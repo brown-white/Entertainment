@@ -219,7 +219,7 @@ img{display:block;max-width:100%}
 <div class="app" id="app"></div>
 <script>
 /* ================================================================
-   ⚙️ SETUP — make it real in 2 steps:
+    SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup.sql (one time)
    2) Provide project values via window.ENTERTAINMENT_CONFIG or an inline JSON config script
    While both are empty the app runs on sample data for preview.
@@ -351,7 +351,7 @@ function demoBookings(){
 function demoOrders(){
   return [{id:1,ticket_id:1,room:"4215",guest_name:"Familie Weber",nationality:"German",qty:2,status:"reserved"}];
 }
-const ICONS={home:`<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg>`,program:`<svg viewBox="0 0 24 24"><path d="M7 2h2v3h6V2h2v3h3v16H4V5h3zm-1 8v9h12v-9z"/></svg>`,tickets:`<svg viewBox="0 0 24 24"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/></svg>`,chat:`<svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>`,stay:`<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-11a7 7 0 0 1 14 0c0 6.6-7 11-7 11zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>`,dash:`<svg viewBox="0 0 24 24"><path d="M4 13h4v7H4zm6-9h4v16h-4zm6 5h4v11h-4z"/></svg>`,team:`<svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm8 1a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zM2 21a6 6 0 0 1 12 0zm10.5 0a5.5 5.5 0 0 1 9.5-3.8V21z"/></svg>`,app:`<svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5zm-7 9 7 4 7-4v5l-7 4-7-4z"/></svg>`};
+const ICONS={bell:`<svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22zm7-5-2-2v-5a5 5 0 0 0-10 0v5l-2 2v1h14z"/></svg>`,moon:`<svg viewBox="0 0 24 24"><path d="M21 14.5A8.5 8.5 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"/></svg>`,sun:`<svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0-5h1v3h-2V2zm0 17h1v3h-2v-3zM2 11h3v2H2zm17 0h3v2h-3zM4.2 5.6l1.4-1.4 2.1 2.1-1.4 1.4zm12.1 12.1 1.4-1.4 2.1 2.1-1.4 1.4zM18.4 4.2l1.4 1.4-2.1 2.1-1.4-1.4zM6.3 16.3l1.4 1.4-2.1 2.1-1.4-1.4z"/></svg>`,globe:`<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.1-5 8 8 0 0 1 4.3 5zM12 4.1c.7 1 1.4 3.2 1.6 6.9h-3.2C10.6 7.3 11.3 5.1 12 4.1zM4.2 13h3.1c.1 1.8.4 3.5.9 5a8 8 0 0 1-4-5zm3.1-2H4.2a8 8 0 0 1 4-5c-.5 1.5-.8 3.2-.9 5zM12 19.9c-.7-1-1.4-3.2-1.6-6.9h3.2c-.2 3.7-.9 5.9-1.6 6.9zm3.8-1.9c.5-1.5.8-3.2.9-5h3.1a8 8 0 0 1-4 5z"/></svg>`,logout:`<svg viewBox="0 0 24 24"><path d="M10 3h2v10h-2zm6.8 2.8 1.4-1.4A10 10 0 1 1 5.8 4.4l1.4 1.4a8 8 0 1 0 9.6 0z"/></svg>`,instagram:`<svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm6-1.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg>`,facebook:`<svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v6h4v-6h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg>`,tiktok:`<svg viewBox="0 0 24 24"><path d="M15 3c.5 3 2.4 4.8 5 5v4a8 8 0 0 1-5-1.8V16a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v4.2A2 2 0 1 0 11 16V3z"/></svg>`,youtube:`<svg viewBox="0 0 24 24"><path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5a3 3 0 0 0-2.1 2.1A31 31 0 0 0 2 12a31 31 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 22 12a31 31 0 0 0-.4-4.8zM10 15.5v-7l6 3.5z"/></svg>`,home:`<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg>`,program:`<svg viewBox="0 0 24 24"><path d="M7 2h2v3h6V2h2v3h3v16H4V5h3zm-1 8v9h12v-9z"/></svg>`,tickets:`<svg viewBox="0 0 24 24"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/></svg>`,chat:`<svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>`,stay:`<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-11a7 7 0 0 1 14 0c0 6.6-7 11-7 11zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>`,dash:`<svg viewBox="0 0 24 24"><path d="M4 13h4v7H4zm6-9h4v16h-4zm6 5h4v11h-4z"/></svg>`,team:`<svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm8 1a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zM2 21a6 6 0 0 1 12 0zm10.5 0a5.5 5.5 0 0 1 9.5-3.8V21z"/></svg>`,app:`<svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5zm-7 9 7 4 7-4v5l-7 4-7-4z"/></svg>`};
 function icon(name){ return ICONS[name]||ICONS.home; }
 const DEMO_USERS=[
   {id:1,username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager"},
@@ -360,13 +360,13 @@ const DEMO_USERS=[
 function demoRooms(){ return ["4215","4308","4510","4102","4103"].map((r,i)=>({id:i+1,room:r,active:true})); }
 function demoAccounts(){
   const today=new Date(), plus=d=>{const x=new Date(today);x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
-  return [{id:1,room:"4215",name:"Familie Weber",phone:"",nationality:"German",arrival:plus(-4),departure:plus(3)}];
+  return [{id:1,room:"4215",name:"Familie Weber",phone:"",nationality:"German",arrival:plus(-4),departure:plus(3),username:"room4215",password:"4215"}];
 }
 function demoMessages(){
   const now=Date.now();
   return [
     {id:1,room:"4215",sender:"guest",sender_name:"Familie Weber",text:"Hello! Is the foam party for kids too?",created_at:new Date(now-3600e3).toISOString(),read_by_team:true,read_by_guest:true},
-    {id:2,room:"4215",sender:"team",sender_name:"Entertainment Manager",text:"Hello! Yes, absolutely — kids love it. See you there! 🎉",created_at:new Date(now-3000e3).toISOString(),read_by_team:true,read_by_guest:false}
+    {id:2,room:"4215",sender:"team",sender_name:"Entertainment Manager",text:"Hello! Yes, absolutely — kids love it. See you there! ",created_at:new Date(now-3000e3).toISOString(),read_by_team:true,read_by_guest:false}
   ];
 }
 function demoRequests(){
@@ -376,7 +376,10 @@ function demoTasks(){
   return [{id:1,title:"Prepare bingo prizes",desc:"Pick up prizes from storage before 17:00",assigned_to:"",due:"",status:"open",created_at:new Date().toISOString()}];
 }
 function demoNotes(){
-  return [{id:1,title:"Foam Party today! 🎉",body:"14:30 at the Main Pool — bring your swimsuit and good mood!",audience:"all",created_at:new Date().toISOString()}];
+  return [{id:1,title:"Foam Party today! ",body:"14:30 at the Main Pool — bring your swimsuit and good mood!",audience:"all",created_at:new Date().toISOString()}];
+}
+function demoReviews(){
+  return [{id:1,activity_id:1,room:"4215",guest_name:"Familie Weber",rating:5,comment:"Great energy at the pool!",created_at:new Date().toISOString()}];
 }
 function demoReviews(){
   return [{id:1,activity_id:1,room:"4215",guest_name:"Familie Weber",rating:5,comment:"Great energy at the pool!",created_at:new Date().toISOString()}];
@@ -405,6 +408,20 @@ const OPERATING_MODULES=[
   ["Staff operations",["Consent-based GPS", "Nearest entertainer lookup", "Task assignment", "Payroll and dress code records"]],
   ["Decision support",["Performance ranking", "Review trends", "Busy hours", "Top performers", "Revenue"]],
   ["Governance",["Role permissions", "Audit logs", "Backups", "Secure API", "Optional two-factor authentication"]]
+  ["","Event Calendar","Monthly drag-and-drop planning, weekly repeats, holidays, entertainer scheduling."],
+  ["","Digital Hotel Map","Tap locations for descriptions, photos, opening hours, activities and navigation."],
+  ["","Photo Gallery","Hotel, activity, event and daily-highlight albums managed without code."],
+  ["","Push Notifications","Send alerts to everyone, guests, entertainers or selected users."],
+  ["","QR Code System","Registration, activity check-in, attendance, tickets and staff ID scanning."],
+  ["","AI Assistant","Answers guest, entertainer and manager questions from hotel data."],
+  ["","Live GPS","On-duty entertainer locations with permission controls for safety and dispatch."],
+  ["","Staff Payroll","Salary, bonus, deductions, overtime, vacation and attendance exports."],
+  ["","Performance Reports","Attendance rate, guest ratings, completed activities, comments and monthly scores."],
+  ["","Guest Reviews","Ratings for entertainers, activities, Kids Club and evening shows with trends."],
+  ["","Languages","Automatic guest-language experience for English, Arabic, Russian, German, French, Polish, Czech, Dutch, Romanian and Turkish."],
+  ["","Offline Mode","Attendance, bookings and reviews queue locally and sync automatically when online."],
+  ["","Security","Encrypted passwords, permissions, audit log, backups, admin timeout and optional 2FA."],
+  ["","Theme Builder","Manager controls colors, logo-ready branding, backgrounds, icons, banners and splash style."]
 ];
 function featuresGrid(limit=PLATFORM_FEATURES.length){
   return `<div class="feature-grid">${PLATFORM_FEATURES.slice(0,limit).map(([ic,title,desc],i)=>`<div class="feature-card ${i===5||i===15?"feature-wide":""}"><div class="ico">${ic}</div><b>${esc(title)}</b><p>${esc(desc)}</p>${title==="Offline Mode"?`<div class="meter"><i style="width:100%"></i></div>`:""}</div>`).join("")}</div>`;
@@ -514,9 +531,9 @@ const DB = {
     if(REMOTE) await sb("ticket_orders?id=eq."+id,{method:"PATCH",body:JSON.stringify({status})});
     S.orders=S.orders.map(o=>o.id===id?{...o,status}:o);
   },
-  async addUser(u){
-    if(REMOTE){ const r=await sb("app_users",{method:"POST",body:JSON.stringify(u)}); S.users.push(r[0]); }
-    else { u.id=Date.now(); S.users.push(u); }
+  async saveUser(u){
+    if(u.id){ if(REMOTE){ const {id,...rest}=u; await sb("app_users?id=eq."+id,{method:"PATCH",body:JSON.stringify(rest)}); } S.users=S.users.map(x=>x.id===u.id?u:x); }
+    else { if(REMOTE){ const r=await sb("app_users",{method:"POST",body:JSON.stringify(u)}); S.users.push(r[0]); } else { u.id=Date.now(); S.users.push(u); } }
   },
   async deleteUser(id){
     if(REMOTE) await sb("app_users?id=eq."+id,{method:"DELETE"});
@@ -666,6 +683,8 @@ function reviewDue(g){
   if(isNaN(a)||isNaN(d)||d<a) return false;
   return Date.now() >= a+(d-a)/2;
 }
+function makeGuestPassword(room){ return String(room).slice(-4).padStart(4,"0"); }
+function isAssignedToMe(a){ const me=S.session||{}; const ent=String(a.entertainer||"").toLowerCase(); return !ent || ent.includes(String(me.username||"").toLowerCase()) || ent.includes(String(me.name||"").toLowerCase()) || ent.includes("team"); }
 function downloadCsv(name, rows){ const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))]; const csv=[cols.join(","),...rows.map(r=>cols.map(c=>`"${String(r[c]??"").replaceAll(`"`,`""`)}"`).join(","))].join("\n"); const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
 function toast(msg){ const el=document.createElement("div"); el.className="toast"; el.innerHTML="<span>"+esc(msg)+"</span>";
   document.body.appendChild(el); setTimeout(()=>el.remove(),2200); }
@@ -685,7 +704,7 @@ function render(){
 }
 function errorView(){
   return `<div class="screen fadein" style="display:flex;flex-direction:column;justify-content:center">
-    <div class="empty"><div class="big">📡</div>
+    <div class="empty"><div class="big">Offline</div>
       Could not reach the database.<br>Please check your internet connection.
       <button class="btn" id="btn-retry" style="margin-top:18px">↻</button>
     </div></div>`;
@@ -710,7 +729,8 @@ function loginView(){
       ${brand}
       <div class="login-card">
         <label>${t("room")}</label><input id="f-room" inputmode="numeric" placeholder="4215">
-        <label>${t("name")}</label><input id="f-name" placeholder="${t("name")}">
+        <label>${t("name")}</label><input id="f-name" placeholder="Required only the first time">
+        <div class="row2"><div><label>${t("user")}</label><input id="f-guser" autocapitalize="none" placeholder="room4215"></div><div><label>${t("pass")}</label><input id="f-gpass" type="password" placeholder="••••"></div></div>
         <label>${t("phone")}</label><input id="f-phone" inputmode="tel" placeholder="+49 ...">
         <label>${t("nationality")}</label>
         <input id="f-nat" list="natlist" placeholder="${t("nationality")}">
@@ -723,7 +743,7 @@ function loginView(){
         <div class="err" id="login-err"></div>
         ${!REMOTE?`<p class="hint">${t("demoNote")}</p>`:""}
       </div>
-      <button class="staff-link" id="btn-teamlink">✦ <span>${t("otherUsers")}</span></button>
+      <button class="staff-link" id="btn-teamlink"> <span>${t("otherUsers")}</span></button>
     </div>`;
   }
   return `<div class="login-wrap fadein">
@@ -744,28 +764,30 @@ function loginView(){
 function wireLogin(){
   document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
   document.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>{loginRole=b.dataset.role;render();});
-  const tl=$("#btn-teamlink"); if(tl) tl.onclick=()=>{loginMode="team";render();};
+  const tl=$("#btn-teamlink"); if(tl) tl.onclick=()=>{loginMode="team";loginRole="staff";render();};
   const gl=$("#btn-guestlink"); if(gl) gl.onclick=()=>{loginMode="guest";render();};
   $("#btn-login").onclick=async ()=>{
     const err=$("#login-err");
     if(loginMode==="guest"){
       const room=$("#f-room").value.trim(), name=$("#f-name").value.trim(), phone=$("#f-phone").value.trim();
+      const guser=$("#f-guser").value.trim(), gpass=$("#f-gpass").value;
       const nat=$("#f-nat").value.trim(), arr=$("#f-arr").value, dep=$("#f-dep").value;
-      if(!room||!name){ err.textContent=t("loginErr"); return; }
+      if(!room){ err.textContent=t("loginErr"); return; }
       const rm=S.rooms.find(x=>String(x.room)===room);
       if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
       let acc=S.accounts.find(a=>String(a.room)===room);
       if(!acc){
-        if(!nat||!arr||!dep||Date.parse(dep)<Date.parse(arr)){ err.textContent=t("loginErr"); return; }
-        try{ acc=await DB.addAccount({room,name,phone,nationality:nat,arrival:arr,departure:dep}); }
+        if(!name||!nat||!arr||!dep||Date.parse(dep)<Date.parse(arr)){ err.textContent=t("loginErr"); return; }
+        try{ acc=await DB.addAccount({room,name,phone,nationality:nat,arrival:arr,departure:dep,username:"room"+room,password:makeGuestPassword(room)}); }
         catch(e){ err.textContent=t("loginErr"); return; }
-      }
-      S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
+        alert("Your login is: "+acc.username+" / "+acc.password+". Use the same account on every phone in this room.");
+      } else if((acc.username||("room"+room))!==guser || (acc.password||room)!==gpass){ err.textContent=t("loginErr"); return; }
+      S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",username:acc.username||("room"+room),password:acc.password||room,
         nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure};
       S.tab="home"; persist(); render();
     } else {
       const u=$("#f-user").value.trim(), p=$("#f-pass").value;
-      const found=S.users.find(x=>x.username===u && x.password===p && (loginRole==="manager"?x.role==="manager":true));
+      const found=S.users.find(x=>x.username===u && x.password===p && x.role===loginRole);
       if(!found){ err.textContent=t("loginErr"); return; }
       const role = found.role==="manager" && loginRole==="manager" ? "manager" : "staff";
       S.session={role,name:found.display_name||found.username,username:found.username,userId:found.id};
@@ -780,23 +802,25 @@ function topBar(title,sub){
   return `<div class="top">
     <div class="who"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>
     <div class="toprow">
-      <button class="iconbtn" id="btn-notes" aria-label="notifications">🔔${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
-      <button class="iconbtn" id="btn-theme" aria-label="theme">${S.theme==="light"?"🌙":"☀️"}</button>
-      <button class="iconbtn" id="btn-lang" aria-label="language">🌐</button>
-      <button class="iconbtn" id="btn-out" aria-label="logout">⏻</button>
+      ${socialTopIcons()}
+      <button class="iconbtn" id="btn-notes" aria-label="notifications">${icon("bell")}${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
+      <button class="iconbtn" id="btn-theme" aria-label="theme">${S.theme==="light"?icon("moon"):icon("sun")}</button>
+      <button class="iconbtn" id="btn-lang" aria-label="language">${icon("globe")}</button>
+      <button class="iconbtn" id="btn-out" aria-label="logout">${icon("logout")}</button>
     </div>
   </div>`;
 }
+function socialTopIcons(){ const st=S.settings; return [["instagram",st.instagram],["tiktok",st.tiktok],["facebook",st.facebook],["youtube",st.youtube]].filter(x=>x[1]).map(([n,u])=>`<a class="iconbtn" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${icon(n)}</a>`).join(""); }
 function heroCard(a){
   if(!a) return "";
   const taken=seatsTaken(a.id), left=Math.max(0,a.capacity-taken);
   return `<div class="hero" data-open="${a.id}">
     <img src="${esc(a.image||IMG.show)}" alt="">
     <div class="veil"></div>
-    <div class="tag">✦ ${t("highlight")}</div>
+    <div class="tag">${t("highlight")}</div>
     <div class="body">
       <h3>${esc(a.name)}</h3>
-      <div class="meta"><span>🕐 ${esc(a.time)}</span><span>📍 ${esc(a.location)}</span>${a.capacity?`<span>👥 ${left} ${t("seatsLeft")}</span>`:""}</div>
+      <div class="meta"><span>${esc(a.time)}</span><span>${esc(a.location)}</span>${a.capacity?`<span>${left} ${t("seatsLeft")}</span>`:""}</div>
       <div class="desc">${esc(a.desc)}</div>
     </div>
   </div>`;
@@ -807,9 +831,9 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   const fav=S.favorites.includes(a.id);
   let side="";
   if(manager){
-    side=`<button class="btn sm ghost" data-edit="${a.id}">✎</button><span class="seats">${taken}/${a.capacity}</span>`;
+    side=`<button class="btn sm ghost" data-edit="${a.id}">Edit</button><span class="seats">${taken}/${a.capacity}</span>`;
   } else if(staff){
-    side=`<button class="btn sm ghost" data-att="${a.id}">✓</button><span class="pill">${bookingsFor(a.id).length} ${t("guests")}</span>`;
+    side=`<button class="btn sm ghost" data-att="${a.id}">Check-in</button><span class="pill">${bookingsFor(a.id).length} ${t("guests")}</span>`;
   } else if(showBook){
     side = mine
       ? `<span class="chip ${mine.status==="booked"?"ok":""}">${mine.status==="booked"?t("booked"):t("onWaitlist")}</span>`
@@ -819,12 +843,12 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   return `<div class="card act" ${manager||staff?"":`data-open="${a.id}"`}>
     <img class="thumb" src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
     <div class="mid">
-      <span class="catbadge">${catLabel(a.category)} · <span class="rating">★ ${activityRating(a.id)}</span></span>
+      <span class="catbadge">${catLabel(a.category)} · <span class="rating">Rating ${activityRating(a.id)}</span></span>
       <h4>${esc(a.name)}</h4>
-      <div class="meta"><span>🕐 ${esc(a.time)}</span><span>📍 ${esc(a.location)}</span></div>
+      <div class="meta"><span>${esc(a.time)}</span><span>${esc(a.location)}</span></div>
     </div>
     <div class="side">
-      ${showFav&&!manager&&!staff?`<button class="fav" data-fav="${a.id}">${fav?"❤️":"🤍"}</button>`:""}
+      ${showFav&&!manager&&!staff?`<button class="fav" data-fav="${a.id}">${fav?"":""}</button>`:""}
       ${side}
     </div>
   </div>`;
@@ -838,14 +862,15 @@ function subTabs(group,items){
     `<button data-sub="${group}:${id}" class="${S.sub[group]===id?"on":""}">${lb}</button>`).join("")}</div>`;
 }
 function listByCat(acts,opts){
-  if(!acts.length) return `<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`;
+  if(!acts.length) return `<div class="empty"><div class="big"></div>${t("noneToday")}</div>`;
   return CAT_ORDER.filter(c=>acts.some(a=>a.category===c)).map(c=>`
     <div class="sec"><h3>${catLabel(c)}</h3>
       ${acts.filter(a=>a.category===c).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a,opts)).join("")}
     </div>`).join("");
 }
 function weeklyTimeline(){
-  const acts=S.activities.filter(a=>a.day===S.day).sort((x,y)=>x.time.localeCompare(y.time));
+  const staffOnly=S.session&&S.session.role==="staff";
+  const acts=S.activities.filter(a=>a.day===S.day && (!staffOnly || isAssignedToMe(a))).sort((x,y)=>x.time.localeCompare(y.time));
   return acts.length?`<div class="wk">${acts.map(a=>`
     <div class="wk-item">
       <div class="wk-time">${esc(a.time)}</div>
@@ -854,11 +879,11 @@ function weeklyTimeline(){
         <img src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
         <div style="min-width:0">
           <h4>${esc(a.name)}</h4>
-          <p>📍 ${esc(a.location)}</p>
+          <p>${esc(a.location)}${staffOnly&&a.entertainer?` · ${esc(a.entertainer)}`:""}</p>
         </div>
       </div>
     </div>`).join("")}</div>`
-  :`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`;
+  :`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`;
 }
 function weeklyView(title){
   return `<div class="screen fadein">${topBar(title,t("days")[S.day])}${dayTabs()}${weeklyTimeline()}</div>`;
@@ -869,11 +894,11 @@ function threadView(room,meSide){
     ${msgs.length?msgs.map(m=>{
       const mine = m.sender===meSide;
       return `<div class="bub ${mine?"me":"them"}">${esc(m.text)}<span class="tm">${mine?"":esc(m.sender_name)+" · "}${fmtTime(m.created_at)}</span></div>`;
-    }).join(""):`<div class="empty"><div class="big">💬</div>${t("noMessages")}</div>`}
+    }).join(""):`<div class="empty"><div class="big"></div>${t("noMessages")}</div>`}
   </div>
   <div class="chatbar">
     <input id="chat-in" placeholder="${t("typeMessage")}" autocomplete="off">
-    <button id="chat-send" aria-label="${t("send")}">➤</button>
+    <button id="chat-send" aria-label="${t("send")}"></button>
   </div>`;
 }
 /* ---------------- guest ---------------- */
@@ -893,11 +918,11 @@ function guestView(){
       ${mapBlock()}
       <div class="sec"><h3>Hotel services</h3>${featuresGrid(6)}</div>
       <div class="quickrow">
-        <button id="btn-req-song"><span>🎵</span>${t("songRequest")}</button>
-        <button id="btn-req-bday"><span>🎂</span>${t("birthdayRequest")}</button>
+        <button id="btn-req-song"><span></span>${t("songRequest")}</button>
+        <button id="btn-req-bday"><span></span>${t("birthdayRequest")}</button>
       </div>
       <div class="sec"><h3>${t("todayProgram")}</h3>
-        ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`}
+        ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`}
       </div>
       ${reviewDue(g)?reviewBlock():""}
       ${socialBlock()}
@@ -923,12 +948,12 @@ function guestView(){
         return `<div class="card act">
           <img class="thumb" src="${esc(a.image||IMG.show)}" alt="">
           <div class="mid"><span class="catbadge">${t("days")[a.day]}</span><h4>${esc(a.name)}</h4>
-            <div class="meta"><span>🕐 ${esc(a.time)}</span><span>📍 ${esc(a.location)}</span></div></div>
+            <div class="meta"><span>${esc(a.time)}</span><span>${esc(a.location)}</span></div></div>
           <div class="side">
             <span class="chip ${b.status==="booked"?"ok":""}">${b.status==="booked"?t("booked"):t("onWaitlist")}</span>
-            <button class="btn sm warn" data-cancel="${b.id}">✕</button>
+            <button class="btn sm warn" data-cancel="${b.id}"></button>
           </div></div>`;
-      }).join(""):`<div class="empty"><div class="big">🎟️</div>${t("noBookings")}</div>`}
+      }).join(""):`<div class="empty"><div class="big"></div>${t("noBookings")}</div>`}
     </div>
     <div class="sec"><h3>${t("myTickets")} <span class="count">${orders.length}</span></h3>
       ${orders.length?orders.map(o=>{
@@ -936,32 +961,32 @@ function guestView(){
         return `<div class="card act">
           <img class="thumb" src="${esc(tk.image||IMG.show)}" alt="">
           <div class="mid"><span class="catbadge">${t("days")[tk.day]} · ${esc(tk.time)}</span><h4>${esc(tk.name)}</h4>
-            <div class="meta"><span>🎫 ×${o.qty}</span><span>${esc(tk.price||"")}</span></div></div>
+            <div class="meta"><span> ×${o.qty}</span><span>${esc(tk.price||"")}</span></div></div>
           <div class="side">
             <span class="chip ${o.status==="paid"?"ok":"res"}">${o.status==="paid"?t("paid"):t("reserved")}</span>
-            ${o.status==="paid"?"":`<button class="btn sm warn" data-cancelorder="${o.id}">✕</button>`}
+            ${o.status==="paid"?"":`<button class="btn sm warn" data-cancelorder="${o.id}"></button>`}
           </div></div>`;
-      }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`}
+      }).join(""):`<div class="empty"><div class="big"></div>${t("ticketsNone")}</div>`}
     </div>
     ${reqs.length?`<div class="sec"><h3>${t("myRequests")} <span class="count">${reqs.length}</span></h3>
       <div class="card">${reqs.map(r=>`<div class="booking-line">
-        <span>${r.type==="song"?"🎵":"🎂"} ${esc(r.detail)}${r.date?` · ${esc(r.date)}`:""}</span>
+        <span>${r.type==="song"?"":""} ${esc(r.detail)}${r.date?` · ${esc(r.date)}`:""}</span>
         <span style="display:flex;gap:6px;align-items:center">
           <span class="chip ${r.status==="done"?"ok":"res"}">${r.status==="done"?t("done"):t("statusNew")}</span>
-          ${r.status==="done"?"":`<button class="btn sm warn" data-delreq="${r.id}">✕</button>`}
+          ${r.status==="done"?"":`<button class="btn sm warn" data-delreq="${r.id}"></button>`}
         </span></div>`).join("")}</div>
     </div>`:""}
     <div class="sec"><h3>${t("favorites")} <span class="count">${favActs.length}</span></h3>
-      ${favActs.length?favActs.map(a=>activityCard(a)).join(""):`<div class="empty"><div class="big">🤍</div>${t("noFavs")}</div>`}
+      ${favActs.length?favActs.map(a=>activityCard(a)).join(""):`<div class="empty"><div class="big"></div>${t("noFavs")}</div>`}
     </div>
     ${reviewDue(g)?reviewBlock():""}
   </div>`;
 }
-function guestProfileBlock(g){return `<div class="sec card"><h3>Guest profile</h3><div class="booking-line"><span>${t("room")}</span><span class="pill">${esc(g.room)}</span></div><div class="booking-line"><span>${t("nationality")}</span><span>${esc(g.nationality||t("none"))}</span></div><div class="booking-line"><span>${t("arrival")}</span><span>${esc(g.arrival||t("none"))}</span></div><div class="booking-line"><span>${t("departure")}</span><span>${esc(g.departure||t("none"))}</span></div></div>`}
-function weatherBlock(){return `<div class="sec card"><h3>Weather</h3><div class="booking-line"><span>☀️ Today</span><span class="pill">29°C · Pool perfect</span></div><div class="booking-line"><span>🌙 Evening</span><span>23°C · Light breeze</span></div></div>`}
+function guestProfileBlock(g){return `<div class="sec card"><h3>Guest profile</h3><div class="booking-line"><span>${t("room")}</span><span class="pill">${esc(g.room)}</span></div><div class="booking-line"><span>${t("user")}</span><span>${esc(g.username||"")}</span></div><div class="booking-line"><span>${t("pass")}</span><span>${esc(g.password||"")}</span></div><div class="booking-line"><span>${t("nationality")}</span><span>${esc(g.nationality||t("none"))}</span></div><div class="booking-line"><span>${t("arrival")}</span><span>${esc(g.arrival||t("none"))}</span></div><div class="booking-line"><span>${t("departure")}</span><span>${esc(g.departure||t("none"))}</span></div></div>`}
+function weatherBlock(){return `<div class="sec card"><h3>Weather</h3><div class="booking-line"><span> Today</span><span class="pill">29°C · Pool perfect</span></div><div class="booking-line"><span> Evening</span><span>23°C · Light breeze</span></div></div>`}
 function mapBlock(){return `<div class="sec"><h3>Map & locations</h3><div class="mapbox"><span class="pin" style="left:35%;top:45%">● Main Pool</span><span class="pin" style="left:68%;top:62%">● Stage</span><span class="pin" style="left:52%;top:30%">● Kids Club</span></div></div>`}
 function activityRating(actId){const rs=S.reviews.filter(r=>r.activity_id===actId); return rs.length? (rs.reduce((n,r)=>n+(+r.rating||0),0)/rs.length).toFixed(1):"—";}
-function guestProgramView(){const q=(S.search||"").toLowerCase(); let acts=S.activities.filter(a=>a.day===S.day && (!q || [a.name,a.desc,a.location,a.category].join(" ").toLowerCase().includes(q))); if(S.ratingFilter!=="all") acts=acts.filter(a=>+activityRating(a.id)>=+S.ratingFilter); return `<div class="screen fadein">${topBar(t("week"),t("days")[S.day])}${dayTabs()}<div class="searchbar"><input id="act-search" placeholder="Search activities or locations" value="${esc(S.search)}"><select id="rating-filter"><option value="all">All ratings</option><option value="4">4★+</option><option value="5">5★</option></select></div><div class="program-grid">${acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">🔎</div>${t("noneToday")}</div>`}</div></div>`}
+function guestProgramView(){const q=(S.search||"").toLowerCase(); let acts=S.activities.filter(a=>a.day===S.day && (!q || [a.name,a.desc,a.location,a.category].join(" ").toLowerCase().includes(q))); if(S.ratingFilter!=="all") acts=acts.filter(a=>+activityRating(a.id)>=+S.ratingFilter); return `<div class="screen fadein">${topBar(t("week"),t("days")[S.day])}${dayTabs()}<div class="searchbar"><input id="act-search" placeholder="Search activities or locations" value="${esc(S.search)}"><select id="rating-filter"><option value="all">All ratings</option><option value="4">4+</option><option value="5">5</option></select></div><div class="program-grid">${acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`}</div></div>`}
 function guestTicketsView(){
   return `<div class="screen fadein">
     ${topBar(t("tickets"),"")}
@@ -973,15 +998,15 @@ function guestTicketsView(){
         <img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy">
         <div class="bd">
           <h4>${esc(tk.name)}</h4>
-          <p class="mini">${t("days")[tk.day]} · 🕐 ${esc(tk.time)} · 📍 ${esc(tk.location)}${left!==null?` · ${left} ${t("seatsLeft")}`:""}</p>
+          <p class="mini">${t("days")[tk.day]} ·  ${esc(tk.time)} ·  ${esc(tk.location)}${left!==null?` · ${left} ${t("seatsLeft")}`:""}</p>
           <p class="desc">${esc(tk.desc)}</p>
           <div class="rowend">
             <span class="price">${esc(tk.price||"")}</span>
-            ${soldOut?`<span class="chip full">${t("soldOut")}</span>`:`<button class="btn sm" data-buy="${tk.id}">🎫 ${t("buyTicket")}</button>`}
+            ${soldOut?`<span class="chip full">${t("soldOut")}</span>`:`<button class="btn sm" data-buy="${tk.id}"> ${t("buyTicket")}</button>`}
           </div>
         </div>
       </div>`;
-    }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`}
+    }).join(""):`<div class="empty"><div class="big"></div>${t("ticketsNone")}</div>`}
   </div>`;
 }
 function reviewBlock(){
@@ -992,7 +1017,7 @@ function reviewBlock(){
     <h3 style="font-size:22px">${t("reviews")}</h3>
     <p class="mini" style="margin:4px 0 12px">${t("reviewsSub")}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      ${links.map(([n,u])=>`<a class="btn sm ghost" style="text-decoration:none" href="${esc(u)}" target="_blank" rel="noopener">⭐ ${n}</a>`).join("")}
+      ${links.map(([n,u])=>`<a class="btn sm ghost" style="text-decoration:none" href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join("")}
     </div></div>`;
 }
 function socialBlock(){
@@ -1010,7 +1035,7 @@ function socialBlock(){
 function staffView(){
   const todayIdx=(new Date().getDay()+6)%7;
   if(S.tab==="today"){
-    const acts=S.activities.filter(a=>a.day===todayIdx);
+    const acts=S.activities.filter(a=>a.day===todayIdx && isAssignedToMe(a));
     const hl=acts.find(a=>a.highlight);
     return `<div class="screen fadein">
       ${topBar(t("schedule"),t("days")[todayIdx]+" · "+S.session.name)}
@@ -1024,20 +1049,19 @@ function staffView(){
     const mine=S.tasks.filter(x=>!x.assigned_to || x.assigned_to===me);
     return `<div class="screen fadein">
       ${topBar(t("myTasks"),S.session.name)}
-      ${mine.length?`<div class="card">${mine.map(x=>taskLine(x,false)).join("")}</div>`:`<div class="empty"><div class="big">🌞</div>${t("noTasks")}</div>`}
+      ${mine.length?`<div class="card">${mine.map(x=>taskLine(x,false)).join("")}</div>`:`<div class="empty"><div class="big"></div>${t("noTasks")}</div>`}
     </div>`;
   }
-  if(S.tab==="chat") return teamChatView();
-  return bookingsView(t("guestsBooked"));
+  return bookingsView(t("guestsBooked"), true);
 }
 function taskLine(x,managerMode){
   const u=S.users.find(u=>u.username===x.assigned_to);
   const assignee = x.assigned_to ? ((u&&u.display_name)||x.assigned_to) : t("allTeam");
   return `<div class="booking-line">
-    <span style="min-width:0"><b>${esc(x.title)}</b>${x.desc?`<br><span class="mini">${esc(x.desc)}</span>`:""}${x.due?`<br><span class="mini">📅 ${esc(x.due)}</span>`:""}${managerMode?`<br><span class="mini">👤 ${esc(assignee)}</span>`:""}</span>
+    <span style="min-width:0"><b>${esc(x.title)}</b>${x.desc?`<br><span class="mini">${esc(x.desc)}</span>`:""}${x.due?`<br><span class="mini"> ${esc(x.due)}</span>`:""}${managerMode?`<br><span class="mini"> ${esc(assignee)}</span>`:""}</span>
     <span style="display:flex;gap:6px;align-items:center;flex:none">
       <button class="chip ${x.status==="done"?"ok":"res"}" data-taskdone="${x.id}">${x.status==="done"?t("done"):t("statusNew")}</button>
-      ${managerMode?`<button class="btn sm warn" data-taskdel="${x.id}">✕</button>`:""}
+      ${managerMode?`<button class="btn sm warn" data-taskdel="${x.id}"></button>`:""}
     </span></div>`;
 }
 function teamChatView(){
@@ -1069,18 +1093,18 @@ function teamChatView(){
           <span class="mini">${fmtTime(c.last.created_at)}</span>
           ${c.unread?`<span class="badge">${c.unread}</span>`:""}
         </div>
-      </div>`).join(""):`<div class="empty"><div class="big">💬</div>${t("noMessages")}</div>`}
+      </div>`).join(""):`<div class="empty"><div class="big"></div>${t("noMessages")}</div>`}
     </div>
   </div>`;
 }
-function bookingsView(title){
+function bookingsView(title, staffOnly=false){
   return `<div class="screen fadein">
     ${topBar(title,t("days")[S.day])}
-    ${bookingsInner()}
+    ${bookingsInner(staffOnly)}
   </div>`;
 }
-function bookingsInner(){
-  const acts=S.activities.filter(a=>a.day===S.day);
+function bookingsInner(staffOnly=false){
+  const acts=S.activities.filter(a=>a.day===S.day && (!staffOnly || isAssignedToMe(a)));
   return dayTabs() + (acts.length?acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>{
     const bks=bookingsFor(a.id);
     return `<div class="card">
@@ -1089,8 +1113,8 @@ function bookingsInner(){
         <span class="pill">${seatsTaken(a.id)}/${a.capacity}</span></div>
       ${bks.map(b=>`<div class="booking-line">
         <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}${b.nationality?` · ${esc(b.nationality)}`:""}</span>
-        <span class="pill">${b.adults}A${b.children?(" +"+b.children+"C"):""}${b.status==="waitlist"?" · ⏳":""}</span></div>`).join("")}
-    </div>`;}).join(""):`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`);
+        <span class="pill">${b.adults}A${b.children?(" +"+b.children+"C"):""}${b.status==="waitlist"?" · waitlist":""}</span></div>`).join("")}
+    </div>`;}).join(""):`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`);
 }
 /* ---------------- manager (full access — manager role only) ---------------- */
 function managerView(){
@@ -1142,7 +1166,7 @@ function dashView(){
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   return `<div class="screen fadein">
     ${topBar(t("dashboard"),S.session.name)}
-    ${!REMOTE?`<div class="setup">⚙️ ${t("demoNote")}</div>`:""}
+    ${!REMOTE?`<div class="setup"> ${t("demoNote")}</div>`:""}
     <div class="stat-grid">
       <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
       <div class="stat"><b>${occ}%</b><span>${t("occupancy")}</span></div>
@@ -1155,6 +1179,7 @@ function dashView(){
     <div class="quickrow"><button id="btn-export-bookings"><span>⬇️</span>Export bookings CSV</button><button id="btn-export-orders"><span>⬇️</span>Export orders CSV</button></div>
     <div class="sec"><h3>👑 Manager Control Center</h3>${featuresGrid()}</div>
     <div class="sec"><h3>🧩 Configurable operating modules</h3>${modulesPanel()}</div>
+    <div class="sec"><h3> Manager Control Center</h3>${featuresGrid()}</div>
     <div class="sec"><h3>Security & operations</h3><div class="card">
       <div class="booking-line"><span>Roles & permissions</span><span class="pill">Manager · Team · Guest</span></div>
       <div class="booking-line"><span>Room validation / one account per room</span><span class="pill">Active</span></div>
@@ -1164,10 +1189,10 @@ function dashView(){
     ${nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
     </div></div>`:""}
-    <div class="sec"><h3>★ ${t("activities")}</h3>
+    <div class="sec"><h3> ${t("activities")}</h3>
       ${top.length?top.map(x=>`<div class="card booking-line" style="padding:12px 14px">
         <span><b>${esc(x.a.name)}</b> · ${t("daysShort")[x.a.day]} ${x.a.time}</span>
-        <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">📊</div>${t("none")}</div>`}
+        <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big"></div>${t("none")}</div>`}
     </div>
   </div>`;
 }
@@ -1186,33 +1211,33 @@ function managerTicketsInner(){
         <img class="thumb" src="${esc(tk.image||IMG.show)}" alt="">
         <div class="mid"><span class="catbadge">${t("days")[tk.day]} · ${esc(tk.time)}</span>
           <h4>${esc(tk.name)}</h4>
-          <div class="meta"><span>${esc(tk.price||"")}</span><span>🎫 ${sold}${tk.capacity>0?"/"+tk.capacity:""}</span></div></div>
-        <div class="side"><button class="btn sm ghost" data-tedit="${tk.id}">✎</button></div>
+          <div class="meta"><span>${esc(tk.price||"")}</span><span> ${sold}${tk.capacity>0?"/"+tk.capacity:""}</span></div></div>
+        <div class="side"><button class="btn sm ghost" data-tedit="${tk.id}"></button></div>
       </div>
       ${os.map(o=>`<div class="booking-line">
         <span><b>${t("room")} ${esc(o.room)}</b> · ${esc(o.guest_name)} · ×${o.qty}</span>
         <span style="display:flex;gap:6px;align-items:center">
           <button class="chip ${o.status==="paid"?"ok":"res"}" data-tpaid="${o.id}">${o.status==="paid"?t("paid"):t("reserved")}</button>
-          <button class="btn sm warn" data-tdel="${o.id}">✕</button>
+          <button class="btn sm warn" data-tdel="${o.id}"></button>
         </span></div>`).join("")}
     </div>`;
-  }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`);
+  }).join(""):`<div class="empty"><div class="big"></div>${t("ticketsNone")}</div>`);
 }
 function requestsInner(){
   return S.requests.length?`<div class="card">${S.requests.map(r=>`<div class="booking-line">
-    <span style="min-width:0">${r.type==="song"?"🎵":"🎂"} <b>${esc(r.detail)}</b>${r.date?` · ${esc(r.date)}`:""}
+    <span style="min-width:0">${r.type==="song"?"":""} <b>${esc(r.detail)}</b>${r.date?` · ${esc(r.date)}`:""}
       <br><span class="mini">${t("room")} ${esc(r.room)} · ${esc(r.guest_name)}${r.note?` — ${esc(r.note)}`:""}</span></span>
     <span style="display:flex;gap:6px;align-items:center;flex:none">
       <button class="chip ${r.status==="done"?"ok":"res"}" data-reqdone="${r.id}">${r.status==="done"?t("done"):t("statusNew")}</button>
-      <button class="btn sm warn" data-reqdel="${r.id}">✕</button>
+      <button class="btn sm warn" data-reqdel="${r.id}"></button>
     </span></div>`).join("")}</div>`
-  :`<div class="empty"><div class="big">🎁</div>${t("none")}</div>`;
+  :`<div class="empty"><div class="big"></div>${t("none")}</div>`;
 }
 function roomsInner(){
   return `<label>${t("addRooms")}</label>
     <textarea id="rooms-in" rows="3" placeholder="${t("roomsHint")}"></textarea>
     <button class="btn" id="btn-addrooms" style="margin:10px 0 16px">＋ ${t("addRooms")}</button>
-    <input id="rooms-filter" placeholder="🔍" style="margin-bottom:10px">
+    <input id="rooms-filter" placeholder="" style="margin-bottom:10px">
     <div class="card roomgrid">
       ${S.rooms.length?S.rooms.map(r=>{
         const acc=S.accounts.find(a=>a.room===r.room);
@@ -1220,29 +1245,29 @@ function roomsInner(){
           <span><b>${esc(r.room)}</b>${acc?` · ${esc(acc.name)}`:""}</span>
           <span style="display:flex;gap:6px;align-items:center">
             <button class="chip ${r.active?"ok":"full"}" data-roomact="${r.id}">${t("activeLbl")}</button>
-            <button class="btn sm warn" data-roomdel="${r.id}">✕</button>
+            <button class="btn sm warn" data-roomdel="${r.id}"></button>
           </span></div>`;
-      }).join(""):`<div class="empty"><div class="big">🚪</div>${t("none")}</div>`}
+      }).join(""):`<div class="empty"><div class="big"></div>${t("none")}</div>`}
     </div>`;
 }
 function accountsInner(){
   const managerCount=S.users.filter(u=>u.role==="manager").length;
-  return `<button class="btn" id="btn-adduser" style="margin:0 0 12px">＋ ${t("addUser")}</button>
+  return `<button class="btn" id="btn-adduser" style="margin:0 0 12px">${t("addUser")}</button>
     <div class="card">
       ${S.users.map(u=>{
         const lastManager=u.role==="manager"&&managerCount<=1;
         return `<div class="booking-line">
         <span><b>${esc(u.display_name||u.username)}</b> · ${esc(u.username)}</span>
         <span style="display:flex;gap:8px;align-items:center">
-          <span class="pill">${u.role==="manager"?t("manager"):t("staff")}</span>
-          ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">✕</button>`}
+          <button class="pill" data-edituser="${u.id}">${u.role==="manager"?t("manager"):t("staff")}</button>
+          ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">×</button>`}
         </span></div>`;}).join("")}
     </div>`;
 }
 function tasksInner(){
   return `<div class="card"><h3>Daily checklist</h3><div class="booking-line"><span>Sound check</span><span class="pill">09:00</span></div><div class="booking-line"><span>Pool games kit ready</span><span class="pill">10:00</span></div><div class="booking-line"><span>Birthday announcements prepared</span><span class="pill">20:30</span></div></div><button class="btn" id="btn-addtask" style="margin:0 0 12px">＋ ${t("addTask")}</button>`
     + (S.tasks.length?`<div class="card">${S.tasks.map(x=>taskLine(x,true)).join("")}</div>`
-      :`<div class="empty"><div class="big">✅</div>${t("noTasks")}</div>`);
+      :`<div class="empty"><div class="big"></div>${t("noTasks")}</div>`);
 }
 function attendanceInner(){
   const todayIdx=(new Date().getDay()+6)%7, date=todayISO();
@@ -1253,7 +1278,7 @@ function attendanceInner(){
       const pres=bks.filter(b=>S.attendance.some(x=>x.booking_id===b.id&&x.date===date)).length;
       return `<div class="booking-line"><span>${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></span>
         <span class="pill">${pres}/${bks.length} ${t("present")}</span></div>`;
-    }).join("")}</div>`:`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`);
+    }).join("")}</div>`:`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`);
 }
 function appSettingsView(){
   const st=S.settings;
@@ -1315,8 +1340,7 @@ function navView(role){
   } else if(role==="staff"){
     const un=unreadFor("staff");
     items=[["today","program",t("today"),0],["week","program",t("program"),0],["bookings","tickets",t("bookings"),0],
-      ["tasks","stay",t("tasks"),S.tasks.filter(x=>x.status!=="done"&&(!x.assigned_to||x.assigned_to===S.session.username)).length],
-      ["chat","chat",t("chat"),un]];
+      ["tasks","stay",t("tasks"),S.tasks.filter(x=>x.status!=="done"&&(!x.assigned_to||x.assigned_to===S.session.username)).length]];
   } else {
     const un=unreadFor("manager");
     const newReq=S.requests.filter(r=>r.status==="new").length;
@@ -1338,7 +1362,7 @@ function openBookModal(a){
   const taken=seatsTaken(a.id), left=Math.max(0,a.capacity-taken), full=left<=0;
   const wrap=baseModal(`
     <h3>${esc(a.name)}</h3>
-    <p class="mini">🕐 ${esc(a.time)} · 📍 ${esc(a.location)} · ${full?t("full"):left+" "+t("seatsLeft")}</p>
+    <p class="mini"> ${esc(a.time)} ·  ${esc(a.location)} · ${full?t("full"):left+" "+t("seatsLeft")}</p>
     <p style="margin-top:8px">${esc(a.desc)}</p>
     <div class="row2">
       <div><label>${t("adults")}</label><input id="m-ad" type="number" min="1" value="1"></div>
@@ -1360,14 +1384,14 @@ function openTicketBuyModal(tk){
   const max=left!==null?Math.max(1,Math.min(10,left)):10;
   const wrap=baseModal(`
     <h3>${esc(tk.name)}</h3>
-    <p class="mini">${t("days")[tk.day]} · 🕐 ${esc(tk.time)} · 📍 ${esc(tk.location)}</p>
+    <p class="mini">${t("days")[tk.day]} ·  ${esc(tk.time)} ·  ${esc(tk.location)}</p>
     <p style="margin-top:8px">${esc(tk.desc)}</p>
     <p class="mini" style="margin-top:8px">${t("payNote")}</p>
     <div class="row2" style="align-items:end">
       <div><label>${t("qty")}</label><input id="tq" type="number" min="1" max="${max}" value="1"></div>
       <div style="text-align:end;font-family:var(--font-display);font-size:24px;color:var(--cacao);padding-bottom:10px">${esc(tk.price||"")}</div>
     </div>
-    <button class="btn" id="t-go">🎫 ${t("buyTicket")}</button>
+    <button class="btn" id="t-go"> ${t("buyTicket")}</button>
     <button class="btn ghost" id="t-x">${t("close")}</button>`);
   wrap.querySelector("#t-x").onclick=()=>wrap.remove();
   wrap.querySelector("#t-go").onclick=async ()=>{
@@ -1380,7 +1404,7 @@ function openTicketBuyModal(tk){
 function openRequestModal(type){
   const isSong=type==="song";
   const wrap=baseModal(`
-    <h3>${isSong?"🎵 "+t("songRequest"):"🎂 "+t("birthdayRequest")}</h3>
+    <h3>${isSong?" "+t("songRequest"):" "+t("birthdayRequest")}</h3>
     <label>${isSong?t("songName"):t("forWhom")}</label><input id="r-detail">
     ${isSong?"":`<label>${t("birthdayDate")}</label><input id="r-date" type="date">`}
     <label>${t("reqNote")}</label><textarea id="r-note" rows="2"></textarea>
@@ -1405,7 +1429,7 @@ function openTaskModal(){
     <label>${t("desc")}</label><textarea id="tk-desc" rows="2"></textarea>
     <label>${t("taskFor")}</label>
     <select id="tk-for"><option value="">${t("allTeam")}</option>${staffOpts}</select>
-    <label>📅 ${t("day")}</label><input id="tk-due" type="date">
+    <label> ${t("day")}</label><input id="tk-due" type="date">
     <button class="btn" id="tk-go">${t("save")}</button>
     <button class="btn ghost" id="tk-x">${t("close")}</button>`);
   wrap.querySelector("#tk-x").onclick=()=>wrap.remove();
@@ -1421,19 +1445,19 @@ function openNotesModal(){
   const role=S.session?S.session.role:"guest";
   const list=visibleNotes(role);
   const wrap=baseModal(`
-    <h3>🔔 ${t("notifications")}</h3>
+    <h3> ${t("notifications")}</h3>
     ${role==="manager"?`<button class="btn sm" id="n-new" style="margin-bottom:12px">＋ ${t("newAnnouncement")}</button>`:""}
     ${list.length?list.map(n=>`<div class="card" style="padding:12px 14px">
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
         <b>${esc(n.title)}</b>
         <span style="display:flex;gap:6px;align-items:center;flex:none">
           <span class="mini">${fmtTime(n.created_at)}</span>
-          ${role==="manager"?`<button class="btn sm warn" data-notedel="${n.id}">✕</button>`:""}
+          ${role==="manager"?`<button class="btn sm warn" data-notedel="${n.id}"></button>`:""}
         </span>
       </div>
       <p style="font-size:14.5px;margin-top:4px">${esc(n.body)}</p>
       ${role==="manager"?`<p class="mini" style="margin-top:4px">${n.audience==="all"?t("audAll"):n.audience==="guests"?t("audGuests"):t("audTeam")}</p>`:""}
-    </div>`).join(""):`<div class="empty"><div class="big">🔕</div>${t("noNotifs")}</div>`}
+    </div>`).join(""):`<div class="empty"><div class="big"></div>${t("noNotifs")}</div>`}
     <button class="btn ghost" id="n-x">${t("close")}</button>`);
   const maxId=list.reduce((m,n)=>Math.max(m,n.id),S.seenNote);
   if(maxId>S.seenNote){ S.seenNote=maxId; persist(); }
@@ -1462,7 +1486,7 @@ function openComposeNoteModal(){
     const title=wrap.querySelector("#nn-title").value.trim();
     const body=wrap.querySelector("#nn-body").value.trim();
     if(!title&&!body) return;
-    await DB.addNote({title:title||"📣",body,audience:wrap.querySelector("#nn-aud").value});
+    await DB.addNote({title:title||"",body,audience:wrap.querySelector("#nn-aud").value});
     S.seenNote=S.notes.reduce((m,n)=>Math.max(m,n.id),S.seenNote); persist();
     wrap.remove(); toast(t("saved")); render();
   };
@@ -1471,7 +1495,7 @@ function openAttendanceModal(a){
   const date=todayISO();
   const bks=bookingsFor(a.id).filter(b=>b.status==="booked");
   const wrap=baseModal(`
-    <h3>✓ ${t("attendance")}</h3>
+    <h3> ${t("attendance")}</h3>
     <p class="mini">${esc(a.name)} · ${esc(a.time)}</p>
     ${bks.length?`<div class="card" style="margin-top:12px">${bks.map(b=>{
       const on=S.attendance.some(x=>x.booking_id===b.id&&x.date===date);
@@ -1479,7 +1503,7 @@ function openAttendanceModal(a){
         <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}</span>
         <button class="chip ${on?"ok":""}" data-attb="${b.id}">${t("present")}</button>
       </div>`;
-    }).join("")}</div>`:`<div class="empty"><div class="big">👥</div>${t("none")}</div>`}
+    }).join("")}</div>`:`<div class="empty"><div class="big"></div>${t("none")}</div>`}
     <button class="btn ghost" id="at-x">${t("close")}</button>`);
   wrap.querySelector("#at-x").onclick=()=>{ wrap.remove(); render(); };
   wrap.querySelectorAll("[data-attb]").forEach(b=>b.onclick=async ()=>{
@@ -1543,7 +1567,7 @@ function openEditModal(a){
     <label>${t("entertainer")}</label><input id="e-ent" value="${esc(a.entertainer)}">
     <label>${t("imageUrl")}</label><input id="e-img" value="${esc(a.image)}" placeholder="https://...">
     <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:15px;color:var(--ink)">
-      <input id="e-hl" type="checkbox" style="width:auto" ${a.highlight?"checked":""}> ✦ ${t("makeHighlight")}</label>
+      <input id="e-hl" type="checkbox" style="width:auto" ${a.highlight?"checked":""}>  ${t("makeHighlight")}</label>
     <button class="btn" id="e-save">${t("save")}</button>
     ${isNew?"":`<button class="btn warn" id="e-del">${t("deleteActivity")}</button>`}
     <button class="btn ghost" id="e-x">${t("close")}</button>`);
@@ -1566,14 +1590,15 @@ function openEditModal(a){
   const del=wrap.querySelector("#e-del");
   if(del) del.onclick=async ()=>{ await DB.deleteActivity(a.id); wrap.remove(); toast(t("deleted")); render(); };
 }
-function openUserModal(){
+function openUserModal(user=null){
+  const isEdit=!!user; user=user||{username:"",password:"",display_name:"",role:"staff"};
   const wrap=baseModal(`
-    <h3>${t("addUser")}</h3>
-    <label>${t("user")}</label><input id="u-name" autocapitalize="none">
-    <label>${t("pass")}</label><input id="u-pass">
-    <label>${t("displayName")}</label><input id="u-disp">
+    <h3>${isEdit?t("save"):t("addUser")}</h3>
+    <label>${t("user")}</label><input id="u-name" autocapitalize="none" value="${esc(user.username)}">
+    <label>${t("pass")}</label><input id="u-pass" value="${esc(user.password)}">
+    <label>${t("displayName")}</label><input id="u-disp" value="${esc(user.display_name||"")}">
     <label>${t("roleLabel")}</label>
-    <select id="u-role"><option value="staff">${t("staff")}</option><option value="manager">${t("manager")}</option></select>
+    <select id="u-role"><option value="staff" ${user.role==="staff"?"selected":""}>${t("staff")}</option><option value="manager" ${user.role==="manager"?"selected":""}>${t("manager")}</option></select>
     <button class="btn" id="u-save">${t("save")}</button>
     <div class="err" id="u-err"></div>
     <button class="btn ghost" id="u-x">${t("close")}</button>`);
@@ -1585,8 +1610,8 @@ function openUserModal(){
     const role=wrap.querySelector("#u-role").value;
     const err=wrap.querySelector("#u-err");
     if(!username||!password){ err.textContent=t("loginErr"); return; }
-    if(S.users.some(x=>x.username===username)){ err.textContent=t("userExists"); return; }
-    await DB.addUser({username,password,role,display_name});
+    if(S.users.some(x=>x.username===username && (!isEdit || x.id!==user.id))){ err.textContent=t("userExists"); return; }
+    await DB.saveUser({...user,username,password,role,display_name});
     wrap.remove(); toast(t("saved")); render();
   };
 }
@@ -1676,7 +1701,8 @@ function wireCommon(){
   const cb=$("#btn-chatback"); if(cb) cb.onclick=()=>{S.chatRoom=null;render();};
   const add=$("#btn-add"); if(add) add.onclick=()=>openEditModal(null);
   const addT=$("#btn-addticket"); if(addT) addT.onclick=()=>openTicketEditModal(null);
-  const addU=$("#btn-adduser"); if(addU) addU.onclick=openUserModal;
+  const addU=$("#btn-adduser"); if(addU) addU.onclick=()=>openUserModal(null);
+  document.querySelectorAll("[data-edituser]").forEach(b=>b.onclick=()=>{ const u=S.users.find(x=>x.id===+b.dataset.edituser); if(u) openUserModal(u); });
   const addTk=$("#btn-addtask"); if(addTk) addTk.onclick=openTaskModal;
   const rs=$("#btn-req-song"); if(rs) rs.onclick=()=>openRequestModal("song");
   const rb=$("#btn-req-bday"); if(rb) rb.onclick=()=>openRequestModal("birthday");
@@ -1769,7 +1795,7 @@ function safeToRender(){
       const rm=S.rooms.find(x=>String(x.room)===String(S.session.room));
       const acc=S.accounts.find(a=>String(a.room)===String(S.session.room));
       if(!rm || !rm.active || !acc) S.session=null;
-      else S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
+      else S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",username:acc.username||("room"+acc.room),password:acc.password||makeGuestPassword(acc.room),
         nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure};
     } else {
       const u=S.users.find(x=>x.username===S.session.username);
