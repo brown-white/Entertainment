@@ -13,15 +13,19 @@
 <style>
 :root{
   --espresso:#3E2A1E; --cacao:#6B4A32; --bronze:#B98A5C; --sand:#E8DCC9;
-  --bg-light:#F7F2EA; --bg:var(--bg-light); --card:#FFFFFF; --ink:#2B1F16; --muted:#8A7663;
+  --bg-light:#F7F2EA; --bg:var(--bg-light);
+  --ink-light:#2B1F16; --ink:var(--ink-light);
+  --card:#FFFFFF; --muted:#8A7663;
   --ok:#4C7A4C; --warn:#A65A3A; --line:#E4D9C8;
   --font-display:'Cormorant Garamond',serif; --font-body:'Jost',sans-serif;
   --btn-radius:14px; --btn-radius-sm:11px;
+  --nav-bg:#FFFFFF; --nav-on:#6B4A32;
   --radius:18px; --shadow:0 6px 24px rgba(62,42,30,.08);
 }
 [data-theme="dark"]{
   --bg:#1B140E; --card:#271E15; --ink:#F1E8DC; --muted:#B7A48E;
   --line:#3B2F22; --sand:#3B2F22; --shadow:0 6px 24px rgba(0,0,0,.35);
+  --nav-bg:#271E15; --nav-on:var(--bronze);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -72,8 +76,9 @@ img{display:block;max-width:100%}
 .top .who{min-width:0}
 .top .who h2{font-size:26px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .top .who p{font-size:13px;color:var(--muted)}
-.iconbtn{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.iconbtn{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none;position:relative}
 .toprow{display:flex;gap:8px}
+.reddot{position:absolute;top:2px;inset-inline-end:2px;width:10px;height:10px;border-radius:50%;background:#C4553B;border:2px solid var(--bg)}
 
 /* ---------- hero ---------- */
 .hero{position:relative;border-radius:24px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:22px;background:var(--espresso)}
@@ -108,8 +113,11 @@ img{display:block;max-width:100%}
 .fav{font-size:20px;line-height:1}
 .seats{font-size:12px;color:var(--muted)}
 .catbadge{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--bronze);font-weight:600}
+.quickrow{display:flex;gap:10px;margin-bottom:22px}
+.quickrow button{flex:1;background:var(--card);box-shadow:var(--shadow);border-radius:var(--radius);padding:14px 10px;font-size:14px;font-weight:500}
+.quickrow button span{display:block;font-size:24px;margin-bottom:4px}
 
-/* ---------- weekly timeline (info-only, distinct look) ---------- */
+/* ---------- weekly timeline ---------- */
 .wk{padding:4px 2px 0}
 .wk-item{display:flex;gap:12px;align-items:stretch}
 .wk-time{width:52px;flex:none;font-family:var(--font-display);font-size:19px;color:var(--cacao);text-align:end;padding-top:8px}
@@ -135,22 +143,38 @@ img{display:block;max-width:100%}
 .tk .price{font-family:var(--font-display);font-size:22px;color:var(--cacao);font-weight:600}
 [data-theme="dark"] .tk .price{color:var(--bronze)}
 
-/* ---------- weekly tabs ---------- */
-.daytabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;scrollbar-width:none}
-.daytabs::-webkit-scrollbar{display:none}
-.daytabs button{flex:none;padding:9px 15px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);font-size:14px;font-weight:500;color:var(--muted)}
-.daytabs button.on{background:var(--espresso);color:#F7F2EA;font-weight:600}
-[data-theme="dark"] .daytabs button.on{background:var(--bronze);color:#1B140E}
+/* ---------- chat ---------- */
+.chatlist .card{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.chatlist .card .nm{font-weight:600}
+.chatlist .card .lastm{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.badge{background:#C4553B;color:#fff;font-size:11px;font-weight:600;border-radius:999px;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.thread{display:flex;flex-direction:column;padding-bottom:66px}
+.bub{max-width:80%;padding:10px 14px;border-radius:16px;margin:4px 0;font-size:15px;line-height:1.45;word-break:break-word}
+.bub.me{background:var(--espresso);color:#F7F2EA;margin-inline-start:auto;border-end-end-radius:4px}
+[data-theme="dark"] .bub.me{background:var(--bronze);color:#1B140E}
+.bub.them{background:var(--card);box-shadow:var(--shadow);border-end-start-radius:4px}
+.bub .tm{display:block;font-size:10.5px;opacity:.65;margin-top:3px}
+.chatbar{position:fixed;bottom:calc(62px + env(safe-area-inset-bottom));inset-inline:0;max-width:540px;margin:0 auto;display:flex;gap:8px;padding:10px 14px;background:var(--bg);z-index:35}
+.chatbar input{flex:1}
+.chatbar button{flex:none;width:50px;height:50px;border-radius:50%;background:var(--espresso);color:#F7F2EA;font-size:19px}
+[data-theme="dark"] .chatbar button{background:var(--bronze);color:#1B140E}
+
+/* ---------- pills / sub-tabs / day tabs ---------- */
+.daytabs,.pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;scrollbar-width:none}
+.daytabs::-webkit-scrollbar,.pills::-webkit-scrollbar{display:none}
+.daytabs button,.pills button{flex:none;padding:9px 15px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);font-size:14px;font-weight:500;color:var(--muted)}
+.daytabs button.on,.pills button.on{background:var(--espresso);color:#F7F2EA;font-weight:600}
+[data-theme="dark"] .daytabs button.on,[data-theme="dark"] .pills button.on{background:var(--bronze);color:#1B140E}
 
 /* ---------- bottom nav ---------- */
-.nav{position:fixed;bottom:0;inset-inline:0;max-width:540px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;padding:8px 4px calc(10px + env(safe-area-inset-bottom));z-index:40}
-.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);padding:4px 1px;min-width:0}
+.nav{position:fixed;bottom:0;inset-inline:0;max-width:540px;margin:0 auto;background:var(--nav-bg);border-top:1px solid var(--line);display:flex;padding:8px 4px calc(10px + env(safe-area-inset-bottom));z-index:40}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);padding:4px 1px;min-width:0;position:relative}
 .nav button span.lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .nav button .ic{font-size:22px;line-height:1}
-.nav button.on{color:var(--cacao)}
-[data-theme="dark"] .nav button.on{color:var(--bronze)}
+.nav button.on{color:var(--nav-on)}
+.nav .ndot{position:absolute;top:2px;inset-inline-end:16%;width:9px;height:9px;border-radius:50%;background:#C4553B}
 
-/* ---------- modal ---------- */
+/* ---------- modal / toast ---------- */
 .modal-bg{position:fixed;inset:0;background:rgba(30,18,10,.55);z-index:60;display:flex;align-items:flex-end;justify-content:center}
 .modal{background:var(--bg);width:100%;max-width:540px;border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));max-height:88dvh;overflow-y:auto;animation:up .25s ease}
 @keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
@@ -180,6 +204,7 @@ img{display:block;max-width:100%}
 .empty .big{font-size:40px;margin-bottom:8px}
 .setup{background:#FDF6E7;border:1px solid #E8D9B5;color:#7A5C22;border-radius:14px;padding:12px 14px;font-size:13.5px;margin-bottom:16px}
 [data-theme="dark"] .setup{background:#33290F;border-color:#5A4A1E;color:#E3CE96}
+.roomgrid{max-height:340px;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -196,12 +221,14 @@ const CONFIG = {
   SUPABASE_ANON_KEY: "sb_publishable_WG03OzuBDsJDfZOeuDxvTQ_N6ewuQg9"    // the long "anon public" key
 };
 const REMOTE = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
+const LS_KEY = "entapp_v3";
 
 const DEFAULT_SETTINGS = {
-  name:"Entertainment", subtitle:"",
-  primary:"#3E2A1E", accent:"#B98A5C", bg:"#F7F2EA",
+  name:"Entertainment", subtitle:"", welcomeMsg:"",
+  primary:"#3E2A1E", accent:"#B98A5C", bg:"#F7F2EA", textColor:"#2B1F16",
+  navBg:"#FFFFFF", navActive:"#6B4A32",
   fontStyle:"elegant", buttonStyle:"rounded",
-  menuHome:"", menuProgram:"", menuTickets:"", menuStay:"",
+  menuHome:"", menuProgram:"", menuTickets:"", menuChat:"", menuStay:"",
   tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
   instagram:"", facebook:"", tiktok:"", youtube:""
 };
@@ -215,28 +242,57 @@ const BTN_R={rounded:["14px","11px"],pill:["999px","999px"],square:["8px","7px"]
 
 /* ---------------- i18n ---------------- */
 const LANGS=[["en","English"],["de","Deutsch"],["ru","Русский"],["pl","Polski"],["cs","Čeština"],["nl","Nederlands"],["fr","Français"],["ar","العربية"]];
+const EXTRA={
+en:{chat:"Chat",typeMessage:"Write a message…",send:"Send",noMessages:"No messages yet — say hello!",requests:"Requests",songRequest:"Song request",birthdayRequest:"Birthday",songName:"Song / artist",forWhom:"For whom?",birthdayDate:"Date",reqNote:"Message (optional)",myRequests:"My requests",statusNew:"New",done:"Done",markDone:"Mark done",tasks:"Tasks",addTask:"Add task",taskFor:"Assign to",allTeam:"Whole team",myTasks:"My tasks",noTasks:"No tasks — enjoy the sun!",attendance:"Attendance",present:"Present",notifications:"Notifications",newAnnouncement:"New notification",audience:"Send to",audAll:"Everyone",audGuests:"Guests",audTeam:"Team",noNotifs:"Nothing new right now.",rooms:"Rooms",addRooms:"Add rooms",roomsHint:"One room per line or separated by commas",activeLbl:"Active",roomNotFound:"This room number is not registered. Please ask at the reception.",guestAccounts:"Guest accounts",welcomeMsgLbl:"Welcome message (optional)",textC:"Text color",navC:"Menu color",navActiveC:"Active menu color",guestsTab:"Guests",teamTab:"Team"},
+de:{chat:"Chat",typeMessage:"Nachricht schreiben…",send:"Senden",noMessages:"Noch keine Nachrichten — sag Hallo!",requests:"Wünsche",songRequest:"Musikwunsch",birthdayRequest:"Geburtstag",songName:"Song / Künstler",forWhom:"Für wen?",birthdayDate:"Datum",reqNote:"Nachricht (optional)",myRequests:"Meine Wünsche",statusNew:"Neu",done:"Erledigt",markDone:"Als erledigt markieren",tasks:"Aufgaben",addTask:"Aufgabe hinzufügen",taskFor:"Zuweisen an",allTeam:"Ganzes Team",myTasks:"Meine Aufgaben",noTasks:"Keine Aufgaben — genieß die Sonne!",attendance:"Anwesenheit",present:"Anwesend",notifications:"Mitteilungen",newAnnouncement:"Neue Mitteilung",audience:"Senden an",audAll:"Alle",audGuests:"Gäste",audTeam:"Team",noNotifs:"Gerade nichts Neues.",rooms:"Zimmer",addRooms:"Zimmer hinzufügen",roomsHint:"Ein Zimmer pro Zeile oder mit Komma getrennt",activeLbl:"Aktiv",roomNotFound:"Diese Zimmernummer ist nicht registriert. Bitte frag an der Rezeption.",guestAccounts:"Gäste-Konten",welcomeMsgLbl:"Willkommenstext (optional)",textC:"Textfarbe",navC:"Menüfarbe",navActiveC:"Aktive Menüfarbe",guestsTab:"Gäste",teamTab:"Team"},
+ru:{chat:"Чат",typeMessage:"Напишите сообщение…",send:"Отправить",noMessages:"Пока нет сообщений — напишите нам!",requests:"Заявки",songRequest:"Заказ песни",birthdayRequest:"День рождения",songName:"Песня / исполнитель",forWhom:"Для кого?",birthdayDate:"Дата",reqNote:"Сообщение (необязательно)",myRequests:"Мои заявки",statusNew:"Новая",done:"Готово",markDone:"Отметить выполненной",tasks:"Задачи",addTask:"Добавить задачу",taskFor:"Назначить",allTeam:"Вся команда",myTasks:"Мои задачи",noTasks:"Задач нет — наслаждайтесь солнцем!",attendance:"Посещаемость",present:"Присутствует",notifications:"Уведомления",newAnnouncement:"Новое уведомление",audience:"Кому",audAll:"Всем",audGuests:"Гостям",audTeam:"Команде",noNotifs:"Пока ничего нового.",rooms:"Комнаты",addRooms:"Добавить комнаты",roomsHint:"По одной комнате в строке или через запятую",activeLbl:"Активна",roomNotFound:"Этот номер комнаты не зарегистрирован. Обратитесь на ресепшен.",guestAccounts:"Аккаунты гостей",welcomeMsgLbl:"Приветственный текст (необязательно)",textC:"Цвет текста",navC:"Цвет меню",navActiveC:"Цвет активного пункта",guestsTab:"Гости",teamTab:"Команда"},
+pl:{chat:"Czat",typeMessage:"Napisz wiadomość…",send:"Wyślij",noMessages:"Brak wiadomości — przywitaj się!",requests:"Prośby",songRequest:"Prośba o piosenkę",birthdayRequest:"Urodziny",songName:"Piosenka / wykonawca",forWhom:"Dla kogo?",birthdayDate:"Data",reqNote:"Wiadomość (opcjonalnie)",myRequests:"Moje prośby",statusNew:"Nowa",done:"Zrobione",markDone:"Oznacz jako zrobione",tasks:"Zadania",addTask:"Dodaj zadanie",taskFor:"Przypisz do",allTeam:"Cały zespół",myTasks:"Moje zadania",noTasks:"Brak zadań — ciesz się słońcem!",attendance:"Obecność",present:"Obecny",notifications:"Powiadomienia",newAnnouncement:"Nowe powiadomienie",audience:"Wyślij do",audAll:"Wszyscy",audGuests:"Goście",audTeam:"Zespół",noNotifs:"Na razie nic nowego.",rooms:"Pokoje",addRooms:"Dodaj pokoje",roomsHint:"Jeden pokój w linii lub po przecinku",activeLbl:"Aktywny",roomNotFound:"Ten numer pokoju nie jest zarejestrowany. Zapytaj w recepcji.",guestAccounts:"Konta gości",welcomeMsgLbl:"Tekst powitalny (opcjonalnie)",textC:"Kolor tekstu",navC:"Kolor menu",navActiveC:"Kolor aktywnego menu",guestsTab:"Goście",teamTab:"Zespół"},
+cs:{chat:"Chat",typeMessage:"Napište zprávu…",send:"Odeslat",noMessages:"Zatím žádné zprávy — pozdravte nás!",requests:"Přání",songRequest:"Přání písničky",birthdayRequest:"Narozeniny",songName:"Píseň / interpret",forWhom:"Pro koho?",birthdayDate:"Datum",reqNote:"Zpráva (volitelné)",myRequests:"Moje přání",statusNew:"Nové",done:"Hotovo",markDone:"Označit jako hotové",tasks:"Úkoly",addTask:"Přidat úkol",taskFor:"Přiřadit",allTeam:"Celý tým",myTasks:"Moje úkoly",noTasks:"Žádné úkoly — užijte si slunce!",attendance:"Docházka",present:"Přítomen",notifications:"Oznámení",newAnnouncement:"Nové oznámení",audience:"Komu",audAll:"Všem",audGuests:"Hostům",audTeam:"Týmu",noNotifs:"Zatím nic nového.",rooms:"Pokoje",addRooms:"Přidat pokoje",roomsHint:"Jeden pokoj na řádek nebo oddělené čárkou",activeLbl:"Aktivní",roomNotFound:"Toto číslo pokoje není registrováno. Zeptejte se na recepci.",guestAccounts:"Účty hostů",welcomeMsgLbl:"Uvítací text (volitelné)",textC:"Barva textu",navC:"Barva menu",navActiveC:"Barva aktivní položky",guestsTab:"Hosté",teamTab:"Tým"},
+nl:{chat:"Chat",typeMessage:"Schrijf een bericht…",send:"Versturen",noMessages:"Nog geen berichten — zeg hallo!",requests:"Verzoeken",songRequest:"Muziekverzoek",birthdayRequest:"Verjaardag",songName:"Nummer / artiest",forWhom:"Voor wie?",birthdayDate:"Datum",reqNote:"Bericht (optioneel)",myRequests:"Mijn verzoeken",statusNew:"Nieuw",done:"Klaar",markDone:"Markeer als klaar",tasks:"Taken",addTask:"Taak toevoegen",taskFor:"Toewijzen aan",allTeam:"Hele team",myTasks:"Mijn taken",noTasks:"Geen taken — geniet van de zon!",attendance:"Aanwezigheid",present:"Aanwezig",notifications:"Meldingen",newAnnouncement:"Nieuwe melding",audience:"Versturen naar",audAll:"Iedereen",audGuests:"Gasten",audTeam:"Team",noNotifs:"Even niets nieuws.",rooms:"Kamers",addRooms:"Kamers toevoegen",roomsHint:"Eén kamer per regel of gescheiden door komma's",activeLbl:"Actief",roomNotFound:"Dit kamernummer is niet geregistreerd. Vraag het bij de receptie.",guestAccounts:"Gastaccounts",welcomeMsgLbl:"Welkomsttekst (optioneel)",textC:"Tekstkleur",navC:"Menukleur",navActiveC:"Actieve menukleur",guestsTab:"Gasten",teamTab:"Team"},
+fr:{chat:"Chat",typeMessage:"Écrivez un message…",send:"Envoyer",noMessages:"Pas encore de messages — dites bonjour !",requests:"Demandes",songRequest:"Demande de chanson",birthdayRequest:"Anniversaire",songName:"Chanson / artiste",forWhom:"Pour qui ?",birthdayDate:"Date",reqNote:"Message (optionnel)",myRequests:"Mes demandes",statusNew:"Nouveau",done:"Fait",markDone:"Marquer comme fait",tasks:"Tâches",addTask:"Ajouter une tâche",taskFor:"Attribuer à",allTeam:"Toute l'équipe",myTasks:"Mes tâches",noTasks:"Aucune tâche — profitez du soleil !",attendance:"Présence",present:"Présent",notifications:"Notifications",newAnnouncement:"Nouvelle notification",audience:"Envoyer à",audAll:"Tout le monde",audGuests:"Invités",audTeam:"Équipe",noNotifs:"Rien de nouveau pour l'instant.",rooms:"Chambres",addRooms:"Ajouter des chambres",roomsHint:"Une chambre par ligne ou séparées par des virgules",activeLbl:"Active",roomNotFound:"Ce numéro de chambre n'est pas enregistré. Demandez à la réception.",guestAccounts:"Comptes invités",welcomeMsgLbl:"Message de bienvenue (optionnel)",textC:"Couleur du texte",navC:"Couleur du menu",navActiveC:"Couleur du menu actif",guestsTab:"Invités",teamTab:"Équipe"},
+ar:{chat:"الدردشة",typeMessage:"اكتب رسالة…",send:"إرسال",noMessages:"لا توجد رسائل بعد — قل مرحباً!",requests:"الطلبات الخاصة",songRequest:"طلب أغنية",birthdayRequest:"عيد ميلاد",songName:"الأغنية / الفنان",forWhom:"لمن؟",birthdayDate:"التاريخ",reqNote:"رسالة (اختياري)",myRequests:"طلباتي الخاصة",statusNew:"جديد",done:"تم",markDone:"وضع علامة تم",tasks:"المهام",addTask:"إضافة مهمة",taskFor:"تعيين إلى",allTeam:"كل الفريق",myTasks:"مهامي",noTasks:"لا مهام — استمتع بالشمس!",attendance:"الحضور",present:"حاضر",notifications:"الإشعارات",newAnnouncement:"إشعار جديد",audience:"إرسال إلى",audAll:"الجميع",audGuests:"الضيوف",audTeam:"الفريق",noNotifs:"لا جديد الآن.",rooms:"الغرف",addRooms:"إضافة غرف",roomsHint:"غرفة واحدة في كل سطر أو مفصولة بفواصل",activeLbl:"مفعّلة",roomNotFound:"رقم الغرفة غير مسجل. يرجى السؤال في الاستقبال.",guestAccounts:"حسابات الضيوف",welcomeMsgLbl:"نص الترحيب (اختياري)",textC:"لون النص",navC:"لون القائمة",navActiveC:"لون القائمة النشط",guestsTab:"الضيوف",teamTab:"الفريق"}
+};
 const DICT = {
-en:{appSub:"Animation Team",guest:"Guest",staff:"Team",manager:"Manager",room:"Room number",name:"Your name",phone:"Mobile phone",user:"Username",pass:"Password",signin:"Sign in",welcome:"Welcome",today:"Today",highlight:"Highlight of the day",todayProgram:"Today's program",week:"Weekly program",myStay:"My stay",home:"Home",program:"Program",bookings:"Bookings",myBookings:"My bookings",favorites:"Favorites",book:"Book",booked:"Booked",full:"Full",waitlist:"Join waiting list",onWaitlist:"On waiting list",cancel:"Cancel booking",seatsLeft:"seats left",adults:"Adults",children:"Children",confirm:"Confirm booking",close:"Close",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],daysShort:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],cats:{morning:"Morning",afternoon:"Afternoon",evening:"Evening",kids:"Kids Club",theme:"Theme day"},guests:"guests",noBookings:"No bookings yet. Find something you love in today's program!",noFavs:"No favorites yet. Tap the heart on any activity.",schedule:"Schedule",team:"Team",guestsBooked:"Guests booked",noneToday:"Nothing scheduled here today.",dashboard:"Dashboard",manage:"Program",totalBookings:"Bookings this week",activities:"Activities",occupancy:"Avg. occupancy",waitlisted:"On waiting lists",addActivity:"Add activity",editActivity:"Edit activity",deleteActivity:"Delete",actName:"Activity name",desc:"Description",location:"Location",time:"Time",capacity:"Capacity",entertainer:"Entertainer(s)",imageUrl:"Photo URL (optional)",category:"Category",day:"Day",makeHighlight:"Highlight of the day",save:"Save",saved:"Saved",deleted:"Deleted",bookingOk:"Booking confirmed!",waitOk:"Added to waiting list",cancelled:"Cancelled",loginErr:"Please check your details and try again.",demoNote:"Preview mode with sample data — connect Supabase in the file to go live.",reviews:"Enjoying your holiday?",reviewsSub:"Share your experience — it means the world to our team.",followUs:"Follow the team",none:"—",arrival:"Arrival day",departure:"Departure day",otherUsers:"Team access",backToGuest:"← Guest login",usersTab:"Users",appTab:"App",appName:"App name",appSubtitle:"Subtitle",colorsHead:"Colors",primaryC:"Main color",accentC:"Accent color",linksHead:"Review links",socialHead:"Social media",addUser:"Add user",displayName:"Display name",roleLabel:"Role",teamAccounts:"Team accounts",guestStats:"Guest analytics",uniqueGuests:"Guest rooms",totalPeople:"People booked",language:"Language",userExists:"Username already exists",tickets:"Tickets",buyTicket:"Buy ticket",myTickets:"My tickets",price:"Price",qty:"Quantity",reserved:"Reserved",paid:"Paid",payNote:"Reserve in the app and pay at the entertainment desk or reception.",ticketOk:"Ticket reserved!",nationality:"Nationality",natStats:"Nationalities",addTicket:"Add ticket event",editTicket:"Edit ticket event",markPaid:"Mark paid",markReserved:"Mark reserved",styleHead:"Text style",buttonHead:"Button style",menuHead:"Menu titles",bgC:"Background",fontElegant:"Elegant",fontRoyal:"Royal",fontModern:"Modern",fontSoft:"Soft",btnRounded:"Rounded",btnPill:"Pill",btnSquare:"Square",ticketsNone:"No ticket events yet.",orders:"Orders",soldOut:"Sold out"},
-de:{appSub:"Animationsteam",guest:"Gast",staff:"Team",manager:"Manager",room:"Zimmernummer",name:"Dein Name",phone:"Handynummer",user:"Benutzername",pass:"Passwort",signin:"Anmelden",welcome:"Willkommen",today:"Heute",highlight:"Highlight des Tages",todayProgram:"Heutiges Programm",week:"Wochenprogramm",myStay:"Mein Urlaub",home:"Start",program:"Programm",bookings:"Buchungen",myBookings:"Meine Buchungen",favorites:"Favoriten",book:"Buchen",booked:"Gebucht",full:"Ausgebucht",waitlist:"Auf Warteliste",onWaitlist:"Auf der Warteliste",cancel:"Buchung stornieren",seatsLeft:"Plätze frei",adults:"Erwachsene",children:"Kinder",confirm:"Buchung bestätigen",close:"Schließen",days:["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"],daysShort:["Mo","Di","Mi","Do","Fr","Sa","So"],cats:{morning:"Vormittag",afternoon:"Nachmittag",evening:"Abend",kids:"Kids Club",theme:"Mottotag"},guests:"Gäste",noBookings:"Noch keine Buchungen. Stöbere im heutigen Programm!",noFavs:"Noch keine Favoriten. Tippe auf das Herz bei einer Aktivität.",schedule:"Zeitplan",team:"Team",guestsBooked:"Gebuchte Gäste",noneToday:"Heute ist hier nichts geplant.",dashboard:"Übersicht",manage:"Programm",totalBookings:"Buchungen diese Woche",activities:"Aktivitäten",occupancy:"Ø Auslastung",waitlisted:"Auf Wartelisten",addActivity:"Aktivität hinzufügen",editActivity:"Aktivität bearbeiten",deleteActivity:"Löschen",actName:"Name der Aktivität",desc:"Beschreibung",location:"Ort",time:"Uhrzeit",capacity:"Kapazität",entertainer:"Animateur(e)",imageUrl:"Foto-URL (optional)",category:"Kategorie",day:"Tag",makeHighlight:"Highlight des Tages",save:"Speichern",saved:"Gespeichert",deleted:"Gelöscht",bookingOk:"Buchung bestätigt!",waitOk:"Zur Warteliste hinzugefügt",cancelled:"Storniert",loginErr:"Bitte prüfe deine Angaben und versuche es erneut.",demoNote:"Vorschau mit Beispieldaten — verbinde Supabase in der Datei, um live zu gehen.",reviews:"Gefällt dir dein Urlaub?",reviewsSub:"Teile deine Erfahrung — es bedeutet unserem Team die Welt.",followUs:"Folge dem Team",none:"—",arrival:"Anreisetag",departure:"Abreisetag",otherUsers:"Team-Zugang",backToGuest:"← Gast-Anmeldung",usersTab:"Nutzer",appTab:"App",appName:"App-Name",appSubtitle:"Untertitel",colorsHead:"Farben",primaryC:"Hauptfarbe",accentC:"Akzentfarbe",linksHead:"Bewertungs-Links",socialHead:"Social Media",addUser:"Nutzer hinzufügen",displayName:"Anzeigename",roleLabel:"Rolle",teamAccounts:"Team-Konten",guestStats:"Gäste-Statistik",uniqueGuests:"Gästezimmer",totalPeople:"Gebuchte Personen",language:"Sprache",userExists:"Benutzername existiert bereits",tickets:"Tickets",buyTicket:"Ticket kaufen",myTickets:"Meine Tickets",price:"Preis",qty:"Anzahl",reserved:"Reserviert",paid:"Bezahlt",payNote:"In der App reservieren und am Animationsstand oder an der Rezeption bezahlen.",ticketOk:"Ticket reserviert!",nationality:"Nationalität",natStats:"Nationalitäten",addTicket:"Ticket-Event hinzufügen",editTicket:"Ticket-Event bearbeiten",markPaid:"Als bezahlt markieren",markReserved:"Als reserviert markieren",styleHead:"Schriftstil",buttonHead:"Button-Stil",menuHead:"Menü-Titel",bgC:"Hintergrund",fontElegant:"Elegant",fontRoyal:"Royal",fontModern:"Modern",fontSoft:"Sanft",btnRounded:"Abgerundet",btnPill:"Pill",btnSquare:"Eckig",ticketsNone:"Noch keine Ticket-Events.",orders:"Bestellungen",soldOut:"Ausverkauft"},
-ru:{appSub:"Команда анимации",guest:"Гость",staff:"Команда",manager:"Менеджер",room:"Номер комнаты",name:"Ваше имя",phone:"Мобильный телефон",user:"Имя пользователя",pass:"Пароль",signin:"Войти",welcome:"Добро пожаловать",today:"Сегодня",highlight:"Событие дня",todayProgram:"Программа на сегодня",week:"Программа недели",myStay:"Мой отдых",home:"Главная",program:"Программа",bookings:"Брони",myBookings:"Мои брони",favorites:"Избранное",book:"Записаться",booked:"Записан",full:"Мест нет",waitlist:"В лист ожидания",onWaitlist:"В листе ожидания",cancel:"Отменить бронь",seatsLeft:"свободных мест",adults:"Взрослые",children:"Дети",confirm:"Подтвердить",close:"Закрыть",days:["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"],daysShort:["Пн","Вт","Ср","Чт","Пт","Сб","Вс"],cats:{morning:"Утро",afternoon:"День",evening:"Вечер",kids:"Детский клуб",theme:"Тематический день"},guests:"гостей",noBookings:"Пока нет броней. Загляните в программу дня!",noFavs:"Пока нет избранного. Нажмите на сердечко у активности.",schedule:"Расписание",team:"Команда",guestsBooked:"Записанные гости",noneToday:"На сегодня здесь ничего не запланировано.",dashboard:"Обзор",manage:"Программа",totalBookings:"Броней за неделю",activities:"Активности",occupancy:"Ср. заполняемость",waitlisted:"В листах ожидания",addActivity:"Добавить активность",editActivity:"Редактировать",deleteActivity:"Удалить",actName:"Название",desc:"Описание",location:"Место",time:"Время",capacity:"Вместимость",entertainer:"Аниматор(ы)",imageUrl:"Ссылка на фото (необязательно)",category:"Категория",day:"День",makeHighlight:"Событие дня",save:"Сохранить",saved:"Сохранено",deleted:"Удалено",bookingOk:"Бронь подтверждена!",waitOk:"Добавлено в лист ожидания",cancelled:"Отменено",loginErr:"Проверьте данные и попробуйте снова.",demoNote:"Режим предпросмотра с примерами — подключите Supabase в файле.",reviews:"Нравится отдых?",reviewsSub:"Поделитесь впечатлениями — для нашей команды это очень важно.",followUs:"Подписывайтесь на команду",none:"—",arrival:"День заезда",departure:"День отъезда",otherUsers:"Вход для команды",backToGuest:"← Вход для гостей",usersTab:"Люди",appTab:"App",appName:"Название приложения",appSubtitle:"Подзаголовок",colorsHead:"Цвета",primaryC:"Основной цвет",accentC:"Акцентный цвет",linksHead:"Ссылки на отзывы",socialHead:"Соцсети",addUser:"Добавить пользователя",displayName:"Отображаемое имя",roleLabel:"Роль",teamAccounts:"Аккаунты команды",guestStats:"Статистика гостей",uniqueGuests:"Комнат гостей",totalPeople:"Записано человек",language:"Язык",userExists:"Имя пользователя уже занято",tickets:"Билеты",buyTicket:"Купить билет",myTickets:"Мои билеты",price:"Цена",qty:"Количество",reserved:"Зарезервировано",paid:"Оплачено",payNote:"Зарезервируйте в приложении и оплатите у аниматоров или на ресепшене.",ticketOk:"Билет зарезервирован!",nationality:"Национальность",natStats:"Национальности",addTicket:"Добавить событие",editTicket:"Редактировать событие",markPaid:"Отметить оплаченным",markReserved:"Отметить резервом",styleHead:"Стиль текста",buttonHead:"Стиль кнопок",menuHead:"Названия меню",bgC:"Фон",fontElegant:"Элегантный",fontRoyal:"Королевский",fontModern:"Современный",fontSoft:"Мягкий",btnRounded:"Скруглённые",btnPill:"Пилюля",btnSquare:"Квадратные",ticketsNone:"Пока нет событий с билетами.",orders:"Заказы",soldOut:"Всё продано"},
-pl:{appSub:"Zespół animacji",guest:"Gość",staff:"Zespół",manager:"Menedżer",room:"Numer pokoju",name:"Twoje imię",phone:"Telefon komórkowy",user:"Nazwa użytkownika",pass:"Hasło",signin:"Zaloguj się",welcome:"Witamy",today:"Dziś",highlight:"Atrakcja dnia",todayProgram:"Dzisiejszy program",week:"Program tygodnia",myStay:"Mój pobyt",home:"Start",program:"Program",bookings:"Rezerwacje",myBookings:"Moje rezerwacje",favorites:"Ulubione",book:"Zarezerwuj",booked:"Zarezerwowano",full:"Brak miejsc",waitlist:"Lista oczekujących",onWaitlist:"Na liście oczekujących",cancel:"Anuluj rezerwację",seatsLeft:"wolnych miejsc",adults:"Dorośli",children:"Dzieci",confirm:"Potwierdź rezerwację",close:"Zamknij",days:["Poniedziałek","Wtorek","Środa","Czwartek","Piątek","Sobota","Niedziela"],daysShort:["Pon","Wt","Śr","Czw","Pt","Sob","Nd"],cats:{morning:"Rano",afternoon:"Popołudnie",evening:"Wieczór",kids:"Klub dziecięcy",theme:"Dzień tematyczny"},guests:"gości",noBookings:"Brak rezerwacji. Zajrzyj do dzisiejszego programu!",noFavs:"Brak ulubionych. Dotknij serca przy aktywności.",schedule:"Harmonogram",team:"Zespół",guestsBooked:"Zapisani goście",noneToday:"Dziś nic tu nie zaplanowano.",dashboard:"Panel",manage:"Program",totalBookings:"Rezerwacje w tym tygodniu",activities:"Aktywności",occupancy:"Śr. obłożenie",waitlisted:"Na listach oczekujących",addActivity:"Dodaj aktywność",editActivity:"Edytuj aktywność",deleteActivity:"Usuń",actName:"Nazwa aktywności",desc:"Opis",location:"Miejsce",time:"Godzina",capacity:"Liczba miejsc",entertainer:"Animator(zy)",imageUrl:"Adres zdjęcia (opcjonalnie)",category:"Kategoria",day:"Dzień",makeHighlight:"Atrakcja dnia",save:"Zapisz",saved:"Zapisano",deleted:"Usunięto",bookingOk:"Rezerwacja potwierdzona!",waitOk:"Dodano do listy oczekujących",cancelled:"Anulowano",loginErr:"Sprawdź dane i spróbuj ponownie.",demoNote:"Tryb podglądu z przykładami — połącz Supabase w pliku.",reviews:"Podobają Ci się wakacje?",reviewsSub:"Podziel się opinią — to wiele znaczy dla naszego zespołu.",followUs:"Obserwuj zespół",none:"—",arrival:"Dzień przyjazdu",departure:"Dzień wyjazdu",otherUsers:"Dostęp dla zespołu",backToGuest:"← Logowanie gościa",usersTab:"Konta",appTab:"App",appName:"Nazwa aplikacji",appSubtitle:"Podtytuł",colorsHead:"Kolory",primaryC:"Kolor główny",accentC:"Kolor akcentu",linksHead:"Linki do opinii",socialHead:"Media społecznościowe",addUser:"Dodaj użytkownika",displayName:"Wyświetlana nazwa",roleLabel:"Rola",teamAccounts:"Konta zespołu",guestStats:"Statystyki gości",uniqueGuests:"Pokoje gości",totalPeople:"Zapisane osoby",language:"Język",userExists:"Ta nazwa użytkownika już istnieje",tickets:"Bilety",buyTicket:"Kup bilet",myTickets:"Moje bilety",price:"Cena",qty:"Ilość",reserved:"Zarezerwowano",paid:"Opłacone",payNote:"Zarezerwuj w aplikacji i zapłać przy stanowisku animacji lub w recepcji.",ticketOk:"Bilet zarezerwowany!",nationality:"Narodowość",natStats:"Narodowości",addTicket:"Dodaj wydarzenie",editTicket:"Edytuj wydarzenie",markPaid:"Oznacz jako opłacone",markReserved:"Oznacz jako rezerwację",styleHead:"Styl tekstu",buttonHead:"Styl przycisków",menuHead:"Tytuły menu",bgC:"Tło",fontElegant:"Elegancki",fontRoyal:"Królewski",fontModern:"Nowoczesny",fontSoft:"Miękki",btnRounded:"Zaokrąglone",btnPill:"Pigułka",btnSquare:"Kwadratowe",ticketsNone:"Brak wydarzeń biletowych.",orders:"Zamówienia",soldOut:"Wyprzedane"},
-cs:{appSub:"Animační tým",guest:"Host",staff:"Tým",manager:"Manažer",room:"Číslo pokoje",name:"Vaše jméno",phone:"Mobilní telefon",user:"Uživatelské jméno",pass:"Heslo",signin:"Přihlásit se",welcome:"Vítejte",today:"Dnes",highlight:"Zážitek dne",todayProgram:"Dnešní program",week:"Týdenní program",myStay:"Můj pobyt",home:"Domů",program:"Program",bookings:"Rezervace",myBookings:"Moje rezervace",favorites:"Oblíbené",book:"Rezervovat",booked:"Rezervováno",full:"Obsazeno",waitlist:"Na čekací listinu",onWaitlist:"Na čekací listině",cancel:"Zrušit rezervaci",seatsLeft:"volných míst",adults:"Dospělí",children:"Děti",confirm:"Potvrdit rezervaci",close:"Zavřít",days:["Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobota","Neděle"],daysShort:["Po","Út","St","Čt","Pá","So","Ne"],cats:{morning:"Ráno",afternoon:"Odpoledne",evening:"Večer",kids:"Dětský klub",theme:"Tematický den"},guests:"hostů",noBookings:"Zatím žádné rezervace. Prohlédněte si dnešní program!",noFavs:"Zatím žádné oblíbené. Klepněte na srdíčko u aktivity.",schedule:"Rozvrh",team:"Tým",guestsBooked:"Přihlášení hosté",noneToday:"Dnes tu není nic naplánováno.",dashboard:"Přehled",manage:"Program",totalBookings:"Rezervace tento týden",activities:"Aktivity",occupancy:"Prům. obsazenost",waitlisted:"Na čekacích listinách",addActivity:"Přidat aktivitu",editActivity:"Upravit aktivitu",deleteActivity:"Smazat",actName:"Název aktivity",desc:"Popis",location:"Místo",time:"Čas",capacity:"Kapacita",entertainer:"Animátor(ři)",imageUrl:"Odkaz na fotku (volitelné)",category:"Kategorie",day:"Den",makeHighlight:"Zážitek dne",save:"Uložit",saved:"Uloženo",deleted:"Smazáno",bookingOk:"Rezervace potvrzena!",waitOk:"Přidáno na čekací listinu",cancelled:"Zrušeno",loginErr:"Zkontrolujte údaje a zkuste to znovu.",demoNote:"Režim náhledu s ukázkovými daty — připojte Supabase v souboru.",reviews:"Líbí se vám dovolená?",reviewsSub:"Podělte se o zkušenost — pro náš tým to hodně znamená.",followUs:"Sledujte náš tým",none:"—",arrival:"Den příjezdu",departure:"Den odjezdu",otherUsers:"Přístup pro tým",backToGuest:"← Přihlášení hosta",usersTab:"Účty",appTab:"App",appName:"Název aplikace",appSubtitle:"Podtitul",colorsHead:"Barvy",primaryC:"Hlavní barva",accentC:"Barva akcentu",linksHead:"Odkazy na recenze",socialHead:"Sociální sítě",addUser:"Přidat uživatele",displayName:"Zobrazované jméno",roleLabel:"Role",teamAccounts:"Účty týmu",guestStats:"Statistiky hostů",uniqueGuests:"Pokoje hostů",totalPeople:"Přihlášené osoby",language:"Jazyk",userExists:"Uživatelské jméno již existuje",tickets:"Vstupenky",buyTicket:"Koupit vstupenku",myTickets:"Moje vstupenky",price:"Cena",qty:"Počet",reserved:"Rezervováno",paid:"Zaplaceno",payNote:"Rezervujte v aplikaci a zaplaťte u animačního stánku nebo na recepci.",ticketOk:"Vstupenka rezervována!",nationality:"Národnost",natStats:"Národnosti",addTicket:"Přidat akci",editTicket:"Upravit akci",markPaid:"Označit jako zaplacené",markReserved:"Označit jako rezervaci",styleHead:"Styl písma",buttonHead:"Styl tlačítek",menuHead:"Názvy menu",bgC:"Pozadí",fontElegant:"Elegantní",fontRoyal:"Královský",fontModern:"Moderní",fontSoft:"Jemný",btnRounded:"Zaoblené",btnPill:"Pilulka",btnSquare:"Hranaté",ticketsNone:"Zatím žádné akce se vstupenkami.",orders:"Objednávky",soldOut:"Vyprodáno"},
-nl:{appSub:"Animatieteam",guest:"Gast",staff:"Team",manager:"Manager",room:"Kamernummer",name:"Je naam",phone:"Mobiel nummer",user:"Gebruikersnaam",pass:"Wachtwoord",signin:"Inloggen",welcome:"Welkom",today:"Vandaag",highlight:"Hoogtepunt van de dag",todayProgram:"Programma van vandaag",week:"Weekprogramma",myStay:"Mijn verblijf",home:"Home",program:"Programma",bookings:"Boekingen",myBookings:"Mijn boekingen",favorites:"Favorieten",book:"Boeken",booked:"Geboekt",full:"Vol",waitlist:"Op wachtlijst",onWaitlist:"Op de wachtlijst",cancel:"Boeking annuleren",seatsLeft:"plaatsen vrij",adults:"Volwassenen",children:"Kinderen",confirm:"Boeking bevestigen",close:"Sluiten",days:["Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag","Zondag"],daysShort:["Ma","Di","Wo","Do","Vr","Za","Zo"],cats:{morning:"Ochtend",afternoon:"Middag",evening:"Avond",kids:"Kidsclub",theme:"Themadag"},guests:"gasten",noBookings:"Nog geen boekingen. Bekijk het programma van vandaag!",noFavs:"Nog geen favorieten. Tik op het hartje bij een activiteit.",schedule:"Rooster",team:"Team",guestsBooked:"Geboekte gasten",noneToday:"Vandaag is hier niets gepland.",dashboard:"Overzicht",manage:"Programma",totalBookings:"Boekingen deze week",activities:"Activiteiten",occupancy:"Gem. bezetting",waitlisted:"Op wachtlijsten",addActivity:"Activiteit toevoegen",editActivity:"Activiteit bewerken",deleteActivity:"Verwijderen",actName:"Naam activiteit",desc:"Beschrijving",location:"Locatie",time:"Tijd",capacity:"Capaciteit",entertainer:"Entertainer(s)",imageUrl:"Foto-URL (optioneel)",category:"Categorie",day:"Dag",makeHighlight:"Hoogtepunt van de dag",save:"Opslaan",saved:"Opgeslagen",deleted:"Verwijderd",bookingOk:"Boeking bevestigd!",waitOk:"Toegevoegd aan wachtlijst",cancelled:"Geannuleerd",loginErr:"Controleer je gegevens en probeer opnieuw.",demoNote:"Voorbeeldmodus — verbind Supabase in het bestand om live te gaan.",reviews:"Geniet je van je vakantie?",reviewsSub:"Deel je ervaring — het betekent veel voor ons team.",followUs:"Volg het team",none:"—",arrival:"Aankomstdag",departure:"Vertrekdag",otherUsers:"Teamtoegang",backToGuest:"← Gast-login",usersTab:"Accounts",appTab:"App",appName:"App-naam",appSubtitle:"Ondertitel",colorsHead:"Kleuren",primaryC:"Hoofdkleur",accentC:"Accentkleur",linksHead:"Reviewlinks",socialHead:"Social media",addUser:"Gebruiker toevoegen",displayName:"Weergavenaam",roleLabel:"Rol",teamAccounts:"Teamaccounts",guestStats:"Gastenstatistiek",uniqueGuests:"Gastenkamers",totalPeople:"Geboekte personen",language:"Taal",userExists:"Gebruikersnaam bestaat al",tickets:"Tickets",buyTicket:"Ticket kopen",myTickets:"Mijn tickets",price:"Prijs",qty:"Aantal",reserved:"Gereserveerd",paid:"Betaald",payNote:"Reserveer in de app en betaal bij de animatiebalie of receptie.",ticketOk:"Ticket gereserveerd!",nationality:"Nationaliteit",natStats:"Nationaliteiten",addTicket:"Ticketevent toevoegen",editTicket:"Ticketevent bewerken",markPaid:"Markeer als betaald",markReserved:"Markeer als gereserveerd",styleHead:"Tekststijl",buttonHead:"Knopstijl",menuHead:"Menutitels",bgC:"Achtergrond",fontElegant:"Elegant",fontRoyal:"Koninklijk",fontModern:"Modern",fontSoft:"Zacht",btnRounded:"Afgerond",btnPill:"Pil",btnSquare:"Vierkant",ticketsNone:"Nog geen ticketevents.",orders:"Bestellingen",soldOut:"Uitverkocht"},
-fr:{appSub:"Équipe d'animation",guest:"Invité",staff:"Équipe",manager:"Manager",room:"Numéro de chambre",name:"Votre nom",phone:"Téléphone portable",user:"Nom d'utilisateur",pass:"Mot de passe",signin:"Se connecter",welcome:"Bienvenue",today:"Aujourd'hui",highlight:"Moment fort du jour",todayProgram:"Programme du jour",week:"Programme de la semaine",myStay:"Mon séjour",home:"Accueil",program:"Programme",bookings:"Réservations",myBookings:"Mes réservations",favorites:"Favoris",book:"Réserver",booked:"Réservé",full:"Complet",waitlist:"Liste d'attente",onWaitlist:"Sur liste d'attente",cancel:"Annuler la réservation",seatsLeft:"places restantes",adults:"Adultes",children:"Enfants",confirm:"Confirmer la réservation",close:"Fermer",days:["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"],daysShort:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],cats:{morning:"Matin",afternoon:"Après-midi",evening:"Soir",kids:"Club enfants",theme:"Journée à thème"},guests:"invités",noBookings:"Aucune réservation. Découvrez le programme du jour !",noFavs:"Aucun favori. Touchez le cœur d'une activité.",schedule:"Planning",team:"Équipe",guestsBooked:"Invités inscrits",noneToday:"Rien de prévu ici aujourd'hui.",dashboard:"Aperçu",manage:"Programme",totalBookings:"Réservations cette semaine",activities:"Activités",occupancy:"Occupation moy.",waitlisted:"Sur listes d'attente",addActivity:"Ajouter une activité",editActivity:"Modifier l'activité",deleteActivity:"Supprimer",actName:"Nom de l'activité",desc:"Description",location:"Lieu",time:"Heure",capacity:"Capacité",entertainer:"Animateur(s)",imageUrl:"URL de la photo (optionnel)",category:"Catégorie",day:"Jour",makeHighlight:"Moment fort du jour",save:"Enregistrer",saved:"Enregistré",deleted:"Supprimé",bookingOk:"Réservation confirmée !",waitOk:"Ajouté à la liste d'attente",cancelled:"Annulé",loginErr:"Vérifiez vos informations et réessayez.",demoNote:"Mode aperçu avec données d'exemple — connectez Supabase dans le fichier.",reviews:"Vous passez de bonnes vacances ?",reviewsSub:"Partagez votre expérience — cela compte beaucoup pour notre équipe.",followUs:"Suivez l'équipe",none:"—",arrival:"Jour d'arrivée",departure:"Jour de départ",otherUsers:"Accès équipe",backToGuest:"← Connexion invité",usersTab:"Comptes",appTab:"App",appName:"Nom de l'app",appSubtitle:"Sous-titre",colorsHead:"Couleurs",primaryC:"Couleur principale",accentC:"Couleur d'accent",linksHead:"Liens d'avis",socialHead:"Réseaux sociaux",addUser:"Ajouter un compte",displayName:"Nom affiché",roleLabel:"Rôle",teamAccounts:"Comptes de l'équipe",guestStats:"Statistiques invités",uniqueGuests:"Chambres",totalPeople:"Personnes inscrites",language:"Langue",userExists:"Ce nom d'utilisateur existe déjà",tickets:"Billets",buyTicket:"Acheter un billet",myTickets:"Mes billets",price:"Prix",qty:"Quantité",reserved:"Réservé",paid:"Payé",payNote:"Réservez dans l'app et payez au stand animation ou à la réception.",ticketOk:"Billet réservé !",nationality:"Nationalité",natStats:"Nationalités",addTicket:"Ajouter un événement",editTicket:"Modifier l'événement",markPaid:"Marquer payé",markReserved:"Marquer réservé",styleHead:"Style du texte",buttonHead:"Style des boutons",menuHead:"Titres du menu",bgC:"Arrière-plan",fontElegant:"Élégant",fontRoyal:"Royal",fontModern:"Moderne",fontSoft:"Doux",btnRounded:"Arrondis",btnPill:"Pilule",btnSquare:"Carrés",ticketsNone:"Aucun événement pour l'instant.",orders:"Commandes",soldOut:"Complet"},
-ar:{appSub:"فريق الترفيه",guest:"ضيف",staff:"الفريق",manager:"المدير",room:"رقم الغرفة",name:"اسمك",phone:"رقم الهاتف",user:"اسم المستخدم",pass:"كلمة المرور",signin:"تسجيل الدخول",welcome:"أهلاً وسهلاً",today:"اليوم",highlight:"نشاط اليوم المميز",todayProgram:"برنامج اليوم",week:"البرنامج الأسبوعي",myStay:"إقامتي",home:"الرئيسية",program:"البرنامج",bookings:"الحجوزات",myBookings:"حجوزاتي",favorites:"المفضلة",book:"احجز",booked:"محجوز",full:"مكتمل",waitlist:"انضم لقائمة الانتظار",onWaitlist:"في قائمة الانتظار",cancel:"إلغاء الحجز",seatsLeft:"مقاعد متبقية",adults:"بالغون",children:"أطفال",confirm:"تأكيد الحجز",close:"إغلاق",days:["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت","الأحد"],daysShort:["اثن","ثلا","أرب","خمي","جمع","سبت","أحد"],cats:{morning:"الصباح",afternoon:"بعد الظهر",evening:"المساء",kids:"نادي الأطفال",theme:"يوم خاص"},guests:"ضيوف",noBookings:"لا توجد حجوزات بعد. تصفح برنامج اليوم!",noFavs:"لا توجد مفضلات بعد. اضغط على القلب في أي نشاط.",schedule:"الجدول",team:"الفريق",guestsBooked:"الضيوف المحجوزون",noneToday:"لا يوجد شيء مجدول هنا اليوم.",dashboard:"لوحة التحكم",manage:"البرنامج",totalBookings:"حجوزات هذا الأسبوع",activities:"الأنشطة",occupancy:"متوسط الإشغال",waitlisted:"في قوائم الانتظار",addActivity:"إضافة نشاط",editActivity:"تعديل النشاط",deleteActivity:"حذف",actName:"اسم النشاط",desc:"الوصف",location:"المكان",time:"الوقت",capacity:"السعة",entertainer:"المنشط(ون)",imageUrl:"رابط الصورة (اختياري)",category:"الفئة",day:"اليوم",makeHighlight:"نشاط اليوم المميز",save:"حفظ",saved:"تم الحفظ",deleted:"تم الحذف",bookingOk:"تم تأكيد الحجز!",waitOk:"تمت الإضافة لقائمة الانتظار",cancelled:"تم الإلغاء",loginErr:"يرجى التحقق من بياناتك والمحاولة مرة أخرى.",demoNote:"وضع المعاينة ببيانات تجريبية — اربط Supabase في الملف.",reviews:"هل تستمتع بعطلتك؟",reviewsSub:"شارك تجربتك — هذا يعني الكثير لفريقنا.",followUs:"تابع الفريق",none:"—",arrival:"يوم الوصول",departure:"يوم المغادرة",otherUsers:"دخول الفريق",backToGuest:"دخول الضيف",usersTab:"الحسابات",appTab:"التطبيق",appName:"اسم التطبيق",appSubtitle:"العنوان الفرعي",colorsHead:"الألوان",primaryC:"اللون الرئيسي",accentC:"لون مميز",linksHead:"روابط التقييم",socialHead:"وسائل التواصل",addUser:"إضافة مستخدم",displayName:"الاسم المعروض",roleLabel:"الدور",teamAccounts:"حسابات الفريق",guestStats:"إحصائيات الضيوف",uniqueGuests:"غرف الضيوف",totalPeople:"أشخاص محجوزون",language:"اللغة",userExists:"اسم المستخدم موجود بالفعل",tickets:"التذاكر",buyTicket:"شراء تذكرة",myTickets:"تذاكري",price:"السعر",qty:"العدد",reserved:"محجوز",paid:"مدفوع",payNote:"احجز في التطبيق وادفع عند مكتب الترفيه أو الاستقبال.",ticketOk:"تم حجز التذكرة!",nationality:"الجنسية",natStats:"الجنسيات",addTicket:"إضافة فعالية",editTicket:"تعديل الفعالية",markPaid:"وضع كمدفوع",markReserved:"وضع كمحجوز",styleHead:"نمط الخط",buttonHead:"نمط الأزرار",menuHead:"عناوين القائمة",bgC:"الخلفية",fontElegant:"أنيق",fontRoyal:"ملكي",fontModern:"عصري",fontSoft:"ناعم",btnRounded:"مستدير",btnPill:"كبسولة",btnSquare:"مربع",ticketsNone:"لا توجد فعاليات بعد.",orders:"الطلبات",soldOut:"نفدت التذاكر"}
+en:Object.assign({appSub:"Animation Team",guest:"Guest",staff:"Team",manager:"Manager",room:"Room number",name:"Your name",phone:"Mobile phone",user:"Username",pass:"Password",signin:"Sign in",welcome:"Welcome",today:"Today",highlight:"Highlight of the day",todayProgram:"Today's program",week:"Weekly program",myStay:"My stay",home:"Home",program:"Program",bookings:"Bookings",myBookings:"My bookings",favorites:"Favorites",book:"Book",booked:"Booked",full:"Full",waitlist:"Join waiting list",onWaitlist:"On waiting list",cancel:"Cancel booking",seatsLeft:"seats left",adults:"Adults",children:"Children",confirm:"Confirm booking",close:"Close",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],daysShort:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],cats:{morning:"Morning",afternoon:"Afternoon",evening:"Evening",kids:"Kids Club",theme:"Theme day"},guests:"guests",noBookings:"No bookings yet. Find something you love in today's program!",noFavs:"No favorites yet. Tap the heart on any activity.",schedule:"Schedule",team:"Team",guestsBooked:"Guests booked",noneToday:"Nothing scheduled here today.",dashboard:"Dashboard",manage:"Program",totalBookings:"Bookings this week",activities:"Activities",occupancy:"Avg. occupancy",waitlisted:"On waiting lists",addActivity:"Add activity",editActivity:"Edit activity",deleteActivity:"Delete",actName:"Activity name",desc:"Description",location:"Location",time:"Time",capacity:"Capacity",entertainer:"Entertainer(s)",imageUrl:"Photo URL (optional)",category:"Category",day:"Day",makeHighlight:"Highlight of the day",save:"Save",saved:"Saved",deleted:"Deleted",bookingOk:"Booking confirmed!",waitOk:"Added to waiting list",cancelled:"Cancelled",loginErr:"Please check your details and try again.",demoNote:"Preview mode with sample data — connect Supabase in the file to go live.",reviews:"Enjoying your holiday?",reviewsSub:"Share your experience — it means the world to our team.",followUs:"Follow the team",none:"—",arrival:"Arrival day",departure:"Departure day",otherUsers:"Team access",backToGuest:"← Guest login",usersTab:"Users",appTab:"App",appName:"App name",appSubtitle:"Subtitle",colorsHead:"Colors",primaryC:"Main color",accentC:"Accent color",linksHead:"Review links",socialHead:"Social media",addUser:"Add user",displayName:"Display name",roleLabel:"Role",teamAccounts:"Team accounts",guestStats:"Guest analytics",uniqueGuests:"Guest rooms",totalPeople:"People booked",language:"Language",userExists:"Username already exists",tickets:"Tickets",buyTicket:"Buy ticket",myTickets:"My tickets",price:"Price",qty:"Quantity",reserved:"Reserved",paid:"Paid",payNote:"Reserve in the app and pay at the entertainment desk or reception.",ticketOk:"Ticket reserved!",nationality:"Nationality",natStats:"Nationalities",addTicket:"Add ticket event",editTicket:"Edit ticket event",markPaid:"Mark paid",markReserved:"Mark reserved",styleHead:"Text style",buttonHead:"Button style",menuHead:"Menu titles",bgC:"Background",fontElegant:"Elegant",fontRoyal:"Royal",fontModern:"Modern",fontSoft:"Soft",btnRounded:"Rounded",btnPill:"Pill",btnSquare:"Square",ticketsNone:"No ticket events yet.",orders:"Orders",soldOut:"Sold out"},EXTRA.en),
+de:Object.assign({appSub:"Animationsteam",guest:"Gast",staff:"Team",manager:"Manager",room:"Zimmernummer",name:"Dein Name",phone:"Handynummer",user:"Benutzername",pass:"Passwort",signin:"Anmelden",welcome:"Willkommen",today:"Heute",highlight:"Highlight des Tages",todayProgram:"Heutiges Programm",week:"Wochenprogramm",myStay:"Mein Urlaub",home:"Start",program:"Programm",bookings:"Buchungen",myBookings:"Meine Buchungen",favorites:"Favoriten",book:"Buchen",booked:"Gebucht",full:"Ausgebucht",waitlist:"Auf Warteliste",onWaitlist:"Auf der Warteliste",cancel:"Buchung stornieren",seatsLeft:"Plätze frei",adults:"Erwachsene",children:"Kinder",confirm:"Buchung bestätigen",close:"Schließen",days:["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"],daysShort:["Mo","Di","Mi","Do","Fr","Sa","So"],cats:{morning:"Vormittag",afternoon:"Nachmittag",evening:"Abend",kids:"Kids Club",theme:"Mottotag"},guests:"Gäste",noBookings:"Noch keine Buchungen. Stöbere im heutigen Programm!",noFavs:"Noch keine Favoriten. Tippe auf das Herz bei einer Aktivität.",schedule:"Zeitplan",team:"Team",guestsBooked:"Gebuchte Gäste",noneToday:"Heute ist hier nichts geplant.",dashboard:"Übersicht",manage:"Programm",totalBookings:"Buchungen diese Woche",activities:"Aktivitäten",occupancy:"Ø Auslastung",waitlisted:"Auf Wartelisten",addActivity:"Aktivität hinzufügen",editActivity:"Aktivität bearbeiten",deleteActivity:"Löschen",actName:"Name der Aktivität",desc:"Beschreibung",location:"Ort",time:"Uhrzeit",capacity:"Kapazität",entertainer:"Animateur(e)",imageUrl:"Foto-URL (optional)",category:"Kategorie",day:"Tag",makeHighlight:"Highlight des Tages",save:"Speichern",saved:"Gespeichert",deleted:"Gelöscht",bookingOk:"Buchung bestätigt!",waitOk:"Zur Warteliste hinzugefügt",cancelled:"Storniert",loginErr:"Bitte prüfe deine Angaben und versuche es erneut.",demoNote:"Vorschau mit Beispieldaten — verbinde Supabase in der Datei, um live zu gehen.",reviews:"Gefällt dir dein Urlaub?",reviewsSub:"Teile deine Erfahrung — es bedeutet unserem Team die Welt.",followUs:"Folge dem Team",none:"—",arrival:"Anreisetag",departure:"Abreisetag",otherUsers:"Team-Zugang",backToGuest:"← Gast-Anmeldung",usersTab:"Nutzer",appTab:"App",appName:"App-Name",appSubtitle:"Untertitel",colorsHead:"Farben",primaryC:"Hauptfarbe",accentC:"Akzentfarbe",linksHead:"Bewertungs-Links",socialHead:"Social Media",addUser:"Nutzer hinzufügen",displayName:"Anzeigename",roleLabel:"Rolle",teamAccounts:"Team-Konten",guestStats:"Gäste-Statistik",uniqueGuests:"Gästezimmer",totalPeople:"Gebuchte Personen",language:"Sprache",userExists:"Benutzername existiert bereits",tickets:"Tickets",buyTicket:"Ticket kaufen",myTickets:"Meine Tickets",price:"Preis",qty:"Anzahl",reserved:"Reserviert",paid:"Bezahlt",payNote:"In der App reservieren und am Animationsstand oder an der Rezeption bezahlen.",ticketOk:"Ticket reserviert!",nationality:"Nationalität",natStats:"Nationalitäten",addTicket:"Ticket-Event hinzufügen",editTicket:"Ticket-Event bearbeiten",markPaid:"Als bezahlt markieren",markReserved:"Als reserviert markieren",styleHead:"Schriftstil",buttonHead:"Button-Stil",menuHead:"Menü-Titel",bgC:"Hintergrund",fontElegant:"Elegant",fontRoyal:"Royal",fontModern:"Modern",fontSoft:"Sanft",btnRounded:"Abgerundet",btnPill:"Pill",btnSquare:"Eckig",ticketsNone:"Noch keine Ticket-Events.",orders:"Bestellungen",soldOut:"Ausverkauft"},EXTRA.de),
+ru:Object.assign({appSub:"Команда анимации",guest:"Гость",staff:"Команда",manager:"Менеджер",room:"Номер комнаты",name:"Ваше имя",phone:"Мобильный телефон",user:"Имя пользователя",pass:"Пароль",signin:"Войти",welcome:"Добро пожаловать",today:"Сегодня",highlight:"Событие дня",todayProgram:"Программа на сегодня",week:"Программа недели",myStay:"Мой отдых",home:"Главная",program:"Программа",bookings:"Брони",myBookings:"Мои брони",favorites:"Избранное",book:"Записаться",booked:"Записан",full:"Мест нет",waitlist:"В лист ожидания",onWaitlist:"В листе ожидания",cancel:"Отменить бронь",seatsLeft:"свободных мест",adults:"Взрослые",children:"Дети",confirm:"Подтвердить",close:"Закрыть",days:["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"],daysShort:["Пн","Вт","Ср","Чт","Пт","Сб","Вс"],cats:{morning:"Утро",afternoon:"День",evening:"Вечер",kids:"Детский клуб",theme:"Тематический день"},guests:"гостей",noBookings:"Пока нет броней. Загляните в программу дня!",noFavs:"Пока нет избранного. Нажмите на сердечко у активности.",schedule:"Расписание",team:"Команда",guestsBooked:"Записанные гости",noneToday:"На сегодня здесь ничего не запланировано.",dashboard:"Обзор",manage:"Программа",totalBookings:"Броней за неделю",activities:"Активности",occupancy:"Ср. заполняемость",waitlisted:"В листах ожидания",addActivity:"Добавить активность",editActivity:"Редактировать",deleteActivity:"Удалить",actName:"Название",desc:"Описание",location:"Место",time:"Время",capacity:"Вместимость",entertainer:"Аниматор(ы)",imageUrl:"Ссылка на фото (необязательно)",category:"Категория",day:"День",makeHighlight:"Событие дня",save:"Сохранить",saved:"Сохранено",deleted:"Удалено",bookingOk:"Бронь подтверждена!",waitOk:"Добавлено в лист ожидания",cancelled:"Отменено",loginErr:"Проверьте данные и попробуйте снова.",demoNote:"Режим предпросмотра с примерами — подключите Supabase в файле.",reviews:"Нравится отдых?",reviewsSub:"Поделитесь впечатлениями — для нашей команды это очень важно.",followUs:"Подписывайтесь на команду",none:"—",arrival:"День заезда",departure:"День отъезда",otherUsers:"Вход для команды",backToGuest:"← Вход для гостей",usersTab:"Люди",appTab:"App",appName:"Название приложения",appSubtitle:"Подзаголовок",colorsHead:"Цвета",primaryC:"Основной цвет",accentC:"Акцентный цвет",linksHead:"Ссылки на отзывы",socialHead:"Соцсети",addUser:"Добавить пользователя",displayName:"Отображаемое имя",roleLabel:"Роль",teamAccounts:"Аккаунты команды",guestStats:"Статистика гостей",uniqueGuests:"Комнат гостей",totalPeople:"Записано человек",language:"Язык",userExists:"Имя пользователя уже занято",tickets:"Билеты",buyTicket:"Купить билет",myTickets:"Мои билеты",price:"Цена",qty:"Количество",reserved:"Зарезервировано",paid:"Оплачено",payNote:"Зарезервируйте в приложении и оплатите у аниматоров или на ресепшене.",ticketOk:"Билет зарезервирован!",nationality:"Национальность",natStats:"Национальности",addTicket:"Добавить событие",editTicket:"Редактировать событие",markPaid:"Отметить оплаченным",markReserved:"Отметить резервом",styleHead:"Стиль текста",buttonHead:"Стиль кнопок",menuHead:"Названия меню",bgC:"Фон",fontElegant:"Элегантный",fontRoyal:"Королевский",fontModern:"Современный",fontSoft:"Мягкий",btnRounded:"Скруглённые",btnPill:"Пилюля",btnSquare:"Квадратные",ticketsNone:"Пока нет событий с билетами.",orders:"Заказы",soldOut:"Всё продано"},EXTRA.ru),
+pl:Object.assign({appSub:"Zespół animacji",guest:"Gość",staff:"Zespół",manager:"Menedżer",room:"Numer pokoju",name:"Twoje imię",phone:"Telefon komórkowy",user:"Nazwa użytkownika",pass:"Hasło",signin:"Zaloguj się",welcome:"Witamy",today:"Dziś",highlight:"Atrakcja dnia",todayProgram:"Dzisiejszy program",week:"Program tygodnia",myStay:"Mój pobyt",home:"Start",program:"Program",bookings:"Rezerwacje",myBookings:"Moje rezerwacje",favorites:"Ulubione",book:"Zarezerwuj",booked:"Zarezerwowano",full:"Brak miejsc",waitlist:"Lista oczekujących",onWaitlist:"Na liście oczekujących",cancel:"Anuluj rezerwację",seatsLeft:"wolnych miejsc",adults:"Dorośli",children:"Dzieci",confirm:"Potwierdź rezerwację",close:"Zamknij",days:["Poniedziałek","Wtorek","Środa","Czwartek","Piątek","Sobota","Niedziela"],daysShort:["Pon","Wt","Śr","Czw","Pt","Sob","Nd"],cats:{morning:"Rano",afternoon:"Popołudnie",evening:"Wieczór",kids:"Klub dziecięcy",theme:"Dzień tematyczny"},guests:"gości",noBookings:"Brak rezerwacji. Zajrzyj do dzisiejszego programu!",noFavs:"Brak ulubionych. Dotknij serca przy aktywności.",schedule:"Harmonogram",team:"Zespół",guestsBooked:"Zapisani goście",noneToday:"Dziś nic tu nie zaplanowano.",dashboard:"Panel",manage:"Program",totalBookings:"Rezerwacje w tym tygodniu",activities:"Aktywności",occupancy:"Śr. obłożenie",waitlisted:"Na listach oczekujących",addActivity:"Dodaj aktywność",editActivity:"Edytuj aktywność",deleteActivity:"Usuń",actName:"Nazwa aktywności",desc:"Opis",location:"Miejsce",time:"Godzina",capacity:"Liczba miejsc",entertainer:"Animator(zy)",imageUrl:"Adres zdjęcia (opcjonalnie)",category:"Kategoria",day:"Dzień",makeHighlight:"Atrakcja dnia",save:"Zapisz",saved:"Zapisano",deleted:"Usunięto",bookingOk:"Rezerwacja potwierdzona!",waitOk:"Dodano do listy oczekujących",cancelled:"Anulowano",loginErr:"Sprawdź dane i spróbuj ponownie.",demoNote:"Tryb podglądu z przykładami — połącz Supabase w pliku.",reviews:"Podobają Ci się wakacje?",reviewsSub:"Podziel się opinią — to wiele znaczy dla naszego zespołu.",followUs:"Obserwuj zespół",none:"—",arrival:"Dzień przyjazdu",departure:"Dzień wyjazdu",otherUsers:"Dostęp dla zespołu",backToGuest:"← Logowanie gościa",usersTab:"Konta",appTab:"App",appName:"Nazwa aplikacji",appSubtitle:"Podtytuł",colorsHead:"Kolory",primaryC:"Kolor główny",accentC:"Kolor akcentu",linksHead:"Linki do opinii",socialHead:"Media społecznościowe",addUser:"Dodaj użytkownika",displayName:"Wyświetlana nazwa",roleLabel:"Rola",teamAccounts:"Konta zespołu",guestStats:"Statystyki gości",uniqueGuests:"Pokoje gości",totalPeople:"Zapisane osoby",language:"Język",userExists:"Ta nazwa użytkownika już istnieje",tickets:"Bilety",buyTicket:"Kup bilet",myTickets:"Moje bilety",price:"Cena",qty:"Ilość",reserved:"Zarezerwowano",paid:"Opłacone",payNote:"Zarezerwuj w aplikacji i zapłać przy stanowisku animacji lub w recepcji.",ticketOk:"Bilet zarezerwowany!",nationality:"Narodowość",natStats:"Narodowości",addTicket:"Dodaj wydarzenie",editTicket:"Edytuj wydarzenie",markPaid:"Oznacz jako opłacone",markReserved:"Oznacz jako rezerwację",styleHead:"Styl tekstu",buttonHead:"Styl przycisków",menuHead:"Tytuły menu",bgC:"Tło",fontElegant:"Elegancki",fontRoyal:"Królewski",fontModern:"Nowoczesny",fontSoft:"Miękki",btnRounded:"Zaokrąglone",btnPill:"Pigułka",btnSquare:"Kwadratowe",ticketsNone:"Brak wydarzeń biletowych.",orders:"Zamówienia",soldOut:"Wyprzedane"},EXTRA.pl),
+cs:Object.assign({appSub:"Animační tým",guest:"Host",staff:"Tým",manager:"Manažer",room:"Číslo pokoje",name:"Vaše jméno",phone:"Mobilní telefon",user:"Uživatelské jméno",pass:"Heslo",signin:"Přihlásit se",welcome:"Vítejte",today:"Dnes",highlight:"Zážitek dne",todayProgram:"Dnešní program",week:"Týdenní program",myStay:"Můj pobyt",home:"Domů",program:"Program",bookings:"Rezervace",myBookings:"Moje rezervace",favorites:"Oblíbené",book:"Rezervovat",booked:"Rezervováno",full:"Obsazeno",waitlist:"Na čekací listinu",onWaitlist:"Na čekací listině",cancel:"Zrušit rezervaci",seatsLeft:"volných míst",adults:"Dospělí",children:"Děti",confirm:"Potvrdit rezervaci",close:"Zavřít",days:["Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobota","Neděle"],daysShort:["Po","Út","St","Čt","Pá","So","Ne"],cats:{morning:"Ráno",afternoon:"Odpoledne",evening:"Večer",kids:"Dětský klub",theme:"Tematický den"},guests:"hostů",noBookings:"Zatím žádné rezervace. Prohlédněte si dnešní program!",noFavs:"Zatím žádné oblíbené. Klepněte na srdíčko u aktivity.",schedule:"Rozvrh",team:"Tým",guestsBooked:"Přihlášení hosté",noneToday:"Dnes tu není nic naplánováno.",dashboard:"Přehled",manage:"Program",totalBookings:"Rezervace tento týden",activities:"Aktivity",occupancy:"Prům. obsazenost",waitlisted:"Na čekacích listinách",addActivity:"Přidat aktivitu",editActivity:"Upravit aktivitu",deleteActivity:"Smazat",actName:"Název aktivity",desc:"Popis",location:"Místo",time:"Čas",capacity:"Kapacita",entertainer:"Animátor(ři)",imageUrl:"Odkaz na fotku (volitelné)",category:"Kategorie",day:"Den",makeHighlight:"Zážitek dne",save:"Uložit",saved:"Uloženo",deleted:"Smazáno",bookingOk:"Rezervace potvrzena!",waitOk:"Přidáno na čekací listinu",cancelled:"Zrušeno",loginErr:"Zkontrolujte údaje a zkuste to znovu.",demoNote:"Režim náhledu s ukázkovými daty — připojte Supabase v souboru.",reviews:"Líbí se vám dovolená?",reviewsSub:"Podělte se o zkušenost — pro náš tým to hodně znamená.",followUs:"Sledujte náš tým",none:"—",arrival:"Den příjezdu",departure:"Den odjezdu",otherUsers:"Přístup pro tým",backToGuest:"← Přihlášení hosta",usersTab:"Účty",appTab:"App",appName:"Název aplikace",appSubtitle:"Podtitul",colorsHead:"Barvy",primaryC:"Hlavní barva",accentC:"Barva akcentu",linksHead:"Odkazy na recenze",socialHead:"Sociální sítě",addUser:"Přidat uživatele",displayName:"Zobrazované jméno",roleLabel:"Role",teamAccounts:"Účty týmu",guestStats:"Statistiky hostů",uniqueGuests:"Pokoje hostů",totalPeople:"Přihlášené osoby",language:"Jazyk",userExists:"Uživatelské jméno již existuje",tickets:"Vstupenky",buyTicket:"Koupit vstupenku",myTickets:"Moje vstupenky",price:"Cena",qty:"Počet",reserved:"Rezervováno",paid:"Zaplaceno",payNote:"Rezervujte v aplikaci a zaplaťte u animačního stánku nebo na recepci.",ticketOk:"Vstupenka rezervována!",nationality:"Národnost",natStats:"Národnosti",addTicket:"Přidat akci",editTicket:"Upravit akci",markPaid:"Označit jako zaplacené",markReserved:"Označit jako rezervaci",styleHead:"Styl písma",buttonHead:"Styl tlačítek",menuHead:"Názvy menu",bgC:"Pozadí",fontElegant:"Elegantní",fontRoyal:"Královský",fontModern:"Moderní",fontSoft:"Jemný",btnRounded:"Zaoblené",btnPill:"Pilulka",btnSquare:"Hranaté",ticketsNone:"Zatím žádné akce se vstupenkami.",orders:"Objednávky",soldOut:"Vyprodáno"},EXTRA.cs),
+nl:Object.assign({appSub:"Animatieteam",guest:"Gast",staff:"Team",manager:"Manager",room:"Kamernummer",name:"Je naam",phone:"Mobiel nummer",user:"Gebruikersnaam",pass:"Wachtwoord",signin:"Inloggen",welcome:"Welkom",today:"Vandaag",highlight:"Hoogtepunt van de dag",todayProgram:"Programma van vandaag",week:"Weekprogramma",myStay:"Mijn verblijf",home:"Home",program:"Programma",bookings:"Boekingen",myBookings:"Mijn boekingen",favorites:"Favorieten",book:"Boeken",booked:"Geboekt",full:"Vol",waitlist:"Op wachtlijst",onWaitlist:"Op de wachtlijst",cancel:"Boeking annuleren",seatsLeft:"plaatsen vrij",adults:"Volwassenen",children:"Kinderen",confirm:"Boeking bevestigen",close:"Sluiten",days:["Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag","Zondag"],daysShort:["Ma","Di","Wo","Do","Vr","Za","Zo"],cats:{morning:"Ochtend",afternoon:"Middag",evening:"Avond",kids:"Kidsclub",theme:"Themadag"},guests:"gasten",noBookings:"Nog geen boekingen. Bekijk het programma van vandaag!",noFavs:"Nog geen favorieten. Tik op het hartje bij een activiteit.",schedule:"Rooster",team:"Team",guestsBooked:"Geboekte gasten",noneToday:"Vandaag is hier niets gepland.",dashboard:"Overzicht",manage:"Programma",totalBookings:"Boekingen deze week",activities:"Activiteiten",occupancy:"Gem. bezetting",waitlisted:"Op wachtlijsten",addActivity:"Activiteit toevoegen",editActivity:"Activiteit bewerken",deleteActivity:"Verwijderen",actName:"Naam activiteit",desc:"Beschrijving",location:"Locatie",time:"Tijd",capacity:"Capaciteit",entertainer:"Entertainer(s)",imageUrl:"Foto-URL (optioneel)",category:"Categorie",day:"Dag",makeHighlight:"Hoogtepunt van de dag",save:"Opslaan",saved:"Opgeslagen",deleted:"Verwijderd",bookingOk:"Boeking bevestigd!",waitOk:"Toegevoegd aan wachtlijst",cancelled:"Geannuleerd",loginErr:"Controleer je gegevens en probeer opnieuw.",demoNote:"Voorbeeldmodus — verbind Supabase in het bestand om live te gaan.",reviews:"Geniet je van je vakantie?",reviewsSub:"Deel je ervaring — het betekent veel voor ons team.",followUs:"Volg het team",none:"—",arrival:"Aankomstdag",departure:"Vertrekdag",otherUsers:"Teamtoegang",backToGuest:"← Gast-login",usersTab:"Accounts",appTab:"App",appName:"App-naam",appSubtitle:"Ondertitel",colorsHead:"Kleuren",primaryC:"Hoofdkleur",accentC:"Accentkleur",linksHead:"Reviewlinks",socialHead:"Social media",addUser:"Gebruiker toevoegen",displayName:"Weergavenaam",roleLabel:"Rol",teamAccounts:"Teamaccounts",guestStats:"Gastenstatistiek",uniqueGuests:"Gastenkamers",totalPeople:"Geboekte personen",language:"Taal",userExists:"Gebruikersnaam bestaat al",tickets:"Tickets",buyTicket:"Ticket kopen",myTickets:"Mijn tickets",price:"Prijs",qty:"Aantal",reserved:"Gereserveerd",paid:"Betaald",payNote:"Reserveer in de app en betaal bij de animatiebalie of receptie.",ticketOk:"Ticket gereserveerd!",nationality:"Nationaliteit",natStats:"Nationaliteiten",addTicket:"Ticketevent toevoegen",editTicket:"Ticketevent bewerken",markPaid:"Markeer als betaald",markReserved:"Markeer als gereserveerd",styleHead:"Tekststijl",buttonHead:"Knopstijl",menuHead:"Menutitels",bgC:"Achtergrond",fontElegant:"Elegant",fontRoyal:"Koninklijk",fontModern:"Modern",fontSoft:"Zacht",btnRounded:"Afgerond",btnPill:"Pil",btnSquare:"Vierkant",ticketsNone:"Nog geen ticketevents.",orders:"Bestellingen",soldOut:"Uitverkocht"},EXTRA.nl),
+fr:Object.assign({appSub:"Équipe d'animation",guest:"Invité",staff:"Équipe",manager:"Manager",room:"Numéro de chambre",name:"Votre nom",phone:"Téléphone portable",user:"Nom d'utilisateur",pass:"Mot de passe",signin:"Se connecter",welcome:"Bienvenue",today:"Aujourd'hui",highlight:"Moment fort du jour",todayProgram:"Programme du jour",week:"Programme de la semaine",myStay:"Mon séjour",home:"Accueil",program:"Programme",bookings:"Réservations",myBookings:"Mes réservations",favorites:"Favoris",book:"Réserver",booked:"Réservé",full:"Complet",waitlist:"Liste d'attente",onWaitlist:"Sur liste d'attente",cancel:"Annuler la réservation",seatsLeft:"places restantes",adults:"Adultes",children:"Enfants",confirm:"Confirmer la réservation",close:"Fermer",days:["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"],daysShort:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],cats:{morning:"Matin",afternoon:"Après-midi",evening:"Soir",kids:"Club enfants",theme:"Journée à thème"},guests:"invités",noBookings:"Aucune réservation. Découvrez le programme du jour !",noFavs:"Aucun favori. Touchez le cœur d'une activité.",schedule:"Planning",team:"Équipe",guestsBooked:"Invités inscrits",noneToday:"Rien de prévu ici aujourd'hui.",dashboard:"Aperçu",manage:"Programme",totalBookings:"Réservations cette semaine",activities:"Activités",occupancy:"Occupation moy.",waitlisted:"Sur listes d'attente",addActivity:"Ajouter une activité",editActivity:"Modifier l'activité",deleteActivity:"Supprimer",actName:"Nom de l'activité",desc:"Description",location:"Lieu",time:"Heure",capacity:"Capacité",entertainer:"Animateur(s)",imageUrl:"URL de la photo (optionnel)",category:"Catégorie",day:"Jour",makeHighlight:"Moment fort du jour",save:"Enregistrer",saved:"Enregistré",deleted:"Supprimé",bookingOk:"Réservation confirmée !",waitOk:"Ajouté à la liste d'attente",cancelled:"Annulé",loginErr:"Vérifiez vos informations et réessayez.",demoNote:"Mode aperçu avec données d'exemple — connectez Supabase dans le fichier.",reviews:"Vous passez de bonnes vacances ?",reviewsSub:"Partagez votre expérience — cela compte beaucoup pour notre équipe.",followUs:"Suivez l'équipe",none:"—",arrival:"Jour d'arrivée",departure:"Jour de départ",otherUsers:"Accès équipe",backToGuest:"← Connexion invité",usersTab:"Comptes",appTab:"App",appName:"Nom de l'app",appSubtitle:"Sous-titre",colorsHead:"Couleurs",primaryC:"Couleur principale",accentC:"Couleur d'accent",linksHead:"Liens d'avis",socialHead:"Réseaux sociaux",addUser:"Ajouter un compte",displayName:"Nom affiché",roleLabel:"Rôle",teamAccounts:"Comptes de l'équipe",guestStats:"Statistiques invités",uniqueGuests:"Chambres",totalPeople:"Personnes inscrites",language:"Langue",userExists:"Ce nom d'utilisateur existe déjà",tickets:"Billets",buyTicket:"Acheter un billet",myTickets:"Mes billets",price:"Prix",qty:"Quantité",reserved:"Réservé",paid:"Payé",payNote:"Réservez dans l'app et payez au stand animation ou à la réception.",ticketOk:"Billet réservé !",nationality:"Nationalité",natStats:"Nationalités",addTicket:"Ajouter un événement",editTicket:"Modifier l'événement",markPaid:"Marquer payé",markReserved:"Marquer réservé",styleHead:"Style du texte",buttonHead:"Style des boutons",menuHead:"Titres du menu",bgC:"Arrière-plan",fontElegant:"Élégant",fontRoyal:"Royal",fontModern:"Moderne",fontSoft:"Doux",btnRounded:"Arrondis",btnPill:"Pilule",btnSquare:"Carrés",ticketsNone:"Aucun événement pour l'instant.",orders:"Commandes",soldOut:"Complet"},EXTRA.fr),
+ar:Object.assign({appSub:"فريق الترفيه",guest:"ضيف",staff:"الفريق",manager:"المدير",room:"رقم الغرفة",name:"اسمك",phone:"رقم الهاتف",user:"اسم المستخدم",pass:"كلمة المرور",signin:"تسجيل الدخول",welcome:"أهلاً وسهلاً",today:"اليوم",highlight:"نشاط اليوم المميز",todayProgram:"برنامج اليوم",week:"البرنامج الأسبوعي",myStay:"إقامتي",home:"الرئيسية",program:"البرنامج",bookings:"الحجوزات",myBookings:"حجوزاتي",favorites:"المفضلة",book:"احجز",booked:"محجوز",full:"مكتمل",waitlist:"انضم لقائمة الانتظار",onWaitlist:"في قائمة الانتظار",cancel:"إلغاء الحجز",seatsLeft:"مقاعد متبقية",adults:"بالغون",children:"أطفال",confirm:"تأكيد الحجز",close:"إغلاق",days:["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت","الأحد"],daysShort:["اثن","ثلا","أرب","خمي","جمع","سبت","أحد"],cats:{morning:"الصباح",afternoon:"بعد الظهر",evening:"المساء",kids:"نادي الأطفال",theme:"يوم خاص"},guests:"ضيوف",noBookings:"لا توجد حجوزات بعد. تصفح برنامج اليوم!",noFavs:"لا توجد مفضلات بعد. اضغط على القلب في أي نشاط.",schedule:"الجدول",team:"الفريق",guestsBooked:"الضيوف المحجوزون",noneToday:"لا يوجد شيء مجدول هنا اليوم.",dashboard:"لوحة التحكم",manage:"البرنامج",totalBookings:"حجوزات هذا الأسبوع",activities:"الأنشطة",occupancy:"متوسط الإشغال",waitlisted:"في قوائم الانتظار",addActivity:"إضافة نشاط",editActivity:"تعديل النشاط",deleteActivity:"حذف",actName:"اسم النشاط",desc:"الوصف",location:"المكان",time:"الوقت",capacity:"السعة",entertainer:"المنشط(ون)",imageUrl:"رابط الصورة (اختياري)",category:"الفئة",day:"اليوم",makeHighlight:"نشاط اليوم المميز",save:"حفظ",saved:"تم الحفظ",deleted:"تم الحذف",bookingOk:"تم تأكيد الحجز!",waitOk:"تمت الإضافة لقائمة الانتظار",cancelled:"تم الإلغاء",loginErr:"يرجى التحقق من بياناتك والمحاولة مرة أخرى.",demoNote:"وضع المعاينة ببيانات تجريبية — اربط Supabase في الملف.",reviews:"هل تستمتع بعطلتك؟",reviewsSub:"شارك تجربتك — هذا يعني الكثير لفريقنا.",followUs:"تابع الفريق",none:"—",arrival:"يوم الوصول",departure:"يوم المغادرة",otherUsers:"دخول الفريق",backToGuest:"دخول الضيف",usersTab:"الحسابات",appTab:"التطبيق",appName:"اسم التطبيق",appSubtitle:"العنوان الفرعي",colorsHead:"الألوان",primaryC:"اللون الرئيسي",accentC:"لون مميز",linksHead:"روابط التقييم",socialHead:"وسائل التواصل",addUser:"إضافة مستخدم",displayName:"الاسم المعروض",roleLabel:"الدور",teamAccounts:"حسابات الفريق",guestStats:"إحصائيات الضيوف",uniqueGuests:"غرف الضيوف",totalPeople:"أشخاص محجوزون",language:"اللغة",userExists:"اسم المستخدم موجود بالفعل",tickets:"التذاكر",buyTicket:"شراء تذكرة",myTickets:"تذاكري",price:"السعر",qty:"العدد",reserved:"محجوز",paid:"مدفوع",payNote:"احجز في التطبيق وادفع عند مكتب الترفيه أو الاستقبال.",ticketOk:"تم حجز التذكرة!",nationality:"الجنسية",natStats:"الجنسيات",addTicket:"إضافة فعالية",editTicket:"تعديل الفعالية",markPaid:"وضع كمدفوع",markReserved:"وضع كمحجوز",styleHead:"نمط الخط",buttonHead:"نمط الأزرار",menuHead:"عناوين القائمة",bgC:"الخلفية",fontElegant:"أنيق",fontRoyal:"ملكي",fontModern:"عصري",fontSoft:"ناعم",btnRounded:"مستدير",btnPill:"كبسولة",btnSquare:"مربع",ticketsNone:"لا توجد فعاليات بعد.",orders:"الطلبات",soldOut:"نفدت التذاكر"},EXTRA.ar)
 };
 
 /* ---------------- state ---------------- */
 const S = {
   lang:"en", theme:"light", session:null, tab:"home",
   day:(new Date().getDay()+6)%7, favorites:[],
+  sub:{program:"acts", guests:"bookings", team:"accounts"},
+  chatRoom:null, seenNote:0,
   activities:[], bookings:[], users:[], tickets:[], orders:[],
+  rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[],
   settings:{...DEFAULT_SETTINGS}, loadError:false
 };
 const t = k => (DICT[S.lang] && DICT[S.lang][k]) ?? DICT.en[k] ?? k;
 const NATIONS=["German","Austrian","Swiss","British","Irish","Russian","Ukrainian","Polish","Czech","Slovak","Dutch","Belgian","French","Italian","Spanish","Portuguese","Romanian","Hungarian","Serbian","Egyptian","Turkish","Other"];
+function persist(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({
+    lang:S.lang, theme:S.theme, favorites:S.favorites, session:S.session, seenNote:S.seenNote
+  })); }catch(e){}
+}
+function restore(){
+  try{
+    const d=JSON.parse(localStorage.getItem(LS_KEY)||"null");
+    if(!d) return;
+    if(d.lang) S.lang=d.lang;
+    if(d.theme) S.theme=d.theme;
+    if(Array.isArray(d.favorites)) S.favorites=d.favorites;
+    if(d.session) S.session=d.session;
+    if(d.seenNote) S.seenNote=d.seenNote;
+  }catch(e){}
+}
 
-/* ---------------- sample data (preview only, never used once Supabase is connected) ---------------- */
+/* ---------------- sample data (preview only) ---------------- */
 const IMG = {
   aqua:"https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&q=60",
   yoga:"https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=60",
@@ -284,6 +340,27 @@ const DEMO_USERS=[
   {id:1,username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager"},
   {id:2,username:"team",password:"1234",role:"staff",display_name:"Entertainer"}
 ];
+function demoRooms(){ return ["4215","4308","4510","4102","4103"].map((r,i)=>({id:i+1,room:r,active:true})); }
+function demoAccounts(){
+  const today=new Date(), plus=d=>{const x=new Date(today);x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
+  return [{id:1,room:"4215",name:"Familie Weber",phone:"",nationality:"German",arrival:plus(-4),departure:plus(3)}];
+}
+function demoMessages(){
+  const now=Date.now();
+  return [
+    {id:1,room:"4215",sender:"guest",sender_name:"Familie Weber",text:"Hello! Is the foam party for kids too?",created_at:new Date(now-3600e3).toISOString(),read_by_team:true,read_by_guest:true},
+    {id:2,room:"4215",sender:"team",sender_name:"Entertainment Manager",text:"Hello! Yes, absolutely — kids love it. See you there! 🎉",created_at:new Date(now-3000e3).toISOString(),read_by_team:true,read_by_guest:false}
+  ];
+}
+function demoRequests(){
+  return [{id:1,room:"4215",guest_name:"Familie Weber",type:"song",detail:"Bailando – Enrique Iglesias",date:"",note:"For the pool party please!",status:"new",created_at:new Date().toISOString()}];
+}
+function demoTasks(){
+  return [{id:1,title:"Prepare bingo prizes",desc:"Pick up prizes from storage before 17:00",assigned_to:"",due:"",status:"open",created_at:new Date().toISOString()}];
+}
+function demoNotes(){
+  return [{id:1,title:"Foam Party today! 🎉",body:"14:30 at the Main Pool — bring your swimsuit and good mood!",audience:"all",created_at:new Date().toISOString()}];
+}
 
 /* ---------------- data layer ---------------- */
 async function sb(path, opts={}){
@@ -304,20 +381,39 @@ async function sb(path, opts={}){
 const DB = {
   async load(){
     if(REMOTE){
-      const [a,b,u,s,tk,o] = await Promise.all([
-        sb("activities?select=*&order=time"),
-        sb("bookings?select=*"),
-        sb("app_users?select=*"),
-        sb("app_settings?select=*&id=eq.1"),
-        sb("tickets?select=*&order=time"),
-        sb("ticket_orders?select=*")
+      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at] = await Promise.all([
+        sb("activities?select=*&order=time"), sb("bookings?select=*"),
+        sb("app_users?select=*"), sb("app_settings?select=*&id=eq.1"),
+        sb("tickets?select=*&order=time"), sb("ticket_orders?select=*"),
+        sb("rooms?select=*&order=room"), sb("guest_accounts?select=*"),
+        sb("messages?select=*&order=created_at"), sb("requests?select=*&order=created_at.desc"),
+        sb("tasks?select=*&order=created_at.desc"), sb("announcements?select=*&order=created_at.desc"),
+        sb("attendance?select=*")
       ]);
       S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
+      S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
+      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[];
       if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
       S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
+      S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
+      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[];
     }
+  },
+  async poll(){
+    if(!REMOTE) return false;
+    const [ms,rq,nt,b,o]=await Promise.all([
+      sb("messages?select=*&order=created_at"), sb("requests?select=*&order=created_at.desc"),
+      sb("announcements?select=*&order=created_at.desc"), sb("bookings?select=*"), sb("ticket_orders?select=*")
+    ]);
+    const changed = JSON.stringify(ms)!==JSON.stringify(S.messages)
+      || JSON.stringify(rq)!==JSON.stringify(S.requests)
+      || JSON.stringify(nt)!==JSON.stringify(S.notes)
+      || JSON.stringify(b)!==JSON.stringify(S.bookings)
+      || JSON.stringify(o)!==JSON.stringify(S.orders);
+    S.messages=ms||[]; S.requests=rq||[]; S.notes=nt||[]; S.bookings=b||[]; S.orders=o||[];
+    return changed;
   },
   async addBooking(bk){
     if(REMOTE){ const r=await sb("bookings",{method:"POST",body:JSON.stringify(bk)}); S.bookings.push(r[0]); }
@@ -375,6 +471,84 @@ const DB = {
     if(REMOTE) await sb("app_users?id=eq."+id,{method:"DELETE"});
     S.users=S.users.filter(x=>x.id!==id);
   },
+  async addRooms(list){
+    const fresh=list.filter(r=>!S.rooms.some(x=>x.room===r)).map(r=>({room:r,active:true}));
+    if(!fresh.length) return;
+    if(REMOTE){ const r=await sb("rooms",{method:"POST",body:JSON.stringify(fresh)}); S.rooms.push(...r); }
+    else { fresh.forEach(f=>{f.id=Date.now()+Math.random(); S.rooms.push(f);}); }
+    S.rooms.sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
+  },
+  async setRoomActive(id,active){
+    if(REMOTE) await sb("rooms?id=eq."+id,{method:"PATCH",body:JSON.stringify({active})});
+    S.rooms=S.rooms.map(r=>r.id===id?{...r,active}:r);
+  },
+  async deleteRoom(id){
+    const rm=S.rooms.find(r=>r.id===id); if(!rm) return;
+    if(REMOTE){
+      await sb("rooms?id=eq."+id,{method:"DELETE"});
+      await sb("guest_accounts?room=eq."+encodeURIComponent(rm.room),{method:"DELETE"});
+    }
+    S.rooms=S.rooms.filter(r=>r.id!==id);
+    S.accounts=S.accounts.filter(a=>a.room!==rm.room);
+  },
+  async addAccount(acc){
+    if(REMOTE){ const r=await sb("guest_accounts",{method:"POST",body:JSON.stringify(acc)}); S.accounts.push(r[0]); return r[0]; }
+    acc.id=Date.now(); S.accounts.push(acc); return acc;
+  },
+  async addMessage(m){
+    if(REMOTE){ const r=await sb("messages",{method:"POST",body:JSON.stringify(m)}); S.messages.push(r[0]); }
+    else { m.id=Date.now(); m.created_at=new Date().toISOString(); S.messages.push(m); }
+  },
+  async markRead(room,side){
+    const flag = side==="team" ? "read_by_team" : "read_by_guest";
+    const sender = side==="team" ? "guest" : "team";
+    const unread=S.messages.filter(m=>m.room===room&&m.sender===sender&&!m[flag]);
+    if(!unread.length) return;
+    if(REMOTE) await sb("messages?room=eq."+encodeURIComponent(room)+"&sender=eq."+sender,{method:"PATCH",body:JSON.stringify({[flag]:true})});
+    S.messages=S.messages.map(m=>m.room===room&&m.sender===sender?{...m,[flag]:true}:m);
+  },
+  async addRequest(r){
+    if(REMOTE){ const x=await sb("requests",{method:"POST",body:JSON.stringify(r)}); S.requests.unshift(x[0]); }
+    else { r.id=Date.now(); r.created_at=new Date().toISOString(); S.requests.unshift(r); }
+  },
+  async setRequestStatus(id,status){
+    if(REMOTE) await sb("requests?id=eq."+id,{method:"PATCH",body:JSON.stringify({status})});
+    S.requests=S.requests.map(r=>r.id===id?{...r,status}:r);
+  },
+  async deleteRequest(id){
+    if(REMOTE) await sb("requests?id=eq."+id,{method:"DELETE"});
+    S.requests=S.requests.filter(r=>r.id!==id);
+  },
+  async addTask(tk){
+    if(REMOTE){ const r=await sb("tasks",{method:"POST",body:JSON.stringify(tk)}); S.tasks.unshift(r[0]); }
+    else { tk.id=Date.now(); tk.created_at=new Date().toISOString(); S.tasks.unshift(tk); }
+  },
+  async setTaskStatus(id,status){
+    if(REMOTE) await sb("tasks?id=eq."+id,{method:"PATCH",body:JSON.stringify({status})});
+    S.tasks=S.tasks.map(x=>x.id===id?{...x,status}:x);
+  },
+  async deleteTask(id){
+    if(REMOTE) await sb("tasks?id=eq."+id,{method:"DELETE"});
+    S.tasks=S.tasks.filter(x=>x.id!==id);
+  },
+  async addNote(n){
+    if(REMOTE){ const r=await sb("announcements",{method:"POST",body:JSON.stringify(n)}); S.notes.unshift(r[0]); }
+    else { n.id=Date.now(); n.created_at=new Date().toISOString(); S.notes.unshift(n); }
+  },
+  async deleteNote(id){
+    if(REMOTE) await sb("announcements?id=eq."+id,{method:"DELETE"});
+    S.notes=S.notes.filter(n=>n.id!==id);
+  },
+  async setAttendance(bookingId,date,present){
+    if(present){
+      const row={booking_id:bookingId,date};
+      if(REMOTE){ const r=await sb("attendance",{method:"POST",body:JSON.stringify(row)}); S.attendance.push(r[0]); }
+      else { row.id=Date.now(); S.attendance.push(row); }
+    } else {
+      if(REMOTE) await sb("attendance?booking_id=eq."+bookingId+"&date=eq."+date,{method:"DELETE"});
+      S.attendance=S.attendance.filter(x=>!(x.booking_id===bookingId&&x.date===date));
+    }
+  },
   async saveSettings(st){
     S.settings={...st};
     if(REMOTE){
@@ -398,6 +572,11 @@ function applySettings(){
   root.setProperty("--cacao",shade(st.primary,.22));
   root.setProperty("--bronze",st.accent);
   root.setProperty("--bg-light",st.bg||"#F7F2EA");
+  root.setProperty("--ink-light",st.textColor||"#2B1F16");
+  if(S.theme==="light"){
+    root.setProperty("--nav-bg",st.navBg||"#FFFFFF");
+    root.setProperty("--nav-on",st.navActive||shade(st.primary,.22));
+  } else { root.removeProperty("--nav-bg"); root.removeProperty("--nav-on"); }
   const f=FONTS[st.fontStyle]||FONTS.elegant;
   root.setProperty("--font-display",f[0]); root.setProperty("--font-body",f[1]);
   const br=BTN_R[st.buttonStyle]||BTN_R.rounded;
@@ -405,14 +584,31 @@ function applySettings(){
   document.title=st.name||"Entertainment";
 }
 function menuLabel(key,fallback){ const v=(S.settings[key]||"").trim(); return v||fallback; }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function fmtTime(ts){
+  const d=new Date(ts); if(isNaN(d)) return "";
+  const hm=d.toTimeString().slice(0,5);
+  return d.toDateString()===new Date().toDateString() ? hm : t("daysShort")[(d.getDay()+6)%7]+" "+hm;
+}
 function bookingsFor(actId){ return S.bookings.filter(b=>b.activity_id===actId); }
 function seatsTaken(actId){ return bookingsFor(actId).filter(b=>b.status==="booked").reduce((n,b)=>n+(+b.adults||0)+(+b.children||0),0); }
 function myBooking(actId){ const g=S.session; if(!g||g.role!=="guest") return null;
-  return S.bookings.find(b=>b.activity_id===actId && b.room===g.room && b.guest_name===g.name); }
+  return S.bookings.find(b=>b.activity_id===actId && b.room===g.room); }
 function ordersFor(tkId){ return S.orders.filter(o=>o.ticket_id===tkId); }
 function ticketsSold(tkId){ return ordersFor(tkId).reduce((n,o)=>n+(+o.qty||0),0); }
 function myOrders(){ const g=S.session; if(!g||g.role!=="guest") return [];
-  return S.orders.filter(o=>o.room===g.room && o.guest_name===g.name); }
+  return S.orders.filter(o=>o.room===g.room); }
+function myRequestsList(){ const g=S.session; if(!g||g.role!=="guest") return [];
+  return S.requests.filter(r=>r.room===g.room); }
+function accountName(room){ const a=S.accounts.find(x=>x.room===room); return a?a.name:room; }
+function unreadFor(role){
+  if(role==="guest"){ const g=S.session; return S.messages.filter(m=>m.room===g.room&&m.sender==="team"&&!m.read_by_guest).length; }
+  return S.messages.filter(m=>m.sender==="guest"&&!m.read_by_team).length;
+}
+function visibleNotes(role){
+  return S.notes.filter(n=>n.audience==="all" || (role==="guest"?n.audience==="guests":n.audience==="team"));
+}
+function unseenNotes(role){ return visibleNotes(role).some(n=>n.id>S.seenNote); }
 function reviewDue(g){
   if(!g || !g.arrival || !g.departure) return false;
   const a=Date.parse(g.arrival), d=Date.parse(g.departure);
@@ -421,8 +617,8 @@ function reviewDue(g){
 }
 function toast(msg){ const el=document.createElement("div"); el.className="toast"; el.innerHTML="<span>"+esc(msg)+"</span>";
   document.body.appendChild(el); setTimeout(()=>el.remove(),2200); }
-function setLang(l){ S.lang=l; document.documentElement.lang=l; document.documentElement.dir=(l==="ar"?"rtl":"ltr"); render(); }
-function setTheme(th){ S.theme=th; document.documentElement.setAttribute("data-theme",th); render(); }
+function setLang(l){ S.lang=l; document.documentElement.lang=l; document.documentElement.dir=(l==="ar"?"rtl":"ltr"); persist(); render(); }
+function setTheme(th){ S.theme=th; document.documentElement.setAttribute("data-theme",th); applySettings(); persist(); render(); }
 function catLabel(c){ return t("cats")[c]||c; }
 const CAT_ORDER=["morning","kids","afternoon","theme","evening"];
 /* ================= RENDER ================= */
@@ -503,24 +699,36 @@ function wireLogin(){
     if(loginMode==="guest"){
       const room=$("#f-room").value.trim(), name=$("#f-name").value.trim(), phone=$("#f-phone").value.trim();
       const nat=$("#f-nat").value.trim(), arr=$("#f-arr").value, dep=$("#f-dep").value;
-      if(!room||!name||!nat||!arr||!dep||Date.parse(dep)<Date.parse(arr)){ err.textContent=t("loginErr"); return; }
-      S.session={role:"guest",room,name,phone,nationality:nat,arrival:arr,departure:dep}; S.tab="home"; render();
+      if(!room||!name){ err.textContent=t("loginErr"); return; }
+      const rm=S.rooms.find(x=>String(x.room)===room);
+      if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
+      let acc=S.accounts.find(a=>String(a.room)===room);
+      if(!acc){
+        if(!nat||!arr||!dep||Date.parse(dep)<Date.parse(arr)){ err.textContent=t("loginErr"); return; }
+        try{ acc=await DB.addAccount({room,name,phone,nationality:nat,arrival:arr,departure:dep}); }
+        catch(e){ err.textContent=t("loginErr"); return; }
+      }
+      S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
+        nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure};
+      S.tab="home"; persist(); render();
     } else {
       const u=$("#f-user").value.trim(), p=$("#f-pass").value;
       const found=S.users.find(x=>x.username===u && x.password===p && (loginRole==="manager"?x.role==="manager":true));
       if(!found){ err.textContent=t("loginErr"); return; }
       const role = found.role==="manager" && loginRole==="manager" ? "manager" : "staff";
       S.session={role,name:found.display_name||found.username,username:found.username,userId:found.id};
-      S.tab = role==="manager" ? "dash" : "today"; render();
+      S.tab = role==="manager" ? "dash" : "today"; persist(); render();
     }
   };
 }
 
 /* ---------------- shared pieces ---------------- */
 function topBar(title,sub){
+  const role=S.session?S.session.role:"guest";
   return `<div class="top">
     <div class="who"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>
     <div class="toprow">
+      <button class="iconbtn" id="btn-notes" aria-label="notifications">🔔${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
       <button class="iconbtn" id="btn-theme" aria-label="theme">${S.theme==="light"?"🌙":"☀️"}</button>
       <button class="iconbtn" id="btn-lang" aria-label="language">🌐</button>
       <button class="iconbtn" id="btn-out" aria-label="logout">⏻</button>
@@ -549,7 +757,7 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   if(manager){
     side=`<button class="btn sm ghost" data-edit="${a.id}">✎</button><span class="seats">${taken}/${a.capacity}</span>`;
   } else if(staff){
-    side=`<span class="pill">${bookingsFor(a.id).length} ${t("guests")}</span>`;
+    side=`<button class="btn sm ghost" data-att="${a.id}">✓</button><span class="pill">${bookingsFor(a.id).length} ${t("guests")}</span>`;
   } else if(showBook){
     side = mine
       ? `<span class="chip ${mine.status==="booked"?"ok":""}">${mine.status==="booked"?t("booked"):t("onWaitlist")}</span>`
@@ -573,6 +781,10 @@ function dayTabs(){
   return `<div class="daytabs">${t("daysShort").map((d,i)=>
     `<button data-day="${i}" class="${S.day===i?"on":""}">${d}</button>`).join("")}</div>`;
 }
+function subTabs(group,items){
+  return `<div class="pills">${items.map(([id,lb])=>
+    `<button data-sub="${group}:${id}" class="${S.sub[group]===id?"on":""}">${lb}</button>`).join("")}</div>`;
+}
 function listByCat(acts,opts){
   if(!acts.length) return `<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`;
   return CAT_ORDER.filter(c=>acts.some(a=>a.category===c)).map(c=>`
@@ -580,28 +792,38 @@ function listByCat(acts,opts){
       ${acts.filter(a=>a.category===c).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a,opts)).join("")}
     </div>`).join("");
 }
-/* weekly program — pure information timeline: photo, name, time, location */
-function weeklyView(title){
+function weeklyTimeline(){
   const acts=S.activities.filter(a=>a.day===S.day).sort((x,y)=>x.time.localeCompare(y.time));
-  return `<div class="screen fadein">
-    ${topBar(title,t("days")[S.day])}
-    ${dayTabs()}
-    ${acts.length?`<div class="wk">${acts.map(a=>`
-      <div class="wk-item">
-        <div class="wk-time">${esc(a.time)}</div>
-        <div class="wk-rail"><div class="wk-dot"></div><div class="wk-line"></div></div>
-        <div class="wk-info">
-          <img src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
-          <div style="min-width:0">
-            <h4>${esc(a.name)}</h4>
-            <p>📍 ${esc(a.location)}</p>
-          </div>
+  return acts.length?`<div class="wk">${acts.map(a=>`
+    <div class="wk-item">
+      <div class="wk-time">${esc(a.time)}</div>
+      <div class="wk-rail"><div class="wk-dot"></div><div class="wk-line"></div></div>
+      <div class="wk-info">
+        <img src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
+        <div style="min-width:0">
+          <h4>${esc(a.name)}</h4>
+          <p>📍 ${esc(a.location)}</p>
         </div>
-      </div>`).join("")}</div>`
-    :`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`}
+      </div>
+    </div>`).join("")}</div>`
+  :`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`;
+}
+function weeklyView(title){
+  return `<div class="screen fadein">${topBar(title,t("days")[S.day])}${dayTabs()}${weeklyTimeline()}</div>`;
+}
+function threadView(room,meSide){
+  const msgs=S.messages.filter(m=>m.room===room);
+  return `<div class="thread">
+    ${msgs.length?msgs.map(m=>{
+      const mine = m.sender===meSide;
+      return `<div class="bub ${mine?"me":"them"}">${esc(m.text)}<span class="tm">${mine?"":esc(m.sender_name)+" · "}${fmtTime(m.created_at)}</span></div>`;
+    }).join(""):`<div class="empty"><div class="big">💬</div>${t("noMessages")}</div>`}
+  </div>
+  <div class="chatbar">
+    <input id="chat-in" placeholder="${t("typeMessage")}" autocomplete="off">
+    <button id="chat-send" aria-label="${t("send")}">➤</button>
   </div>`;
 }
-
 /* ---------------- guest ---------------- */
 function guestView(){
   const g=S.session;
@@ -609,9 +831,15 @@ function guestView(){
   if(S.tab==="home"){
     const todays=S.activities.filter(a=>a.day===todayIdx);
     const hl=todays.find(a=>a.highlight)||todays[0];
+    const wm=(S.settings.welcomeMsg||"").trim();
     return `<div class="screen fadein">
       ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
+      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
       ${heroCard(hl)}
+      <div class="quickrow">
+        <button id="btn-req-song"><span>🎵</span>${t("songRequest")}</button>
+        <button id="btn-req-bday"><span>🎂</span>${t("birthdayRequest")}</button>
+      </div>
       <div class="sec"><h3>${t("todayProgram")}</h3>
         ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`}
       </div>
@@ -621,9 +849,15 @@ function guestView(){
   }
   if(S.tab==="program") return weeklyView(t("week"));
   if(S.tab==="tickets") return guestTicketsView();
-  /* my stay */
-  const mine=S.bookings.filter(b=>b.room===g.room&&b.guest_name===g.name);
+  if(S.tab==="chat"){
+    return `<div class="screen fadein">
+      ${topBar(t("chat"),accountName(g.room))}
+      ${threadView(g.room,"guest")}
+    </div>`;
+  }
+  const mine=S.bookings.filter(b=>b.room===g.room);
   const orders=myOrders();
+  const reqs=myRequestsList();
   const favActs=S.activities.filter(a=>S.favorites.includes(a.id));
   return `<div class="screen fadein">
     ${topBar(t("myStay"),g.name)}
@@ -653,6 +887,14 @@ function guestView(){
           </div></div>`;
       }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`}
     </div>
+    ${reqs.length?`<div class="sec"><h3>${t("myRequests")} <span class="count">${reqs.length}</span></h3>
+      <div class="card">${reqs.map(r=>`<div class="booking-line">
+        <span>${r.type==="song"?"🎵":"🎂"} ${esc(r.detail)}${r.date?` · ${esc(r.date)}`:""}</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <span class="chip ${r.status==="done"?"ok":"res"}">${r.status==="done"?t("done"):t("statusNew")}</span>
+          ${r.status==="done"?"":`<button class="btn sm warn" data-delreq="${r.id}">✕</button>`}
+        </span></div>`).join("")}</div>
+    </div>`:""}
     <div class="sec"><h3>${t("favorites")} <span class="count">${favActs.length}</span></h3>
       ${favActs.length?favActs.map(a=>activityCard(a)).join(""):`<div class="empty"><div class="big">🤍</div>${t("noFavs")}</div>`}
     </div>
@@ -716,122 +958,231 @@ function staffView(){
     </div>`;
   }
   if(S.tab==="week") return weeklyView(t("week"));
+  if(S.tab==="tasks"){
+    const me=S.session.username;
+    const mine=S.tasks.filter(x=>!x.assigned_to || x.assigned_to===me);
+    return `<div class="screen fadein">
+      ${topBar(t("myTasks"),S.session.name)}
+      ${mine.length?`<div class="card">${mine.map(x=>taskLine(x,false)).join("")}</div>`:`<div class="empty"><div class="big">🌞</div>${t("noTasks")}</div>`}
+    </div>`;
+  }
+  if(S.tab==="chat") return teamChatView();
   return bookingsView(t("guestsBooked"));
 }
+function taskLine(x,managerMode){
+  const u=S.users.find(u=>u.username===x.assigned_to);
+  const assignee = x.assigned_to ? ((u&&u.display_name)||x.assigned_to) : t("allTeam");
+  return `<div class="booking-line">
+    <span style="min-width:0"><b>${esc(x.title)}</b>${x.desc?`<br><span class="mini">${esc(x.desc)}</span>`:""}${x.due?`<br><span class="mini">📅 ${esc(x.due)}</span>`:""}${managerMode?`<br><span class="mini">👤 ${esc(assignee)}</span>`:""}</span>
+    <span style="display:flex;gap:6px;align-items:center;flex:none">
+      <button class="chip ${x.status==="done"?"ok":"res"}" data-taskdone="${x.id}">${x.status==="done"?t("done"):t("statusNew")}</button>
+      ${managerMode?`<button class="btn sm warn" data-taskdel="${x.id}">✕</button>`:""}
+    </span></div>`;
+}
+function teamChatView(){
+  if(S.chatRoom){
+    return `<div class="screen fadein">
+      <div class="top">
+        <div class="who" style="display:flex;align-items:center;gap:10px">
+          <button class="iconbtn" id="btn-chatback">←</button>
+          <div><h2 style="font-size:22px">${esc(accountName(S.chatRoom))}</h2><p>${t("room")} ${esc(S.chatRoom)}</p></div>
+        </div>
+      </div>
+      ${threadView(S.chatRoom,"team")}
+    </div>`;
+  }
+  const rooms={};
+  S.messages.forEach(m=>{ (rooms[m.room]=rooms[m.room]||[]).push(m); });
+  const list=Object.entries(rooms).map(([room,ms])=>({room,last:ms[ms.length-1],
+    unread:ms.filter(m=>m.sender==="guest"&&!m.read_by_team).length}))
+    .sort((a,b)=>new Date(b.last.created_at)-new Date(a.last.created_at));
+  return `<div class="screen fadein">
+    ${topBar(t("chat"),S.session.name)}
+    <div class="chatlist">
+      ${list.length?list.map(c=>`<div class="card" data-chatroom="${esc(c.room)}">
+        <div style="min-width:0">
+          <div class="nm">${esc(accountName(c.room))} <span class="mini">· ${t("room")} ${esc(c.room)}</span></div>
+          <div class="lastm">${esc(c.last.text)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
+          <span class="mini">${fmtTime(c.last.created_at)}</span>
+          ${c.unread?`<span class="badge">${c.unread}</span>`:""}
+        </div>
+      </div>`).join(""):`<div class="empty"><div class="big">💬</div>${t("noMessages")}</div>`}
+    </div>
+  </div>`;
+}
 function bookingsView(title){
-  const acts=S.activities.filter(a=>a.day===S.day);
   return `<div class="screen fadein">
     ${topBar(title,t("days")[S.day])}
-    ${dayTabs()}
-    ${acts.length?acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>{
-      const bks=bookingsFor(a.id);
-      return `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:${bks.length?8:0}px;gap:8px">
-          <h4 style="font-size:17px;min-width:0">${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></h4>
-          <span class="pill">${seatsTaken(a.id)}/${a.capacity}</span></div>
-        ${bks.map(b=>`<div class="booking-line">
-          <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}${b.nationality?` · ${esc(b.nationality)}`:""}</span>
-          <span class="pill">${b.adults}A${b.children?(" +"+b.children+"C"):""}${b.status==="waitlist"?" · ⏳":""}</span></div>`).join("")}
-      </div>`;}).join(""):`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`}
+    ${bookingsInner()}
   </div>`;
 }
-
+function bookingsInner(){
+  const acts=S.activities.filter(a=>a.day===S.day);
+  return dayTabs() + (acts.length?acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>{
+    const bks=bookingsFor(a.id);
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:${bks.length?8:0}px;gap:8px">
+        <h4 style="font-size:17px;min-width:0">${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></h4>
+        <span class="pill">${seatsTaken(a.id)}/${a.capacity}</span></div>
+      ${bks.map(b=>`<div class="booking-line">
+        <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}${b.nationality?` · ${esc(b.nationality)}`:""}</span>
+        <span class="pill">${b.adults}A${b.children?(" +"+b.children+"C"):""}${b.status==="waitlist"?" · ⏳":""}</span></div>`).join("")}
+    </div>`;}).join(""):`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`);
+}
 /* ---------------- manager (full access — manager role only) ---------------- */
 function managerView(){
-  if(S.tab==="dash"){
-    const totalB=S.bookings.length;
-    const wait=S.bookings.filter(b=>b.status==="waitlist").length;
-    const withCap=S.activities.filter(a=>a.capacity>0);
-    const occ=withCap.length?Math.round(withCap.reduce((n,a)=>n+Math.min(1,seatsTaken(a.id)/a.capacity),0)/withCap.length*100):0;
-    const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
-    const tSold=S.orders.reduce((n,o)=>n+(+o.qty||0),0);
+  if(S.tab==="dash") return dashView();
+  if(S.tab==="program"){
+    const inner = S.sub.program==="tickets" ? managerTicketsInner() : managerActsInner();
     return `<div class="screen fadein">
-      ${topBar(t("dashboard"),S.session.name)}
-      ${!REMOTE?`<div class="setup">⚙️ ${t("demoNote")}</div>`:""}
-      <div class="stat-grid">
-        <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
-        <div class="stat"><b>${S.activities.length}</b><span>${t("activities")}</span></div>
-        <div class="stat"><b>${occ}%</b><span>${t("occupancy")}</span></div>
-        <div class="stat"><b>${tSold}</b><span>${t("tickets")}</span></div>
-      </div>
-      <div class="sec"><h3>★ ${t("activities")}</h3>
-        ${top.length?top.map(x=>`<div class="card booking-line" style="padding:12px 14px">
-          <span><b>${esc(x.a.name)}</b> · ${t("daysShort")[x.a.day]} ${x.a.time}</span>
-          <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">📊</div>${t("none")}</div>`}
-      </div>
+      ${topBar(t("manage"),S.session.name)}
+      ${subTabs("program",[["acts",t("activities")],["tickets",t("tickets")]])}
+      ${inner}
     </div>`;
   }
-  if(S.tab==="manage"){
-    const acts=S.activities.filter(a=>a.day===S.day);
+  if(S.tab==="guests"){
+    const sub=S.sub.guests;
+    let inner="";
+    if(sub==="bookings") inner=bookingsInner();
+    else if(sub==="chat") return teamChatView();
+    else if(sub==="requests") inner=requestsInner();
+    else inner=roomsInner();
     return `<div class="screen fadein">
-      ${topBar(t("manage"),t("days")[S.day])}
-      ${dayTabs()}
-      <button class="btn" id="btn-add" style="margin:0 0 14px">＋ ${t("addActivity")}</button>
-      ${listByCat(acts,{manager:true,showBook:false,showFav:false})}
+      ${topBar(t("guestsTab"),S.session.name)}
+      ${subTabs("guests",[["bookings",t("bookings")],["chat",t("chat")],["requests",t("requests")],["rooms",t("rooms")]])}
+      ${inner}
     </div>`;
   }
-  if(S.tab==="tickets") return managerTicketsView();
-  if(S.tab==="users") return usersView();
-  if(S.tab==="app") return appSettingsView();
-  return bookingsView(t("bookings"));
+  if(S.tab==="team"){
+    const sub=S.sub.team;
+    const inner = sub==="tasks" ? tasksInner() : sub==="attendance" ? attendanceInner() : accountsInner();
+    return `<div class="screen fadein">
+      ${topBar(t("teamTab"),S.session.name)}
+      ${subTabs("team",[["accounts",t("teamAccounts")],["tasks",t("tasks")],["attendance",t("attendance")]])}
+      ${inner}
+    </div>`;
+  }
+  return appSettingsView();
 }
-function managerTicketsView(){
-  return `<div class="screen fadein">
-    ${topBar(t("tickets"),S.session.name)}
-    <button class="btn" id="btn-addticket" style="margin:0 0 14px">＋ ${t("addTicket")}</button>
-    ${S.tickets.length?S.tickets.map(tk=>{
-      const os=ordersFor(tk.id), sold=ticketsSold(tk.id);
-      return `<div class="card">
-        <div class="act" style="margin-bottom:${os.length?10:0}px">
-          <img class="thumb" src="${esc(tk.image||IMG.show)}" alt="">
-          <div class="mid"><span class="catbadge">${t("days")[tk.day]} · ${esc(tk.time)}</span>
-            <h4>${esc(tk.name)}</h4>
-            <div class="meta"><span>${esc(tk.price||"")}</span><span>🎫 ${sold}${tk.capacity>0?"/"+tk.capacity:""}</span></div></div>
-          <div class="side"><button class="btn sm ghost" data-tedit="${tk.id}">✎</button></div>
-        </div>
-        ${os.map(o=>`<div class="booking-line">
-          <span><b>${t("room")} ${esc(o.room)}</b> · ${esc(o.guest_name)} · ×${o.qty}</span>
-          <span style="display:flex;gap:6px;align-items:center">
-            <button class="chip ${o.status==="paid"?"ok":"res"}" data-tpaid="${o.id}">${o.status==="paid"?t("paid"):t("reserved")}</button>
-            <button class="btn sm warn" data-tdel="${o.id}">✕</button>
-          </span></div>`).join("")}
-      </div>`;
-    }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`}
-  </div>`;
-}
-function usersView(){
+function dashView(){
+  const totalB=S.bookings.length;
+  const wait=S.bookings.filter(b=>b.status==="waitlist").length;
+  const withCap=S.activities.filter(a=>a.capacity>0);
+  const occ=withCap.length?Math.round(withCap.reduce((n,a)=>n+Math.min(1,seatsTaken(a.id)/a.capacity),0)/withCap.length*100):0;
+  const tSold=S.orders.reduce((n,o)=>n+(+o.qty||0),0);
   const rooms=new Set(S.bookings.map(b=>b.room)).size;
   const people=S.bookings.filter(b=>b.status==="booked").reduce((n,b)=>n+(+b.adults||0)+(+b.children||0),0);
   const natMap={};
   S.bookings.forEach(b=>{ if(b.nationality){ (natMap[b.nationality]=natMap[b.nationality]||new Set()).add(b.room); } });
   S.orders.forEach(o=>{ if(o.nationality){ (natMap[o.nationality]=natMap[o.nationality]||new Set()).add(o.room); } });
   const nats=Object.entries(natMap).map(([n,s])=>[n,s.size]).sort((x,y)=>y[1]-x[1]);
-  const managerCount=S.users.filter(u=>u.role==="manager").length;
+  const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   return `<div class="screen fadein">
-    ${topBar(t("usersTab"),S.session.name)}
-    <div class="sec"><h3>${t("guestStats")}</h3>
-      <div class="stat-grid" style="margin-bottom:0">
-        <div class="stat"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div>
-        <div class="stat"><b>${people}</b><span>${t("totalPeople")}</span></div>
-      </div>
+    ${topBar(t("dashboard"),S.session.name)}
+    ${!REMOTE?`<div class="setup">⚙️ ${t("demoNote")}</div>`:""}
+    <div class="stat-grid">
+      <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
+      <div class="stat"><b>${occ}%</b><span>${t("occupancy")}</span></div>
+      <div class="stat"><b>${tSold}</b><span>${t("tickets")}</span></div>
+      <div class="stat"><b>${wait}</b><span>${t("waitlisted")}</span></div>
+      <div class="stat"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div>
+      <div class="stat"><b>${people}</b><span>${t("totalPeople")}</span></div>
     </div>
     ${nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
     </div></div>`:""}
-    <div class="sec"><h3>${t("teamAccounts")} <span class="count">${S.users.length}</span></h3>
-      <button class="btn" id="btn-adduser" style="margin:0 0 12px">＋ ${t("addUser")}</button>
-      <div class="card">
-        ${S.users.map(u=>{
-          const lastManager=u.role==="manager"&&managerCount<=1;
-          return `<div class="booking-line">
-          <span><b>${esc(u.display_name||u.username)}</b> · ${esc(u.username)}</span>
-          <span style="display:flex;gap:8px;align-items:center">
-            <span class="pill">${u.role==="manager"?t("manager"):t("staff")}</span>
-            ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">✕</button>`}
-          </span></div>`;}).join("")}
-      </div>
+    <div class="sec"><h3>★ ${t("activities")}</h3>
+      ${top.length?top.map(x=>`<div class="card booking-line" style="padding:12px 14px">
+        <span><b>${esc(x.a.name)}</b> · ${t("daysShort")[x.a.day]} ${x.a.time}</span>
+        <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">📊</div>${t("none")}</div>`}
     </div>
   </div>`;
+}
+function managerActsInner(){
+  const acts=S.activities.filter(a=>a.day===S.day);
+  return dayTabs()
+    + `<button class="btn" id="btn-add" style="margin:0 0 14px">＋ ${t("addActivity")}</button>`
+    + listByCat(acts,{manager:true,showBook:false,showFav:false});
+}
+function managerTicketsInner(){
+  return `<button class="btn" id="btn-addticket" style="margin:0 0 14px">＋ ${t("addTicket")}</button>`
+  + (S.tickets.length?S.tickets.map(tk=>{
+    const os=ordersFor(tk.id), sold=ticketsSold(tk.id);
+    return `<div class="card">
+      <div class="act" style="margin-bottom:${os.length?10:0}px">
+        <img class="thumb" src="${esc(tk.image||IMG.show)}" alt="">
+        <div class="mid"><span class="catbadge">${t("days")[tk.day]} · ${esc(tk.time)}</span>
+          <h4>${esc(tk.name)}</h4>
+          <div class="meta"><span>${esc(tk.price||"")}</span><span>🎫 ${sold}${tk.capacity>0?"/"+tk.capacity:""}</span></div></div>
+        <div class="side"><button class="btn sm ghost" data-tedit="${tk.id}">✎</button></div>
+      </div>
+      ${os.map(o=>`<div class="booking-line">
+        <span><b>${t("room")} ${esc(o.room)}</b> · ${esc(o.guest_name)} · ×${o.qty}</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <button class="chip ${o.status==="paid"?"ok":"res"}" data-tpaid="${o.id}">${o.status==="paid"?t("paid"):t("reserved")}</button>
+          <button class="btn sm warn" data-tdel="${o.id}">✕</button>
+        </span></div>`).join("")}
+    </div>`;
+  }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`);
+}
+function requestsInner(){
+  return S.requests.length?`<div class="card">${S.requests.map(r=>`<div class="booking-line">
+    <span style="min-width:0">${r.type==="song"?"🎵":"🎂"} <b>${esc(r.detail)}</b>${r.date?` · ${esc(r.date)}`:""}
+      <br><span class="mini">${t("room")} ${esc(r.room)} · ${esc(r.guest_name)}${r.note?` — ${esc(r.note)}`:""}</span></span>
+    <span style="display:flex;gap:6px;align-items:center;flex:none">
+      <button class="chip ${r.status==="done"?"ok":"res"}" data-reqdone="${r.id}">${r.status==="done"?t("done"):t("statusNew")}</button>
+      <button class="btn sm warn" data-reqdel="${r.id}">✕</button>
+    </span></div>`).join("")}</div>`
+  :`<div class="empty"><div class="big">🎁</div>${t("none")}</div>`;
+}
+function roomsInner(){
+  return `<label>${t("addRooms")}</label>
+    <textarea id="rooms-in" rows="3" placeholder="${t("roomsHint")}"></textarea>
+    <button class="btn" id="btn-addrooms" style="margin:10px 0 16px">＋ ${t("addRooms")}</button>
+    <input id="rooms-filter" placeholder="🔍" style="margin-bottom:10px">
+    <div class="card roomgrid">
+      ${S.rooms.length?S.rooms.map(r=>{
+        const acc=S.accounts.find(a=>a.room===r.room);
+        return `<div class="booking-line roomline" data-room="${esc(r.room)}">
+          <span><b>${esc(r.room)}</b>${acc?` · ${esc(acc.name)}`:""}</span>
+          <span style="display:flex;gap:6px;align-items:center">
+            <button class="chip ${r.active?"ok":"full"}" data-roomact="${r.id}">${t("activeLbl")}</button>
+            <button class="btn sm warn" data-roomdel="${r.id}">✕</button>
+          </span></div>`;
+      }).join(""):`<div class="empty"><div class="big">🚪</div>${t("none")}</div>`}
+    </div>`;
+}
+function accountsInner(){
+  const managerCount=S.users.filter(u=>u.role==="manager").length;
+  return `<button class="btn" id="btn-adduser" style="margin:0 0 12px">＋ ${t("addUser")}</button>
+    <div class="card">
+      ${S.users.map(u=>{
+        const lastManager=u.role==="manager"&&managerCount<=1;
+        return `<div class="booking-line">
+        <span><b>${esc(u.display_name||u.username)}</b> · ${esc(u.username)}</span>
+        <span style="display:flex;gap:8px;align-items:center">
+          <span class="pill">${u.role==="manager"?t("manager"):t("staff")}</span>
+          ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">✕</button>`}
+        </span></div>`;}).join("")}
+    </div>`;
+}
+function tasksInner(){
+  return `<button class="btn" id="btn-addtask" style="margin:0 0 12px">＋ ${t("addTask")}</button>`
+    + (S.tasks.length?`<div class="card">${S.tasks.map(x=>taskLine(x,true)).join("")}</div>`
+      :`<div class="empty"><div class="big">✅</div>${t("noTasks")}</div>`);
+}
+function attendanceInner(){
+  const todayIdx=(new Date().getDay()+6)%7, date=todayISO();
+  const acts=S.activities.filter(a=>a.day===todayIdx).sort((x,y)=>x.time.localeCompare(y.time));
+  return `<p class="mini" style="margin-bottom:10px">${t("today")} · ${t("days")[todayIdx]}</p>`
+    + (acts.length?`<div class="card">${acts.map(a=>{
+      const bks=bookingsFor(a.id).filter(b=>b.status==="booked");
+      const pres=bks.filter(b=>S.attendance.some(x=>x.booking_id===b.id&&x.date===date)).length;
+      return `<div class="booking-line"><span>${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></span>
+        <span class="pill">${pres}/${bks.length} ${t("present")}</span></div>`;
+    }).join("")}</div>`:`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`);
 }
 function appSettingsView(){
   const st=S.settings;
@@ -842,12 +1193,20 @@ function appSettingsView(){
     <div class="card" style="padding:16px">
       <label>${t("appName")}</label><input id="s-name" value="${esc(st.name)}">
       <label>${t("appSubtitle")}</label><input id="s-sub" value="${esc(st.subtitle)}" placeholder="${t("appSub")}">
+      <label>${t("welcomeMsgLbl")}</label><textarea id="s-welcome" rows="2">${esc(st.welcomeMsg)}</textarea>
       <label>${t("colorsHead")}</label>
       <div class="row2">
         <div><label style="margin-top:0">${t("primaryC")}</label><input id="s-primary" type="color" value="${esc(st.primary)}"></div>
         <div><label style="margin-top:0">${t("accentC")}</label><input id="s-accent" type="color" value="${esc(st.accent)}"></div>
       </div>
-      <label>${t("bgC")}</label><input id="s-bg" type="color" value="${esc(st.bg)}">
+      <div class="row2">
+        <div><label>${t("bgC")}</label><input id="s-bg" type="color" value="${esc(st.bg)}"></div>
+        <div><label>${t("textC")}</label><input id="s-text" type="color" value="${esc(st.textColor)}"></div>
+      </div>
+      <div class="row2">
+        <div><label>${t("navC")}</label><input id="s-navbg" type="color" value="${esc(st.navBg)}"></div>
+        <div><label>${t("navActiveC")}</label><input id="s-navon" type="color" value="${esc(st.navActive)}"></div>
+      </div>
       <label>${t("styleHead")}</label>
       <select id="s-font">${fontOpts.map(([v,l])=>`<option value="${v}" ${st.fontStyle===v?"selected":""}>${l}</option>`).join("")}</select>
       <label>${t("buttonHead")}</label>
@@ -856,6 +1215,7 @@ function appSettingsView(){
       <input id="s-mhome" value="${esc(st.menuHome)}" placeholder="${t("home")}" style="margin-bottom:8px">
       <input id="s-mprog" value="${esc(st.menuProgram)}" placeholder="${t("program")}" style="margin-bottom:8px">
       <input id="s-mtick" value="${esc(st.menuTickets)}" placeholder="${t("tickets")}" style="margin-bottom:8px">
+      <input id="s-mchat" value="${esc(st.menuChat)}" placeholder="${t("chat")}" style="margin-bottom:8px">
       <input id="s-mstay" value="${esc(st.menuStay)}" placeholder="${t("myStay")}">
       <label>${t("linksHead")}</label>
       <input id="s-trip" value="${esc(st.tripadvisor)}" placeholder="Tripadvisor URL" style="margin-bottom:8px">
@@ -873,21 +1233,39 @@ function appSettingsView(){
 
 /* ---------------- nav ---------------- */
 function navView(role){
-  const items = role==="guest"
-    ? [["home","🏛️",menuLabel("menuHome",t("home"))],["program","📅",menuLabel("menuProgram",t("program"))],["tickets","🎫",menuLabel("menuTickets",t("tickets"))],["stay","🎟️",menuLabel("menuStay",t("myStay"))]]
-    : role==="staff"
-    ? [["today","📋",t("today")],["week","📅",t("program")],["bookings","🎟️",t("bookings")]]
-    : [["dash","📊",t("dashboard")],["manage","🗓️",t("manage")],["bookings","🎟️",t("bookings")],["tickets","🎫",t("tickets")],["users","👥",t("usersTab")],["app","🎨",t("appTab")]];
-  return `<nav class="nav">${items.map(([id,ic,lb])=>
-    `<button data-tab="${id}" class="${S.tab===id?"on":""}"><span class="ic">${ic}</span><span class="lb">${lb}</span></button>`).join("")}</nav>`;
+  let items;
+  if(role==="guest"){
+    const un=unreadFor("guest");
+    items=[["home","🏛️",menuLabel("menuHome",t("home")),0],
+      ["program","📅",menuLabel("menuProgram",t("program")),0],
+      ["tickets","🎫",menuLabel("menuTickets",t("tickets")),0],
+      ["chat","💬",menuLabel("menuChat",t("chat")),un],
+      ["stay","🎟️",menuLabel("menuStay",t("myStay")),0]];
+  } else if(role==="staff"){
+    const un=unreadFor("staff");
+    items=[["today","📋",t("today"),0],["week","📅",t("program"),0],["bookings","🎟️",t("bookings"),0],
+      ["tasks","✅",t("tasks"),S.tasks.filter(x=>x.status!=="done"&&(!x.assigned_to||x.assigned_to===S.session.username)).length],
+      ["chat","💬",t("chat"),un]];
+  } else {
+    const un=unreadFor("manager");
+    const newReq=S.requests.filter(r=>r.status==="new").length;
+    items=[["dash","📊",t("dashboard"),0],["program","🗓️",t("manage"),0],
+      ["guests","💬",t("guestsTab"),un+newReq],["team","👥",t("teamTab"),0],["app","🎨",t("appTab"),0]];
+  }
+  return `<nav class="nav">${items.map(([id,ic,lb,dot])=>
+    `<button data-tab="${id}" class="${S.tab===id?"on":""}"><span class="ic">${ic}</span><span class="lb">${lb}</span>${dot?'<span class="ndot"></span>':''}</button>`).join("")}</nav>`;
 }
-
 /* ---------------- modals ---------------- */
-function openBookModal(a){
+function baseModal(html){
   const wrap=document.createElement("div"); wrap.className="modal-bg";
+  wrap.innerHTML=`<div class="modal"><div class="grab"></div>${html}</div>`;
+  document.body.appendChild(wrap);
+  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+  return wrap;
+}
+function openBookModal(a){
   const taken=seatsTaken(a.id), left=Math.max(0,a.capacity-taken), full=left<=0;
-  wrap.innerHTML=`<div class="modal">
-    <div class="grab"></div>
+  const wrap=baseModal(`
     <h3>${esc(a.name)}</h3>
     <p class="mini">🕐 ${esc(a.time)} · 📍 ${esc(a.location)} · ${full?t("full"):left+" "+t("seatsLeft")}</p>
     <p style="margin-top:8px">${esc(a.desc)}</p>
@@ -896,10 +1274,7 @@ function openBookModal(a){
       <div><label>${t("children")}</label><input id="m-ch" type="number" min="0" value="0"></div>
     </div>
     <button class="btn" id="m-go">${full?t("waitlist"):t("confirm")}</button>
-    <button class="btn ghost" id="m-x">${t("close")}</button>
-  </div>`;
-  document.body.appendChild(wrap);
-  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+    <button class="btn ghost" id="m-x">${t("close")}</button>`);
   wrap.querySelector("#m-x").onclick=()=>wrap.remove();
   wrap.querySelector("#m-go").onclick=async ()=>{
     const g=S.session;
@@ -910,11 +1285,9 @@ function openBookModal(a){
   };
 }
 function openTicketBuyModal(tk){
-  const wrap=document.createElement("div"); wrap.className="modal-bg";
   const sold=ticketsSold(tk.id), left=tk.capacity>0?Math.max(0,tk.capacity-sold):null;
   const max=left!==null?Math.max(1,Math.min(10,left)):10;
-  wrap.innerHTML=`<div class="modal">
-    <div class="grab"></div>
+  const wrap=baseModal(`
     <h3>${esc(tk.name)}</h3>
     <p class="mini">${t("days")[tk.day]} · 🕐 ${esc(tk.time)} · 📍 ${esc(tk.location)}</p>
     <p style="margin-top:8px">${esc(tk.desc)}</p>
@@ -924,10 +1297,7 @@ function openTicketBuyModal(tk){
       <div style="text-align:end;font-family:var(--font-display);font-size:24px;color:var(--cacao);padding-bottom:10px">${esc(tk.price||"")}</div>
     </div>
     <button class="btn" id="t-go">🎫 ${t("buyTicket")}</button>
-    <button class="btn ghost" id="t-x">${t("close")}</button>
-  </div>`;
-  document.body.appendChild(wrap);
-  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+    <button class="btn ghost" id="t-x">${t("close")}</button>`);
   wrap.querySelector("#t-x").onclick=()=>wrap.remove();
   wrap.querySelector("#t-go").onclick=async ()=>{
     const g=S.session;
@@ -936,11 +1306,121 @@ function openTicketBuyModal(tk){
     wrap.remove(); toast(t("ticketOk")); render();
   };
 }
+function openRequestModal(type){
+  const isSong=type==="song";
+  const wrap=baseModal(`
+    <h3>${isSong?"🎵 "+t("songRequest"):"🎂 "+t("birthdayRequest")}</h3>
+    <label>${isSong?t("songName"):t("forWhom")}</label><input id="r-detail">
+    ${isSong?"":`<label>${t("birthdayDate")}</label><input id="r-date" type="date">`}
+    <label>${t("reqNote")}</label><textarea id="r-note" rows="2"></textarea>
+    <button class="btn" id="r-go">${t("send")}</button>
+    <button class="btn ghost" id="r-x">${t("close")}</button>`);
+  wrap.querySelector("#r-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#r-go").onclick=async ()=>{
+    const detail=wrap.querySelector("#r-detail").value.trim();
+    if(!detail) return;
+    const g=S.session;
+    await DB.addRequest({room:g.room,guest_name:g.name,type,detail,
+      date:isSong?"":(wrap.querySelector("#r-date").value||""),
+      note:wrap.querySelector("#r-note").value.trim(),status:"new"});
+    wrap.remove(); toast(t("saved")); render();
+  };
+}
+function openTaskModal(){
+  const staffOpts=S.users.map(u=>`<option value="${esc(u.username)}">${esc(u.display_name||u.username)}</option>`).join("");
+  const wrap=baseModal(`
+    <h3>${t("addTask")}</h3>
+    <label>${t("actName")}</label><input id="tk-title">
+    <label>${t("desc")}</label><textarea id="tk-desc" rows="2"></textarea>
+    <label>${t("taskFor")}</label>
+    <select id="tk-for"><option value="">${t("allTeam")}</option>${staffOpts}</select>
+    <label>📅 ${t("day")}</label><input id="tk-due" type="date">
+    <button class="btn" id="tk-go">${t("save")}</button>
+    <button class="btn ghost" id="tk-x">${t("close")}</button>`);
+  wrap.querySelector("#tk-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#tk-go").onclick=async ()=>{
+    const title=wrap.querySelector("#tk-title").value.trim();
+    if(!title) return;
+    await DB.addTask({title,desc:wrap.querySelector("#tk-desc").value.trim(),
+      assigned_to:wrap.querySelector("#tk-for").value,due:wrap.querySelector("#tk-due").value||"",status:"open"});
+    wrap.remove(); toast(t("saved")); render();
+  };
+}
+function openNotesModal(){
+  const role=S.session?S.session.role:"guest";
+  const list=visibleNotes(role);
+  const wrap=baseModal(`
+    <h3>🔔 ${t("notifications")}</h3>
+    ${role==="manager"?`<button class="btn sm" id="n-new" style="margin-bottom:12px">＋ ${t("newAnnouncement")}</button>`:""}
+    ${list.length?list.map(n=>`<div class="card" style="padding:12px 14px">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
+        <b>${esc(n.title)}</b>
+        <span style="display:flex;gap:6px;align-items:center;flex:none">
+          <span class="mini">${fmtTime(n.created_at)}</span>
+          ${role==="manager"?`<button class="btn sm warn" data-notedel="${n.id}">✕</button>`:""}
+        </span>
+      </div>
+      <p style="font-size:14.5px;margin-top:4px">${esc(n.body)}</p>
+      ${role==="manager"?`<p class="mini" style="margin-top:4px">${n.audience==="all"?t("audAll"):n.audience==="guests"?t("audGuests"):t("audTeam")}</p>`:""}
+    </div>`).join(""):`<div class="empty"><div class="big">🔕</div>${t("noNotifs")}</div>`}
+    <button class="btn ghost" id="n-x">${t("close")}</button>`);
+  const maxId=list.reduce((m,n)=>Math.max(m,n.id),S.seenNote);
+  if(maxId>S.seenNote){ S.seenNote=maxId; persist(); }
+  wrap.querySelector("#n-x").onclick=()=>{ wrap.remove(); render(); };
+  const nn=wrap.querySelector("#n-new");
+  if(nn) nn.onclick=()=>{ wrap.remove(); openComposeNoteModal(); };
+  wrap.querySelectorAll("[data-notedel]").forEach(b=>b.onclick=async ()=>{
+    await DB.deleteNote(+b.dataset.notedel); wrap.remove(); openNotesModal();
+  });
+}
+function openComposeNoteModal(){
+  const wrap=baseModal(`
+    <h3>＋ ${t("newAnnouncement")}</h3>
+    <label>${t("actName")}</label><input id="nn-title">
+    <label>${t("desc")}</label><textarea id="nn-body" rows="3"></textarea>
+    <label>${t("audience")}</label>
+    <select id="nn-aud">
+      <option value="all">${t("audAll")}</option>
+      <option value="guests">${t("audGuests")}</option>
+      <option value="team">${t("audTeam")}</option>
+    </select>
+    <button class="btn" id="nn-go">${t("send")}</button>
+    <button class="btn ghost" id="nn-x">${t("close")}</button>`);
+  wrap.querySelector("#nn-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#nn-go").onclick=async ()=>{
+    const title=wrap.querySelector("#nn-title").value.trim();
+    const body=wrap.querySelector("#nn-body").value.trim();
+    if(!title&&!body) return;
+    await DB.addNote({title:title||"📣",body,audience:wrap.querySelector("#nn-aud").value});
+    S.seenNote=S.notes.reduce((m,n)=>Math.max(m,n.id),S.seenNote); persist();
+    wrap.remove(); toast(t("saved")); render();
+  };
+}
+function openAttendanceModal(a){
+  const date=todayISO();
+  const bks=bookingsFor(a.id).filter(b=>b.status==="booked");
+  const wrap=baseModal(`
+    <h3>✓ ${t("attendance")}</h3>
+    <p class="mini">${esc(a.name)} · ${esc(a.time)}</p>
+    ${bks.length?`<div class="card" style="margin-top:12px">${bks.map(b=>{
+      const on=S.attendance.some(x=>x.booking_id===b.id&&x.date===date);
+      return `<div class="booking-line">
+        <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}</span>
+        <button class="chip ${on?"ok":""}" data-attb="${b.id}">${t("present")}</button>
+      </div>`;
+    }).join("")}</div>`:`<div class="empty"><div class="big">👥</div>${t("none")}</div>`}
+    <button class="btn ghost" id="at-x">${t("close")}</button>`);
+  wrap.querySelector("#at-x").onclick=()=>{ wrap.remove(); render(); };
+  wrap.querySelectorAll("[data-attb]").forEach(b=>b.onclick=async ()=>{
+    const id=+b.dataset.attb;
+    const on=S.attendance.some(x=>x.booking_id===id&&x.date===date);
+    await DB.setAttendance(id,date,!on);
+    b.classList.toggle("ok",!on);
+  });
+}
 function openTicketEditModal(tk){
   const isNew=!tk; tk=tk||{day:S.day,name:"",desc:"",location:"",time:"20:00",price:"",capacity:0,image:""};
-  const wrap=document.createElement("div"); wrap.className="modal-bg";
-  wrap.innerHTML=`<div class="modal">
-    <div class="grab"></div>
+  const wrap=baseModal(`
     <h3>${isNew?t("addTicket"):t("editTicket")}</h3>
     <label>${t("actName")}</label><input id="k-name" value="${esc(tk.name)}">
     <label>${t("desc")}</label><textarea id="k-desc" rows="2">${esc(tk.desc)}</textarea>
@@ -956,10 +1436,7 @@ function openTicketEditModal(tk){
     <label>${t("imageUrl")}</label><input id="k-img" value="${esc(tk.image)}" placeholder="https://...">
     <button class="btn" id="k-save">${t("save")}</button>
     ${isNew?"":`<button class="btn warn" id="k-del">${t("deleteActivity")}</button>`}
-    <button class="btn ghost" id="k-x">${t("close")}</button>
-  </div>`;
-  document.body.appendChild(wrap);
-  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+    <button class="btn ghost" id="k-x">${t("close")}</button>`);
   wrap.querySelector("#k-x").onclick=()=>wrap.remove();
   wrap.querySelector("#k-save").onclick=async ()=>{
     const upd={...tk,
@@ -979,9 +1456,7 @@ function openTicketEditModal(tk){
 }
 function openEditModal(a){
   const isNew=!a; a=a||{day:S.day,category:"morning",name:"",desc:"",location:"",time:"10:00",capacity:20,entertainer:"",image:"",highlight:false};
-  const wrap=document.createElement("div"); wrap.className="modal-bg";
-  wrap.innerHTML=`<div class="modal">
-    <div class="grab"></div>
+  const wrap=baseModal(`
     <h3>${isNew?t("addActivity"):t("editActivity")}</h3>
     <label>${t("actName")}</label><input id="e-name" value="${esc(a.name)}">
     <label>${t("desc")}</label><textarea id="e-desc" rows="2">${esc(a.desc)}</textarea>
@@ -1000,10 +1475,7 @@ function openEditModal(a){
       <input id="e-hl" type="checkbox" style="width:auto" ${a.highlight?"checked":""}> ✦ ${t("makeHighlight")}</label>
     <button class="btn" id="e-save">${t("save")}</button>
     ${isNew?"":`<button class="btn warn" id="e-del">${t("deleteActivity")}</button>`}
-    <button class="btn ghost" id="e-x">${t("close")}</button>
-  </div>`;
-  document.body.appendChild(wrap);
-  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+    <button class="btn ghost" id="e-x">${t("close")}</button>`);
   wrap.querySelector("#e-x").onclick=()=>wrap.remove();
   wrap.querySelector("#e-save").onclick=async ()=>{
     const upd={...a,
@@ -1024,9 +1496,7 @@ function openEditModal(a){
   if(del) del.onclick=async ()=>{ await DB.deleteActivity(a.id); wrap.remove(); toast(t("deleted")); render(); };
 }
 function openUserModal(){
-  const wrap=document.createElement("div"); wrap.className="modal-bg";
-  wrap.innerHTML=`<div class="modal">
-    <div class="grab"></div>
+  const wrap=baseModal(`
     <h3>${t("addUser")}</h3>
     <label>${t("user")}</label><input id="u-name" autocapitalize="none">
     <label>${t("pass")}</label><input id="u-pass">
@@ -1035,10 +1505,7 @@ function openUserModal(){
     <select id="u-role"><option value="staff">${t("staff")}</option><option value="manager">${t("manager")}</option></select>
     <button class="btn" id="u-save">${t("save")}</button>
     <div class="err" id="u-err"></div>
-    <button class="btn ghost" id="u-x">${t("close")}</button>
-  </div>`;
-  document.body.appendChild(wrap);
-  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+    <button class="btn ghost" id="u-x">${t("close")}</button>`);
   wrap.querySelector("#u-x").onclick=()=>wrap.remove();
   wrap.querySelector("#u-save").onclick=async ()=>{
     const username=wrap.querySelector("#u-name").value.trim();
@@ -1053,31 +1520,29 @@ function openUserModal(){
   };
 }
 function openLangModal(){
-  const wrap=document.createElement("div"); wrap.className="modal-bg";
-  wrap.innerHTML=`<div class="modal">
-    <div class="grab"></div>
+  const wrap=baseModal(`
     <h3>${t("language")}</h3>
     <div class="langlist">
       ${LANGS.map(([l,label])=>`<button data-mlang="${l}" class="${S.lang===l?"on":""}">${label}</button>`).join("")}
     </div>
-    <button class="btn ghost" id="l-x">${t("close")}</button>
-  </div>`;
-  document.body.appendChild(wrap);
-  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+    <button class="btn ghost" id="l-x">${t("close")}</button>`);
   wrap.querySelector("#l-x").onclick=()=>wrap.remove();
   wrap.querySelectorAll("[data-mlang]").forEach(b=>b.onclick=()=>{ wrap.remove(); setLang(b.dataset.mlang); });
 }
-
 /* ---------------- wiring ---------------- */
 function wireCommon(){
-  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;render();});
+  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;S.chatRoom=null;render();});
   document.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{S.day=+b.dataset.day;render();});
+  document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{
+    const [g,v]=b.dataset.sub.split(":"); S.sub[g]=v; S.chatRoom=null; render();
+  });
   const th=$("#btn-theme"); if(th) th.onclick=()=>setTheme(S.theme==="light"?"dark":"light");
   const lg=$("#btn-lang"); if(lg) lg.onclick=openLangModal;
-  const out=$("#btn-out"); if(out) out.onclick=()=>{S.session=null;loginMode="guest";render();};
+  const nb=$("#btn-notes"); if(nb) nb.onclick=openNotesModal;
+  const out=$("#btn-out"); if(out) out.onclick=()=>{S.session=null;S.chatRoom=null;loginMode="guest";persist();render();};
   document.querySelectorAll("[data-fav]").forEach(b=>b.onclick=e=>{
     e.stopPropagation(); const id=+b.dataset.fav;
-    S.favorites=S.favorites.includes(id)?S.favorites.filter(x=>x!==id):[...S.favorites,id]; render();
+    S.favorites=S.favorites.includes(id)?S.favorites.filter(x=>x!==id):[...S.favorites,id]; persist(); render();
   });
   document.querySelectorAll("[data-book]").forEach(b=>b.onclick=e=>{
     e.stopPropagation(); const a=S.activities.find(x=>x.id===+b.dataset.book); if(a) openBookModal(a);
@@ -1091,8 +1556,14 @@ function wireCommon(){
   document.querySelectorAll("[data-cancelorder]").forEach(b=>b.onclick=async e=>{
     e.stopPropagation(); await DB.deleteOrder(+b.dataset.cancelorder); toast(t("cancelled")); render();
   });
+  document.querySelectorAll("[data-delreq]").forEach(b=>b.onclick=async ()=>{
+    await DB.deleteRequest(+b.dataset.delreq); toast(t("deleted")); render();
+  });
   document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=e=>{
     e.stopPropagation(); const a=S.activities.find(x=>x.id===+b.dataset.edit); openEditModal(a);
+  });
+  document.querySelectorAll("[data-att]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation(); const a=S.activities.find(x=>x.id===+b.dataset.att); if(a) openAttendanceModal(a);
   });
   document.querySelectorAll("[data-tedit]").forEach(b=>b.onclick=e=>{
     e.stopPropagation(); const tk=S.tickets.find(x=>x.id===+b.dataset.tedit); openTicketEditModal(tk);
@@ -1107,17 +1578,59 @@ function wireCommon(){
   document.querySelectorAll("[data-deluser]").forEach(b=>b.onclick=async ()=>{
     await DB.deleteUser(+b.dataset.deluser); toast(t("deleted")); render();
   });
+  document.querySelectorAll("[data-reqdone]").forEach(b=>b.onclick=async ()=>{
+    const r=S.requests.find(x=>x.id===+b.dataset.reqdone); if(!r) return;
+    await DB.setRequestStatus(r.id, r.status==="done"?"new":"done"); render();
+  });
+  document.querySelectorAll("[data-reqdel]").forEach(b=>b.onclick=async ()=>{
+    await DB.deleteRequest(+b.dataset.reqdel); toast(t("deleted")); render();
+  });
+  document.querySelectorAll("[data-taskdone]").forEach(b=>b.onclick=async ()=>{
+    const x=S.tasks.find(y=>y.id===+b.dataset.taskdone); if(!x) return;
+    await DB.setTaskStatus(x.id, x.status==="done"?"open":"done"); render();
+  });
+  document.querySelectorAll("[data-taskdel]").forEach(b=>b.onclick=async ()=>{
+    await DB.deleteTask(+b.dataset.taskdel); toast(t("deleted")); render();
+  });
+  document.querySelectorAll("[data-roomact]").forEach(b=>b.onclick=async ()=>{
+    const r=S.rooms.find(x=>x.id==b.dataset.roomact); if(!r) return;
+    await DB.setRoomActive(r.id,!r.active); render();
+  });
+  document.querySelectorAll("[data-roomdel]").forEach(b=>b.onclick=async ()=>{
+    await DB.deleteRoom(+b.dataset.roomdel||b.dataset.roomdel); toast(t("deleted")); render();
+  });
+  document.querySelectorAll("[data-chatroom]").forEach(el=>el.onclick=()=>{
+    S.chatRoom=el.dataset.chatroom; render();
+  });
+  const cb=$("#btn-chatback"); if(cb) cb.onclick=()=>{S.chatRoom=null;render();};
   const add=$("#btn-add"); if(add) add.onclick=()=>openEditModal(null);
   const addT=$("#btn-addticket"); if(addT) addT.onclick=()=>openTicketEditModal(null);
   const addU=$("#btn-adduser"); if(addU) addU.onclick=openUserModal;
+  const addTk=$("#btn-addtask"); if(addTk) addTk.onclick=openTaskModal;
+  const rs=$("#btn-req-song"); if(rs) rs.onclick=()=>openRequestModal("song");
+  const rb=$("#btn-req-bday"); if(rb) rb.onclick=()=>openRequestModal("birthday");
+  const ar=$("#btn-addrooms"); if(ar) ar.onclick=async ()=>{
+    const raw=$("#rooms-in").value;
+    const list=[...new Set(raw.split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean))];
+    if(!list.length) return;
+    await DB.addRooms(list); toast(t("saved")); render();
+  };
+  const rf=$("#rooms-filter"); if(rf) rf.oninput=()=>{
+    const q=rf.value.trim().toLowerCase();
+    document.querySelectorAll(".roomline").forEach(el=>{
+      el.style.display = !q || el.dataset.room.toLowerCase().includes(q) || el.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+  };
   const sv=$("#btn-savesettings"); if(sv) sv.onclick=async ()=>{
     const st={...S.settings,
       name:$("#s-name").value.trim()||"Entertainment",
       subtitle:$("#s-sub").value.trim(),
+      welcomeMsg:$("#s-welcome").value.trim(),
       primary:$("#s-primary").value, accent:$("#s-accent").value, bg:$("#s-bg").value,
+      textColor:$("#s-text").value, navBg:$("#s-navbg").value, navActive:$("#s-navon").value,
       fontStyle:$("#s-font").value, buttonStyle:$("#s-btn").value,
       menuHome:$("#s-mhome").value.trim(), menuProgram:$("#s-mprog").value.trim(),
-      menuTickets:$("#s-mtick").value.trim(), menuStay:$("#s-mstay").value.trim(),
+      menuTickets:$("#s-mtick").value.trim(), menuChat:$("#s-mchat").value.trim(), menuStay:$("#s-mstay").value.trim(),
       tripadvisor:$("#s-trip").value.trim(), google:$("#s-goog").value.trim(), holidaycheck:$("#s-holi").value.trim(),
       instagram:$("#s-insta").value.trim(), tiktok:$("#s-tiktok").value.trim(),
       facebook:$("#s-fb").value.trim(), youtube:$("#s-yt").value.trim()};
@@ -1128,20 +1641,75 @@ function wireCommon(){
     const a=S.activities.find(x=>x.id===+el.dataset.open);
     if(a && !myBooking(a.id)) openBookModal(a);
   });
+  /* chat send + read marking + scroll */
+  const cs=$("#chat-send");
+  if(cs){
+    const g=S.session;
+    const room = g.role==="guest" ? g.room : S.chatRoom;
+    const meSide = g.role==="guest" ? "guest" : "team";
+    const readSide = g.role==="guest" ? "guest" : "team";
+    if(room){
+      const flag = readSide==="team"?"read_by_team":"read_by_guest";
+      const sender = readSide==="team"?"guest":"team";
+      if(S.messages.some(m=>m.room===room&&m.sender===sender&&!m[flag])){
+        DB.markRead(room,readSide).then(()=>render());
+      }
+      window.scrollTo(0,document.body.scrollHeight);
+      const doSend=async ()=>{
+        const inp=$("#chat-in"); const txt=inp.value.trim(); if(!txt) return;
+        inp.value="";
+        await DB.addMessage({room,sender:meSide,sender_name:g.name,text:txt,
+          read_by_team:meSide==="team",read_by_guest:meSide==="guest"});
+        render();
+      };
+      cs.onclick=doSend;
+      $("#chat-in").onkeydown=e=>{ if(e.key==="Enter") doSend(); };
+    }
+  }
 }
 
 /* ---------------- boot ---------------- */
+function safeToRender(){
+  if(document.querySelector(".modal-bg")) return false;
+  const a=document.activeElement;
+  return !(a && ["INPUT","TEXTAREA","SELECT"].includes(a.tagName));
+}
 (async function(){
-  document.documentElement.setAttribute("data-theme","light");
+  restore();
+  document.documentElement.setAttribute("data-theme",S.theme);
+  document.documentElement.lang=S.lang;
+  document.documentElement.dir=(S.lang==="ar"?"rtl":"ltr");
   try{ await DB.load(); }
   catch(e){
     console.error(e);
     if(REMOTE){ S.loadError=true; applySettings(); render(); return; }
     S.activities=demoActivities(); S.bookings=demoBookings();
     S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
+    S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
+    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[];
+  }
+  /* validate remembered session against fresh data */
+  if(S.session){
+    if(S.session.role==="guest"){
+      const rm=S.rooms.find(x=>String(x.room)===String(S.session.room));
+      const acc=S.accounts.find(a=>String(a.room)===String(S.session.room));
+      if(!rm || !rm.active || !acc) S.session=null;
+      else S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
+        nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure};
+    } else {
+      const u=S.users.find(x=>x.username===S.session.username);
+      if(!u || (S.session.role==="manager" && u.role!=="manager")) S.session=null;
+      else S.session={...S.session,name:u.display_name||u.username,userId:u.id};
+    }
+    if(!S.session){ S.tab="home"; }
+    persist();
   }
   applySettings();
   render();
+  if(REMOTE) setInterval(async ()=>{
+    if(!S.session) return;
+    try{ const changed=await DB.poll(); if(changed && safeToRender()) render(); }catch(e){}
+  }, 45000);
 })();
 </script>
 </body>
