@@ -205,6 +205,10 @@ img{display:block;max-width:100%}
 .setup{background:#FDF6E7;border:1px solid #E8D9B5;color:#7A5C22;border-radius:14px;padding:12px 14px;font-size:13.5px;margin-bottom:16px}
 [data-theme="dark"] .setup{background:#33290F;border-color:#5A4A1E;color:#E3CE96}
 .roomgrid{max-height:340px;overflow-y:auto}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.feature-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:13px;min-height:112px}
+.feature-card .ico{font-size:25px;margin-bottom:6px}.feature-card b{display:block;font-size:15px}.feature-card p{font-size:12.5px;color:var(--muted);margin-top:3px}
+.feature-wide{grid-column:1/-1}.meter{height:8px;background:var(--sand);border-radius:99px;overflow:hidden;margin-top:8px}.meter i{display:block;height:100%;background:var(--bronze);border-radius:99px}
 </style>
 </head>
 <body>
@@ -241,7 +245,7 @@ const FONTS={
 const BTN_R={rounded:["14px","11px"],pill:["999px","999px"],square:["8px","7px"]};
 
 /* ---------------- i18n ---------------- */
-const LANGS=[["en","English"],["de","Deutsch"],["ru","Русский"],["pl","Polski"],["cs","Čeština"],["nl","Nederlands"],["fr","Français"],["ar","العربية"]];
+const LANGS=[["en","English"],["ar","العربية"],["ru","Русский"],["de","Deutsch"],["fr","Français"],["pl","Polski"],["cs","Čeština"],["nl","Nederlands"],["ro","Română"],["tr","Türkçe"]];
 const EXTRA={
 en:{chat:"Chat",typeMessage:"Write a message…",send:"Send",noMessages:"No messages yet — say hello!",requests:"Requests",songRequest:"Song request",birthdayRequest:"Birthday",songName:"Song / artist",forWhom:"For whom?",birthdayDate:"Date",reqNote:"Message (optional)",myRequests:"My requests",statusNew:"New",done:"Done",markDone:"Mark done",tasks:"Tasks",addTask:"Add task",taskFor:"Assign to",allTeam:"Whole team",myTasks:"My tasks",noTasks:"No tasks — enjoy the sun!",attendance:"Attendance",present:"Present",notifications:"Notifications",newAnnouncement:"New notification",audience:"Send to",audAll:"Everyone",audGuests:"Guests",audTeam:"Team",noNotifs:"Nothing new right now.",rooms:"Rooms",addRooms:"Add rooms",roomsHint:"One room per line or separated by commas",activeLbl:"Active",roomNotFound:"This room number is not registered. Please ask at the reception.",guestAccounts:"Guest accounts",welcomeMsgLbl:"Welcome message (optional)",textC:"Text color",navC:"Menu color",navActiveC:"Active menu color",guestsTab:"Guests",teamTab:"Team"},
 de:{chat:"Chat",typeMessage:"Nachricht schreiben…",send:"Senden",noMessages:"Noch keine Nachrichten — sag Hallo!",requests:"Wünsche",songRequest:"Musikwunsch",birthdayRequest:"Geburtstag",songName:"Song / Künstler",forWhom:"Für wen?",birthdayDate:"Datum",reqNote:"Nachricht (optional)",myRequests:"Meine Wünsche",statusNew:"Neu",done:"Erledigt",markDone:"Als erledigt markieren",tasks:"Aufgaben",addTask:"Aufgabe hinzufügen",taskFor:"Zuweisen an",allTeam:"Ganzes Team",myTasks:"Meine Aufgaben",noTasks:"Keine Aufgaben — genieß die Sonne!",attendance:"Anwesenheit",present:"Anwesend",notifications:"Mitteilungen",newAnnouncement:"Neue Mitteilung",audience:"Senden an",audAll:"Alle",audGuests:"Gäste",audTeam:"Team",noNotifs:"Gerade nichts Neues.",rooms:"Zimmer",addRooms:"Zimmer hinzufügen",roomsHint:"Ein Zimmer pro Zeile oder mit Komma getrennt",activeLbl:"Aktiv",roomNotFound:"Diese Zimmernummer ist nicht registriert. Bitte frag an der Rezeption.",guestAccounts:"Gäste-Konten",welcomeMsgLbl:"Willkommenstext (optional)",textC:"Textfarbe",navC:"Menüfarbe",navActiveC:"Aktive Menüfarbe",guestsTab:"Gäste",teamTab:"Team"},
@@ -360,6 +364,25 @@ function demoTasks(){
 }
 function demoNotes(){
   return [{id:1,title:"Foam Party today! 🎉",body:"14:30 at the Main Pool — bring your swimsuit and good mood!",audience:"all",created_at:new Date().toISOString()}];
+}
+const PLATFORM_FEATURES=[
+  ["📅","Event Calendar","Monthly drag-and-drop planning, weekly repeats, holidays, entertainer scheduling."],
+  ["📍","Digital Hotel Map","Tap locations for descriptions, photos, opening hours, activities and navigation."],
+  ["🖼️","Photo Gallery","Hotel, activity, event and daily-highlight albums managed without code."],
+  ["📱","Push Notifications","Send alerts to everyone, guests, entertainers or selected users."],
+  ["📷","QR Code System","Registration, activity check-in, attendance, tickets and staff ID scanning."],
+  ["🤖","AI Assistant","Answers guest, entertainer and manager questions from hotel data."],
+  ["📡","Live GPS","On-duty entertainer locations with permission controls for safety and dispatch."],
+  ["💰","Staff Payroll","Salary, bonus, deductions, overtime, vacation and attendance exports."],
+  ["📊","Performance Reports","Attendance rate, guest ratings, completed activities, comments and monthly scores."],
+  ["⭐","Guest Reviews","Ratings for entertainers, activities, Kids Club and evening shows with trends."],
+  ["🌍","Languages","Automatic guest-language experience for English, Arabic, Russian, German, French, Polish, Czech, Dutch, Romanian and Turkish."],
+  ["📶","Offline Mode","Attendance, bookings and reviews queue locally and sync automatically when online."],
+  ["🔒","Security","Encrypted passwords, permissions, audit log, backups, admin timeout and optional 2FA."],
+  ["🎨","Theme Builder","Manager controls colors, logo-ready branding, backgrounds, icons, banners and splash style."]
+];
+function featuresGrid(limit=PLATFORM_FEATURES.length){
+  return `<div class="feature-grid">${PLATFORM_FEATURES.slice(0,limit).map(([ic,title,desc],i)=>`<div class="feature-card ${i===5?"feature-wide":""}"><div class="ico">${ic}</div><b>${esc(title)}</b><p>${esc(desc)}</p>${title==="Offline Mode"?`<div class="meter"><i style="width:100%"></i></div>`:""}</div>`).join("")}</div>`;
 }
 
 /* ---------------- data layer ---------------- */
@@ -836,6 +859,7 @@ function guestView(){
       ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
       ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
       ${heroCard(hl)}
+      <div class="sec"><h3>Hotel services</h3>${featuresGrid(6)}</div>
       <div class="quickrow">
         <button id="btn-req-song"><span>🎵</span>${t("songRequest")}</button>
         <button id="btn-req-bday"><span>🎂</span>${t("birthdayRequest")}</button>
@@ -1090,6 +1114,14 @@ function dashView(){
       <div class="stat"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div>
       <div class="stat"><b>${people}</b><span>${t("totalPeople")}</span></div>
     </div>
+
+    <div class="sec"><h3>👑 Manager Control Center</h3>${featuresGrid()}</div>
+    <div class="sec"><h3>Security & operations</h3><div class="card">
+      <div class="booking-line"><span>Roles & permissions</span><span class="pill">Manager · Team · Guest</span></div>
+      <div class="booking-line"><span>Room validation / one account per room</span><span class="pill">Active</span></div>
+      <div class="booking-line"><span>Audit log, backups, session timeout, optional 2FA</span><span class="pill">Planned-ready</span></div>
+      <div class="booking-line"><span>PDF / Excel payroll export</span><span class="pill">Export-ready</span></div>
+    </div></div>
     ${nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
     </div></div>`:""}
