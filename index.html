@@ -264,6 +264,91 @@ h3 .ic-s,h4 .ic-s{color:var(--bronze);vertical-align:-3px}
 .modal h3 .ic-s{color:var(--bronze)}
 @media (prefers-reduced-motion: reduce){.hero img,.fadein>*{animation:none}}
 
+
+/* ================= LUXURY LAYER 2 — drawer, top bar, pages ================= */
+.screen{padding:18px 18px 48px}
+.chatbar{bottom:calc(10px + env(safe-area-inset-bottom))}
+.thread{padding-bottom:88px}
+.screen{animation:screenIn .32s ease}
+@keyframes screenIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.top{margin-bottom:4px}
+.whobar{margin:8px 0 18px}
+.whobar h2{font-size:27px;line-height:1.15}
+.whobar p{font-size:13px;color:var(--muted);margin-top:2px}
+.toprow-l{display:flex;align-items:center;gap:9px;min-width:0}
+.socialrow{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+.socialrow::-webkit-scrollbar{display:none}
+.socialtop{width:35px;height:35px;color:var(--cacao);text-decoration:none}
+[data-theme="dark"] .socialtop{color:var(--bronze)}
+/* drawer */
+.drawer-bg{position:fixed;inset:0;background:rgba(22,14,8,.45);backdrop-filter:blur(3px);z-index:80;opacity:0;transition:opacity .24s ease}
+.drawer-bg.open{opacity:1}
+.drawer{position:absolute;inset-block:0;inset-inline-start:0;width:min(320px,84vw);
+  background:linear-gradient(168deg,var(--bg) 0%,var(--sand) 120%);
+  display:flex;flex-direction:column;padding:26px 20px calc(20px + env(safe-area-inset-bottom));
+  transform:translateX(-106%);transition:transform .27s cubic-bezier(.2,.75,.2,1);
+  box-shadow:40px 0 90px -35px rgba(0,0,0,.55)}
+[dir="rtl"] .drawer{transform:translateX(106%)}
+.drawer-bg.open .drawer{transform:none}
+[data-theme="dark"] .drawer{background:linear-gradient(168deg,#20180F 0%,#181209 120%)}
+.dr-head{display:flex;gap:13px;align-items:center;margin-bottom:24px}
+.dr-head .mono.sm{width:47px;height:47px;font-size:23px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#F2E3CB;
+  box-shadow:0 10px 24px -10px rgba(62,42,30,.6)}
+[data-theme="dark"] .dr-head .mono.sm{background:linear-gradient(135deg,var(--bronze),#D9B47F);color:#221708}
+.dr-head h3{font-family:var(--font-display);font-size:21px;line-height:1.1}
+.dr-head p{font-size:12.5px;color:var(--muted)}
+.dr-items{flex:1;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.dr-it{display:flex;align-items:center;gap:13px;padding:13px;border-radius:14px;font-size:15.5px;
+  color:var(--ink);text-align:start;background:transparent;transition:background .15s}
+.dr-it:active{background:var(--sand)}
+.dr-it.on{background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#F6ECDD;box-shadow:0 10px 24px -12px rgba(62,42,30,.55)}
+[data-theme="dark"] .dr-it.on{background:linear-gradient(135deg,var(--bronze),#D9B47F);color:#221708}
+.dr-ic{display:flex;color:var(--cacao)}
+[data-theme="dark"] .dr-ic{color:var(--bronze)}
+.dr-it.on .dr-ic{color:inherit;opacity:.9}
+.dr-it .badge{margin-inline-start:auto}
+.dr-foot{display:flex;gap:10px;align-items:center;padding-top:16px;border-top:1px solid var(--line)}
+.dr-out{margin-inline-start:auto;display:inline-flex;gap:8px;align-items:center;font-size:14px;
+  color:var(--muted);padding:10px 15px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+/* luxury login */
+.login-wrap{background:radial-gradient(130% 95% at 50% -12%,#5C4030 0%,#3E2A1E 46%,#221610 100%)}
+.login-card{background:rgba(255,251,244,.97);border-radius:26px;box-shadow:0 34px 90px -34px rgba(0,0,0,.65)}
+.brandmark .mono{width:76px;height:76px;font-size:35px;border:1px solid rgba(217,180,127,.65);
+  box-shadow:0 0 0 8px rgba(217,180,127,.13),0 22px 55px -20px rgba(0,0,0,.75)}
+.brandmark h1{letter-spacing:.05em}
+.brandmark p{letter-spacing:.14em;text-transform:uppercase;font-size:11.5px;opacity:.85}
+/* social & reviews page */
+.wa-cta{display:flex;gap:11px;align-items:center;justify-content:center;padding:16px;border-radius:17px;
+  background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#F6ECDD;text-decoration:none;
+  font-size:16px;margin-bottom:20px;box-shadow:0 14px 30px -12px rgba(62,42,30,.55)}
+[data-theme="dark"] .wa-cta{background:linear-gradient(135deg,var(--bronze),#D9B47F);color:#221708}
+.social-big{display:flex;align-items:center;gap:13px;padding:15px 16px;text-decoration:none;color:var(--ink)}
+.sb-ic{width:39px;height:39px;border-radius:13px;background:var(--sand);display:flex;align-items:center;
+  justify-content:center;color:var(--cacao);border:1px solid var(--line);flex:none}
+[data-theme="dark"] .sb-ic{color:var(--bronze);background:rgba(255,255,255,.05)}
+.sb-ic.star{font-size:19px;color:var(--bronze)}
+.sb-nm{font-size:16.5px;font-weight:600}
+.sb-go{margin-inline-start:auto;color:var(--muted);transform:rotate(180deg)}
+[dir="rtl"] .sb-go{transform:none}
+/* team page */
+.teamcount{display:flex;align-items:center;gap:15px;padding:16px 18px}
+.teamcount b{font-size:36px;color:var(--cacao);line-height:1}
+[data-theme="dark"] .teamcount b{color:var(--bronze)}
+.teamcount span{font-size:14px;color:var(--muted)}
+.team-card{display:flex;gap:14px;align-items:flex-start}
+.tc-photo{width:88px;height:106px;border-radius:16px;overflow:hidden;flex:none;border:1px solid var(--line);background:var(--sand)}
+.tc-photo img{width:100%;height:100%;object-fit:cover}
+.tc-photo.sm{width:58px;height:70px;border-radius:13px}
+.tc-mono{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--bronze);
+  background:linear-gradient(150deg,var(--sand),var(--card))}
+.tc-body{min-width:0;flex:1}
+.tc-body h4{font-size:20px;line-height:1.15}
+.tc-pos{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--bronze);margin:3px 0 4px}
+.tc-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.tchip{font-size:12px;padding:4.5px 11px;border-radius:999px;background:var(--sand);border:1px solid var(--line);color:var(--muted)}
+.team-card .social-a{margin-top:6px}
+
 </style>
 </head>
 <body>
@@ -289,7 +374,7 @@ const DEFAULT_SETTINGS = {
   fontStyle:"elegant", buttonStyle:"rounded",
   menuHome:"", menuProgram:"", menuTickets:"", menuChat:"", menuStay:"",
   tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
-  instagram:"", facebook:"", tiktok:"", youtube:""
+  instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:""
 };
 const FONTS={
   elegant:["'Cormorant Garamond',serif","'Jost',sans-serif"],
@@ -302,14 +387,14 @@ const BTN_R={rounded:["14px","11px"],pill:["999px","999px"],square:["8px","7px"]
 /* ---------------- i18n ---------------- */
 const LANGS=[["en","English"],["de","Deutsch"],["ru","Русский"],["pl","Polski"],["cs","Čeština"],["nl","Nederlands"],["fr","Français"],["ar","العربية"]];
 const EXTRA={
-en:{chat:"Chat",typeMessage:"Write a message…",send:"Send",noMessages:"No messages yet — say hello!",requests:"Requests",songRequest:"Song request",birthdayRequest:"Birthday",songName:"Song / artist",forWhom:"For whom?",birthdayDate:"Date",reqNote:"Message (optional)",myRequests:"My requests",statusNew:"New",done:"Done",markDone:"Mark done",tasks:"Tasks",addTask:"Add task",taskFor:"Assign to",allTeam:"Whole team",myTasks:"My tasks",noTasks:"No tasks — enjoy the sun!",attendance:"Attendance",present:"Present",notifications:"Notifications",newAnnouncement:"New notification",audience:"Send to",audAll:"Everyone",audGuests:"Guests",audTeam:"Team",noNotifs:"Nothing new right now.",rooms:"Rooms",addRooms:"Add rooms",roomsHint:"One room per line or separated by commas",activeLbl:"Active",roomNotFound:"This room number is not registered. Please ask at the reception.",guestAccounts:"Guest accounts",welcomeMsgLbl:"Welcome message (optional)",textC:"Text color",navC:"Menu color",navActiveC:"Active menu color",guestsTab:"Guests",teamTab:"Team",taskType:"Task type",ttCome:"Come to location",ttLeave:"Leave location",ttActivity:"Run activity",ttFeedback:"Collect feedback",ttCollect:"Collect guests",accept:"Accept",still:"Still working",cantDo:"I can't",accepted:"Accepted",late:"Late",points:"Points",rank:"Team ranking",exportReport:"Weekly report (Excel)",feedback:"Feedback",addFeedback:"Add feedback",rate:"Rating",comment:"Short comment",avgRate:"Average rating",taskStats:"Tasks per entertainer",dueLbl:"Deadline",aiTab:"AI Assistant",aiKeyLbl:"Anthropic API key",aiKeyHint:"Saved only in this browser — never in the app file or database.",aiAsk:"Ask your assistant…",aiIntro:"Professional help for planning, announcements, ideas and problems — it knows your live program and statistics.",aiErr:"AI request failed — check key and credit.",profile:"Profile",changePass:"Change password",newPass:"New password",yourLogin:"Your login details",saveThese:"Save these — you need them to sign in on other phones.",firstVisit:"First visit",accountExists:"This room already has an account — please sign in with the password.",editUser:"Edit user",overview:"Overview"},
-de:{chat:"Chat",typeMessage:"Nachricht schreiben…",send:"Senden",noMessages:"Noch keine Nachrichten — sag Hallo!",requests:"Wünsche",songRequest:"Musikwunsch",birthdayRequest:"Geburtstag",songName:"Song / Künstler",forWhom:"Für wen?",birthdayDate:"Datum",reqNote:"Nachricht (optional)",myRequests:"Meine Wünsche",statusNew:"Neu",done:"Erledigt",markDone:"Als erledigt markieren",tasks:"Aufgaben",addTask:"Aufgabe hinzufügen",taskFor:"Zuweisen an",allTeam:"Ganzes Team",myTasks:"Meine Aufgaben",noTasks:"Keine Aufgaben — genieß die Sonne!",attendance:"Anwesenheit",present:"Anwesend",notifications:"Mitteilungen",newAnnouncement:"Neue Mitteilung",audience:"Senden an",audAll:"Alle",audGuests:"Gäste",audTeam:"Team",noNotifs:"Gerade nichts Neues.",rooms:"Zimmer",addRooms:"Zimmer hinzufügen",roomsHint:"Ein Zimmer pro Zeile oder mit Komma getrennt",activeLbl:"Aktiv",roomNotFound:"Diese Zimmernummer ist nicht registriert. Bitte frag an der Rezeption.",guestAccounts:"Gäste-Konten",welcomeMsgLbl:"Willkommenstext (optional)",textC:"Textfarbe",navC:"Menüfarbe",navActiveC:"Aktive Menüfarbe",guestsTab:"Gäste",teamTab:"Team",taskType:"Aufgabentyp",ttCome:"Zum Ort kommen",ttLeave:"Ort verlassen",ttActivity:"Aktivität durchführen",ttFeedback:"Feedback sammeln",ttCollect:"Gäste einsammeln",accept:"Annehmen",still:"Noch dabei",cantDo:"Ich kann nicht",accepted:"Angenommen",late:"Verspätet",points:"Punkte",rank:"Team-Rangliste",exportReport:"Wochenbericht (Excel)",feedback:"Feedback",addFeedback:"Feedback hinzufügen",rate:"Bewertung",comment:"Kurzer Kommentar",avgRate:"Ø Bewertung",taskStats:"Aufgaben pro Animateur",dueLbl:"Frist",aiTab:"KI-Assistent",aiKeyLbl:"Anthropic API-Schlüssel",aiKeyHint:"Nur in diesem Browser gespeichert — nie in der App-Datei oder Datenbank.",aiAsk:"Frag deinen Assistenten…",aiIntro:"Professionelle Hilfe für Planung, Mitteilungen, Ideen und Probleme — kennt dein Live-Programm und deine Statistiken.",aiErr:"KI-Anfrage fehlgeschlagen — prüfe Schlüssel und Guthaben.",profile:"Profil",changePass:"Passwort ändern",newPass:"Neues Passwort",yourLogin:"Deine Zugangsdaten",saveThese:"Speichere sie — du brauchst sie zum Anmelden auf anderen Handys.",firstVisit:"Erster Besuch",accountExists:"Dieses Zimmer hat bereits ein Konto — bitte mit Passwort anmelden.",editUser:"Nutzer bearbeiten",overview:"Statistik"},
-ru:{chat:"Чат",typeMessage:"Напишите сообщение…",send:"Отправить",noMessages:"Пока нет сообщений — напишите нам!",requests:"Заявки",songRequest:"Заказ песни",birthdayRequest:"День рождения",songName:"Песня / исполнитель",forWhom:"Для кого?",birthdayDate:"Дата",reqNote:"Сообщение (необязательно)",myRequests:"Мои заявки",statusNew:"Новая",done:"Готово",markDone:"Отметить выполненной",tasks:"Задачи",addTask:"Добавить задачу",taskFor:"Назначить",allTeam:"Вся команда",myTasks:"Мои задачи",noTasks:"Задач нет — наслаждайтесь солнцем!",attendance:"Посещаемость",present:"Присутствует",notifications:"Уведомления",newAnnouncement:"Новое уведомление",audience:"Кому",audAll:"Всем",audGuests:"Гостям",audTeam:"Команде",noNotifs:"Пока ничего нового.",rooms:"Комнаты",addRooms:"Добавить комнаты",roomsHint:"По одной комнате в строке или через запятую",activeLbl:"Активна",roomNotFound:"Этот номер комнаты не зарегистрирован. Обратитесь на ресепшен.",guestAccounts:"Аккаунты гостей",welcomeMsgLbl:"Приветственный текст (необязательно)",textC:"Цвет текста",navC:"Цвет меню",navActiveC:"Цвет активного пункта",guestsTab:"Гости",teamTab:"Команда",taskType:"Тип задачи",ttCome:"Прийти в локацию",ttLeave:"Покинуть локацию",ttActivity:"Провести активность",ttFeedback:"Собрать отзывы",ttCollect:"Собрать гостей",accept:"Принять",still:"Ещё в процессе",cantDo:"Не могу",accepted:"Принято",late:"С опозданием",points:"Очки",rank:"Рейтинг команды",exportReport:"Недельный отчёт (Excel)",feedback:"Отзывы",addFeedback:"Добавить отзыв",rate:"Оценка",comment:"Короткий комментарий",avgRate:"Средняя оценка",taskStats:"Задачи по аниматорам",dueLbl:"Срок",aiTab:"ИИ-ассистент",aiKeyLbl:"API-ключ Anthropic",aiKeyHint:"Хранится только в этом браузере — не в файле приложения и не в базе.",aiAsk:"Спросите ассистента…",aiIntro:"Профессиональная помощь: планирование, тексты, идеи и проблемы — знает вашу программу и статистику.",aiErr:"Запрос к ИИ не удался — проверьте ключ и баланс.",profile:"Профиль",changePass:"Сменить пароль",newPass:"Новый пароль",yourLogin:"Ваши данные для входа",saveThese:"Сохраните их — они нужны для входа на других телефонах.",firstVisit:"Первый визит",accountExists:"У этой комнаты уже есть аккаунт — войдите с паролем.",editUser:"Редактировать пользователя",overview:"Статистика"},
-pl:{chat:"Czat",typeMessage:"Napisz wiadomość…",send:"Wyślij",noMessages:"Brak wiadomości — przywitaj się!",requests:"Prośby",songRequest:"Prośba o piosenkę",birthdayRequest:"Urodziny",songName:"Piosenka / wykonawca",forWhom:"Dla kogo?",birthdayDate:"Data",reqNote:"Wiadomość (opcjonalnie)",myRequests:"Moje prośby",statusNew:"Nowa",done:"Zrobione",markDone:"Oznacz jako zrobione",tasks:"Zadania",addTask:"Dodaj zadanie",taskFor:"Przypisz do",allTeam:"Cały zespół",myTasks:"Moje zadania",noTasks:"Brak zadań — ciesz się słońcem!",attendance:"Obecność",present:"Obecny",notifications:"Powiadomienia",newAnnouncement:"Nowe powiadomienie",audience:"Wyślij do",audAll:"Wszyscy",audGuests:"Goście",audTeam:"Zespół",noNotifs:"Na razie nic nowego.",rooms:"Pokoje",addRooms:"Dodaj pokoje",roomsHint:"Jeden pokój w linii lub po przecinku",activeLbl:"Aktywny",roomNotFound:"Ten numer pokoju nie jest zarejestrowany. Zapytaj w recepcji.",guestAccounts:"Konta gości",welcomeMsgLbl:"Tekst powitalny (opcjonalnie)",textC:"Kolor tekstu",navC:"Kolor menu",navActiveC:"Kolor aktywnego menu",guestsTab:"Goście",teamTab:"Zespół",taskType:"Typ zadania",ttCome:"Przyjdź na miejsce",ttLeave:"Opuść miejsce",ttActivity:"Poprowadź aktywność",ttFeedback:"Zbierz opinie",ttCollect:"Zbierz gości",accept:"Przyjmij",still:"Wciąż w trakcie",cantDo:"Nie mogę",accepted:"Przyjęte",late:"Po czasie",points:"Punkty",rank:"Ranking zespołu",exportReport:"Raport tygodniowy (Excel)",feedback:"Opinie",addFeedback:"Dodaj opinię",rate:"Ocena",comment:"Krótki komentarz",avgRate:"Średnia ocena",taskStats:"Zadania wg animatorów",dueLbl:"Termin",aiTab:"Asystent AI",aiKeyLbl:"Klucz API Anthropic",aiKeyHint:"Zapisany tylko w tej przeglądarce — nigdy w pliku aplikacji ani w bazie.",aiAsk:"Zapytaj asystenta…",aiIntro:"Profesjonalna pomoc: planowanie, komunikaty, pomysły i problemy — zna Twój program i statystyki.",aiErr:"Zapytanie AI nie powiodło się — sprawdź klucz i środki.",profile:"Profil",changePass:"Zmień hasło",newPass:"Nowe hasło",yourLogin:"Twoje dane logowania",saveThese:"Zapisz je — będą potrzebne do logowania na innych telefonach.",firstVisit:"Pierwsza wizyta",accountExists:"Ten pokój ma już konto — zaloguj się hasłem.",editUser:"Edytuj użytkownika",overview:"Statystyki"},
-cs:{chat:"Chat",typeMessage:"Napište zprávu…",send:"Odeslat",noMessages:"Zatím žádné zprávy — pozdravte nás!",requests:"Přání",songRequest:"Přání písničky",birthdayRequest:"Narozeniny",songName:"Píseň / interpret",forWhom:"Pro koho?",birthdayDate:"Datum",reqNote:"Zpráva (volitelné)",myRequests:"Moje přání",statusNew:"Nové",done:"Hotovo",markDone:"Označit jako hotové",tasks:"Úkoly",addTask:"Přidat úkol",taskFor:"Přiřadit",allTeam:"Celý tým",myTasks:"Moje úkoly",noTasks:"Žádné úkoly — užijte si slunce!",attendance:"Docházka",present:"Přítomen",notifications:"Oznámení",newAnnouncement:"Nové oznámení",audience:"Komu",audAll:"Všem",audGuests:"Hostům",audTeam:"Týmu",noNotifs:"Zatím nic nového.",rooms:"Pokoje",addRooms:"Přidat pokoje",roomsHint:"Jeden pokoj na řádek nebo oddělené čárkou",activeLbl:"Aktivní",roomNotFound:"Toto číslo pokoje není registrováno. Zeptejte se na recepci.",guestAccounts:"Účty hostů",welcomeMsgLbl:"Uvítací text (volitelné)",textC:"Barva textu",navC:"Barva menu",navActiveC:"Barva aktivní položky",guestsTab:"Hosté",teamTab:"Tým",taskType:"Typ úkolu",ttCome:"Přijď na místo",ttLeave:"Opusť místo",ttActivity:"Veď aktivitu",ttFeedback:"Sbírej hodnocení",ttCollect:"Shromáždi hosty",accept:"Přijmout",still:"Stále na tom",cantDo:"Nemůžu",accepted:"Přijato",late:"Pozdě",points:"Body",rank:"Žebříček týmu",exportReport:"Týdenní report (Excel)",feedback:"Hodnocení hostů",addFeedback:"Přidat hodnocení",rate:"Hodnocení",comment:"Krátký komentář",avgRate:"Prům. hodnocení",taskStats:"Úkoly podle animátorů",dueLbl:"Termín",aiTab:"AI asistent",aiKeyLbl:"Anthropic API klíč",aiKeyHint:"Uložen jen v tomto prohlížeči — nikdy v souboru aplikace ani v databázi.",aiAsk:"Zeptej se asistenta…",aiIntro:"Profesionální pomoc: plánování, texty, nápady i problémy — zná tvůj program a statistiky.",aiErr:"AI požadavek selhal — zkontroluj klíč a kredit.",profile:"Profil",changePass:"Změnit heslo",newPass:"Nové heslo",yourLogin:"Vaše přihlašovací údaje",saveThese:"Uložte si je — potřebujete je pro přihlášení na dalších telefonech.",firstVisit:"První návštěva",accountExists:"Tento pokoj už má účet — přihlaste se heslem.",editUser:"Upravit uživatele",overview:"Statistiky"},
-nl:{chat:"Chat",typeMessage:"Schrijf een bericht…",send:"Versturen",noMessages:"Nog geen berichten — zeg hallo!",requests:"Verzoeken",songRequest:"Muziekverzoek",birthdayRequest:"Verjaardag",songName:"Nummer / artiest",forWhom:"Voor wie?",birthdayDate:"Datum",reqNote:"Bericht (optioneel)",myRequests:"Mijn verzoeken",statusNew:"Nieuw",done:"Klaar",markDone:"Markeer als klaar",tasks:"Taken",addTask:"Taak toevoegen",taskFor:"Toewijzen aan",allTeam:"Hele team",myTasks:"Mijn taken",noTasks:"Geen taken — geniet van de zon!",attendance:"Aanwezigheid",present:"Aanwezig",notifications:"Meldingen",newAnnouncement:"Nieuwe melding",audience:"Versturen naar",audAll:"Iedereen",audGuests:"Gasten",audTeam:"Team",noNotifs:"Even niets nieuws.",rooms:"Kamers",addRooms:"Kamers toevoegen",roomsHint:"Eén kamer per regel of gescheiden door komma's",activeLbl:"Actief",roomNotFound:"Dit kamernummer is niet geregistreerd. Vraag het bij de receptie.",guestAccounts:"Gastaccounts",welcomeMsgLbl:"Welkomsttekst (optioneel)",textC:"Tekstkleur",navC:"Menukleur",navActiveC:"Actieve menukleur",guestsTab:"Gasten",teamTab:"Team",taskType:"Taaktype",ttCome:"Kom naar locatie",ttLeave:"Verlaat locatie",ttActivity:"Activiteit leiden",ttFeedback:"Feedback verzamelen",ttCollect:"Gasten verzamelen",accept:"Accepteren",still:"Nog bezig",cantDo:"Ik kan niet",accepted:"Geaccepteerd",late:"Te laat",points:"Punten",rank:"Teamranking",exportReport:"Weekrapport (Excel)",feedback:"Feedback",addFeedback:"Feedback toevoegen",rate:"Beoordeling",comment:"Korte opmerking",avgRate:"Gem. beoordeling",taskStats:"Taken per entertainer",dueLbl:"Deadline",aiTab:"AI-assistent",aiKeyLbl:"Anthropic API-sleutel",aiKeyHint:"Alleen in deze browser opgeslagen — nooit in het app-bestand of de database.",aiAsk:"Vraag je assistent…",aiIntro:"Professionele hulp: planning, teksten, ideeën en problemen — kent je programma en statistieken.",aiErr:"AI-verzoek mislukt — controleer sleutel en tegoed.",profile:"Profiel",changePass:"Wachtwoord wijzigen",newPass:"Nieuw wachtwoord",yourLogin:"Je inloggegevens",saveThese:"Bewaar ze — je hebt ze nodig om op andere telefoons in te loggen.",firstVisit:"Eerste bezoek",accountExists:"Deze kamer heeft al een account — log in met het wachtwoord.",editUser:"Gebruiker bewerken",overview:"Statistieken"},
-fr:{chat:"Chat",typeMessage:"Écrivez un message…",send:"Envoyer",noMessages:"Pas encore de messages — dites bonjour !",requests:"Demandes",songRequest:"Demande de chanson",birthdayRequest:"Anniversaire",songName:"Chanson / artiste",forWhom:"Pour qui ?",birthdayDate:"Date",reqNote:"Message (optionnel)",myRequests:"Mes demandes",statusNew:"Nouveau",done:"Fait",markDone:"Marquer comme fait",tasks:"Tâches",addTask:"Ajouter une tâche",taskFor:"Attribuer à",allTeam:"Toute l'équipe",myTasks:"Mes tâches",noTasks:"Aucune tâche — profitez du soleil !",attendance:"Présence",present:"Présent",notifications:"Notifications",newAnnouncement:"Nouvelle notification",audience:"Envoyer à",audAll:"Tout le monde",audGuests:"Invités",audTeam:"Équipe",noNotifs:"Rien de nouveau pour l'instant.",rooms:"Chambres",addRooms:"Ajouter des chambres",roomsHint:"Une chambre par ligne ou séparées par des virgules",activeLbl:"Active",roomNotFound:"Ce numéro de chambre n'est pas enregistré. Demandez à la réception.",guestAccounts:"Comptes invités",welcomeMsgLbl:"Message de bienvenue (optionnel)",textC:"Couleur du texte",navC:"Couleur du menu",navActiveC:"Couleur du menu actif",guestsTab:"Invités",teamTab:"Équipe",taskType:"Type de tâche",ttCome:"Venir sur place",ttLeave:"Quitter le lieu",ttActivity:"Animer l'activité",ttFeedback:"Recueillir des avis",ttCollect:"Rassembler les invités",accept:"Accepter",still:"Encore en cours",cantDo:"Je ne peux pas",accepted:"Acceptée",late:"En retard",points:"Points",rank:"Classement de l'équipe",exportReport:"Rapport hebdo (Excel)",feedback:"Avis",addFeedback:"Ajouter un avis",rate:"Note",comment:"Commentaire court",avgRate:"Note moyenne",taskStats:"Tâches par animateur",dueLbl:"Échéance",aiTab:"Assistant IA",aiKeyLbl:"Clé API Anthropic",aiKeyHint:"Enregistrée uniquement dans ce navigateur — jamais dans le fichier de l'app ni la base.",aiAsk:"Demandez à votre assistant…",aiIntro:"Aide professionnelle : planification, textes, idées et problèmes — il connaît votre programme et vos statistiques.",aiErr:"Échec de la requête IA — vérifiez la clé et le crédit.",profile:"Profil",changePass:"Changer le mot de passe",newPass:"Nouveau mot de passe",yourLogin:"Vos identifiants",saveThese:"Gardez-les — nécessaires pour vous connecter sur d'autres téléphones.",firstVisit:"Première visite",accountExists:"Cette chambre a déjà un compte — connectez-vous avec le mot de passe.",editUser:"Modifier l'utilisateur",overview:"Statistiques"},
-ar:{chat:"الدردشة",typeMessage:"اكتب رسالة…",send:"إرسال",noMessages:"لا توجد رسائل بعد — قل مرحباً!",requests:"الطلبات الخاصة",songRequest:"طلب أغنية",birthdayRequest:"عيد ميلاد",songName:"الأغنية / الفنان",forWhom:"لمن؟",birthdayDate:"التاريخ",reqNote:"رسالة (اختياري)",myRequests:"طلباتي الخاصة",statusNew:"جديد",done:"تم",markDone:"وضع علامة تم",tasks:"المهام",addTask:"إضافة مهمة",taskFor:"تعيين إلى",allTeam:"كل الفريق",myTasks:"مهامي",noTasks:"لا مهام — استمتع بالشمس!",attendance:"الحضور",present:"حاضر",notifications:"الإشعارات",newAnnouncement:"إشعار جديد",audience:"إرسال إلى",audAll:"الجميع",audGuests:"الضيوف",audTeam:"الفريق",noNotifs:"لا جديد الآن.",rooms:"الغرف",addRooms:"إضافة غرف",roomsHint:"غرفة واحدة في كل سطر أو مفصولة بفواصل",activeLbl:"مفعّلة",roomNotFound:"رقم الغرفة غير مسجل. يرجى السؤال في الاستقبال.",guestAccounts:"حسابات الضيوف",welcomeMsgLbl:"نص الترحيب (اختياري)",textC:"لون النص",navC:"لون القائمة",navActiveC:"لون القائمة النشط",guestsTab:"الضيوف",teamTab:"الفريق",taskType:"نوع المهمة",ttCome:"تعال إلى الموقع",ttLeave:"غادر الموقع",ttActivity:"قدّم النشاط",ttFeedback:"اجمع آراء الضيوف",ttCollect:"اجمع الضيوف",accept:"قبول",still:"ما زلت أعمل",cantDo:"لا أستطيع",accepted:"مقبولة",late:"متأخر",points:"نقاط",rank:"ترتيب الفريق",exportReport:"تقرير أسبوعي (Excel)",feedback:"آراء الضيوف",addFeedback:"إضافة رأي",rate:"التقييم",comment:"تعليق قصير",avgRate:"متوسط التقييم",taskStats:"المهام حسب المنشط",dueLbl:"الموعد النهائي",aiTab:"مساعد الذكاء",aiKeyLbl:"مفتاح Anthropic API",aiKeyHint:"يُحفظ في هذا المتصفح فقط — لا في ملف التطبيق ولا في قاعدة البيانات.",aiAsk:"اسأل مساعدك…",aiIntro:"مساعدة احترافية: التخطيط والنصوص والأفكار والمشكلات — يعرف برنامجك وإحصاءاتك.",aiErr:"فشل طلب الذكاء الاصطناعي — تحقق من المفتاح والرصيد.",profile:"الملف الشخصي",changePass:"تغيير كلمة المرور",newPass:"كلمة مرور جديدة",yourLogin:"بيانات دخولك",saveThese:"احفظها — ستحتاجها للدخول من هواتف أخرى.",firstVisit:"الزيارة الأولى",accountExists:"هذه الغرفة لديها حساب بالفعل — سجّل الدخول بكلمة المرور.",editUser:"تعديل المستخدم",overview:"نظرة عامة"}
+en:{chat:"Chat",typeMessage:"Write a message…",send:"Send",noMessages:"No messages yet — say hello!",requests:"Requests",songRequest:"Song request",birthdayRequest:"Birthday",songName:"Song / artist",forWhom:"For whom?",birthdayDate:"Date",reqNote:"Message (optional)",myRequests:"My requests",statusNew:"New",done:"Done",markDone:"Mark done",tasks:"Tasks",addTask:"Add task",taskFor:"Assign to",allTeam:"Whole team",myTasks:"My tasks",noTasks:"No tasks — enjoy the sun!",attendance:"Attendance",present:"Present",notifications:"Notifications",newAnnouncement:"New notification",audience:"Send to",audAll:"Everyone",audGuests:"Guests",audTeam:"Team",noNotifs:"Nothing new right now.",rooms:"Rooms",addRooms:"Add rooms",roomsHint:"One room per line or separated by commas",activeLbl:"Active",roomNotFound:"This room number is not registered. Please ask at the reception.",guestAccounts:"Guest accounts",welcomeMsgLbl:"Welcome message (optional)",textC:"Text color",navC:"Menu color",navActiveC:"Active menu color",guestsTab:"Guests",teamTab:"Team",taskType:"Task type",ttCome:"Come to location",ttLeave:"Leave location",ttActivity:"Run activity",ttFeedback:"Collect feedback",ttCollect:"Collect guests",accept:"Accept",still:"Still working",cantDo:"I can't",accepted:"Accepted",late:"Late",points:"Points",rank:"Team ranking",exportReport:"Weekly report (Excel)",feedback:"Feedback",addFeedback:"Add feedback",rate:"Rating",comment:"Short comment",avgRate:"Average rating",taskStats:"Tasks per entertainer",dueLbl:"Deadline",aiTab:"AI Assistant",aiKeyLbl:"Anthropic API key",aiKeyHint:"Saved only in this browser — never in the app file or database.",aiAsk:"Ask your assistant…",aiIntro:"Professional help for planning, announcements, ideas and problems — it knows your live program and statistics.",aiErr:"AI request failed — check key and credit.",profile:"Profile",changePass:"Change password",newPass:"New password",yourLogin:"Your login details",saveThese:"Save these — you need them to sign in on other phones.",firstVisit:"First visit",accountExists:"This room already has an account — please sign in with the password.",editUser:"Edit user",overview:"Overview",menu:"Menu",logout:"Sign out",socialPage:"Social & Reviews",teamPage:"Meet the Team",contactWa:"Chat with us on WhatsApp",leaveReview:"Leave a review",ourTeam:"Our entertainment team",entertainersWord:"entertainers",profiles:"Profiles",addProfile:"Add profile",positionLbl:"Position",skills:"Skills",languagesLbl:"Languages",instagramLbl:"Instagram profile",whatsappLbl:"WhatsApp number"},
+de:{chat:"Chat",typeMessage:"Nachricht schreiben…",send:"Senden",noMessages:"Noch keine Nachrichten — sag Hallo!",requests:"Wünsche",songRequest:"Musikwunsch",birthdayRequest:"Geburtstag",songName:"Song / Künstler",forWhom:"Für wen?",birthdayDate:"Datum",reqNote:"Nachricht (optional)",myRequests:"Meine Wünsche",statusNew:"Neu",done:"Erledigt",markDone:"Als erledigt markieren",tasks:"Aufgaben",addTask:"Aufgabe hinzufügen",taskFor:"Zuweisen an",allTeam:"Ganzes Team",myTasks:"Meine Aufgaben",noTasks:"Keine Aufgaben — genieß die Sonne!",attendance:"Anwesenheit",present:"Anwesend",notifications:"Mitteilungen",newAnnouncement:"Neue Mitteilung",audience:"Senden an",audAll:"Alle",audGuests:"Gäste",audTeam:"Team",noNotifs:"Gerade nichts Neues.",rooms:"Zimmer",addRooms:"Zimmer hinzufügen",roomsHint:"Ein Zimmer pro Zeile oder mit Komma getrennt",activeLbl:"Aktiv",roomNotFound:"Diese Zimmernummer ist nicht registriert. Bitte frag an der Rezeption.",guestAccounts:"Gäste-Konten",welcomeMsgLbl:"Willkommenstext (optional)",textC:"Textfarbe",navC:"Menüfarbe",navActiveC:"Aktive Menüfarbe",guestsTab:"Gäste",teamTab:"Team",taskType:"Aufgabentyp",ttCome:"Zum Ort kommen",ttLeave:"Ort verlassen",ttActivity:"Aktivität durchführen",ttFeedback:"Feedback sammeln",ttCollect:"Gäste einsammeln",accept:"Annehmen",still:"Noch dabei",cantDo:"Ich kann nicht",accepted:"Angenommen",late:"Verspätet",points:"Punkte",rank:"Team-Rangliste",exportReport:"Wochenbericht (Excel)",feedback:"Feedback",addFeedback:"Feedback hinzufügen",rate:"Bewertung",comment:"Kurzer Kommentar",avgRate:"Ø Bewertung",taskStats:"Aufgaben pro Animateur",dueLbl:"Frist",aiTab:"KI-Assistent",aiKeyLbl:"Anthropic API-Schlüssel",aiKeyHint:"Nur in diesem Browser gespeichert — nie in der App-Datei oder Datenbank.",aiAsk:"Frag deinen Assistenten…",aiIntro:"Professionelle Hilfe für Planung, Mitteilungen, Ideen und Probleme — kennt dein Live-Programm und deine Statistiken.",aiErr:"KI-Anfrage fehlgeschlagen — prüfe Schlüssel und Guthaben.",profile:"Profil",changePass:"Passwort ändern",newPass:"Neues Passwort",yourLogin:"Deine Zugangsdaten",saveThese:"Speichere sie — du brauchst sie zum Anmelden auf anderen Handys.",firstVisit:"Erster Besuch",accountExists:"Dieses Zimmer hat bereits ein Konto — bitte mit Passwort anmelden.",editUser:"Nutzer bearbeiten",overview:"Statistik",menu:"Menü",logout:"Abmelden",socialPage:"Social & Bewertungen",teamPage:"Unser Team",contactWa:"Schreib uns auf WhatsApp",leaveReview:"Bewertung abgeben",ourTeam:"Unser Animationsteam",entertainersWord:"Animateure",profiles:"Profile",addProfile:"Profil hinzufügen",positionLbl:"Position",skills:"Fähigkeiten",languagesLbl:"Sprachen",instagramLbl:"Instagram-Profil",whatsappLbl:"WhatsApp-Nummer"},
+ru:{chat:"Чат",typeMessage:"Напишите сообщение…",send:"Отправить",noMessages:"Пока нет сообщений — напишите нам!",requests:"Заявки",songRequest:"Заказ песни",birthdayRequest:"День рождения",songName:"Песня / исполнитель",forWhom:"Для кого?",birthdayDate:"Дата",reqNote:"Сообщение (необязательно)",myRequests:"Мои заявки",statusNew:"Новая",done:"Готово",markDone:"Отметить выполненной",tasks:"Задачи",addTask:"Добавить задачу",taskFor:"Назначить",allTeam:"Вся команда",myTasks:"Мои задачи",noTasks:"Задач нет — наслаждайтесь солнцем!",attendance:"Посещаемость",present:"Присутствует",notifications:"Уведомления",newAnnouncement:"Новое уведомление",audience:"Кому",audAll:"Всем",audGuests:"Гостям",audTeam:"Команде",noNotifs:"Пока ничего нового.",rooms:"Комнаты",addRooms:"Добавить комнаты",roomsHint:"По одной комнате в строке или через запятую",activeLbl:"Активна",roomNotFound:"Этот номер комнаты не зарегистрирован. Обратитесь на ресепшен.",guestAccounts:"Аккаунты гостей",welcomeMsgLbl:"Приветственный текст (необязательно)",textC:"Цвет текста",navC:"Цвет меню",navActiveC:"Цвет активного пункта",guestsTab:"Гости",teamTab:"Команда",taskType:"Тип задачи",ttCome:"Прийти в локацию",ttLeave:"Покинуть локацию",ttActivity:"Провести активность",ttFeedback:"Собрать отзывы",ttCollect:"Собрать гостей",accept:"Принять",still:"Ещё в процессе",cantDo:"Не могу",accepted:"Принято",late:"С опозданием",points:"Очки",rank:"Рейтинг команды",exportReport:"Недельный отчёт (Excel)",feedback:"Отзывы",addFeedback:"Добавить отзыв",rate:"Оценка",comment:"Короткий комментарий",avgRate:"Средняя оценка",taskStats:"Задачи по аниматорам",dueLbl:"Срок",aiTab:"ИИ-ассистент",aiKeyLbl:"API-ключ Anthropic",aiKeyHint:"Хранится только в этом браузере — не в файле приложения и не в базе.",aiAsk:"Спросите ассистента…",aiIntro:"Профессиональная помощь: планирование, тексты, идеи и проблемы — знает вашу программу и статистику.",aiErr:"Запрос к ИИ не удался — проверьте ключ и баланс.",profile:"Профиль",changePass:"Сменить пароль",newPass:"Новый пароль",yourLogin:"Ваши данные для входа",saveThese:"Сохраните их — они нужны для входа на других телефонах.",firstVisit:"Первый визит",accountExists:"У этой комнаты уже есть аккаунт — войдите с паролем.",editUser:"Редактировать пользователя",overview:"Статистика",menu:"Меню",logout:"Выйти",socialPage:"Соцсети и отзывы",teamPage:"Наша команда",contactWa:"Напишите нам в WhatsApp",leaveReview:"Оставить отзыв",ourTeam:"Наша команда анимации",entertainersWord:"аниматоров",profiles:"Профили",addProfile:"Добавить профиль",positionLbl:"Должность",skills:"Навыки",languagesLbl:"Языки",instagramLbl:"Профиль Instagram",whatsappLbl:"Номер WhatsApp"},
+pl:{chat:"Czat",typeMessage:"Napisz wiadomość…",send:"Wyślij",noMessages:"Brak wiadomości — przywitaj się!",requests:"Prośby",songRequest:"Prośba o piosenkę",birthdayRequest:"Urodziny",songName:"Piosenka / wykonawca",forWhom:"Dla kogo?",birthdayDate:"Data",reqNote:"Wiadomość (opcjonalnie)",myRequests:"Moje prośby",statusNew:"Nowa",done:"Zrobione",markDone:"Oznacz jako zrobione",tasks:"Zadania",addTask:"Dodaj zadanie",taskFor:"Przypisz do",allTeam:"Cały zespół",myTasks:"Moje zadania",noTasks:"Brak zadań — ciesz się słońcem!",attendance:"Obecność",present:"Obecny",notifications:"Powiadomienia",newAnnouncement:"Nowe powiadomienie",audience:"Wyślij do",audAll:"Wszyscy",audGuests:"Goście",audTeam:"Zespół",noNotifs:"Na razie nic nowego.",rooms:"Pokoje",addRooms:"Dodaj pokoje",roomsHint:"Jeden pokój w linii lub po przecinku",activeLbl:"Aktywny",roomNotFound:"Ten numer pokoju nie jest zarejestrowany. Zapytaj w recepcji.",guestAccounts:"Konta gości",welcomeMsgLbl:"Tekst powitalny (opcjonalnie)",textC:"Kolor tekstu",navC:"Kolor menu",navActiveC:"Kolor aktywnego menu",guestsTab:"Goście",teamTab:"Zespół",taskType:"Typ zadania",ttCome:"Przyjdź na miejsce",ttLeave:"Opuść miejsce",ttActivity:"Poprowadź aktywność",ttFeedback:"Zbierz opinie",ttCollect:"Zbierz gości",accept:"Przyjmij",still:"Wciąż w trakcie",cantDo:"Nie mogę",accepted:"Przyjęte",late:"Po czasie",points:"Punkty",rank:"Ranking zespołu",exportReport:"Raport tygodniowy (Excel)",feedback:"Opinie",addFeedback:"Dodaj opinię",rate:"Ocena",comment:"Krótki komentarz",avgRate:"Średnia ocena",taskStats:"Zadania wg animatorów",dueLbl:"Termin",aiTab:"Asystent AI",aiKeyLbl:"Klucz API Anthropic",aiKeyHint:"Zapisany tylko w tej przeglądarce — nigdy w pliku aplikacji ani w bazie.",aiAsk:"Zapytaj asystenta…",aiIntro:"Profesjonalna pomoc: planowanie, komunikaty, pomysły i problemy — zna Twój program i statystyki.",aiErr:"Zapytanie AI nie powiodło się — sprawdź klucz i środki.",profile:"Profil",changePass:"Zmień hasło",newPass:"Nowe hasło",yourLogin:"Twoje dane logowania",saveThese:"Zapisz je — będą potrzebne do logowania na innych telefonach.",firstVisit:"Pierwsza wizyta",accountExists:"Ten pokój ma już konto — zaloguj się hasłem.",editUser:"Edytuj użytkownika",overview:"Statystyki",menu:"Menu",logout:"Wyloguj",socialPage:"Social i opinie",teamPage:"Nasz zespół",contactWa:"Napisz do nas na WhatsApp",leaveReview:"Zostaw opinię",ourTeam:"Nasz zespół animacji",entertainersWord:"animatorów",profiles:"Profile",addProfile:"Dodaj profil",positionLbl:"Stanowisko",skills:"Umiejętności",languagesLbl:"Języki",instagramLbl:"Profil na Instagramie",whatsappLbl:"Numer WhatsApp"},
+cs:{chat:"Chat",typeMessage:"Napište zprávu…",send:"Odeslat",noMessages:"Zatím žádné zprávy — pozdravte nás!",requests:"Přání",songRequest:"Přání písničky",birthdayRequest:"Narozeniny",songName:"Píseň / interpret",forWhom:"Pro koho?",birthdayDate:"Datum",reqNote:"Zpráva (volitelné)",myRequests:"Moje přání",statusNew:"Nové",done:"Hotovo",markDone:"Označit jako hotové",tasks:"Úkoly",addTask:"Přidat úkol",taskFor:"Přiřadit",allTeam:"Celý tým",myTasks:"Moje úkoly",noTasks:"Žádné úkoly — užijte si slunce!",attendance:"Docházka",present:"Přítomen",notifications:"Oznámení",newAnnouncement:"Nové oznámení",audience:"Komu",audAll:"Všem",audGuests:"Hostům",audTeam:"Týmu",noNotifs:"Zatím nic nového.",rooms:"Pokoje",addRooms:"Přidat pokoje",roomsHint:"Jeden pokoj na řádek nebo oddělené čárkou",activeLbl:"Aktivní",roomNotFound:"Toto číslo pokoje není registrováno. Zeptejte se na recepci.",guestAccounts:"Účty hostů",welcomeMsgLbl:"Uvítací text (volitelné)",textC:"Barva textu",navC:"Barva menu",navActiveC:"Barva aktivní položky",guestsTab:"Hosté",teamTab:"Tým",taskType:"Typ úkolu",ttCome:"Přijď na místo",ttLeave:"Opusť místo",ttActivity:"Veď aktivitu",ttFeedback:"Sbírej hodnocení",ttCollect:"Shromáždi hosty",accept:"Přijmout",still:"Stále na tom",cantDo:"Nemůžu",accepted:"Přijato",late:"Pozdě",points:"Body",rank:"Žebříček týmu",exportReport:"Týdenní report (Excel)",feedback:"Hodnocení hostů",addFeedback:"Přidat hodnocení",rate:"Hodnocení",comment:"Krátký komentář",avgRate:"Prům. hodnocení",taskStats:"Úkoly podle animátorů",dueLbl:"Termín",aiTab:"AI asistent",aiKeyLbl:"Anthropic API klíč",aiKeyHint:"Uložen jen v tomto prohlížeči — nikdy v souboru aplikace ani v databázi.",aiAsk:"Zeptej se asistenta…",aiIntro:"Profesionální pomoc: plánování, texty, nápady i problémy — zná tvůj program a statistiky.",aiErr:"AI požadavek selhal — zkontroluj klíč a kredit.",profile:"Profil",changePass:"Změnit heslo",newPass:"Nové heslo",yourLogin:"Vaše přihlašovací údaje",saveThese:"Uložte si je — potřebujete je pro přihlášení na dalších telefonech.",firstVisit:"První návštěva",accountExists:"Tento pokoj už má účet — přihlaste se heslem.",editUser:"Upravit uživatele",overview:"Statistiky",menu:"Menu",logout:"Odhlásit",socialPage:"Sociální sítě a recenze",teamPage:"Náš tým",contactWa:"Napište nám na WhatsApp",leaveReview:"Napsat recenzi",ourTeam:"Náš animační tým",entertainersWord:"animátorů",profiles:"Profily",addProfile:"Přidat profil",positionLbl:"Pozice",skills:"Dovednosti",languagesLbl:"Jazyky",instagramLbl:"Instagram profil",whatsappLbl:"Číslo WhatsApp"},
+nl:{chat:"Chat",typeMessage:"Schrijf een bericht…",send:"Versturen",noMessages:"Nog geen berichten — zeg hallo!",requests:"Verzoeken",songRequest:"Muziekverzoek",birthdayRequest:"Verjaardag",songName:"Nummer / artiest",forWhom:"Voor wie?",birthdayDate:"Datum",reqNote:"Bericht (optioneel)",myRequests:"Mijn verzoeken",statusNew:"Nieuw",done:"Klaar",markDone:"Markeer als klaar",tasks:"Taken",addTask:"Taak toevoegen",taskFor:"Toewijzen aan",allTeam:"Hele team",myTasks:"Mijn taken",noTasks:"Geen taken — geniet van de zon!",attendance:"Aanwezigheid",present:"Aanwezig",notifications:"Meldingen",newAnnouncement:"Nieuwe melding",audience:"Versturen naar",audAll:"Iedereen",audGuests:"Gasten",audTeam:"Team",noNotifs:"Even niets nieuws.",rooms:"Kamers",addRooms:"Kamers toevoegen",roomsHint:"Eén kamer per regel of gescheiden door komma's",activeLbl:"Actief",roomNotFound:"Dit kamernummer is niet geregistreerd. Vraag het bij de receptie.",guestAccounts:"Gastaccounts",welcomeMsgLbl:"Welkomsttekst (optioneel)",textC:"Tekstkleur",navC:"Menukleur",navActiveC:"Actieve menukleur",guestsTab:"Gasten",teamTab:"Team",taskType:"Taaktype",ttCome:"Kom naar locatie",ttLeave:"Verlaat locatie",ttActivity:"Activiteit leiden",ttFeedback:"Feedback verzamelen",ttCollect:"Gasten verzamelen",accept:"Accepteren",still:"Nog bezig",cantDo:"Ik kan niet",accepted:"Geaccepteerd",late:"Te laat",points:"Punten",rank:"Teamranking",exportReport:"Weekrapport (Excel)",feedback:"Feedback",addFeedback:"Feedback toevoegen",rate:"Beoordeling",comment:"Korte opmerking",avgRate:"Gem. beoordeling",taskStats:"Taken per entertainer",dueLbl:"Deadline",aiTab:"AI-assistent",aiKeyLbl:"Anthropic API-sleutel",aiKeyHint:"Alleen in deze browser opgeslagen — nooit in het app-bestand of de database.",aiAsk:"Vraag je assistent…",aiIntro:"Professionele hulp: planning, teksten, ideeën en problemen — kent je programma en statistieken.",aiErr:"AI-verzoek mislukt — controleer sleutel en tegoed.",profile:"Profiel",changePass:"Wachtwoord wijzigen",newPass:"Nieuw wachtwoord",yourLogin:"Je inloggegevens",saveThese:"Bewaar ze — je hebt ze nodig om op andere telefoons in te loggen.",firstVisit:"Eerste bezoek",accountExists:"Deze kamer heeft al een account — log in met het wachtwoord.",editUser:"Gebruiker bewerken",overview:"Statistieken",menu:"Menu",logout:"Uitloggen",socialPage:"Social & Reviews",teamPage:"Ons team",contactWa:"App ons op WhatsApp",leaveReview:"Laat een review achter",ourTeam:"Ons animatieteam",entertainersWord:"entertainers",profiles:"Profielen",addProfile:"Profiel toevoegen",positionLbl:"Functie",skills:"Vaardigheden",languagesLbl:"Talen",instagramLbl:"Instagram-profiel",whatsappLbl:"WhatsApp-nummer"},
+fr:{chat:"Chat",typeMessage:"Écrivez un message…",send:"Envoyer",noMessages:"Pas encore de messages — dites bonjour !",requests:"Demandes",songRequest:"Demande de chanson",birthdayRequest:"Anniversaire",songName:"Chanson / artiste",forWhom:"Pour qui ?",birthdayDate:"Date",reqNote:"Message (optionnel)",myRequests:"Mes demandes",statusNew:"Nouveau",done:"Fait",markDone:"Marquer comme fait",tasks:"Tâches",addTask:"Ajouter une tâche",taskFor:"Attribuer à",allTeam:"Toute l'équipe",myTasks:"Mes tâches",noTasks:"Aucune tâche — profitez du soleil !",attendance:"Présence",present:"Présent",notifications:"Notifications",newAnnouncement:"Nouvelle notification",audience:"Envoyer à",audAll:"Tout le monde",audGuests:"Invités",audTeam:"Équipe",noNotifs:"Rien de nouveau pour l'instant.",rooms:"Chambres",addRooms:"Ajouter des chambres",roomsHint:"Une chambre par ligne ou séparées par des virgules",activeLbl:"Active",roomNotFound:"Ce numéro de chambre n'est pas enregistré. Demandez à la réception.",guestAccounts:"Comptes invités",welcomeMsgLbl:"Message de bienvenue (optionnel)",textC:"Couleur du texte",navC:"Couleur du menu",navActiveC:"Couleur du menu actif",guestsTab:"Invités",teamTab:"Équipe",taskType:"Type de tâche",ttCome:"Venir sur place",ttLeave:"Quitter le lieu",ttActivity:"Animer l'activité",ttFeedback:"Recueillir des avis",ttCollect:"Rassembler les invités",accept:"Accepter",still:"Encore en cours",cantDo:"Je ne peux pas",accepted:"Acceptée",late:"En retard",points:"Points",rank:"Classement de l'équipe",exportReport:"Rapport hebdo (Excel)",feedback:"Avis",addFeedback:"Ajouter un avis",rate:"Note",comment:"Commentaire court",avgRate:"Note moyenne",taskStats:"Tâches par animateur",dueLbl:"Échéance",aiTab:"Assistant IA",aiKeyLbl:"Clé API Anthropic",aiKeyHint:"Enregistrée uniquement dans ce navigateur — jamais dans le fichier de l'app ni la base.",aiAsk:"Demandez à votre assistant…",aiIntro:"Aide professionnelle : planification, textes, idées et problèmes — il connaît votre programme et vos statistiques.",aiErr:"Échec de la requête IA — vérifiez la clé et le crédit.",profile:"Profil",changePass:"Changer le mot de passe",newPass:"Nouveau mot de passe",yourLogin:"Vos identifiants",saveThese:"Gardez-les — nécessaires pour vous connecter sur d'autres téléphones.",firstVisit:"Première visite",accountExists:"Cette chambre a déjà un compte — connectez-vous avec le mot de passe.",editUser:"Modifier l'utilisateur",overview:"Statistiques",menu:"Menu",logout:"Se déconnecter",socialPage:"Réseaux & Avis",teamPage:"Notre équipe",contactWa:"Écrivez-nous sur WhatsApp",leaveReview:"Laisser un avis",ourTeam:"Notre équipe d'animation",entertainersWord:"animateurs",profiles:"Profils",addProfile:"Ajouter un profil",positionLbl:"Poste",skills:"Compétences",languagesLbl:"Langues",instagramLbl:"Profil Instagram",whatsappLbl:"Numéro WhatsApp"},
+ar:{chat:"الدردشة",typeMessage:"اكتب رسالة…",send:"إرسال",noMessages:"لا توجد رسائل بعد — قل مرحباً!",requests:"الطلبات الخاصة",songRequest:"طلب أغنية",birthdayRequest:"عيد ميلاد",songName:"الأغنية / الفنان",forWhom:"لمن؟",birthdayDate:"التاريخ",reqNote:"رسالة (اختياري)",myRequests:"طلباتي الخاصة",statusNew:"جديد",done:"تم",markDone:"وضع علامة تم",tasks:"المهام",addTask:"إضافة مهمة",taskFor:"تعيين إلى",allTeam:"كل الفريق",myTasks:"مهامي",noTasks:"لا مهام — استمتع بالشمس!",attendance:"الحضور",present:"حاضر",notifications:"الإشعارات",newAnnouncement:"إشعار جديد",audience:"إرسال إلى",audAll:"الجميع",audGuests:"الضيوف",audTeam:"الفريق",noNotifs:"لا جديد الآن.",rooms:"الغرف",addRooms:"إضافة غرف",roomsHint:"غرفة واحدة في كل سطر أو مفصولة بفواصل",activeLbl:"مفعّلة",roomNotFound:"رقم الغرفة غير مسجل. يرجى السؤال في الاستقبال.",guestAccounts:"حسابات الضيوف",welcomeMsgLbl:"نص الترحيب (اختياري)",textC:"لون النص",navC:"لون القائمة",navActiveC:"لون القائمة النشط",guestsTab:"الضيوف",teamTab:"الفريق",taskType:"نوع المهمة",ttCome:"تعال إلى الموقع",ttLeave:"غادر الموقع",ttActivity:"قدّم النشاط",ttFeedback:"اجمع آراء الضيوف",ttCollect:"اجمع الضيوف",accept:"قبول",still:"ما زلت أعمل",cantDo:"لا أستطيع",accepted:"مقبولة",late:"متأخر",points:"نقاط",rank:"ترتيب الفريق",exportReport:"تقرير أسبوعي (Excel)",feedback:"آراء الضيوف",addFeedback:"إضافة رأي",rate:"التقييم",comment:"تعليق قصير",avgRate:"متوسط التقييم",taskStats:"المهام حسب المنشط",dueLbl:"الموعد النهائي",aiTab:"مساعد الذكاء",aiKeyLbl:"مفتاح Anthropic API",aiKeyHint:"يُحفظ في هذا المتصفح فقط — لا في ملف التطبيق ولا في قاعدة البيانات.",aiAsk:"اسأل مساعدك…",aiIntro:"مساعدة احترافية: التخطيط والنصوص والأفكار والمشكلات — يعرف برنامجك وإحصاءاتك.",aiErr:"فشل طلب الذكاء الاصطناعي — تحقق من المفتاح والرصيد.",profile:"الملف الشخصي",changePass:"تغيير كلمة المرور",newPass:"كلمة مرور جديدة",yourLogin:"بيانات دخولك",saveThese:"احفظها — ستحتاجها للدخول من هواتف أخرى.",firstVisit:"الزيارة الأولى",accountExists:"هذه الغرفة لديها حساب بالفعل — سجّل الدخول بكلمة المرور.",editUser:"تعديل المستخدم",overview:"نظرة عامة",menu:"القائمة",logout:"تسجيل الخروج",socialPage:"التواصل والتقييمات",teamPage:"تعرّف على الفريق",contactWa:"راسلنا على واتساب",leaveReview:"اترك تقييماً",ourTeam:"فريق الترفيه لدينا",entertainersWord:"منشطين",profiles:"الملفات الشخصية",addProfile:"إضافة ملف",positionLbl:"المنصب",skills:"المهارات",languagesLbl:"اللغات",instagramLbl:"حساب إنستغرام",whatsappLbl:"رقم واتساب"}
 };
 const DICT = {
 en:Object.assign({appSub:"Animation Team",guest:"Guest",staff:"Team",manager:"Manager",room:"Room number",name:"Your name",phone:"Mobile phone",user:"Username",pass:"Password",signin:"Sign in",welcome:"Welcome",today:"Today",highlight:"Highlight of the day",todayProgram:"Today's program",week:"Weekly program",myStay:"My stay",home:"Home",program:"Program",bookings:"Bookings",myBookings:"My bookings",favorites:"Favorites",book:"Book",booked:"Booked",full:"Full",waitlist:"Join waiting list",onWaitlist:"On waiting list",cancel:"Cancel booking",seatsLeft:"seats left",adults:"Adults",children:"Children",confirm:"Confirm booking",close:"Close",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],daysShort:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],cats:{morning:"Morning",afternoon:"Afternoon",evening:"Evening",kids:"Kids Club",theme:"Theme day"},guests:"guests",noBookings:"No bookings yet. Find something you love in today's program!",noFavs:"No favorites yet. Tap the heart on any activity.",schedule:"Schedule",team:"Team",guestsBooked:"Guests booked",noneToday:"Nothing scheduled here today.",dashboard:"Dashboard",manage:"Program",totalBookings:"Bookings this week",activities:"Activities",occupancy:"Avg. occupancy",waitlisted:"On waiting lists",addActivity:"Add activity",editActivity:"Edit activity",deleteActivity:"Delete",actName:"Activity name",desc:"Description",location:"Location",time:"Time",capacity:"Capacity",entertainer:"Entertainer(s)",imageUrl:"Photo URL (optional)",category:"Category",day:"Day",makeHighlight:"Highlight of the day",save:"Save",saved:"Saved",deleted:"Deleted",bookingOk:"Booking confirmed!",waitOk:"Added to waiting list",cancelled:"Cancelled",loginErr:"Please check your details and try again.",demoNote:"Preview mode with sample data — connect Supabase in the file to go live.",reviews:"Enjoying your holiday?",reviewsSub:"Share your experience — it means the world to our team.",followUs:"Follow the team",none:"—",arrival:"Arrival day",departure:"Departure day",otherUsers:"Team access",backToGuest:"← Guest login",usersTab:"Users",appTab:"App",appName:"App name",appSubtitle:"Subtitle",colorsHead:"Colors",primaryC:"Main color",accentC:"Accent color",linksHead:"Review links",socialHead:"Social media",addUser:"Add user",displayName:"Display name",roleLabel:"Role",teamAccounts:"Team accounts",guestStats:"Guest analytics",uniqueGuests:"Guest rooms",totalPeople:"People booked",language:"Language",userExists:"Username already exists",tickets:"Tickets",buyTicket:"Buy ticket",myTickets:"My tickets",price:"Price",qty:"Quantity",reserved:"Reserved",paid:"Paid",payNote:"Reserve in the app and pay at the entertainment desk or reception.",ticketOk:"Ticket reserved!",nationality:"Nationality",natStats:"Nationalities",addTicket:"Add ticket event",editTicket:"Edit ticket event",markPaid:"Mark paid",markReserved:"Mark reserved",styleHead:"Text style",buttonHead:"Button style",menuHead:"Menu titles",bgC:"Background",fontElegant:"Elegant",fontRoyal:"Royal",fontModern:"Modern",fontSoft:"Soft",btnRounded:"Rounded",btnPill:"Pill",btnSquare:"Square",ticketsNone:"No ticket events yet.",orders:"Orders",soldOut:"Sold out"},EXTRA.en),
@@ -329,7 +414,7 @@ const S = {
   sub:{program:"acts", guests:"bookings", team:"accounts", dash:"overview"},
   chatRoom:null, seenNote:0,
   activities:[], bookings:[], users:[], tickets:[], orders:[],
-  rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[], feedback:[], aiChat:[],
+  rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[], feedback:[], aiChat:[], profiles:[],
   settings:{...DEFAULT_SETTINGS}, loadError:false
 };
 const t = k => (DICT[S.lang] && DICT[S.lang][k]) ?? DICT.en[k] ?? k;
@@ -417,6 +502,9 @@ function demoRequests(){
 function demoTasks(){
   return [{id:1,type:"collect",title:"Collect guests for Boccia",desc:"",location:"Beach Area",assigned_to:"team",due:"",status:"open",was_still:false,created_at:new Date().toISOString()}];
 }
+function demoProfiles(){
+  return [{id:1,name:"Jacky",position:"Entertainment Manager",photo:"",nationality:"German",languages:"DE · EN · AR",skills:"Shows · Dance · Kids",instagram:"",created_at:new Date().toISOString()}];
+}
 function demoFeedback(){
   return [{id:1,room:"4215",nationality:"German",rate:5,comment:"Amazing foam party!",by_user:"team",created_at:new Date().toISOString()}];
 }
@@ -443,24 +531,25 @@ async function sb(path, opts={}){
 const DB = {
   async load(){
     if(REMOTE){
-      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at,fb] = await Promise.all([
+      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at,fb,tp] = await Promise.all([
         sb("activities?select=*&order=time"), sb("bookings?select=*"),
         sb("app_users?select=*"), sb("app_settings?select=*&id=eq.1"),
         sb("tickets?select=*&order=time"), sb("ticket_orders?select=*"),
         sb("rooms?select=*&order=room"), sb("guest_accounts?select=*"),
         sb("messages?select=*&order=created_at"), sb("requests?select=*&order=created_at.desc"),
         sb("tasks?select=*&order=created_at.desc"), sb("announcements?select=*&order=created_at.desc"),
-        sb("attendance?select=*"), sb("feedback?select=*&order=created_at.desc")
+        sb("attendance?select=*"), sb("feedback?select=*&order=created_at.desc"),
+        sb("team_profiles?select=*&order=id")
       ]);
       S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
       S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
-      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.feedback=fb||[];
+      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.feedback=fb||[]; S.profiles=tp||[];
       if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
       S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
       S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback();
+      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
     }
   },
   async poll(){
@@ -607,6 +696,20 @@ const DB = {
     if(REMOTE) await sb("feedback?id=eq."+id,{method:"DELETE"});
     S.feedback=S.feedback.filter(x=>x.id!==id);
   },
+  async saveProfile(pr){
+    if(REMOTE){
+      if(pr.id){ const {id,...rest}=pr; await sb("team_profiles?id=eq."+id,{method:"PATCH",body:JSON.stringify(rest)});
+        S.profiles=S.profiles.map(x=>x.id===id?pr:x); }
+      else { const r=await sb("team_profiles",{method:"POST",body:JSON.stringify(pr)}); S.profiles.push(r[0]); }
+    } else {
+      if(pr.id) S.profiles=S.profiles.map(x=>x.id===pr.id?pr:x);
+      else { pr.id=Date.now(); S.profiles.push(pr); }
+    }
+  },
+  async deleteProfile(id){
+    if(REMOTE) await sb("team_profiles?id=eq."+id,{method:"DELETE"});
+    S.profiles=S.profiles.filter(x=>x.id!==id);
+  },
   async deleteTask(id){
     if(REMOTE) await sb("tasks?id=eq."+id,{method:"DELETE"});
     S.tasks=S.tasks.filter(x=>x.id!==id);
@@ -704,6 +807,7 @@ const CAT_ORDER=["morning","kids","afternoon","theme","evening"];
 const TASK_TYPES=["come","leave","activity","feedback","collect"];
 const TASK_ICON={come:"pin",leave:"exit",activity:"flag",feedback:"star",collect:"users"};
 const ICONS={
+menu:'<path d="M4 7h16M4 12h16M4 17h10"/>',
 home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v11h14V10"/><path d="M10 21v-6h4v6"/>',
 calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
 ticket:'<path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v1.5a2.5 2.5 0 000 5V16a2 2 0 01-2 2H6a2 2 0 01-2-2v-1.5a2.5 2.5 0 000-5z"/><path d="M14 6v12" stroke-dasharray="2.5 2.5"/>',
@@ -741,7 +845,8 @@ const BRAND={
 Instagram:'<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/>',
 TikTok:'<path fill="currentColor" d="M16.5 3c.4 2.3 1.8 3.8 4 4.1v3c-1.6 0-3-.5-4-1.3v6.7a5.75 5.75 0 11-5.75-5.75c.26 0 .5.02.75.06v3.1a2.7 2.7 0 102 2.6V3h3z"/>',
 Facebook:'<path fill="currentColor" d="M14 8.5h3.2V5H14a4.2 4.2 0 00-4.2 4.2v2.3H7v3.5h2.8V22h3.6v-7h3l.6-3.5h-3.6V9.4c0-.5.3-.9.6-.9z"/>',
-YouTube:'<rect x="2.5" y="6" width="19" height="12.5" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="currentColor" d="M10.3 9.4l5 2.85-5 2.85z"/>'
+YouTube:'<rect x="2.5" y="6" width="19" height="12.5" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="currentColor" d="M10.3 9.4l5 2.85-5 2.85z"/>',
+WhatsApp:'<path fill="currentColor" d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.7.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.2-.4 0-.5.1-.7l.4-.5c.1-.2.1-.3.2-.5s0-.4 0-.5c-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.6 1.1 2.8c.1.2 1.9 3 4.7 4.1.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/>'
 };
 function ic(name,size=20){ return `<svg class="ic-s" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.star}</svg>`; }
 function mi(name){ return `<span class="mi">${ic(name,13)}</span>`; }
@@ -778,7 +883,7 @@ function render(){
   if(!S.session){ app.innerHTML=loginView(); wireLogin(); return; }
   const r=S.session.role;
   app.innerHTML =
-    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView()) + navView(r);
+    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView());
   wireCommon();
 }
 function errorView(){
@@ -816,7 +921,7 @@ function loginView(){
           <div><label>${t("arrival")}</label><input id="f-arr" type="date"></div>
           <div><label>${t("departure")}</label><input id="f-dep" type="date"></div>
         </div>` : `
-        <label>${t("room")}</label><input id="f-room" inputmode="numeric" placeholder="4215">
+        <label>${t("user")} · ${t("room")}</label><input id="f-room" inputmode="numeric" placeholder="4215">
         <label>${t("pass")}</label><input id="f-gpass" type="password" placeholder="••••••">`;
     return `<div class="login-wrap fadein">
       ${brand}
@@ -859,15 +964,18 @@ function wireLogin(){
     if(loginMode==="guest"){
       const room=$("#f-room").value.trim();
       if(!room){ err.textContent=t("loginErr"); return; }
-      const rm=S.rooms.find(x=>String(x.room)===room);
-      if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
-      const existing=S.accounts.find(a=>String(a.room)===room);
       if(guestMode==="signin"){
+        const existing=S.accounts.find(a=>String(a.room)===room || String(a.username||"")===room);
         if(!existing){ err.textContent=t("roomNotFound"); return; }
+        const rm=S.rooms.find(x=>String(x.room)===String(existing.room));
+        if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
         const p=$("#f-gpass").value;
         if(existing.password && existing.password!==p){ err.textContent=t("loginErr"); return; }
         startGuestSession(existing);
       } else {
+        const rm=S.rooms.find(x=>String(x.room)===room);
+        if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
+        const existing=S.accounts.find(a=>String(a.room)===room);
         if(existing){ err.textContent=t("accountExists"); guestMode="signin"; setTimeout(render,1400); return; }
         const name=$("#f-name").value.trim(), phone=$("#f-phone").value.trim();
         const nat=$("#f-nat").value.trim(), arr=$("#f-arr").value, dep=$("#f-dep").value;
@@ -907,17 +1015,81 @@ function openCredentialsModal(acc){
   wrap.querySelector("#cr-x").onclick=()=>wrap.remove();
 }
 /* ---------------- shared pieces ---------------- */
+function socialTopIcons(){
+  const st=S.settings;
+  const links=[["Facebook",st.facebook],["Instagram",st.instagram],["TikTok",st.tiktok],["YouTube",st.youtube],["WhatsApp",waLink()]].filter(x=>x[1]);
+  return links.map(([n,u])=>`<a class="iconbtn socialtop" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${brandIc(n)}</a>`).join("");
+}
+function waLink(){
+  const num=String(S.settings.whatsapp||"").replace(/[^0-9]/g,"");
+  return num?("https://wa.me/"+num):"";
+}
+function navItems(role){
+  if(role==="guest"){
+    const un=unreadFor("guest");
+    return [["home","home",menuLabel("menuHome",t("home")),0],
+      ["program","calendar",menuLabel("menuProgram",t("program")),0],
+      ["tickets","ticket",menuLabel("menuTickets",t("tickets")),0],
+      ["chat","chat",menuLabel("menuChat",t("chat")),un],
+      ["stay","user",menuLabel("menuStay",t("myStay")),0],
+      ["teaminfo","users",t("teamPage"),0],
+      ["social","star",t("socialPage"),0]];
+  }
+  if(role==="staff"){
+    return [["today","clipboard",t("today"),0],["week","calendar",t("program"),0],["bookings","ticket",t("bookings"),0],
+      ["tasks","check",t("tasks"),S.tasks.filter(x=>["open","accepted","still"].includes(x.status)&&(!x.assigned_to||x.assigned_to===S.session.username)).length],
+      ["feedback","star",t("feedback"),0]];
+  }
+  const un=unreadFor("manager");
+  const newReq=S.requests.filter(r=>r.status==="new").length;
+  return [["dash","grid",t("dashboard"),0],["program","calendar",t("manage"),0],
+    ["guests","chat",t("guestsTab"),un+newReq],["team","users",t("teamTab"),0],
+    ["ai","sparkle",t("aiTab"),0],["app","palette",t("appTab"),0]];
+}
 function topBar(title,sub){
   const role=S.session?S.session.role:"guest";
+  const anyDot=navItems(role).some(x=>x[3]>0);
   return `<div class="top">
-    <div class="who"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>
+    <div class="toprow toprow-l">
+      <button class="iconbtn" id="btn-menu" aria-label="${t("menu")}">${ic("menu",21)}${anyDot?'<span class="reddot"></span>':''}</button>
+      <span class="socialrow">${socialTopIcons()}</span>
+    </div>
     <div class="toprow">
       <button class="iconbtn" id="btn-notes" aria-label="notifications">${ic("bell",19)}${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
-      <button class="iconbtn" id="btn-theme" aria-label="theme">${ic(S.theme==="light"?"moon":"sun",19)}</button>
-      <button class="iconbtn" id="btn-lang" aria-label="language">${ic("globe",19)}</button>
-      <button class="iconbtn" id="btn-out" aria-label="logout">${ic("power",19)}</button>
+    </div>
+  </div>
+  <div class="who whobar"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>`;
+}
+function openMenuDrawer(){
+  const role=S.session?S.session.role:"guest";
+  const items=navItems(role);
+  const wrap=document.createElement("div"); wrap.className="drawer-bg";
+  wrap.innerHTML=`<div class="drawer">
+    <div class="dr-head">
+      <div class="mono serif sm">${esc((S.settings.name||"E").trim().charAt(0).toUpperCase())}</div>
+      <div><h3>${esc(S.settings.name)}</h3><p>${esc(S.session?S.session.name:"")}</p></div>
+    </div>
+    <div class="dr-items">
+      ${items.map(([id,icn,lb,dot])=>`<button class="dr-it ${S.tab===id?"on":""}" data-drtab="${id}">
+        <span class="dr-ic">${ic(icn,19)}</span><span class="dr-lb">${lb}</span>${dot?`<span class="badge">${dot}</span>`:""}
+      </button>`).join("")}
+    </div>
+    <div class="dr-foot">
+      <button class="iconbtn" id="dr-lang" aria-label="${t("language")}">${ic("globe",19)}</button>
+      <button class="iconbtn" id="dr-theme" aria-label="theme">${ic(S.theme==="light"?"moon":"sun",19)}</button>
+      <button class="dr-out" id="dr-out">${ic("power",16)} ${t("logout")}</button>
     </div>
   </div>`;
+  document.body.appendChild(wrap);
+  requestAnimationFrame(()=>wrap.classList.add("open"));
+  const close=(cb)=>{ wrap.classList.remove("open"); setTimeout(()=>{ wrap.remove(); if(cb) cb(); },240); };
+  wrap.onclick=e=>{ if(e.target===wrap) close(); };
+  wrap.querySelectorAll("[data-drtab]").forEach(b=>b.onclick=()=>{
+    close(()=>{ S.tab=b.dataset.drtab; S.chatRoom=null; render(); });
+  });
+  wrap.querySelector("#dr-lang").onclick=()=>close(openLangModal);
+  wrap.querySelector("#dr-theme").onclick=()=>close(()=>setTheme(S.theme==="light"?"dark":"light"));
+  wrap.querySelector("#dr-out").onclick=()=>close(()=>{S.session=null;S.chatRoom=null;loginMode="guest";guestMode="new";persist();render();});
 }
 function heroCard(a){
   if(!a) return "";
@@ -1035,6 +1207,8 @@ function guestView(){
     </div>`;
   }
   if(S.tab==="program") return weeklyView(t("week"));
+  if(S.tab==="social") return socialPageView();
+  if(S.tab==="teaminfo") return teamInfoView();
   if(S.tab==="tickets") return guestTicketsView();
   if(S.tab==="chat"){
     return `<div class="screen fadein">
@@ -1095,6 +1269,50 @@ function guestView(){
       ${favActs.length?favActs.map(a=>activityCard(a)).join(""):`<div class="empty"><div class="big">${ic("heart",30)}</div>${t("noFavs")}</div>`}
     </div>
     ${reviewDue(g)?reviewBlock():""}
+  </div>`;
+}
+function socialPageView(){
+  const st=S.settings;
+  const socials=[["Facebook",st.facebook],["Instagram",st.instagram],["TikTok",st.tiktok],["YouTube",st.youtube]].filter(x=>x[1]);
+  const reviews=[["Google",st.google],["Facebook",st.facebook],["Tripadvisor",st.tripadvisor],["HolidayCheck",st.holidaycheck]].filter(x=>x[1]);
+  const wa=waLink();
+  return `<div class="screen fadein">
+    ${topBar(t("socialPage"),S.settings.name)}
+    ${wa?`<a class="wa-cta" href="${esc(wa)}" target="_blank" rel="noopener">${brandIc("WhatsApp")} ${t("contactWa")}</a>`:""}
+    ${socials.length?`<div class="sec"><h3>${t("followUs")}</h3>
+      ${socials.map(([n,u])=>`<a class="card social-big" href="${esc(u)}" target="_blank" rel="noopener">
+        <span class="sb-ic">${brandIc(n)}</span><span class="sb-nm">${n}</span><span class="sb-go">${ic("back",16)}</span></a>`).join("")}
+    </div>`:""}
+    ${reviews.length?`<div class="sec"><h3>${t("leaveReview")}</h3>
+      ${reviews.map(([n,u])=>`<a class="card social-big" href="${esc(u)}" target="_blank" rel="noopener">
+        <span class="sb-ic star">★</span><span class="sb-nm">${n}</span><span class="sb-go">${ic("back",16)}</span></a>`).join("")}
+    </div>`:""}
+  </div>`;
+}
+function teamInfoView(){
+  const list=[...S.profiles].sort((a,b)=>{
+    const am=/manager/i.test(a.position||"")?0:1, bm=/manager/i.test(b.position||"")?0:1;
+    return am-bm || a.id-b.id;
+  });
+  const entCount=list.filter(p=>!/manager/i.test(p.position||"")).length;
+  return `<div class="screen fadein">
+    ${topBar(t("teamPage"),S.settings.name)}
+    <div class="teamcount card"><b class="serif">${entCount}</b><span>${t("ourTeam")} · ${entCount} ${t("entertainersWord")}</span></div>
+    ${list.length?list.map(p=>teamCard(p)).join(""):`<div class="empty"><div class="big">${ic("users",30)}</div>${t("none")}</div>`}
+  </div>`;
+}
+function teamCard(p){
+  const chips=x=>String(x||"").split(/[·,;\/|]+/).map(v=>v.trim()).filter(Boolean)
+    .map(v=>`<span class="tchip">${esc(v)}</span>`).join("");
+  return `<div class="card team-card">
+    <div class="tc-photo">${p.photo?`<img src="${esc(p.photo)}" alt="" loading="lazy">`:`<div class="tc-mono serif">${esc((p.name||"?").trim().charAt(0).toUpperCase())}</div>`}</div>
+    <div class="tc-body">
+      <h4 class="serif">${esc(p.name)}</h4>
+      <p class="tc-pos">${esc(p.position||"")}</p>
+      <p class="mini">${esc(p.nationality||"")}${p.nationality&&p.languages?" · ":""}${esc(p.languages||"")}</p>
+      ${p.skills?`<div class="tc-chips">${chips(p.skills)}</div>`:""}
+      ${p.instagram?`<a class="btn sm ghost social-a" href="${esc(p.instagram)}" target="_blank" rel="noopener">${brandIc("Instagram")} Instagram</a>`:""}
+    </div>
   </div>`;
 }
 function guestTicketsView(){
@@ -1290,10 +1508,10 @@ function managerView(){
   }
   if(S.tab==="team"){
     const sub=S.sub.team;
-    const inner = sub==="tasks" ? tasksInner() : sub==="attendance" ? attendanceInner() : accountsInner();
+    const inner = sub==="tasks" ? tasksInner() : sub==="attendance" ? attendanceInner() : sub==="profiles" ? profilesInner() : accountsInner();
     return `<div class="screen fadein">
       ${topBar(t("teamTab"),S.session.name)}
-      ${subTabs("team",[["accounts",t("teamAccounts")],["tasks",t("tasks")],["attendance",t("attendance")]])}
+      ${subTabs("team",[["accounts",t("teamAccounts")],["profiles",t("profiles")],["tasks",t("tasks")],["attendance",t("attendance")]])}
       ${inner}
     </div>`;
   }
@@ -1424,6 +1642,49 @@ function accountsInner(){
           ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">✕</button>`}
         </span></div>`;}).join("")}
     </div>`;
+}
+function profilesInner(){
+  return `<button class="btn" id="btn-addprofile" style="margin:0 0 14px">＋ ${t("addProfile")}</button>`
+    + (S.profiles.length?S.profiles.map(p=>`<div class="card team-card">
+        <div class="tc-photo sm">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<div class="tc-mono serif">${esc((p.name||"?").trim().charAt(0).toUpperCase())}</div>`}</div>
+        <div class="tc-body">
+          <h4 class="serif">${esc(p.name)}</h4>
+          <p class="tc-pos">${esc(p.position||"")}</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex:none">
+          <button class="btn sm ghost" data-pedit="${p.id}">${ic("pen",15)}</button>
+          <button class="btn sm warn" data-pdel="${p.id}">✕</button>
+        </div>
+      </div>`).join(""):`<div class="empty"><div class="big">${ic("users",30)}</div>${t("none")}</div>`);
+}
+function openProfileModal(p){
+  const isNew=!p; p=p||{name:"",position:"",photo:"",nationality:"",languages:"",skills:"",instagram:""};
+  const wrap=baseModal(`
+    <h3>${ic("pen",20)} ${isNew?t("addProfile"):t("profiles")}</h3>
+    <label>${t("name")}</label><input id="pr-name" value="${esc(p.name)}">
+    <label>${t("positionLbl")}</label><input id="pr-pos" value="${esc(p.position)}" placeholder="Entertainment Manager / Entertainer">
+    <label>${t("imageUrl")}</label><input id="pr-photo" value="${esc(p.photo)}" placeholder="https://...">
+    <label>${t("nationality")}</label>
+    <input id="pr-nat" list="prnatlist" value="${esc(p.nationality)}">
+    <datalist id="prnatlist">${NATIONS.map(n=>`<option value="${n}">`).join("")}</datalist>
+    <label>${t("languagesLbl")}</label><input id="pr-lang" value="${esc(p.languages)}" placeholder="DE · EN · RU">
+    <label>${t("skills")}</label><input id="pr-skills" value="${esc(p.skills)}" placeholder="Dance · Shows · Kids">
+    <label>${t("instagramLbl")}</label><input id="pr-ig" value="${esc(p.instagram)}" placeholder="https://instagram.com/...">
+    <button class="btn" id="pr-go">${t("save")}</button>
+    <button class="btn ghost" id="pr-x">${t("close")}</button>`);
+  wrap.querySelector("#pr-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#pr-go").onclick=async ()=>{
+    const name=wrap.querySelector("#pr-name").value.trim();
+    if(!name) return;
+    await DB.saveProfile({...p,name,
+      position:wrap.querySelector("#pr-pos").value.trim(),
+      photo:wrap.querySelector("#pr-photo").value.trim(),
+      nationality:wrap.querySelector("#pr-nat").value.trim(),
+      languages:wrap.querySelector("#pr-lang").value.trim(),
+      skills:wrap.querySelector("#pr-skills").value.trim(),
+      instagram:wrap.querySelector("#pr-ig").value.trim()});
+    wrap.remove(); toast(t("saved")); render();
+  };
 }
 function tasksInner(){
   const rk=rankingRows();
@@ -1583,36 +1844,14 @@ function appSettingsView(){
       <input id="s-insta" value="${esc(st.instagram)}" placeholder="Instagram URL" style="margin-bottom:8px">
       <input id="s-tiktok" value="${esc(st.tiktok)}" placeholder="TikTok URL" style="margin-bottom:8px">
       <input id="s-fb" value="${esc(st.facebook)}" placeholder="Facebook URL" style="margin-bottom:8px">
-      <input id="s-yt" value="${esc(st.youtube)}" placeholder="YouTube URL">
+      <input id="s-yt" value="${esc(st.youtube)}" placeholder="YouTube URL" style="margin-bottom:8px">
+      <label style="margin-top:4px">${t("whatsappLbl")}</label>
+      <input id="s-wa" value="${esc(st.whatsapp)}" placeholder="+20 100 000 0000" inputmode="tel">
       <button class="btn" id="btn-savesettings">${t("save")}</button>
     </div>
   </div>`;
 }
 
-/* ---------------- nav ---------------- */
-function navView(role){
-  let items;
-  if(role==="guest"){
-    const un=unreadFor("guest");
-    items=[["home","home",menuLabel("menuHome",t("home")),0],
-      ["program","calendar",menuLabel("menuProgram",t("program")),0],
-      ["tickets","ticket",menuLabel("menuTickets",t("tickets")),0],
-      ["chat","chat",menuLabel("menuChat",t("chat")),un],
-      ["stay","user",menuLabel("menuStay",t("myStay")),0]];
-  } else if(role==="staff"){
-    items=[["today","clipboard",t("today"),0],["week","calendar",t("program"),0],["bookings","ticket",t("bookings"),0],
-      ["tasks","check",t("tasks"),S.tasks.filter(x=>["open","accepted","still"].includes(x.status)&&(!x.assigned_to||x.assigned_to===S.session.username)).length],
-      ["feedback","star",t("feedback"),0]];
-  } else {
-    const un=unreadFor("manager");
-    const newReq=S.requests.filter(r=>r.status==="new").length;
-    items=[["dash","grid",t("dashboard"),0],["program","calendar",t("manage"),0],
-      ["guests","chat",t("guestsTab"),un+newReq],["team","users",t("teamTab"),0],
-      ["ai","sparkle",t("aiTab"),0],["app","palette",t("appTab"),0]];
-  }
-  return `<nav class="nav">${items.map(([id,icn,lb,dot])=>
-    `<button data-tab="${id}" class="${S.tab===id?"on":""}"><span class="ic">${ic(icn,21)}</span><span class="lb">${lb}</span>${dot?'<span class="ndot"></span>':''}</button>`).join("")}</nav>`;
-}
 /* ---------------- modals ---------------- */
 function baseModal(html){
   const wrap=document.createElement("div"); wrap.className="modal-bg";
@@ -1994,10 +2233,8 @@ function wireCommon(){
   document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{
     const [g,v]=b.dataset.sub.split(":"); S.sub[g]=v; S.chatRoom=null; render();
   });
-  const th=$("#btn-theme"); if(th) th.onclick=()=>setTheme(S.theme==="light"?"dark":"light");
-  const lg=$("#btn-lang"); if(lg) lg.onclick=openLangModal;
+  const mn=$("#btn-menu"); if(mn) mn.onclick=openMenuDrawer;
   const nb=$("#btn-notes"); if(nb) nb.onclick=openNotesModal;
-  const out=$("#btn-out"); if(out) out.onclick=()=>{S.session=null;S.chatRoom=null;loginMode="guest";persist();render();};
   document.querySelectorAll("[data-fav]").forEach(b=>b.onclick=e=>{
     e.stopPropagation(); const id=+b.dataset.fav;
     S.favorites=S.favorites.includes(id)?S.favorites.filter(x=>x!==id):[...S.favorites,id]; persist(); render();
@@ -2064,6 +2301,13 @@ function wireCommon(){
   });
   const fb=$("#btn-addfb"); if(fb) fb.onclick=openFeedbackModal;
   const cp=$("#btn-chpass"); if(cp) cp.onclick=openChangePassModal;
+  const ap=$("#btn-addprofile"); if(ap) ap.onclick=()=>openProfileModal(null);
+  document.querySelectorAll("[data-pedit]").forEach(b=>b.onclick=()=>{
+    const pr=S.profiles.find(x=>x.id===+b.dataset.pedit); if(pr) openProfileModal(pr);
+  });
+  document.querySelectorAll("[data-pdel]").forEach(b=>b.onclick=async ()=>{
+    await DB.deleteProfile(+b.dataset.pdel); toast(t("deleted")); render();
+  });
   document.querySelectorAll("[data-uedit]").forEach(b=>b.onclick=()=>{
     const u=S.users.find(x=>x.id===+b.dataset.uedit); if(u) openUserEditModal(u);
   });
@@ -2125,7 +2369,8 @@ function wireCommon(){
       menuTickets:$("#s-mtick").value.trim(), menuChat:$("#s-mchat").value.trim(), menuStay:$("#s-mstay").value.trim(),
       tripadvisor:$("#s-trip").value.trim(), google:$("#s-goog").value.trim(), holidaycheck:$("#s-holi").value.trim(),
       instagram:$("#s-insta").value.trim(), tiktok:$("#s-tiktok").value.trim(),
-      facebook:$("#s-fb").value.trim(), youtube:$("#s-yt").value.trim()};
+      facebook:$("#s-fb").value.trim(), youtube:$("#s-yt").value.trim(),
+      whatsapp:$("#s-wa").value.trim()};
     await DB.saveSettings(st); applySettings(); toast(t("saved")); render();
   };
   document.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>{
@@ -2166,6 +2411,26 @@ function safeToRender(){
   const a=document.activeElement;
   return !(a && ["INPUT","TEXTAREA","SELECT"].includes(a.tagName));
 }
+function startRealtime(){
+  if(!REMOTE || window.__rt) return;
+  window.__rt=true;
+  const sc=document.createElement("script");
+  sc.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
+  sc.onload=()=>{ try{
+    const client=window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    let tmr=null;
+    client.channel("live-changes")
+      .on("postgres_changes",{event:"*",schema:"public"},()=>{
+        clearTimeout(tmr);
+        tmr=setTimeout(async ()=>{
+          try{ const changed=await DB.poll(); if(changed && S.session && safeToRender()) render(); }catch(e){}
+        },300);
+      })
+      .subscribe();
+  }catch(e){ console.warn("realtime unavailable",e); } };
+  sc.onerror=()=>console.warn("realtime script blocked — polling continues");
+  document.head.appendChild(sc);
+}
 (async function(){
   restore();
   document.documentElement.setAttribute("data-theme",S.theme);
@@ -2178,7 +2443,7 @@ function safeToRender(){
     S.activities=demoActivities(); S.bookings=demoBookings();
     S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
     S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[];
+    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
   }
   /* validate remembered session against fresh data */
   if(S.session){
@@ -2199,6 +2464,7 @@ function safeToRender(){
   }
   applySettings();
   render();
+  startRealtime();
   if(REMOTE) setInterval(async ()=>{
     if(!S.session) return;
     try{ const changed=await DB.poll(); if(changed && safeToRender()) render(); }catch(e){}
