@@ -1,9 +1,0 @@
-{
-  "name": "Entertainment Team",
-  "short_name": "Entertainment",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#F7F2EA",
-  "theme_color": "#3E2A1E",
-  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
-}
