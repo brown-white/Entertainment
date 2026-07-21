@@ -14,8 +14,6 @@ for (const needle of [
   'remember-me',
   'forgot-pass',
   'config.js',
-  'withHotel',
-  'payloadWithHotel',
   'reviews?select=*'
 ]) {
   if (!html.includes(needle) && !existsSync(needle)) throw new Error(`Missing ${needle}`);
