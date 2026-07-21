@@ -233,15 +233,14 @@ const CONFIG = (()=>{
   try{ inline = meta ? JSON.parse(meta.textContent || "{}") : {}; }catch(e){ console.warn("Invalid inline config", e); }
   return {
     SUPABASE_URL: env.SUPABASE_URL || inline.SUPABASE_URL || "",
-    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || "",
-    HOTEL_ID: env.HOTEL_ID || inline.HOTEL_ID || "demo-hotel"
+    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || ""
   };
 })();
 const REMOTE = /^https:\/\//.test(CONFIG.SUPABASE_URL) && !!CONFIG.SUPABASE_ANON_KEY;
 const LS_KEY = "entapp_v3";
 
 const DEFAULT_SETTINGS = {
-  name:"Entertainment", subtitle:"", welcomeMsg:"", hotelId:"demo-hotel", logo:"", weatherLocation:"Hurghada, Egypt", mapUrl:"https://www.google.com/maps",
+  name:"Entertainment", subtitle:"", welcomeMsg:"", logo:"", weatherLocation:"Hurghada, Egypt", mapUrl:"https://www.google.com/maps",
   primary:"#3E2A1E", accent:"#B98A5C", bg:"#F7F2EA", textColor:"#2B1F16",
   navBg:"#FFFFFF", navActive:"#6B4A32",
   fontStyle:"elegant", buttonStyle:"rounded",
@@ -457,22 +456,9 @@ function calendarPreview(){
 }
 
 /* ---------------- data layer ---------------- */
-function withHotel(path){
-  if(!CONFIG.HOTEL_ID || /(?:^|[?&])hotel_id=/.test(path)) return path;
-  const join = path.includes("?") ? "&" : "?";
-  return path + join + "hotel_id=eq." + encodeURIComponent(CONFIG.HOTEL_ID);
-}
-function payloadWithHotel(payload){
-  if(!CONFIG.HOTEL_ID) return payload;
-  const add = row => row && typeof row === "object" && !("hotel_id" in row) ? {...row, hotel_id:CONFIG.HOTEL_ID} : row;
-  return Array.isArray(payload) ? payload.map(add) : add(payload);
-}
 async function sb(path, opts={}){
-  const requestPath = withHotel(path);
+  const requestPath = path;
   const requestOpts = {...opts};
-  if(requestOpts.body && /^(POST|PATCH)$/i.test(requestOpts.method||"GET")){
-    try{ requestOpts.body = JSON.stringify(payloadWithHotel(JSON.parse(requestOpts.body))); }catch(e){}
-  }
   const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + requestPath, {
     ...requestOpts,
     headers:{
