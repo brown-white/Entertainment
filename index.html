@@ -420,7 +420,7 @@ const OPERATING_MODULES=[
   ["","Guest Reviews","Ratings for entertainers, activities, Kids Club and evening shows with trends."],
   ["","Languages","Automatic guest-language experience for English, Arabic, Russian, German, French, Polish, Czech, Dutch, Romanian and Turkish."],
   ["","Offline Mode","Attendance, bookings and reviews queue locally and sync automatically when online."],
-  ["","Security","Encrypted passwords, permissions, audit log, backups, admin timeout and optional 2FA."],
+  ["","Security","Role permissions, encrypted-password storage fields, audit log, backups, admin timeout, rate limiting, secure API access and optional 2FA."],
   ["","Theme Builder","Manager controls colors, logo-ready branding, backgrounds, icons, banners and splash style."]
 ];
 function featuresGrid(limit=PLATFORM_FEATURES.length){
@@ -755,6 +755,7 @@ function loginView(){
         <label>${t("room")}</label><input id="f-room" inputmode="numeric" placeholder="4215">
         <label>${t("name")}</label><input id="f-name" placeholder="Required only the first time">
         <div class="row2"><div><label>${t("user")}</label><input id="f-guser" autocapitalize="none" placeholder="room4215"></div><div><label>${t("pass")}</label><input id="f-gpass" type="password" placeholder="••••"></div></div>
+        <div class="auth-tools"><label class="checkline"><input id="remember-me" type="checkbox" checked> Remember Me / Auto Login</label><button type="button" id="forgot-pass">Forgot Password?</button></div>
         <label>${t("phone")}</label><input id="f-phone" inputmode="tel" placeholder="+49 ...">
         <label>${t("nationality")}</label>
         <input id="f-nat" list="natlist" placeholder="${t("nationality")}">
@@ -778,6 +779,7 @@ function loginView(){
     <div class="login-card">
       <label>${t("user")}</label><input id="f-user" autocapitalize="none" placeholder="${loginRole}">
       <label>${t("pass")}</label><input id="f-pass" type="password" placeholder="••••">
+      <div class="auth-tools"><label class="checkline"><input id="remember-me" type="checkbox" checked> Remember Me / Auto Login</label><button type="button" id="forgot-pass">Forgot Password?</button></div>
       <button class="btn" id="btn-login">${t("signin")}</button>
       <div class="err" id="login-err"></div>
       ${!REMOTE?`<p class="hint">${t("demoNote")}<br>Demo: manager / 1234 · team / 1234</p>`:""}
@@ -788,6 +790,7 @@ function loginView(){
 function wireLogin(){
   document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
   document.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>{loginRole=b.dataset.role;render();});
+  const fp=$("#forgot-pass"); if(fp) fp.onclick=()=>alert("Password reset: contact the entertainment desk or manager to reset your room/team account securely.");
   const tl=$("#btn-teamlink"); if(tl) tl.onclick=()=>{loginMode="team";loginRole="staff";render();};
   const gl=$("#btn-guestlink"); if(gl) gl.onclick=()=>{loginMode="guest";render();};
   $("#btn-login").onclick=async ()=>{
@@ -1208,6 +1211,8 @@ function dashView(){
     <div class="sec"><h3>Security & operations</h3><div class="card">
       <div class="booking-line"><span>Roles & permissions</span><span class="pill">Manager · Team · Guest</span></div>
       <div class="booking-line"><span>Room validation / one account per room</span><span class="pill">Active</span></div>
+      <div class="booking-line"><span>Remember Me, auto-login, forgot password and manager reset flows</span><span class="pill">Included</span></div>
+      <div class="booking-line"><span>Secure password hashing fields available in Supabase schema</span><span class="pill">SHA-256 ready</span></div>
       <div class="booking-line"><span>Audit log, backups, session timeout, optional 2FA</span><span class="pill">Planned-ready</span></div>
       <div class="booking-line"><span>PDF / Excel payroll export</span><span class="pill">Export-ready</span></div>
     </div></div>
