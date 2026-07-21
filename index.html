@@ -7,9 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22:%22Entertainment%20Team%22,%22short_name%22:%22Entertainment%22,%22start_url%22:%22./index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#F7F2EA%22,%22theme_color%22:%22#3E2A1E%22,%22icons%22:%5B%7B%22src%22:%22data:image/svg+xml,%253Csvg%2520xmlns=%2522http://www.w3.org/2000/svg%2522%2520viewBox=%25220%25200%2520512%2520512%2522%253E%253Crect%2520width=%2522512%2522%2520height=%2522512%2522%2520rx=%2522110%2522%2520fill=%2522#3E2A1E%2522/%253E%253Ccircle%2520cx=%2522256%2522%2520cy=%2522214%2522%2520r=%2522118%2522%2520fill=%2522none%2522%2520stroke=%2522#B98A5C%2522%2520stroke-width=%252228%2522/%253E%253Cpath%2520d=%2522M118%2520365c70-88%2520206-88%2520276%25200%2522%2520fill=%2522none%2522%2520stroke=%2522#F7F2EA%2522%2520stroke-width=%252232%2522%2520stroke-linecap=%2522round%2522/%253E%253Ctext%2520x=%2522256%2522%2520y=%2522240%2522%2520text-anchor=%2522middle%2522%2520font-family=%2522serif%2522%2520font-size=%2522140%2522%2520fill=%2522#F7F2EA%2522%253EE%253C/text%253E%253C/svg%253E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22%7D%5D%7D">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20512%20512%22%3E%3Crect%20width=%22512%22%20height=%22512%22%20rx=%22110%22%20fill=%22#3E2A1E%22/%3E%3Ccircle%20cx=%22256%22%20cy=%22214%22%20r=%22118%22%20fill=%22none%22%20stroke=%22#B98A5C%22%20stroke-width=%2228%22/%3E%3Cpath%20d=%22M118%20365c70-88%20206-88%20276%200%22%20fill=%22none%22%20stroke=%22#F7F2EA%22%20stroke-width=%2232%22%20stroke-linecap=%22round%22/%3E%3Ctext%20x=%22256%22%20y=%22240%22%20text-anchor=%22middle%22%20font-family=%22serif%22%20font-size=%22140%22%20fill=%22#F7F2EA%22%3EE%3C/text%3E%3C/svg%3E">
-<script>window.ENTERTAINMENT_CONFIG = window.ENTERTAINMENT_CONFIG || {};</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
 <title>Entertainment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -73,7 +72,6 @@ img{display:block;max-width:100%}
 .lang-row button.on{background:#F7F2EA;color:var(--espresso);font-weight:600;border-color:#F7F2EA}
 .staff-link{display:block;margin:20px auto 0;text-align:center;font-size:13px;color:#E4D3BC;opacity:.85;letter-spacing:.05em}
 .staff-link span{border-bottom:1px dotted #E4D3BC;padding-bottom:2px}
-.auth-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}.checkline{display:flex;align-items:center;gap:8px;margin:0;text-transform:none;letter-spacing:0;color:var(--muted);font-size:13px}.checkline input{width:auto}.auth-tools button{font-size:13px;color:var(--cacao);text-decoration:underline}[data-theme="dark"] .auth-tools button{color:var(--bronze)}
 
 /* ---------- header ---------- */
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px}
@@ -213,7 +211,7 @@ img{display:block;max-width:100%}
 .feature-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:13px;min-height:112px}
 .feature-card .ico{font-size:25px;margin-bottom:6px}.feature-card b{display:block;font-size:15px}.feature-card p{font-size:12.5px;color:var(--muted);margin-top:3px}
 .nav svg{width:22px;height:22px;fill:currentColor}.searchbar{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:14px}.rating{color:#D6A44E;letter-spacing:1px}.mapbox{height:220px;border-radius:18px;background:linear-gradient(135deg,var(--sand),var(--card));position:relative;overflow:hidden}.mapbox:before,.mapbox:after{content:"";position:absolute;background:rgba(185,138,92,.28)}.mapbox:before{width:130%;height:2px;top:48%;left:-15%;transform:rotate(-18deg)}.mapbox:after{width:2px;height:130%;left:58%;top:-15%;transform:rotate(22deg)}.pin{position:absolute;transform:translate(-50%,-100%);font-weight:700;color:var(--warn)}.splash{position:fixed;inset:0;z-index:100;background:var(--espresso);color:#F7F2EA;display:flex;align-items:center;justify-content:center;animation:splashout .6s ease 1.1s forwards}.splash b{font-family:var(--font-display);font-size:38px}@keyframes splashout{to{opacity:0;visibility:hidden}}@media (min-width:900px){.app{max-width:980px}.screen{padding:28px 28px 110px}.nav{max-width:980px}.feature-grid,.stat-grid{grid-template-columns:repeat(3,1fr)}.program-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.program-grid .card{margin-bottom:0}}
-.feature-wide{grid-column:1/-1}.feature-card ul{margin:7px 0 0 17px;color:var(--muted);font-size:12.5px}.feature-card li{margin:3px 0}.cap-list{display:grid;grid-template-columns:1fr;gap:8px}.cap-list .booking-line{align-items:flex-start}.cap-list b{display:block}.meter{height:8px;background:var(--sand);border-radius:99px;overflow:hidden;margin-top:8px}.meter i{display:block;height:100%;background:var(--bronze);border-radius:99px}
+.feature-wide{grid-column:1/-1}.meter{height:8px;background:var(--sand);border-radius:99px;overflow:hidden;margin-top:8px}.meter i{display:block;height:100%;background:var(--bronze);border-radius:99px}
 </style>
 </head>
 <body>
@@ -221,10 +219,10 @@ img{display:block;max-width:100%}
 <div class="app" id="app"></div>
 <script>
 /* ================================================================
-    SETUP — make it real in 2 steps:
+   ⚙️ SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup.sql (one time)
-   2) Supabase project credentials are configured below. Override with window.ENTERTAINMENT_CONFIG if needed.
-   If credentials are removed the app runs on sample data for preview.
+   2) Provide project values via window.ENTERTAINMENT_CONFIG or an inline JSON config script
+   While both are empty the app runs on sample data for preview.
 ================================================================ */
 const CONFIG = (()=>{
   const meta = document.querySelector('script[type="application/json"][data-ent-config]');
@@ -232,15 +230,16 @@ const CONFIG = (()=>{
   let inline = {};
   try{ inline = meta ? JSON.parse(meta.textContent || "{}") : {}; }catch(e){ console.warn("Invalid inline config", e); }
   return {
-    SUPABASE_URL: env.SUPABASE_URL || inline.SUPABASE_URL || "https://ogxkrmvhozgqhdleyllw.supabase.co",
-    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || "sb_publishable_WG03OzuBDsJDfZOeuDxvTQ_N6ewuQg9"
+    SUPABASE_URL: env.SUPABASE_URL || inline.SUPABASE_URL || "",
+    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || "",
+    HOTEL_ID: env.HOTEL_ID || inline.HOTEL_ID || "demo-hotel"
   };
 })();
 const REMOTE = /^https:\/\//.test(CONFIG.SUPABASE_URL) && !!CONFIG.SUPABASE_ANON_KEY;
 const LS_KEY = "entapp_v3";
 
 const DEFAULT_SETTINGS = {
-  name:"Entertainment", subtitle:"", welcomeMsg:"", logo:"", weatherLocation:"Hurghada, Egypt", mapUrl:"https://www.google.com/maps",
+  name:"Entertainment", subtitle:"", welcomeMsg:"", hotelId:"demo-hotel", logo:"", weatherLocation:"Hurghada, Egypt", mapUrl:"https://www.google.com/maps",
   primary:"#3E2A1E", accent:"#B98A5C", bg:"#F7F2EA", textColor:"#2B1F16",
   navBg:"#FFFFFF", navActive:"#6B4A32",
   fontStyle:"elegant", buttonStyle:"rounded",
@@ -352,7 +351,7 @@ function demoBookings(){
 function demoOrders(){
   return [{id:1,ticket_id:1,room:"4215",guest_name:"Familie Weber",nationality:"German",qty:2,status:"reserved"}];
 }
-const ICONS={bell:`<svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22zm7-5-2-2v-5a5 5 0 0 0-10 0v5l-2 2v1h14z"/></svg>`,moon:`<svg viewBox="0 0 24 24"><path d="M21 14.5A8.5 8.5 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"/></svg>`,sun:`<svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0-5h1v3h-2V2zm0 17h1v3h-2v-3zM2 11h3v2H2zm17 0h3v2h-3zM4.2 5.6l1.4-1.4 2.1 2.1-1.4 1.4zm12.1 12.1 1.4-1.4 2.1 2.1-1.4 1.4zM18.4 4.2l1.4 1.4-2.1 2.1-1.4-1.4zM6.3 16.3l1.4 1.4-2.1 2.1-1.4-1.4z"/></svg>`,globe:`<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.1-5 8 8 0 0 1 4.3 5zM12 4.1c.7 1 1.4 3.2 1.6 6.9h-3.2C10.6 7.3 11.3 5.1 12 4.1zM4.2 13h3.1c.1 1.8.4 3.5.9 5a8 8 0 0 1-4-5zm3.1-2H4.2a8 8 0 0 1 4-5c-.5 1.5-.8 3.2-.9 5zM12 19.9c-.7-1-1.4-3.2-1.6-6.9h3.2c-.2 3.7-.9 5.9-1.6 6.9zm3.8-1.9c.5-1.5.8-3.2.9-5h3.1a8 8 0 0 1-4 5z"/></svg>`,logout:`<svg viewBox="0 0 24 24"><path d="M10 3h2v10h-2zm6.8 2.8 1.4-1.4A10 10 0 1 1 5.8 4.4l1.4 1.4a8 8 0 1 0 9.6 0z"/></svg>`,instagram:`<svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm6-1.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg>`,facebook:`<svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v6h4v-6h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg>`,tiktok:`<svg viewBox="0 0 24 24"><path d="M15 3c.5 3 2.4 4.8 5 5v4a8 8 0 0 1-5-1.8V16a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v4.2A2 2 0 1 0 11 16V3z"/></svg>`,youtube:`<svg viewBox="0 0 24 24"><path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5a3 3 0 0 0-2.1 2.1A31 31 0 0 0 2 12a31 31 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 22 12a31 31 0 0 0-.4-4.8zM10 15.5v-7l6 3.5z"/></svg>`,home:`<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg>`,program:`<svg viewBox="0 0 24 24"><path d="M7 2h2v3h6V2h2v3h3v16H4V5h3zm-1 8v9h12v-9z"/></svg>`,tickets:`<svg viewBox="0 0 24 24"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/></svg>`,chat:`<svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>`,stay:`<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-11a7 7 0 0 1 14 0c0 6.6-7 11-7 11zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>`,dash:`<svg viewBox="0 0 24 24"><path d="M4 13h4v7H4zm6-9h4v16h-4zm6 5h4v11h-4z"/></svg>`,team:`<svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm8 1a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zM2 21a6 6 0 0 1 12 0zm10.5 0a5.5 5.5 0 0 1 9.5-3.8V21z"/></svg>`,app:`<svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5zm-7 9 7 4 7-4v5l-7 4-7-4z"/></svg>`,back:`<svg viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4 4 12l8 8 1.4-1.4L7.8 13H20z"/></svg>`};
+const ICONS={home:`<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg>`,program:`<svg viewBox="0 0 24 24"><path d="M7 2h2v3h6V2h2v3h3v16H4V5h3zm-1 8v9h12v-9z"/></svg>`,tickets:`<svg viewBox="0 0 24 24"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/></svg>`,chat:`<svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>`,stay:`<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-11a7 7 0 0 1 14 0c0 6.6-7 11-7 11zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>`,dash:`<svg viewBox="0 0 24 24"><path d="M4 13h4v7H4zm6-9h4v16h-4zm6 5h4v11h-4z"/></svg>`,team:`<svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm8 1a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zM2 21a6 6 0 0 1 12 0zm10.5 0a5.5 5.5 0 0 1 9.5-3.8V21z"/></svg>`,app:`<svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5zm-7 9 7 4 7-4v5l-7 4-7-4z"/></svg>`};
 function icon(name){ return ICONS[name]||ICONS.home; }
 const DEMO_USERS=[
   {id:1,username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager"},
@@ -361,13 +360,13 @@ const DEMO_USERS=[
 function demoRooms(){ return ["4215","4308","4510","4102","4103"].map((r,i)=>({id:i+1,room:r,active:true})); }
 function demoAccounts(){
   const today=new Date(), plus=d=>{const x=new Date(today);x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
-  return [{id:1,room:"4215",name:"Familie Weber",phone:"",nationality:"German",arrival:plus(-4),departure:plus(3),username:"room4215",password:"4215"}];
+  return [{id:1,room:"4215",name:"Familie Weber",phone:"",nationality:"German",arrival:plus(-4),departure:plus(3)}];
 }
 function demoMessages(){
   const now=Date.now();
   return [
     {id:1,room:"4215",sender:"guest",sender_name:"Familie Weber",text:"Hello! Is the foam party for kids too?",created_at:new Date(now-3600e3).toISOString(),read_by_team:true,read_by_guest:true},
-    {id:2,room:"4215",sender:"team",sender_name:"Entertainment Manager",text:"Hello! Yes, absolutely — kids love it. See you there! ",created_at:new Date(now-3000e3).toISOString(),read_by_team:true,read_by_guest:false}
+    {id:2,room:"4215",sender:"team",sender_name:"Entertainment Manager",text:"Hello! Yes, absolutely — kids love it. See you there! 🎉",created_at:new Date(now-3000e3).toISOString(),read_by_team:true,read_by_guest:false}
   ];
 }
 function demoRequests(){
@@ -377,117 +376,62 @@ function demoTasks(){
   return [{id:1,title:"Prepare bingo prizes",desc:"Pick up prizes from storage before 17:00",assigned_to:"",due:"",status:"open",created_at:new Date().toISOString()}];
 }
 function demoNotes(){
-  return [{id:1,title:"Foam Party today! ",body:"14:30 at the Main Pool — bring your swimsuit and good mood!",audience:"all",created_at:new Date().toISOString()}];
-}
-function demoReviews(){
-  return [{id:1,activity_id:1,room:"4215",guest_name:"Familie Weber",rating:5,comment:"Great energy at the pool!",created_at:new Date().toISOString()}];
+  return [{id:1,title:"Foam Party today! 🎉",body:"14:30 at the Main Pool — bring your swimsuit and good mood!",audience:"all",created_at:new Date().toISOString()}];
 }
 function demoReviews(){
   return [{id:1,activity_id:1,room:"4215",guest_name:"Familie Weber",rating:5,comment:"Great energy at the pool!",created_at:new Date().toISOString()}];
 }
 const PLATFORM_FEATURES=[
-  ["📅","Event Calendar","Recurring events, drag-and-drop planning, color categories, holiday support and special events."],
-  ["🖼️","Photo Gallery","Manager uploads photos, videos and event albums; guests browse activities, shows, hotel and events."],
-  ["📡","GPS Tracking","Optional consent-based live GPS for working hours, nearest entertainer dispatch, task assignment and emergency support."],
-  ["💰","Staff Payroll","Employee profile, salary, bonuses, deductions, overtime, vacation, entrance day, dress code and monthly PDF/Excel exports."],
-  ["📊","Performance Reports","Attendance score, activity completion, punctuality, manager evaluation, monthly performance and ranking."],
-  ["⭐","Reviews","Guest ratings for Kids Club, activities, entertainers, shows, sports and pool activities with comments, complaints and trends."],
-  ["📈","Reports & Analytics","Daily, weekly, monthly and yearly reports exported to PDF, Excel or CSV with attendance, bookings, nationalities and revenue charts."],
-  ["💬","Communication Center","Internal chat, manager-to-staff, guest-to-manager, announcements, attachments, photos and optional voice messages."],
-  ["🗂️","File Management","Upload PDFs, images, videos, documents, icons and activity posters from the dashboard."],
-  ["🌍","Multi-language","Automatic language detection for English, Arabic, German, Russian, French, Polish, Dutch, Romanian, Turkish and Czech."],
-  ["🎨","Theme Builder","No-code control for logo, colors, icons, backgrounds, splash screen, home banner, buttons and fonts."],
-  ["⚙️","Settings Panel","Hotel information, working hours, locations, activity categories, languages, notifications, booking rules, attendance rules, security, backup, restore and logs."],
-  ["📶","Offline Mode","Attendance, bookings, reviews, messages and settings continue offline and sync automatically when internet returns."],
-  ["🔒","Security","Role-based permissions, encrypted passwords, audit logs, automatic backup, sessions, optional 2FA, rate limiting and secure API access."],
-  ["🔌","Future Integrations","WhatsApp, email, SMS, Google Calendar, Outlook, hotel PMS, digital signage, Smart TV schedules and wearable support."],
-  ["🏨","Final Objective","A modern, secure and scalable hotel entertainment operating system configurable from the manager dashboard without code updates."]
-];
-const OPERATING_MODULES=[
-  ["Calendar operations",["Recurring events", "Drag & drop", "Color categories", "Holiday support", "Special events"]],
-  ["Guest media experience",["Photo and video uploads", "Event albums", "Activity, show, hotel and event browsing"]],
-  ["Staff operations",["Consent-based GPS", "Nearest entertainer lookup", "Task assignment", "Payroll and dress code records"]],
-  ["Decision support",["Performance ranking", "Review trends", "Busy hours", "Top performers", "Revenue"]],
-  ["Governance",["Role permissions", "Audit logs", "Backups", "Secure API", "Optional two-factor authentication"]]
-  ["","Event Calendar","Monthly drag-and-drop planning, weekly repeats, holidays, entertainer scheduling."],
-  ["","Digital Hotel Map","Tap locations for descriptions, photos, opening hours, activities and navigation."],
-  ["","Photo Gallery","Hotel, activity, event and daily-highlight albums managed without code."],
-  ["","Push Notifications","Send alerts to everyone, guests, entertainers or selected users."],
-  ["","QR Code System","Registration, activity check-in, attendance, tickets and staff ID scanning."],
-  ["","AI Assistant","Answers guest, entertainer and manager questions from hotel data."],
-  ["","Live GPS","On-duty entertainer locations with permission controls for safety and dispatch."],
-  ["","Staff Payroll","Salary, bonus, deductions, overtime, vacation and attendance exports."],
-  ["","Performance Reports","Attendance rate, guest ratings, completed activities, comments and monthly scores."],
-  ["","Guest Reviews","Ratings for entertainers, activities, Kids Club and evening shows with trends."],
-  ["","Languages","Automatic guest-language experience for English, Arabic, Russian, German, French, Polish, Czech, Dutch, Romanian and Turkish."],
-  ["","Offline Mode","Attendance, bookings and reviews queue locally and sync automatically when online."],
-  ["","Security","Role permissions, encrypted-password storage fields, audit log, backups, admin timeout, rate limiting, secure API access and optional 2FA."],
-  ["","Theme Builder","Manager controls colors, logo-ready branding, backgrounds, icons, banners and splash style."]
+  ["📅","Event Calendar","Monthly drag-and-drop planning, weekly repeats, holidays, entertainer scheduling."],
+  ["📍","Digital Hotel Map","Tap locations for descriptions, photos, opening hours, activities and navigation."],
+  ["🖼️","Photo Gallery","Hotel, activity, event and daily-highlight albums managed without code."],
+  ["📱","Push Notifications","Send alerts to everyone, guests, entertainers or selected users."],
+  ["📷","QR Code System","Registration, activity check-in, attendance, tickets and staff ID scanning."],
+  ["🤖","AI Assistant","Answers guest, entertainer and manager questions from hotel data."],
+  ["📡","Live GPS","On-duty entertainer locations with permission controls for safety and dispatch."],
+  ["💰","Staff Payroll","Salary, bonus, deductions, overtime, vacation and attendance exports."],
+  ["📊","Performance Reports","Attendance rate, guest ratings, completed activities, comments and monthly scores."],
+  ["⭐","Guest Reviews","Ratings for entertainers, activities, Kids Club and evening shows with trends."],
+  ["🌍","Languages","Automatic guest-language experience for English, Arabic, Russian, German, French, Polish, Czech, Dutch, Romanian and Turkish."],
+  ["📶","Offline Mode","Attendance, bookings and reviews queue locally and sync automatically when online."],
+  ["🔒","Security","Encrypted passwords, permissions, audit log, backups, admin timeout and optional 2FA."],
+  ["🎨","Theme Builder","Manager controls colors, logo-ready branding, backgrounds, icons, banners and splash style."]
 ];
 function featuresGrid(limit=PLATFORM_FEATURES.length){
-  return `<div class="feature-grid">${PLATFORM_FEATURES.slice(0,limit).map(([ic,title,desc],i)=>`<div class="feature-card ${i===5||i===15?"feature-wide":""}"><div class="ico">${ic}</div><b>${esc(title)}</b><p>${esc(desc)}</p>${title==="Offline Mode"?`<div class="meter"><i style="width:100%"></i></div>`:""}</div>`).join("")}</div>`;
-}
-function modulesPanel(){
-  return `<div class="card cap-list">${OPERATING_MODULES.map(([title,items])=>`<div class="booking-line"><span><b>${esc(title)}</b><span class="mini">${items.map(esc).join(" · ")}</span></span><span class="pill">Configurable</span></div>`).join("")}</div>`;
-}
-
-const OPS_MODULES=[
-  {title:"Event Calendar",icon:"📅",desc:"Create, edit and delete events with recurring schedules, color categories, holiday overlays, special events and drag-and-drop planning.",tags:["Create event","Edit event","Delete event","Recurring","Drag & drop","Holidays"]},
-  {title:"Photo Gallery",icon:"🖼️",desc:"Managers upload photos, videos and event albums while guests browse activities, shows, hotel spaces and event memories.",tags:["Photos","Videos","Event albums","Guest browsing"]},
-  {title:"GPS Tracking",icon:"📍",desc:"Optional consent-based live GPS during working hours helps managers view active staff, find the nearest entertainer, assign tasks and support emergencies.",tags:["Consent only","Working hours","Nearest staff","Emergency"]},
-  {title:"Staff Payroll",icon:"💼",desc:"Employee profiles include salary, bonuses, deductions, overtime, vacation, entrance day and dress code with monthly PDF and Excel export readiness.",tags:["Salary","Bonuses","Deductions","Overtime","Vacation","PDF/Excel"]},
-  {title:"Performance Reports",icon:"🏆",desc:"Every entertainer gets attendance score, activity completion, punctuality, manager evaluation, monthly performance and ranking insights.",tags:["Attendance","Completion","Punctuality","Ranking"]},
-  {title:"Reviews & Complaints",icon:"⭐",desc:"Guests rate Kids Club, activities, entertainers, shows, sports and pool activities; managers see averages, comments, complaints and trends.",tags:["Ratings","Comments","Complaints","Trends"]},
-  {title:"Reports & Analytics",icon:"📊",desc:"Daily, weekly, monthly and yearly reports with PDF, Excel and CSV exports for attendance, bookings, guests, nationalities, busy hours, top performers and revenue.",tags:["Daily","Weekly","Monthly","Yearly","CSV"]},
-  {title:"Communication Center",icon:"💬",desc:"Internal manager-to-staff chat, guest-to-manager conversations, announcements, attachments, photos and optional voice-message workflows.",tags:["Internal chat","Guest chat","Announcements","Attachments"]},
-  {title:"File Management",icon:"📁",desc:"Central library for PDFs, images, videos, documents, icons and activity posters so managers can update content without code.",tags:["PDF","Images","Videos","Documents","Posters"]},
-  {title:"Settings & Security",icon:"🛡️",desc:"Hotel information, working hours, locations, categories, languages, notifications, booking rules, attendance rules, backups, restore, system logs and secure API access.",tags:["Permissions","Audit logs","Backups","2FA","Rate limiting"]}
-];
-function operationsCenter(){
-  return `<div class="ops-grid">${OPS_MODULES.map(m=>`<div class="ops-card"><h4><span style="font-size:24px;margin-inline-end:6px">${m.icon}</span>${esc(m.title)}</h4><p class="mini">${esc(m.desc)}</p><div class="ops-tags">${m.tags.map(x=>`<span class="ops-tag">${esc(x)}</span>`).join("")}</div></div>`).join("")}</div>`;
-}
-function analyticsPanel(){
-  const rows=[["Attendance",88],["Bookings",74],["Guest reviews",92],["Busy hours",67],["Top performers",84],["Revenue",58]];
-  return `<div class="card">${rows.map(([n,v])=>`<div class="chart-row"><span class="mini">${n}</span><span class="bar"><i style="width:${v}%"></i></span><b>${v}%</b></div>`).join("")}</div>`;
-}
-function calendarPreview(){
-  const labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  return `<div class="card"><div class="booking-line"><span><b>Drag & drop event planner</b><br><span class="mini">Recurring activities, holidays and special-event colors are dashboard-configurable.</span></span><span class="pill">Live-ready</span></div><div class="calendar-mini">${labels.map((d,i)=>`<div class="cal-day"><b>${d}</b>${i===0?"Aqua Gym":i===2?"Foam Party":i===5?"Neon Show":"Kids Club"}</div>`).join("")}</div></div>`;
+  return `<div class="feature-grid">${PLATFORM_FEATURES.slice(0,limit).map(([ic,title,desc],i)=>`<div class="feature-card ${i===5?"feature-wide":""}"><div class="ico">${ic}</div><b>${esc(title)}</b><p>${esc(desc)}</p>${title==="Offline Mode"?`<div class="meter"><i style="width:100%"></i></div>`:""}</div>`).join("")}</div>`;
 }
 
 /* ---------------- data layer ---------------- */
 async function sb(path, opts={}){
-  const requestPath = path;
-  const requestOpts = {...opts};
-  const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + requestPath, {
-    ...requestOpts,
+  const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + path, {
+    ...opts,
     headers:{
       "apikey":CONFIG.SUPABASE_ANON_KEY,
       "Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
       "Content-Type":"application/json",
-      "Prefer": requestOpts.method==="POST"||requestOpts.method==="PATCH" ? "return=representation" : "",
-      ...(requestOpts.headers||{})
+      "Prefer": opts.method==="POST"||opts.method==="PATCH" ? "return=representation" : "",
+      ...(opts.headers||{})
     }
   });
-  if(!res.ok) throw new Error("Supabase "+res.status+" on "+requestPath);
+  if(!res.ok) throw new Error("Supabase "+res.status+" on "+path);
   const txt = await res.text();
   return txt ? JSON.parse(txt) : null;
 }
 const DB = {
   async load(){
     if(REMOTE){
-      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at,rv] = await Promise.all([
+      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at] = await Promise.all([
         sb("activities?select=*&order=time"), sb("bookings?select=*"),
         sb("app_users?select=*"), sb("app_settings?select=*&id=eq.1"),
         sb("tickets?select=*&order=time"), sb("ticket_orders?select=*"),
         sb("rooms?select=*&order=room"), sb("guest_accounts?select=*"),
         sb("messages?select=*&order=created_at"), sb("requests?select=*&order=created_at.desc"),
         sb("tasks?select=*&order=created_at.desc"), sb("announcements?select=*&order=created_at.desc"),
-        sb("attendance?select=*"), sb("reviews?select=*&order=created_at.desc")
+        sb("attendance?select=*")
       ]);
       S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
       S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
-      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.reviews=rv||[];
+      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[];
       if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
@@ -558,9 +502,9 @@ const DB = {
     if(REMOTE) await sb("ticket_orders?id=eq."+id,{method:"PATCH",body:JSON.stringify({status})});
     S.orders=S.orders.map(o=>o.id===id?{...o,status}:o);
   },
-  async saveUser(u){
-    if(u.id){ if(REMOTE){ const {id,...rest}=u; await sb("app_users?id=eq."+id,{method:"PATCH",body:JSON.stringify(rest)}); } S.users=S.users.map(x=>x.id===u.id?u:x); }
-    else { if(REMOTE){ const r=await sb("app_users",{method:"POST",body:JSON.stringify(u)}); S.users.push(r[0]); } else { u.id=Date.now(); S.users.push(u); } }
+  async addUser(u){
+    if(REMOTE){ const r=await sb("app_users",{method:"POST",body:JSON.stringify(u)}); S.users.push(r[0]); }
+    else { u.id=Date.now(); S.users.push(u); }
   },
   async deleteUser(id){
     if(REMOTE) await sb("app_users?id=eq."+id,{method:"DELETE"});
@@ -710,8 +654,6 @@ function reviewDue(g){
   if(isNaN(a)||isNaN(d)||d<a) return false;
   return Date.now() >= a+(d-a)/2;
 }
-function makeGuestPassword(room){ return String(room).slice(-4).padStart(4,"0"); }
-function isAssignedToMe(a){ const me=S.session||{}; const ent=String(a.entertainer||"").toLowerCase(); return !ent || ent.includes(String(me.username||"").toLowerCase()) || ent.includes(String(me.name||"").toLowerCase()) || ent.includes("team"); }
 function downloadCsv(name, rows){ const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))]; const csv=[cols.join(","),...rows.map(r=>cols.map(c=>`"${String(r[c]??"").replaceAll(`"`,`""`)}"`).join(","))].join("\n"); const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
 function toast(msg){ const el=document.createElement("div"); el.className="toast"; el.innerHTML="<span>"+esc(msg)+"</span>";
   document.body.appendChild(el); setTimeout(()=>el.remove(),2200); }
@@ -731,7 +673,7 @@ function render(){
 }
 function errorView(){
   return `<div class="screen fadein" style="display:flex;flex-direction:column;justify-content:center">
-    <div class="empty"><div class="big">Offline</div>
+    <div class="empty"><div class="big">📡</div>
       Could not reach the database.<br>Please check your internet connection.
       <button class="btn" id="btn-retry" style="margin-top:18px">↻</button>
     </div></div>`;
@@ -756,9 +698,7 @@ function loginView(){
       ${brand}
       <div class="login-card">
         <label>${t("room")}</label><input id="f-room" inputmode="numeric" placeholder="4215">
-        <label>${t("name")}</label><input id="f-name" placeholder="Required only the first time">
-        <div class="row2"><div><label>${t("user")}</label><input id="f-guser" autocapitalize="none" placeholder="room4215"></div><div><label>${t("pass")}</label><input id="f-gpass" type="password" placeholder="••••"></div></div>
-        <div class="auth-tools"><label class="checkline"><input id="remember-me" type="checkbox" checked> Remember Me / Auto Login</label><button type="button" id="forgot-pass">Forgot Password?</button></div>
+        <label>${t("name")}</label><input id="f-name" placeholder="${t("name")}">
         <label>${t("phone")}</label><input id="f-phone" inputmode="tel" placeholder="+49 ...">
         <label>${t("nationality")}</label>
         <input id="f-nat" list="natlist" placeholder="${t("nationality")}">
@@ -771,7 +711,7 @@ function loginView(){
         <div class="err" id="login-err"></div>
         ${!REMOTE?`<p class="hint">${t("demoNote")}</p>`:""}
       </div>
-      <button class="staff-link" id="btn-teamlink"> <span>${t("otherUsers")}</span></button>
+      <button class="staff-link" id="btn-teamlink">✦ <span>${t("otherUsers")}</span></button>
     </div>`;
   }
   return `<div class="login-wrap fadein">
@@ -782,7 +722,6 @@ function loginView(){
     <div class="login-card">
       <label>${t("user")}</label><input id="f-user" autocapitalize="none" placeholder="${loginRole}">
       <label>${t("pass")}</label><input id="f-pass" type="password" placeholder="••••">
-      <div class="auth-tools"><label class="checkline"><input id="remember-me" type="checkbox" checked> Remember Me / Auto Login</label><button type="button" id="forgot-pass">Forgot Password?</button></div>
       <button class="btn" id="btn-login">${t("signin")}</button>
       <div class="err" id="login-err"></div>
       ${!REMOTE?`<p class="hint">${t("demoNote")}<br>Demo: manager / 1234 · team / 1234</p>`:""}
@@ -793,31 +732,28 @@ function loginView(){
 function wireLogin(){
   document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
   document.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>{loginRole=b.dataset.role;render();});
-  const fp=$("#forgot-pass"); if(fp) fp.onclick=()=>alert("Password reset: contact the entertainment desk or manager to reset your room/team account securely.");
-  const tl=$("#btn-teamlink"); if(tl) tl.onclick=()=>{loginMode="team";loginRole="staff";render();};
+  const tl=$("#btn-teamlink"); if(tl) tl.onclick=()=>{loginMode="team";render();};
   const gl=$("#btn-guestlink"); if(gl) gl.onclick=()=>{loginMode="guest";render();};
   $("#btn-login").onclick=async ()=>{
     const err=$("#login-err");
     if(loginMode==="guest"){
       const room=$("#f-room").value.trim(), name=$("#f-name").value.trim(), phone=$("#f-phone").value.trim();
-      const guser=$("#f-guser").value.trim(), gpass=$("#f-gpass").value;
       const nat=$("#f-nat").value.trim(), arr=$("#f-arr").value, dep=$("#f-dep").value;
-      if(!room){ err.textContent=t("loginErr"); return; }
+      if(!room||!name){ err.textContent=t("loginErr"); return; }
       const rm=S.rooms.find(x=>String(x.room)===room);
       if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
       let acc=S.accounts.find(a=>String(a.room)===room);
       if(!acc){
-        if(!name||!nat||!arr||!dep||Date.parse(dep)<Date.parse(arr)){ err.textContent=t("loginErr"); return; }
-        try{ acc=await DB.addAccount({room,name,phone,nationality:nat,arrival:arr,departure:dep,username:"room"+room,password:makeGuestPassword(room)}); }
+        if(!nat||!arr||!dep||Date.parse(dep)<Date.parse(arr)){ err.textContent=t("loginErr"); return; }
+        try{ acc=await DB.addAccount({room,name,phone,nationality:nat,arrival:arr,departure:dep}); }
         catch(e){ err.textContent=t("loginErr"); return; }
-        alert("Your login is: "+acc.username+" / "+acc.password+". Use the same account on every phone in this room.");
-      } else if((acc.username||("room"+room))!==guser || (acc.password||room)!==gpass){ err.textContent=t("loginErr"); return; }
-      S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",username:acc.username||("room"+room),password:acc.password||room,
+      }
+      S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
         nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure};
       S.tab="home"; persist(); render();
     } else {
       const u=$("#f-user").value.trim(), p=$("#f-pass").value;
-      const found=S.users.find(x=>x.username===u && x.password===p && x.role===loginRole);
+      const found=S.users.find(x=>x.username===u && x.password===p && (loginRole==="manager"?x.role==="manager":true));
       if(!found){ err.textContent=t("loginErr"); return; }
       const role = found.role==="manager" && loginRole==="manager" ? "manager" : "staff";
       S.session={role,name:found.display_name||found.username,username:found.username,userId:found.id};
@@ -827,34 +763,28 @@ function wireLogin(){
 }
 
 /* ---------------- shared pieces ---------------- */
-function normalTabForRole(role){ return role==="manager" ? "dash" : role==="staff" ? "today" : "home"; }
 function topBar(title,sub){
   const role=S.session?S.session.role:"guest";
-  const normalTab=normalTabForRole(role);
-  const showBack=!!S.session;
   return `<div class="top">
     <div class="who"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>
     <div class="toprow">
-      ${showBack?`<button class="iconbtn" id="btn-backhome" aria-label="back">${icon("back")}</button>`:""}
-      ${socialTopIcons()}
-      <button class="iconbtn" id="btn-notes" aria-label="notifications">${icon("bell")}${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
-      <button class="iconbtn" id="btn-theme" aria-label="theme">${S.theme==="light"?icon("moon"):icon("sun")}</button>
-      <button class="iconbtn" id="btn-lang" aria-label="language">${icon("globe")}</button>
-      <button class="iconbtn" id="btn-out" aria-label="logout">${icon("logout")}</button>
+      <button class="iconbtn" id="btn-notes" aria-label="notifications">🔔${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
+      <button class="iconbtn" id="btn-theme" aria-label="theme">${S.theme==="light"?"🌙":"☀️"}</button>
+      <button class="iconbtn" id="btn-lang" aria-label="language">🌐</button>
+      <button class="iconbtn" id="btn-out" aria-label="logout">⏻</button>
     </div>
   </div>`;
 }
-function socialTopIcons(){ const st=S.settings; return [["instagram",st.instagram],["tiktok",st.tiktok],["facebook",st.facebook],["youtube",st.youtube]].filter(x=>x[1]).map(([n,u])=>`<a class="iconbtn" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${icon(n)}</a>`).join(""); }
 function heroCard(a){
   if(!a) return "";
   const taken=seatsTaken(a.id), left=Math.max(0,a.capacity-taken);
   return `<div class="hero" data-open="${a.id}">
     <img src="${esc(a.image||IMG.show)}" alt="">
     <div class="veil"></div>
-    <div class="tag">${t("highlight")}</div>
+    <div class="tag">✦ ${t("highlight")}</div>
     <div class="body">
       <h3>${esc(a.name)}</h3>
-      <div class="meta"><span>${esc(a.time)}</span><span>${esc(a.location)}</span>${a.capacity?`<span>${left} ${t("seatsLeft")}</span>`:""}</div>
+      <div class="meta"><span>🕐 ${esc(a.time)}</span><span>📍 ${esc(a.location)}</span>${a.capacity?`<span>👥 ${left} ${t("seatsLeft")}</span>`:""}</div>
       <div class="desc">${esc(a.desc)}</div>
     </div>
   </div>`;
@@ -865,9 +795,9 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   const fav=S.favorites.includes(a.id);
   let side="";
   if(manager){
-    side=`<button class="btn sm ghost" data-edit="${a.id}">Edit</button><span class="seats">${taken}/${a.capacity}</span>`;
+    side=`<button class="btn sm ghost" data-edit="${a.id}">✎</button><span class="seats">${taken}/${a.capacity}</span>`;
   } else if(staff){
-    side=`<button class="btn sm ghost" data-att="${a.id}">Check-in</button><span class="pill">${bookingsFor(a.id).length} ${t("guests")}</span>`;
+    side=`<button class="btn sm ghost" data-att="${a.id}">✓</button><span class="pill">${bookingsFor(a.id).length} ${t("guests")}</span>`;
   } else if(showBook){
     side = mine
       ? `<span class="chip ${mine.status==="booked"?"ok":""}">${mine.status==="booked"?t("booked"):t("onWaitlist")}</span>`
@@ -877,12 +807,12 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   return `<div class="card act" ${manager||staff?"":`data-open="${a.id}"`}>
     <img class="thumb" src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
     <div class="mid">
-      <span class="catbadge">${catLabel(a.category)} · <span class="rating">Rating ${activityRating(a.id)}</span></span>
+      <span class="catbadge">${catLabel(a.category)} · <span class="rating">★ ${activityRating(a.id)}</span></span>
       <h4>${esc(a.name)}</h4>
-      <div class="meta"><span>${esc(a.time)}</span><span>${esc(a.location)}</span></div>
+      <div class="meta"><span>🕐 ${esc(a.time)}</span><span>📍 ${esc(a.location)}</span></div>
     </div>
     <div class="side">
-      ${showFav&&!manager&&!staff?`<button class="fav" data-fav="${a.id}">${fav?"":""}</button>`:""}
+      ${showFav&&!manager&&!staff?`<button class="fav" data-fav="${a.id}">${fav?"❤️":"🤍"}</button>`:""}
       ${side}
     </div>
   </div>`;
@@ -896,15 +826,14 @@ function subTabs(group,items){
     `<button data-sub="${group}:${id}" class="${S.sub[group]===id?"on":""}">${lb}</button>`).join("")}</div>`;
 }
 function listByCat(acts,opts){
-  if(!acts.length) return `<div class="empty"><div class="big"></div>${t("noneToday")}</div>`;
+  if(!acts.length) return `<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`;
   return CAT_ORDER.filter(c=>acts.some(a=>a.category===c)).map(c=>`
     <div class="sec"><h3>${catLabel(c)}</h3>
       ${acts.filter(a=>a.category===c).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a,opts)).join("")}
     </div>`).join("");
 }
 function weeklyTimeline(){
-  const staffOnly=S.session&&S.session.role==="staff";
-  const acts=S.activities.filter(a=>a.day===S.day && (!staffOnly || isAssignedToMe(a))).sort((x,y)=>x.time.localeCompare(y.time));
+  const acts=S.activities.filter(a=>a.day===S.day).sort((x,y)=>x.time.localeCompare(y.time));
   return acts.length?`<div class="wk">${acts.map(a=>`
     <div class="wk-item">
       <div class="wk-time">${esc(a.time)}</div>
@@ -913,11 +842,11 @@ function weeklyTimeline(){
         <img src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
         <div style="min-width:0">
           <h4>${esc(a.name)}</h4>
-          <p>${esc(a.location)}${staffOnly&&a.entertainer?` · ${esc(a.entertainer)}`:""}</p>
+          <p>📍 ${esc(a.location)}</p>
         </div>
       </div>
     </div>`).join("")}</div>`
-  :`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`;
+  :`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`;
 }
 function weeklyView(title){
   return `<div class="screen fadein">${topBar(title,t("days")[S.day])}${dayTabs()}${weeklyTimeline()}</div>`;
@@ -928,11 +857,11 @@ function threadView(room,meSide){
     ${msgs.length?msgs.map(m=>{
       const mine = m.sender===meSide;
       return `<div class="bub ${mine?"me":"them"}">${esc(m.text)}<span class="tm">${mine?"":esc(m.sender_name)+" · "}${fmtTime(m.created_at)}</span></div>`;
-    }).join(""):`<div class="empty"><div class="big"></div>${t("noMessages")}</div>`}
+    }).join(""):`<div class="empty"><div class="big">💬</div>${t("noMessages")}</div>`}
   </div>
   <div class="chatbar">
     <input id="chat-in" placeholder="${t("typeMessage")}" autocomplete="off">
-    <button id="chat-send" aria-label="${t("send")}"></button>
+    <button id="chat-send" aria-label="${t("send")}">➤</button>
   </div>`;
 }
 /* ---------------- guest ---------------- */
@@ -952,11 +881,11 @@ function guestView(){
       ${mapBlock()}
       <div class="sec"><h3>Hotel services</h3>${featuresGrid(6)}</div>
       <div class="quickrow">
-        <button id="btn-req-song"><span></span>${t("songRequest")}</button>
-        <button id="btn-req-bday"><span></span>${t("birthdayRequest")}</button>
+        <button id="btn-req-song"><span>🎵</span>${t("songRequest")}</button>
+        <button id="btn-req-bday"><span>🎂</span>${t("birthdayRequest")}</button>
       </div>
       <div class="sec"><h3>${t("todayProgram")}</h3>
-        ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`}
+        ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`}
       </div>
       ${reviewDue(g)?reviewBlock():""}
       ${socialBlock()}
@@ -982,12 +911,12 @@ function guestView(){
         return `<div class="card act">
           <img class="thumb" src="${esc(a.image||IMG.show)}" alt="">
           <div class="mid"><span class="catbadge">${t("days")[a.day]}</span><h4>${esc(a.name)}</h4>
-            <div class="meta"><span>${esc(a.time)}</span><span>${esc(a.location)}</span></div></div>
+            <div class="meta"><span>🕐 ${esc(a.time)}</span><span>📍 ${esc(a.location)}</span></div></div>
           <div class="side">
             <span class="chip ${b.status==="booked"?"ok":""}">${b.status==="booked"?t("booked"):t("onWaitlist")}</span>
-            <button class="btn sm warn" data-cancel="${b.id}"></button>
+            <button class="btn sm warn" data-cancel="${b.id}">✕</button>
           </div></div>`;
-      }).join(""):`<div class="empty"><div class="big"></div>${t("noBookings")}</div>`}
+      }).join(""):`<div class="empty"><div class="big">🎟️</div>${t("noBookings")}</div>`}
     </div>
     <div class="sec"><h3>${t("myTickets")} <span class="count">${orders.length}</span></h3>
       ${orders.length?orders.map(o=>{
@@ -995,32 +924,32 @@ function guestView(){
         return `<div class="card act">
           <img class="thumb" src="${esc(tk.image||IMG.show)}" alt="">
           <div class="mid"><span class="catbadge">${t("days")[tk.day]} · ${esc(tk.time)}</span><h4>${esc(tk.name)}</h4>
-            <div class="meta"><span> ×${o.qty}</span><span>${esc(tk.price||"")}</span></div></div>
+            <div class="meta"><span>🎫 ×${o.qty}</span><span>${esc(tk.price||"")}</span></div></div>
           <div class="side">
             <span class="chip ${o.status==="paid"?"ok":"res"}">${o.status==="paid"?t("paid"):t("reserved")}</span>
-            ${o.status==="paid"?"":`<button class="btn sm warn" data-cancelorder="${o.id}"></button>`}
+            ${o.status==="paid"?"":`<button class="btn sm warn" data-cancelorder="${o.id}">✕</button>`}
           </div></div>`;
-      }).join(""):`<div class="empty"><div class="big"></div>${t("ticketsNone")}</div>`}
+      }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`}
     </div>
     ${reqs.length?`<div class="sec"><h3>${t("myRequests")} <span class="count">${reqs.length}</span></h3>
       <div class="card">${reqs.map(r=>`<div class="booking-line">
-        <span>${r.type==="song"?"":""} ${esc(r.detail)}${r.date?` · ${esc(r.date)}`:""}</span>
+        <span>${r.type==="song"?"🎵":"🎂"} ${esc(r.detail)}${r.date?` · ${esc(r.date)}`:""}</span>
         <span style="display:flex;gap:6px;align-items:center">
           <span class="chip ${r.status==="done"?"ok":"res"}">${r.status==="done"?t("done"):t("statusNew")}</span>
-          ${r.status==="done"?"":`<button class="btn sm warn" data-delreq="${r.id}"></button>`}
+          ${r.status==="done"?"":`<button class="btn sm warn" data-delreq="${r.id}">✕</button>`}
         </span></div>`).join("")}</div>
     </div>`:""}
     <div class="sec"><h3>${t("favorites")} <span class="count">${favActs.length}</span></h3>
-      ${favActs.length?favActs.map(a=>activityCard(a)).join(""):`<div class="empty"><div class="big"></div>${t("noFavs")}</div>`}
+      ${favActs.length?favActs.map(a=>activityCard(a)).join(""):`<div class="empty"><div class="big">🤍</div>${t("noFavs")}</div>`}
     </div>
     ${reviewDue(g)?reviewBlock():""}
   </div>`;
 }
-function guestProfileBlock(g){return `<div class="sec card"><h3>Guest profile</h3><div class="booking-line"><span>${t("room")}</span><span class="pill">${esc(g.room)}</span></div><div class="booking-line"><span>${t("user")}</span><span>${esc(g.username||"")}</span></div><div class="booking-line"><span>${t("pass")}</span><span>${esc(g.password||"")}</span></div><div class="booking-line"><span>${t("nationality")}</span><span>${esc(g.nationality||t("none"))}</span></div><div class="booking-line"><span>${t("arrival")}</span><span>${esc(g.arrival||t("none"))}</span></div><div class="booking-line"><span>${t("departure")}</span><span>${esc(g.departure||t("none"))}</span></div></div>`}
-function weatherBlock(){return `<div class="sec card"><h3>Weather</h3><div class="booking-line"><span> Today</span><span class="pill">29°C · Pool perfect</span></div><div class="booking-line"><span> Evening</span><span>23°C · Light breeze</span></div></div>`}
+function guestProfileBlock(g){return `<div class="sec card"><h3>Guest profile</h3><div class="booking-line"><span>${t("room")}</span><span class="pill">${esc(g.room)}</span></div><div class="booking-line"><span>${t("nationality")}</span><span>${esc(g.nationality||t("none"))}</span></div><div class="booking-line"><span>${t("arrival")}</span><span>${esc(g.arrival||t("none"))}</span></div><div class="booking-line"><span>${t("departure")}</span><span>${esc(g.departure||t("none"))}</span></div></div>`}
+function weatherBlock(){return `<div class="sec card"><h3>Weather</h3><div class="booking-line"><span>☀️ Today</span><span class="pill">29°C · Pool perfect</span></div><div class="booking-line"><span>🌙 Evening</span><span>23°C · Light breeze</span></div></div>`}
 function mapBlock(){return `<div class="sec"><h3>Map & locations</h3><div class="mapbox"><span class="pin" style="left:35%;top:45%">● Main Pool</span><span class="pin" style="left:68%;top:62%">● Stage</span><span class="pin" style="left:52%;top:30%">● Kids Club</span></div></div>`}
 function activityRating(actId){const rs=S.reviews.filter(r=>r.activity_id===actId); return rs.length? (rs.reduce((n,r)=>n+(+r.rating||0),0)/rs.length).toFixed(1):"—";}
-function guestProgramView(){const q=(S.search||"").toLowerCase(); let acts=S.activities.filter(a=>a.day===S.day && (!q || [a.name,a.desc,a.location,a.category].join(" ").toLowerCase().includes(q))); if(S.ratingFilter!=="all") acts=acts.filter(a=>+activityRating(a.id)>=+S.ratingFilter); return `<div class="screen fadein">${topBar(t("week"),t("days")[S.day])}${dayTabs()}<div class="searchbar"><input id="act-search" placeholder="Search activities or locations" value="${esc(S.search)}"><select id="rating-filter"><option value="all">All ratings</option><option value="4">4+</option><option value="5">5</option></select></div><div class="program-grid">${acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`}</div></div>`}
+function guestProgramView(){const q=(S.search||"").toLowerCase(); let acts=S.activities.filter(a=>a.day===S.day && (!q || [a.name,a.desc,a.location,a.category].join(" ").toLowerCase().includes(q))); if(S.ratingFilter!=="all") acts=acts.filter(a=>+activityRating(a.id)>=+S.ratingFilter); return `<div class="screen fadein">${topBar(t("week"),t("days")[S.day])}${dayTabs()}<div class="searchbar"><input id="act-search" placeholder="Search activities or locations" value="${esc(S.search)}"><select id="rating-filter"><option value="all">All ratings</option><option value="4">4★+</option><option value="5">5★</option></select></div><div class="program-grid">${acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">🔎</div>${t("noneToday")}</div>`}</div></div>`}
 function guestTicketsView(){
   return `<div class="screen fadein">
     ${topBar(t("tickets"),"")}
@@ -1032,15 +961,15 @@ function guestTicketsView(){
         <img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy">
         <div class="bd">
           <h4>${esc(tk.name)}</h4>
-          <p class="mini">${t("days")[tk.day]} ·  ${esc(tk.time)} ·  ${esc(tk.location)}${left!==null?` · ${left} ${t("seatsLeft")}`:""}</p>
+          <p class="mini">${t("days")[tk.day]} · 🕐 ${esc(tk.time)} · 📍 ${esc(tk.location)}${left!==null?` · ${left} ${t("seatsLeft")}`:""}</p>
           <p class="desc">${esc(tk.desc)}</p>
           <div class="rowend">
             <span class="price">${esc(tk.price||"")}</span>
-            ${soldOut?`<span class="chip full">${t("soldOut")}</span>`:`<button class="btn sm" data-buy="${tk.id}"> ${t("buyTicket")}</button>`}
+            ${soldOut?`<span class="chip full">${t("soldOut")}</span>`:`<button class="btn sm" data-buy="${tk.id}">🎫 ${t("buyTicket")}</button>`}
           </div>
         </div>
       </div>`;
-    }).join(""):`<div class="empty"><div class="big"></div>${t("ticketsNone")}</div>`}
+    }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`}
   </div>`;
 }
 function reviewBlock(){
@@ -1051,7 +980,7 @@ function reviewBlock(){
     <h3 style="font-size:22px">${t("reviews")}</h3>
     <p class="mini" style="margin:4px 0 12px">${t("reviewsSub")}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      ${links.map(([n,u])=>`<a class="btn sm ghost" style="text-decoration:none" href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join("")}
+      ${links.map(([n,u])=>`<a class="btn sm ghost" style="text-decoration:none" href="${esc(u)}" target="_blank" rel="noopener">⭐ ${n}</a>`).join("")}
     </div></div>`;
 }
 function socialBlock(){
@@ -1069,7 +998,7 @@ function socialBlock(){
 function staffView(){
   const todayIdx=(new Date().getDay()+6)%7;
   if(S.tab==="today"){
-    const acts=S.activities.filter(a=>a.day===todayIdx && isAssignedToMe(a));
+    const acts=S.activities.filter(a=>a.day===todayIdx);
     const hl=acts.find(a=>a.highlight);
     return `<div class="screen fadein">
       ${topBar(t("schedule"),t("days")[todayIdx]+" · "+S.session.name)}
@@ -1083,19 +1012,20 @@ function staffView(){
     const mine=S.tasks.filter(x=>!x.assigned_to || x.assigned_to===me);
     return `<div class="screen fadein">
       ${topBar(t("myTasks"),S.session.name)}
-      ${mine.length?`<div class="card">${mine.map(x=>taskLine(x,false)).join("")}</div>`:`<div class="empty"><div class="big"></div>${t("noTasks")}</div>`}
+      ${mine.length?`<div class="card">${mine.map(x=>taskLine(x,false)).join("")}</div>`:`<div class="empty"><div class="big">🌞</div>${t("noTasks")}</div>`}
     </div>`;
   }
-  return bookingsView(t("guestsBooked"), true);
+  if(S.tab==="chat") return teamChatView();
+  return bookingsView(t("guestsBooked"));
 }
 function taskLine(x,managerMode){
   const u=S.users.find(u=>u.username===x.assigned_to);
   const assignee = x.assigned_to ? ((u&&u.display_name)||x.assigned_to) : t("allTeam");
   return `<div class="booking-line">
-    <span style="min-width:0"><b>${esc(x.title)}</b>${x.desc?`<br><span class="mini">${esc(x.desc)}</span>`:""}${x.due?`<br><span class="mini"> ${esc(x.due)}</span>`:""}${managerMode?`<br><span class="mini"> ${esc(assignee)}</span>`:""}</span>
+    <span style="min-width:0"><b>${esc(x.title)}</b>${x.desc?`<br><span class="mini">${esc(x.desc)}</span>`:""}${x.due?`<br><span class="mini">📅 ${esc(x.due)}</span>`:""}${managerMode?`<br><span class="mini">👤 ${esc(assignee)}</span>`:""}</span>
     <span style="display:flex;gap:6px;align-items:center;flex:none">
       <button class="chip ${x.status==="done"?"ok":"res"}" data-taskdone="${x.id}">${x.status==="done"?t("done"):t("statusNew")}</button>
-      ${managerMode?`<button class="btn sm warn" data-taskdel="${x.id}"></button>`:""}
+      ${managerMode?`<button class="btn sm warn" data-taskdel="${x.id}">✕</button>`:""}
     </span></div>`;
 }
 function teamChatView(){
@@ -1103,11 +1033,8 @@ function teamChatView(){
     return `<div class="screen fadein">
       <div class="top">
         <div class="who" style="display:flex;align-items:center;gap:10px">
-          <button class="iconbtn" id="btn-chatback" aria-label="back to chats">←</button>
+          <button class="iconbtn" id="btn-chatback">←</button>
           <div><h2 style="font-size:22px">${esc(accountName(S.chatRoom))}</h2><p>${t("room")} ${esc(S.chatRoom)}</p></div>
-        </div>
-        <div class="toprow">
-          <button class="iconbtn" id="btn-backhome" aria-label="back to main page">${icon("home")}</button>
         </div>
       </div>
       ${threadView(S.chatRoom,"team")}
@@ -1130,18 +1057,18 @@ function teamChatView(){
           <span class="mini">${fmtTime(c.last.created_at)}</span>
           ${c.unread?`<span class="badge">${c.unread}</span>`:""}
         </div>
-      </div>`).join(""):`<div class="empty"><div class="big"></div>${t("noMessages")}</div>`}
+      </div>`).join(""):`<div class="empty"><div class="big">💬</div>${t("noMessages")}</div>`}
     </div>
   </div>`;
 }
-function bookingsView(title, staffOnly=false){
+function bookingsView(title){
   return `<div class="screen fadein">
     ${topBar(title,t("days")[S.day])}
-    ${bookingsInner(staffOnly)}
+    ${bookingsInner()}
   </div>`;
 }
-function bookingsInner(staffOnly=false){
-  const acts=S.activities.filter(a=>a.day===S.day && (!staffOnly || isAssignedToMe(a)));
+function bookingsInner(){
+  const acts=S.activities.filter(a=>a.day===S.day);
   return dayTabs() + (acts.length?acts.sort((x,y)=>x.time.localeCompare(y.time)).map(a=>{
     const bks=bookingsFor(a.id);
     return `<div class="card">
@@ -1150,8 +1077,8 @@ function bookingsInner(staffOnly=false){
         <span class="pill">${seatsTaken(a.id)}/${a.capacity}</span></div>
       ${bks.map(b=>`<div class="booking-line">
         <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}${b.nationality?` · ${esc(b.nationality)}`:""}</span>
-        <span class="pill">${b.adults}A${b.children?(" +"+b.children+"C"):""}${b.status==="waitlist"?" · waitlist":""}</span></div>`).join("")}
-    </div>`;}).join(""):`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`);
+        <span class="pill">${b.adults}A${b.children?(" +"+b.children+"C"):""}${b.status==="waitlist"?" · ⏳":""}</span></div>`).join("")}
+    </div>`;}).join(""):`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`);
 }
 /* ---------------- manager (full access — manager role only) ---------------- */
 function managerView(){
@@ -1203,7 +1130,7 @@ function dashView(){
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   return `<div class="screen fadein">
     ${topBar(t("dashboard"),S.session.name)}
-    ${!REMOTE?`<div class="setup"> ${t("demoNote")}</div>`:""}
+    ${!REMOTE?`<div class="setup">⚙️ ${t("demoNote")}</div>`:""}
     <div class="stat-grid">
       <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
       <div class="stat"><b>${occ}%</b><span>${t("occupancy")}</span></div>
@@ -1214,25 +1141,20 @@ function dashView(){
     </div>
 
     <div class="quickrow"><button id="btn-export-bookings"><span>⬇️</span>Export bookings CSV</button><button id="btn-export-orders"><span>⬇️</span>Export orders CSV</button></div>
-    <div class="sec"><h3>Event command calendar</h3>${calendarPreview()}</div>
-    <div class="sec"><h3>Hotel Entertainment Operations Suite</h3>${operationsCenter()}</div>
-    <div class="sec"><h3>Analytics cockpit</h3>${analyticsPanel()}</div>
-    <div class="sec"><h3> Manager Control Center</h3>${featuresGrid()}</div>
+    <div class="sec"><h3>👑 Manager Control Center</h3>${featuresGrid()}</div>
     <div class="sec"><h3>Security & operations</h3><div class="card">
       <div class="booking-line"><span>Roles & permissions</span><span class="pill">Manager · Team · Guest</span></div>
       <div class="booking-line"><span>Room validation / one account per room</span><span class="pill">Active</span></div>
-      <div class="booking-line"><span>Remember Me, auto-login, forgot password and manager reset flows</span><span class="pill">Included</span></div>
-      <div class="booking-line"><span>Secure password hashing fields available in Supabase schema</span><span class="pill">SHA-256 ready</span></div>
       <div class="booking-line"><span>Audit log, backups, session timeout, optional 2FA</span><span class="pill">Planned-ready</span></div>
       <div class="booking-line"><span>PDF / Excel payroll export</span><span class="pill">Export-ready</span></div>
     </div></div>
     ${nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
     </div></div>`:""}
-    <div class="sec"><h3> ${t("activities")}</h3>
+    <div class="sec"><h3>★ ${t("activities")}</h3>
       ${top.length?top.map(x=>`<div class="card booking-line" style="padding:12px 14px">
         <span><b>${esc(x.a.name)}</b> · ${t("daysShort")[x.a.day]} ${x.a.time}</span>
-        <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big"></div>${t("none")}</div>`}
+        <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">📊</div>${t("none")}</div>`}
     </div>
   </div>`;
 }
@@ -1251,33 +1173,33 @@ function managerTicketsInner(){
         <img class="thumb" src="${esc(tk.image||IMG.show)}" alt="">
         <div class="mid"><span class="catbadge">${t("days")[tk.day]} · ${esc(tk.time)}</span>
           <h4>${esc(tk.name)}</h4>
-          <div class="meta"><span>${esc(tk.price||"")}</span><span> ${sold}${tk.capacity>0?"/"+tk.capacity:""}</span></div></div>
-        <div class="side"><button class="btn sm ghost" data-tedit="${tk.id}"></button></div>
+          <div class="meta"><span>${esc(tk.price||"")}</span><span>🎫 ${sold}${tk.capacity>0?"/"+tk.capacity:""}</span></div></div>
+        <div class="side"><button class="btn sm ghost" data-tedit="${tk.id}">✎</button></div>
       </div>
       ${os.map(o=>`<div class="booking-line">
         <span><b>${t("room")} ${esc(o.room)}</b> · ${esc(o.guest_name)} · ×${o.qty}</span>
         <span style="display:flex;gap:6px;align-items:center">
           <button class="chip ${o.status==="paid"?"ok":"res"}" data-tpaid="${o.id}">${o.status==="paid"?t("paid"):t("reserved")}</button>
-          <button class="btn sm warn" data-tdel="${o.id}"></button>
+          <button class="btn sm warn" data-tdel="${o.id}">✕</button>
         </span></div>`).join("")}
     </div>`;
-  }).join(""):`<div class="empty"><div class="big"></div>${t("ticketsNone")}</div>`);
+  }).join(""):`<div class="empty"><div class="big">🎫</div>${t("ticketsNone")}</div>`);
 }
 function requestsInner(){
   return S.requests.length?`<div class="card">${S.requests.map(r=>`<div class="booking-line">
-    <span style="min-width:0">${r.type==="song"?"":""} <b>${esc(r.detail)}</b>${r.date?` · ${esc(r.date)}`:""}
+    <span style="min-width:0">${r.type==="song"?"🎵":"🎂"} <b>${esc(r.detail)}</b>${r.date?` · ${esc(r.date)}`:""}
       <br><span class="mini">${t("room")} ${esc(r.room)} · ${esc(r.guest_name)}${r.note?` — ${esc(r.note)}`:""}</span></span>
     <span style="display:flex;gap:6px;align-items:center;flex:none">
       <button class="chip ${r.status==="done"?"ok":"res"}" data-reqdone="${r.id}">${r.status==="done"?t("done"):t("statusNew")}</button>
-      <button class="btn sm warn" data-reqdel="${r.id}"></button>
+      <button class="btn sm warn" data-reqdel="${r.id}">✕</button>
     </span></div>`).join("")}</div>`
-  :`<div class="empty"><div class="big"></div>${t("none")}</div>`;
+  :`<div class="empty"><div class="big">🎁</div>${t("none")}</div>`;
 }
 function roomsInner(){
   return `<label>${t("addRooms")}</label>
     <textarea id="rooms-in" rows="3" placeholder="${t("roomsHint")}"></textarea>
     <button class="btn" id="btn-addrooms" style="margin:10px 0 16px">＋ ${t("addRooms")}</button>
-    <input id="rooms-filter" placeholder="" style="margin-bottom:10px">
+    <input id="rooms-filter" placeholder="🔍" style="margin-bottom:10px">
     <div class="card roomgrid">
       ${S.rooms.length?S.rooms.map(r=>{
         const acc=S.accounts.find(a=>a.room===r.room);
@@ -1285,29 +1207,29 @@ function roomsInner(){
           <span><b>${esc(r.room)}</b>${acc?` · ${esc(acc.name)}`:""}</span>
           <span style="display:flex;gap:6px;align-items:center">
             <button class="chip ${r.active?"ok":"full"}" data-roomact="${r.id}">${t("activeLbl")}</button>
-            <button class="btn sm warn" data-roomdel="${r.id}"></button>
+            <button class="btn sm warn" data-roomdel="${r.id}">✕</button>
           </span></div>`;
-      }).join(""):`<div class="empty"><div class="big"></div>${t("none")}</div>`}
+      }).join(""):`<div class="empty"><div class="big">🚪</div>${t("none")}</div>`}
     </div>`;
 }
 function accountsInner(){
   const managerCount=S.users.filter(u=>u.role==="manager").length;
-  return `<button class="btn" id="btn-adduser" style="margin:0 0 12px">${t("addUser")}</button>
+  return `<button class="btn" id="btn-adduser" style="margin:0 0 12px">＋ ${t("addUser")}</button>
     <div class="card">
       ${S.users.map(u=>{
         const lastManager=u.role==="manager"&&managerCount<=1;
         return `<div class="booking-line">
         <span><b>${esc(u.display_name||u.username)}</b> · ${esc(u.username)}</span>
         <span style="display:flex;gap:8px;align-items:center">
-          <button class="pill" data-edituser="${u.id}">${u.role==="manager"?t("manager"):t("staff")}</button>
-          ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">×</button>`}
+          <span class="pill">${u.role==="manager"?t("manager"):t("staff")}</span>
+          ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">✕</button>`}
         </span></div>`;}).join("")}
     </div>`;
 }
 function tasksInner(){
   return `<div class="card"><h3>Daily checklist</h3><div class="booking-line"><span>Sound check</span><span class="pill">09:00</span></div><div class="booking-line"><span>Pool games kit ready</span><span class="pill">10:00</span></div><div class="booking-line"><span>Birthday announcements prepared</span><span class="pill">20:30</span></div></div><button class="btn" id="btn-addtask" style="margin:0 0 12px">＋ ${t("addTask")}</button>`
     + (S.tasks.length?`<div class="card">${S.tasks.map(x=>taskLine(x,true)).join("")}</div>`
-      :`<div class="empty"><div class="big"></div>${t("noTasks")}</div>`);
+      :`<div class="empty"><div class="big">✅</div>${t("noTasks")}</div>`);
 }
 function attendanceInner(){
   const todayIdx=(new Date().getDay()+6)%7, date=todayISO();
@@ -1318,7 +1240,7 @@ function attendanceInner(){
       const pres=bks.filter(b=>S.attendance.some(x=>x.booking_id===b.id&&x.date===date)).length;
       return `<div class="booking-line"><span>${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></span>
         <span class="pill">${pres}/${bks.length} ${t("present")}</span></div>`;
-    }).join("")}</div>`:`<div class="empty"><div class="big"></div>${t("noneToday")}</div>`);
+    }).join("")}</div>`:`<div class="empty"><div class="big">🌴</div>${t("noneToday")}</div>`);
 }
 function appSettingsView(){
   const st=S.settings;
@@ -1380,7 +1302,8 @@ function navView(role){
   } else if(role==="staff"){
     const un=unreadFor("staff");
     items=[["today","program",t("today"),0],["week","program",t("program"),0],["bookings","tickets",t("bookings"),0],
-      ["tasks","stay",t("tasks"),S.tasks.filter(x=>x.status!=="done"&&(!x.assigned_to||x.assigned_to===S.session.username)).length]];
+      ["tasks","stay",t("tasks"),S.tasks.filter(x=>x.status!=="done"&&(!x.assigned_to||x.assigned_to===S.session.username)).length],
+      ["chat","chat",t("chat"),un]];
   } else {
     const un=unreadFor("manager");
     const newReq=S.requests.filter(r=>r.status==="new").length;
@@ -1402,7 +1325,7 @@ function openBookModal(a){
   const taken=seatsTaken(a.id), left=Math.max(0,a.capacity-taken), full=left<=0;
   const wrap=baseModal(`
     <h3>${esc(a.name)}</h3>
-    <p class="mini"> ${esc(a.time)} ·  ${esc(a.location)} · ${full?t("full"):left+" "+t("seatsLeft")}</p>
+    <p class="mini">🕐 ${esc(a.time)} · 📍 ${esc(a.location)} · ${full?t("full"):left+" "+t("seatsLeft")}</p>
     <p style="margin-top:8px">${esc(a.desc)}</p>
     <div class="row2">
       <div><label>${t("adults")}</label><input id="m-ad" type="number" min="1" value="1"></div>
@@ -1424,14 +1347,14 @@ function openTicketBuyModal(tk){
   const max=left!==null?Math.max(1,Math.min(10,left)):10;
   const wrap=baseModal(`
     <h3>${esc(tk.name)}</h3>
-    <p class="mini">${t("days")[tk.day]} ·  ${esc(tk.time)} ·  ${esc(tk.location)}</p>
+    <p class="mini">${t("days")[tk.day]} · 🕐 ${esc(tk.time)} · 📍 ${esc(tk.location)}</p>
     <p style="margin-top:8px">${esc(tk.desc)}</p>
     <p class="mini" style="margin-top:8px">${t("payNote")}</p>
     <div class="row2" style="align-items:end">
       <div><label>${t("qty")}</label><input id="tq" type="number" min="1" max="${max}" value="1"></div>
       <div style="text-align:end;font-family:var(--font-display);font-size:24px;color:var(--cacao);padding-bottom:10px">${esc(tk.price||"")}</div>
     </div>
-    <button class="btn" id="t-go"> ${t("buyTicket")}</button>
+    <button class="btn" id="t-go">🎫 ${t("buyTicket")}</button>
     <button class="btn ghost" id="t-x">${t("close")}</button>`);
   wrap.querySelector("#t-x").onclick=()=>wrap.remove();
   wrap.querySelector("#t-go").onclick=async ()=>{
@@ -1444,7 +1367,7 @@ function openTicketBuyModal(tk){
 function openRequestModal(type){
   const isSong=type==="song";
   const wrap=baseModal(`
-    <h3>${isSong?" "+t("songRequest"):" "+t("birthdayRequest")}</h3>
+    <h3>${isSong?"🎵 "+t("songRequest"):"🎂 "+t("birthdayRequest")}</h3>
     <label>${isSong?t("songName"):t("forWhom")}</label><input id="r-detail">
     ${isSong?"":`<label>${t("birthdayDate")}</label><input id="r-date" type="date">`}
     <label>${t("reqNote")}</label><textarea id="r-note" rows="2"></textarea>
@@ -1469,7 +1392,7 @@ function openTaskModal(){
     <label>${t("desc")}</label><textarea id="tk-desc" rows="2"></textarea>
     <label>${t("taskFor")}</label>
     <select id="tk-for"><option value="">${t("allTeam")}</option>${staffOpts}</select>
-    <label> ${t("day")}</label><input id="tk-due" type="date">
+    <label>📅 ${t("day")}</label><input id="tk-due" type="date">
     <button class="btn" id="tk-go">${t("save")}</button>
     <button class="btn ghost" id="tk-x">${t("close")}</button>`);
   wrap.querySelector("#tk-x").onclick=()=>wrap.remove();
@@ -1485,19 +1408,19 @@ function openNotesModal(){
   const role=S.session?S.session.role:"guest";
   const list=visibleNotes(role);
   const wrap=baseModal(`
-    <h3> ${t("notifications")}</h3>
+    <h3>🔔 ${t("notifications")}</h3>
     ${role==="manager"?`<button class="btn sm" id="n-new" style="margin-bottom:12px">＋ ${t("newAnnouncement")}</button>`:""}
     ${list.length?list.map(n=>`<div class="card" style="padding:12px 14px">
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
         <b>${esc(n.title)}</b>
         <span style="display:flex;gap:6px;align-items:center;flex:none">
           <span class="mini">${fmtTime(n.created_at)}</span>
-          ${role==="manager"?`<button class="btn sm warn" data-notedel="${n.id}"></button>`:""}
+          ${role==="manager"?`<button class="btn sm warn" data-notedel="${n.id}">✕</button>`:""}
         </span>
       </div>
       <p style="font-size:14.5px;margin-top:4px">${esc(n.body)}</p>
       ${role==="manager"?`<p class="mini" style="margin-top:4px">${n.audience==="all"?t("audAll"):n.audience==="guests"?t("audGuests"):t("audTeam")}</p>`:""}
-    </div>`).join(""):`<div class="empty"><div class="big"></div>${t("noNotifs")}</div>`}
+    </div>`).join(""):`<div class="empty"><div class="big">🔕</div>${t("noNotifs")}</div>`}
     <button class="btn ghost" id="n-x">${t("close")}</button>`);
   const maxId=list.reduce((m,n)=>Math.max(m,n.id),S.seenNote);
   if(maxId>S.seenNote){ S.seenNote=maxId; persist(); }
@@ -1526,7 +1449,7 @@ function openComposeNoteModal(){
     const title=wrap.querySelector("#nn-title").value.trim();
     const body=wrap.querySelector("#nn-body").value.trim();
     if(!title&&!body) return;
-    await DB.addNote({title:title||"",body,audience:wrap.querySelector("#nn-aud").value});
+    await DB.addNote({title:title||"📣",body,audience:wrap.querySelector("#nn-aud").value});
     S.seenNote=S.notes.reduce((m,n)=>Math.max(m,n.id),S.seenNote); persist();
     wrap.remove(); toast(t("saved")); render();
   };
@@ -1535,7 +1458,7 @@ function openAttendanceModal(a){
   const date=todayISO();
   const bks=bookingsFor(a.id).filter(b=>b.status==="booked");
   const wrap=baseModal(`
-    <h3> ${t("attendance")}</h3>
+    <h3>✓ ${t("attendance")}</h3>
     <p class="mini">${esc(a.name)} · ${esc(a.time)}</p>
     ${bks.length?`<div class="card" style="margin-top:12px">${bks.map(b=>{
       const on=S.attendance.some(x=>x.booking_id===b.id&&x.date===date);
@@ -1543,7 +1466,7 @@ function openAttendanceModal(a){
         <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}</span>
         <button class="chip ${on?"ok":""}" data-attb="${b.id}">${t("present")}</button>
       </div>`;
-    }).join("")}</div>`:`<div class="empty"><div class="big"></div>${t("none")}</div>`}
+    }).join("")}</div>`:`<div class="empty"><div class="big">👥</div>${t("none")}</div>`}
     <button class="btn ghost" id="at-x">${t("close")}</button>`);
   wrap.querySelector("#at-x").onclick=()=>{ wrap.remove(); render(); };
   wrap.querySelectorAll("[data-attb]").forEach(b=>b.onclick=async ()=>{
@@ -1607,7 +1530,7 @@ function openEditModal(a){
     <label>${t("entertainer")}</label><input id="e-ent" value="${esc(a.entertainer)}">
     <label>${t("imageUrl")}</label><input id="e-img" value="${esc(a.image)}" placeholder="https://...">
     <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:15px;color:var(--ink)">
-      <input id="e-hl" type="checkbox" style="width:auto" ${a.highlight?"checked":""}>  ${t("makeHighlight")}</label>
+      <input id="e-hl" type="checkbox" style="width:auto" ${a.highlight?"checked":""}> ✦ ${t("makeHighlight")}</label>
     <button class="btn" id="e-save">${t("save")}</button>
     ${isNew?"":`<button class="btn warn" id="e-del">${t("deleteActivity")}</button>`}
     <button class="btn ghost" id="e-x">${t("close")}</button>`);
@@ -1630,15 +1553,14 @@ function openEditModal(a){
   const del=wrap.querySelector("#e-del");
   if(del) del.onclick=async ()=>{ await DB.deleteActivity(a.id); wrap.remove(); toast(t("deleted")); render(); };
 }
-function openUserModal(user=null){
-  const isEdit=!!user; user=user||{username:"",password:"",display_name:"",role:"staff"};
+function openUserModal(){
   const wrap=baseModal(`
-    <h3>${isEdit?t("save"):t("addUser")}</h3>
-    <label>${t("user")}</label><input id="u-name" autocapitalize="none" value="${esc(user.username)}">
-    <label>${t("pass")}</label><input id="u-pass" value="${esc(user.password)}">
-    <label>${t("displayName")}</label><input id="u-disp" value="${esc(user.display_name||"")}">
+    <h3>${t("addUser")}</h3>
+    <label>${t("user")}</label><input id="u-name" autocapitalize="none">
+    <label>${t("pass")}</label><input id="u-pass">
+    <label>${t("displayName")}</label><input id="u-disp">
     <label>${t("roleLabel")}</label>
-    <select id="u-role"><option value="staff" ${user.role==="staff"?"selected":""}>${t("staff")}</option><option value="manager" ${user.role==="manager"?"selected":""}>${t("manager")}</option></select>
+    <select id="u-role"><option value="staff">${t("staff")}</option><option value="manager">${t("manager")}</option></select>
     <button class="btn" id="u-save">${t("save")}</button>
     <div class="err" id="u-err"></div>
     <button class="btn ghost" id="u-x">${t("close")}</button>`);
@@ -1650,8 +1572,8 @@ function openUserModal(user=null){
     const role=wrap.querySelector("#u-role").value;
     const err=wrap.querySelector("#u-err");
     if(!username||!password){ err.textContent=t("loginErr"); return; }
-    if(S.users.some(x=>x.username===username && (!isEdit || x.id!==user.id))){ err.textContent=t("userExists"); return; }
-    await DB.saveUser({...user,username,password,role,display_name});
+    if(S.users.some(x=>x.username===username)){ err.textContent=t("userExists"); return; }
+    await DB.addUser({username,password,role,display_name});
     wrap.remove(); toast(t("saved")); render();
   };
 }
@@ -1738,17 +1660,10 @@ function wireCommon(){
   document.querySelectorAll("[data-chatroom]").forEach(el=>el.onclick=()=>{
     S.chatRoom=el.dataset.chatroom; render();
   });
-  const bh=$("#btn-backhome"); if(bh) bh.onclick=()=>{
-    if(S.chatRoom){ S.chatRoom=null; render(); return; }
-    const normal=normalTabForRole(S.session?S.session.role:"guest");
-    if(S.tab!==normal){ S.tab=normal; persist(); render(); return; }
-    if(history.length>1) history.back();
-  };
   const cb=$("#btn-chatback"); if(cb) cb.onclick=()=>{S.chatRoom=null;render();};
   const add=$("#btn-add"); if(add) add.onclick=()=>openEditModal(null);
   const addT=$("#btn-addticket"); if(addT) addT.onclick=()=>openTicketEditModal(null);
-  const addU=$("#btn-adduser"); if(addU) addU.onclick=()=>openUserModal(null);
-  document.querySelectorAll("[data-edituser]").forEach(b=>b.onclick=()=>{ const u=S.users.find(x=>x.id===+b.dataset.edituser); if(u) openUserModal(u); });
+  const addU=$("#btn-adduser"); if(addU) addU.onclick=openUserModal;
   const addTk=$("#btn-addtask"); if(addTk) addTk.onclick=openTaskModal;
   const rs=$("#btn-req-song"); if(rs) rs.onclick=()=>openRequestModal("song");
   const rb=$("#btn-req-bday"); if(rb) rb.onclick=()=>openRequestModal("birthday");
@@ -1841,7 +1756,7 @@ function safeToRender(){
       const rm=S.rooms.find(x=>String(x.room)===String(S.session.room));
       const acc=S.accounts.find(a=>String(a.room)===String(S.session.room));
       if(!rm || !rm.active || !acc) S.session=null;
-      else S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",username:acc.username||("room"+acc.room),password:acc.password||makeGuestPassword(acc.room),
+      else S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
         nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure};
     } else {
       const u=S.users.find(x=>x.username===S.session.username);
@@ -1858,8 +1773,7 @@ function safeToRender(){
     try{ const changed=await DB.poll(); if(changed && safeToRender()) render(); }catch(e){}
   }, 45000);
 })();
-/* Single-file build: serviceWorker registration is intentionally skipped because no external sw.js is required. */
-window.__singleFileApp = true;
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{})); }
 </script>
 </body>
 </html>
