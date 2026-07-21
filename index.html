@@ -430,6 +430,30 @@ function modulesPanel(){
   return `<div class="card cap-list">${OPERATING_MODULES.map(([title,items])=>`<div class="booking-line"><span><b>${esc(title)}</b><span class="mini">${items.map(esc).join(" · ")}</span></span><span class="pill">Configurable</span></div>`).join("")}</div>`;
 }
 
+const OPS_MODULES=[
+  {title:"Event Calendar",icon:"📅",desc:"Create, edit and delete events with recurring schedules, color categories, holiday overlays, special events and drag-and-drop planning.",tags:["Create event","Edit event","Delete event","Recurring","Drag & drop","Holidays"]},
+  {title:"Photo Gallery",icon:"🖼️",desc:"Managers upload photos, videos and event albums while guests browse activities, shows, hotel spaces and event memories.",tags:["Photos","Videos","Event albums","Guest browsing"]},
+  {title:"GPS Tracking",icon:"📍",desc:"Optional consent-based live GPS during working hours helps managers view active staff, find the nearest entertainer, assign tasks and support emergencies.",tags:["Consent only","Working hours","Nearest staff","Emergency"]},
+  {title:"Staff Payroll",icon:"💼",desc:"Employee profiles include salary, bonuses, deductions, overtime, vacation, entrance day and dress code with monthly PDF and Excel export readiness.",tags:["Salary","Bonuses","Deductions","Overtime","Vacation","PDF/Excel"]},
+  {title:"Performance Reports",icon:"🏆",desc:"Every entertainer gets attendance score, activity completion, punctuality, manager evaluation, monthly performance and ranking insights.",tags:["Attendance","Completion","Punctuality","Ranking"]},
+  {title:"Reviews & Complaints",icon:"⭐",desc:"Guests rate Kids Club, activities, entertainers, shows, sports and pool activities; managers see averages, comments, complaints and trends.",tags:["Ratings","Comments","Complaints","Trends"]},
+  {title:"Reports & Analytics",icon:"📊",desc:"Daily, weekly, monthly and yearly reports with PDF, Excel and CSV exports for attendance, bookings, guests, nationalities, busy hours, top performers and revenue.",tags:["Daily","Weekly","Monthly","Yearly","CSV"]},
+  {title:"Communication Center",icon:"💬",desc:"Internal manager-to-staff chat, guest-to-manager conversations, announcements, attachments, photos and optional voice-message workflows.",tags:["Internal chat","Guest chat","Announcements","Attachments"]},
+  {title:"File Management",icon:"📁",desc:"Central library for PDFs, images, videos, documents, icons and activity posters so managers can update content without code.",tags:["PDF","Images","Videos","Documents","Posters"]},
+  {title:"Settings & Security",icon:"🛡️",desc:"Hotel information, working hours, locations, categories, languages, notifications, booking rules, attendance rules, backups, restore, system logs and secure API access.",tags:["Permissions","Audit logs","Backups","2FA","Rate limiting"]}
+];
+function operationsCenter(){
+  return `<div class="ops-grid">${OPS_MODULES.map(m=>`<div class="ops-card"><h4><span style="font-size:24px;margin-inline-end:6px">${m.icon}</span>${esc(m.title)}</h4><p class="mini">${esc(m.desc)}</p><div class="ops-tags">${m.tags.map(x=>`<span class="ops-tag">${esc(x)}</span>`).join("")}</div></div>`).join("")}</div>`;
+}
+function analyticsPanel(){
+  const rows=[["Attendance",88],["Bookings",74],["Guest reviews",92],["Busy hours",67],["Top performers",84],["Revenue",58]];
+  return `<div class="card">${rows.map(([n,v])=>`<div class="chart-row"><span class="mini">${n}</span><span class="bar"><i style="width:${v}%"></i></span><b>${v}%</b></div>`).join("")}</div>`;
+}
+function calendarPreview(){
+  const labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  return `<div class="card"><div class="booking-line"><span><b>Drag & drop event planner</b><br><span class="mini">Recurring activities, holidays and special-event colors are dashboard-configurable.</span></span><span class="pill">Live-ready</span></div><div class="calendar-mini">${labels.map((d,i)=>`<div class="cal-day"><b>${d}</b>${i===0?"Aqua Gym":i===2?"Foam Party":i===5?"Neon Show":"Kids Club"}</div>`).join("")}</div></div>`;
+}
+
 /* ---------------- data layer ---------------- */
 async function sb(path, opts={}){
   const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + path, {
@@ -1177,8 +1201,9 @@ function dashView(){
     </div>
 
     <div class="quickrow"><button id="btn-export-bookings"><span>⬇️</span>Export bookings CSV</button><button id="btn-export-orders"><span>⬇️</span>Export orders CSV</button></div>
-    <div class="sec"><h3>👑 Manager Control Center</h3>${featuresGrid()}</div>
-    <div class="sec"><h3>🧩 Configurable operating modules</h3>${modulesPanel()}</div>
+    <div class="sec"><h3>Event command calendar</h3>${calendarPreview()}</div>
+    <div class="sec"><h3>Hotel Entertainment Operations Suite</h3>${operationsCenter()}</div>
+    <div class="sec"><h3>Analytics cockpit</h3>${analyticsPanel()}</div>
     <div class="sec"><h3> Manager Control Center</h3>${featuresGrid()}</div>
     <div class="sec"><h3>Security & operations</h3><div class="card">
       <div class="booking-line"><span>Roles & permissions</span><span class="pill">Manager · Team · Guest</span></div>
