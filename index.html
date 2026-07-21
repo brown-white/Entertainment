@@ -283,7 +283,7 @@ const S = {
   lang:"en", theme:"light", session:null, tab:"home",
   day:(new Date().getDay()+6)%7, favorites:[],
   sub:{program:"acts", guests:"bookings", team:"accounts"},
-  chatRoom:null, seenNote:0,
+  chatRoom:null, seenNote:0, history:[],
   activities:[], bookings:[], users:[], tickets:[], orders:[],
   rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[],
   settings:{...DEFAULT_SETTINGS}, loadError:false, search:"", ratingFilter:"all", activeTabs:{home:true,program:true,tickets:true,chat:true,stay:true}, reviews:[]
@@ -305,6 +305,16 @@ function restore(){
     if(d.session) S.session=d.session;
     if(d.seenNote) S.seenNote=d.seenNote;
   }catch(e){}
+}
+/* ---------------- back navigation ---------------- */
+function pushHistory(){
+  S.history.push({tab:S.tab, sub:{...S.sub}, chatRoom:S.chatRoom});
+  if(S.history.length>40) S.history.shift();
+}
+function goBack(){
+  const prev=S.history.pop();
+  if(prev){ S.tab=prev.tab; S.sub=prev.sub; S.chatRoom=prev.chatRoom; }
+  render();
 }
 
 /* ---------------- sample data (preview only) ---------------- */
@@ -750,14 +760,14 @@ function wireLogin(){
       }
       S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
         nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure};
-      S.tab="home"; persist(); render();
+      S.tab="home"; S.history=[]; persist(); render();
     } else {
       const u=$("#f-user").value.trim(), p=$("#f-pass").value;
       const found=S.users.find(x=>x.username===u && x.password===p && (loginRole==="manager"?x.role==="manager":true));
       if(!found){ err.textContent=t("loginErr"); return; }
       const role = found.role==="manager" && loginRole==="manager" ? "manager" : "staff";
       S.session={role,name:found.display_name||found.username,username:found.username,userId:found.id};
-      S.tab = role==="manager" ? "dash" : "today"; persist(); render();
+      S.tab = role==="manager" ? "dash" : "today"; S.history=[]; persist(); render();
     }
   };
 }
@@ -766,7 +776,10 @@ function wireLogin(){
 function topBar(title,sub){
   const role=S.session?S.session.role:"guest";
   return `<div class="top">
-    <div class="who"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>
+    <div class="who" style="display:flex;align-items:center;gap:8px;min-width:0">
+      ${S.history.length?`<button class="iconbtn" id="btn-back" aria-label="back" style="width:36px;height:36px;font-size:17px;flex:none">←</button>`:""}
+      <div style="min-width:0"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>
+    </div>
     <div class="toprow">
       <button class="iconbtn" id="btn-notes" aria-label="notifications">🔔${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
       <button class="iconbtn" id="btn-theme" aria-label="theme">${S.theme==="light"?"🌙":"☀️"}</button>
@@ -1589,15 +1602,21 @@ function openLangModal(){
 }
 /* ---------------- wiring ---------------- */
 function wireCommon(){
-  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;S.chatRoom=null;render();});
+  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
+    if(b.dataset.tab!==S.tab) pushHistory();
+    S.tab=b.dataset.tab;S.chatRoom=null;render();
+  });
   document.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{S.day=+b.dataset.day;render();});
   document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{
-    const [g,v]=b.dataset.sub.split(":"); S.sub[g]=v; S.chatRoom=null; render();
+    const [g,v]=b.dataset.sub.split(":");
+    if(S.sub[g]!==v) pushHistory();
+    S.sub[g]=v; S.chatRoom=null; render();
   });
+  const bk=$("#btn-back"); if(bk) bk.onclick=goBack;
   const th=$("#btn-theme"); if(th) th.onclick=()=>setTheme(S.theme==="light"?"dark":"light");
   const lg=$("#btn-lang"); if(lg) lg.onclick=openLangModal;
   const nb=$("#btn-notes"); if(nb) nb.onclick=openNotesModal;
-  const out=$("#btn-out"); if(out) out.onclick=()=>{S.session=null;S.chatRoom=null;loginMode="guest";persist();render();};
+  const out=$("#btn-out"); if(out) out.onclick=()=>{S.session=null;S.chatRoom=null;S.history=[];loginMode="guest";persist();render();};
   document.querySelectorAll("[data-fav]").forEach(b=>b.onclick=e=>{
     e.stopPropagation(); const id=+b.dataset.fav;
     S.favorites=S.favorites.includes(id)?S.favorites.filter(x=>x!==id):[...S.favorites,id]; persist(); render();
@@ -1658,6 +1677,7 @@ function wireCommon(){
     await DB.deleteRoom(+b.dataset.roomdel||b.dataset.roomdel); toast(t("deleted")); render();
   });
   document.querySelectorAll("[data-chatroom]").forEach(el=>el.onclick=()=>{
+    pushHistory();
     S.chatRoom=el.dataset.chatroom; render();
   });
   const cb=$("#btn-chatback"); if(cb) cb.onclick=()=>{S.chatRoom=null;render();};
