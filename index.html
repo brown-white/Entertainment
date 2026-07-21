@@ -824,11 +824,15 @@ function wireLogin(){
 }
 
 /* ---------------- shared pieces ---------------- */
+function normalTabForRole(role){ return role==="manager" ? "dash" : role==="staff" ? "today" : "home"; }
 function topBar(title,sub){
   const role=S.session?S.session.role:"guest";
+  const normalTab=normalTabForRole(role);
+  const showBack=S.tab!==normalTab || !!S.chatRoom;
   return `<div class="top">
     <div class="who"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>
     <div class="toprow">
+      ${showBack?`<button class="iconbtn" id="btn-backhome" aria-label="back to main page">${icon("home")}</button>`:""}
       ${socialTopIcons()}
       <button class="iconbtn" id="btn-notes" aria-label="notifications">${icon("bell")}${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
       <button class="iconbtn" id="btn-theme" aria-label="theme">${S.theme==="light"?icon("moon"):icon("sun")}</button>
@@ -1096,8 +1100,11 @@ function teamChatView(){
     return `<div class="screen fadein">
       <div class="top">
         <div class="who" style="display:flex;align-items:center;gap:10px">
-          <button class="iconbtn" id="btn-chatback">←</button>
+          <button class="iconbtn" id="btn-chatback" aria-label="back to chats">←</button>
           <div><h2 style="font-size:22px">${esc(accountName(S.chatRoom))}</h2><p>${t("room")} ${esc(S.chatRoom)}</p></div>
+        </div>
+        <div class="toprow">
+          <button class="iconbtn" id="btn-backhome" aria-label="back to main page">${icon("home")}</button>
         </div>
       </div>
       ${threadView(S.chatRoom,"team")}
@@ -1728,6 +1735,7 @@ function wireCommon(){
   document.querySelectorAll("[data-chatroom]").forEach(el=>el.onclick=()=>{
     S.chatRoom=el.dataset.chatroom; render();
   });
+  const bh=$("#btn-backhome"); if(bh) bh.onclick=()=>{ S.tab=normalTabForRole(S.session?S.session.role:"guest"); S.chatRoom=null; persist(); render(); };
   const cb=$("#btn-chatback"); if(cb) cb.onclick=()=>{S.chatRoom=null;render();};
   const add=$("#btn-add"); if(add) add.onclick=()=>openEditModal(null);
   const addT=$("#btn-addticket"); if(addT) addT.onclick=()=>openTicketEditModal(null);
