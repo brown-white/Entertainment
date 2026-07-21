@@ -223,8 +223,8 @@ img{display:block;max-width:100%}
 /* ================================================================
     SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup.sql (one time)
-   2) Optionally set window.ENTERTAINMENT_CONFIG or add an inline JSON config script with your Supabase URL + anon key.
-   While credentials are empty the app runs on sample data for preview.
+   2) Supabase project credentials are configured below. Override with window.ENTERTAINMENT_CONFIG if needed.
+   If credentials are removed the app runs on sample data for preview.
 ================================================================ */
 const CONFIG = (()=>{
   const meta = document.querySelector('script[type="application/json"][data-ent-config]');
@@ -232,8 +232,8 @@ const CONFIG = (()=>{
   let inline = {};
   try{ inline = meta ? JSON.parse(meta.textContent || "{}") : {}; }catch(e){ console.warn("Invalid inline config", e); }
   return {
-    SUPABASE_URL: env.SUPABASE_URL || inline.SUPABASE_URL || "",
-    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || ""
+    SUPABASE_URL: env.SUPABASE_URL || inline.SUPABASE_URL || "https://ogxkrmvhozgqhdleyllw.supabase.co",
+    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || "sb_publishable_WG03OzuBDsJDfZOeuDxvTQ_N6ewuQg9"
   };
 })();
 const REMOTE = /^https:\/\//.test(CONFIG.SUPABASE_URL) && !!CONFIG.SUPABASE_ANON_KEY;
