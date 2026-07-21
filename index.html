@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
+<script src="config.js"></script>
 <title>Entertainment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -221,8 +222,9 @@ img{display:block;max-width:100%}
 /* ================================================================
     SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup.sql (one time)
-   2) Provide project values via window.ENTERTAINMENT_CONFIG or an inline JSON config script
-   While both are empty the app runs on sample data for preview.
+   2) Copy config.example.js to config.js and add your Supabase URL + anon key
+      (or provide values via window.ENTERTAINMENT_CONFIG / an inline JSON config script).
+   While credentials are empty the app runs on sample data for preview.
 ================================================================ */
 const CONFIG = (()=>{
   const meta = document.querySelector('script[type="application/json"][data-ent-config]');
@@ -455,36 +457,51 @@ function calendarPreview(){
 }
 
 /* ---------------- data layer ---------------- */
+function withHotel(path){
+  if(!CONFIG.HOTEL_ID || /(?:^|[?&])hotel_id=/.test(path)) return path;
+  const join = path.includes("?") ? "&" : "?";
+  return path + join + "hotel_id=eq." + encodeURIComponent(CONFIG.HOTEL_ID);
+}
+function payloadWithHotel(payload){
+  if(!CONFIG.HOTEL_ID) return payload;
+  const add = row => row && typeof row === "object" && !("hotel_id" in row) ? {...row, hotel_id:CONFIG.HOTEL_ID} : row;
+  return Array.isArray(payload) ? payload.map(add) : add(payload);
+}
 async function sb(path, opts={}){
-  const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + path, {
-    ...opts,
+  const requestPath = withHotel(path);
+  const requestOpts = {...opts};
+  if(requestOpts.body && /^(POST|PATCH)$/i.test(requestOpts.method||"GET")){
+    try{ requestOpts.body = JSON.stringify(payloadWithHotel(JSON.parse(requestOpts.body))); }catch(e){}
+  }
+  const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + requestPath, {
+    ...requestOpts,
     headers:{
       "apikey":CONFIG.SUPABASE_ANON_KEY,
       "Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
       "Content-Type":"application/json",
-      "Prefer": opts.method==="POST"||opts.method==="PATCH" ? "return=representation" : "",
-      ...(opts.headers||{})
+      "Prefer": requestOpts.method==="POST"||requestOpts.method==="PATCH" ? "return=representation" : "",
+      ...(requestOpts.headers||{})
     }
   });
-  if(!res.ok) throw new Error("Supabase "+res.status+" on "+path);
+  if(!res.ok) throw new Error("Supabase "+res.status+" on "+requestPath);
   const txt = await res.text();
   return txt ? JSON.parse(txt) : null;
 }
 const DB = {
   async load(){
     if(REMOTE){
-      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at] = await Promise.all([
+      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at,rv] = await Promise.all([
         sb("activities?select=*&order=time"), sb("bookings?select=*"),
         sb("app_users?select=*"), sb("app_settings?select=*&id=eq.1"),
         sb("tickets?select=*&order=time"), sb("ticket_orders?select=*"),
         sb("rooms?select=*&order=room"), sb("guest_accounts?select=*"),
         sb("messages?select=*&order=created_at"), sb("requests?select=*&order=created_at.desc"),
         sb("tasks?select=*&order=created_at.desc"), sb("announcements?select=*&order=created_at.desc"),
-        sb("attendance?select=*")
+        sb("attendance?select=*"), sb("reviews?select=*&order=created_at.desc")
       ]);
       S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
       S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
-      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[];
+      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.reviews=rv||[];
       if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
