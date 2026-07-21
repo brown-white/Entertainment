@@ -12,16 +12,20 @@ for (const needle of [
   'x.role===loginRole',
   'guest_accounts',
   'remember-me',
-  'forgot-pass'
+  'forgot-pass',
+  'config.js',
+  'withHotel',
+  'payloadWithHotel',
+  'reviews?select=*'
 ]) {
   if (!html.includes(needle) && !existsSync(needle)) throw new Error(`Missing ${needle}`);
 }
 for (const needle of ['audit_logs', 'payroll_records', 'locations', 'files', 'password_hash']) {
   if (!sql.includes(needle)) throw new Error(`Missing schema object ${needle}`);
 }
-const js = html.split('<script>')[1].split('</script>')[0];
+const js = html.match(/<script>([\s\S]*)<\/script>/)[1];
 new Function(js);
-for (const file of ['manifest.webmanifest', 'sw.js', 'icon.svg', 'supabase-setup.sql']) {
+for (const file of ['manifest.webmanifest', 'sw.js', 'icon.svg', 'supabase-setup.sql', 'config.example.js']) {
   if (!existsSync(file)) throw new Error(`Missing ${file}`);
 }
 console.log('smoke ok');
