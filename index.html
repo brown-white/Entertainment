@@ -230,9 +230,9 @@ const CONFIG = (()=>{
   let inline = {};
   try{ inline = meta ? JSON.parse(meta.textContent || "{}") : {}; }catch(e){ console.warn("Invalid inline config", e); }
   return {
-    SUPABASE_URL: env.SUPABASE_URL || inline.SUPABASE_URL || "",
-    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || "",
-    HOTEL_ID: env.HOTEL_ID || inline.HOTEL_ID || "demo-hotel"
+    SUPABASE_URL: env.SUPABASE_URL || inline.SUPABASE_URL || "https://ogxkrmvhozgqhdleyllw.supabase.co",
+    SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || inline.SUPABASE_ANON_KEY || "sb_publishable_WG03OzuBDsJDfZOeuDxvTQ_N6ewuQg9",
+    HOTEL_ID: env.HOTEL_ID || inline.HOTEL_ID || "ogxkrmvhozgqhdleyllw"
   };
 })();
 const REMOTE = /^https:\/\//.test(CONFIG.SUPABASE_URL) && !!CONFIG.SUPABASE_ANON_KEY;
@@ -420,18 +420,18 @@ async function sb(path, opts={}){
 const DB = {
   async load(){
     if(REMOTE){
-      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at] = await Promise.all([
+      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at,rv] = await Promise.all([
         sb("activities?select=*&order=time"), sb("bookings?select=*"),
         sb("app_users?select=*"), sb("app_settings?select=*&id=eq.1"),
         sb("tickets?select=*&order=time"), sb("ticket_orders?select=*"),
         sb("rooms?select=*&order=room"), sb("guest_accounts?select=*"),
         sb("messages?select=*&order=created_at"), sb("requests?select=*&order=created_at.desc"),
         sb("tasks?select=*&order=created_at.desc"), sb("announcements?select=*&order=created_at.desc"),
-        sb("attendance?select=*")
+        sb("attendance?select=*"), sb("reviews?select=*")
       ]);
       S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
       S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
-      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[];
+      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.reviews=rv||[];
       if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
