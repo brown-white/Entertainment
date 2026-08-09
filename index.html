@@ -3978,12 +3978,32 @@ let SW_REG=null;
 let SW_READY=false;
 /* Registers the REAL static service worker file (sw.js) that sits next to index.html.
    Relative path keeps the scope correct on GitHub Pages sub-paths. */
+/* ===================== SERVICE WORKER =====================
+   SAFE MODE: set USE_SERVICE_WORKER to true again only once sw.js
+   is confirmed uploaded next to index.html and the app logs in fine.
+   While false, this actively REMOVES any old/stuck service worker and
+   clears its caches, so a bad cached copy can never keep the app broken. */
+const USE_SERVICE_WORKER = false;
+
+function cleanupServiceWorkers(){
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      regs.forEach(r=>{ r.unregister().catch(()=>{}); });
+      if(regs.length){ console.warn("removed", regs.length, "old service worker(s)"); }
+    }).catch(()=>{});
+    if(window.caches && caches.keys){
+      caches.keys().then(keys=>keys.forEach(k=>caches.delete(k).catch(()=>{}))).catch(()=>{});
+    }
+  }catch(e){ console.warn("sw cleanup:", e && e.message); }
+}
+
 function registerServiceWorker(){
   if(!("serviceWorker" in navigator)) return;
+  if(!USE_SERVICE_WORKER){ cleanupServiceWorkers(); return; }
   try{
     navigator.serviceWorker.register("sw.js").then(reg=>{
       SW_REG=reg; SW_READY=true;
-      // if a new version is waiting, activate it right away
       if(reg.waiting) reg.waiting.postMessage({kind:"skip-waiting"});
       reg.addEventListener&&reg.addEventListener("updatefound",()=>{
         const nw=reg.installing;
@@ -3993,7 +4013,6 @@ function registerServiceWorker(){
       });
     }).catch(err=>{ console.warn("service worker not registered:", err && err.message); });
 
-    // messages coming back from the service worker
     navigator.serviceWorker.addEventListener("message", ev=>{
       const d=ev.data||{};
       if(d.kind==="notification-click"){ routeFromNotification(d.type); }
