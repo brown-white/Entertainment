@@ -61,13 +61,16 @@ self.addEventListener('fetch', event => {
   // other same-origin GETs -> cache first, then network
   if (url.origin === self.location.origin) {
     event.respondWith(
-      caches.match(req).then(hit => hit || fetch(req).then(res => {
-        if (res && res.status === 200 && res.type === 'basic') {
-          const copy = res.clone();
-          caches.open(SHELL_CACHE).then(c => c.put(req, copy)).catch(() => {});
-        }
-        return res;
-      }).catch(() => hit))
+      caches.match(req).then(hit => {
+        if (hit) return hit;
+        return fetch(req).then(res => {
+          if (res && res.status === 200 && res.type === 'basic') {
+            const copy = res.clone();
+            caches.open(SHELL_CACHE).then(c => c.put(req, copy)).catch(() => {});
+          }
+          return res;
+        }).catch(() => new Response('', { status: 504, statusText: 'offline' }));
+      })
     );
   }
 });
