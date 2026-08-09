@@ -774,27 +774,27 @@ input,textarea,select{border-radius:var(--r-md);transition:border-color .15s,box
 
 /* ===== manager: real tablet & desktop layout (guests/staff stay mobile-first) ===== */
 @media(min-width:900px){
-  [data-role="manager"] .app{max-width:1080px;padding-inline:10px}
-  [data-role="manager"] .modal{max-width:640px;border-radius:var(--r-2xl)}
-  [data-role="manager"] .chatbar{max-width:1080px}
+  [data-approle="manager"] .app{max-width:1080px;padding-inline:10px}
+  [data-approle="manager"] .modal{max-width:640px;border-radius:var(--r-2xl)}
+  [data-approle="manager"] .chatbar{max-width:1080px}
   /* two/three column grids where it helps */
-  [data-role="manager"] .opgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-  [data-role="manager"] .catgrid{grid-template-columns:repeat(3,1fr)}
-  [data-role="manager"] .hub-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  [data-role="manager"] .bus-grid{grid-template-columns:1fr 1fr}
-  [data-role="manager"] .rostercard{columns:2;column-gap:0}
-  [data-role="manager"] .roster-row{break-inside:avoid}
-  [data-role="manager"] .whobar h2{font-size:30px}
+  [data-approle="manager"] .opgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  [data-approle="manager"] .catgrid{grid-template-columns:repeat(3,1fr)}
+  [data-approle="manager"] .hub-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  [data-approle="manager"] .bus-grid{grid-template-columns:1fr 1fr}
+  [data-approle="manager"] .rostercard{columns:2;column-gap:0}
+  [data-approle="manager"] .roster-row{break-inside:avoid}
+  [data-approle="manager"] .whobar h2{font-size:30px}
 }
 @media(min-width:1280px){
-  [data-role="manager"] .app{max-width:1240px}
-  [data-role="manager"] .opgrid{grid-template-columns:repeat(3,1fr)}
-  [data-role="manager"] .hub-list{grid-template-columns:repeat(3,1fr)}
+  [data-approle="manager"] .app{max-width:1240px}
+  [data-approle="manager"] .opgrid{grid-template-columns:repeat(3,1fr)}
+  [data-approle="manager"] .hub-list{grid-template-columns:repeat(3,1fr)}
 }
 /* tablet: give the manager a bit more room already */
 @media(min-width:700px) and (max-width:899px){
-  [data-role="manager"] .app{max-width:720px}
-  [data-role="manager"] .bus-grid{grid-template-columns:1fr 1fr}
+  [data-approle="manager"] .app{max-width:720px}
+  [data-approle="manager"] .bus-grid{grid-template-columns:1fr 1fr}
 }
 
 /* ================= TYPOGRAPHY HIERARCHY ================= */
@@ -1625,7 +1625,7 @@ function rankingRows(){
 /* ================= RENDER ================= */
 function render(){
   const app=$("#app");
-  document.documentElement.setAttribute("data-role", S.session?S.session.role:"none");
+  document.documentElement.setAttribute("data-approle", S.session?S.session.role:"none");
   if(S.loadError){ app.innerHTML=errorView(); const r=$("#btn-retry"); if(r) r.onclick=()=>location.reload(); return; }
   if(!S.session){ app.innerHTML=loginView(); wireLogin(); return; }
   const r=S.session.role;
@@ -1718,7 +1718,7 @@ function loginView(){
 }
 function wireLogin(){
   document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
-  document.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>{loginRole=b.dataset.role;render();});
+  document.querySelectorAll("#app [data-role]").forEach(b=>b.onclick=()=>{loginRole=b.dataset.role;render();});
   document.querySelectorAll("[data-gmode]").forEach(b=>b.onclick=()=>{guestMode=b.dataset.gmode;render();});
   const tl=$("#btn-teamlink"); if(tl) tl.onclick=()=>{loginMode="team";render();};
   const gl=$("#btn-guestlink"); if(gl) gl.onclick=()=>{loginMode="guest";render();};
