@@ -28,7 +28,7 @@
 --ease:cubic-bezier(.2,.7,.2,1);
 /* layering — one scale, no guessing */
 --z-base:1; --z-sticky:6; --z-chatbar:35; --z-nav:40; --z-drawer:60;
---z-modal:80; --z-toast:100; --z-banner:120;
+--z-modal:80; --z-toast:100; --z-banner:120; --z-photo:200;
 /* typography scale */
 --fs-h1:30px; --fs-h2:24px; --fs-h3:19px; --fs-h4:16px;
 --fs-body:15px; --fs-label:13px; --fs-caption:12px; --fs-meta:11px;
@@ -1304,6 +1304,60 @@ html{font-size:calc(16px * var(--fscale,1))}
 .pb-edit input[type="color"]{height:42px;padding:4px}
 .pb-prev{margin-top:6px;padding:12px;border-radius:var(--r-md);background:var(--bg);border:1px dashed var(--line)}
 .pb-prev .pb-b:last-child{margin-bottom:0}
+
+/* ===== photo viewer (lightbox) ===== */
+.pv-bg{position:fixed;inset:0;z-index:var(--z-photo,200);background:rgba(0,0,0,.93);display:flex;
+  align-items:center;justify-content:center;padding:20px;animation:pvIn .18s ease}
+@keyframes pvIn{from{opacity:0}to{opacity:1}}
+.pv-img{max-width:100%;max-height:86vh;border-radius:var(--r-md);object-fit:contain;
+  box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.pv-x{position:absolute;top:calc(env(safe-area-inset-top) + 14px);right:16px;width:44px;height:44px;
+  min-height:0;padding:0;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+[dir="rtl"] .pv-x{right:auto;left:16px}
+.pv-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;min-height:0;padding:0;
+  border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:flex;
+  align-items:center;justify-content:center;cursor:pointer}
+.pv-nav.prev{left:12px}
+.pv-nav.next{right:12px}
+.pv-nav.next svg{transform:scaleX(-1)}
+.pv-count{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 20px);left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,.85);font-size:13px;font-weight:600;letter-spacing:.03em}
+/* ===== horizontal photo strip ===== */
+.pstrip{display:flex;gap:9px;overflow-x:auto;padding:2px 0 4px;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.pstrip::-webkit-scrollbar{display:none}
+.pstrip img{flex:none;width:70%;max-width:260px;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-lg);
+  scroll-snap-align:start;cursor:pointer;border:1px solid var(--line)}
+@media(min-width:620px){.pstrip img{width:38%}}
+/* ===== photo list editor ===== */
+.pedit{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:9px}
+.pedit-it{position:relative;width:74px;height:74px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line)}
+.pedit-it img{width:100%;height:100%;object-fit:cover}
+.pedit-rm{position:absolute;top:3px;right:3px;width:22px;height:22px;min-height:0;padding:0;border-radius:50%;
+  border:0;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center}
+[dir="rtl"] .pedit-rm{right:auto;left:3px}
+/* ===== circle crop ===== */
+.crop-stage{position:relative;width:280px;max-width:100%;height:280px;margin:12px auto;border-radius:var(--r-md);
+  overflow:hidden;background:var(--sand);touch-action:none;cursor:grab}
+.crop-stage canvas{display:block;width:100%;height:100%}
+.crop-ring{position:absolute;inset:0;pointer-events:none;box-shadow:0 0 0 999px rgba(0,0,0,.42) inset;border-radius:50%}
+
+/* ===== collapsible menu sections ===== */
+.dr-sech{display:flex;align-items:center;gap:8px;width:100%;text-align:start;background:transparent;
+  border:0;cursor:pointer;min-height:0}
+.dr-sech>span:first-child{flex:1;min-width:0}
+.dr-caret{display:flex;opacity:.5;transform:rotate(-90deg);transition:transform var(--dur-base)}
+.dr-sech.open .dr-caret{transform:rotate(90deg)}
+[dir="rtl"] .dr-caret{transform:rotate(90deg)}
+[dir="rtl"] .dr-sech.open .dr-caret{transform:rotate(-90deg)}
+.dr-group{display:none}
+.dr-group.open{display:block;animation:drOpen .18s ease}
+@keyframes drOpen{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.dr-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:start}
+/* editor helpers */
+.hi-t1{flex:1;margin:0}
+.hi-rm{flex:none;margin:0}
 </style>
 </head>
 <body>
@@ -1745,6 +1799,42 @@ async function uploadAvatar(file){
 /* Wire a photo picker: an avatar preview + hidden file input + upload-on-change. */
 /* ================= PHOTO VIEWER (lightbox) =================
    Tap any picture anywhere to open it big, swipe or arrow between them. */
+/* Any picture, anywhere: tapping it opens the big view and NEVER triggers the
+   card or row underneath. Runs in the capture phase so it fires before anything else. */
+function initPhotoTaps(){
+  if(window.__photoTaps) return;
+  window.__photoTaps=true;
+  document.addEventListener("click", ev=>{
+    const target=ev.target;
+    if(!target || !target.closest) return;
+    // never inside the viewer itself, an upload box, the crop tool or an editor thumbnail
+    if(target.closest(".pv-bg,.photo-pick,.photo-box,.pedit,.crop-stage,.brandmark")) return;
+    const holder=target.closest("[data-pv],[data-pvsingle]");
+    let urls=[], start=0;
+    if(holder && holder.hasAttribute("data-pvsingle")){
+      urls=[holder.getAttribute("data-pvsingle")];
+    } else if(holder && holder.hasAttribute("data-pv")){
+      const parts=String(holder.getAttribute("data-pv")).split("|");
+      start=+parts[1]||0;
+      let strip=null;
+      try{ strip=document.querySelector('[data-strip="'+String(parts[0]).replace(/["\\]/g,"")+'"]'); }catch(e){}
+      if(strip) urls=[...strip.querySelectorAll("img")].map(i=>i.getAttribute("src"));
+      else { const im=holder.tagName==="IMG"?holder:holder.querySelector("img"); if(im) urls=[im.getAttribute("src")]; }
+    } else {
+      // a plain photo with no marker (gallery grid, avatars, proof shots…)
+      if(target.tagName!=="IMG") return;
+      const src=target.getAttribute("src");
+      if(!src || /^data:/.test(src)) return;
+      urls=[src];
+    }
+    urls=(urls||[]).filter(Boolean);
+    if(!urls.length) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+    openPhotoViewer(urls, start);
+  }, true);
+}
 function openPhotoViewer(urls, start){
   const list=(Array.isArray(urls)?urls:[urls]).filter(Boolean);
   if(!list.length) return;
@@ -6920,21 +7010,7 @@ function wireCommon(){
   document.querySelectorAll("[data-uview]").forEach(b=>b.onclick=()=>{ S.tab="emp:"+b.dataset.uview; render(); });
   const profReq=$("#prof-req"); if(profReq) profReq.onclick=openProfileChangeModal;
   // any picture with data-pv opens the big viewer
-  document.querySelectorAll("[data-pvsingle]").forEach(el=>el.onclick=e=>{
-    e.stopPropagation(); e.preventDefault();
-    openPhotoViewer([el.dataset.pvsingle],0);
-  });
-  document.querySelectorAll("[data-pv]").forEach(el=>el.onclick=e=>{
-    e.stopPropagation();
-    const [key,ixRaw]=String(el.dataset.pv).split("|");
-    const ix=+ixRaw||0;
-    const strip=document.querySelector('[data-strip="'+key+'"]');
-    let urls=[];
-    if(strip) urls=[...strip.querySelectorAll("img")].map(i=>i.getAttribute("src"));
-    else { const img=el.tagName==="IMG"?el:el.querySelector("img"); if(img) urls=[img.getAttribute("src")]; }
-    openPhotoViewer(urls, ix);
-  });
-  document.querySelectorAll("[data-strip] img").forEach((img,i)=>{ if(!img.dataset.pv) img.onclick=()=>openPhotoViewer([img.getAttribute("src")],0); });
+  /* photo taps are handled globally by initPhotoTaps() */
   const crumbTeam=$("#crumb-team"); if(crumbTeam) crumbTeam.onclick=()=>{
     if(S.session.role==="manager"){ S.tab="team"; S.sub.team="accounts"; }
     else S.tab="teaminfo";
@@ -7541,6 +7617,7 @@ function startRealtime(){
     window.addEventListener("focus", ()=>{ if(S.session) runPoll(); });
     document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && S.session) runPoll(); });
   }
+  initPhotoTaps();
   enforceAccess();
   applyOpenParam();
   setTimeout(()=>loadWeather(false), 800);
