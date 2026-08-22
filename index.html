@@ -6394,7 +6394,7 @@ function buildDataset(kind){
     // Order exactly as the hotel reads it. No practice, no internal notes.
     const rows=[ [t("restaurantTheme"), dp.theme] ];
     evs.forEach(a=>rows.push([t("eventsToday"),
-      String(a.time||"").split(/\s*[–—-]\s*/)[0]+" — "+a.name+(a.location?" ("+a.location+")":"")]));
+      String(a.time||"").split(/\s*[–—-]\s*/)[0]+" — "+a.name+(a.location?" ("+a.location+")":"")+(a.desc?" · "+a.desc:"")]));
     if(!evs.length) rows.push([t("eventsToday"),"—"]);
     rows.push([t("liveBandLbl"), dp.liveBand||"—"]);
     rows.push([t("eveningShowLbl"), dp.eveningShow+" · "+dp.showTime+" · "+dp.showLoc]);
@@ -6404,10 +6404,9 @@ function buildDataset(kind){
     // ---- team totals ----
     const st=teamStats(), duty=dayDutyStats(d);
     if(st.total){
-      // entertainers working today = entertainers minus the ones off (manager excluded)
-      const offEnt=duty.off.filter(u=>u.role!=="manager").length;
-      rows.push([t("workingEntToday"), String(Math.max(0, st.entertainers-offEnt))+" / "+st.entertainers]);
-      rows.push([t("totalAllTeam"), String(st.total)]);
+      // one clean number: everyone working today, manager included
+      const offAll=duty.off.length;
+      rows.push([t("workingToday"), String(Math.max(0, st.total-offAll))]);
       if(st.natList.length) rows.push([t("byNationality"), st.natList.map(n=>n.name+" "+n.count).join(" · ")]);
       const gen=[st.byGender.male+" "+t("genderM"), st.byGender.female+" "+t("genderF")];
       if(st.byGender.none) gen.push(st.byGender.none+" "+t("genderNone"));
