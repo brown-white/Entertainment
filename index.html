@@ -334,8 +334,8 @@ h3 .ic-s,h4 .ic-s{color:var(--bronze);vertical-align:-3px}
 .dr-out{margin-inline-start:auto;display:inline-flex;gap:8px;align-items:center;font-size:14px;
   color:var(--muted);padding:10px 15px;border:1px solid var(--line);border-radius:var(--r-pill);background:var(--card)}
 /* luxury login */
-.login-wrap{background:radial-gradient(130% 95% at 50% -12%,#5C4030 0%,#3E2A1E 46%,#221610 100%)}
-.login-card{background:rgba(255,251,244,.97);border-radius:var(--r-2xl);box-shadow:0 34px 90px -34px rgba(0,0,0,.65)}
+.login-wrap{background:radial-gradient(120% 90% at 50% 120%,rgba(0,0,0,.42),rgba(0,0,0,0) 60%),radial-gradient(130% 95% at 50% -12%,var(--cacao) 0%,var(--espresso) 100%)}
+.login-card{background:var(--card);border-radius:var(--r-2xl);box-shadow:0 34px 90px -34px rgba(0,0,0,.5)}
 .brandmark .mono{width:76px;height:76px;font-size:35px;border:1px solid rgba(217,180,127,.65);
   box-shadow:0 0 0 8px rgba(217,180,127,.13),0 22px 55px -20px rgba(0,0,0,.75)}
 .brandmark h1{letter-spacing:.05em}
@@ -2902,7 +2902,7 @@ function loginView(){
       </div>
       <div class="login-card">
         ${fields}
-        <button class="btn" id="btn-login">${t("signin")}</button>
+        ${guestMode==="signin"?`<button class="btn" id="btn-login">${t("signin")}</button>`:""}
         <div class="err" id="login-err"></div>
         ${!REMOTE?`<p class="hint">${t("demoNote")}</p>`:""}
       </div>
