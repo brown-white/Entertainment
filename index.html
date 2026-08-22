@@ -42,11 +42,11 @@
   --font-display:'Cormorant Garamond',serif; --font-body:'Jost',sans-serif;
   --btn-radius:14px; --btn-radius-sm:11px;
   --nav-bg:#FFFFFF; --nav-on:#6B4A32;
-  --radius:18px; --shadow:0 6px 24px rgba(62,42,30,.08);
+  --radius:18px; --shadow:0 1px 2px rgba(38,24,14,.05),0 10px 28px -14px rgba(38,24,14,.20);
 }
 [data-theme="dark"]{
   --bg:#1B140E; --card:#271E15; --ink:#F1E8DC; --muted:#B7A48E;
-  --line:#3B2F22; --sand:#3B2F22; --shadow:0 6px 24px rgba(0,0,0,.35);
+  --line:#3B2F22; --sand:#3B2F22; --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 32px -14px rgba(0,0,0,.55);
   --nav-bg:#271E15; --nav-on:var(--bronze);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -116,7 +116,7 @@ img{display:block;max-width:100%}
 .sec{margin-bottom:22px}
 .sec>h3{font-size:22px;margin-bottom:10px;display:flex;align-items:baseline;gap:8px}
 .sec>h3 .count{font-family:var(--font-body);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
 .act{display:flex;gap:12px;align-items:stretch}
 .act .thumb{width:78px;height:78px;border-radius:var(--r-md);object-fit:cover;flex:none;background:var(--sand)}
 .act .mid{flex:1;min-width:0}
@@ -190,7 +190,7 @@ img{display:block;max-width:100%}
 [data-theme="dark"] .daytabs button.on,[data-theme="dark"] .pills button.on{background:var(--bronze);color:#1B140E}
 
 /* ---------- bottom nav ---------- */
-.nav{position:fixed;bottom:0;inset-inline:0;max-width:540px;margin:0 auto;background:var(--nav-bg);border-top:1px solid var(--line);display:flex;padding:8px 4px calc(10px + env(safe-area-inset-bottom));z-index:var(--z-nav)}
+.nav{position:fixed;bottom:0;inset-inline:0;max-width:540px;margin:0 auto;background:var(--nav-bg);border-top:1px solid var(--line);box-shadow:0 -6px 22px -14px rgba(38,24,14,.30);display:flex;padding:8px 4px calc(10px + env(safe-area-inset-bottom));z-index:var(--z-nav)}
 .nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);padding:4px 1px;min-width:0;position:relative}
 .nav button span.lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .nav button .ic{font-size:22px;line-height:1}
@@ -199,7 +199,7 @@ img{display:block;max-width:100%}
 
 /* ---------- modal / toast ---------- */
 .modal-bg{position:fixed;inset:0;background:rgba(30,18,10,.55);z-index:var(--z-drawer);display:flex;align-items:flex-end;justify-content:center}
-.modal{background:var(--bg);width:100%;max-width:540px;border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));max-height:88dvh;overflow-y:auto;animation:up .25s ease}
+.modal{background:var(--bg);width:100%;max-width:540px;border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));max-height:88dvh;overflow-y:auto;box-shadow:0 -10px 44px -14px rgba(0,0,0,.40);animation:up .25s ease}
 @keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .modal h3{font-size:24px;margin-bottom:6px}
 .modal .grab{width:44px;height:5px;border-radius:var(--r-pill);background:var(--line);margin:0 auto 14px}
@@ -1396,6 +1396,20 @@ html{font-size:calc(16px * var(--fscale,1))}
 .aa-bal span{font-size:14.5px;color:var(--ink);font-weight:600}
 .aa-sel{flex:none;width:auto;min-width:112px;max-width:140px;margin:0;padding:7px 9px;font-size:12.5px}
 .ts-chip.hot{background:rgba(229,161,0,.22)}
+/* ===== branded splash (auto-dismiss, failsafe-removed) ===== */
+#splash{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  background:radial-gradient(120% 85% at 50% 0%,#1B2740 0%,#0C1220 74%);
+  animation:splashOut .6s ease .55s forwards}
+#splash .sp-ring{width:80px;height:80px;border-radius:50%;border:2px solid rgba(201,162,39,.9);
+  display:flex;align-items:center;justify-content:center;color:#E9D9B8;font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1;
+  box-shadow:0 0 0 7px rgba(201,162,39,.10),0 14px 46px -10px rgba(0,0,0,.6);animation:spPulse 1.4s ease-in-out infinite}
+#splash .sp-line{width:128px;height:2px;border-radius:2px;overflow:hidden;position:relative;background:rgba(233,217,184,.16)}
+#splash .sp-line::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;
+  background:linear-gradient(90deg,transparent,#C9A227,transparent);animation:spSlide 1.15s linear infinite}
+@keyframes splashOut{to{opacity:0;visibility:hidden}}
+@keyframes spPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes spSlide{from{transform:translateX(-130%)}to{transform:translateX(330%)}}
+@media (prefers-reduced-motion:reduce){#splash{display:none}}
 </style>
 </head>
 <body>
@@ -1406,6 +1420,8 @@ html{font-size:calc(16px * var(--fscale,1))}
   <div class="skel skel-card"></div>
   <div class="skel skel-card"></div>
 </div></div>
+<div id="splash" aria-hidden="true"><div class="sp-ring">&#10022;</div><div class="sp-line"></div></div>
+<script>setTimeout(function(){var s=document.getElementById("splash");if(s&&s.parentNode)s.parentNode.removeChild(s);},2600);</script>
 <script>
 /* ================================================================
    ⚙️ SETUP — make it real in 2 steps:
@@ -1429,7 +1445,7 @@ const DEFAULT_SETTINGS = {
   tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
   instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:"",
   busToHotel:"", busToHouse:"",
-  aiEndpoint:"", pushEndpoint:"", palette:"brownWhite", dayOverrides:{}, hotelInfo:[], reviewAsk:true,
+  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, hotelInfo:[], reviewAsk:true,
   logo:"", hotelName:"", timezone:"", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true}
