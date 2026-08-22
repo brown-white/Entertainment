@@ -6955,11 +6955,16 @@ function openTicketEditModal(tk){
       <div><label>${t("capacity")} (0 = ∞)</label><input id="k-cap" type="number" min="0" value="${tk.capacity}"></div>
     </div>
     <label>${t("location")}</label><input id="k-loc" value="${esc(tk.location)}">
+    <div class="photo-pick"><div class="photo-box" data-photobox></div>
+      <div class="pp-txt"><b>${t("photo")}</b><span class="mini">${t("uploadPhoto")}</span></div>
+      <input type="file" accept="image/*" data-photoinput hidden></div>
     <label>${t("imageUrl")}</label><input id="k-img" value="${esc(tk.image)}" placeholder="https://...">
     <button class="btn" id="k-save">${t("save")}</button>
     ${isNew?"":`<button class="btn warn" id="k-del">${t("deleteActivity")}</button>`}
     <button class="btn ghost" id="k-x">${t("close")}</button>`);
   wrap.querySelector("#k-x").onclick=()=>wrap.remove();
+  let kPhoto=tk.image||"";
+  wirePhotoPicker(wrap, ()=>kPhoto, v=>{ kPhoto=v; const ki=wrap.querySelector("#k-img"); if(ki) ki.value=v; });
   wrap.querySelector("#k-save").onclick=async ()=>{
     const upd={...tk,
       name:wrap.querySelector("#k-name").value.trim(),
