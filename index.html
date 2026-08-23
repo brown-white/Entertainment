@@ -4093,10 +4093,15 @@ function guest360View(id){
 const NO_ACTIVITY_NUMBERS=[1,3];          // manager and DJ
 function assignableStaff(day){
   const dp=dayPlanFor(day);
+  // Connect to attendance: for today, anyone marked absent (A) or off (O) gets no activity.
+  const today=(day===todayIndex()) ? hotelDateStr() : null;
+  const awayToday=u=> !!today && (S.staffAtt||[]).some(x=>
+    x.username===u.username && String(x.date).slice(0,10)===today && (x.status==="A"||x.status==="O"));
   return (S.users||[])
     .filter(u=>u.role==="staff" && u.number && u.active!==false
       && !NO_ACTIVITY_NUMBERS.includes(u.number)
-      && !dp.off.includes(u.number))
+      && !dp.off.includes(u.number)
+      && !awayToday(u))
     .sort((a,b)=>(a.number||99)-(b.number||99));
 }
 /* which slot an activity belongs to */
