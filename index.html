@@ -1524,6 +1524,8 @@ const RULE_STR={
   ar:{wr_title:"قواعد العمل",wr_edit:"تعديل",wr_add:"إضافة قاعدة",wr_none:"لا توجد قواعد بعد — اضغط تعديل لإضافة الأولى.",wr_hint:"أضف ما يجب فعله وما يجب تجنبه وما يترتب على ذلك. يراها الفريق كله.",wr_ftitle:"العنوان",wr_do:"افعل",wr_dont:"لا تفعل",wr_appr:"تقدير",wr_cons:"عاقبة",wr_title_ph:"عنوان القاعدة",wr_do_ph:"ما يجب فعله",wr_dont_ph:"ما يجب تجنبه",wr_appr_ph:"تقدير عند الالتزام",wr_cons_ph:"عاقبة عند عدم الالتزام",std_hint:"عدّل الوقت والعنوان والملاحظة الاختيارية لكل سطر.",std_addrow:"إضافة سطر",std_reset:"إعادة للوضع الافتراضي"}
 };
 Object.keys(RULE_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], RULE_STR[l]); });
+const RULE_STR2={en:{wr_editday:"Edit the day"},de:{wr_editday:"Tag bearbeiten"},ru:{wr_editday:"Изменить день"},pl:{wr_editday:"Edytuj dzień"},cs:{wr_editday:"Upravit den"},nl:{wr_editday:"Dag bewerken"},fr:{wr_editday:"Modifier la journée"},ar:{wr_editday:"تعديل اليوم"}};
+Object.keys(RULE_STR2).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], RULE_STR2[l]); });
 const NATIONS=["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian","Botswanan","Brazilian","British","Bruneian","Bulgarian","Burkinabe","Burmese","Burundian","Cambodian","Cameroonian","Canadian","Cape Verdean","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech","Danish","Djiboutian","Dominican","Dutch","East Timorese","Ecuadorean","Egyptian","Emirati","Equatorial Guinean","Eritrean","Estonian","Ethiopian","Fijian","Filipino","Finnish","French","Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Guyanese","Haitian","Honduran","Hungarian","Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Ivorian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Kosovar","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish","Macedonian","Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Mauritanian","Mauritian","Mexican","Moldovan","Monacan","Mongolian","Montenegrin","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Nigerien","North Korean","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Salvadoran","Samoan","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovenian","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swazi","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Togolese","Trinidadian","Tunisian","Turkish","Turkmen","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean","Other"];
 
 /* ============ TEAM PLAN (from the internal 8-page plan) ============ */
@@ -1637,6 +1639,8 @@ function dayPlanFor(day){
   return {...base,
     off: Array.isArray(ov.off) ? ov.off.slice() : base.off,
     entrance: (typeof ov.entrance==="number") ? ov.entrance : base.entrance,
+    theme: (ov.theme!=null && ov.theme!=="") ? ov.theme : base.theme,
+    dress: (ov.dress!=null && ov.dress!=="") ? ov.dress : base.dress,
     custom: true};
 }
 function dayIsCustom(day){
@@ -5600,7 +5604,7 @@ function openDutyModal(day){
   const roster=[];
   for(let n=1;n<=10;n++) roster.push({n, name:nameForNumber(n), role:roleForNumber(n)});
   const wrap=baseModal(`
-    <h3>${ic("clipboard",20)} ${t("editDuty")}</h3>
+    <h3>${ic("clipboard",20)} ${t("wr_editday")}</h3>
     <p class="mini">${t("dutyFor")}: <b>${esc(t("days")[day]||"")}</b>${dayIsCustom(day)?` · ${t("customDay")}`:` · ${t("standardDay")}`}</p>
     <label style="margin-top:10px">${t("selectDayOff")}</label>
     <div class="duty-list">
@@ -5614,6 +5618,10 @@ function openDutyModal(day){
       <option value="">—</option>
       ${roster.map(r=>`<option value="${r.n}" ${dp.entrance===r.n?"selected":""}>#${r.n} ${esc(r.name||r.role)}</option>`).join("")}
     </select>
+    <label style="margin-top:12px">${t("restaurantTheme")}</label>
+    <input id="duty-theme" value="${esc(dp.theme||"")}" placeholder="${esc(t("restaurantTheme"))}">
+    <label style="margin-top:2px">${t("dressCode")}</label>
+    <input id="duty-dress" value="${esc(dp.dress||"")}" placeholder="${esc(t("dressCode"))}">
     <button class="btn" id="duty-save">${t("save")}</button>
     ${dayIsCustom(day)?`<button class="btn ghost" id="duty-reset">${ic("back",15)} ${t("resetDefault")}</button>`:""}
     <button class="btn ghost" id="duty-x">${t("close")}</button>`);
@@ -5621,7 +5629,9 @@ function openDutyModal(day){
   wrap.querySelector("#duty-save").onclick=async ()=>{
     const off=[...wrap.querySelectorAll(".duty-off")].filter(b=>b.checked).map(b=>+b.value);
     const entRaw=wrap.querySelector("#duty-ent").value;
-    const ov={off, entrance: entRaw?+entRaw:null};
+    const ov={off, entrance: entRaw?+entRaw:null,
+      theme: wrap.querySelector("#duty-theme").value.trim(),
+      dress: wrap.querySelector("#duty-dress").value.trim()};
     const all={...(S.settings.dayOverrides||{})};
     all[String(day)]=ov;
     try{
@@ -5848,7 +5858,7 @@ function dayDetailCard(day,num){
       ${cons?`<div class="rl-line rl-cons"><span class="rl-lb">${t("wr_cons")}</span> ${esc(cons)}</div>`:""}
     </div>`;
   }).join("");
-  return `<div class="sec"><h3>${ic("calendar",18)} ${esc(t("days")[dp.day]||dp.name)}</h3>
+  return `<div class="sec"><h3 class="dd-h">${ic("calendar",18)} ${esc(t("days")[dp.day]||dp.name)}${isMgrView?`<button class="dd-edit" data-dutyedit="${day}" type="button">${ic("pen",13)} ${t("wr_edit")}</button>`:""}</h3>
     <div class="card daycard">
       <div class="dc-grid">
         <div class="dc-cell"><span>${t("restaurantTheme")}</span><b>${esc(dp.theme)}</b></div>
