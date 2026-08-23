@@ -928,6 +928,15 @@ button,.btn,.iconbtn{min-height:44px}
 .db-n.ok{background:rgba(62,155,95,.13);border-color:transparent}
 .db-n.off{background:rgba(192,57,43,.11);border-color:transparent}
 .db-n.absent{background:rgba(229,161,0,.16);border-color:transparent}
+.dd-h{display:flex;align-items:center;gap:8px}
+.dd-edit{margin-inline-start:auto;background:var(--sand);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.rule-row{display:flex;flex-direction:column;gap:5px;padding:11px 16px}
+.rule-row:not(:last-child){border-bottom:1px solid var(--line)}
+.rule-row b{font-size:14.5px;color:var(--ink)}
+.rule-pun{font-size:12.5px;color:var(--ink);background:rgba(192,57,43,.10);border-radius:8px;padding:3px 9px;align-self:flex-start}
+.ed-row{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
+.ed-row input{margin:0 0 8px}
+.ed-row .ed-rm{margin:0}
 .db-meta{display:flex;flex-direction:column;gap:3px;margin:12px 0 10px}
 .db-tag{align-self:flex-start;margin-top:3px;padding:3px 10px;border-radius:var(--r-pill);
   background:var(--bronze);color:#fff;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -5714,17 +5723,97 @@ function practiceCard(dp,info){
         <span class="pr-mid"><b>${t("makeupPractice")}</b><span class="mini">${esc(makeupText(dp.makeup))}</span></span></div>`:""}
     </div>`;
 }
+function stdList(dp){
+  if(Array.isArray(S.settings.standards) && S.settings.standards.length)
+    return S.settings.standards.map(r=>({time:r.time||"", title:r.title||"", note:r.note||""}));
+  return DAILY_STANDARDS.map(r=>{
+    let note=r.nk?t(r.nk):"";
+    if(r.morning) note = (dp&&dp.practice) ? t("practiceInline") : "";
+    return {time:r.time, title:t(r.k), note};
+  });
+}
+function rulesList(){ return Array.isArray(S.settings.rules) ? S.settings.rules : []; }
+function openStandardsEditor(){
+  const rows = stdList(dayPlanFor(todayIndex())).map(r=>({time:r.time,title:r.title,note:r.note}));
+  const rowHtml = r=>`<div class="ed-row">
+    <input class="ed-time" value="${esc(r.time)}" placeholder="09:00">
+    <input class="ed-title" value="${esc(r.title)}" placeholder="Breakfast">
+    <input class="ed-note" value="${esc(r.note)}" placeholder="note (optional)">
+    <button class="btn sm ghost ed-rm" type="button">${ic("close",14)}</button></div>`;
+  const wrap=baseModal(`
+    <h3>${ic("clock",18)} ${t("dailyStandards")}</h3>
+    <p class="mini">Edit the time, title and optional note for each line.</p>
+    <div id="ed-list">${rows.map(rowHtml).join("")}</div>
+    <button class="btn sm ghost" id="ed-add" style="margin-bottom:10px">${ic("plus",14)} Add row</button>
+    <button class="btn" id="ed-save">${t("save")}</button>
+    <button class="btn ghost" id="ed-reset">Reset to default</button>
+    <button class="btn ghost" id="ed-x">${t("close")}</button>`);
+  wrap.querySelector("#ed-x").onclick=()=>wrap.remove();
+  const list=wrap.querySelector("#ed-list");
+  const wireRm=()=>wrap.querySelectorAll(".ed-rm").forEach(b=>b.onclick=()=>b.parentElement.remove());
+  wireRm();
+  wrap.querySelector("#ed-add").onclick=()=>{
+    const d=document.createElement("div"); d.className="ed-row";
+    d.innerHTML=`<input class="ed-time" placeholder="09:00"><input class="ed-title" placeholder="Title"><input class="ed-note" placeholder="note (optional)"><button class="btn sm ghost ed-rm" type="button">${ic("close",14)}</button>`;
+    list.appendChild(d); wireRm();
+  };
+  wrap.querySelector("#ed-save").onclick=async ()=>{
+    const out=[...list.querySelectorAll(".ed-row")].map(row=>({
+      time:row.querySelector(".ed-time").value.trim(),
+      title:row.querySelector(".ed-title").value.trim(),
+      note:row.querySelector(".ed-note").value.trim()
+    })).filter(r=>r.time||r.title);
+    try{ await DB.saveSettings({...S.settings, standards:out}); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+  wrap.querySelector("#ed-reset").onclick=async ()=>{
+    try{ await DB.saveSettings({...S.settings, standards:[]}); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+}
+function openRulesEditor(){
+  const rows = rulesList().map(r=>({rule:r.rule,punish:r.punish}));
+  const rowHtml = r=>`<div class="ed-row ed-rule">
+    <input class="ed-rule-t" value="${esc(r.rule||"")}" placeholder="Rule (what to do / not do)">
+    <input class="ed-rule-p" value="${esc(r.punish||"")}" placeholder="If broken (consequence)">
+    <button class="btn sm ghost ed-rm" type="button">${ic("close",14)}</button></div>`;
+  const wrap=baseModal(`
+    <h3>${ic("star",18)} Work rules</h3>
+    <p class="mini">Each rule can have a consequence if it is broken. The whole team sees these.</p>
+    <div id="ed-rlist">${(rows.length?rows:[{rule:"",punish:""}]).map(rowHtml).join("")}</div>
+    <button class="btn sm ghost" id="ed-radd" style="margin-bottom:10px">${ic("plus",14)} Add rule</button>
+    <button class="btn" id="ed-rsave">${t("save")}</button>
+    <button class="btn ghost" id="ed-rx">${t("close")}</button>`);
+  wrap.querySelector("#ed-rx").onclick=()=>wrap.remove();
+  const list=wrap.querySelector("#ed-rlist");
+  const wireRm=()=>wrap.querySelectorAll(".ed-rm").forEach(b=>b.onclick=()=>b.parentElement.remove());
+  wireRm();
+  wrap.querySelector("#ed-radd").onclick=()=>{
+    const d=document.createElement("div"); d.className="ed-row ed-rule";
+    d.innerHTML=`<input class="ed-rule-t" placeholder="Rule (what to do / not do)"><input class="ed-rule-p" placeholder="If broken (consequence)"><button class="btn sm ghost ed-rm" type="button">${ic("close",14)}</button>`;
+    list.appendChild(d); wireRm();
+  };
+  wrap.querySelector("#ed-rsave").onclick=async ()=>{
+    const out=[...list.querySelectorAll(".ed-rule")].map(row=>({
+      rule:row.querySelector(".ed-rule-t").value.trim(),
+      punish:row.querySelector(".ed-rule-p").value.trim()
+    })).filter(r=>r.rule);
+    try{ await DB.saveSettings({...S.settings, rules:out}); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+}
 function dayDetailCard(day,num){
   const dp=dayPlanFor(day);
   const info=num?personDayInfo(num,day):null;
-  const stdRows=DAILY_STANDARDS.map(r=>{
-    const title=t(r.k);
-    let note=r.nk?t(r.nk):"";
-    // the "finish morning" note only applies on practice days; otherwise hide it
-    if(r.morning){ note = dp.practice ? t("practiceInline") : ""; }
-    return `<div class="std-row"><span class="std-t">${esc(r.time)}</span>
-      <span class="std-x"><b>${esc(title)}</b>${note?`<span class="mini"> · ${esc(note)}</span>`:""}</span></div>`;
-  }).join("");
+  const isMgrView = S.session && S.session.role==="manager";
+  const stdRows=stdList(dp).map(r=>
+    `<div class="std-row"><span class="std-t">${esc(r.time)}</span>
+      <span class="std-x"><b>${esc(r.title)}</b>${r.note?`<span class="mini"> · ${esc(r.note)}</span>`:""}</span></div>`
+  ).join("");
+  const _rules=rulesList();
+  const ruleRows=_rules.map(r=>
+    `<div class="rule-row"><b>${esc(r.rule)}</b>${r.punish?`<span class="rule-pun">If broken: ${esc(r.punish)}</span>`:""}</div>`
+  ).join("");
   return `<div class="sec"><h3>${ic("calendar",18)} ${esc(t("days")[dp.day]||dp.name)}</h3>
     <div class="card daycard">
       <div class="dc-grid">
@@ -5744,8 +5833,10 @@ function dayDetailCard(day,num){
       <div class="sc-row"><span class="mini">${t("eveningShowLbl")}</span><b class="serif">${esc(dp.eveningShow)}</b><span class="mini">${esc(dp.showTime)} · ${esc(dp.showLoc)}</span></div>
       ${dp.liveBand?`<div class="sc-row"><span class="mini">${t("liveBandLbl")}</span><span>${esc(dp.liveBand)}</span></div>`:""}
     </div>
-    <h3 style="margin-top:18px">${ic("clock",17)} ${t("dailyStandards")}</h3>
+    <h3 class="dd-h" style="margin-top:18px">${ic("clock",17)} ${t("dailyStandards")}${isMgrView?`<button class="dd-edit" data-editstd type="button">${ic("pen",13)} Edit</button>`:""}</h3>
     <div class="card stdcard">${stdRows}</div>
+    ${(ruleRows||isMgrView)?`<h3 class="dd-h" style="margin-top:18px">${ic("star",17)} Work rules${isMgrView?`<button class="dd-edit" data-editrules type="button">${ic("pen",13)} Edit</button>`:""}</h3>
+    <div class="card stdcard">${ruleRows||`<div class="std-row"><span class="mini">No rules added yet — tap Edit to add the first one.</span></div>`}</div>`:""}
   </div>`;
 }
 function staffFeedbackView(){
@@ -7477,6 +7568,8 @@ function wireCommon(){
   const qzSend=$("#qz-send"); if(qzSend) qzSend.onclick=submitQuizAnswer;
   document.querySelectorAll("[data-dutyedit]").forEach(b=>b.onclick=()=>openDutyModal(+b.dataset.dutyedit));
   document.querySelectorAll("[data-autoassign]").forEach(b=>b.onclick=()=>openAutoAssignModal(+b.dataset.autoassign));
+  document.querySelectorAll("[data-editstd]").forEach(b=>b.onclick=()=>openStandardsEditor());
+  document.querySelectorAll("[data-editrules]").forEach(b=>b.onclick=()=>openRulesEditor());
   const qrP=$("#qr-print"); if(qrP) qrP.onclick=openQrPrint;
   document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>{ S.tab=b.dataset.gotab; render(); });
   const crmQ=$("#crm-q"); if(crmQ) crmQ.oninput=e=>{ S.crmQuery=e.target.value; render(); };
