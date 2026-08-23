@@ -927,6 +927,7 @@ button,.btn,.iconbtn{min-height:44px}
 .db-n .mini{display:block;margin-top:3px}
 .db-n.ok{background:rgba(62,155,95,.13);border-color:transparent}
 .db-n.off{background:rgba(192,57,43,.11);border-color:transparent}
+.db-n.absent{background:rgba(229,161,0,.16);border-color:transparent}
 .db-meta{display:flex;flex-direction:column;gap:3px;margin:12px 0 10px}
 .db-tag{align-self:flex-start;margin-top:3px;padding:3px 10px;border-radius:var(--r-pill);
   background:var(--bronze);color:#fff;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -5908,11 +5909,16 @@ function managerView(){
 function dutyBar(day){
   const st=dayDutyStats(day);
   const dp=dayPlanFor(day);
+  const today=(day===todayIndex()) ? hotelDateStr() : null;
+  const absentCount=today ? st.working.filter(u=>(S.staffAtt||[]).some(x=>
+    x.username===u.username && String(x.date).slice(0,10)===today && x.status==="A")).length : 0;
+  const workingNow=Math.max(0, st.workingCount - absentCount);
   return `<div class="card dutybar">
     <div class="db-nums">
       <div class="db-n"><b>${st.total}</b><span class="mini">${t("totalTeam")}</span></div>
-      <div class="db-n ok"><b>${st.workingCount}</b><span class="mini">${t("workingToday")}</span></div>
+      <div class="db-n ok"><b>${workingNow}</b><span class="mini">${t("workingToday")}</span></div>
       <div class="db-n off"><b>${st.offCount}</b><span class="mini">${t("dayOffToday")}</span></div>
+      <div class="db-n absent"><b>${absentCount}</b><span class="mini">${t("attA")}</span></div>
     </div>
     <div class="db-meta">
       <span class="mini">${t("dayOff")}: ${personTags(dp.off)||t("noOneOff")}</span>
