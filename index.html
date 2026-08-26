@@ -1686,6 +1686,17 @@ button:disabled{opacity:.34;cursor:not-allowed;filter:none!important;transform:n
 button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.screen,.fadein>*{animation:none!important}}
 
+
+/* ===== EXECUTIVE MANAGER SUITE v4 ===== */
+.mgr-console{position:relative;overflow:hidden;border:1px solid var(--border-gold);border-radius:22px;padding:20px;margin:2px 0 14px;background:linear-gradient(135deg,var(--brand-900),var(--brand-700));color:#fff;box-shadow:0 22px 55px -34px color-mix(in srgb,var(--brand-900) 75%,transparent)}
+.mgr-console:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;right:-70px;top:-90px;background:radial-gradient(circle,color-mix(in srgb,var(--champagne-500) 25%,transparent),transparent 68%);pointer-events:none}
+.mgr-kicker{font-size:9px;font-weight:800;letter-spacing:.18em;color:var(--champagne-300);margin-bottom:6px}.mgr-console h2{font-family:var(--font-display);font-size:25px;line-height:1.05;margin:0 0 5px}.mgr-console p{font-size:12px;opacity:.78;max-width:430px}
+.mgr-health{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:17px}.mgr-health span{display:flex;flex-direction:column;padding:9px 8px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);font-size:18px;font-weight:750;line-height:1}.mgr-health small{font-size:8.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:650;opacity:.68;margin-top:5px;line-height:1.15}
+.mgr-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:15px}.mgr-actions button{min-height:78px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px;border-radius:16px;background:var(--card);border:1px solid var(--border);box-shadow:var(--elev-1);color:var(--ink)}.mgr-actions button>.ic-s{flex:none;color:var(--champagne-700)}.mgr-actions span{display:flex;flex-direction:column;min-width:0}.mgr-actions b{font-size:13.5px;line-height:1.2}.mgr-actions small{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.25}.mgr-actions button:active{transform:scale(.985);border-color:var(--border-gold)}
+.theme-card{background:var(--card)!important;color:var(--ink)!important}.theme-card.on{background:linear-gradient(145deg,var(--card),var(--champagne-100))!important}.tc-lb{color:var(--ink)!important}
+@media(max-width:380px){.mgr-health{grid-template-columns:1fr 1fr}.mgr-actions{grid-template-columns:1fr}.mgr-console{padding:17px}.mgr-console h2{font-size:23px}}
+@media(min-width:760px){.manager-settings .mgr-actions{grid-template-columns:repeat(3,1fr)}.manager-settings .mgr-health{max-width:570px}}
+
 </style>
 </head>
 <body data-build="executive-v3">
@@ -2768,24 +2779,41 @@ const PALETTES = {
 function paletteList(){ return Object.keys(PALETTES); }
 function applyPalette(){
   const key=S.settings.palette;
-  const pal=PALETTES[key]; if(!pal) return false;      // custom colours -> skip
+  const pal=PALETTES[key]; if(!pal) return false;
   const mode=(S.theme==="dark")?"dark":"light";
   const c=pal[mode], root=document.documentElement.style;
+  const p700=shade(c.primary, mode==="dark"?-0.10:0.14);
+  const p600=shade(c.primary, mode==="dark"?0.06:0.24);
+  const a700=shade(c.accent, mode==="dark"?-0.18:-0.12);
+  const a600=shade(c.accent, mode==="dark"?-0.06:0.02);
+  const a300=shade(c.accent,0.46), a100=shade(c.accent,0.84);
+  root.setProperty("--brand-900",c.primary);
+  root.setProperty("--brand-700",p700);
+  root.setProperty("--brand-600",p600);
+  root.setProperty("--champagne-700",a700);
+  root.setProperty("--champagne-600",a600);
+  root.setProperty("--champagne-500",c.accent);
+  root.setProperty("--champagne-300",a300);
+  root.setProperty("--champagne-100",a100);
+  root.setProperty("--surface-0",c.card);
+  root.setProperty("--surface-1",c.bg);
+  root.setProperty("--surface-2",c.sand);
+  root.setProperty("--text-1",c.text);
+  root.setProperty("--text-2",shade(c.text,mode==="dark"?-0.32:0.44));
   root.setProperty("--espresso",c.primary);
-  root.setProperty("--cacao",shade(c.primary,.18));
+  root.setProperty("--cacao",p700);
   root.setProperty("--bronze",c.accent);
-  root.setProperty("--bg-light",pal.light.bg);
-  root.setProperty("--ink-light",pal.light.text);
-  root.setProperty("--bg-dark",pal.dark.bg);
-  root.setProperty("--ink-dark",pal.dark.text);
   root.setProperty("--bg",c.bg);
   root.setProperty("--ink",c.text);
   root.setProperty("--card",c.card);
   root.setProperty("--sand",c.sand);
   root.setProperty("--line",c.line);
-  root.setProperty("--muted",shade(c.text,mode==="dark"?-0.35:0.42));
+  root.setProperty("--muted",shade(c.text,mode==="dark"?-0.32:0.44));
   root.setProperty("--nav-bg",c.card);
   root.setProperty("--nav-on",c.primary);
+  root.setProperty("--border",c.line);
+  root.setProperty("--border-gold",shade(c.accent,0.54));
+  root.setProperty("--focus","0 0 0 3px "+shade(c.accent,0.70));
   return true;
 }
 function applySettings(){
@@ -2799,15 +2827,32 @@ function applySettings(){
     document.title=st.name||"Entertainment";
     return;
   }
-  root.setProperty("--espresso",st.primary);
-  root.setProperty("--cacao",shade(st.primary,.22));
-  root.setProperty("--bronze",st.accent);
-  root.setProperty("--bg-light",st.bg||"#F8F7F3");
-  root.setProperty("--ink-light",st.textColor||"#172033");
-  if(S.theme==="light"){
-    root.setProperty("--nav-bg",st.navBg||"#FFFFFF");
-    root.setProperty("--nav-on",st.navActive||shade(st.primary,.22));
-  } else { root.removeProperty("--nav-bg"); root.removeProperty("--nav-on"); }
+  const isDark=S.theme==="dark";
+  const primary=st.primary||"#0F1B2D", accent=st.accent||"#C6A15B";
+  const bg=isDark?shade(st.bg||"#F8F7F3",-0.90):(st.bg||"#F8F7F3");
+  const text=isDark?"#F4F7FA":(st.textColor||"#172033");
+  const card=isDark?shade(primary,-0.60):"#FFFFFF";
+  const surface=isDark?shade(primary,-0.48):shade(st.bg||"#F8F7F3",-0.02);
+  const line=isDark?shade(primary,-0.28):shade(st.textColor||"#172033",0.86);
+  root.setProperty("--brand-900",primary);
+  root.setProperty("--brand-700",shade(primary,.16));
+  root.setProperty("--brand-600",shade(primary,.27));
+  root.setProperty("--champagne-700",shade(accent,-.14));
+  root.setProperty("--champagne-600",shade(accent,.02));
+  root.setProperty("--champagne-500",accent);
+  root.setProperty("--champagne-300",shade(accent,.46));
+  root.setProperty("--champagne-100",shade(accent,.84));
+  root.setProperty("--espresso",primary);
+  root.setProperty("--cacao",shade(primary,.22));
+  root.setProperty("--bronze",accent);
+  root.setProperty("--bg",bg); root.setProperty("--ink",text); root.setProperty("--card",card);
+  root.setProperty("--sand",surface); root.setProperty("--line",line); root.setProperty("--muted",isDark?"#AEB8C6":shade(text,.44));
+  root.setProperty("--surface-0",card); root.setProperty("--surface-1",bg); root.setProperty("--surface-2",surface);
+  root.setProperty("--text-1",text); root.setProperty("--text-2",isDark?"#AEB8C6":shade(text,.44));
+  root.setProperty("--nav-bg",isDark?card:(st.navBg||"#FFFFFF"));
+  root.setProperty("--nav-on",isDark?accent:(st.navActive||shade(primary,.22)));
+  root.setProperty("--border",line); root.setProperty("--border-gold",shade(accent,.55));
+  root.setProperty("--focus","0 0 0 3px "+shade(accent,.70));
   const f=FONTS[st.fontStyle]||FONTS.elegant;
   root.setProperty("--font-display",f[0]); root.setProperty("--font-body",f[1]);
   const br=BTN_R[st.buttonStyle]||BTN_R.rounded;
@@ -7065,6 +7110,23 @@ function fbSummaryDataset(mode, titleKey){
     rows:agg.map(g=>[g.period, g.count, g.overall!=null?g.overall.toFixed(1):"",
       ...FB_CATS.map(([c])=>g.catAvg[c]!=null?g.catAvg[c].toFixed(1):""), g.best, g.worst])};
 }
+function fbDetailDataset(mode,titleKey){
+  const rows=(S.feedback||[]).slice().sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||""))).map((f,i)=>{
+    const acct=(S.accounts||[]).find(a=>String(a.room||"").trim()===String(f.room||"").trim());
+    const room=String(f.room||acct?.room||"").trim();
+    const guest=f.guest_name||acct?.name||"";
+    const nat=f.nationality||acct?.nationality||"";
+    return [i+1,fbPeriodKey(f,mode),fmtDate(f.created_at),room,guest,nat,f.rate||"",...FB_CATS.map(([k])=>(f.scores&&f.scores[k])||""),f.comment||"",f.by_user||""];
+  });
+  return {title:t(titleKey)+" — Guest Detail Register",
+    headers:["No.",t("fb_period"),"Date",t("room"),t("name"),t("nationality"),t("rate"),...FB_CATS.map(([k,lk])=>t(lk)),t("comment"),"Collected by"],rows};
+}
+function buildExportSets(kind){
+  if(kind==="fbdaily") return [fbSummaryDataset("day","fb_daily"),fbDetailDataset("day","fb_daily")];
+  if(kind==="fbweekly") return [fbSummaryDataset("week","fb_weekly"),fbDetailDataset("week","fb_weekly")];
+  if(kind==="fbmonthly") return [fbSummaryDataset("month","fb_monthly"),fbDetailDataset("month","fb_monthly")];
+  const ds=buildDataset(kind); return ds?[ds]:[];
+}
 const EXPORT_KINDS=["todayplan","dayplan","monthatt","teamsummary","program","guests","bookings","requests","chat","tickets","feedback","fbdaily","fbweekly","fbmonthly","users"];
 function exportKindLabel(k){ return {todayplan:t("todayPlanExp"),monthatt:t("attExport"),teamsummary:t("teamSummary"),program:t("manage"),dayplan:t("dayPlan"),guests:t("expGuests"),bookings:t("expBookings"),requests:t("expRequests"),chat:t("expChat"),tickets:t("expTickets"),feedback:t("expFeedback"),fbdaily:t("fb_daily"),fbweekly:t("fb_weekly"),fbmonthly:t("fb_monthly"),users:t("expUsers")}[k]; }
 const REPORT_META={
@@ -7146,8 +7208,9 @@ async function exportExcelSets(sets,fname){
 }
 function exportPdfSets(sets,titleText){
   const esc2=x=>String(x==null?"":x).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const wide=sets.some(ds=>(ds.headers||[]).length>8);
   const css=`
-    @page{size:A4;margin:15mm 11mm 17mm}
+    @page{size:A4 ${wide?"landscape":"portrait"};margin:${wide?"10mm 8mm 12mm":"15mm 11mm 17mm"}}
     *{box-sizing:border-box} body{font-family:Arial,Helvetica,sans-serif;color:#172033;margin:0;background:#fff;font-size:10.5px}
     .report-head{border:1px solid #D8DEE7;border-top:6px solid #0F1B2D;padding:18px 20px 15px;margin-bottom:18px;position:relative}
     .eyebrow{font-size:9px;letter-spacing:.18em;font-weight:700;color:#70798A;margin-bottom:5px}
@@ -7158,10 +7221,10 @@ function exportPdfSets(sets,titleText){
     .meta div{display:flex;gap:8px}.meta span{color:#70798A;min-width:92px}.meta b{font-weight:700;color:#172033}
     .section{margin:0 0 20px;page-break-inside:auto}.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 8px;border-bottom:2px solid #C6A15B;padding-bottom:5px}
     .section-title h2{font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#0F1B2D;margin:0}.count{font-size:9px;color:#70798A;text-transform:uppercase;letter-spacing:.08em}
-    .table-wrap{width:100%;overflow:visible} table{border-collapse:collapse;width:100%;table-layout:auto;font-size:9.2px}
+    .table-wrap{width:100%;overflow:visible} table{border-collapse:collapse;width:100%;table-layout:${wide?"fixed":"auto"};font-size:${wide?"7.4px":"9.2px"}}
     thead{display:table-header-group} tr{page-break-inside:avoid;page-break-after:auto}
-    th{background:#0F1B2D;color:#fff;text-align:left;padding:6px 7px;border:1px solid #0F1B2D;font-size:8.4px;letter-spacing:.03em;vertical-align:bottom}
-    td{padding:5px 7px;border:1px solid #E0E5EC;vertical-align:top;word-break:break-word} tbody tr:nth-child(even) td{background:#F7F8FA}
+    th{background:#0F1B2D;color:#fff;text-align:left;padding:${wide?"4px 4px":"6px 7px"};border:1px solid #0F1B2D;font-size:${wide?"6.8px":"8.4px"};letter-spacing:.02em;vertical-align:bottom;word-break:break-word}
+    td{padding:${wide?"4px":"5px 7px"};border:1px solid #E0E5EC;vertical-align:top;word-break:break-word} tbody tr:nth-child(even) td{background:#F7F8FA}
     .empty{color:#999;text-align:center;padding:14px}.footer{margin-top:20px;padding-top:8px;border-top:1px solid #D8DEE7;display:flex;justify-content:space-between;color:#70798A;font-size:8.5px}
     .signature{margin-top:20px;width:260px;border-top:1px solid #70798A;padding-top:5px;color:#1F3657;font-size:9px}
     @media print{.report-head,.section-title,thead{break-inside:avoid}.section{break-before:auto}}
@@ -7194,7 +7257,7 @@ function openExportModal(preselect){
       ${EXPORT_KINDS.map(k=>`<label class="exp-it"><input type="checkbox" data-exp="${k}" ${(preselect===k||(!preselect&&k==="todayplan"))?"checked":""}> <span>${exportKindLabel(k)}</span></label>`).join("")}
       <label class="exp-it exp-all"><input type="checkbox" id="exp-all"> <span>${t("expAll")}</span></label>
     </div>
-    <div class="export-format-note">Excel is best for management analysis. PDF is formatted as an official printable report.</div>
+    <div class="export-format-note">Management exports include executive summaries plus guest-level detail where applicable. Feedback detail always includes room number and nationality.</div>
     <button class="btn" id="exp-xlsx">${ic("download",16)} ${t("exportExcel")}</button>
     <button class="btn ghost" id="exp-pdf">${ic("download",16)} ${t("exportPdf")}</button>
     <button class="btn ghost" id="exp-x">${t("close")}</button>`);
@@ -7203,7 +7266,7 @@ function openExportModal(preselect){
   boxes.forEach(b=>b.onchange=sync);
   wrap.querySelector("#exp-all").onchange=e=>{ boxes.forEach(b=>{b.checked=e.target.checked;}); sync(); };
   wrap.querySelector("#exp-x").onclick=()=>wrap.remove();
-  const gather=()=>EXPORT_KINDS.filter(k=>picked.has(k)).map(buildDataset).filter(Boolean);
+  const gather=()=>EXPORT_KINDS.filter(k=>picked.has(k)).flatMap(buildExportSets).filter(Boolean);
   wrap.querySelector("#exp-xlsx").onclick=async ()=>{
     sync(); const sets=gather(); if(!sets.length) return;
     await exportExcelSets(sets,reportFileName("Management_Report")); toast(t("saved"));
@@ -7261,9 +7324,23 @@ const SETTINGS_GROUPS=[
     ["set:advanced","shield","setAdvanced","setAdvancedSub"]]}
 ];
 function settingsHubView(){
-  return `<div class="screen fadein">
+  const openTasks=(S.tasks||[]).filter(x=>!["done","verified"].includes(x.status)).length;
+  const lowFb=(S.feedback||[]).filter(x=>Number(x.rate||0)>0&&Number(x.rate||0)<4).length;
+  return `<div class="screen fadein manager-settings">
     ${topBar(t("settingsHub"),S.session.name)}
-    <p class="mini" style="margin:-4px 0 16px">${t("settingsSub")}</p>
+    <div class="mgr-console">
+      <div><div class="mgr-kicker">MANAGER CONTROL CENTER</div><h2>Department administration</h2><p>Operations, people, guest experience, brand and reporting in one place.</p></div>
+      <div class="mgr-health"><span>${(S.users||[]).length}<small>Team</small></span><span>${(S.accounts||[]).length}<small>Guests</small></span><span>${openTasks}<small>Open tasks</small></span><span>${lowFb}<small>Low feedback</small></span></div>
+    </div>
+    <div class="mgr-actions">
+      <button data-hub="dayplan">${ic("calendar",19)}<span><b>Daily operation</b><small>Duty, events & show plan</small></span></button>
+      <button data-hub="team">${ic("users",19)}<span><b>Team administration</b><small>Accounts & performance</small></span></button>
+      <button data-hub="guests">${ic("user",19)}<span><b>Guest CRM</b><small>Rooms, nationality & profiles</small></span></button>
+      <button data-hub="program">${ic("calendar",19)}<span><b>Program control</b><small>Activities & assignment</small></span></button>
+      <button data-hub="export">${ic("file",19)}<span><b>Report center</b><small>Official PDF / Excel exports</small></span></button>
+      <button data-hub="builder">${ic("menu",19)}<span><b>Experience builder</b><small>Role menus & pages</small></span></button>
+    </div>
+    <p class="mini" style="margin:4px 2px 12px">Configuration changes affect the live hotel app. Operational shortcuts above do not change settings automatically.</p>
     ${SETTINGS_GROUPS.map(g=>`
       <div class="set-sec">${t(g.head)}</div>
       <div class="card set-list">
@@ -8364,7 +8441,9 @@ function wireCommon(){
     if(has("#s-welcome")) st.welcomeMsg=v("#s-welcome","").trim();
     if(has("#s-primary")){ st.primary=v("#s-primary",st.primary); st.accent=v("#s-accent",st.accent);
       st.bg=v("#s-bg",st.bg); st.textColor=v("#s-text",st.textColor);
-      st.navBg=v("#s-navbg",st.navBg); st.navActive=v("#s-navon",st.navActive); }
+      st.navBg=v("#s-navbg",st.navBg); st.navActive=v("#s-navon",st.navActive);
+      // Editing any manual colour means the manager intentionally chose Custom colours.
+      st.palette=""; }
     if(has("#s-font"))    st.fontStyle=v("#s-font",st.fontStyle);
     if(has("#s-btn"))     st.buttonStyle=v("#s-btn",st.buttonStyle);
     if(has("#s-mhome")){ st.menuHome=v("#s-mhome","").trim(); st.menuProgram=v("#s-mprog","").trim();
