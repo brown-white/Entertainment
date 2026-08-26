@@ -1840,7 +1840,7 @@ function restore(){
     if(d.theme) S.theme=d.theme;
     if(Array.isArray(d.favorites)) S.favorites=d.favorites;
     if(typeof d.remember!=="undefined") S.remember=d.remember!==false;
-    if(d.session) S.session=d.session;
+    if(d.session){ S.session=d.session; S.tab = d.session.role==="manager" ? "dash" : d.session.role==="staff" ? "workday" : "home"; }
     if(d.seenNote) S.seenNote=d.seenNote;
   }catch(e){}
 }
