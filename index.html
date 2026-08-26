@@ -983,6 +983,11 @@ button,.btn,.iconbtn{min-height:44px}
 .fb-lb{font-size:14px;color:var(--ink);flex:1;min-width:0}
 .fb-stars{display:flex;gap:1px;flex:none}
 .fb-st{background:none;border:none;font-size:23px;line-height:1;color:var(--line);padding:0 1px;cursor:pointer}
+.ex-act{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer}
+.ex-act:not(:last-child){border-bottom:1px solid var(--line)}
+.ex-act-mid{flex:1;min-width:0;display:flex;flex-direction:column}
+.ex-act-mid b{font-size:14.5px;color:var(--ink)}
+.ex-act-go{flex:none;color:var(--muted);transform:scaleX(-1)}
 .db-meta{display:flex;flex-direction:column;gap:3px;margin:12px 0 10px}
 .db-tag{align-self:flex-start;margin-top:3px;padding:3px 10px;border-radius:var(--r-pill);
   background:var(--bronze);color:#fff;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -1585,6 +1590,17 @@ const FB_STR={
   ar:{fb_entertainment:"الترفيه",fb_music:"الموسيقى",fb_activities:"الأنشطة",fb_showmusic:"العرض والموسيقى الحية",fb_food:"الطعام والشراب",fb_room:"الغرفة",fb_poolbeach:"المسبح والشاطئ",fb_staff:"سلوك الموظفين",fb_hotel:"الفندق عموماً",ex_upvid:"رفع من الهاتف",ex_upvidhint:"اختر فيديو من هاتفك"}
 };
 Object.keys(FB_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], FB_STR[l]); });
+const EXB_STR={
+  en:{ex_signinbook:"Sign in as a guest to book or save favourites",ex_program:"Program"},
+  de:{ex_signinbook:"Als Gast anmelden, um zu buchen oder Favoriten zu speichern",ex_program:"Programm"},
+  ru:{ex_signinbook:"Войдите как гость, чтобы записаться или добавить в избранное",ex_program:"Программа"},
+  pl:{ex_signinbook:"Zaloguj się jako gość, aby rezerwować lub zapisywać ulubione",ex_program:"Program"},
+  cs:{ex_signinbook:"Přihlaste se jako host pro rezervaci nebo oblíbené",ex_program:"Program"},
+  nl:{ex_signinbook:"Log in als gast om te boeken of favorieten op te slaan",ex_program:"Programma"},
+  fr:{ex_signinbook:"Connectez-vous en tant qu'invité pour réserver ou ajouter aux favoris",ex_program:"Programme"},
+  ar:{ex_signinbook:"سجّل الدخول كضيف للحجز أو حفظ المفضلة",ex_program:"البرنامج"}
+};
+Object.keys(EXB_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], EXB_STR[l]); });
 const NATIONS=["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian","Botswanan","Brazilian","British","Bruneian","Bulgarian","Burkinabe","Burmese","Burundian","Cambodian","Cameroonian","Canadian","Cape Verdean","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech","Danish","Djiboutian","Dominican","Dutch","East Timorese","Ecuadorean","Egyptian","Emirati","Equatorial Guinean","Eritrean","Estonian","Ethiopian","Fijian","Filipino","Finnish","French","Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Guyanese","Haitian","Honduran","Hungarian","Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Ivorian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Kosovar","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish","Macedonian","Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Mauritanian","Mauritian","Mexican","Moldovan","Monacan","Mongolian","Montenegrin","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Nigerien","North Korean","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Salvadoran","Samoan","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovenian","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swazi","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Togolese","Trinidadian","Tunisian","Turkish","Turkmen","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean","Other"];
 
 /* ============ TEAM PLAN (from the internal 8-page plan) ============ */
@@ -5350,6 +5366,29 @@ function playVideo(url){
   const wrap=baseModal(`${inner}<button class="btn ghost" id="ex-vx">${t("close")}</button>`);
   const x=wrap.querySelector("#ex-vx"); if(x) x.onclick=()=>wrap.remove();
 }
+function exploreProgram(){
+  const acts=(S.activities||[]).slice()
+    .sort((a,b)=>(a.day-b.day)||String(a.time||"").localeCompare(String(b.time||"")))
+    .slice(0,14);
+  if(!acts.length) return "";
+  return `<div class="ex-secrow"><h3 class="ex-sec">${t("ex_program")}</h3></div>
+    <div class="card">${acts.map(a=>`<div class="ex-act" data-exact="${a.id}">
+      <span class="ex-act-mid"><b>${esc(a.name)}</b><span class="mini">${t("daysShort")[a.day]||""} · ${esc(a.time||"")}${a.location?" · "+esc(a.location):""}</span></span>
+      <span class="ex-act-go">${ic("back",15)}</span>
+    </div>`).join("")}</div>`;
+}
+function openExploreBook(id){
+  const a=(S.activities||[]).find(x=>String(x.id)===String(id)); if(!a) return;
+  const wrap=baseModal(`
+    <h3>${esc(a.name)}</h3>
+    <p class="mini">${t("daysShort")[a.day]||""} · ${esc(a.time||"")}${a.location?" · "+esc(a.location):""}</p>
+    ${a.desc?`<p style="margin-top:8px">${esc(a.desc)}</p>`:""}
+    <p class="mini" style="margin-top:12px">${t("ex_signinbook")}</p>
+    <button class="btn" id="exb-in">${t("signin")}</button>
+    <button class="btn ghost" id="exb-x">${t("close")}</button>`);
+  wrap.querySelector("#exb-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#exb-in").onclick=()=>{ wrap.remove(); showExplore=false; loginMode="guest"; render(); };
+}
 function exploreView(){
   const m=exploreMoments();
   const shown = exploreFilter==="videos"?m.vids : exploreFilter==="photos"?m.pics : m.all;
@@ -5374,6 +5413,7 @@ function exploreView(){
       ${feat.video?`<span class="ex-play big"></span>`:""}
       <div class="ex-feat-cap"><span class="ex-tag">${t("ex_featured")}</span>${feat.cap?`<b>${esc(feat.cap)}</b>`:""}</div>
     </div>`:""}
+    ${exploreProgram()}
     <div class="ex-secrow"><h3 class="ex-sec">${t("ex_moments")}</h3>${isMgr?`<button class="dd-edit" id="ex-addvid" type="button">${ic("plus",13)} ${t("ex_addvid")}</button>`:""}</div>
     ${shown.length?`<div class="ex-grid">${shown.map(card).join("")}</div>`:`<div class="empty"><div class="big">${ic("sparkle",30)}</div>${t("ex_none")}</div>`}
   </div>`;
@@ -5383,6 +5423,7 @@ function wireExplore(){
   const s=$("#ex-signin"); if(s) s.onclick=()=>{ showExplore=false; render(); };
   document.querySelectorAll("[data-exfilter]").forEach(el=>el.onclick=()=>{ exploreFilter=el.dataset.exfilter; render(); });
   document.querySelectorAll("[data-vid]").forEach(el=>el.onclick=()=>playVideo(el.dataset.vid));
+  document.querySelectorAll("[data-exact]").forEach(el=>el.onclick=()=>openExploreBook(el.dataset.exact));
   const av=$("#ex-addvid"); if(av) av.onclick=openVideoLinkModal;
 }
 function openVideoLinkModal(){
@@ -6254,13 +6295,31 @@ function openFbDetail(id){
     <button class="btn ghost" id="fbd-x">${t("close")}</button>`);
   wrap.querySelector("#fbd-x").onclick=()=>wrap.remove();
 }
+function openFbCatDetail(catKey,label){
+  const fb=(S.feedback||[]).filter(f=>f.scores&&f.scores[catKey]);
+  const vals=fb.map(f=>+f.scores[catKey]);
+  const n=vals.length, avg=n?(vals.reduce((a,b)=>a+b,0)/n):0;
+  const distRows=[5,4,3,2,1].map(s=>{ const c=vals.filter(v=>v===s).length;
+    return `<div class="fb-row"><span class="fb-lb" style="color:${fbColor(s)};font-weight:600">${s} ★</span><span style="flex:none">${c}</span></div>`; }).join("");
+  const rooms=fb.map(f=>({room:f.room,v:+f.scores[catKey],id:f.id})).sort((a,b)=>a.v-b.v);
+  const roomRows=rooms.map(r=>`<div class="fb-row" data-fbview="${r.id}" style="cursor:pointer"><span class="fb-lb">${t("room")} ${esc(r.room)}</span><span style="color:${fbColor(r.v)};font-weight:600;flex:none">${r.v} ★</span></div>`).join("");
+  const wrap=baseModal(`
+    <h3>${ic("star",18)} ${esc(label)}</h3>
+    <p class="mini">${n} ${t("feedback").toLowerCase()} · ${avg?avg.toFixed(1)+" ★":"—"}</p>
+    <div class="fb-list">${distRows}</div>
+    <h3 style="font-size:15px;margin-top:14px">${t("rooms")}</h3>
+    <div class="fb-list">${roomRows||`<p class="mini">${t("none")}</p>`}</div>
+    <button class="btn ghost" id="fbc-x">${t("close")}</button>`);
+  wrap.querySelector("#fbc-x").onclick=()=>wrap.remove();
+  wrap.querySelectorAll("[data-fbview]").forEach(b=>b.onclick=()=>{ wrap.remove(); openFbDetail(b.dataset.fbview); });
+}
 function fbAnalyticsCard(){
   const fb=S.feedback||[]; if(!fb.length) return "";
   const rows=FB_CATS.map(([k,lk])=>{
     const vals=fb.map(f=>f.scores&&f.scores[k]).filter(v=>v);
     const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length):0;
     const r=Math.round(avg);
-    return `<div class="fb-row"><span class="fb-lb">${t(lk)}</span><span style="color:${avg?fbColor(r):"var(--muted)"};font-weight:600;flex:none">${avg?avg.toFixed(1)+" ★":"—"}</span></div>`;
+    return `<div class="fb-row" data-fbcat="${k}" style="cursor:pointer"><span class="fb-lb">${t(lk)}</span><span style="color:${avg?fbColor(r):"var(--muted)"};font-weight:600;flex:none">${avg?avg.toFixed(1)+" ★":"—"}</span></div>`;
   }).join("");
   return `<div class="sec"><h3>${ic("star",18)} ${t("feedback")}</h3><div class="card fb-list">${rows}</div></div>`;
 }
@@ -7713,6 +7772,7 @@ function wireCommon(){
   document.querySelectorAll("[data-tcant]").forEach(b=>b.onclick=async ()=>{
     await DB.updateTask(+b.dataset.tcant,{status:"cant"}); render();
   });
+  document.querySelectorAll("[data-fbcat]").forEach(b=>b.onclick=()=>{ const c=FB_CATS.find(x=>x[0]===b.dataset.fbcat); if(c) openFbCatDetail(c[0], t(c[1])); });
   document.querySelectorAll("[data-fbview]").forEach(b=>b.onclick=()=>openFbDetail(b.dataset.fbview));
   document.querySelectorAll("[data-fbdel]").forEach(b=>b.onclick=async ()=>{
     await DB.deleteFeedback(+b.dataset.fbdel); toast(t("deleted")); render();
