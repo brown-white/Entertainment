@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment</title>
+<title>Hotel Entertainment Operations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -1510,9 +1510,185 @@ body{background:linear-gradient(180deg,#F9FAFC 0%,#F1F4F8 100%)}[data-theme="dar
 .export-seal,.pf-ava,.acct-av,.rnum,.mb-av,.dr-head .mono.sm{background:linear-gradient(145deg,#0F1B2D,#29476E);border-color:#C6A15B;color:#FFF9EC}.export-kicker,.catbadge,.tc-pos{color:#A9853E}
 .export-format-note{border-left-color:#C6A15B;background:#F3F0E8}[data-theme="dark"] .export-format-note{background:#162337}input:focus,textarea:focus,select:focus{border-color:#C6A15B;box-shadow:0 0 0 3px rgba(198,161,91,.16)}
 
+
+/* =====================================================================
+   EXECUTIVE PRODUCT SYSTEM v7 — authoritative visual layer
+   Hotel Entertainment Operations / mobile-first + management responsive
+   ===================================================================== */
+:root{
+  --brand-950:#081321; --brand-900:#0D1B2A; --brand-800:#142A43;
+  --brand-700:#1D3B5D; --brand-600:#28517B;
+  --champagne-700:#92723A; --champagne-600:#B18A48; --champagne-500:#CAA55F;
+  --champagne-300:#E6D2A7; --champagne-100:#F7F1E5;
+  --surface-0:#FFFFFF; --surface-1:#F7F9FC; --surface-2:#EEF2F7;
+  --text-1:#142033; --text-2:#637084; --danger:#B5473A; --success:#357A56;
+  --focus:0 0 0 3px rgba(202,165,95,.22);
+  --border:rgba(20,42,67,.11); --border-gold:rgba(202,165,95,.28);
+  --elev-1:0 1px 2px rgba(8,19,33,.04),0 8px 24px -20px rgba(8,19,33,.28);
+  --elev-2:0 8px 30px -22px rgba(8,19,33,.42),0 2px 8px -5px rgba(8,19,33,.12);
+  --elev-3:0 24px 70px -38px rgba(8,19,33,.60);
+  --espresso:var(--brand-900); --cacao:var(--brand-700); --bronze:var(--champagne-500);
+  --sand:var(--champagne-100); --bg:var(--surface-1); --card:var(--surface-0);
+  --ink:var(--text-1); --muted:var(--text-2); --line:#E1E7EF;
+  --radius:18px; --shadow:var(--elev-2); --nav-bg:rgba(255,255,255,.97); --nav-on:var(--brand-700);
+}
+[data-theme="dark"]{
+  --bg:#07111D; --card:#0D1B2A; --ink:#F5F7FA; --muted:#A3AFBF; --line:#203149;
+  --sand:#12253A; --nav-bg:rgba(10,23,39,.97); --nav-on:#E3C982;
+  --surface-0:#0D1B2A; --surface-1:#07111D; --surface-2:#12253A;
+  --border:rgba(227,201,130,.10); --border-gold:rgba(227,201,130,.22);
+}
+html{background:var(--bg);scroll-behavior:smooth}
+body{background:var(--bg);font-size:15.5px;line-height:1.52;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.app{max-width:620px;min-height:100dvh;background:transparent}
+.screen{padding-inline:18px;padding-bottom:44px}
+
+/* Typography hierarchy */
+h1,h2,h3,.serif{letter-spacing:-.012em}
+.whobar h2{font-size:30px;line-height:1.08;font-weight:600;letter-spacing:-.02em}
+.whobar p{margin-top:5px;font-size:12.5px;letter-spacing:.015em}
+.sec>h3{font-size:21px;font-weight:600;padding-bottom:10px;margin-bottom:12px}
+.sec>h3::after{width:42px;height:2px;background:linear-gradient(90deg,var(--champagne-500),rgba(202,165,95,0))}
+label{font-size:11px;font-weight:700;letter-spacing:.09em;color:var(--muted);margin-top:15px}
+.mini{font-size:12.5px;line-height:1.45;color:var(--muted)}
+
+/* Cards and information surfaces */
+.card,.stat,.tk,.login-card{border:1px solid var(--border);box-shadow:var(--elev-1);background:var(--card)}
+.card{padding:17px;border-radius:18px;margin-bottom:12px}
+.card:active{transform:none}
+.stat{padding:16px;border-radius:16px}
+.stat b{font-family:var(--font-body);font-size:30px;font-weight:650;letter-spacing:-.03em;color:var(--ink)}
+.stat span{font-size:10px;letter-spacing:.11em;font-weight:700}
+.stat-grid{gap:10px}
+
+/* Forms */
+input,select,textarea{min-height:48px;border:1px solid var(--line);border-radius:13px;background:var(--card);padding:12px 14px;box-shadow:none;transition:border-color .16s,box-shadow .16s,background .16s}
+textarea{min-height:96px;resize:vertical}
+input:hover,select:hover,textarea:hover{border-color:rgba(202,165,95,.52)}
+input:focus,select:focus,textarea:focus{border-color:var(--champagne-500);box-shadow:var(--focus)}
+input::placeholder,textarea::placeholder{color:color-mix(in srgb,var(--muted) 72%,transparent)}
+
+/* Buttons — primary, secondary, destructive */
+.btn{min-height:48px;border-radius:13px;font-size:14px;font-weight:650;letter-spacing:.02em;box-shadow:none;transition:transform .12s,box-shadow .16s,filter .16s}
+.btn:not(.ghost):not(.warn){background:linear-gradient(135deg,var(--brand-900),var(--brand-700));color:#FFF;box-shadow:0 12px 25px -18px rgba(13,27,42,.8)}
+.btn:not(.ghost):not(.warn):hover{filter:brightness(1.06);box-shadow:0 15px 28px -18px rgba(13,27,42,.9)}
+.btn.ghost{background:var(--card);color:var(--brand-700);border:1px solid var(--line);backdrop-filter:none}
+[data-theme="dark"] .btn.ghost{color:#E3C982;background:var(--card)}
+.btn.warn{background:var(--danger);color:#fff}
+.btn.sm{min-height:38px;padding:9px 14px}
+button:disabled{opacity:.34;cursor:not-allowed;filter:none!important;transform:none!important}
+
+/* Icon language */
+.ic-s{filter:none;stroke-width:1.65}
+.iconbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--brand-700);box-shadow:var(--elev-1)}
+.iconbtn:hover{border-color:var(--border-gold);color:var(--champagne-700);background:var(--champagne-100)}
+[data-theme="dark"] .iconbtn:hover{background:#142A43;color:#E3C982}
+.socialtop{width:36px;height:36px;border-radius:11px;background:transparent;box-shadow:none}
+
+/* Top workspace header */
+.top{align-items:center;margin-bottom:13px;padding-bottom:3px}
+.toprow{gap:7px}.toprow-l{gap:7px}
+.whobar{margin:0 0 20px;padding:0 1px}
+.reddot{width:8px;height:8px;top:4px;inset-inline-end:4px;border-width:1.5px}
+
+/* Drawer: structured app navigation */
+.drawer-bg{background:rgba(4,12,22,.58);backdrop-filter:blur(8px)}
+.drawer{width:min(350px,88vw);background:var(--card);border-inline-end:1px solid var(--border);box-shadow:var(--elev-3);padding-inline:18px}
+[data-theme="dark"] .drawer{background:#0A1727}
+.dr-head{padding:2px 3px 20px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.dr-head .mono.sm{width:48px;height:48px;border-radius:14px;background:linear-gradient(145deg,var(--brand-900),var(--brand-700));border:1px solid var(--border-gold);box-shadow:none}
+.dr-user{min-width:0}.dr-user h3{font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dr-user p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.workspace-role{display:inline-flex;margin-top:5px;padding:3px 8px;border-radius:999px;background:var(--champagne-100);color:var(--champagne-700);font-size:9.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+[data-theme="dark"] .workspace-role{background:#172B43;color:#E3C982}
+.dr-sec{padding:15px 10px 7px;font-size:9.5px;letter-spacing:.16em;font-weight:800}
+.dr-it{min-height:47px;border-radius:12px;padding:11px 12px;gap:12px;font-size:14px;font-weight:550}
+.dr-it:hover{background:var(--surface-2)}
+.dr-it.on{background:var(--brand-900);color:#fff;box-shadow:none}
+[data-theme="dark"] .dr-it.on{background:linear-gradient(135deg,#D4B86E,#E5D09A);color:#0A1727}
+.dr-ic{width:21px;justify-content:center}.dr-it.on .dr-ic{opacity:1}
+.dr-foot{margin-top:10px;padding-top:15px}
+.dr-out{min-height:40px;border-radius:12px;font-weight:600}
+
+/* Tabs and filters */
+.daytabs,.pills{gap:7px;padding:2px 1px 9px;margin-bottom:15px}
+.daytabs button,.pills button{min-height:39px;padding:9px 14px;border:1px solid var(--border);background:var(--card);box-shadow:none;color:var(--muted);font-size:13px}
+.daytabs button.on,.pills button.on,.daychip.on{background:var(--brand-900);color:#fff;border-color:var(--brand-900);box-shadow:none}
+[data-theme="dark"] .daytabs button.on,[data-theme="dark"] .pills button.on,[data-theme="dark"] .daychip.on{background:#D4B86E;color:#0A1727;border-color:#D4B86E}
+
+/* Data rows */
+.booking-line{min-height:44px;padding:10px 0;border-color:var(--line);line-height:1.4}
+.pill,.chip,.tchip,.rstat,.tk-st,.tk-pr{font-size:10px;font-weight:700;letter-spacing:.045em;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2)}
+[data-theme="dark"] .pill,[data-theme="dark"] .chip,[data-theme="dark"] .tchip{color:#C9D2DF}
+
+/* Settings hub: clear specialties */
+.set-sec{margin:22px 2px 8px;font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.set-list{padding:4px;overflow:hidden}
+.set-it{min-height:65px;padding:12px;border-radius:13px}
+.set-it:not(:last-child){border-bottom:0;margin-bottom:2px}
+.set-it:hover{background:var(--surface-2)}
+.set-ic{width:40px;height:40px;border-radius:12px;background:var(--champagne-100);color:var(--champagne-700);border:1px solid rgba(202,165,95,.18)}
+[data-theme="dark"] .set-ic{background:#142A43;color:#E3C982}
+.set-mid b{font-size:14.5px}.set-mid .mini{font-size:11.5px}
+.set-go{opacity:.34}
+
+/* Dashboard and manager density */
+.theme-grid{gap:10px}.theme-card{border-radius:15px!important;border:1px solid var(--border)!important;box-shadow:none!important}
+.theme-card.on{border-color:var(--champagne-500)!important;box-shadow:var(--focus)!important}
+.export-brand{border:1px solid var(--border-gold);background:linear-gradient(135deg,var(--card),var(--champagne-100));border-radius:17px;padding:15px}
+.export-seal{width:48px;height:48px;border-radius:14px;background:var(--brand-900);border:1px solid var(--champagne-500);box-shadow:none}
+.export-kicker{color:var(--champagne-700);font-size:9px;letter-spacing:.16em}
+.exp-it{min-height:46px;border-radius:12px;padding:11px 12px}.exp-it:hover{background:var(--surface-2)}
+.exp-it:has(input:checked){background:var(--champagne-100);border-color:var(--border-gold)}
+[data-theme="dark"] .exp-it:has(input:checked){background:#142A43}
+.export-format-note{background:var(--surface-2);border-inline-start:2px solid var(--champagne-500);border-left:0;color:var(--muted)}
+
+/* Login / onboarding */
+.login-wrap{background:radial-gradient(110% 90% at 50% -10%,#264E77 0%,#0D1B2A 58%,#07111D 100%);padding-inline:20px}
+.brandmark .mono{border-radius:18px;width:72px;height:72px;border:1px solid rgba(230,210,167,.75);box-shadow:0 20px 55px -25px rgba(0,0,0,.7)}
+.brandmark h1{font-size:31px;letter-spacing:-.015em}.brandmark p{font-size:10.5px;letter-spacing:.16em;color:#DDE6F1}
+.login-card{padding:21px 19px;border-radius:20px;box-shadow:0 30px 80px -45px rgba(0,0,0,.8)}
+.role-tabs button{min-height:40px;border:1px solid rgba(255,255,255,.15);font-size:13px}.role-tabs button.on{border-color:rgba(255,255,255,.65)}
+.lang-row button{font-size:11.5px;padding:6px 11px}
+
+/* Modals / overlays */
+.modal-bg{background:rgba(4,12,22,.60);backdrop-filter:blur(7px)}
+.modal{border-radius:25px 25px 0 0;background:var(--bg);box-shadow:0 -30px 80px -35px rgba(0,0,0,.7);border-top:1px solid var(--border)}
+.modal .grab{width:38px;height:4px;background:color-mix(in srgb,var(--muted) 35%,transparent)}
+.toast span{background:var(--brand-900);color:#fff;border:1px solid rgba(255,255,255,.08);box-shadow:var(--elev-3)}
+
+/* Guest / team / CRM details */
+.crm-av,.g3-av,.acct-av,.rnum,.mb-av,.pf-ava{background:linear-gradient(145deg,var(--brand-900),var(--brand-700));color:#fff;box-shadow:none}
+.team-card{align-items:center}.tc-photo{border-radius:16px}.tc-pos{color:var(--champagne-700);font-weight:700}
+[data-theme="dark"] .tc-pos{color:#E3C982}
+
+/* Navigation / bottom bars */
+.nav{background:var(--nav-bg);border-top:1px solid var(--border);box-shadow:0 -12px 35px -28px rgba(8,19,33,.45);backdrop-filter:blur(18px)}
+.nav::before{height:1px;opacity:.72;background:linear-gradient(90deg,transparent 8%,var(--champagne-500) 50%,transparent 92%)}
+.nav button{font-size:9.5px;letter-spacing:.01em}.nav button.on{color:var(--brand-700);font-weight:750}
+[data-theme="dark"] .nav button.on{color:#E3C982}
+
+/* Responsive management workspace */
+@media (min-width:760px){
+  [data-approle="manager"] .app{max-width:920px}
+  [data-approle="manager"] .screen{padding-inline:28px;padding-bottom:56px}
+  [data-approle="manager"] .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  [data-approle="manager"] .catgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  [data-approle="manager"] .row2{gap:14px}
+  [data-approle="manager"] .whobar h2{font-size:34px}
+  [data-approle="manager"] .modal{max-width:680px;border-radius:24px;margin:auto;max-height:88vh}
+  [data-approle="manager"] .modal-bg{align-items:center;padding:24px}
+}
+@media (min-width:1080px){[data-approle="manager"] .app{max-width:1040px}}
+@media (max-width:380px){.screen{padding-inline:14px}.socialrow{display:none}.whobar h2{font-size:27px}.stat b{font-size:27px}}
+
+/* Accessibility and motion */
+:focus-visible{outline:none;box-shadow:var(--focus)!important}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.screen,.fadein>*{animation:none!important}}
+
 </style>
 </head>
-<body>
+<body data-build="executive-v3">
 <div class="app" id="app"><div class="skel-wrap">
   <div class="skel skel-bar"></div>
   <div class="skel skel-title"></div>
@@ -1537,7 +1713,7 @@ const REMOTE = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 const LS_KEY = "entapp_v3";
 
 const DEFAULT_SETTINGS = {
-  name:"Entertainment", subtitle:"", welcomeMsg:"",
+  name:"Entertainment Operations", subtitle:"Guest Experience · Activities · Team Operations", welcomeMsg:"",
   primary:"#0F1B2D", accent:"#C6A15B", bg:"#F8F7F3", textColor:"#172033",
   navBg:"#FFFFFF", navActive:"#1F3657",
   fontStyle:"elegant", buttonStyle:"rounded",
@@ -2875,7 +3051,15 @@ music:'<path d="M9 18.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM20 16.5a2.5 2.5 0 11-5
 lock:'<rect x="5" y="11" width="14" height="9.5" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
 trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4.2A2.8 2.8 0 007 9.8M17 6h2.8A2.8 2.8 0 0117 9.8"/>',
 door:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/>',
-key:'<circle cx="8" cy="14.5" r="4"/><path d="M11 11.5L20 3M16 7l2.5 2.5M13.5 9.5L16 12"/>'
+key:'<circle cx="8" cy="14.5" r="4"/><path d="M11 11.5L20 3M16 7l2.5 2.5M13.5 9.5L16 12"/>',
+chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21h-4v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 00.3-1.9A1.7 1.7 0 003 14H3v-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 001.9.3 1.7 1.7 0 001-1.5V3h4v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 00-.3 1.9 1.7 1.7 0 001.5 1h.1v4h-.1a1.7 1.7 0 00-1.5 1z"/>',
+building:'<path d="M4 21V7l8-4 8 4v14"/><path d="M8 10h2M14 10h2M8 14h2M14 14h2M10 21v-4h4v4"/>',
+image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="M21 15l-4.5-4.5L8 19"/>',
+map:'<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/>',
+qr:'<rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><path d="M15 15h3v3h3M15 21v-3M21 15v2"/>',
+file:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+shield:'<path d="M12 3l7 3v5c0 4.6-2.8 8-7 10-4.2-2-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/>'
 };
 const BRAND={
 Instagram:'<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/>',
@@ -2884,7 +3068,7 @@ Facebook:'<path fill="currentColor" d="M14 8.5h3.2V5H14a4.2 4.2 0 00-4.2 4.2v2.3
 YouTube:'<rect x="2.5" y="6" width="19" height="12.5" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="currentColor" d="M10.3 9.4l5 2.85-5 2.85z"/>',
 WhatsApp:'<path fill="currentColor" d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.7.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.2-.4 0-.5.1-.7l.4-.5c.1-.2.1-.3.2-.5s0-.4 0-.5c-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.6 1.1 2.8c.1.2 1.9 3 4.7 4.1.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/>'
 };
-function ic(name,size=20){ return `<svg class="ic-s" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.star}</svg>`; }
+function ic(name,size=20){ return `<svg class="ic-s" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.star}</svg>`; }
 function mi(name){ return `<span class="mi">${ic(name,13)}</span>`; }
 function brandIc(name){ return `<svg class="ic-s" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">${BRAND[name]||""}</svg>`; }
 function rankBadge(i){ return `<span class="rankb r${i<3?i:"x"}">${i+1}</span>`; }
@@ -3005,7 +3189,7 @@ function render(){
 function errorView(){
   return `<div class="screen fadein" style="display:flex;flex-direction:column;justify-content:center">
     <div class="empty"><div class="big">${ic("globe",30)}</div>
-      Could not reach the database.<br>Please check your internet connection.
+      Connection unavailable.<br><span class="mini">Please check the internet connection and try again.</span>
       <button class="btn" id="btn-retry" style="margin-top:18px">${ic("back",16)}</button>
     </div></div>`;
 }
@@ -3255,8 +3439,8 @@ function navGroupsBase(role){
         ["home","home",menuLabel("menuHome",t("home")),0],
         ["program","calendar",menuLabel("menuProgram",t("program")),0],
         ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[]),
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
-        ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
+        ...(featureOn("gallery")?[["gallery","image",t("galleryTab"),0]]:[]),
+        ...(featureOn("hotelinfo")?[["hotelinfo","building",t("hotelInfoTab"),0]]:[]),
         ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
       {head:t("secBookings"), items:[
         ["stay","user",menuLabel("menuStay",t("myStay")),0],
@@ -3278,7 +3462,7 @@ function navGroupsBase(role){
         ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
         ...(featureOn("bus")?[["bus","bus",t("busTimes"),0]]:[]),
         ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-        ...(featureOn("map")?[["map","pin",t("mapTab"),0]]:[]),
+        ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
         ["tasks","check",t("tasks"),taskN]]},
       {head:t("secProgram"), items:[
         ["today","calendar",t("todayProgram"),0],
@@ -3287,7 +3471,7 @@ function navGroupsBase(role){
       {head:t("secConnect"), items:[
         ["chat","chat",t("chatManager"),un],
         ["feedback","star",t("feedback"),0],
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
+        ...(featureOn("gallery")?[["gallery","image",t("galleryTab"),0]]:[]),
         ["teaminfo","users",t("teamPage"),0]]}
     ];
   }
@@ -3295,20 +3479,20 @@ function navGroupsBase(role){
   const newReq=S.requests.filter(r=>r.status==="new").length;
   return [
     {head:t("secManage"), items:[
-      ["dash","grid",t("dashboard"),0],
+      ["dash","chart",t("dashboard"),0],
       ["program","calendar",t("manage"),0],
       ["dayplan","clipboard",t("dayPlan"),0],
       ["quiz","sparkle",t("quizCenter"),0],
-      ["gallery","sparkle",t("galleryTab"),0],
-      ["hotelinfo","pin",t("hotelInfoTab"),0],
+      ["gallery","image",t("galleryTab"),0],
+      ["hotelinfo","building",t("hotelInfoTab"),0],
       ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-        ...(featureOn("map")?[["map","pin",t("mapTab"),0]]:[]),
-      ["qr","sparkle",t("qrTab"),0]]},
+        ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
+      ["qr","qr",t("qrTab"),0]]},
     {head:t("secGuests"), items:[
-      ["guests","chat",t("guestsTab"),un+newReq],
+      ["guests","user",t("guestsTab"),un+newReq],
       ["team","users",t("teamTab"),0]]},
     {head:t("secSettings"), items:[
-      ["settings","palette",t("settingsHub"),0]]}
+      ["settings","settings",t("settingsHub"),0]]}
   ];
 }
 /* ===== MENU BUILDER =====
@@ -3378,7 +3562,7 @@ function openMenuDrawer(){
   wrap.innerHTML=`<div class="drawer">
     <div class="dr-head">
       <div class="mono serif sm">${esc((S.settings.name||"E").trim().charAt(0).toUpperCase())}</div>
-      <div><h3>${esc(S.settings.name)}</h3><p>${esc(S.session?S.session.name:"")}</p></div>
+      <div class="dr-user"><h3>${esc(S.settings.name)}</h3><p>${esc(S.session?S.session.name:"")}</p><span class="workspace-role">${esc(S.session?t(S.session.role):"")}</span></div>
     </div>
     <div class="dr-items">
       ${navGroups(role).map((g,gi)=>{
@@ -7064,17 +7248,17 @@ function attendanceInner(){
 const SETTINGS_GROUPS=[
   {head:"secLook", items:[
     ["set:theme","palette","setTheme","setThemeSub"],
-    ["set:brand","sparkle","setBrand","setBrandSub"],
-    ["builder","grid","setMenus","setMenusSub"]]},
+    ["set:brand","building","setBrand","setBrandSub"],
+    ["builder","menu","setMenus","setMenusSub"]]},
   {head:"secManage", items:[
     ["set:features","check","setFeatures","setFeaturesSub"],
     ["set:notif","bell","setNotif","setNotifSub"],
-    ["set:links","star","setLinksT","setLinksSub"],
+    ["set:links","globe","setLinksT","setLinksSub"],
     ["bus","bus","busItem","busItem"]]},
   {head:"secSettings", items:[
     ["set:location","pin","setLocation","setLocationSub"],
-    ["export","download","setData","setDataSub"],
-    ["set:advanced","grid","setAdvanced","setAdvancedSub"]]}
+    ["export","file","setData","setDataSub"],
+    ["set:advanced","shield","setAdvanced","setAdvancedSub"]]}
 ];
 function settingsHubView(){
   return `<div class="screen fadein">
