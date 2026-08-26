@@ -1601,6 +1601,17 @@ const EXB_STR={
   ar:{ex_signinbook:"سجّل الدخول كضيف للحجز أو حفظ المفضلة",ex_program:"البرنامج"}
 };
 Object.keys(EXB_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], EXB_STR[l]); });
+const FBX_STR={
+  en:{fb_daily:"Feedback — Daily",fb_weekly:"Feedback — Weekly",fb_monthly:"Feedback — Monthly",fb_best:"Best department",fb_worst:"Needs attention",fb_period:"Period"},
+  de:{fb_daily:"Feedback — Täglich",fb_weekly:"Feedback — Wöchentlich",fb_monthly:"Feedback — Monatlich",fb_best:"Bester Bereich",fb_worst:"Handlungsbedarf",fb_period:"Zeitraum"},
+  ru:{fb_daily:"Отзывы — по дням",fb_weekly:"Отзывы — по неделям",fb_monthly:"Отзывы — по месяцам",fb_best:"Лучший отдел",fb_worst:"Требует внимания",fb_period:"Период"},
+  pl:{fb_daily:"Opinie — dziennie",fb_weekly:"Opinie — tygodniowo",fb_monthly:"Opinie — miesięcznie",fb_best:"Najlepszy dział",fb_worst:"Wymaga uwagi",fb_period:"Okres"},
+  cs:{fb_daily:"Zpětná vazba — denně",fb_weekly:"Zpětná vazba — týdně",fb_monthly:"Zpětná vazba — měsíčně",fb_best:"Nejlepší oddělení",fb_worst:"Vyžaduje pozornost",fb_period:"Období"},
+  nl:{fb_daily:"Feedback — Dagelijks",fb_weekly:"Feedback — Wekelijks",fb_monthly:"Feedback — Maandelijks",fb_best:"Beste afdeling",fb_worst:"Vraagt aandacht",fb_period:"Periode"},
+  fr:{fb_daily:"Avis — Quotidien",fb_weekly:"Avis — Hebdomadaire",fb_monthly:"Avis — Mensuel",fb_best:"Meilleur service",fb_worst:"À améliorer",fb_period:"Période"},
+  ar:{fb_daily:"التقييمات — يومياً",fb_weekly:"التقييمات — أسبوعياً",fb_monthly:"التقييمات — شهرياً",fb_best:"أفضل قسم",fb_worst:"يحتاج اهتماماً",fb_period:"الفترة"}
+};
+Object.keys(FBX_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], FBX_STR[l]); });
 const NATIONS=["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian","Botswanan","Brazilian","British","Bruneian","Bulgarian","Burkinabe","Burmese","Burundian","Cambodian","Cameroonian","Canadian","Cape Verdean","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech","Danish","Djiboutian","Dominican","Dutch","East Timorese","Ecuadorean","Egyptian","Emirati","Equatorial Guinean","Eritrean","Estonian","Ethiopian","Fijian","Filipino","Finnish","French","Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Guyanese","Haitian","Honduran","Hungarian","Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Ivorian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Kosovar","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish","Macedonian","Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Mauritanian","Mauritian","Mexican","Moldovan","Monacan","Mongolian","Montenegrin","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Nigerien","North Korean","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Salvadoran","Samoan","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovenian","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swazi","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Togolese","Trinidadian","Tunisian","Turkish","Turkmen","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean","Other"];
 
 /* ============ TEAM PLAN (from the internal 8-page plan) ============ */
@@ -6721,6 +6732,9 @@ function buildDataset(kind){
   if(kind==="tickets") return {title:t("expTickets"),
     headers:[t("room"),t("name"),"Ticket","Qty","Status",t("handTo"),"Date"],
     rows:S.orders.map(o=>[o.room,o.guest_name,tkName(o.ticket_id),o.qty,o.status,o.collect_from||"",fmtDate(o.created_at)])};
+  if(kind==="fbdaily")   return fbSummaryDataset("day","fb_daily");
+  if(kind==="fbweekly")  return fbSummaryDataset("week","fb_weekly");
+  if(kind==="fbmonthly") return fbSummaryDataset("month","fb_monthly");
   if(kind==="feedback") return {title:t("expFeedback"),
     headers:[t("room"),t("nationality"),t("rate"),...FB_CATS.map(([k,lk])=>t(lk)),t("comment"),t("user"),"Date"],
     rows:S.feedback.map(f=>[f.room,f.nationality||"",f.rate,...FB_CATS.map(([k])=>(f.scores&&f.scores[k])||""),f.comment||"",f.by_user||"",fmtDate(f.created_at)])};
@@ -6788,8 +6802,42 @@ function buildDataset(kind){
   }
   return null;
 }
-const EXPORT_KINDS=["todayplan","dayplan","monthatt","teamsummary","program","guests","bookings","requests","chat","tickets","feedback","users"];
-function exportKindLabel(k){ return {todayplan:t("todayPlanExp"),monthatt:t("attExport"),teamsummary:t("teamSummary"),program:t("manage"),dayplan:t("dayPlan"),guests:t("expGuests"),bookings:t("expBookings"),requests:t("expRequests"),chat:t("expChat"),tickets:t("expTickets"),feedback:t("expFeedback"),users:t("expUsers")}[k]; }
+function fbPeriodKey(f, mode){
+  const d=new Date(f.created_at||Date.now()); if(isNaN(d)) return "";
+  const y=d.getFullYear(), m=d.getMonth()+1, day=d.getDate();
+  if(mode==="month") return `${y}-${String(m).padStart(2,"0")}`;
+  if(mode==="week"){
+    const tt=new Date(Date.UTC(y,d.getMonth(),day)); const dn=(tt.getUTCDay()+6)%7;
+    tt.setUTCDate(tt.getUTCDate()-dn+3); const ft=new Date(Date.UTC(tt.getUTCFullYear(),0,4));
+    const wk=1+Math.round(((tt-ft)/86400000-3+((ft.getUTCDay()+6)%7))/7);
+    return `${tt.getUTCFullYear()}-W${String(wk).padStart(2,"0")}`;
+  }
+  return `${y}-${String(m).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+}
+function fbAggregate(mode){
+  const groups={};
+  (S.feedback||[]).forEach(f=>{ const k=fbPeriodKey(f,mode); if(k) (groups[k]=groups[k]||[]).push(f); });
+  return Object.keys(groups).sort().map(period=>{
+    const fb=groups[period], catAvg={};
+    FB_CATS.forEach(([c])=>{ const v=fb.map(f=>f.scores&&f.scores[c]).filter(x=>x); catAvg[c]=v.length?v.reduce((a,b)=>a+b,0)/v.length:null; });
+    const rated=FB_CATS.filter(([c])=>catAvg[c]!=null);
+    let best="",worst="";
+    if(rated.length){ const s=rated.slice().sort((a,b)=>catAvg[b[0]]-catAvg[a[0]]);
+      best=t(s[0][1])+" ("+catAvg[s[0][0]].toFixed(1)+")";
+      worst=t(s[s.length-1][1])+" ("+catAvg[s[s.length-1][0]].toFixed(1)+")"; }
+    const ov=fb.map(f=>f.rate).filter(x=>x);
+    return {period, count:fb.length, overall:ov.length?ov.reduce((a,b)=>a+b,0)/ov.length:null, catAvg, best, worst};
+  });
+}
+function fbSummaryDataset(mode, titleKey){
+  const agg=fbAggregate(mode);
+  return {title:t(titleKey),
+    headers:[t("fb_period"),t("feedback"),t("rate"),...FB_CATS.map(([c,lk])=>t(lk)),t("fb_best"),t("fb_worst")],
+    rows:agg.map(g=>[g.period, g.count, g.overall!=null?g.overall.toFixed(1):"",
+      ...FB_CATS.map(([c])=>g.catAvg[c]!=null?g.catAvg[c].toFixed(1):""), g.best, g.worst])};
+}
+const EXPORT_KINDS=["todayplan","dayplan","monthatt","teamsummary","program","guests","bookings","requests","chat","tickets","feedback","fbdaily","fbweekly","fbmonthly","users"];
+function exportKindLabel(k){ return {todayplan:t("todayPlanExp"),monthatt:t("attExport"),teamsummary:t("teamSummary"),program:t("manage"),dayplan:t("dayPlan"),guests:t("expGuests"),bookings:t("expBookings"),requests:t("expRequests"),chat:t("expChat"),tickets:t("expTickets"),feedback:t("expFeedback"),fbdaily:t("fb_daily"),fbweekly:t("fb_weekly"),fbmonthly:t("fb_monthly"),users:t("expUsers")}[k]; }
 async function loadXLSX(){
   if(window.XLSX) return true;
   return new Promise(res=>{const sc=document.createElement("script");
