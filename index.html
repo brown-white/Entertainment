@@ -2900,6 +2900,7 @@ function navReset(){ NAV_HIST=[]; NAV_IDX=-1; }
 function render(){
   const app=$("#app");
   document.documentElement.setAttribute("data-approle", S.session?S.session.role:"none");
+  if(!window.__exInit){ window.__exInit=true; if(S.session) showExplore=false; }
   if(showExplore){ app.innerHTML=exploreView(); wireExplore(); return; }
   if(S.loadError){ app.innerHTML=errorView(); const r=$("#btn-retry"); if(r) r.onclick=()=>location.reload(); return; }
   if(!S.session){
@@ -3173,8 +3174,7 @@ function navGroupsBase(role){
         ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[]),
         ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
         ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-        ...(featureOn("map")?[["map","pin",t("mapTab"),0]]:[])]},
+        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
       {head:t("secBookings"), items:[
         ["stay","user",menuLabel("menuStay",t("myStay")),0],
         ...(featureOn("tickets")?[["tickets","ticket",menuLabel("menuTickets",t("tickets")),0]]:[])]},
@@ -4449,11 +4449,11 @@ function mapView(){
   const on=locSharingOn();
   return `<div class="screen fadein">
     ${topBar(t("mapTab"),"")}
-    <div class="card notif-card" id="loc-toggle">
+    ${S.session.role==="staff"?`<div class="card notif-card" id="loc-toggle">
       <div class="nt-l"><span class="nt-ic">${ic("pin",20)}</span>
         <div><b>${t("shareLoc")}</b><p class="mini">${t("shareLocHint")}</p></div></div>
       <span class="switch ${on?"on":""}"><span class="knob"></span></span>
-    </div>
+    </div>`:""}
     ${isMgr?`<p class="mini" style="margin:12px 0 8px">${t("mapHint")}</p>
       <div id="livemap" class="livemap"></div>
       ${list.length?`<div class="card" style="margin-top:12px">${list.map(l=>`
@@ -5317,7 +5317,7 @@ function openInfoModal(idx){
   };
 }
 /* ================= PHOTO GALLERY ================= */
-let showExplore=false, exploreFilter="all";
+let showExplore=true, exploreFilter="all";
 function ytId(u){ const m=String(u||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{6,})/); return m?m[1]:""; }
 function exploreMoments(){
   const pics=(S.photos||[]).map(p=>({img:p.url, cap:p.caption||"", video:""}));
