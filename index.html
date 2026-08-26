@@ -978,6 +978,11 @@ button,.btn,.iconbtn{min-height:44px}
 .ex-play.big::after{border-width:11px 0 11px 19px;margin-left:4px}
 .ex-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;margin-bottom:12px}
 .ex-video iframe,.ex-video video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.fb-list{margin:8px 0 4px}
+.fb-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.fb-lb{font-size:14px;color:var(--ink);flex:1;min-width:0}
+.fb-stars{display:flex;gap:1px;flex:none}
+.fb-st{background:none;border:none;font-size:23px;line-height:1;color:var(--line);padding:0 1px;cursor:pointer}
 .db-meta{display:flex;flex-direction:column;gap:3px;margin:12px 0 10px}
 .db-tag{align-self:flex-start;margin-top:3px;padding:3px 10px;border-radius:var(--r-pill);
   background:var(--bronze);color:#fff;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -1568,6 +1573,18 @@ const EX_STR={
   ar:{ex_open:"استكشف",ex_title:"استكشف",ex_sub:"شاهد ما يحدث في المنتجع",ex_all:"الكل",ex_videos:"فيديوهات",ex_photos:"صور",ex_featured:"مميز",ex_moments:"أحدث اللحظات",ex_none:"لا يوجد شيء هنا بعد — عد قريباً",ex_addvid:"إضافة فيديو",ex_vidlink:"رابط فيديو (يوتيوب)"}
 };
 Object.keys(EX_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], EX_STR[l]); });
+const FB_CATS=[["entertainment","fb_entertainment"],["music","fb_music"],["activities","fb_activities"],["showmusic","fb_showmusic"],["food","fb_food"],["roomq","fb_room"],["poolbeach","fb_poolbeach"],["staff","fb_staff"],["hotel","fb_hotel"]];
+const FB_STR={
+  en:{fb_entertainment:"Entertainment",fb_music:"Music",fb_activities:"Activities",fb_showmusic:"Show & live music",fb_food:"Food & drinks",fb_room:"Room",fb_poolbeach:"Pool & beach",fb_staff:"Staff behaviour",fb_hotel:"Hotel in general",ex_upvid:"Upload from phone",ex_upvidhint:"Choose a video from your phone"},
+  de:{fb_entertainment:"Unterhaltung",fb_music:"Musik",fb_activities:"Aktivitäten",fb_showmusic:"Show & Live-Musik",fb_food:"Essen & Getränke",fb_room:"Zimmer",fb_poolbeach:"Pool & Strand",fb_staff:"Verhalten des Personals",fb_hotel:"Hotel allgemein",ex_upvid:"Vom Handy hochladen",ex_upvidhint:"Wähle ein Video vom Handy"},
+  ru:{fb_entertainment:"Развлечения",fb_music:"Музыка",fb_activities:"Активности",fb_showmusic:"Шоу и живая музыка",fb_food:"Еда и напитки",fb_room:"Номер",fb_poolbeach:"Бассейн и пляж",fb_staff:"Поведение персонала",fb_hotel:"Отель в целом",ex_upvid:"Загрузить с телефона",ex_upvidhint:"Выберите видео с телефона"},
+  pl:{fb_entertainment:"Rozrywka",fb_music:"Muzyka",fb_activities:"Aktywności",fb_showmusic:"Show i muzyka na żywo",fb_food:"Jedzenie i napoje",fb_room:"Pokój",fb_poolbeach:"Basen i plaża",fb_staff:"Zachowanie personelu",fb_hotel:"Hotel ogólnie",ex_upvid:"Prześlij z telefonu",ex_upvidhint:"Wybierz wideo z telefonu"},
+  cs:{fb_entertainment:"Zábava",fb_music:"Hudba",fb_activities:"Aktivity",fb_showmusic:"Show a živá hudba",fb_food:"Jídlo a nápoje",fb_room:"Pokoj",fb_poolbeach:"Bazén a pláž",fb_staff:"Chování personálu",fb_hotel:"Hotel celkově",ex_upvid:"Nahrát z telefonu",ex_upvidhint:"Vyberte video z telefonu"},
+  nl:{fb_entertainment:"Entertainment",fb_music:"Muziek",fb_activities:"Activiteiten",fb_showmusic:"Show & livemuziek",fb_food:"Eten & drinken",fb_room:"Kamer",fb_poolbeach:"Zwembad & strand",fb_staff:"Gedrag personeel",fb_hotel:"Hotel algemeen",ex_upvid:"Uploaden van telefoon",ex_upvidhint:"Kies een video van je telefoon"},
+  fr:{fb_entertainment:"Animation",fb_music:"Musique",fb_activities:"Activités",fb_showmusic:"Spectacle & musique live",fb_food:"Nourriture & boissons",fb_room:"Chambre",fb_poolbeach:"Piscine & plage",fb_staff:"Comportement du personnel",fb_hotel:"Hôtel en général",ex_upvid:"Depuis le téléphone",ex_upvidhint:"Choisissez une vidéo sur le téléphone"},
+  ar:{fb_entertainment:"الترفيه",fb_music:"الموسيقى",fb_activities:"الأنشطة",fb_showmusic:"العرض والموسيقى الحية",fb_food:"الطعام والشراب",fb_room:"الغرفة",fb_poolbeach:"المسبح والشاطئ",fb_staff:"سلوك الموظفين",fb_hotel:"الفندق عموماً",ex_upvid:"رفع من الهاتف",ex_upvidhint:"اختر فيديو من هاتفك"}
+};
+Object.keys(FB_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], FB_STR[l]); });
 const NATIONS=["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian","Botswanan","Brazilian","British","Bruneian","Bulgarian","Burkinabe","Burmese","Burundian","Cambodian","Cameroonian","Canadian","Cape Verdean","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech","Danish","Djiboutian","Dominican","Dutch","East Timorese","Ecuadorean","Egyptian","Emirati","Equatorial Guinean","Eritrean","Estonian","Ethiopian","Fijian","Filipino","Finnish","French","Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Guyanese","Haitian","Honduran","Hungarian","Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Ivorian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Kosovar","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish","Macedonian","Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Mauritanian","Mauritian","Mexican","Moldovan","Monacan","Mongolian","Montenegrin","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Nigerien","North Korean","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Salvadoran","Samoan","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovenian","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swazi","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Togolese","Trinidadian","Tunisian","Turkish","Turkmen","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean","Other"];
 
 /* ============ TEAM PLAN (from the internal 8-page plan) ============ */
@@ -5371,13 +5388,25 @@ function wireExplore(){
 function openVideoLinkModal(){
   const wrap=baseModal(`
     <h3>${ic("sparkle",20)} ${t("ex_addvid")}</h3>
+    <div class="photo-pick"><div class="photo-box" id="xv-box">${ic("sparkle",22)}</div>
+      <div class="pp-txt"><b>${t("ex_upvid")}</b><span class="mini">${t("ex_upvidhint")}</span></div>
+      <input type="file" accept="video/*" id="xv-file" hidden></div>
     <label>${t("ex_vidlink")}</label><input id="xv-url" placeholder="https://youtu.be/...">
     <label>${t("photoCaption")}</label><input id="xv-cap" placeholder="${esc(t("photoCaption"))}">
     <button class="btn" id="xv-save">${t("save")}</button>
     <button class="btn ghost" id="xv-x">${t("close")}</button>`);
+  let upUrl="";
+  const box=wrap.querySelector("#xv-box"), file=wrap.querySelector("#xv-file");
+  box.onclick=()=>file.click();
+  file.onchange=async ()=>{
+    const f=file.files[0]; if(!f) return;
+    box.textContent="…";
+    try{ upUrl=await uploadAvatar(f); box.textContent="✓"; }
+    catch(e){ box.innerHTML=ic("sparkle",22); toastErr(t("uploadErr")); }
+  };
   wrap.querySelector("#xv-x").onclick=()=>wrap.remove();
   wrap.querySelector("#xv-save").onclick=async ()=>{
-    const url=wrap.querySelector("#xv-url").value.trim();
+    const url=wrap.querySelector("#xv-url").value.trim() || upUrl;
     if(!url){ toastWarn(t("ex_vidlink")); return; }
     const list=((S.settings&&S.settings.exploreVids)||[]).slice();
     list.unshift({url, cap:wrap.querySelector("#xv-cap").value.trim()});
@@ -6610,8 +6639,8 @@ function buildDataset(kind){
     headers:[t("room"),t("name"),"Ticket","Qty","Status",t("handTo"),"Date"],
     rows:S.orders.map(o=>[o.room,o.guest_name,tkName(o.ticket_id),o.qty,o.status,o.collect_from||"",fmtDate(o.created_at)])};
   if(kind==="feedback") return {title:t("expFeedback"),
-    headers:[t("room"),t("nationality"),t("rate"),t("comment"),t("user"),"Date"],
-    rows:S.feedback.map(f=>[f.room,f.nationality||"",f.rate,f.comment||"",f.by_user||"",fmtDate(f.created_at)])};
+    headers:[t("room"),t("nationality"),t("rate"),...FB_CATS.map(([k,lk])=>t(lk)),t("comment"),t("user"),"Date"],
+    rows:S.feedback.map(f=>[f.room,f.nationality||"",f.rate,...FB_CATS.map(([k])=>(f.scores&&f.scores[k])||""),f.comment||"",f.by_user||"",fmtDate(f.created_at)])};
   if(kind==="program") return {title:t("manage"),
     headers:[t("day"),t("time"),t("actName"),t("category"),t("location"),t("entertainer"),t("capacity"),t("makeHighlight")],
     rows:S.activities.slice().sort((x,y)=>(x.day-y.day)||String(x.time).localeCompare(String(y.time)))
@@ -7105,26 +7134,41 @@ function openTaskAddModal(){
     wrap.remove(); toast(t("saved")); render();
   };
 }
+function fbColor(v){ return v>=5?"#2e9e57":v===4?"#e8c400":v===3?"#e8890c":"#d13b2e"; }
+function paintFbRow(row,v){
+  row.dataset.rate=v; const col=fbColor(v);
+  [...row.querySelectorAll(".fb-st")].forEach(s=>{ const on=(+s.dataset.v)<=v; s.classList.toggle("on",on); s.style.color=on?col:""; });
+}
+function fbStarRow(catKey,label){
+  return `<div class="fb-row" data-cat="${catKey}">
+    <span class="fb-lb">${esc(label)}</span>
+    <span class="fb-stars">${[1,2,3,4,5].map(v=>`<button type="button" class="fb-st" data-v="${v}">★</button>`).join("")}</span>
+  </div>`;
+}
 function openFeedbackModal(){
   const wrap=baseModal(`
     <h3>${ic("star",18)} ${t("addFeedback")}</h3>
     <label>${t("room")}</label><input id="fb-room" inputmode="numeric">
     <label>${t("nationality")}</label>
     <input id="fb-nat" list="fbnatlist"><datalist id="fbnatlist">${NATIONS.map(n=>`<option value="${n}">`).join("")}</datalist>
-    <label>${t("rate")}</label>
-    <select id="fb-rate">${[5,4,3,2,1].map(r=>`<option value="${r}">${"★".repeat(r)}${"☆".repeat(5-r)}</option>`).join("")}</select>
+    <div class="fb-list">${FB_CATS.map(([k,lk])=>fbStarRow(k,t(lk))).join("")}</div>
     <label>${t("comment")}</label><textarea id="fb-com" rows="2"></textarea>
     <button class="btn" id="fb-go">${t("save")}</button>
     <button class="btn ghost" id="fb-x">${t("close")}</button>`);
   wrap.querySelector("#fb-x").onclick=()=>wrap.remove();
+  wrap.querySelectorAll(".fb-st").forEach(st=>st.onclick=()=>paintFbRow(st.closest(".fb-row"), +st.dataset.v));
   wrap.querySelector("#fb-go").onclick=async ()=>{
     const room=wrap.querySelector("#fb-room").value.trim();
-    if(!room) return;
-    await DB.addFeedback({room,nationality:wrap.querySelector("#fb-nat").value.trim(),
-      rate:+wrap.querySelector("#fb-rate").value||5,
-      comment:wrap.querySelector("#fb-com").value.trim(),
-      by_user:S.session.username||""});
-    wrap.remove(); toast(t("saved")); render();
+    if(!room){ toastWarn(t("fieldRequired")); return; }
+    const scores={}; let sum=0,cnt=0;
+    wrap.querySelectorAll(".fb-row").forEach(r=>{ const v=+r.dataset.rate||0; if(v){ scores[r.dataset.cat]=v; sum+=v; cnt++; } });
+    const overall = cnt?Math.round(sum/cnt):5;
+    try{
+      await DB.addFeedback({room, nationality:wrap.querySelector("#fb-nat").value.trim(),
+        rate:overall, scores, comment:wrap.querySelector("#fb-com").value.trim(),
+        by_user:S.session.username||""});
+      wrap.remove(); toastOk(t("saved")); render();
+    }catch(e){ toastErr(t("errSave")); }
   };
 }
 function openNotesModal(){
