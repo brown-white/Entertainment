@@ -1471,6 +1471,30 @@ html{font-size:calc(16px * var(--fscale,1))}
 @keyframes spPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 @keyframes spSlide{from{transform:translateX(-130%)}to{transform:translateX(330%)}}
 @media (prefers-reduced-motion:reduce){#splash{display:none}}
+
+/* ===== EXECUTIVE HOTEL UI / REPORTING POLISH v5 ===== */
+:root{--gold:#C7A36A;--gold-soft:#EADCC5;--ink-deep:#24170F}
+body{background:linear-gradient(180deg,var(--bg) 0%,#F3ECE2 100%)}
+[data-theme="dark"] body{background:linear-gradient(180deg,#18110B 0%,#21180F 100%)}
+.card,.stat,.tk{border:1px solid rgba(185,138,92,.16)}
+.top .who h2,.whobar h2{letter-spacing:.015em}
+.sec>h3{font-size:23px;letter-spacing:.01em}
+.btn{min-height:48px;font-weight:600;letter-spacing:.045em}
+.btn.ghost{background:rgba(255,255,255,.55);backdrop-filter:blur(8px)}
+[data-theme="dark"] .btn.ghost{background:rgba(255,255,255,.035)}
+.iconbtn{border:1px solid rgba(185,138,92,.14);box-shadow:0 7px 22px -16px rgba(38,24,14,.55)}
+.stat b{font-size:34px}.stat span{font-size:10.5px;letter-spacing:.12em}
+.exp-it{border:1px solid transparent}.exp-it:has(input:checked){background:linear-gradient(135deg,rgba(185,138,92,.13),rgba(232,220,201,.32));border-color:rgba(185,138,92,.28)}
+.export-brand{display:flex;align-items:center;gap:13px;padding:14px 15px;border:1px solid var(--line);border-radius:var(--r-xl);background:linear-gradient(135deg,var(--card),var(--sand));margin-bottom:8px}
+.export-seal{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#F7F2EA;font-family:var(--font-display);font-size:19px;border:2px solid rgba(199,163,106,.75);box-shadow:0 8px 20px -12px rgba(62,42,30,.7)}
+[data-theme="dark"] .export-seal{background:linear-gradient(135deg,var(--bronze),#D9B47F);color:#24170F}
+.export-brand h3{margin:1px 0 2px;font-size:22px}.export-brand p{font-size:11.5px;color:var(--muted)}
+.export-kicker{font-size:9px;letter-spacing:.15em;color:var(--bronze);font-weight:700}
+.export-format-note{font-size:11.5px;line-height:1.45;color:var(--muted);padding:10px 12px;border-left:2px solid var(--bronze);background:var(--sand);border-radius:0 var(--r-sm) var(--r-sm) 0;margin:8px 0 4px}
+.drawer{border-inline-end:1px solid rgba(185,138,92,.16)}
+.nav{backdrop-filter:blur(16px);background:color-mix(in srgb,var(--nav-bg) 94%,transparent)}
+.hero{border:1px solid rgba(199,163,106,.22)}
+
 </style>
 </head>
 <body>
@@ -6838,6 +6862,34 @@ function fbSummaryDataset(mode, titleKey){
 }
 const EXPORT_KINDS=["todayplan","dayplan","monthatt","teamsummary","program","guests","bookings","requests","chat","tickets","feedback","fbdaily","fbweekly","fbmonthly","users"];
 function exportKindLabel(k){ return {todayplan:t("todayPlanExp"),monthatt:t("attExport"),teamsummary:t("teamSummary"),program:t("manage"),dayplan:t("dayPlan"),guests:t("expGuests"),bookings:t("expBookings"),requests:t("expRequests"),chat:t("expChat"),tickets:t("expTickets"),feedback:t("expFeedback"),fbdaily:t("fb_daily"),fbweekly:t("fb_weekly"),fbmonthly:t("fb_monthly"),users:t("expUsers")}[k]; }
+const REPORT_META={
+  department:"Entertainment Department",
+  departmentHead:"Mr. Hassan Amer",
+  documentClass:"OFFICIAL MANAGEMENT REPORT",
+  confidentiality:"Internal Hotel Management Use",
+  version:"1.0"
+};
+function reportHotelName(){ return (S.settings&&S.settings.name)||"Hotel"; }
+function reportDateLabel(){
+  try{return new Intl.DateTimeFormat(lang||"en",{year:"numeric",month:"long",day:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date());}
+  catch(e){return new Date().toLocaleString();}
+}
+function safeFilePart(x){return String(x||"").trim().replace(/[^a-zA-Z0-9_-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60)||"hotel";}
+function reportFileName(kind){return safeFilePart(reportHotelName())+"_Entertainment_"+kind+"_"+todayISO();}
+function datasetMatrix(ds){
+  return [
+    [REPORT_META.documentClass],
+    [reportHotelName()],
+    [REPORT_META.department],
+    ["Department Head",REPORT_META.departmentHead],
+    ["Generated",reportDateLabel()],
+    ["Classification",REPORT_META.confidentiality],
+    [],
+    [ds.title],
+    ds.headers,
+    ...ds.rows
+  ];
+}
 async function loadXLSX(){
   if(window.XLSX) return true;
   return new Promise(res=>{const sc=document.createElement("script");
@@ -6846,55 +6898,98 @@ async function loadXLSX(){
 }
 function downloadBlob(name,blob){
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name;
-  document.body.appendChild(a); a.click(); a.remove();
+  document.body.appendChild(a); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1500); a.remove();
+}
+function sheetWidths(matrix){
+  const maxCols=Math.max(1,...matrix.map(r=>r.length));
+  return Array.from({length:maxCols},(_,c)=>{
+    let m=10;
+    matrix.forEach(r=>{const v=r[c]; if(v!=null) m=Math.max(m,Math.min(44,String(v).length+2));});
+    return {wch:m};
+  });
 }
 async function exportExcelSets(sets,fname){
   const ok=await loadXLSX();
   if(ok){
     const wb=XLSX.utils.book_new();
+    wb.Props={Title:REPORT_META.documentClass,Subject:REPORT_META.department,Author:REPORT_META.departmentHead,Company:reportHotelName(),Comments:REPORT_META.confidentiality,CreatedDate:new Date()};
     sets.forEach(ds=>{
-      const ws=XLSX.utils.aoa_to_sheet([ds.headers,...ds.rows]);
+      const matrix=datasetMatrix(ds), ws=XLSX.utils.aoa_to_sheet(matrix);
+      const lastCol=Math.max(0,ds.headers.length-1), lastRow=matrix.length-1;
+      ws["!cols"]=sheetWidths(matrix);
+      ws["!rows"]=[{hpt:24},{hpt:22},{hpt:19},{hpt:18},{hpt:18},{hpt:18},{hpt:8},{hpt:22},{hpt:21}];
+      ws["!merges"]=[
+        XLSX.utils.decode_range("A1:"+XLSX.utils.encode_col(lastCol)+"1"),
+        XLSX.utils.decode_range("A2:"+XLSX.utils.encode_col(lastCol)+"2"),
+        XLSX.utils.decode_range("A3:"+XLSX.utils.encode_col(lastCol)+"3"),
+        XLSX.utils.decode_range("A8:"+XLSX.utils.encode_col(lastCol)+"8")
+      ];
+      if(ds.headers.length) ws["!autofilter"]={ref:"A9:"+XLSX.utils.encode_col(lastCol)+Math.max(9,lastRow+1)};
+      ws["!freeze"]={xSplit:0,ySplit:9,topLeftCell:"A10",activePane:"bottomLeft",state:"frozen"};
+      ws["!margins"]={left:0.35,right:0.35,top:0.55,bottom:0.55,header:0.2,footer:0.2};
+      ws["!pageSetup"]={orientation:ds.headers.length>7?"landscape":"portrait",fitToWidth:1,fitToHeight:0,paperSize:9};
       const name=(ds.title||"Sheet").replace(/[\\/?*\[\]:]/g,"").slice(0,28)||"Sheet";
       XLSX.utils.book_append_sheet(wb,ws,name);
     });
-    XLSX.writeFile(wb,fname+".xlsx");
+    XLSX.writeFile(wb,fname+".xlsx",{compression:true});
   } else {
     const lines=[];
-    sets.forEach(ds=>{ lines.push([ds.title]); lines.push(ds.headers); ds.rows.forEach(r=>lines.push(r)); lines.push([]); });
+    sets.forEach(ds=>{ datasetMatrix(ds).forEach(r=>lines.push(r)); lines.push([]); });
     const csv=lines.map(r=>r.map(c=>'"'+String(c==null?"":c).replace(/"/g,'""')+'"').join(";")).join("\n");
     downloadBlob(fname+".csv",new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));
   }
 }
 function exportPdfSets(sets,titleText){
   const esc2=x=>String(x==null?"":x).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-  const css="body{font-family:Arial,Helvetica,sans-serif;color:#2B1F16;padding:26px}"
-    +"h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:22px 0 8px;color:#6B4A32;border-bottom:2px solid #B98A5C;padding-bottom:4px}"
-    +"table{border-collapse:collapse;width:100%;margin-bottom:10px;font-size:11px}"
-    +"th{background:#F2E7D6;text-align:left;padding:6px 8px;border:1px solid #E4D3BC}"
-    +"td{padding:5px 8px;border:1px solid #EEE3D2;vertical-align:top}"
-    +".sub{color:#8A7358;font-size:12px;margin-bottom:6px}@media print{h2{page-break-after:avoid}}";
-  let html="<h1>"+esc2(titleText)+"</h1><div class=sub>"+esc2(new Date().toLocaleString())+"</div>";
+  const css=`
+    @page{size:A4;margin:15mm 11mm 17mm}
+    *{box-sizing:border-box} body{font-family:Arial,Helvetica,sans-serif;color:#2B1F16;margin:0;background:#fff;font-size:10.5px}
+    .report-head{border:1px solid #D8C7AE;border-top:6px solid #3E2A1E;padding:18px 20px 15px;margin-bottom:18px;position:relative}
+    .eyebrow{font-size:9px;letter-spacing:.18em;font-weight:700;color:#8A7358;margin-bottom:5px}
+    .hotel{font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.05;color:#3E2A1E;margin:0}
+    .dept{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6B4A32;margin-top:5px}
+    .official{position:absolute;right:20px;top:18px;border:1px solid #B98A5C;color:#6B4A32;padding:5px 8px;font-size:8px;letter-spacing:.12em;font-weight:700}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;margin-top:14px;padding-top:11px;border-top:1px solid #E9DFD2}
+    .meta div{display:flex;gap:8px}.meta span{color:#8A7358;min-width:92px}.meta b{font-weight:700;color:#2B1F16}
+    .section{margin:0 0 20px;page-break-inside:auto}.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 8px;border-bottom:2px solid #B98A5C;padding-bottom:5px}
+    .section-title h2{font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#3E2A1E;margin:0}.count{font-size:9px;color:#8A7358;text-transform:uppercase;letter-spacing:.08em}
+    .table-wrap{width:100%;overflow:visible} table{border-collapse:collapse;width:100%;table-layout:auto;font-size:9.2px}
+    thead{display:table-header-group} tr{page-break-inside:avoid;page-break-after:auto}
+    th{background:#3E2A1E;color:#fff;text-align:left;padding:6px 7px;border:1px solid #3E2A1E;font-size:8.4px;letter-spacing:.03em;vertical-align:bottom}
+    td{padding:5px 7px;border:1px solid #E5D9CA;vertical-align:top;word-break:break-word} tbody tr:nth-child(even) td{background:#FBF8F3}
+    .empty{color:#999;text-align:center;padding:14px}.footer{margin-top:20px;padding-top:8px;border-top:1px solid #D8C7AE;display:flex;justify-content:space-between;color:#8A7358;font-size:8.5px}
+    .signature{margin-top:20px;width:260px;border-top:1px solid #8A7358;padding-top:5px;color:#6B4A32;font-size:9px}
+    @media print{.report-head,.section-title,thead{break-inside:avoid}.section{break-before:auto}}
+  `;
+  let html=`<div class="report-head"><div class="official">${esc2(REPORT_META.documentClass)}</div>
+    <div class="eyebrow">${esc2(REPORT_META.confidentiality)}</div><h1 class="hotel">${esc2(reportHotelName())}</h1>
+    <div class="dept">${esc2(REPORT_META.department)}</div>
+    <div class="meta"><div><span>Report</span><b>${esc2(titleText)}</b></div><div><span>Generated</span><b>${esc2(reportDateLabel())}</b></div>
+    <div><span>Department Head</span><b>${esc2(REPORT_META.departmentHead)}</b></div><div><span>Document Version</span><b>${esc2(REPORT_META.version)}</b></div></div></div>`;
   sets.forEach(ds=>{
-    html+="<h2>"+esc2(ds.title)+" ("+ds.rows.length+")</h2><table><thead><tr>"
+    html+=`<section class="section"><div class="section-title"><h2>${esc2(ds.title)}</h2><div class="count">${ds.rows.length} record${ds.rows.length===1?"":"s"}</div></div><div class="table-wrap"><table><thead><tr>`
       +ds.headers.map(h=>"<th>"+esc2(h)+"</th>").join("")+"</tr></thead><tbody>";
     html+=ds.rows.map(r=>"<tr>"+r.map(c=>"<td>"+esc2(c)+"</td>").join("")+"</tr>").join("");
-    if(!ds.rows.length) html+="<tr><td colspan="+ds.headers.length+" style=\"color:#999\">—</td></tr>";
-    html+="</tbody></table>";
+    if(!ds.rows.length) html+="<tr><td class=empty colspan="+Math.max(1,ds.headers.length)+">No records for this period</td></tr>";
+    html+="</tbody></table></div></section>";
   });
+  html+=`<div class="signature">Prepared under the responsibility of <b>${esc2(REPORT_META.departmentHead)}</b><br>${esc2(REPORT_META.department)}</div>
+    <div class="footer"><span>${esc2(reportHotelName())} · ${esc2(REPORT_META.department)}</span><span>${esc2(REPORT_META.confidentiality)}</span></div>`;
   const w=window.open("","_blank");
   if(!w){ toast(t("aiErr")); return; }
-  w.document.write("<html><head><title>"+esc2(titleText)+"</title><meta charset=utf-8><style>"+css+"</style></head><body>"+html+"<scr"+"ipt>setTimeout(function(){window.print();},350);<\/scr"+"ipt></body></html>");
+  w.document.write("<html><head><title>"+esc2(titleText)+"</title><meta charset=utf-8><style>"+css+"</style></head><body>"+html+"<scr"+"ipt>setTimeout(function(){window.print();},450);<\/scr"+"ipt></body></html>");
   w.document.close();
 }
-function openExportModal(){
-  let picked=new Set(["guests"]);
+function openExportModal(preselect){
+  let picked=new Set(preselect?[preselect]:["todayplan"]);
   const wrap=baseModal(`
-    <h3>${ic("download",20)} ${t("exportData")}</h3>
-    <p class="mini" style="margin-bottom:10px">${t("exportWhat")}</p>
+    <div class="export-brand"><div class="export-seal">HA</div><div><div class="export-kicker">${REPORT_META.documentClass}</div><h3>${ic("download",20)} ${t("exportData")}</h3><p>${REPORT_META.department} · ${REPORT_META.departmentHead}</p></div></div>
+    <p class="mini" style="margin:10px 0 12px">${t("exportWhat")}</p>
     <div class="explist">
-      ${EXPORT_KINDS.map(k=>`<label class="exp-it"><input type="checkbox" data-exp="${k}" ${k==="guests"?"checked":""}> <span>${exportKindLabel(k)}</span></label>`).join("")}
+      ${EXPORT_KINDS.map(k=>`<label class="exp-it"><input type="checkbox" data-exp="${k}" ${(preselect===k||(!preselect&&k==="todayplan"))?"checked":""}> <span>${exportKindLabel(k)}</span></label>`).join("")}
       <label class="exp-it exp-all"><input type="checkbox" id="exp-all"> <span>${t("expAll")}</span></label>
     </div>
+    <div class="export-format-note">Excel is best for management analysis. PDF is formatted as an official printable report.</div>
     <button class="btn" id="exp-xlsx">${ic("download",16)} ${t("exportExcel")}</button>
     <button class="btn ghost" id="exp-pdf">${ic("download",16)} ${t("exportPdf")}</button>
     <button class="btn ghost" id="exp-x">${t("close")}</button>`);
@@ -6904,14 +6999,13 @@ function openExportModal(){
   wrap.querySelector("#exp-all").onchange=e=>{ boxes.forEach(b=>{b.checked=e.target.checked;}); sync(); };
   wrap.querySelector("#exp-x").onclick=()=>wrap.remove();
   const gather=()=>EXPORT_KINDS.filter(k=>picked.has(k)).map(buildDataset).filter(Boolean);
-  const fname="entertainment-data-"+todayISO();
   wrap.querySelector("#exp-xlsx").onclick=async ()=>{
     sync(); const sets=gather(); if(!sets.length) return;
-    await exportExcelSets(sets,fname); toast(t("saved"));
+    await exportExcelSets(sets,reportFileName("Management_Report")); toast(t("saved"));
   };
   wrap.querySelector("#exp-pdf").onclick=()=>{
     sync(); const sets=gather(); if(!sets.length) return;
-    exportPdfSets(sets,S.settings.name+" — "+t("exportData")); wrap.remove();
+    exportPdfSets(sets,reportHotelName()+" — "+REPORT_META.department); wrap.remove();
   };
 }
 async function exportReport(){
@@ -6924,23 +7018,15 @@ async function exportReport(){
     x.status==="done"?(x.was_still?t("done")+" ("+t("late")+")":t("done")):x.status==="cant"?t("cantDo"):x.status==="still"?t("still"):x.status==="accepted"?t("accepted"):t("statusNew")]);
   const fbRows=S.feedback.filter(f=>!f.created_at||Date.parse(f.created_at)>=weekAgo)
     .map(f=>[String(f.created_at||"").slice(0,16).replace("T"," "),f.room,f.nationality||"",f.rate,f.comment||"",f.by_user||""]);
-  const fname="entertainment-report-"+todayISO();
-  const ok=await loadXLSX();
-  if(ok){
-    const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([["#",t("displayName"),t("done"),t("late"),t("cantDo"),t("statusNew"),t("points")],...rank]),"Ranking");
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([["Date",t("taskType"),t("actName"),t("taskFor"),t("location"),t("dueLbl"),"Status"],...taskRows]),"Tasks");
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([["Date",t("room"),t("nationality"),t("rate"),t("comment"),t("user")],...fbRows]),"Feedback");
-    XLSX.writeFile(wb,fname+".xlsx");
-  } else {
-    const csv=[["RANKING"],["#",t("displayName"),t("done"),t("late"),t("cantDo"),t("statusNew"),t("points")],...rank,[],
-      ["TASKS"],["Date",t("taskType"),t("actName"),t("taskFor"),t("location"),t("dueLbl"),"Status"],...taskRows,[],
-      ["FEEDBACK"],["Date",t("room"),t("nationality"),t("rate"),t("comment"),t("user")],...fbRows]
-      .map(r=>r.map(c=>'"'+String(c??"").replace(/"/g,'""')+'"').join(";")).join("\n");
-    downloadBlob(fname+".csv",new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));
-  }
+  const sets=[
+    {title:"Team Performance Ranking — Last 7 Days",headers:["#",t("displayName"),t("done"),t("late"),t("cantDo"),t("statusNew"),t("points")],rows:rank},
+    {title:"Operational Tasks — Last 7 Days",headers:["Date",t("taskType"),t("actName"),t("taskFor"),t("location"),t("dueLbl"),"Status"],rows:taskRows},
+    {title:"Guest Feedback — Last 7 Days",headers:["Date",t("room"),t("nationality"),t("rate"),t("comment"),t("user")],rows:fbRows}
+  ];
+  await exportExcelSets(sets,reportFileName("Weekly_Department_Report"));
   toast(t("saved"));
 }
+
 function attendanceInner(){
   const todayIdx=todayIndex(), date=todayISO();
   const acts=S.activities.filter(a=>a.day===todayIdx).sort((x,y)=>x.time.localeCompare(y.time));
