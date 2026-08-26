@@ -1697,6 +1697,12 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 @media(max-width:380px){.mgr-health{grid-template-columns:1fr 1fr}.mgr-actions{grid-template-columns:1fr}.mgr-console{padding:17px}.mgr-console h2{font-size:23px}}
 @media(min-width:760px){.manager-settings .mgr-actions{grid-template-columns:repeat(3,1fr)}.manager-settings .mgr-health{max-width:570px}}
 
+
+/* ================= LUXURY OPERATIONS v5 ================= */
+.cap-panel{margin:18px 0 6px;padding:16px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card) 94%,var(--accent) 6%));box-shadow:0 14px 36px -28px rgba(10,22,39,.45)}
+.cap-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.cap-head>div{display:flex;flex-direction:column;gap:3px}.cap-head>b{font-size:17px}.cap-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 8px}.cap-toolbar b{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.cap-toolbar span{display:flex;gap:6px}.cap-toolbar button{font-size:12px;padding:6px 9px;border:1px solid var(--line);background:var(--card);border-radius:999px}.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.cap-item,.ops-check{display:flex!important;align-items:center;gap:9px!important;text-transform:none!important;letter-spacing:0!important;color:var(--ink)!important;margin:0!important}.cap-item{padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:13px}.cap-item input,.ops-check input{width:19px!important;height:19px;flex:none;accent-color:var(--accent);margin:0!important}.ops-check{padding:11px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 8%,var(--card));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));font-size:14px!important}.ops-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}.ops-mini-actions{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:1px}.ops-section-title{margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--line);font-weight:700;font-family:var(--font-display);font-size:19px;display:flex;align-items:center;gap:7px;color:var(--ink)}
+.aa-row select:has(option[value=""]:checked){border-color:var(--warn)}
+@media(max-width:430px){.cap-grid,.ops-edit-grid{grid-template-columns:1fr}.cap-head{flex-direction:column}.ops-mini-actions{padding-bottom:0}.ops-mini-actions .btn{flex:1}}
 </style>
 </head>
 <body data-build="executive-v3">
@@ -1732,7 +1738,7 @@ const DEFAULT_SETTINGS = {
   tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
   instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:"",
   busToHotel:"", busToHouse:"",
-  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, hotelInfo:[], reviewAsk:true,
+  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, hotelInfo:[], reviewAsk:true,
   logo:"", hotelName:"", timezone:"", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true}
@@ -1838,6 +1844,19 @@ const FBX_STR={
   ar:{fb_daily:"التقييمات — يومياً",fb_weekly:"التقييمات — أسبوعياً",fb_monthly:"التقييمات — شهرياً",fb_best:"أفضل قسم",fb_worst:"يحتاج اهتماماً",fb_period:"الفترة"}
 };
 Object.keys(FBX_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], FBX_STR[l]); });
+const OPS_V5_STR={
+  en:{
+    capabilityTitle:"Operational capabilities", capabilityHint:"Choose exactly what this team member is qualified to run. Automatic assignment will respect these permissions.",
+    canEntrance:"Eligible for entrance duty", activityEligibility:"Activities this person can run", selectAll:"Select all", clearAll:"Clear all", notConfigured:"Not configured — all activities allowed",
+    allocatorSmart:"Smart fair assignment", allocatorSmartHint:"Capability-aware · balanced · avoids repeating the same activity · varies safely each recalculation",
+    noQualified:"No qualified entertainer is available for this activity", autoEntrance:"Choose fair entrance", autoEntranceWeek:"Balance entrance for week",
+    practiceEnabled:"Team practice on this day", practiceTimeEdit:"Practice time / duration", showNameEdit:"Evening show / presentation", showTimeEdit:"Show time", showLocationEdit:"Show location", liveBandEdit:"Live band / supporting programme",
+    operationEditor:"Day operation editor", editableHint:"Everything below is manager-controlled and can be changed at any time.",
+    qualifications:"Qualifications", entranceQualified:"Entrance eligible", entranceNotQualified:"No entrance duty", skillsConfigured:"Activity permissions configured",
+    smartPlanning:"Smart planning rules", smartPlanningSub:"Qualifications, fairness & entrance eligibility"
+  }
+};
+Object.keys(OPS_V5_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], OPS_V5_STR[l]); });
 const NATIONS=["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian","Botswanan","Brazilian","British","Bruneian","Bulgarian","Burkinabe","Burmese","Burundian","Cambodian","Cameroonian","Canadian","Cape Verdean","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech","Danish","Djiboutian","Dominican","Dutch","East Timorese","Ecuadorean","Egyptian","Emirati","Equatorial Guinean","Eritrean","Estonian","Ethiopian","Fijian","Filipino","Finnish","French","Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Guyanese","Haitian","Honduran","Hungarian","Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Ivorian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Kosovar","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish","Macedonian","Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Mauritanian","Mauritian","Mexican","Moldovan","Monacan","Mongolian","Montenegrin","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Nigerien","North Korean","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Salvadoran","Samoan","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovenian","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swazi","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Togolese","Trinidadian","Tunisian","Turkish","Turkmen","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean","Other"];
 
 /* ============ TEAM PLAN (from the internal 8-page plan) ============ */
@@ -1951,8 +1970,16 @@ function dayPlanFor(day){
   return {...base,
     off: Array.isArray(ov.off) ? ov.off.slice() : base.off,
     entrance: (typeof ov.entrance==="number") ? ov.entrance : base.entrance,
-    theme: (ov.theme!=null && ov.theme!=="") ? ov.theme : base.theme,
-    dress: (ov.dress!=null && ov.dress!=="") ? ov.dress : base.dress,
+    theme: (ov.theme!=null) ? ov.theme : base.theme,
+    dress: (ov.dress!=null) ? ov.dress : base.dress,
+    practice: (typeof ov.practice==="boolean") ? ov.practice : base.practice,
+    practiceTime: (ov.practiceTime!=null) ? ov.practiceTime : (base.practiceTime||t("practiceWindow")),
+    practiceTitle: (ov.practiceTitle!=null) ? ov.practiceTitle : (base.practiceTitle||t("practiceHead")),
+    eveningShow: (ov.eveningShow!=null) ? ov.eveningShow : base.eveningShow,
+    showTime: (ov.showTime!=null) ? ov.showTime : base.showTime,
+    showLoc: (ov.showLoc!=null) ? ov.showLoc : base.showLoc,
+    liveBand: (ov.liveBand!=null) ? ov.liveBand : base.liveBand,
+    makeup: (ov.makeup!==undefined) ? ov.makeup : base.makeup,
     custom: true};
 }
 function dayIsCustom(day){
@@ -4506,6 +4533,69 @@ function activitySlot(a){
   if(!w) return "other";
   return w.s0 < 13*60 ? "morning" : "afternoon";
 }
+/* ===== v5 QUALIFICATION + FAIR RANDOM ALLOCATION =====
+   Stored inside app_settings, not the staff database schema, so it works on
+   existing installations without adding Supabase columns. */
+function capKeyName(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g," "); }
+function capabilityMap(){ return (S.settings&&S.settings.staffCapabilities&&typeof S.settings.staffCapabilities==="object") ? S.settings.staffCapabilities : {}; }
+function userCapability(u){
+  const m=capabilityMap(); const c=m[String(u&&u.username||"").toLowerCase()];
+  return c&&typeof c==="object" ? c : null;
+}
+function distinctOperationalActivities(){
+  const m=new Map();
+  (S.activities||[]).forEach(a=>{ const sl=activitySlot(a); if(sl!=="morning"&&sl!=="afternoon") return; const k=capKeyName(a.name); if(k&&!m.has(k)) m.set(k,a.name); });
+  return [...m.entries()].map(([key,name])=>({key,name})).sort((a,b)=>a.name.localeCompare(b.name));
+}
+function canRunActivity(u,a){
+  const c=userCapability(u); if(!c || !Array.isArray(c.activities)) return true; // backward compatible until configured
+  return c.activities.includes(capKeyName(a&&a.name));
+}
+function entranceEligible(u){
+  if(!u || u.active===false || u.role!=="staff") return false;
+  if(NO_ACTIVITY_NUMBERS.includes(+u.number)) return false;
+  const c=userCapability(u); return !c || c.entrance!==false;
+}
+function eligibleStaffForActivity(day,a){ return assignableStaff(day).filter(u=>canRunActivity(u,a)); }
+function sameActivityExistingCount(u,a,ignoreAssigned){
+  const key=capKeyName(a&&a.name), un=String(u.username||"").toLowerCase();
+  return (S.activities||[]).filter(x=>capKeyName(x.name)===key && String(x.entertainer||"").toLowerCase()===un && (!ignoreAssigned || !String(x.entertainer||"").trim())).length;
+}
+function pickSmartFair(pool,load,usedThisSlot,a,plannedSame){
+  if(!pool.length) return null;
+  let candidates=pool.filter(u=>!usedThisSlot.has(u.username)); if(!candidates.length) candidates=pool.slice();
+  const scored=candidates.map(u=>{
+    const k=loadKey(u);
+    const repeat=(sameActivityExistingCount(u,a,false)+(plannedSame[k+"|"+capKeyName(a.name)]||0));
+    // fairness dominates; repeat penalty is next; random jitter makes recalculation genuinely variable among close candidates.
+    const score=loadOf(load,u)*1000 + repeat*420 + (load.last[k]||0)*2 + Math.random()*180;
+    return {u,score};
+  }).sort((a,b)=>a.score-b.score);
+  return scored[0].u;
+}
+function entrancePool(day){
+  const dp=dayPlanFor(day); const today=(day===todayIndex())?hotelDateStr():null;
+  return (S.users||[]).filter(u=>entranceEligible(u) && u.number && !dp.off.includes(+u.number) && !(today&&(S.staffAtt||[]).some(x=>x.username===u.username&&String(x.date).slice(0,10)===today&&(x.status==="A"||x.status==="O"))));
+}
+function entranceCounts(excludeDay){
+  const out={};
+  for(let d=0;d<7;d++){ if(d===excludeDay) continue; const p=dayPlanFor(d), u=(S.users||[]).find(x=>+x.number===+p.entrance); if(u){const k=loadKey(u);out[k]=(out[k]||0)+1;} }
+  return out;
+}
+function chooseFairEntrance(day, extraCounts){
+  const pool=entrancePool(day); if(!pool.length) return null;
+  const c=extraCounts||entranceCounts(day);
+  const min=Math.min(...pool.map(u=>c[loadKey(u)]||0));
+  const shortlist=pool.filter(u=>(c[loadKey(u)]||0)===min);
+  return shortlist[Math.floor(Math.random()*shortlist.length)]||pool[0];
+}
+async function autoBalanceEntranceWeek(){
+  const counts={}; const next={...(S.settings.dayOverrides||{})};
+  // randomize day order so repeated clicks can create another equally fair rotation
+  const days=[0,1,2,3,4,5,6].sort(()=>Math.random()-.5);
+  days.forEach(day=>{ const u=chooseFairEntrance(day,counts); if(!u) return; counts[loadKey(u)]=(counts[loadKey(u)]||0)+1; const dp=dayPlanFor(day); next[String(day)]={...(next[String(day)]||{}), entrance:+u.number, off:dp.off.slice(), theme:dp.theme, dress:dp.dress, practice:!!dp.practice, practiceTime:dp.practiceTime||t("practiceWindow"), practiceTitle:dp.practiceTitle||t("practiceHead"), eveningShow:dp.eveningShow||"", showTime:dp.showTime||"", showLoc:dp.showLoc||"", liveBand:dp.liveBand||"", makeup:dp.makeup||null}; });
+  await DB.saveSettings({...S.settings,dayOverrides:next}); render(); toastOk(t("dutySaved"));
+}
 /* What each person ALREADY has that we are not going to touch.
    When she replaces everything, nothing is kept, so everyone starts at zero. */
 function baseLoad(opts){
@@ -4548,10 +4638,9 @@ function pickFairest(pool, load, usedThisSlot){
 /* One day. Pass a shared `load` so a whole week stays balanced across days. */
 function autoAssignDay(day, opts, sharedLoad){
   const o=opts||{};
-  const pool=assignableStaff(day);
   const out=[];
-  if(!pool.length) return out;
   const load=sharedLoad || baseLoad(o);
+  const plannedSame={};
   ["morning","afternoon"].forEach(slot=>{
     const acts=(S.activities||[])
       .filter(a=>a.day===day && activitySlot(a)===slot)
@@ -4559,11 +4648,12 @@ function autoAssignDay(day, opts, sharedLoad){
       .sort((x,y)=>String(x.time).localeCompare(String(y.time)));
     if(!acts.length) return;
     const usedThisSlot=new Set();
-    acts.forEach((a,idx)=>{
-      const pick=pickFairest(pool, load, usedThisSlot);
-      if(!pick) return;
-      usedThisSlot.add(pick.username);
-      bumpLoad(load,pick);
+    acts.forEach(a=>{
+      const pool=eligibleStaffForActivity(day,a);
+      const pick=pickSmartFair(pool,load,usedThisSlot,a,plannedSame);
+      if(!pick){ out.push({activity:a, username:"", name:t("noQualified"), slot, day, unassigned:true}); return; }
+      usedThisSlot.add(pick.username); bumpLoad(load,pick);
+      const rk=loadKey(pick)+"|"+capKeyName(a.name); plannedSame[rk]=(plannedSame[rk]||0)+1;
       out.push({activity:a, username:pick.username, name:pick.display_name||pick.username, slot, day});
     });
   });
@@ -4592,8 +4682,8 @@ function balancePlan(plan, opts){
           const it=plan[i];
           if(String(it.username).toLowerCase()!==h) continue;
           const day=it.activity.day;
-          const cand=assignableStaff(day).find(u=>String(u.username).toLowerCase()===l);
-          if(!cand) continue;                                   // not working that day
+          const cand=eligibleStaffForActivity(day,it.activity).find(u=>String(u.username).toLowerCase()===l);
+          if(!cand) continue;                                   // not working / not qualified that day
           const clash=plan.some(x=>x!==it && x.activity.day===day && x.slot===it.slot
             && String(x.username).toLowerCase()===l);
           if(clash) continue;                                   // already has that half-day
@@ -4618,13 +4708,14 @@ function planBalance(list, opts){
     Object.keys(b).forEach(k=>{ per[k]=b[k]; });
   }
   everyone.forEach(u=>{ if(per[String(u).toLowerCase()]===undefined) per[String(u).toLowerCase()]=0; });
-  list.forEach(x=>{ const k=String(x.username).toLowerCase(); per[k]=(per[k]||0)+1; });
+  list.forEach(x=>{ if(!x.username) return; const k=String(x.username).toLowerCase(); per[k]=(per[k]||0)+1; });
   const vals=Object.values(per);
   return {per, min:vals.length?Math.min(...vals):0, max:vals.length?Math.max(...vals):0,
           spread:vals.length?Math.max(...vals)-Math.min(...vals):0};
 }
 async function applyAssignments(list){
   for(const it of list){
+    if(!it.username || it.unassigned) continue;
     try{ await DB.saveActivity({...it.activity, entertainer:it.username}); }
     catch(e){ toastErr(t("errSave")); return false; }
   }
@@ -4644,7 +4735,7 @@ function openAutoAssignModal(day){
     const nameOf=un=>{ const u=(S.users||[]).find(y=>y.username===un); return u?(u.display_name||u.username):un; };
     wrap.innerHTML=`<div class="modal">
       <h3>${ic("users",20)} ${t("autoAssign")}</h3>
-      <p class="mini">${t("autoHint")}</p>
+      <p class="mini"><b>${t("allocatorSmart")}</b><br>${t("allocatorSmartHint")}</p>
       <div class="bd-roles" style="margin-top:12px">
         <button class="bd-role ${scope==="day"?"on":""}" data-ascope="day">${t("autoDay")}</button>
         <button class="bd-role ${scope==="week"?"on":""}" data-ascope="week">${t("autoWeek")}</button>
@@ -4659,9 +4750,9 @@ function openAutoAssignModal(day){
         <p class="mini" style="margin:8px 0">${ic("pen",12)} ${t("editHint")}</p>
         <div class="card aa-list">
           ${Object.keys(byDay).sort((a,b)=>a-b).map(d=>{
-            const pool=assignableStaff(+d);
             return `<div class="aa-day"><b>${esc(t("days")[+d]||"")}</b></div>
             ${byDay[d].map(x=>{
+              const pool=eligibleStaffForActivity(+d,x.activity);
               const i=plan.indexOf(x);
               return `<div class="aa-row">
                 <span class="aa-slot ${x.slot}">${x.slot==="morning"?t("morningSlot"):t("afternoonSlot")}</span>
@@ -6064,54 +6155,46 @@ function busView(){
    Saved as an override on top of the standard rotation. */
 function openDutyModal(day){
   const dp=dayPlanFor(day);
-  const roster=[];
-  for(let n=1;n<=10;n++) roster.push({n, name:nameForNumber(n), role:roleForNumber(n)});
+  const roster=(S.users||[]).filter(u=>u.role==="staff"||u.role==="manager").slice().sort((a,b)=>(a.number||99)-(b.number||99)).map(u=>({n:u.number||(u.role==="manager"?1:null),name:u.display_name||u.username,role:u.role,u})).filter(r=>r.n);
+  const entPool=entrancePool(day);
   const wrap=baseModal(`
-    <h3>${ic("clipboard",20)} ${t("wr_editday")}</h3>
-    <p class="mini">${t("dutyFor")}: <b>${esc(t("days")[day]||"")}</b>${dayIsCustom(day)?` · ${t("customDay")}`:` · ${t("standardDay")}`}</p>
+    <h3>${ic("clipboard",20)} ${t("operationEditor")}</h3>
+    <p class="mini">${t("dutyFor")}: <b>${esc(t("days")[day]||"")}</b> · ${t("editableHint")}</p>
     <label style="margin-top:10px">${t("selectDayOff")}</label>
     <div class="duty-list">
-      ${roster.map(r=>`<label class="duty-it">
-        <input type="checkbox" class="duty-off" value="${r.n}" ${dp.off.includes(r.n)?"checked":""}>
-        <span class="duty-n">${r.n}</span>
-        <span class="duty-nm">${esc(r.name||r.role)}</span></label>`).join("")}
+      ${roster.map(r=>`<label class="duty-it"><input type="checkbox" class="duty-off" value="${r.n}" ${dp.off.includes(r.n)?"checked":""}><span class="duty-n">${r.n}</span><span class="duty-nm">${esc(r.name||r.role)}</span></label>`).join("")}
     </div>
-    <label style="margin-top:12px">${t("selectEntrance")}</label>
-    <select id="duty-ent">
-      <option value="">—</option>
-      ${roster.map(r=>`<option value="${r.n}" ${dp.entrance===r.n?"selected":""}>#${r.n} ${esc(r.name||r.role)}</option>`).join("")}
-    </select>
-    <label style="margin-top:12px">${t("restaurantTheme")}</label>
-    <input id="duty-theme" value="${esc(dp.theme||"")}" placeholder="${esc(t("restaurantTheme"))}">
-    <label style="margin-top:2px">${t("dressCode")}</label>
-    <input id="duty-dress" value="${esc(dp.dress||"")}" placeholder="${esc(t("dressCode"))}">
+    <div class="ops-edit-grid">
+      <div><label>${t("selectEntrance")}</label><select id="duty-ent"><option value="">—</option>${entPool.map(u=>`<option value="${u.number}" ${+dp.entrance===+u.number?"selected":""}>#${u.number} ${esc(u.display_name||u.username)}</option>`).join("")}</select></div>
+      <div class="ops-mini-actions"><button class="btn sm ghost" id="duty-auto-ent" type="button">${ic("sparkle",14)} ${t("autoEntrance")}</button><button class="btn sm ghost" id="duty-auto-week" type="button">${ic("calendar",14)} ${t("autoEntranceWeek")}</button></div>
+      <div><label>${t("restaurantTheme")}</label><input id="duty-theme" value="${esc(dp.theme||"")}"></div>
+      <div><label>${t("dressCode")}</label><input id="duty-dress" value="${esc(dp.dress||"")}"></div>
+    </div>
+    <div class="ops-section-title">${ic("clock",16)} ${t("practiceHead")}</div>
+    <label class="ops-check"><input id="duty-practice" type="checkbox" ${dp.practice?"checked":""}> <span>${t("practiceEnabled")}</span></label>
+    <div class="row2"><div><label>${t("practiceTimeEdit")}</label><input id="duty-prtime" value="${esc(dp.practiceTime||t("practiceWindow"))}"></div><div><label>${t("practiceHead")}</label><input id="duty-prtitle" value="${esc(dp.practiceTitle||t("practiceHead"))}"></div></div>
+    <div class="ops-section-title">${ic("star",16)} ${t("showNameEdit")}</div>
+    <label>${t("showNameEdit")}</label><input id="duty-show" value="${esc(dp.eveningShow||"")}">
+    <div class="row2"><div><label>${t("showTimeEdit")}</label><input id="duty-showtime" value="${esc(dp.showTime||"")}"></div><div><label>${t("showLocationEdit")}</label><input id="duty-showloc" value="${esc(dp.showLoc||"")}"></div></div>
+    <label>${t("liveBandEdit")}</label><input id="duty-band" value="${esc(dp.liveBand||"")}">
     <button class="btn" id="duty-save">${t("save")}</button>
     ${dayIsCustom(day)?`<button class="btn ghost" id="duty-reset">${ic("back",15)} ${t("resetDefault")}</button>`:""}
     <button class="btn ghost" id="duty-x">${t("close")}</button>`);
   wrap.querySelector("#duty-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#duty-auto-ent").onclick=()=>{ const u=chooseFairEntrance(day); if(u){ wrap.querySelector("#duty-ent").value=String(u.number); toastOk((u.display_name||u.username)+" · "+t("entranceDuty")); } else toastErr(t("noOneAvailable")); };
+  wrap.querySelector("#duty-auto-week").onclick=async ()=>{ try{ await autoBalanceEntranceWeek(); wrap.remove(); }catch(e){console.error(e);toastErr(t("errSave"));} };
   wrap.querySelector("#duty-save").onclick=async ()=>{
     const off=[...wrap.querySelectorAll(".duty-off")].filter(b=>b.checked).map(b=>+b.value);
     const entRaw=wrap.querySelector("#duty-ent").value;
-    const ov={off, entrance: entRaw?+entRaw:null,
-      theme: wrap.querySelector("#duty-theme").value.trim(),
-      dress: wrap.querySelector("#duty-dress").value.trim()};
-    const all={...(S.settings.dayOverrides||{})};
-    all[String(day)]=ov;
-    try{
-      await DB.saveSettings({...S.settings, dayOverrides:all});
-      wrap.remove(); toastOk(t("dutySaved")); render();
-    }catch(e){ toastErr(t("errSave")); }
+    const ov={off, entrance:entRaw?+entRaw:null, theme:wrap.querySelector("#duty-theme").value.trim(), dress:wrap.querySelector("#duty-dress").value.trim(),
+      practice:wrap.querySelector("#duty-practice").checked, practiceTime:wrap.querySelector("#duty-prtime").value.trim(), practiceTitle:wrap.querySelector("#duty-prtitle").value.trim(),
+      eveningShow:wrap.querySelector("#duty-show").value.trim(), showTime:wrap.querySelector("#duty-showtime").value.trim(), showLoc:wrap.querySelector("#duty-showloc").value.trim(), liveBand:wrap.querySelector("#duty-band").value.trim(), makeup:dp.makeup||null};
+    const all={...(S.settings.dayOverrides||{})}; all[String(day)]=ov;
+    try{ await DB.saveSettings({...S.settings,dayOverrides:all}); wrap.remove(); toastOk(t("dutySaved")); render(); }catch(e){console.error(e);toastErr(t("errSave"));}
   };
-  const rst=wrap.querySelector("#duty-reset");
-  if(rst) rst.onclick=async ()=>{
-    const all={...(S.settings.dayOverrides||{})};
-    delete all[String(day)];
-    try{
-      await DB.saveSettings({...S.settings, dayOverrides:all});
-      wrap.remove(); toastOk(t("dutySaved")); render();
-    }catch(e){ toastErr(t("errSave")); }
-  };
+  const rst=wrap.querySelector("#duty-reset"); if(rst) rst.onclick=async ()=>{ const all={...(S.settings.dayOverrides||{})}; delete all[String(day)]; try{await DB.saveSettings({...S.settings,dayOverrides:all});wrap.remove();toastOk(t("dutySaved"));render();}catch(e){toastErr(t("errSave"));} };
 }
+
 function openBusModal(bus, dir){
   const editing=!!bus;
   const b=bus||{direction:dir||"toHotel",time:"08:00",note:""};
@@ -6212,8 +6295,8 @@ function practiceCard(dp,info){
   if(!dp.practice && !dp.makeup && !mine) return "";
   return `<h3 style="margin-top:18px">${ic("clock",17)} ${t("practiceHead")}</h3>
     <div class="card prcard">
-      ${dp.practice?`<div class="pr-row"><span class="pr-time">${esc(t("practiceWindow"))}</span>
-        <span class="pr-mid"><b>${t("practiceHead")}</b><span class="mini">${t("practiceToday")}</span></span></div>`:""}
+      ${dp.practice?`<div class="pr-row"><span class="pr-time">${esc(dp.practiceTime||t("practiceWindow"))}</span>
+        <span class="pr-mid"><b>${esc(dp.practiceTitle||t("practiceHead"))}</b><span class="mini">${esc(dp.practiceTime||t("practiceToday"))}</span></span></div>`:""}
       ${dp.makeup?`<div class="pr-row ${mine?"mine":""}"><span class="pr-time">${esc(t("makeupWindow"))}</span>
         <span class="pr-mid"><b>${t("makeupPractice")}</b><span class="mini">${esc(makeupText(dp.makeup))}</span></span></div>`:""}
     </div>`;
@@ -6329,7 +6412,7 @@ function dayDetailCard(day,num){
         <div class="dc-cell"><span>${t("entranceDuty")}</span><b>${personTag(dp.entrance)}</b></div>
         <div class="dc-cell"><span>${t("dayOff")}</span><b>${personTags(dp.off)}</b></div>
       </div>
-      ${dp.practice?`<div class="dc-flag">${ic("star",15)} ${t("practiceToday")}</div>`:""}
+      ${dp.practice?`<div class="dc-flag">${ic("star",15)} ${esc(dp.practiceTitle||t("practiceHead"))} · ${esc(dp.practiceTime||t("practiceWindow"))}</div>`:""}
       ${dp.makeup?`<div class="dc-flag">${ic("star",15)} ${t("makeupPractice")}: ${esc(makeupText(dp.makeup))}</div>`:""}
     </div>
     ${practiceCard(dp,info)}
@@ -7911,6 +7994,25 @@ function openEditModal(a){
     catch(e){ toastErr(t("errSave")); }
   };
 }
+function capabilityEditorHtml(prefix,u){
+  const c=userCapability(u); const configured=!!(c&&Array.isArray(c.activities));
+  const allowed=configured?new Set(c.activities):new Set(distinctOperationalActivities().map(a=>a.key));
+  const acts=distinctOperationalActivities();
+  return `<div class="cap-panel"><div class="cap-head"><div><b>${t("capabilityTitle")}</b><span class="mini">${t("capabilityHint")}</span></div><span class="chip ${configured?"ok":""}">${configured?t("skillsConfigured"):t("notConfigured")}</span></div>
+    <label class="ops-check"><input id="${prefix}-entrance" type="checkbox" ${(c?c.entrance!==false:true)?"checked":""}> <span>${t("canEntrance")}</span></label>
+    <div class="cap-toolbar"><b>${t("activityEligibility")}</b><span><button type="button" class="cap-all" data-capall="${prefix}">${t("selectAll")}</button><button type="button" class="cap-none" data-capnone="${prefix}">${t("clearAll")}</button></span></div>
+    <div class="cap-grid">${acts.map(a=>`<label class="cap-item"><input type="checkbox" data-capact="${prefix}" value="${esc(a.key)}" ${allowed.has(a.key)?"checked":""}><span>${esc(a.name)}</span></label>`).join("")||`<span class="mini">${t("noneToday")}</span>`}</div></div>`;
+}
+function wireCapabilityEditor(wrap,prefix){
+  const all=wrap.querySelector(`[data-capall="${prefix}"]`), none=wrap.querySelector(`[data-capnone="${prefix}"]`);
+  if(all) all.onclick=()=>wrap.querySelectorAll(`[data-capact="${prefix}"]`).forEach(x=>x.checked=true);
+  if(none) none.onclick=()=>wrap.querySelectorAll(`[data-capact="${prefix}"]`).forEach(x=>x.checked=false);
+}
+function readCapabilityEditor(wrap,prefix){ return {entrance:!!wrap.querySelector(`#${prefix}-entrance`)?.checked, activities:[...wrap.querySelectorAll(`[data-capact="${prefix}"]`)].filter(x=>x.checked).map(x=>x.value)}; }
+async function saveUserCapability(username,data,oldUsername){
+  const all={...capabilityMap()}; const old=String(oldUsername||username).toLowerCase(), key=String(username||"").toLowerCase();
+  if(old&&old!==key) delete all[old]; all[key]=data; await DB.saveSettings({...S.settings,staffCapabilities:all});
+}
 function openUserModal(){
   const wrap=baseModal(`
     <h3>${t("addUser")}</h3>
@@ -7925,6 +8027,7 @@ function openUserModal(){
     <label>${t("shirtNumber")} (2–10)</label><input id="u-num" type="number" min="2" max="10" placeholder="e.g. 4">
     <label>${t("nationality")}</label>${nationField("u-nat","u-natx","")}
     <label>${t("genderLbl")}</label><select id="u-gen">${genderOptions("")}</select>
+    ${capabilityEditorHtml("ucap",{username:"",role:"staff",number:null})}
     <button class="btn" id="u-save">${t("save")}</button>
     <div class="err" id="u-err"></div>
     <button class="btn ghost" id="u-x">${t("close")}</button>`);
@@ -7932,6 +8035,7 @@ function openUserModal(){
   let uPhoto="";
   wirePhotoPicker(wrap, ()=>uPhoto, v=>{ uPhoto=v; });
   wireNatPicker(wrap,"u-nat","u-natx");
+  wireCapabilityEditor(wrap,"ucap");
   wrap.querySelector("#u-save").onclick=async ()=>{
     const username=wrap.querySelector("#u-name").value.trim();
     const password=wrap.querySelector("#u-pass").value;
@@ -7945,6 +8049,7 @@ function openUserModal(){
     await DB.addUser({username,password,role,display_name,number,photo:uPhoto,
       nationality:readNatField(wrap,"u-nat","u-natx"),
       gender:wrap.querySelector("#u-gen").value});
+    await saveUserCapability(username,readCapabilityEditor(wrap,"ucap"));
     wrap.remove(); toast(t("saved")); render();
   };
 }
@@ -8009,6 +8114,7 @@ function openUserEditModal(u){
     <label>${t("languagesLbl")}</label><input id="ue-lang" value="${esc(u.languages||"")}" placeholder="DE · EN · RU">
     <label>${t("skills")}</label><input id="ue-skills" value="${esc(u.skills||"")}">
     <label>${t("hireDate")}</label><input id="ue-hire" type="date" value="${esc(u.hire_date||"")}">
+    ${capabilityEditorHtml("uecap",u)}
     ${photoListEditor("uep", (()=>{try{return Array.isArray(u.photos)?u.photos:JSON.parse(u.photos||"[]");}catch(e){return [];}})())}
     <label>${t("nationality")}</label>${nationField("ue-nat","ue-natx",u.nationality||"")}
     <label>${t("genderLbl")}</label><select id="ue-gen">${genderOptions(u.gender||"")}</select>
@@ -8021,6 +8127,7 @@ function openUserEditModal(u){
   let uePhoto=u.photo||"";
   wirePhotoPicker(wrap, ()=>uePhoto, v=>{ uePhoto=v; });
   wireNatPicker(wrap,"ue-nat","ue-natx");
+  wireCapabilityEditor(wrap,"uecap");
   let uePics=(()=>{try{return Array.isArray(u.photos)?u.photos.slice():JSON.parse(u.photos||"[]");}catch(e){return [];}})();
   wirePhotoList(wrap,"uep",()=>uePics,l=>{ uePics=l; });
   const ueReset=wrap.querySelector("#ue-reset");
@@ -8054,6 +8161,7 @@ function openUserEditModal(u){
     }
     if(!patch.password){ return; }
     await DB.updateUser(u.id,patch);
+    await saveUserCapability(patch.username||u.username,readCapabilityEditor(wrap,"uecap"),u.username);
     wrap.remove(); toast(t("saved")); render();
   };
 }
