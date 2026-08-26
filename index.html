@@ -4125,7 +4125,7 @@ function guestRecord(acc){
 }
 function guestCrmInner(){
   const q=(S.crmQuery||"").trim().toLowerCase();
-  let list=(S.accounts||[]).slice();
+  let list=(S.accounts||[]).slice().filter(a=>!stayExpired(a));
   if(q) list=list.filter(a=>[a.room,a.name,a.nationality].some(v=>String(v||"").toLowerCase().includes(q)));
   list.sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
   return `<input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
@@ -6241,6 +6241,29 @@ function managerDayPlanView(){
     ${dayDetailCard(day,null)}
   </div>`;
 }
+function fbStarsRO(v){ v=+v||0; const col=fbColor(v); return `<span class="fb-ro">${[1,2,3,4,5].map(i=>`<span style="color:${i<=v?col:"var(--line)"}">★</span>`).join("")}</span>`; }
+function openFbDetail(id){
+  const f=(S.feedback||[]).find(x=>String(x.id)===String(id)); if(!f) return;
+  const rows=FB_CATS.map(([k,lk])=>`<div class="fb-row"><span class="fb-lb">${t(lk)}</span>${fbStarsRO((f.scores&&f.scores[k])||0)}</div>`).join("");
+  const wrap=baseModal(`
+    <h3>${ic("star",18)} ${t("room")} ${esc(f.room)}</h3>
+    <p class="mini" style="margin-bottom:6px">${f.nationality?esc(f.nationality)+" · ":""}${fbStarsRO(f.rate)} ${f.rate?"("+f.rate+"/5)":""}</p>
+    <div class="fb-list">${rows}</div>
+    ${f.comment?`<p style="margin-top:10px">${esc(f.comment)}</p>`:""}
+    <p class="mini" style="margin-top:8px">${esc(f.by_user||"")} · ${fmtTime(f.created_at)}</p>
+    <button class="btn ghost" id="fbd-x">${t("close")}</button>`);
+  wrap.querySelector("#fbd-x").onclick=()=>wrap.remove();
+}
+function fbAnalyticsCard(){
+  const fb=S.feedback||[]; if(!fb.length) return "";
+  const rows=FB_CATS.map(([k,lk])=>{
+    const vals=fb.map(f=>f.scores&&f.scores[k]).filter(v=>v);
+    const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length):0;
+    const r=Math.round(avg);
+    return `<div class="fb-row"><span class="fb-lb">${t(lk)}</span><span style="color:${avg?fbColor(r):"var(--muted)"};font-weight:600;flex:none">${avg?avg.toFixed(1)+" ★":"—"}</span></div>`;
+  }).join("");
+  return `<div class="sec"><h3>${ic("star",18)} ${t("feedback")}</h3><div class="card fb-list">${rows}</div></div>`;
+}
 function feedbackInner(){
   const avg=S.feedback.length?(S.feedback.reduce((n,f)=>n+(+f.rate||0),0)/S.feedback.length).toFixed(1):"—";
   return `<div class="stat-grid" style="grid-template-columns:1fr 1fr">
@@ -6248,7 +6271,7 @@ function feedbackInner(){
       <div class="stat"><b>${S.feedback.length}</b><span>${t("feedback")}</span></div>
     </div>`
   + (S.feedback.length?`<div class="card">${S.feedback.map(f=>`<div class="booking-line">
-      <span style="min-width:0"><b>${t("room")} ${esc(f.room)}</b>${f.nationality?` · ${esc(f.nationality)}`:""}
+      <span style="min-width:0;cursor:pointer" data-fbview="${f.id}"><b>${t("room")} ${esc(f.room)}</b>${f.nationality?` · ${esc(f.nationality)}`:""}
         <br><span class="mini">${"★".repeat(+f.rate||0)}${"☆".repeat(Math.max(0,5-(+f.rate||0)))}${f.comment?` — ${esc(f.comment)}`:""}</span>
         <br><span class="mini">${mi("user")}${esc(f.by_user||"")} · ${fmtTime(f.created_at)}</span></span>
       <button class="btn sm warn" data-fbdel="${f.id}" style="flex:none">${ic("close",14)}</button>
@@ -6297,6 +6320,7 @@ function dashView(){
         <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">${ic("grid",30)}</div>${t("none")}</div>`}
     </div>
     ${trendsCard()}
+    ${fbAnalyticsCard()}
   </div>`;
 }
 function managerActsInner(){
@@ -7150,7 +7174,7 @@ function openFeedbackModal(){
     <h3>${ic("star",18)} ${t("addFeedback")}</h3>
     <label>${t("room")}</label><input id="fb-room" inputmode="numeric">
     <label>${t("nationality")}</label>
-    <input id="fb-nat" list="fbnatlist"><datalist id="fbnatlist">${NATIONS.map(n=>`<option value="${n}">`).join("")}</datalist>
+    <select id="fb-nat"><option value="">—</option>${NATIONS.map(n=>`<option value="${n}">${n}</option>`).join("")}</select>
     <div class="fb-list">${FB_CATS.map(([k,lk])=>fbStarRow(k,t(lk))).join("")}</div>
     <label>${t("comment")}</label><textarea id="fb-com" rows="2"></textarea>
     <button class="btn" id="fb-go">${t("save")}</button>
@@ -7689,6 +7713,7 @@ function wireCommon(){
   document.querySelectorAll("[data-tcant]").forEach(b=>b.onclick=async ()=>{
     await DB.updateTask(+b.dataset.tcant,{status:"cant"}); render();
   });
+  document.querySelectorAll("[data-fbview]").forEach(b=>b.onclick=()=>openFbDetail(b.dataset.fbview));
   document.querySelectorAll("[data-fbdel]").forEach(b=>b.onclick=async ()=>{
     await DB.deleteFeedback(+b.dataset.fbdel); toast(t("deleted")); render();
   });
