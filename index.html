@@ -1716,6 +1716,93 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .audit-row{padding:11px 0;border-bottom:1px solid var(--line)}.audit-row:last-child{border:0}.audit-row b{font-size:13px}.audit-row small{display:block;color:var(--muted);margin-top:3px}.approval{display:flex;gap:8px;flex-wrap:wrap}.approval .pill{padding:8px 12px}.lux-section-title{font-family:var(--serif);font-size:27px;margin:20px 0 8px}.skill-legend{display:flex;gap:7px;flex-wrap:wrap}.skill-legend span{padding:6px 9px;border-radius:999px;background:var(--soft);font-size:11px;font-weight:800}.manager-command{background:linear-gradient(135deg,var(--primary),color-mix(in srgb,var(--primary) 76%,#000));color:#fff;border-radius:26px;padding:20px;margin-bottom:16px;box-shadow:0 20px 55px color-mix(in srgb,var(--primary) 20%,transparent)}.manager-command h2{font-family:var(--serif);font-size:30px;margin:3px 0 6px}.manager-command p{opacity:.8}.command-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}.command-actions button{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:15px;padding:12px;text-align:left;font-weight:800}.command-actions small{display:block;opacity:.65;margin-top:3px;font-weight:500}
 @media(min-width:850px){.exec-grid{grid-template-columns:repeat(3,1fr)}.exec-wide{grid-column:auto}.command-actions{grid-template-columns:repeat(4,1fr)}}
 </style>
+<style id="control-center-v8-css">
+/* ===== CONTROL CENTER v8 — manager control surfaces ===== */
+.cc-hero{background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#fff;border-radius:var(--r-2xl);
+  padding:var(--sp-6);margin:var(--sp-4) var(--sp-4) var(--sp-3);box-shadow:var(--sh-2)}
+.cc-hero .cc-kick{font-size:var(--fs-meta);letter-spacing:.18em;text-transform:uppercase;color:var(--bronze);font-weight:600}
+.cc-hero h2{margin:6px 0 4px;color:#fff;font-size:var(--fs-h2)}
+.cc-hero p{font-size:var(--fs-label);opacity:.82;margin:0}
+.cc-stats{display:flex;gap:var(--sp-4);margin-top:var(--sp-4);flex-wrap:wrap}
+.cc-stats span{display:flex;flex-direction:column;font-weight:600;font-size:var(--fs-h4)}
+.cc-stats span small{font-weight:400;opacity:.75;font-size:var(--fs-meta);text-transform:uppercase;letter-spacing:.09em}
+.cc-search{margin:0 var(--sp-4) var(--sp-3)}
+.cc-group{margin:0 var(--sp-4) var(--sp-5)}
+.cc-group > h3{font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.13em;color:var(--muted);
+  margin:0 0 var(--sp-2);font-family:var(--font-body);font-weight:600}
+.cc-grid{display:grid;grid-template-columns:1fr;gap:var(--sp-2)}
+@media(min-width:620px){.cc-grid{grid-template-columns:1fr 1fr}}
+.cc-card{display:flex;align-items:center;gap:var(--sp-3);width:100%;text-align:start;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--sp-3) var(--sp-4);box-shadow:var(--sh-1);
+  transition:transform var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease)}
+.cc-card:active{transform:scale(.985)}
+.cc-card:hover{border-color:var(--bronze)}
+.cc-card .cc-ic{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 38px;
+  border-radius:var(--r-sm);background:var(--sand);color:var(--espresso)}
+[data-theme="dark"] .cc-card .cc-ic{color:var(--bronze)}
+.cc-card b{display:block;font-size:var(--fs-body)}
+.cc-card small{display:block;color:var(--muted);font-size:var(--fs-caption);line-height:1.35}
+.cc-card .cc-tx{flex:1;min-width:0}
+.cc-none{margin:0 var(--sp-4);color:var(--muted);font-size:var(--fs-label)}
+
+/* ---- editor pages ---- */
+.cc-page{padding:0 var(--sp-4) var(--sp-10)}
+.cc-note{background:var(--sand);border-radius:var(--r-md);padding:var(--sp-3);font-size:var(--fs-caption);
+  color:var(--ink);margin-bottom:var(--sp-3);line-height:1.45}
+.cc-bar{display:flex;gap:var(--sp-2);flex-wrap:wrap;margin:var(--sp-3) 0}
+.cc-bar .btn{flex:1 1 auto}
+.cc-row{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2) 0;border-bottom:1px solid var(--line)}
+.cc-row:last-child{border-bottom:none}
+.cc-row .cc-lb{flex:0 0 40%;min-width:0}
+.cc-row .cc-lb b{display:block;font-size:var(--fs-label);word-break:break-word}
+.cc-row .cc-lb small{display:block;color:var(--muted);font-size:var(--fs-meta)}
+.cc-row .cc-in{flex:1;min-width:0}
+.cc-changed{color:var(--bronze);font-weight:600}
+.cc-seg{display:flex;gap:6px;flex-wrap:wrap}
+.cc-seg button{border:1px solid var(--line);background:var(--card);border-radius:var(--r-pill);
+  padding:8px 14px;font-size:var(--fs-label)}
+.cc-seg button.on{background:var(--espresso);color:#fff;border-color:var(--espresso)}
+[data-theme="dark"] .cc-seg button.on{background:var(--bronze);color:#10192a}
+.cc-range{display:flex;align-items:center;gap:var(--sp-3)}
+.cc-range input[type=range]{flex:1;padding:0;border:none;background:transparent}
+.cc-range b{flex:0 0 54px;text-align:end;font-variant-numeric:tabular-nums}
+.cc-prev{border:1px dashed var(--line);border-radius:var(--r-lg);padding:var(--sp-4);margin-top:var(--sp-3);background:var(--sand)}
+.cc-prev .cc-pv-card{background:var(--card);border-radius:var(--r-lg);padding:var(--sp-4);box-shadow:var(--sh-2);
+  border:1px solid var(--line)}
+.cc-thumb{width:100%;height:120px;object-fit:cover;border-radius:var(--r-md);border:1px solid var(--line);margin-top:6px}
+.cc-mini-actions{display:flex;gap:var(--sp-2);margin-top:6px}
+.cc-kv{display:grid;grid-template-columns:1fr;gap:var(--sp-3)}
+@media(min-width:620px){.cc-kv{grid-template-columns:1fr 1fr}}
+.cc-tag{display:inline-block;font-size:var(--fs-meta);padding:3px 9px;border-radius:var(--r-pill);
+  background:var(--sand);color:var(--muted);margin-inline-start:6px}
+.cc-tag.ok{background:rgba(76,122,76,.16);color:var(--ok)}
+.cc-tag.warn{background:rgba(166,90,58,.16);color:var(--warn)}
+.cc-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
+  background:var(--espresso);color:#fff;font-size:var(--fs-caption);font-weight:700;flex:0 0 28px}
+[data-theme="dark"] .cc-num{background:var(--bronze);color:#10192a}
+.cc-check{display:flex;align-items:center;gap:8px;font-size:var(--fs-label)}
+.cc-check input{width:auto}
+.cc-rep-head{border:1px solid var(--line);border-radius:var(--r-md);padding:var(--sp-4);background:#fff;color:#172033}
+.cc-rep-head .cc-rep-cls{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8a7a6a}
+.cc-rep-head h4{font-family:var(--font-display);font-size:20px;margin:4px 0}
+.cc-rep-head .cc-rep-line{height:2px;background:var(--bronze);margin:8px 0}
+.cc-rep-head small{display:block;color:#6b7280;font-size:11px}
+.cc-word,.cc-role{width:100%}
+.cc-role{margin-bottom:2px}
+.cc-wreset{flex:0 0 auto}
+.cc-noact{width:auto}
+.cc-file{display:block;width:100%;padding:var(--sp-3);border:1px dashed var(--line);border-radius:var(--r-md);
+  font-size:var(--fs-label);background:var(--card)}
+
+/* ---- design tokens driven by the Design Studio ---- */
+body::before{content:"";position:fixed;inset:0;background-image:var(--app-bg-image,none);background-size:cover;
+  background-position:center;opacity:var(--app-bg-strength,0);z-index:-1;pointer-events:none}
+.login-wrap{position:relative}
+.login-wrap::before{content:"";position:absolute;inset:0;background-image:var(--login-bg-image,none);
+  background-size:cover;background-position:center;opacity:var(--login-bg-strength,0);z-index:0;pointer-events:none}
+.login-wrap > *{position:relative;z-index:1}
+html[data-cardborder="off"] .card{border-color:transparent}
+</style>
 </head>
 <body data-build="intelligent-planner-v6">
 <div class="app" id="app"><div class="skel-wrap">
@@ -1753,7 +1840,10 @@ const DEFAULT_SETTINGS = {
   aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
   logo:"", hotelName:"", timezone:"", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
-  features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true}
+  features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true},
+  /* --- Control Center v8: everything below is editable inside the app --- */
+  labels:{}, design:{}, teamRoles:{}, noActivity:[1,3], slotSplit:"13:00",
+  reportMeta:{}, catImages:{}
 };
 const FONTS={
   elegant:["'Cormorant Garamond',serif","'Jost',sans-serif"],
@@ -1796,7 +1886,16 @@ const S = {
   rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[], feedback:[], aiChat:[], profiles:[],
   buses:[], quizzes:[], quizReplies:[], staffAtt:[], attMonth:null, photos:[], staffReqs:[], weather:null, weatherBusy:false, crmQuery:"", drawerOpen:null, pb:null, locations:[], locWatch:null, settings:{...DEFAULT_SETTINGS}, loadError:false
 };
-const t = k => (DICT[S.lang] && DICT[S.lang][k]) ?? DICT.en[k] ?? k;
+const t = k => {
+  const L=(S.settings&&S.settings.labels)||null;
+  if(L){
+    const o=(L[S.lang]&&L[S.lang][k]);
+    if(typeof o==="string"&&o.trim()!=="") return o;
+    const a=(L.all&&L.all[k]);
+    if(typeof a==="string"&&a.trim()!=="") return a;
+  }
+  return (DICT[S.lang] && DICT[S.lang][k]) ?? DICT.en[k] ?? k;
+};
 /* Extra labels for Work Rules + Standards editor — added in all languages (new keys only) */
 const RULE_STR={
   en:{wr_title:"Work rules",wr_edit:"Edit",wr_add:"Add rule",wr_none:"No rules added yet — tap Edit to add the first one.",wr_hint:"Add what to do and not do, and what happens either way. The whole team sees this.",wr_ftitle:"Title",wr_do:"Do",wr_dont:"Don't",wr_appr:"Appreciation",wr_cons:"Consequence",wr_title_ph:"Rule title",wr_do_ph:"What to do",wr_dont_ph:"What not to do",wr_appr_ph:"Recognition if followed",wr_cons_ph:"Consequence if not followed",std_hint:"Edit the time, title and optional note for each line.",std_addrow:"Add row",std_reset:"Reset to default"},
@@ -1921,7 +2020,20 @@ const DAY_PLAN=[
     makeup:null, eveningShow:"International / Brazilian", showTime:"21:00 – 21:30", showLoc:"Stage", liveBand:"20:15–21:00 · 21:30–22:15"}
 ];
 const TEAM_ROLES={1:"Manager",2:"Entertainer · Social Media",3:"DJ"};
-function roleForNumber(n){ return TEAM_ROLES[n]||"Entertainer"; }
+/* Find the team member wearing a shirt number. The v7 week board called this
+   helper but it was never defined, which crashed the Command Center and the
+   Weekly Planner as soon as they were opened. */
+function staffByNumber(n){
+  const num=Number(n);
+  if(!num) return null;
+  return (S.users||[]).find(u=>Number(u.number||(u.role==="manager"?1:0))===num)||null;
+}
+function roleForNumber(n){
+  const custom=(S.settings&&S.settings.teamRoles)||{};
+  const v=custom[String(n)];
+  if(typeof v==="string"&&v.trim()) return v.trim();
+  return TEAM_ROLES[n]||"Entertainer";
+}
 /* Counts the whole team once — used by the team page and the management export */
 function teamStats(){
   const team=(S.users||[]).filter(u=>u.role==="staff"||u.role==="manager");
@@ -2874,6 +2986,7 @@ function applyPalette(){
 }
 function applySettings(){
   const st=S.settings, root=document.documentElement.style;
+  try{ applyDesignTokens(); }catch(e){}
   applyAutoDark();
   if(applyPalette()){
     const f0=FONTS[st.fontStyle]||FONTS.elegant;
@@ -4540,8 +4653,14 @@ function guest360View(id){
    - anyone on their day off is skipped
    - it is FAIR: whoever has done the least so far goes first, and the
      starting point rotates each day so it is never the same person. */
-const NO_ACTIVITY_NUMBERS=[1,3];          // manager and DJ
-function assignableStaff(day){
+const NO_ACTIVITY_NUMBERS=[1,3];          // manager and DJ (factory default)
+/* Manager-editable in Control Center -> Team roles & duty rules */
+function noActivityNums(){
+  const v=(S.settings&&S.settings.noActivity);
+  return Array.isArray(v) ? v.map(Number) : NO_ACTIVITY_NUMBERS;
+}
+/* Superseded by the capability-aware version further down. Kept for reference. */
+function assignableStaffLegacy(day){
   const dp=dayPlanFor(day);
   // Connect to attendance: for today, anyone marked absent (A) or off (O) gets no activity.
   const today=(day===todayIndex()) ? hotelDateStr() : null;
@@ -4549,10 +4668,16 @@ function assignableStaff(day){
     x.username===u.username && String(x.date).slice(0,10)===today && (x.status==="A"||x.status==="O"));
   return (S.users||[])
     .filter(u=>u.role==="staff" && u.number && u.active!==false
-      && !NO_ACTIVITY_NUMBERS.includes(u.number)
+      && !noActivityNums().includes(u.number)
       && !dp.off.includes(u.number)
       && !awayToday(u))
     .sort((a,b)=>(a.number||99)-(b.number||99));
+}
+/* Morning / afternoon boundary — manager-editable in Control Center */
+function slotSplitMin(){
+  const raw=String((S.settings&&S.settings.slotSplit)||"13:00");
+  const m=/^(\d{1,2}):(\d{2})$/.exec(raw);
+  return m ? (Number(m[1])*60+Number(m[2])) : 13*60;
 }
 /* which slot an activity belongs to */
 function activitySlot(a){
@@ -4561,7 +4686,7 @@ function activitySlot(a){
   if(c!=="mAdult") return "other";                        // evening programme
   const w=actWindow(a);
   if(!w) return "other";
-  return w.s0 < 13*60 ? "morning" : "afternoon";
+  return w.s0 < slotSplitMin() ? "morning" : "afternoon";
 }
 /* ===== v5 QUALIFICATION + FAIR RANDOM ALLOCATION =====
    Stored inside app_settings, not the staff database schema, so it works on
@@ -4597,14 +4722,14 @@ function activityGenderRule(a){
 function genderEligibleForActivity(u,a){ const r=activityGenderRule(a); return r==="any" || String(u&&u.gender||"").toLowerCase()===r; }
 function entranceEligible(u){
   if(!u || u.active===false || u.role!=="staff") return false;
-  if(NO_ACTIVITY_NUMBERS.includes(+u.number)) return false;
+  if(noActivityNums().includes(+u.number)) return false;
   const c=userCapability(u); return !c || c.entrance!==false;
 }
 function currentWeekDateForDay(day){ const d=hotelNow(); const monday=new Date(d); monday.setHours(12,0,0,0); monday.setDate(d.getDate()-todayIndex()+day); return monday.getFullYear()+"-"+String(monday.getMonth()+1).padStart(2,"0")+"-"+String(monday.getDate()).padStart(2,"0"); }
 function attendanceUnavailable(u,day){ const date=currentWeekDateForDay(day); return (S.staffAtt||[]).some(x=>String(x.username).toLowerCase()===String(u.username).toLowerCase()&&String(x.date).slice(0,10)===date&&(x.status==="A"||x.status==="O")); }
 function assignableStaff(day){
   const dp=dayPlanFor(day);
-  return (S.users||[]).filter(u=>u.role==="staff"&&u.number&&u.active!==false&&!NO_ACTIVITY_NUMBERS.includes(+u.number)&&!dp.off.includes(+u.number)&&!attendanceUnavailable(u,day)).sort((a,b)=>(a.number||99)-(b.number||99));
+  return (S.users||[]).filter(u=>u.role==="staff"&&u.number&&u.active!==false&&!noActivityNums().includes(+u.number)&&!dp.off.includes(+u.number)&&!attendanceUnavailable(u,day)).sort((a,b)=>(a.number||99)-(b.number||99));
 }
 function eligibleStaffForActivity(day,a){ return assignableStaff(day).filter(u=>canRunActivity(u,a)&&genderEligibleForActivity(u,a)); }
 function plannerHistory(){ return Array.isArray(S.settings&&S.settings.plannerHistory)?S.settings.plannerHistory:[]; }
@@ -7212,13 +7337,18 @@ function buildExportSets(kind){
 }
 const EXPORT_KINDS=["todayplan","dayplan","monthatt","teamsummary","program","guests","bookings","requests","chat","tickets","feedback","fbdaily","fbweekly","fbmonthly","users"];
 function exportKindLabel(k){ return {todayplan:t("todayPlanExp"),monthatt:t("attExport"),teamsummary:t("teamSummary"),program:t("manage"),dayplan:t("dayPlan"),guests:t("expGuests"),bookings:t("expBookings"),requests:t("expRequests"),chat:t("expChat"),tickets:t("expTickets"),feedback:t("expFeedback"),fbdaily:t("fb_daily"),fbweekly:t("fb_weekly"),fbmonthly:t("fb_monthly"),users:t("expUsers")}[k]; }
-const REPORT_META={
+const REPORT_META_DEF={
   department:"Entertainment Department",
   departmentHead:"Mr. Hassan Amer",
   documentClass:"OFFICIAL MANAGEMENT REPORT",
   confidentiality:"Internal Hotel Management Use",
-  version:"1.0"
+  version:"1.0",
+  footer:""
 };
+/* Manager-editable in Control Center -> Report identity */
+function reportMeta(){
+  return Object.assign({}, REPORT_META_DEF, (S.settings&&S.settings.reportMeta)||{});
+}
 function reportHotelName(){ return (S.settings&&S.settings.name)||"Hotel"; }
 function reportDateLabel(){
   try{return new Intl.DateTimeFormat(lang||"en",{year:"numeric",month:"long",day:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date());}
@@ -7228,12 +7358,12 @@ function safeFilePart(x){return String(x||"").trim().replace(/[^a-zA-Z0-9_-]+/g,
 function reportFileName(kind){return safeFilePart(reportHotelName())+"_Entertainment_"+kind+"_"+todayISO();}
 function datasetMatrix(ds){
   return [
-    [REPORT_META.documentClass],
+    [reportMeta().documentClass],
     [reportHotelName()],
-    [REPORT_META.department],
-    ["Department Head",REPORT_META.departmentHead],
+    [reportMeta().department],
+    ["Department Head",reportMeta().departmentHead],
     ["Generated",reportDateLabel()],
-    ["Classification",REPORT_META.confidentiality],
+    ["Classification",reportMeta().confidentiality],
     [],
     [ds.title],
     ds.headers,
@@ -7262,7 +7392,7 @@ async function exportExcelSets(sets,fname){
   const ok=await loadXLSX();
   if(ok){
     const wb=XLSX.utils.book_new();
-    wb.Props={Title:REPORT_META.documentClass,Subject:REPORT_META.department,Author:REPORT_META.departmentHead,Company:reportHotelName(),Comments:REPORT_META.confidentiality,CreatedDate:new Date()};
+    wb.Props={Title:reportMeta().documentClass,Subject:reportMeta().department,Author:reportMeta().departmentHead,Company:reportHotelName(),Comments:reportMeta().confidentiality,CreatedDate:new Date()};
     sets.forEach(ds=>{
       const matrix=datasetMatrix(ds), ws=XLSX.utils.aoa_to_sheet(matrix);
       const lastCol=Math.max(0,ds.headers.length-1), lastRow=matrix.length-1;
@@ -7312,11 +7442,11 @@ function exportPdfSets(sets,titleText){
     .signature{margin-top:20px;width:260px;border-top:1px solid #70798A;padding-top:5px;color:#1F3657;font-size:9px}
     @media print{.report-head,.section-title,thead{break-inside:avoid}.section{break-before:auto}}
   `;
-  let html=`<div class="report-head"><div class="official">${esc2(REPORT_META.documentClass)}</div>
-    <div class="eyebrow">${esc2(REPORT_META.confidentiality)}</div><h1 class="hotel">${esc2(reportHotelName())}</h1>
-    <div class="dept">${esc2(REPORT_META.department)}</div>
+  let html=`<div class="report-head"><div class="official">${esc2(reportMeta().documentClass)}</div>
+    <div class="eyebrow">${esc2(reportMeta().confidentiality)}</div><h1 class="hotel">${esc2(reportHotelName())}</h1>
+    <div class="dept">${esc2(reportMeta().department)}</div>
     <div class="meta"><div><span>Report</span><b>${esc2(titleText)}</b></div><div><span>Generated</span><b>${esc2(reportDateLabel())}</b></div>
-    <div><span>Department Head</span><b>${esc2(REPORT_META.departmentHead)}</b></div><div><span>Document Version</span><b>${esc2(REPORT_META.version)}</b></div></div></div>`;
+    <div><span>Department Head</span><b>${esc2(reportMeta().departmentHead)}</b></div><div><span>Document Version</span><b>${esc2(reportMeta().version)}</b></div></div></div>`;
   sets.forEach(ds=>{
     html+=`<section class="section"><div class="section-title"><h2>${esc2(ds.title)}</h2><div class="count">${ds.rows.length} record${ds.rows.length===1?"":"s"}</div></div><div class="table-wrap"><table><thead><tr>`
       +ds.headers.map(h=>"<th>"+esc2(h)+"</th>").join("")+"</tr></thead><tbody>";
@@ -7324,8 +7454,8 @@ function exportPdfSets(sets,titleText){
     if(!ds.rows.length) html+="<tr><td class=empty colspan="+Math.max(1,ds.headers.length)+">No records for this period</td></tr>";
     html+="</tbody></table></div></section>";
   });
-  html+=`<div class="signature">Prepared under the responsibility of <b>${esc2(REPORT_META.departmentHead)}</b><br>${esc2(REPORT_META.department)}</div>
-    <div class="footer"><span>${esc2(reportHotelName())} · ${esc2(REPORT_META.department)}</span><span>${esc2(REPORT_META.confidentiality)}</span></div>`;
+  html+=`<div class="signature">Prepared under the responsibility of <b>${esc2(reportMeta().departmentHead)}</b><br>${esc2(reportMeta().department)}</div>
+    <div class="footer"><span>${esc2(reportHotelName())} · ${esc2(reportMeta().department)}</span><span>${esc2(reportMeta().confidentiality)}</span></div>`;
   const w=window.open("","_blank");
   if(!w){ toast(t("aiErr")); return; }
   w.document.write("<html><head><title>"+esc2(titleText)+"</title><meta charset=utf-8><style>"+css+"</style></head><body>"+html+"<scr"+"ipt>setTimeout(function(){window.print();},450);<\/scr"+"ipt></body></html>");
@@ -7334,7 +7464,7 @@ function exportPdfSets(sets,titleText){
 function openExportModal(preselect){
   let picked=new Set(preselect?[preselect]:["todayplan"]);
   const wrap=baseModal(`
-    <div class="export-brand"><div class="export-seal">HA</div><div><div class="export-kicker">${REPORT_META.documentClass}</div><h3>${ic("download",20)} ${t("exportData")}</h3><p>${REPORT_META.department} · ${REPORT_META.departmentHead}</p></div></div>
+    <div class="export-brand"><div class="export-seal">HA</div><div><div class="export-kicker">${reportMeta().documentClass}</div><h3>${ic("download",20)} ${t("exportData")}</h3><p>${reportMeta().department} · ${reportMeta().departmentHead}</p></div></div>
     <p class="mini" style="margin:10px 0 12px">${t("exportWhat")}</p>
     <div class="explist">
       ${EXPORT_KINDS.map(k=>`<label class="exp-it"><input type="checkbox" data-exp="${k}" ${(preselect===k||(!preselect&&k==="todayplan"))?"checked":""}> <span>${exportKindLabel(k)}</span></label>`).join("")}
@@ -7356,7 +7486,7 @@ function openExportModal(preselect){
   };
   wrap.querySelector("#exp-pdf").onclick=()=>{
     sync(); const sets=gather(); if(!sets.length) return;
-    exportPdfSets(sets,reportHotelName()+" — "+REPORT_META.department); wrap.remove();
+    exportPdfSets(sets,reportHotelName()+" — "+reportMeta().department); wrap.remove();
   };
 }
 async function exportReport(){
@@ -9047,8 +9177,870 @@ function v7WeeklyPlannerView(){const vars=buildPlanVariants('week',todayIndex(),
 function v7ApprovalView(){const st=S.settings.weekWorkflow||{status:'draft',updatedAt:''};return `<div class="screen fadein">${topBar('Approval Center',S.session.name)}${hubBack()}<div class="card"><label>Current weekly schedule status</label><h2 style="margin:6px 0 12px;text-transform:capitalize">${esc(st.status||'draft')}</h2><div class="approval"><button class="btn sm ghost" data-v7status="draft">Draft</button><button class="btn sm ghost" data-v7status="review">Review</button><button class="btn sm ghost" data-v7status="approved">Approve</button><button class="btn sm" data-v7status="published">Publish to Team</button></div><p class="mini" style="margin-top:12px">Published schedules are the official team plan. Later changes should be reviewed and published again.</p></div><h2 class="lux-section-title">Publication safeguards</h2><div class="warn-list">${v7Warnings().length?v7Warnings().map(x=>`<div class="warn-item bad">⚠️ <span>${esc(x.text)}</span></div>`).join(''):`<div class="warn-item good">✓ No blocking warnings detected.</div>`}</div></div>`}
 function v7AuditView(){const h=v7Audit().slice().reverse();return `<div class="screen fadein">${topBar('Audit History',S.session.name)}${hubBack()}<div class="card">${h.length?h.map(x=>`<div class="audit-row"><b>${esc(x.action)}</b><small>${esc(x.user)} · ${new Date(x.at).toLocaleString()}</small>${x.detail?`<div class="mini">${esc(x.detail)}</div>`:''}</div>`).join(''):'<p class="mini">Changes will appear here after v7 actions are used.</p>'}</div></div>`}
 const __v6ManagerView=managerView;managerView=function(){if(S.tab==='command')return v7CommandView();if(S.tab==='weekplanner')return v7WeeklyPlannerView();if(S.tab==='approval')return v7ApprovalView();if(S.tab==='audit')return v7AuditView();return __v6ManagerView()}
-const __v6SettingsHub=settingsHubView;settingsHubView=function(){const base=__v6SettingsHub();return base.replace('<div class="mgr-actions">','<div class="mgr-actions"><button data-hub="command">'+ic('sparkles',19)+'<span><b>Operations Command Center</b><small>Warnings, week, approval & audit</small></span></button><button data-hub="weekplanner">'+ic('calendar',19)+'<span><b>Master Weekly Planner</b><small>Build My Week & plan alternatives</small></span></button>')}
+const __v6SettingsHub=settingsHubView;settingsHubView=function(){const base=__v6SettingsHub();return base.replace('<div class="mgr-actions">','<div class="mgr-actions"><button data-hub="command">'+ic('sparkle',19)+'<span><b>Operations Command Center</b><small>Warnings, week, approval & audit</small></span></button><button data-hub="weekplanner">'+ic('calendar',19)+'<span><b>Master Weekly Planner</b><small>Build My Week & plan alternatives</small></span></button>')}
 const __v6Wire=wireCommon;wireCommon=function(){__v6Wire();document.querySelectorAll('[data-v7go]').forEach(b=>b.onclick=()=>{const x=b.dataset.v7go;S.tab=x==='week'?'weekplanner':x==='publish'?'approval':x==='audit'?'audit':x;render()});const gen=document.getElementById('v7-generate');if(gen)gen.onclick=()=>render();document.querySelectorAll('[data-v7plan]').forEach(b=>b.onclick=async()=>{const idx=+b.dataset.v7plan,vars=buildPlanVariants('week',todayIndex(),false),c=vars[idx]||vars[0];if(await applyPlanningCandidate(c)){await v7Log('Weekly plan applied',`Plan ${String.fromCharCode(65+idx)} · score ${v7PlanScore(c)}%`);toast('Weekly plan applied');render()}});document.querySelectorAll('[data-v7status]').forEach(b=>b.onclick=async()=>{const status=b.dataset.v7status;if(status==='published'&&v7Warnings().length&&!confirm('There are operational warnings. Publish anyway?'))return;const weekWorkflow={status,updatedAt:new Date().toISOString(),by:S.session.name};await DB.saveSettings({...S.settings,weekWorkflow});S.settings.weekWorkflow=weekWorkflow;await v7Log('Schedule status changed',status);toast('Schedule: '+status);render()})}
+</script>
+<script id="control-center-v8">
+/* ==========================================================================
+   CONTROL CENTER v8
+   One place where the manager controls EVERYTHING: wording, design,
+   operation rules, programme structure, report identity and data.
+   Purely additive — it wraps existing functions, it never replaces them.
+   ========================================================================== */
+const V8_STR={
+en:{
+  ccTab:"Control Center", ccKick:"FULL CONTROL", ccHead:"Everything in this app is yours to change",
+  ccSub:"Wording, design, rules, programme, reports and data — no code, no developer.",
+  ccSearch:"Search a setting…", ccNothing:"Nothing matches that search.",
+  ccSecContent:"Content & wording", ccSecDesign:"Design & appearance", ccSecOps:"Operation rules",
+  ccSecPeople:"People & programme", ccSecReports:"Reports & data", ccSecSystem:"System",
+  ccStatSettings:"Settings", ccStatCustom:"Your changes", ccStatTeam:"Team", ccStatActs:"Activities",
+
+  ccWording:"Words & texts", ccWordingSub:"Rename any text in the app, in every language",
+  ccDesign:"Design studio", ccDesignSub:"Corners, spacing, shadows, backgrounds, custom style",
+  ccRoles:"Team roles & duty rules", ccRolesSub:"Shirt numbers, who never gets activities, morning/afternoon split",
+  ccProgram:"Programme structure", ccProgramSub:"Rename operations and categories, change cover photos",
+  ccReports:"Report identity", ccReportsSub:"Department, head of department, classification, version",
+  ccBackup:"Backup & restore", ccBackupSub:"Save everything to a file, restore it, or start fresh",
+  ccStandards:"Daily standards", ccStandardsSub:"The fixed times of the working day",
+  ccRules:"Work rules", ccRulesSub:"Do, don't, appearance and consequence",
+  ccDayOp:"Daily operation", ccDayOpSub:"Day off, entrance, theme, dress code, show",
+  ccHotelInfo:"Hotel information", ccHotelInfoSub:"Opening times, WiFi and guest answers",
+
+  ccEditLang:"Editing language", ccAllLangs:"Use this text in every language",
+  ccDefaultIs:"Default", ccResetOne:"Reset", ccResetAll:"Reset all wording", ccSaveAll:"Save changes",
+  ccChanged:"changed", ccWordHint:"Type your own words on the right. Empty means the original text is used.",
+  ccWordGroups:"Most used texts", ccWordAll:"All texts",
+  ccGrpLogin:"Login & identity", ccGrpMenu:"Menu & sections", ccGrpProgram:"Programme",
+  ccGrpTeam:"Team & work day", ccGrpStandards:"Daily standards", ccGrpGuest:"Guest messages",
+  ccGrpSystem:"Buttons & system messages",
+
+  ccRadius:"Corner rounding", ccDensity:"Spacing", ccDensCompact:"Compact", ccDensNormal:"Normal",
+  ccDensSpacious:"Spacious", ccShadow:"Shadows", ccShFlat:"Flat", ccShSoft:"Soft", ccShDeep:"Deep",
+  ccBorders:"Card outlines", ccAppBg:"App background photo", ccLoginBg:"Login background photo",
+  ccStrength:"Photo strength", ccCustomCss:"Advanced style (CSS)",
+  ccCustomCssHint:"Only for advanced use. Leave it empty if you are not sure — a wrong value can break the look.",
+  ccLivePreview:"Changes are shown live. Nothing is saved until you press Save.",
+  ccPreview:"Preview", ccPvTitle:"Sample card", ccPvText:"This is how your cards, buttons and spacing will look.",
+  ccResetDesign:"Reset design", ccRemovePhoto:"Remove photo", ccUploadPhoto:"Upload photo", ccDiscard:"Discard changes",
+
+  ccRoleTitle:"Role name", ccNoActs:"Never gets activities", ccNoActsHint:"Automatic planning skips these shirt numbers — normally the manager (#1) and the DJ (#3).",
+  ccSplit:"Morning / afternoon split", ccSplitHint:"An activity that starts before this time counts as morning, after it as afternoon.",
+  ccAddNumber:"Add shirt number", ccNotInTeam:"no account yet",
+
+  ccOperations:"Operations", ccCategories:"Categories", ccCover:"Cover photo",
+  ccProgHint:"These names appear everywhere guests and the team read the programme.",
+
+  ccRepDept:"Department", ccRepHead:"Head of department", ccRepClass:"Document class",
+  ccRepConf:"Classification", ccRepVersion:"Document version", ccRepFooter:"Footer note",
+  ccRepHint:"This is the header printed on every official PDF and Excel report.",
+
+  ccDownload:"Download backup file", ccDownloadSub:"Everything you configured, in one file",
+  ccRestore:"Restore from a file", ccRestoreSub:"Choose a backup file to put everything back",
+  ccRestoreQ:"Replace all settings with this file?", ccRestoreOk:"Settings restored",
+  ccRestoreBad:"That file is not a valid backup",
+  ccFactory:"Reset everything to factory", ccFactoryQ:"Reset every setting to the original?",
+  ccFactorySub:"Wording, design, rules and menus go back to the original",
+  ccWipeWording:"Clear all wording changes", ccWipeDesign:"Clear all design changes",
+  ccConnection:"Connection", ccConnected:"Connected to the database", ccOffline:"Working offline",
+  ccRowCounts:"Loaded records", ccSavedOk:"Saved", ccBackupMade:"Backup file created"
+},
+de:{
+  ccTab:"Kontrollzentrum", ccKick:"VOLLE KONTROLLE", ccHead:"Alles in dieser App kannst du selbst ändern",
+  ccSub:"Texte, Design, Regeln, Programm, Berichte und Daten — ohne Code, ohne Entwickler.",
+  ccSearch:"Einstellung suchen…", ccNothing:"Dazu wurde nichts gefunden.",
+  ccSecContent:"Inhalte & Texte", ccSecDesign:"Design & Aussehen", ccSecOps:"Betriebsregeln",
+  ccSecPeople:"Team & Programm", ccSecReports:"Berichte & Daten", ccSecSystem:"System",
+  ccWording:"Wörter & Texte", ccWordingSub:"Jeden Text der App umbenennen, in jeder Sprache",
+  ccDesign:"Design-Studio", ccDesignSub:"Ecken, Abstände, Schatten, Hintergründe, eigener Stil",
+  ccRoles:"Rollen & Dienstregeln", ccRolesSub:"Shirtnummern, wer nie Aktivitäten bekommt, Vormittag/Nachmittag",
+  ccProgram:"Programmstruktur", ccProgramSub:"Bereiche und Kategorien umbenennen, Titelbilder ändern",
+  ccReports:"Berichtskopf", ccReportsSub:"Abteilung, Abteilungsleiter, Einstufung, Version",
+  ccBackup:"Sicherung & Wiederherstellung", ccBackupSub:"Alles in eine Datei sichern oder zurückholen",
+  ccSaveAll:"Änderungen speichern", ccResetAll:"Alle Texte zurücksetzen", ccPreview:"Vorschau"
+},
+ar:{
+  ccTab:"مركز التحكم", ccKick:"تحكم كامل", ccHead:"كل شيء في التطبيق يمكنك تغييره بنفسك",
+  ccSub:"النصوص والتصميم والقواعد والبرنامج والتقارير — بدون برمجة.",
+  ccSearch:"ابحث عن إعداد…", ccNothing:"لا توجد نتائج.",
+  ccSecContent:"المحتوى والنصوص", ccSecDesign:"التصميم والمظهر", ccSecOps:"قواعد التشغيل",
+  ccSecPeople:"الفريق والبرنامج", ccSecReports:"التقارير والبيانات", ccSecSystem:"النظام",
+  ccWording:"الكلمات والنصوص", ccWordingSub:"غيّر أي نص في التطبيق بكل اللغات",
+  ccDesign:"استوديو التصميم", ccDesignSub:"الزوايا والمسافات والظلال والخلفيات",
+  ccRoles:"الأدوار وقواعد الدوام", ccRolesSub:"أرقام القمصان ومن لا يُسند له نشاط",
+  ccProgram:"هيكل البرنامج", ccProgramSub:"إعادة تسمية الأقسام والفئات",
+  ccReports:"هوية التقارير", ccReportsSub:"القسم، رئيس القسم، التصنيف، الإصدار",
+  ccBackup:"نسخ احتياطي واستعادة", ccBackupSub:"احفظ كل الإعدادات في ملف أو استعدها",
+  ccSaveAll:"حفظ التغييرات", ccResetAll:"إعادة ضبط النصوص", ccPreview:"معاينة"
+}
+};
+Object.keys(V8_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V8_STR[l]); });
+
+/* ---------------- design tokens ---------------- */
+const V8_DESIGN_DEF={radius:16, density:"normal", shadow:"soft", cardBorder:true,
+  bgImage:"", bgStrength:18, loginImage:"", loginStrength:35, customCss:""};
+function v8Design(extra){
+  return Object.assign({}, V8_DESIGN_DEF, (S.settings&&S.settings.design)||{}, extra||{});
+}
+function v8SafeUrl(u){ return String(u||"").replace(/["'()\\]/g,"").trim(); }
+function applyDesignTokens(over){
+  if(typeof document==="undefined"||!document.documentElement) return;
+  const d=v8Design(over), root=document.documentElement.style;
+  const R=Math.max(0,Math.min(30,Number(d.radius)||0));
+  root.setProperty("--r-xs",Math.round(R*0.38)+"px");
+  root.setProperty("--r-sm",Math.round(R*0.62)+"px");
+  root.setProperty("--r-md",Math.round(R*0.81)+"px");
+  root.setProperty("--r-lg",Math.round(R)+"px");
+  root.setProperty("--r-xl",Math.round(R*1.25)+"px");
+  root.setProperty("--r-2xl",Math.round(R*1.5)+"px");
+  root.setProperty("--radius",Math.round(R*1.12)+"px");
+  const dens={compact:0.8,normal:1,spacious:1.22}[d.density]||1;
+  [[1,4],[2,8],[3,12],[4,16],[5,20],[6,24],[8,32],[10,40]].forEach(([k,v])=>
+    root.setProperty("--sp-"+k, Math.max(2,Math.round(v*dens))+"px"));
+  const SH={
+    flat:["0 1px 2px -1px rgba(20,25,35,.06)","0 1px 3px -1px rgba(20,25,35,.08)","0 2px 6px -2px rgba(20,25,35,.10)"],
+    soft:["0 1px 3px -1px rgba(38,24,14,.10)","0 2px 8px -4px rgba(38,24,14,.10),0 12px 30px -18px rgba(38,24,14,.22)","0 4px 14px -6px rgba(38,24,14,.16),0 18px 40px -20px rgba(38,24,14,.28)"],
+    deep:["0 2px 6px -2px rgba(20,25,35,.18)","0 6px 18px -8px rgba(20,25,35,.28),0 18px 44px -22px rgba(20,25,35,.40)","0 10px 28px -10px rgba(20,25,35,.34),0 26px 60px -26px rgba(20,25,35,.5)"]
+  }[d.shadow]||null;
+  if(SH){ root.setProperty("--sh-1",SH[0]); root.setProperty("--sh-2",SH[1]); root.setProperty("--sh-3",SH[2]); root.setProperty("--shadow",SH[1]); }
+  document.documentElement.setAttribute("data-cardborder", d.cardBorder===false?"off":"on");
+  const bg=v8SafeUrl(d.bgImage);
+  root.setProperty("--app-bg-image", bg?'url("'+bg+'")':"none");
+  root.setProperty("--app-bg-strength", bg?String(Math.max(0,Math.min(100,Number(d.bgStrength)||0))/100):"0");
+  const lg=v8SafeUrl(d.loginImage);
+  root.setProperty("--login-bg-image", lg?'url("'+lg+'")':"none");
+  root.setProperty("--login-bg-strength", lg?String(Math.max(0,Math.min(100,Number(d.loginStrength)||0))/100):"0");
+  let tag=document.getElementById("v8-custom-css");
+  if(!tag){ tag=document.createElement("style"); tag.id="v8-custom-css"; (document.head||document.body||document.documentElement).appendChild(tag); }
+  tag.textContent=String(d.customCss||"").slice(0,20000);
+}
+
+/* ---------------- wording ---------------- */
+function v8LabelStore(){ const l=(S.settings&&S.settings.labels)||{}; return (l&&typeof l==="object")?l:{}; }
+function v8DefaultText(key){
+  const d=(DICT.en&&DICT.en[key]);
+  const cur=(DICT[S.lang]&&DICT[S.lang][key]);
+  const v=(typeof cur==="string")?cur:(typeof d==="string"?d:"");
+  return v;
+}
+function v8OverrideOf(key,lang){
+  const st=v8LabelStore();
+  const a=st[lang]&&st[lang][key];
+  if(typeof a==="string") return a;
+  const b=st.all&&st.all[key];
+  return (typeof b==="string")?b:"";
+}
+function v8CountOverrides(){
+  const st=v8LabelStore(); let n=0;
+  Object.keys(st).forEach(l=>{ const o=st[l]; if(o&&typeof o==="object") n+=Object.keys(o).length; });
+  return n;
+}
+const V8_WORD_GROUPS=[
+  ["ccGrpLogin",["appSub","signin","welcome","guest","staff","manager","room","name","phone","user","pass","otherUsers","backToGuest","loginErr","stayEnded","accountOff"]],
+  ["ccGrpMenu",["home","program","bookings","myBookings","myStay","team","tickets","chat","requests","quizTab","galleryTab","hotelInfoTab","weatherTab","mapTab","busTimes","settingsHub","myWorkDay","dayPlan","secProgram","secBookings","secConnect","secManage","secTeamwork","secGuests","secSettings"]],
+  ["ccGrpProgram",["todayProgram","week","highlight","opDaytime","opDayEvents","opEvening","opSpecial","book","booked","full","waitlist","cancel","seatsLeft","capacity","location","time","entertainer","category","noneToday","persons"]],
+  ["ccGrpTeam",["dayOff","entranceDuty","dressCode","restaurantTheme","dailyStandards","eveningShowLbl","liveBandLbl","makeupPractice","practiceToday","practiceInline","practiceHead","practiceWindow","makeupWindow","youAreOff","youHaveEntrance","shirtNumber","noNumber","djSchedule","dj_wed","dj_thu","dj_other","teamPlanFull","workingToday","dayOffToday","totalTeam"]],
+  ["ccGrpStandards",["std_breakfast","std_mmeet","std_start","std_lunch","std_fmorning","std_ameet","std_fafternoon","std_dinner","std_stage","std_emeet","std_yoga","std_fevening","n_sport","n_mact","n_practice","n_aact","n_yogahost","n_eshow","n_special"]],
+  ["ccGrpGuest",["reviews","reviewsSub","followUs","payNote","thankYou","shareExp","howWasIt","noBookings","noFavs","quizNone","noPhotos","hotelInfoHint","galleryHint","qrHint","welcome"]],
+  ["ccGrpSystem",["save","saved","close","cancelBtn","confirmTitle","cannotUndo","deleted","errSave","errNet","offlineMsg","backOnlineMsg","loadingMsg","fieldRequired","invalidTime","invalidNumber","tooManyTries"]]
+];
+function v8AllKeys(){
+  const out=[];
+  Object.keys(DICT.en||{}).forEach(k=>{ if(typeof DICT.en[k]==="string") out.push(k); });
+  return out.sort();
+}
+
+/* ---------------- roles & numbers ---------------- */
+function v8TeamNumbers(){
+  const nums=new Set();
+  Object.keys(TEAM_ROLES).forEach(n=>nums.add(+n));
+  (S.users||[]).forEach(u=>{ const n=+(u.number||(u.role==="manager"?1:0)); if(n) nums.add(n); });
+  Object.keys((S.settings&&S.settings.teamRoles)||{}).forEach(n=>{ if(+n) nums.add(+n); });
+  noActivityNums().forEach(n=>{ if(+n) nums.add(+n); });
+  if(nums.size<10) for(let i=1;i<=10;i++) nums.add(i);
+  return [...nums].sort((a,b)=>a-b);
+}
+function v8NameForNumber(n){
+  const u=(S.users||[]).find(x=>+(x.number||(x.role==="manager"?1:0))===+n);
+  return u?(u.display_name||u.username||""):"";
+}
+
+/* ---------------- transient editor state ---------------- */
+function v8S(){
+  if(!S.v8) S.v8={q:"", wq:"", wall:false, wlang:"", pending:{}, design:null};
+  return S.v8;
+}
+function v8Card(target,icon,title,sub,kind){
+  const at = kind==="act" ? `data-v8act="${target}"` : `data-hub="${target}"`;
+  const find=(String(title)+" "+String(sub)).toLowerCase().replace(/"/g,"");
+  return `<button class="cc-card" ${at} data-ccfind="${esc(find)}">
+    <span class="cc-ic">${ic(icon,19)}</span>
+    <span class="cc-tx"><b>${esc(title)}</b><small>${esc(sub)}</small></span>
+  </button>`;
+}
+function v8ControlView(){
+  const sets=Object.keys(S.settings||{}).length;
+  const groups=[
+    [t("ccSecContent"),[
+      ["set:wording","pen",t("ccWording"),t("ccWordingSub"),"hub"],
+      ["builder","menu",t("setMenus"),t("setMenusSub"),"hub"],
+      ["set:program","grid",t("ccProgram"),t("ccProgramSub"),"hub"],
+      ["hotelinfo","building",t("ccHotelInfo"),t("ccHotelInfoSub"),"hub"]
+    ]],
+    [t("ccSecDesign"),[
+      ["set:design","palette",t("ccDesign"),t("ccDesignSub"),"hub"],
+      ["set:theme","sparkle",t("setTheme"),t("setThemeSub"),"hub"],
+      ["set:brand","image",t("setBrand"),t("setBrandSub"),"hub"]
+    ]],
+    [t("ccSecOps"),[
+      ["set:roles","users",t("ccRoles"),t("ccRolesSub"),"hub"],
+      ["standards","clock",t("ccStandards"),t("ccStandardsSub"),"act"],
+      ["rules","star",t("ccRules"),t("ccRulesSub"),"act"],
+      ["dayplan","calendar",t("ccDayOp"),t("ccDayOpSub"),"hub"]
+    ]],
+    [t("ccSecPeople"),[
+      ["team","user",t("teamAccounts"),t("teamOverview"),"hub"],
+      ["program","flag",t("manage"),t("activities"),"hub"],
+      ["quiz","trophy",t("quizCenter"),t("quizToday"),"hub"]
+    ]],
+    [t("ccSecReports"),[
+      ["set:reports","file",t("ccReports"),t("ccReportsSub"),"hub"],
+      ["export","download",t("setData"),t("setDataSub"),"hub"],
+      ["set:backup","shield",t("ccBackup"),t("ccBackupSub"),"hub"]
+    ]],
+    [t("ccSecSystem"),[
+      ["set:features","check",t("setFeatures"),t("setFeaturesSub"),"hub"],
+      ["set:notif","bell",t("setNotif"),t("setNotifSub"),"hub"],
+      ["set:links","globe",t("setLinksT"),t("setLinksSub"),"hub"],
+      ["set:location","pin",t("setLocation"),t("setLocationSub"),"hub"],
+      ["bus","bus",t("busItem"),t("busSchedule"),"hub"],
+      ["qr","qr",t("qrTab"),t("qrHint"),"hub"],
+      ["set:advanced","lock",t("setAdvanced"),t("setAdvancedSub"),"hub"]
+    ]]
+  ];
+  return `<div class="screen fadein">
+    ${topBar(t("ccTab"),S.session.name)}
+    <div class="cc-hero">
+      <div class="cc-kick">${esc(t("ccKick"))}</div>
+      <h2>${esc(t("ccHead"))}</h2>
+      <p>${esc(t("ccSub"))}</p>
+      <div class="cc-stats">
+        <span>${sets}<small>${esc(t("ccStatSettings"))}</small></span>
+        <span>${v8CountOverrides()}<small>${esc(t("ccStatCustom"))}</small></span>
+        <span>${(S.users||[]).length}<small>${esc(t("ccStatTeam"))}</small></span>
+        <span>${(S.activities||[]).length}<small>${esc(t("ccStatActs"))}</small></span>
+      </div>
+    </div>
+    <div class="cc-search"><input id="cc-q" placeholder="${esc(t("ccSearch"))}" value="${esc(v8S().q)}"></div>
+    <div id="cc-groups">
+      ${groups.map(([head,items])=>`<div class="cc-group" data-ccgroup>
+        <h3>${esc(head)}</h3>
+        <div class="cc-grid">${items.map(it=>v8Card(it[0],it[1],it[2],it[3],it[4])).join("")}</div>
+      </div>`).join("")}
+    </div>
+    <p class="cc-none" id="cc-noneg" style="display:none">${esc(t("ccNothing"))}</p>
+  </div>`;
+}
+
+/* ---------------- wording editor ---------------- */
+function v8WordRows(keys,lang){
+  return keys.map(k=>{
+    const def=v8DefaultText(k);
+    if(typeof def!=="string") return "";
+    const pend=v8S().pending;
+    const val=(k in pend)?pend[k]:v8OverrideOf(k,lang);
+    const changed=String(val||"").trim()!=="";
+    return `<div class="cc-row">
+      <span class="cc-lb"><b class="${changed?"cc-changed":""}">${esc(def||k)}</b><small>${esc(k)}</small></span>
+      <span class="cc-in"><input class="cc-word" data-key="${esc(k)}" value="${esc(val||"")}" placeholder="${esc(def||"")}"></span>
+      <button class="btn sm ghost cc-wreset" data-key="${esc(k)}" type="button">${ic("back",14)}</button>
+    </div>`;
+  }).join("");
+}
+function v8WordingView(){
+  const st=v8S();
+  const lang=st.wlang||S.lang;
+  const q=String(st.wq||"").trim().toLowerCase();
+  let body="";
+  if(q){
+    const hits=v8AllKeys().filter(k=>{
+      const def=String(v8DefaultText(k)||"").toLowerCase();
+      return k.toLowerCase().includes(q)||def.includes(q);
+    }).slice(0,300);
+    body=hits.length
+      ? `<div class="card"><h3>${esc(t("ccWordAll"))} <span class="cc-tag">${hits.length}</span></h3>${v8WordRows(hits,lang)}</div>`
+      : `<p class="cc-none">${esc(t("ccNothing"))}</p>`;
+  }else{
+    body=V8_WORD_GROUPS.map(([head,keys])=>{
+      const seen=[...new Set(keys)].filter(k=>typeof v8DefaultText(k)==="string");
+      return `<div class="card"><h3>${esc(t(head))}</h3>${v8WordRows(seen,lang)}</div>`;
+    }).join("");
+  }
+  const langOpts=LANGS.map(([l,label])=>`<option value="${l}" ${l===lang?"selected":""}>${esc(label)}</option>`).join("");
+  return `<div class="screen fadein">
+    ${topBar(t("ccWording"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="cc-note">${esc(t("ccWordHint"))}</div>
+      <div class="cc-kv">
+        <div><label>${esc(t("ccEditLang"))}</label><select id="cc-wlang">${langOpts}</select></div>
+        <div><label>${esc(t("ccSearch"))}</label><input id="cc-wq" value="${esc(st.wq||"")}" placeholder="${esc(t("ccSearch"))}"></div>
+      </div>
+      <label class="cc-check" style="margin-top:10px"><input type="checkbox" id="cc-wall" ${st.wall?"checked":""}> <span>${esc(t("ccAllLangs"))}</span></label>
+      ${body}
+      <div class="cc-bar">
+        <button class="btn" id="cc-wsave">${ic("check",16)} ${esc(t("ccSaveAll"))}</button>
+        <button class="btn ghost" id="cc-wreset-all">${ic("trash",16)} ${esc(t("ccResetAll"))}</button>
+      </div>
+    </div>
+  </div>`;
+}
+function v8HarvestWords(){
+  const pend=v8S().pending;
+  document.querySelectorAll(".cc-word").forEach(inp=>{
+    const k=inp.dataset.key; if(!k) return;
+    pend[k]=String(inp.value||"");
+  });
+  return pend;
+}
+async function v8SaveWords(){
+  const st=v8S(), lang=st.wlang||S.lang, pend=v8HarvestWords();
+  const store=JSON.parse(JSON.stringify(v8LabelStore()));
+  const target=st.wall?"all":lang;
+  if(!store[target]||typeof store[target]!=="object") store[target]={};
+  Object.keys(pend).forEach(k=>{
+    const v=String(pend[k]||"").trim();
+    if(v){ store[target][k]=v; }
+    else { delete store[target][k]; if(store[lang]) delete store[lang][k]; }
+  });
+  Object.keys(store).forEach(l=>{ if(!Object.keys(store[l]||{}).length) delete store[l]; });
+  try{
+    await DB.saveSettings({...S.settings, labels:store});
+    st.pending={};
+    toastOk(t("saved")); render();
+  }catch(e){ console.error(e); toastErr(t("errSave")); }
+}
+
+/* ---------------- design studio ---------------- */
+function v8DesignDraft(){
+  const st=v8S();
+  if(!st.design) st.design=v8Design();
+  return st.design;
+}
+function v8Seg(id,value,options){
+  return `<div class="cc-seg" data-ccseg="${id}">${options.map(([v,lb])=>
+    `<button type="button" data-ccv="${esc(v)}" class="${String(value)===String(v)?"on":""}">${esc(lb)}</button>`).join("")}</div>`;
+}
+function v8DesignView(){
+  const d=v8DesignDraft();
+  const photoBox=(kind,url,strength)=>`
+    <div class="card">
+      <h3>${ic("image",17)} ${esc(kind==="bg"?t("ccAppBg"):t("ccLoginBg"))}</h3>
+      ${url?`<img class="cc-thumb" src="${esc(url)}" alt="">`:`<p class="mini">${esc(t("none"))}</p>`}
+      <div class="cc-mini-actions">
+        <button class="btn sm ghost" data-ccpick="${kind}" type="button">${ic("plus",14)} ${esc(t("ccUploadPhoto"))}</button>
+        ${url?`<button class="btn sm ghost" data-ccdrop="${kind}" type="button">${ic("trash",14)} ${esc(t("ccRemovePhoto"))}</button>`:""}
+      </div>
+      <label style="margin-top:10px">${esc(t("ccStrength"))}</label>
+      <div class="cc-range"><input type="range" min="0" max="100" step="5" data-ccrange="${kind==="bg"?"bgStrength":"loginStrength"}" value="${Number(strength)||0}"><b>${Number(strength)||0}%</b></div>
+    </div>`;
+  return `<div class="screen fadein">
+    ${topBar(t("ccDesign"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="cc-note">${esc(t("ccLivePreview"))}</div>
+
+      <div class="card">
+        <h3>${ic("palette",17)} ${esc(t("ccRadius"))}</h3>
+        <div class="cc-range"><input type="range" min="0" max="30" step="1" data-ccrange="radius" value="${Number(d.radius)||0}"><b>${Number(d.radius)||0}px</b></div>
+        <label style="margin-top:12px">${esc(t("ccDensity"))}</label>
+        ${v8Seg("density",d.density,[["compact",t("ccDensCompact")],["normal",t("ccDensNormal")],["spacious",t("ccDensSpacious")]])}
+        <label style="margin-top:12px">${esc(t("ccShadow"))}</label>
+        ${v8Seg("shadow",d.shadow,[["flat",t("ccShFlat")],["soft",t("ccShSoft")],["deep",t("ccShDeep")]])}
+        <label class="cc-check" style="margin-top:12px"><input type="checkbox" id="cc-border" ${d.cardBorder===false?"":"checked"}> <span>${esc(t("ccBorders"))}</span></label>
+        <label style="margin-top:12px">${esc(t("fontSizeLbl"))}</label>
+        ${v8Seg("fontScale",(S.settings.fontScale||"normal"),[["small",t("fsSmall")],["normal",t("fsNormal")],["large",t("fsLarge")],["xl",t("fsXl")]])}
+        <label style="margin-top:12px">${esc(t("styleHead"))}</label>
+        ${v8Seg("fontStyle",(S.settings.fontStyle||"elegant"),[["elegant",t("fontElegant")],["royal",t("fontRoyal")],["modern",t("fontModern")],["soft",t("fontSoft")]])}
+        <label style="margin-top:12px">${esc(t("buttonHead"))}</label>
+        ${v8Seg("buttonStyle",(S.settings.buttonStyle||"rounded"),[["rounded",t("btnRounded")],["pill",t("btnPill")],["square",t("btnSquare")]])}
+      </div>
+
+      <div class="cc-prev">
+        <p class="mini">${esc(t("ccPreview"))}</p>
+        <div class="cc-pv-card">
+          <b>${esc(t("ccPvTitle"))}</b>
+          <p class="mini">${esc(t("ccPvText"))}</p>
+          <button class="btn sm" type="button" id="cc-pvbtn">${esc(t("book"))}</button>
+        </div>
+      </div>
+
+      ${photoBox("bg",d.bgImage,d.bgStrength)}
+      ${photoBox("login",d.loginImage,d.loginStrength)}
+
+      <div class="card">
+        <h3>${ic("shield",17)} ${esc(t("ccCustomCss"))}</h3>
+        <p class="mini">${esc(t("ccCustomCssHint"))}</p>
+        <textarea id="cc-css" rows="5" placeholder=".card{border-width:2px}">${esc(d.customCss||"")}</textarea>
+      </div>
+
+      <div class="cc-bar">
+        <button class="btn" id="cc-dsave">${ic("check",16)} ${esc(t("save"))}</button>
+        <button class="btn ghost" id="cc-ddiscard">${ic("back",16)} ${esc(t("ccDiscard"))}</button>
+        <button class="btn ghost" id="cc-dreset">${ic("trash",16)} ${esc(t("ccResetDesign"))}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- team roles & duty rules ---------------- */
+function v8RolesView(){
+  const nums=v8TeamNumbers(), no=noActivityNums().map(Number);
+  const rows=nums.map(n=>{
+    const person=v8NameForNumber(n);
+    return `<div class="cc-row">
+      <span class="cc-num">${n}</span>
+      <span class="cc-in"><input class="cc-role" data-num="${n}" value="${esc((S.settings.teamRoles||{})[String(n)]||TEAM_ROLES[n]||"")}" placeholder="${esc(TEAM_ROLES[n]||"Entertainer")}">
+        <small class="mini">${person?esc(person):esc(t("ccNotInTeam"))}</small></span>
+      <label class="cc-check"><input type="checkbox" class="cc-noact" data-num="${n}" ${no.includes(n)?"checked":""}> <span class="mini">${esc(t("ccNoActs"))}</span></label>
+    </div>`;
+  }).join("");
+  return `<div class="screen fadein">
+    ${topBar(t("ccRoles"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="cc-note">${esc(t("ccNoActsHint"))}</div>
+      <div class="card"><h3>${ic("users",17)} ${esc(t("shirtNumber"))}</h3>${rows}
+        <button class="btn sm ghost" id="cc-addnum" style="margin-top:10px" type="button">${ic("plus",14)} ${esc(t("ccAddNumber"))}</button>
+      </div>
+      <div class="card">
+        <h3>${ic("clock",17)} ${esc(t("ccSplit"))}</h3>
+        <p class="mini">${esc(t("ccSplitHint"))}</p>
+        <input id="cc-split" value="${esc(S.settings.slotSplit||"13:00")}" placeholder="13:00">
+      </div>
+      <div class="cc-bar">
+        <button class="btn" id="cc-rsave">${ic("check",16)} ${esc(t("save"))}</button>
+        <button class="btn ghost" id="cc-rreset">${ic("back",16)} ${esc(t("resetDefault"))}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- programme structure ---------------- */
+function v8ProgramStructureView(){
+  const lang=S.lang;
+  const opRows=[["daytime","opDaytime"],["dayevents","opDayEvents"],["evening","opEvening"],["special","opSpecial"]]
+    .map(([id,key])=>`<div class="cc-row">
+      <span class="cc-lb"><b>${esc(v8DefaultText(key))}</b><small>${esc(id)}</small></span>
+      <span class="cc-in"><input class="cc-word" data-key="${key}" value="${esc(v8OverrideOf(key,lang))}" placeholder="${esc(v8DefaultText(key))}"></span>
+    </div>`).join("");
+  const catRows=CAT_ORDER.map(c=>{
+    const key="cats."+c;
+    const img=((S.settings.catImages||{})[c])||"";
+    return `<div class="card">
+      <div class="cc-row">
+        <span class="cc-lb"><b>${esc(v8CatDefault(c))}</b><small>${esc(c)}</small></span>
+        <span class="cc-in"><input class="cc-word" data-key="${esc(key)}" value="${esc(v8OverrideOf(key,lang))}" placeholder="${esc(v8CatDefault(c))}"></span>
+      </div>
+      <label style="margin-top:8px">${esc(t("ccCover"))}</label>
+      <img class="cc-thumb" src="${esc(img||catImage(c))}" alt="">
+      <div class="cc-mini-actions">
+        <button class="btn sm ghost" data-cccat="${esc(c)}" type="button">${ic("image",14)} ${esc(t("ccUploadPhoto"))}</button>
+        ${img?`<button class="btn sm ghost" data-cccatdrop="${esc(c)}" type="button">${ic("trash",14)} ${esc(t("ccRemovePhoto"))}</button>`:""}
+      </div>
+    </div>`;
+  }).join("");
+  return `<div class="screen fadein">
+    ${topBar(t("ccProgram"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="cc-note">${esc(t("ccProgHint"))}</div>
+      <div class="card"><h3>${ic("grid",17)} ${esc(t("ccOperations"))}</h3>${opRows}</div>
+      <h3 class="lux-section-title">${esc(t("ccCategories"))}</h3>
+      ${catRows}
+      <div class="cc-bar">
+        <button class="btn" id="cc-psave">${ic("check",16)} ${esc(t("save"))}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- report identity ---------------- */
+function v8ReportsView(){
+  const m=reportMeta();
+  const f=(id,lb,val,ph)=>`<div><label>${esc(lb)}</label><input id="${id}" value="${esc(val||"")}" placeholder="${esc(ph||"")}"></div>`;
+  return `<div class="screen fadein">
+    ${topBar(t("ccReports"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="cc-note">${esc(t("ccRepHint"))}</div>
+      <div class="cc-prev">
+        <div class="cc-rep-head">
+          <div class="cc-rep-cls">${esc(m.documentClass)}</div>
+          <h4>${esc(reportHotelName())}</h4>
+          <div class="cc-rep-line"></div>
+          <small>${esc(m.department)} · ${esc(m.departmentHead)}</small>
+          <small>${esc(m.confidentiality)} · v${esc(m.version)}</small>
+        </div>
+      </div>
+      <div class="card">
+        ${f("cc-rep-dept",t("ccRepDept"),m.department)}
+        ${f("cc-rep-head",t("ccRepHead"),m.departmentHead)}
+        ${f("cc-rep-class",t("ccRepClass"),m.documentClass)}
+        ${f("cc-rep-conf",t("ccRepConf"),m.confidentiality)}
+        ${f("cc-rep-ver",t("ccRepVersion"),m.version)}
+        ${f("cc-rep-foot",t("ccRepFooter"),m.footer)}
+      </div>
+      <div class="cc-bar">
+        <button class="btn" id="cc-repsave">${ic("check",16)} ${esc(t("save"))}</button>
+        <button class="btn ghost" id="cc-represet">${ic("back",16)} ${esc(t("resetDefault"))}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- backup & restore ---------------- */
+function v8BackupView(){
+  const counts=[["activities",(S.activities||[]).length],["users",(S.users||[]).length],
+    ["accounts",(S.accounts||[]).length],["bookings",(S.bookings||[]).length],
+    ["tasks",(S.tasks||[]).length],["feedback",(S.feedback||[]).length]];
+  return `<div class="screen fadein">
+    ${topBar(t("ccBackup"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="card">
+        <h3>${ic("globe",17)} ${esc(t("ccConnection"))}</h3>
+        <p class="mini">${REMOTE?esc(t("ccConnected")):esc(t("ccOffline"))}
+          <span class="cc-tag ${REMOTE?"ok":"warn"}">${REMOTE?"live":"local"}</span></p>
+        <label style="margin-top:10px">${esc(t("ccRowCounts"))}</label>
+        <p class="mini">${counts.map(([k,n])=>esc(k)+": <b>"+n+"</b>").join(" · ")}</p>
+      </div>
+      <div class="card">
+        <h3>${ic("download",17)} ${esc(t("ccDownload"))}</h3>
+        <p class="mini">${esc(t("ccDownloadSub"))}</p>
+        <button class="btn" id="cc-bdl" type="button">${ic("download",16)} ${esc(t("ccDownload"))}</button>
+      </div>
+      <div class="card">
+        <h3>${ic("file",17)} ${esc(t("ccRestore"))}</h3>
+        <p class="mini">${esc(t("ccRestoreSub"))}</p>
+        <input type="file" accept="application/json,.json" id="cc-brestore" class="cc-file">
+      </div>
+      <div class="card">
+        <h3>${ic("trash",17)} ${esc(t("resetDefault"))}</h3>
+        <div class="cc-bar">
+          <button class="btn ghost" id="cc-wipewords" type="button">${esc(t("ccWipeWording"))}</button>
+          <button class="btn ghost" id="cc-wipedesign" type="button">${esc(t("ccWipeDesign"))}</button>
+        </div>
+        <p class="mini">${esc(t("ccFactorySub"))}</p>
+        <button class="btn ghost" id="cc-factory" type="button">${ic("power",16)} ${esc(t("ccFactory"))}</button>
+      </div>
+    </div>
+  </div>`;
+}
+function v8BackupPayload(){
+  return {kind:"entertainment-operations-backup", version:8, at:new Date().toISOString(),
+    hotel:(S.settings&&S.settings.name)||"", settings:S.settings};
+}
+
+/* ---------------- category helpers ---------------- */
+function v8CatDefault(c){
+  const src=(DICT[S.lang]&&DICT[S.lang].cats)||(DICT.en&&DICT.en.cats)||{};
+  return src[c]||c;
+}
+
+/* ---------------- wiring ---------------- */
+function v8WireHub(){
+  const q=document.getElementById("cc-q");
+  if(!q) return;
+  const apply=()=>{
+    const v=String(q.value||"").trim().toLowerCase();
+    v8S().q=v;
+    let shown=0;
+    document.querySelectorAll("[data-ccfind]").forEach(el=>{
+      const hit=!v||String(el.dataset.ccfind||"").includes(v);
+      el.style.display=hit?"":"none"; if(hit) shown++;
+    });
+    document.querySelectorAll("[data-ccgroup]").forEach(g=>{
+      const any=[...g.querySelectorAll("[data-ccfind]")].some(el=>el.style.display!=="none");
+      g.style.display=any?"":"none";
+    });
+    const none=document.getElementById("cc-noneg");
+    if(none) none.style.display=shown?"none":"";
+  };
+  q.oninput=apply;
+  if(v8S().q) apply();
+  document.querySelectorAll("[data-v8act]").forEach(b=>b.onclick=()=>{
+    const a=b.dataset.v8act;
+    if(a==="standards") openStandardsEditor();
+    else if(a==="rules") openRulesEditor();
+  });
+}
+function v8WireWording(){
+  const lang=document.getElementById("cc-wlang");
+  if(!lang) return;
+  lang.onchange=()=>{ v8HarvestWords(); v8S().wlang=lang.value; render(); };
+  const q=document.getElementById("cc-wq");
+  if(q) q.onchange=()=>{ v8HarvestWords(); v8S().wq=q.value; render(); };
+  const all=document.getElementById("cc-wall");
+  if(all) all.onchange=()=>{ v8HarvestWords(); v8S().wall=all.checked; };
+  document.querySelectorAll(".cc-wreset").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.key, inp=document.querySelector('.cc-word[data-key="'+k+'"]');
+    if(inp) inp.value="";
+    v8S().pending[k]="";
+  });
+  const save=document.getElementById("cc-wsave");
+  if(save) save.onclick=()=>v8SaveWords();
+  const rall=document.getElementById("cc-wreset-all");
+  if(rall) rall.onclick=async ()=>{
+    const ok=await confirmAction({title:t("ccResetAll"), text:t("cannotUndo"), danger:true});
+    if(!ok) return;
+    try{ await DB.saveSettings({...S.settings, labels:{}}); v8S().pending={}; toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+}
+function v8WireDesign(){
+  const save=document.getElementById("cc-dsave");
+  if(!save) return;
+  const st=v8S(), d=v8DesignDraft();
+  applyDesignTokens(d);
+  document.querySelectorAll("[data-ccrange]").forEach(inp=>{
+    inp.oninput=()=>{
+      const k=inp.dataset.ccrange;
+      d[k]=Number(inp.value);
+      const lbl=inp.parentElement&&inp.parentElement.querySelector("b");
+      if(lbl) lbl.textContent = (k==="radius") ? d[k]+"px" : d[k]+"%";
+      applyDesignTokens(d);
+    };
+  });
+  document.querySelectorAll("[data-ccseg]").forEach(box=>{
+    const key=box.dataset.ccseg;
+    box.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+      const v=b.dataset.ccv;
+      box.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      if(key==="density"||key==="shadow"){ d[key]=v; applyDesignTokens(d); }
+      else { st.core=st.core||{}; st.core[key]=v; S.settings[key]=v; applySettings(); }
+    });
+  });
+  const bd=document.getElementById("cc-border");
+  if(bd) bd.onchange=()=>{ d.cardBorder=bd.checked; applyDesignTokens(d); };
+  const css=document.getElementById("cc-css");
+  if(css) css.onchange=()=>{ d.customCss=css.value; applyDesignTokens(d); };
+  document.querySelectorAll("[data-ccpick]").forEach(b=>b.onclick=()=>{
+    const kind=b.dataset.ccpick;
+    pickOneImage(url=>{ if(kind==="bg") d.bgImage=url; else d.loginImage=url; applyDesignTokens(d); render(); });
+  });
+  document.querySelectorAll("[data-ccdrop]").forEach(b=>b.onclick=()=>{
+    const kind=b.dataset.ccdrop;
+    if(kind==="bg") d.bgImage=""; else d.loginImage="";
+    applyDesignTokens(d); render();
+  });
+  save.onclick=async ()=>{
+    const cssBox=document.getElementById("cc-css");
+    if(cssBox) d.customCss=cssBox.value;
+    const core=st.core||{};
+    try{
+      await DB.saveSettings({...S.settings, ...core, design:{...d}});
+      st.design=null; st.core=null; st.coreOrig=null;
+      applySettings(); toastOk(t("saved")); render();
+    }catch(e){ console.error(e); toastErr(t("errSave")); }
+  };
+  const disc=document.getElementById("cc-ddiscard");
+  if(disc) disc.onclick=()=>{
+    if(st.coreOrig) Object.assign(S.settings, st.coreOrig);
+    st.design=null; st.core=null; st.coreOrig=null;
+    applySettings(); render();
+  };
+  const rst=document.getElementById("cc-dreset");
+  if(rst) rst.onclick=async ()=>{
+    const ok=await confirmAction({title:t("ccResetDesign"), text:t("cannotUndo"), danger:true});
+    if(!ok) return;
+    try{
+      await DB.saveSettings({...S.settings, design:{}});
+      st.design=null; st.core=null; st.coreOrig=null;
+      applySettings(); toastOk(t("saved")); render();
+    }catch(e){ toastErr(t("errSave")); }
+  };
+  const pv=document.getElementById("cc-pvbtn");
+  if(pv) pv.onclick=()=>toastOk(t("ccPreview"));
+}
+function v8WireRoles(){
+  const save=document.getElementById("cc-rsave");
+  if(!save) return;
+  const add=document.getElementById("cc-addnum");
+  if(add) add.onclick=async ()=>{
+    const nums=v8TeamNumbers(), next=(nums.length?Math.max(...nums):0)+1;
+    const roles={...(S.settings.teamRoles||{})};
+    roles[String(next)]=roles[String(next)]||"Entertainer";
+    try{ await DB.saveSettings({...S.settings, teamRoles:roles}); render(); }catch(e){ toastErr(t("errSave")); }
+  };
+  save.onclick=async ()=>{
+    const roles={};
+    document.querySelectorAll(".cc-role").forEach(inp=>{
+      const n=inp.dataset.num, v=String(inp.value||"").trim();
+      if(v) roles[String(n)]=v;
+    });
+    const no=[];
+    document.querySelectorAll(".cc-noact").forEach(cb=>{ if(cb.checked) no.push(+cb.dataset.num); });
+    const splitEl=document.getElementById("cc-split");
+    let split=splitEl?String(splitEl.value||"").trim():"13:00";
+    if(!/^\d{1,2}:\d{2}$/.test(split)){ toastErr(t("invalidTime")); return; }
+    try{
+      await DB.saveSettings({...S.settings, teamRoles:roles, noActivity:no, slotSplit:split});
+      toastOk(t("saved")); render();
+    }catch(e){ console.error(e); toastErr(t("errSave")); }
+  };
+  const rst=document.getElementById("cc-rreset");
+  if(rst) rst.onclick=async ()=>{
+    const ok=await confirmAction({title:t("resetDefault"), text:t("cannotUndo"), danger:true});
+    if(!ok) return;
+    try{ await DB.saveSettings({...S.settings, teamRoles:{}, noActivity:[1,3], slotSplit:"13:00"}); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+}
+function v8WireProgram(){
+  const save=document.getElementById("cc-psave");
+  if(!save) return;
+  document.querySelectorAll("[data-cccat]").forEach(b=>b.onclick=()=>{
+    const c=b.dataset.cccat;
+    pickOneImage(async url=>{
+      const imgs={...(S.settings.catImages||{})}; imgs[c]=url;
+      try{ await DB.saveSettings({...S.settings, catImages:imgs}); toastOk(t("saved")); render(); }
+      catch(e){ toastErr(t("errSave")); }
+    });
+  });
+  document.querySelectorAll("[data-cccatdrop]").forEach(b=>b.onclick=async ()=>{
+    const c=b.dataset.cccatdrop, imgs={...(S.settings.catImages||{})};
+    delete imgs[c];
+    try{ await DB.saveSettings({...S.settings, catImages:imgs}); toastOk(t("deleted")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  });
+  save.onclick=async ()=>{
+    const lang=S.lang, store=JSON.parse(JSON.stringify(v8LabelStore()));
+    if(!store[lang]||typeof store[lang]!=="object") store[lang]={};
+    document.querySelectorAll(".cc-word").forEach(inp=>{
+      const k=inp.dataset.key, v=String(inp.value||"").trim();
+      if(v) store[lang][k]=v; else delete store[lang][k];
+    });
+    if(!Object.keys(store[lang]).length) delete store[lang];
+    try{ await DB.saveSettings({...S.settings, labels:store}); toastOk(t("saved")); render(); }
+    catch(e){ console.error(e); toastErr(t("errSave")); }
+  };
+}
+function v8WireReports(){
+  const save=document.getElementById("cc-repsave");
+  if(!save) return;
+  const val=id=>{ const e=document.getElementById(id); return e?String(e.value||"").trim():""; };
+  save.onclick=async ()=>{
+    const meta={department:val("cc-rep-dept"), departmentHead:val("cc-rep-head"),
+      documentClass:val("cc-rep-class"), confidentiality:val("cc-rep-conf"),
+      version:val("cc-rep-ver"), footer:val("cc-rep-foot")};
+    Object.keys(meta).forEach(k=>{ if(!meta[k]) delete meta[k]; });
+    try{ await DB.saveSettings({...S.settings, reportMeta:meta}); toastOk(t("saved")); render(); }
+    catch(e){ console.error(e); toastErr(t("errSave")); }
+  };
+  const rst=document.getElementById("cc-represet");
+  if(rst) rst.onclick=async ()=>{
+    try{ await DB.saveSettings({...S.settings, reportMeta:{}}); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+}
+function v8DownloadBackup(){
+  const data=JSON.stringify(v8BackupPayload(),null,2);
+  const name=safeFilePart((S.settings&&S.settings.name)||"hotel")+"_settings_backup_"+todayISO()+".json";
+  downloadBlob(name,new Blob([data],{type:"application/json"}));
+  toastOk(t("ccBackupMade"));
+}
+function v8WireBackup(){
+  const dl=document.getElementById("cc-bdl");
+  if(!dl) return;
+  dl.onclick=()=>v8DownloadBackup();
+  const file=document.getElementById("cc-brestore");
+  if(file) file.onchange=()=>{
+    const f=(file.files||[])[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=async ()=>{
+      let payload=null;
+      try{ payload=JSON.parse(String(rd.result||"")); }catch(e){ payload=null; }
+      const st=payload&&payload.settings;
+      if(!st||typeof st!=="object"){ toastErr(t("ccRestoreBad")); return; }
+      const ok=await confirmAction({title:t("ccRestoreQ"), text:t("cannotUndo"), danger:true});
+      if(!ok) return;
+      try{
+        await DB.saveSettings({...DEFAULT_SETTINGS, ...st});
+        applySettings(); toastOk(t("ccRestoreOk")); render();
+      }catch(e){ console.error(e); toastErr(t("errSave")); }
+    };
+    rd.readAsText(f);
+  };
+  const ww=document.getElementById("cc-wipewords");
+  if(ww) ww.onclick=async ()=>{
+    const ok=await confirmAction({title:t("ccWipeWording"), text:t("cannotUndo"), danger:true});
+    if(!ok) return;
+    try{ await DB.saveSettings({...S.settings, labels:{}}); toastOk(t("saved")); render(); }catch(e){ toastErr(t("errSave")); }
+  };
+  const wd=document.getElementById("cc-wipedesign");
+  if(wd) wd.onclick=async ()=>{
+    const ok=await confirmAction({title:t("ccWipeDesign"), text:t("cannotUndo"), danger:true});
+    if(!ok) return;
+    try{ await DB.saveSettings({...S.settings, design:{}}); applySettings(); toastOk(t("saved")); render(); }catch(e){ toastErr(t("errSave")); }
+  };
+  const fac=document.getElementById("cc-factory");
+  if(fac) fac.onclick=async ()=>{
+    const ok=await confirmAction({title:t("ccFactoryQ"), text:t("ccFactorySub")+" — "+t("cannotUndo"), danger:true});
+    if(!ok) return;
+    v8DownloadBackup();                       // always keep a copy first
+    try{ await DB.saveSettings({...DEFAULT_SETTINGS}); applySettings(); toastOk(t("saved")); S.tab="settings"; render(); }
+    catch(e){ console.error(e); toastErr(t("errSave")); }
+  };
+}
+function v8Wire(){
+  try{ v8WireHub(); }catch(e){ console.error(e); }
+  try{ v8WireWording(); }catch(e){ console.error(e); }
+  try{ v8WireDesign(); }catch(e){ console.error(e); }
+  try{ v8WireRoles(); }catch(e){ console.error(e); }
+  try{ v8WireProgram(); }catch(e){ console.error(e); }
+  try{ v8WireReports(); }catch(e){ console.error(e); }
+  try{ v8WireBackup(); }catch(e){ console.error(e); }
+}
+
+/* ---------------- integration ---------------- */
+const __v7ManagerViewCC=managerView;
+managerView=function(){
+  if(S.session && S.session.role==="manager"){
+    if(S.tab==="control")      return v8ControlView();
+    if(S.tab==="set:wording")  return v8WordingView();
+    if(S.tab==="set:design")   return v8DesignView();
+    if(S.tab==="set:roles")    return v8RolesView();
+    if(S.tab==="set:program")  return v8ProgramStructureView();
+    if(S.tab==="set:reports")  return v8ReportsView();
+    if(S.tab==="set:backup")   return v8BackupView();
+  }
+  return __v7ManagerViewCC();
+};
+const __v7SettingsHubCC=settingsHubView;
+settingsHubView=function(){
+  const base=__v7SettingsHubCC();
+  return base.replace('<div class="mgr-actions">',
+    '<div class="mgr-actions"><button data-hub="control">'+ic("sparkle",19)+
+    '<span><b>'+esc(t("ccTab"))+'</b><small>'+esc(t("ccSub"))+'</small></span></button>');
+};
+SETTINGS_GROUPS.unshift({head:"ccTab", items:[
+  ["control","sparkle","ccTab","ccSub"],
+  ["set:wording","pen","ccWording","ccWordingSub"],
+  ["set:design","palette","ccDesign","ccDesignSub"],
+  ["set:roles","users","ccRoles","ccRolesSub"],
+  ["set:program","grid","ccProgram","ccProgramSub"],
+  ["set:reports","file","ccReports","ccReportsSub"],
+  ["set:backup","shield","ccBackup","ccBackupSub"]
+]});
+const __v7CatLabelCC=catLabel;
+catLabel=function(c){ const o=v8OverrideOf("cats."+c,S.lang); return o||__v7CatLabelCC(c); };
+const __v7CatImageCC=catImage;
+catImage=function(c){ const m=(S.settings&&S.settings.catImages)||{}; return m[c]||__v7CatImageCC(c); };
+const __v7WireCC=wireCommon;
+wireCommon=function(){ __v7WireCC(); v8Wire(); };
+
 </script>
 </body>
 </html>
