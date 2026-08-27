@@ -2231,7 +2231,8 @@ function enforceAccess(){
 }
 function persist(){
   try{ localStorage.setItem(LS_KEY, JSON.stringify({
-    lang:S.lang, theme:S.theme, favorites:S.favorites, seenNote:S.seenNote,
+    lang:S.lang, theme:S.theme, themeManual:!!S.themeManual,
+    favorites:S.favorites, seenNote:S.seenNote,
     remember:S.remember!==false, session:(S.remember===false?null:S.session)
   })); }catch(e){}
 }
@@ -2243,6 +2244,7 @@ function restore(){
     if(!d) return;
     if(d.lang) S.lang=d.lang;
     if(d.theme) S.theme=d.theme;
+    if(typeof d.themeManual!=="undefined") S.themeManual=!!d.themeManual;
     if(Array.isArray(d.favorites)) S.favorites=d.favorites;
     if(typeof d.remember!=="undefined") S.remember=d.remember!==false;
     if(d.session){ S.session=d.session; S.tab = d.session.role==="manager" ? "dash" : d.session.role==="staff" ? "workday" : "home"; }
@@ -2891,9 +2893,17 @@ const DB = {
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function shade(hex,p){
-  const n=parseInt(hex.slice(1),16); let r=n>>16,g=(n>>8)&255,b=n&255;
-  r=Math.min(255,Math.round(r+(255-r)*p)); g=Math.min(255,Math.round(g+(255-g)*p)); b=Math.min(255,Math.round(b+(255-b)*p));
-  return "#"+((r<<16)|(g<<8)|b).toString(16).padStart(6,"0");
+  /* Lighten (p>0) or darken (p<0). Clamped on both sides and tolerant of a bad
+     value, so it can never return an invalid colour like "#-2f0000" — that was
+     what broke dark mode with custom colours. */
+  let h=String(hex==null?"":hex).trim().replace(/^#/,"");
+  if(h.length===3) h=h.split("").map(c=>c+c).join("");
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) h="000000";
+  const n=parseInt(h,16); let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+  if(p>=0){ r=r+(255-r)*p; g=g+(255-g)*p; b=b+(255-b)*p; }
+  else { const k=Math.max(0,1+p); r=r*k; g=g*k; b=b*k; }
+  const c=v=>Math.max(0,Math.min(255,Math.round(v)));
+  return "#"+((c(r)<<16)|(c(g)<<8)|c(b)).toString(16).padStart(6,"0");
 }
 
 /* ============ COLOUR PALETTES (each works in light AND dark) ============ */
@@ -2993,6 +3003,7 @@ function applySettings(){
     root.setProperty("--font-display",f0[0]); root.setProperty("--font-body",f0[1]);
     const br0=BTN_R[st.buttonStyle]||BTN_R.rounded;
     root.setProperty("--btn-radius",br0[0]); root.setProperty("--btn-radius-sm",br0[1]);
+    applyFontScale();          /* was missing here: text size did nothing with a theme */
     document.title=st.name||"Entertainment";
     return;
   }
@@ -7567,8 +7578,6 @@ function settingsHubView(){
 }
 function setThemeView(){
   const st=S.settings;
-  const fontOpts=[["elegant",t("fontElegant")],["royal",t("fontRoyal")],["modern",t("fontModern")],["soft",t("fontSoft")]];
-  const btnOpts=[["rounded",t("btnRounded")],["pill",t("btnPill")],["square",t("btnSquare")]];
   return `<div class="screen fadein">
     ${topBar(t("setTheme"),S.session.name)}
     ${hubBack()}
@@ -7586,13 +7595,13 @@ function setThemeView(){
           <span class="tc-sw"><i style="background:${esc(st.primary)}"></i><i style="background:${esc(st.accent)}"></i><i style="background:${esc(st.bg)};border:1px solid var(--line)"></i></span>
           <span class="tc-lb">${t("themeCustom")}</span></button>
       </div>
-      <label style="margin-top:14px">${t("fontSizeLbl")}</label>
-      <select id="s-fs">
-        ${[["small","fsSmall"],["normal","fsNormal"],["large","fsLarge"],["xl","fsXl"]].map(([k,lb])=>
-          `<option value="${k}" ${(st.fontScale||"normal")===k?"selected":""}>${t(lb)}</option>`).join("")}
-      </select>
-      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:15px;color:var(--ink);margin-top:10px">
-        <input id="s-autodark" type="checkbox" style="width:auto" ${st.autoDark?"checked":""}> ${t("autoDarkLbl")}</label>
+      <label style="margin-top:14px">${t("v9Mode")}</label>
+      <p class="mini" style="margin:-4px 0 6px">${t("v9ModeHint")}</p>
+      <div class="v9-modes">
+        ${[["light","sun","v9ModeLight"],["dark","moon","v9ModeDark"],["auto","settings","v9ModeAuto"]].map(([k,icn,lb])=>
+          `<button type="button" data-v9mode="${k}" class="${v9Mode()===k?"on":""}">${ic(icn,18)}<span>${t(lb)}</span></button>`).join("")}
+      </div>
+      <span class="v9-modenow">${t("v9ModeNow")}: ${S.theme==="dark"?t("themeDark"):t("themeLight")}</span>
 
       <label>${t("colorsHead")}</label>
       <div class="row2">
@@ -7607,10 +7616,8 @@ function setThemeView(){
         <div><label>${t("navC")}</label><input id="s-navbg" type="color" value="${esc(st.navBg)}"></div>
         <div><label>${t("navActiveC")}</label><input id="s-navon" type="color" value="${esc(st.navActive)}"></div>
       </div>
-      <label>${t("styleHead")}</label>
-      <select id="s-font">${fontOpts.map(([v,l])=>`<option value="${v}" ${st.fontStyle===v?"selected":""}>${l}</option>`).join("")}</select>
-      <label>${t("buttonHead")}</label>
-      <select id="s-btn">${btnOpts.map(([v,l])=>`<option value="${v}" ${st.buttonStyle===v?"selected":""}>${l}</option>`).join("")}</select>
+      <p class="mini" style="margin:14px 0 0">${t("v9TypoMoved")}</p>
+      <p class="mini" style="margin:4px 0 0">${t("v9Contrast")}</p>
       <button class="btn" id="btn-savesettings">${t("save")}</button>
     </div>
   </div>`;
@@ -9180,6 +9187,71 @@ const __v6ManagerView=managerView;managerView=function(){if(S.tab==='command')re
 const __v6SettingsHub=settingsHubView;settingsHubView=function(){const base=__v6SettingsHub();return base.replace('<div class="mgr-actions">','<div class="mgr-actions"><button data-hub="command">'+ic('sparkle',19)+'<span><b>Operations Command Center</b><small>Warnings, week, approval & audit</small></span></button><button data-hub="weekplanner">'+ic('calendar',19)+'<span><b>Master Weekly Planner</b><small>Build My Week & plan alternatives</small></span></button>')}
 const __v6Wire=wireCommon;wireCommon=function(){__v6Wire();document.querySelectorAll('[data-v7go]').forEach(b=>b.onclick=()=>{const x=b.dataset.v7go;S.tab=x==='week'?'weekplanner':x==='publish'?'approval':x==='audit'?'audit':x;render()});const gen=document.getElementById('v7-generate');if(gen)gen.onclick=()=>render();document.querySelectorAll('[data-v7plan]').forEach(b=>b.onclick=async()=>{const idx=+b.dataset.v7plan,vars=buildPlanVariants('week',todayIndex(),false),c=vars[idx]||vars[0];if(await applyPlanningCandidate(c)){await v7Log('Weekly plan applied',`Plan ${String.fromCharCode(65+idx)} · score ${v7PlanScore(c)}%`);toast('Weekly plan applied');render()}});document.querySelectorAll('[data-v7status]').forEach(b=>b.onclick=async()=>{const status=b.dataset.v7status;if(status==='published'&&v7Warnings().length&&!confirm('There are operational warnings. Publish anyway?'))return;const weekWorkflow={status,updatedAt:new Date().toISOString(),by:S.session.name};await DB.saveSettings({...S.settings,weekWorkflow});S.settings.weekWorkflow=weekWorkflow;await v7Log('Schedule status changed',status);toast('Schedule: '+status);render()})}
 </script>
+<style id="control-center-v9-css">
+/* ===== CONTROL CENTER v9 — settings home + analytics center ===== */
+.v9-hero{background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#fff;border-radius:var(--r-2xl);
+  padding:var(--sp-6);margin:var(--sp-4) var(--sp-4) var(--sp-3);box-shadow:var(--sh-2)}
+.v9-kick{font-size:var(--fs-meta);letter-spacing:.18em;text-transform:uppercase;color:var(--bronze);font-weight:600}
+.v9-hero h2{margin:6px 0 4px;color:#fff;font-size:var(--fs-h2)}
+.v9-hero p{font-size:var(--fs-label);opacity:.82;margin:0}
+.v9-stats{display:flex;gap:var(--sp-4);margin-top:var(--sp-4);flex-wrap:wrap}
+.v9-stats span{display:flex;flex-direction:column;font-weight:600;font-size:var(--fs-h4)}
+.v9-stats span small{font-weight:400;opacity:.75;font-size:var(--fs-meta);text-transform:uppercase;letter-spacing:.09em}
+.v9-hero-btn{display:inline-flex;align-items:center;gap:8px;margin-top:var(--sp-4);border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.12);color:#fff;border-radius:var(--btn-radius);padding:10px 16px;
+  font-family:var(--font-body);font-size:var(--fs-label);font-weight:600}
+.v9-hero-btn:active{transform:scale(.98)}
+.v9-search{margin:0 var(--sp-4) var(--sp-3)}
+.v9-group{margin:0 var(--sp-4) var(--sp-5)}
+.v9-group > h3{font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.13em;color:var(--muted);
+  margin:0 0 var(--sp-2);font-family:var(--font-body);font-weight:600}
+.v9-none{margin:0 var(--sp-4);color:var(--muted);font-size:var(--fs-label)}
+.v9-lead{margin:0 var(--sp-4) var(--sp-2);color:var(--muted)}
+
+/* ---- mode picker (light / dark / follow phone) ---- */
+.v9-modes{display:flex;gap:var(--sp-2);flex-wrap:wrap;margin:6px 0 4px}
+.v9-modes button{flex:1 1 30%;display:flex;flex-direction:column;align-items:center;gap:6px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:var(--r-md);
+  padding:12px 8px;font-family:var(--font-body);font-size:var(--fs-caption);font-weight:600}
+.v9-modes button.on{border-color:var(--bronze);box-shadow:0 0 0 2px var(--champagne-300) inset}
+.v9-modenow{display:inline-block;margin-top:6px;color:var(--muted);font-size:var(--fs-meta)}
+
+
+/* ---- small gaps found by the CSS audit ---- */
+.ts-chip.n{background:var(--surface-2);border-color:var(--line);color:var(--muted)}
+.feat-cb{width:auto;flex:0 0 auto;margin:0}
+/* ---- editor rows: three fields on one line instead of stacked ---- */
+.ed-row .ed-time{flex:0 0 74px;text-align:center}
+.ed-row .ed-title{flex:1 1 40%;min-width:0}
+.ed-row .ed-note{flex:1 1 100%;min-width:0}
+.ed-row .er-title{flex:1 1 100%;min-width:0}
+.ed-row input{margin:0}
+.ed-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ed-row.ed-rule{align-items:flex-start}
+.ed-row .ed-rm{flex:0 0 auto;margin-inline-start:auto}
+/* ---- read-only star rating ---- */
+.fb-ro{display:inline-flex;gap:1px;white-space:nowrap;letter-spacing:.5px}
+/* ---- duty checkbox + tappable room line ---- */
+.duty-off{width:auto;flex:0 0 auto;margin:0}
+.roomline{cursor:pointer}
+.roomline:active{opacity:.7}
+
+/* ---- analytics bars ---- */
+.v9-card{padding:var(--sp-4)}
+.v9-bar{display:flex;align-items:center;gap:var(--sp-3);padding:5px 0}
+.v9-bl{flex:0 0 42%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--fs-caption)}
+.v9-bt{flex:1;height:8px;border-radius:99px;background:var(--sand);overflow:hidden}
+.v9-bt i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--champagne-500),var(--bronze))}
+.v9-bv{flex:0 0 auto;font-size:var(--fs-caption);font-weight:600;color:var(--muted);min-width:34px;text-align:end}
+.v9-flag{display:flex;align-items:center;gap:8px;margin:0 var(--sp-4) var(--sp-3);padding:10px 14px;
+  border-radius:var(--r-md);font-size:var(--fs-caption);font-weight:600}
+.v9-flag.ok{background:var(--sand);color:var(--ink)}
+.v9-flag.warn{background:var(--champagne-100);color:var(--espresso)}
+[data-theme="dark"] .v9-flag.warn{background:var(--surface-2);color:var(--bronze)}
+.v9-dashbtns{display:flex;flex-direction:column;gap:var(--sp-2);margin:var(--sp-4)}
+@media(min-width:620px){.v9-dashbtns{flex-direction:row}.v9-dashbtns .btn{flex:1}}
+
+</style>
 <script id="control-center-v8">
 /* ==========================================================================
    CONTROL CENTER v8
@@ -10040,6 +10112,599 @@ const __v7CatImageCC=catImage;
 catImage=function(c){ const m=(S.settings&&S.settings.catImages)||{}; return m[c]||__v7CatImageCC(c); };
 const __v7WireCC=wireCommon;
 wireCommon=function(){ __v7WireCC(); v8Wire(); };
+
+</script>
+<script id="control-center-v9">
+
+/* ==========================================================================
+   CONTROL CENTER v9
+   ONE home for every setting. ONE home for every number.
+   - every setting appears exactly once (no page is listed twice)
+   - a real Analytics Center instead of numbers scattered over five screens
+   - a colour engine that cannot produce an invalid colour, so light/dark
+     mode works with the 15 themes AND with custom colours
+   Purely additive: it wraps existing functions, it never deletes them.
+   ========================================================================== */
+const V9_STR={
+en:{
+  v9Tab:"Control Center", v9Kick:"ONE PLACE FOR EVERYTHING",
+  v9Head:"Control Center", v9Sub:"Every setting in this app, sorted and in one place.",
+  v9SecLook:"Look & feel", v9SecContent:"Content & wording", v9SecOps:"Operation",
+  v9SecSystem:"System", v9SecData:"Reports & data",
+  v9Search:"Search a setting…", v9NoHit:"Nothing matches that search.",
+  v9OpenAnalytics:"Open the Analytics Center",
+
+  v9Insights:"Analytics", v9InsightsSub:"Every number in the app, in one place",
+  v9Overview:"Overview", v9Guests:"Guests", v9Program:"Programme", v9Team:"Team", v9Quality:"Quality",
+  v9NoData:"Not enough information yet — this fills up as the week runs.",
+  v9Kpi:"Key numbers", v9Share:"Share", v9Avg:"Average", v9Total:"Total",
+  v9Workload:"Activities per person", v9Even:"Evenly shared", v9Gap:"Difference of",
+  v9AttRate:"Attendance", v9TaskOpen:"Open tasks", v9TaskLate:"Overdue",
+  v9RateAvg:"Average rating", v9Rate5:"5 stars", v9RateLow:"1–3 stars",
+  v9Reviews:"Review invitations earned", v9EmptyActs:"Activities with no booking",
+  v9PerOp:"By operation", v9PerCat:"By category", v9PerDay:"By day",
+  v9TopActs:"Most booked", v9LowActs:"Least booked", v9NoShowFree:"Everyone marked",
+  v9Bookings:"Bookings", v9People:"People", v9Rooms:"Rooms", v9Tickets:"Tickets sold",
+  v9Nations:"Nationalities", v9Waitlist:"Waiting list", v9Occ:"Average occupancy",
+  v9Answered:"Quiz answers", v9Messages:"Messages", v9OpenFull:"Open full list",
+
+  v9Mode:"Light or dark", v9ModeHint:"This is how the app looks on every phone unless the person changes it.",
+  v9ModeLight:"Light", v9ModeDark:"Dark", v9ModeAuto:"Follow the phone",
+  v9ModeNow:"Showing now", v9Contrast:"Readability is checked automatically.",
+  v9TypoMoved:"Text size, font and button shape are in the Design Studio.",
+  v9Ops2:"Operations", v9People2:"People", v9Reports2:"Reports", v9Settings2:"Settings",
+  v9Command:"Operations Command Center", v9WeekPlanner:"Master Weekly Planner",
+  v9Approval:"Publishing & approval", v9Audit:"Change log", v9Export:"Report center"
+},
+de:{
+  v9Tab:"Kontrollzentrum", v9Kick:"ALLES AN EINEM ORT",
+  v9Head:"Kontrollzentrum", v9Sub:"Jede Einstellung dieser App, sortiert und an einem Ort.",
+  v9SecLook:"Aussehen", v9SecContent:"Inhalt & Texte", v9SecOps:"Betrieb",
+  v9SecSystem:"System", v9SecData:"Berichte & Daten",
+  v9Search:"Einstellung suchen…", v9NoHit:"Nichts gefunden.",
+  v9OpenAnalytics:"Auswertungen öffnen",
+  v9Insights:"Auswertungen", v9InsightsSub:"Alle Zahlen der App an einem Ort",
+  v9Overview:"Überblick", v9Guests:"Gäste", v9Program:"Programm", v9Team:"Team", v9Quality:"Qualität",
+  v9NoData:"Noch zu wenig Daten — das füllt sich im Lauf der Woche.",
+  v9Kpi:"Kennzahlen", v9Share:"Anteil", v9Avg:"Durchschnitt", v9Total:"Gesamt",
+  v9Workload:"Aktivitäten pro Person", v9Even:"Gleichmäßig verteilt", v9Gap:"Unterschied von",
+  v9AttRate:"Anwesenheit", v9TaskOpen:"Offene Aufgaben", v9TaskLate:"Überfällig",
+  v9RateAvg:"Durchschnittsbewertung", v9Rate5:"5 Sterne", v9RateLow:"1–3 Sterne",
+  v9Reviews:"Verdiente Bewertungs-Einladungen", v9EmptyActs:"Aktivitäten ohne Buchung",
+  v9PerOp:"Nach Programm", v9PerCat:"Nach Kategorie", v9PerDay:"Nach Tag",
+  v9TopActs:"Am meisten gebucht", v9LowActs:"Am wenigsten gebucht", v9NoShowFree:"Alle erfasst",
+  v9Bookings:"Buchungen", v9People:"Personen", v9Rooms:"Zimmer", v9Tickets:"Verkaufte Tickets",
+  v9Nations:"Nationalitäten", v9Waitlist:"Warteliste", v9Occ:"Ø Auslastung",
+  v9Answered:"Quiz-Antworten", v9Messages:"Nachrichten", v9OpenFull:"Vollständige Liste",
+  v9Mode:"Hell oder dunkel", v9ModeHint:"So sieht die App auf jedem Handy aus, solange niemand sie ändert.",
+  v9ModeLight:"Hell", v9ModeDark:"Dunkel", v9ModeAuto:"Handy folgen",
+  v9ModeNow:"Zeigt gerade", v9Contrast:"Die Lesbarkeit wird automatisch geprüft.",
+  v9TypoMoved:"Textgröße, Schrift und Button-Form findest du im Design-Studio.",
+  v9Ops2:"Betrieb", v9People2:"Menschen", v9Reports2:"Berichte", v9Settings2:"Einstellungen",
+  v9Command:"Operations Command Center", v9WeekPlanner:"Wochenplaner",
+  v9Approval:"Freigabe & Veröffentlichung", v9Audit:"Änderungsprotokoll", v9Export:"Berichtszentrum"
+},
+ar:{
+  v9Tab:"مركز التحكم", v9Kick:"كل شيء في مكان واحد",
+  v9Head:"مركز التحكم", v9Sub:"كل إعدادات التطبيق مرتبة في مكان واحد.",
+  v9SecLook:"المظهر", v9SecContent:"المحتوى والنصوص", v9SecOps:"التشغيل",
+  v9SecSystem:"النظام", v9SecData:"التقارير والبيانات",
+  v9Search:"ابحث عن إعداد…", v9NoHit:"لا توجد نتائج.",
+  v9OpenAnalytics:"فتح مركز التحليلات",
+  v9Insights:"التحليلات", v9InsightsSub:"كل أرقام التطبيق في مكان واحد",
+  v9Overview:"نظرة عامة", v9Guests:"الضيوف", v9Program:"البرنامج", v9Team:"الفريق", v9Quality:"الجودة",
+  v9NoData:"لا توجد بيانات كافية بعد.",
+  v9Kpi:"الأرقام الرئيسية", v9Share:"النسبة", v9Avg:"المتوسط", v9Total:"الإجمالي",
+  v9Workload:"الأنشطة لكل شخص", v9Even:"موزّع بالتساوي", v9Gap:"فرق قدره",
+  v9AttRate:"الحضور", v9TaskOpen:"مهام مفتوحة", v9TaskLate:"متأخرة",
+  v9RateAvg:"متوسط التقييم", v9Rate5:"5 نجوم", v9RateLow:"1–3 نجوم",
+  v9Reviews:"دعوات التقييم المستحقة", v9EmptyActs:"أنشطة بدون حجز",
+  v9PerOp:"حسب البرنامج", v9PerCat:"حسب الفئة", v9PerDay:"حسب اليوم",
+  v9TopActs:"الأكثر حجزاً", v9LowActs:"الأقل حجزاً", v9NoShowFree:"تم تسجيل الجميع",
+  v9Bookings:"الحجوزات", v9People:"الأشخاص", v9Rooms:"الغرف", v9Tickets:"التذاكر المباعة",
+  v9Nations:"الجنسيات", v9Waitlist:"قائمة الانتظار", v9Occ:"متوسط الإشغال",
+  v9Answered:"إجابات المسابقة", v9Messages:"الرسائل", v9OpenFull:"عرض القائمة كاملة",
+  v9Mode:"فاتح أو داكن", v9ModeHint:"هكذا يظهر التطبيق على كل هاتف ما لم يغيّره المستخدم.",
+  v9ModeLight:"فاتح", v9ModeDark:"داكن", v9ModeAuto:"اتباع الهاتف",
+  v9ModeNow:"المعروض الآن", v9Contrast:"يتم فحص وضوح النص تلقائياً.",
+  v9TypoMoved:"حجم النص والخط وشكل الأزرار في استوديو التصميم.",
+  v9Ops2:"التشغيل", v9People2:"الأشخاص", v9Reports2:"التقارير", v9Settings2:"الإعدادات",
+  v9Command:"مركز قيادة العمليات", v9WeekPlanner:"مخطط الأسبوع",
+  v9Approval:"الاعتماد والنشر", v9Audit:"سجل التغييرات", v9Export:"مركز التقارير"
+}
+};
+Object.keys(V9_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V9_STR[l]); });
+
+/* ==========================================================================
+   1. COLOUR ENGINE — light and dark can never break again
+   ========================================================================== */
+function v9Hex(h){
+  let s=String(h==null?"":h).trim().replace(/^#/,"");
+  if(s.length===3) s=s.split("").map(c=>c+c).join("");
+  return /^[0-9a-fA-F]{6}$/.test(s) ? "#"+s.toLowerCase() : null;
+}
+function v9Rgb(h){ const s=v9Hex(h)||"#000000"; const n=parseInt(s.slice(1),16);
+  return [(n>>16)&255,(n>>8)&255,n&255]; }
+function v9Out(r,g,b){ const c=v=>Math.max(0,Math.min(255,Math.round(v)));
+  return "#"+((c(r)<<16)|(c(g)<<8)|c(b)).toString(16).padStart(6,"0"); }
+/* perceived brightness 0 (black) … 1 (white) */
+function v9Lum(h){ const [r,g,b]=v9Rgb(h).map(v=>{ const s=v/255;
+  return s<=0.03928 ? s/12.92 : Math.pow((s+0.055)/1.055,2.4); });
+  return 0.2126*r+0.7152*g+0.0722*b; }
+function v9Contrast(a,b){ const l1=v9Lum(a), l2=v9Lum(b);
+  return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); }
+/* mix a towards b by p (0…1) */
+function v9Mix(a,b,p){ const A=v9Rgb(a), B=v9Rgb(b), q=Math.max(0,Math.min(1,p));
+  return v9Out(A[0]+(B[0]-A[0])*q, A[1]+(B[1]-A[1])*q, A[2]+(B[2]-A[2])*q); }
+function v9Lighten(h,p){ return v9Mix(h,"#ffffff",p); }
+function v9Darken(h,p){ return v9Mix(h,"#000000",p); }
+/* push a colour until it is readable on the given background */
+function v9Readable(color,bg,target){
+  const goal=target||4.5;
+  if(v9Contrast(color,bg)>=goal) return color;
+  const up=v9Lum(bg)<0.5;               // dark background -> go lighter
+  let out=color;
+  for(let i=1;i<=20;i++){
+    out = up ? v9Lighten(color,i/20) : v9Darken(color,i/20);
+    if(v9Contrast(out,bg)>=goal) return out;
+  }
+  return up ? "#ffffff" : "#111418";
+}
+/* Build a complete, safe scheme from the manager's four custom colours.
+   Works whether she picked light colours or dark ones. */
+function v9CustomScheme(mode){
+  const st=(S&&S.settings)||{};
+  const primary=v9Hex(st.primary)||"#0f1b2d";
+  const accent =v9Hex(st.accent) ||"#c6a15b";
+  const baseBg =v9Hex(st.bg)     ||"#f8f7f3";
+  const baseTx =v9Hex(st.textColor)||"#172033";
+  if(mode==="dark"){
+    const bg   = v9Mix(v9Darken(primary,0.86),"#0a0b0d",0.35);
+    const card = v9Lighten(bg,0.06);
+    const sand = v9Lighten(bg,0.11);
+    const line = v9Lighten(bg,0.20);
+    const text = v9Readable(v9Lum(baseTx)>0.6?baseTx:"#f2f5f9", bg, 8);
+    return { primary:v9Readable(v9Lighten(primary,0.55),bg,4.5),
+             accent:v9Readable(accent,bg,4.5),
+             bg, card, sand, line, text };
+  }
+  const bg   = v9Lum(baseBg)>0.55 ? baseBg : v9Lighten(baseBg,0.90);
+  const card = v9Lum(bg)>0.92 ? "#ffffff" : v9Lighten(bg,0.55);
+  const sand = v9Darken(bg,0.05);
+  const line = v9Darken(bg,0.12);
+  const text = v9Readable(v9Lum(baseTx)<0.45?baseTx:"#172033", bg, 8);
+  return { primary:v9Readable(primary,bg,4.5),
+           accent:v9Readable(accent,bg,3), bg, card, sand, line, text };
+}
+/* write one scheme into the CSS variables — same names the themes use */
+function v9ApplyScheme(c,mode){
+  const root=document.documentElement.style;
+  const dark=mode==="dark";
+  const p700=dark?v9Darken(c.primary,0.10):v9Lighten(c.primary,0.14);
+  const p600=dark?v9Lighten(c.primary,0.06):v9Lighten(c.primary,0.24);
+  const a700=v9Darken(c.accent,dark?0.18:0.12);
+  const a600=dark?v9Darken(c.accent,0.06):v9Lighten(c.accent,0.02);
+  const muted=v9Readable(dark?v9Darken(c.text,0.32):v9Lighten(c.text,0.44), c.bg, 3.2);
+  root.setProperty("--brand-900",c.primary);
+  root.setProperty("--brand-700",p700);
+  root.setProperty("--brand-600",p600);
+  root.setProperty("--champagne-700",a700);
+  root.setProperty("--champagne-600",a600);
+  root.setProperty("--champagne-500",c.accent);
+  root.setProperty("--champagne-300",v9Lighten(c.accent,0.46));
+  root.setProperty("--champagne-100",v9Lighten(c.accent,0.84));
+  root.setProperty("--surface-0",c.card);
+  root.setProperty("--surface-1",c.bg);
+  root.setProperty("--surface-2",c.sand);
+  root.setProperty("--text-1",c.text);
+  root.setProperty("--text-2",muted);
+  root.setProperty("--espresso",c.primary);
+  root.setProperty("--cacao",p700);
+  root.setProperty("--bronze",c.accent);
+  root.setProperty("--bg",c.bg);
+  root.setProperty("--ink",c.text);
+  root.setProperty("--card",c.card);
+  root.setProperty("--sand",c.sand);
+  root.setProperty("--line",c.line);
+  root.setProperty("--muted",muted);
+  root.setProperty("--nav-bg",c.card);
+  root.setProperty("--nav-on",v9Readable(c.primary,c.card,4.5));
+  root.setProperty("--border",c.line);
+  root.setProperty("--border-gold",v9Lighten(c.accent,0.54));
+  root.setProperty("--focus","0 0 0 3px "+v9Lighten(c.accent,0.70));
+}
+/* Custom colours now go through the same safe path as the 15 themes, so the
+   old (broken) custom branch of applySettings is never reached again. */
+const __v8ApplyPalette=applyPalette;
+applyPalette=function(){
+  const key=(S.settings&&S.settings.palette)||"";
+  if(PALETTES[key]) return __v8ApplyPalette();
+  const mode=(S.theme==="dark")?"dark":"light";
+  v9ApplyScheme(v9CustomScheme(mode),mode);
+  return true;
+};
+/* Text size was only applied on the custom-colour path, so it did nothing
+   with any of the 15 themes. Now it is applied every time. */
+const __v8ApplySettings=applySettings;
+applySettings=function(){
+  __v8ApplySettings();
+  try{ applyFontScale(); }catch(e){}
+};
+
+/* ==========================================================================
+   2. LIGHT / DARK MODE — one control that actually holds
+   ========================================================================== */
+/* Manual choice beats "follow the phone" until she picks Follow again. */
+const __v8ApplyAutoDark=applyAutoDark;
+applyAutoDark=function(){ if(S.themeManual) return; __v8ApplyAutoDark(); };
+const __v8SetTheme=setTheme;
+setTheme=function(th){ S.themeManual=true; __v8SetTheme(th); };
+function v9Mode(){
+  if(S.themeManual) return S.theme==="dark"?"dark":"light";
+  if(S.settings&&S.settings.autoDark) return "auto";
+  return S.theme==="dark"?"dark":"light";
+}
+async function v9SetMode(mode){
+  if(mode==="auto"){
+    S.themeManual=false;
+    try{ await DB.saveSettings({...S.settings, autoDark:true}); }catch(e){ toastErr(t("errSave")); return; }
+    applyAutoDark();
+  }else{
+    S.themeManual=true;
+    S.theme=mode;
+    document.documentElement.setAttribute("data-theme",mode);
+    if(S.settings&&S.settings.autoDark){
+      try{ await DB.saveSettings({...S.settings, autoDark:false}); }catch(e){}
+    }
+  }
+  applySettings(); persist(); render();
+}
+
+/* ==========================================================================
+   3. CONTROL CENTER — the single settings home
+   Every page below appears exactly once, here and nowhere else.
+   ========================================================================== */
+const V9_SETTINGS=[
+  {head:"v9SecLook", items:[
+    ["set:theme","palette","setTheme","setThemeSub"],
+    ["set:design","sparkle","ccDesign","ccDesignSub"],
+    ["set:brand","image","setBrand","setBrandSub"]]},
+  {head:"v9SecContent", items:[
+    ["set:wording","pen","ccWording","ccWordingSub"],
+    ["builder","menu","setMenus","setMenusSub"],
+    ["set:program","grid","ccProgram","ccProgramSub"]]},
+  {head:"v9SecOps", items:[
+    ["set:roles","users","ccRoles","ccRolesSub"],
+    ["bus","bus","busItem","busSchedule"],
+    ["set:location","pin","setLocation","setLocationSub"]]},
+  {head:"v9SecSystem", items:[
+    ["set:features","check","setFeatures","setFeaturesSub"],
+    ["set:notif","bell","setNotif","setNotifSub"],
+    ["set:links","globe","setLinksT","setLinksSub"],
+    ["set:advanced","lock","setAdvanced","setAdvancedSub"]]},
+  {head:"v9SecData", items:[
+    ["set:reports","file","ccReports","ccReportsSub"],
+    ["export","download","setData","setDataSub"],
+    ["set:backup","shield","ccBackup","ccBackupSub"]]}
+];
+function v9SettingsCount(){ return V9_SETTINGS.reduce((n,g)=>n+g.items.length,0); }
+/* replaces every earlier version of the settings hub — nothing is listed twice */
+settingsHubView=function(){
+  const custom=(typeof v8CountOverrides==="function")?v8CountOverrides():0;
+  return `<div class="screen fadein manager-settings">
+    ${topBar(t("v9Tab"),S.session.name)}
+    <div class="v9-hero">
+      <div class="v9-kick">${esc(t("v9Kick"))}</div>
+      <h2>${esc(t("v9Head"))}</h2>
+      <p>${esc(t("v9Sub"))}</p>
+      <div class="v9-stats">
+        <span>${v9SettingsCount()}<small>${esc(t("v9Settings2"))}</small></span>
+        <span>${custom}<small>${esc(t("ccStatCustom"))}</small></span>
+        <span>${(S.users||[]).length}<small>${esc(t("ccStatTeam"))}</small></span>
+        <span>${(S.activities||[]).length}<small>${esc(t("ccStatActs"))}</small></span>
+      </div>
+      <button class="v9-hero-btn" data-hub="insights">${ic("chart",16)} ${esc(t("v9OpenAnalytics"))}</button>
+    </div>
+    <div class="v9-search"><input id="v9-q" placeholder="${esc(t("v9Search"))}" value="${esc(v9Q())}"></div>
+    <div id="v9-groups">
+      ${V9_SETTINGS.map(g=>`<div class="v9-group" data-v9group>
+        <h3>${esc(t(g.head))}</h3>
+        <div class="card set-list">
+          ${g.items.map(([id,icn,lb,sub])=>`<button class="set-it" data-hub="${id}" data-v9item data-v9text="${esc((t(lb)+" "+t(sub)).toLowerCase())}">
+            <span class="set-ic">${ic(icn,19)}</span>
+            <span class="set-mid"><b>${esc(t(lb))}</b><span class="mini">${esc(t(sub))}</span></span>
+            <span class="set-go">${ic("back",16)}</span>
+          </button>`).join("")}
+        </div>
+      </div>`).join("")}
+    </div>
+    <p class="v9-none" id="v9-none" style="display:none">${esc(t("v9NoHit"))}</p>
+  </div>`;
+};
+let __v9q="";
+function v9Q(){ return __v9q; }
+function v9WireSearch(){
+  const box=document.getElementById("v9-q");
+  if(!box) return;
+  const run=()=>{
+    __v9q=String(box.value||"").toLowerCase().trim();
+    let shown=0;
+    document.querySelectorAll("[data-v9group]").forEach(g=>{
+      let any=0;
+      g.querySelectorAll("[data-v9item]").forEach(b=>{
+        const hit=!__v9q || (b.dataset.v9text||"").includes(__v9q);
+        b.style.display=hit?"":"none";
+        if(hit){ any++; shown++; }
+      });
+      g.style.display=any?"":"none";
+    });
+    const none=document.getElementById("v9-none");
+    if(none) none.style.display=shown?"none":"";
+  };
+  box.oninput=run;
+  if(__v9q) run();
+}
+
+/* ==========================================================================
+   4. ANALYTICS CENTER — every number, in one place, grouped
+   ========================================================================== */
+function v9Num(n){ return Number.isFinite(n)?n:0; }
+function v9Pct(a,b){ return b>0?Math.round(a/b*100):0; }
+function v9Bar(label,value,max,extra){
+  const w=max>0?Math.max(2,Math.round(value/max*100)):0;
+  return `<div class="v9-bar"><span class="v9-bl">${esc(label)}</span>
+    <span class="v9-bt"><i style="width:${w}%"></i></span>
+    <span class="v9-bv">${esc(String(extra!=null?extra:value))}</span></div>`;
+}
+function v9Stat(value,label){
+  return `<div class="stat"><b>${esc(String(value))}</b><span>${esc(label)}</span></div>`;
+}
+function v9Card(title,icon,body){
+  return `<div class="sec"><h3>${ic(icon,18)} ${esc(title)}</h3>
+    <div class="card v9-card">${body}</div></div>`;
+}
+function v9Empty(){ return `<p class="mini">${esc(t("v9NoData"))}</p>`; }
+
+function v9Booked(){ return (S.bookings||[]).filter(b=>b.status==="booked"); }
+function v9PeopleOn(b){ return v9Num(+b.people||0)||(v9Num(+b.adults||0)+v9Num(+b.children||0)); }
+function v9StaffList(){ return (S.users||[]).filter(u=>u.role==="staff"); }
+function v9ActsOf(u){
+  const a=String(u.username||"").toLowerCase(), b=String(u.display_name||"").toLowerCase();
+  return (S.activities||[]).filter(x=>{
+    const e=String(x.entertainer||"").toLowerCase().trim();
+    return e && (e===a || e===b || e.split(/[,/]+/).map(s=>s.trim()).includes(a));
+  }).length;
+}
+function v9OverviewInner(){
+  const bk=v9Booked();
+  const withCap=(S.activities||[]).filter(a=>+a.capacity>0);
+  const occ=withCap.length?Math.round(withCap.reduce((n,a)=>n+Math.min(1,seatsTaken(a.id)/a.capacity),0)/withCap.length*100):0;
+  const people=bk.reduce((n,b)=>n+v9PeopleOn(b),0);
+  const rooms=new Set(bk.map(b=>b.room)).size;
+  const tSold=(S.orders||[]).reduce((n,o)=>n+v9Num(+o.qty||0),0);
+  const wait=(S.bookings||[]).filter(b=>b.status==="waitlist").length;
+  const fb=(S.feedback||[]).filter(f=>+f.rate>0);
+  const avg=fb.length?(fb.reduce((n,f)=>n+ +f.rate,0)/fb.length):0;
+  const openTasks=(S.tasks||[]).filter(x=>!["done","verified","completed"].includes(String(x.status))).length;
+  return `<div class="stat-grid">
+      ${v9Stat(bk.length,t("v9Bookings"))}
+      ${v9Stat(occ+"%",t("v9Occ"))}
+      ${v9Stat(people,t("v9People"))}
+      ${v9Stat(rooms,t("v9Rooms"))}
+      ${v9Stat(tSold,t("v9Tickets"))}
+      ${v9Stat(wait,t("v9Waitlist"))}
+      ${v9Stat((S.activities||[]).length,t("activities"))}
+      ${v9Stat(v9StaffList().length,t("v9Team"))}
+      ${v9Stat(avg?avg.toFixed(1):"—",t("v9RateAvg"))}
+      ${v9Stat(openTasks,t("v9TaskOpen"))}
+    </div>
+    ${typeof attentionCard==="function"?attentionCard():""}`;
+}
+function v9GuestsInner(){
+  const bk=v9Booked();
+  const natMap={};
+  bk.forEach(b=>{ if(b.nationality) (natMap[b.nationality]=natMap[b.nationality]||new Set()).add(b.room); });
+  (S.orders||[]).forEach(o=>{ if(o.nationality) (natMap[o.nationality]=natMap[o.nationality]||new Set()).add(o.room); });
+  const nats=Object.entries(natMap).map(([n,s])=>[n,s.size]).sort((a,b)=>b[1]-a[1]);
+  const maxN=nats.length?nats[0][1]:0;
+  const total=nats.reduce((n,x)=>n+x[1],0);
+  const msgs=(S.messages||[]).length;
+  const quiz=(S.quizReplies||[]).length;
+  return `<div class="stat-grid">
+      ${v9Stat(new Set(bk.map(b=>b.room)).size,t("v9Rooms"))}
+      ${v9Stat(bk.reduce((n,b)=>n+v9PeopleOn(b),0),t("v9People"))}
+      ${v9Stat(nats.length,t("v9Nations"))}
+      ${v9Stat(msgs,t("v9Messages"))}
+      ${v9Stat(quiz,t("v9Answered"))}
+      ${v9Stat((S.requests||[]).filter(r=>r.status==="new").length,t("requests"))}
+    </div>
+    ${v9Card(t("v9Nations"),"globe", nats.length
+      ? nats.slice(0,12).map(([n,c])=>v9Bar(n,c,maxN,c+" · "+v9Pct(c,total)+"%")).join("")
+      : v9Empty())}`;
+}
+function v9ProgramInner(){
+  const acts=(S.activities||[]);
+  const scored=acts.map(a=>({a,n:seatsTaken(a.id)}));
+  const top=[...scored].sort((x,y)=>y.n-x.n).slice(0,8).filter(x=>x.n>0);
+  const low=[...scored].filter(x=>x.n===0);
+  const maxT=top.length?top[0].n:0;
+  const byDay=[0,1,2,3,4,5,6].map(d=>({d,n:acts.filter(a=>a.day===d).length}));
+  const maxD=Math.max(1,...byDay.map(x=>x.n));
+  const catMap={};
+  acts.forEach(a=>{ const c=a.category||"—"; catMap[c]=(catMap[c]||0)+1; });
+  const cats=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+  const maxC=cats.length?cats[0][1]:1;
+  return `${v9Card(t("v9TopActs"),"star", top.length
+      ? top.map(x=>v9Bar(x.a.name+" · "+t("daysShort")[x.a.day]+" "+x.a.time, x.n, maxT)).join("")
+      : v9Empty())}
+    ${v9Card(t("v9PerDay"),"calendar", byDay.map(x=>v9Bar(t("days")[x.d],x.n,maxD)).join(""))}
+    ${v9Card(t("v9PerCat"),"grid", cats.length
+      ? cats.map(([c,n])=>v9Bar((typeof catLabel==="function"?catLabel(c):c),n,maxC)).join("")
+      : v9Empty())}
+    ${v9Card(t("v9EmptyActs"),"flag", low.length
+      ? `<p class="mini">${low.length} ${esc(t("activities"))}</p>`+low.slice(0,10).map(x=>
+          `<div class="booking-line"><span>${esc(x.a.name)}</span><span class="pill">${t("daysShort")[x.a.day]} ${esc(x.a.time)}</span></div>`).join("")
+      : `<p class="mini">${esc(t("allGood"))}</p>`)}`;
+}
+function v9TeamInner(){
+  const staff=v9StaffList();
+  const rows=staff.map(u=>({u,n:v9ActsOf(u)})).sort((a,b)=>b.n-a.n);
+  const counts=rows.map(r=>r.n);
+  const max=counts.length?Math.max(...counts):0;
+  const min=counts.length?Math.min(...counts):0;
+  const spread=max-min;
+  const tasks=(S.tasks||[]);
+  const openT=tasks.filter(x=>!["done","verified","completed"].includes(String(x.status))).length;
+  const lateT=tasks.filter(x=>{
+    if(["done","verified","completed"].includes(String(x.status))) return false;
+    return x.deadline && Date.parse(x.deadline)<Date.now();
+  }).length;
+  const date=(typeof hotelDateStr==="function")?hotelDateStr():"";
+  const marked=new Set((S.staffAtt||[]).filter(x=>String(x.date).slice(0,10)===date).map(x=>x.username));
+  const unmarked=staff.filter(u=>!marked.has(u.username)).length;
+  return `<div class="stat-grid">
+      ${v9Stat(staff.length,t("totalEntertainers"))}
+      ${v9Stat(openT,t("v9TaskOpen"))}
+      ${v9Stat(lateT,t("v9TaskLate"))}
+      ${v9Stat(unmarked,t("attNoShow"))}
+    </div>
+    <div class="v9-flag ${spread<=1?"ok":"warn"}">${spread<=1?ic("check",15):ic("flag",15)}
+      ${spread<=1?esc(t("v9Even")):esc(t("v9Gap"))+" "+spread}</div>
+    ${v9Card(t("v9Workload"),"users", rows.length
+      ? rows.map(r=>v9Bar((r.u.display_name||r.u.username)+(r.u.number?" · #"+r.u.number:""), r.n, max||1)).join("")
+      : v9Empty())}`;
+}
+function v9QualityInner(){
+  const fb=(S.feedback||[]).filter(f=>+f.rate>0);
+  const dist=[5,4,3,2,1].map(r=>({r,n:fb.filter(f=>+f.rate===r).length}));
+  const max=Math.max(1,...dist.map(x=>x.n));
+  const avg=fb.length?(fb.reduce((n,f)=>n+ +f.rate,0)/fb.length):0;
+  const good=fb.filter(f=>+f.rate>=4).length;
+  const low=fb.filter(f=>+f.rate<=3).length;
+  return `<div class="stat-grid">
+      ${v9Stat(fb.length,t("feedback"))}
+      ${v9Stat(avg?avg.toFixed(1):"—",t("v9RateAvg"))}
+      ${v9Stat(good,t("v9Reviews"))}
+      ${v9Stat(low,t("v9RateLow"))}
+    </div>
+    ${v9Card(t("feedback"),"star", fb.length
+      ? dist.map(x=>v9Bar("★".repeat(x.r), x.n, max)).join("")
+      : v9Empty())}
+    ${typeof fbAnalyticsCard==="function"?fbAnalyticsCard():""}`;
+}
+function v9InsightsView(){
+  const sub=(S.sub&&S.sub.insights)||"overview";
+  const inner = sub==="guests"  ? v9GuestsInner()
+              : sub==="program" ? v9ProgramInner()
+              : sub==="team"    ? v9TeamInner()
+              : sub==="quality" ? v9QualityInner()
+              : v9OverviewInner();
+  return `<div class="screen fadein">
+    ${topBar(t("v9Insights"),S.session.name)}
+    <p class="mini v9-lead">${esc(t("v9InsightsSub"))}</p>
+    ${subTabs("insights",[["overview",t("v9Overview")],["guests",t("v9Guests")],
+      ["program",t("v9Program")],["team",t("v9Team")],["quality",t("v9Quality")]])}
+    ${inner}
+    <button class="btn ghost" id="btn-exportdata" style="margin-top:16px">${ic("download",16)} ${t("exportData")}</button>
+  </div>`;
+}
+
+/* ==========================================================================
+   5. MENU — every screen has exactly one place in the menu
+   ========================================================================== */
+const __v8NavGroups=navGroupsBase;
+navGroupsBase=function(role){
+  if(role!=="manager") return __v8NavGroups(role);
+  const un=unreadFor("manager");
+  const newReq=(S.requests||[]).filter(r=>r.status==="new").length;
+  return [
+    {head:t("v9Ops2"), items:[
+      ["dash","chart",t("dashboard"),0],
+      ["insights","grid",t("v9Insights"),0],
+      ["command","sparkle",t("v9Command"),0],
+      ["program","calendar",t("manage"),0],
+      ["dayplan","clipboard",t("dayPlan"),0],
+      ["weekplanner","calendar",t("v9WeekPlanner"),0],
+      ["quiz","trophy",t("quizCenter"),0],
+      ["gallery","image",t("galleryTab"),0],
+      ["hotelinfo","building",t("hotelInfoTab"),0],
+      ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
+      ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
+      ["qr","qr",t("qrTab"),0]]},
+    {head:t("v9People2"), items:[
+      ["guests","user",t("guestsTab"),un+newReq],
+      ["team","users",t("teamTab"),0]]},
+    {head:t("v9Reports2"), items:[
+      ["approval","check",t("v9Approval"),0],
+      ["audit","file",t("v9Audit"),0]]},
+    {head:t("v9Settings2"), items:[
+      ["settings","settings",t("v9Tab"),0]]}
+  ];
+};
+const __v8ManagerViewV9=managerView;
+managerView=function(){
+  if(S.session && S.session.role==="manager" && S.tab==="insights") return v9InsightsView();
+  return __v8ManagerViewV9();
+};
+
+/* ==========================================================================
+   6. WIRING
+   ========================================================================== */
+function v9WireMode(){
+  document.querySelectorAll("[data-v9mode]").forEach(b=>{
+    b.onclick=()=>v9SetMode(b.dataset.v9mode);
+  });
+}
+function v9Wire(){
+  try{ v9WireSearch(); }catch(e){ console.error(e); }
+  try{ v9WireMode(); }catch(e){ console.error(e); }
+}
+const __v8WireCommonV9=wireCommon;
+wireCommon=function(){ __v8WireCommonV9(); v9Wire(); };
+if(S && S.sub && !S.sub.insights) S.sub.insights="overview";
+
+/* ==========================================================================
+   7. DASHBOARD — a clean daily cockpit; the long lists moved to Analytics
+   ========================================================================== */
+const __v8DashView=dashView;
+dashView=function(){
+  if(S.sub && S.sub.dash==="rooms") return __v8DashView();
+  const bk=v9Booked();
+  const withCap=(S.activities||[]).filter(a=>+a.capacity>0);
+  const occ=withCap.length?Math.round(withCap.reduce((n,a)=>n+Math.min(1,seatsTaken(a.id)/a.capacity),0)/withCap.length*100):0;
+  const today=(typeof todayIndex==="function")?todayIndex():0;
+  const todayActs=(S.activities||[]).filter(a=>a.day===today).length;
+  const wait=(S.bookings||[]).filter(b=>b.status==="waitlist").length;
+  const staff=v9StaffList().length;
+  const openTasks=(S.tasks||[]).filter(x=>!["done","verified","completed"].includes(String(x.status))).length;
+  return `<div class="screen fadein">
+    ${topBar(t("dashboard"),S.session.name)}
+    ${subTabs("dash",[["overview",t("overview")],["rooms",t("rooms")]])}
+    ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
+    ${typeof attentionCard==="function"?attentionCard():""}
+    <div class="stat-grid">
+      ${v9Stat(todayActs,t("todayProgram"))}
+      ${v9Stat(bk.length,t("v9Bookings"))}
+      ${v9Stat(occ+"%",t("v9Occ"))}
+      ${v9Stat(wait,t("v9Waitlist"))}
+      ${v9Stat(staff,t("v9Team"))}
+      ${v9Stat(openTasks,t("v9TaskOpen"))}
+    </div>
+    <div class="v9-dashbtns">
+      <button class="btn" data-hub="insights">${ic("chart",16)} ${t("v9OpenAnalytics")}</button>
+      <button class="btn ghost" data-hub="command">${ic("sparkle",16)} ${t("v9Command")}</button>
+      <button class="btn ghost" id="btn-exportdata">${ic("download",16)} ${t("exportData")}</button>
+    </div>
+  </div>`;
+};
+
+/* Re-apply everything once this file has loaded: the boot pass ran before
+   these fixes existed, so the first paint would otherwise miss them. */
+try{
+  if(S && S.sub && !S.sub.insights) S.sub.insights="overview";
+  applySettings();
+  if(typeof render==="function" && document.getElementById("app")) render();
+}catch(e){ console.error(e); }
 
 </script>
 </body>
