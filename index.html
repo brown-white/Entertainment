@@ -3460,7 +3460,8 @@ function loginView(){
         ${stepHtml}
         ${wiz.step<6
           ? `<button class="btn" id="wz-next">${t("nextStep")}</button>`
-          : `<button class="btn" id="wz-create">${t("createAccount")}</button>`}
+          : `<p class="mini v10-notice">${t("vaNotice")}</p>
+             <button class="btn" id="wz-create">${t("createAccount")}</button>`}
         ${backLink}`;
     const fields = guestMode==="new" ? wizard : `
         <label>${t("user")} · ${t("room")}</label><input id="f-room" inputmode="numeric" value="${esc(wiz.room)}" placeholder="4215">
@@ -9217,6 +9218,28 @@ const __v6Wire=wireCommon;wireCommon=function(){__v6Wire();document.querySelecto
 .v9-modenow{display:inline-block;margin-top:6px;color:var(--muted);font-size:var(--fs-meta)}
 
 
+
+/* ---- v10: retention, health, privacy notice ---- */
+.v10-due{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin:6px 0 12px}
+.v10-due span{background:var(--sand);border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:6px 12px;font-size:var(--fs-caption);font-weight:600}
+.v10-two{display:grid;grid-template-columns:1fr;gap:var(--sp-2)}
+@media(min-width:620px){.v10-two{grid-template-columns:1fr 1fr}}
+.v10-list{margin:6px 0 0;padding-inline-start:18px;font-size:var(--fs-caption);line-height:1.6;color:var(--ink)}
+.v10-chk{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.v10-chk:last-child{border-bottom:0}
+.v10-dot{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex:0 0 24px;
+  border-radius:50%;background:var(--sand)}
+.v10-chk.ok .v10-dot{color:var(--espresso)}
+.v10-chk.warn .v10-dot{background:var(--champagne-100);color:var(--espresso)}
+[data-theme="dark"] .v10-chk.warn .v10-dot{background:var(--surface-2);color:var(--bronze)}
+.v10-chk-t{min-width:0}
+.v10-chk-t b{display:block;font-size:var(--fs-body)}
+.v10-chk-t small{display:block;color:var(--muted);font-size:var(--fs-caption);line-height:1.4}
+.v10-errs{max-height:340px;overflow:auto;margin-top:6px}
+.v10-err{padding:8px 0;border-bottom:1px solid var(--line)}
+.v10-err b{display:block;font-size:var(--fs-caption);font-weight:600;word-break:break-word}
+.v10-notice{margin:0 0 10px;line-height:1.5;opacity:.85}
 /* ---- small gaps found by the CSS audit ---- */
 .ts-chip.n{background:var(--surface-2);border-color:var(--line);color:var(--muted)}
 .feat-cb{width:auto;flex:0 0 auto;margin:0}
@@ -10705,6 +10728,494 @@ try{
   applySettings();
   if(typeof render==="function" && document.getElementById("app")) render();
 }catch(e){ console.error(e); }
+
+</script>
+<script id="control-center-v10">
+
+/* ==========================================================================
+   v10 — the operational gaps
+   1. Photos are resized before upload (storage + speed)
+   2. Guest data retention — personal data does not live forever
+   3. Problem reports — the app records its own errors so you can see them
+   4. The newest manager screens now speak all 8 languages
+   ========================================================================== */
+const V10_STR={
+en:{
+  vaPrivacy:"Guest data & privacy", vaPrivacySub:"How long guest details are kept before they are removed",
+  vaHealth:"Problem reports", vaHealthSub:"Errors the app recorded, and a health check",
+  vaKeep:"Keep guest details for", vaDays:"days after departure",
+  vaKeepHint:"After this, the guest's name, phone, login and messages are removed. Bookings and ratings stay as numbers, so your statistics are not affected.",
+  vaOff:"Never remove (not recommended)",
+  vaDue:"Ready to be removed now", vaNothingDue:"Nothing to remove — everything is within the period you chose.",
+  vaCleanNow:"Remove them now", vaCleanQ:"Remove these guest details?",
+  vaCleaned:"Guest details removed", vaAuto:"Check automatically", vaAutoHint:"Runs once a day when you open the app.",
+  vaLastRun:"Last check", vaNever:"never",
+  vaWhatGoes:"What is removed", vaWhatStays:"What stays",
+  vaGoes1:"Name, phone, username and password", vaGoes2:"Chat messages", vaGoes3:"Song and birthday requests",
+  vaStays1:"Booking counts and occupancy", vaStays2:"Nationality statistics", vaStays3:"Ratings and feedback",
+  vaAccounts:"guest accounts", vaMessages:"messages", vaRequests:"requests", vaNames:"names in old bookings",
+  vaNotice:"Your name, room and phone are used only to run the entertainment programme during your stay, and are removed after you leave.",
+
+  vaNoErrors:"No problems recorded — that is the good result.",
+  vaErrCount:"Recorded problems", vaClearErrs:"Clear the list", vaCleared:"List cleared",
+  vaWhen:"When", vaWhere:"Screen", vaWhat:"What happened",
+  vaHealthChk:"Health check", vaHealthOk:"Working", vaHealthWarn:"Needs a look",
+  vaChkDb:"Database connection", vaChkData:"Data received", vaChkMgr:"Second manager account",
+  vaChkBackup:"Settings backup", vaChkPush:"Push notifications", vaChkRetention:"Guest data retention",
+  vaMgrWarn:"Only one manager account — if you are away, nobody can manage the app",
+  vaBackupWarn:"No backup taken yet — download one from Backup & restore",
+  vaBackupOk:"Last backup", vaPushOff:"Not set up — notifications only work while the app is open",
+  vaRetOff:"Switched off — guest details are kept forever",
+  vaCopyErr:"Copy the list",  vaCopied:"Copied",
+  vaPhotoSmaller:"Photos are made smaller before uploading, so they load fast on hotel wifi."
+},
+de:{
+  vaPrivacy:"Gästedaten & Datenschutz", vaPrivacySub:"Wie lange Gästedaten gespeichert bleiben",
+  vaHealth:"Problemberichte", vaHealthSub:"Fehler, die die App aufgezeichnet hat, plus Systemcheck",
+  vaKeep:"Gästedaten aufbewahren für", vaDays:"Tage nach der Abreise",
+  vaKeepHint:"Danach werden Name, Telefon, Login und Nachrichten gelöscht. Buchungen und Bewertungen bleiben als Zahlen — deine Statistik bleibt vollständig.",
+  vaOff:"Nie löschen (nicht empfohlen)",
+  vaDue:"Jetzt zum Löschen bereit", vaNothingDue:"Nichts zu löschen — alles liegt im gewählten Zeitraum.",
+  vaCleanNow:"Jetzt löschen", vaCleanQ:"Diese Gästedaten löschen?",
+  vaCleaned:"Gästedaten gelöscht", vaAuto:"Automatisch prüfen", vaAutoHint:"Läuft einmal täglich beim Öffnen der App.",
+  vaLastRun:"Letzte Prüfung", vaNever:"nie",
+  vaWhatGoes:"Was gelöscht wird", vaWhatStays:"Was bleibt",
+  vaGoes1:"Name, Telefon, Benutzername und Passwort", vaGoes2:"Chat-Nachrichten", vaGoes3:"Musik- und Geburtstagswünsche",
+  vaStays1:"Buchungszahlen und Auslastung", vaStays2:"Nationalitäten-Statistik", vaStays3:"Bewertungen und Feedback",
+  vaAccounts:"Gästekonten", vaMessages:"Nachrichten", vaRequests:"Wünsche", vaNames:"Namen in alten Buchungen",
+  vaNotice:"Dein Name, Zimmer und Telefon werden nur für das Animationsprogramm während deines Aufenthalts genutzt und nach deiner Abreise gelöscht.",
+  vaNoErrors:"Keine Probleme aufgezeichnet — das ist das gute Ergebnis.",
+  vaErrCount:"Aufgezeichnete Probleme", vaClearErrs:"Liste leeren", vaCleared:"Liste geleert",
+  vaWhen:"Wann", vaWhere:"Bildschirm", vaWhat:"Was passiert ist",
+  vaHealthChk:"Systemcheck", vaHealthOk:"Funktioniert", vaHealthWarn:"Anschauen",
+  vaChkDb:"Datenbank-Verbindung", vaChkData:"Daten empfangen", vaChkMgr:"Zweites Manager-Konto",
+  vaChkBackup:"Einstellungs-Sicherung", vaChkPush:"Push-Benachrichtigungen", vaChkRetention:"Löschfrist für Gästedaten",
+  vaMgrWarn:"Nur ein Manager-Konto — wenn du weg bist, kann niemand die App verwalten",
+  vaBackupWarn:"Noch keine Sicherung — lade eine unter Sicherung & Wiederherstellung",
+  vaBackupOk:"Letzte Sicherung", vaPushOff:"Nicht eingerichtet — Hinweise kommen nur bei geöffneter App",
+  vaRetOff:"Ausgeschaltet — Gästedaten bleiben für immer gespeichert",
+  vaCopyErr:"Liste kopieren", vaCopied:"Kopiert",
+  vaPhotoSmaller:"Fotos werden vor dem Hochladen verkleinert und laden im Hotel-WLAN schnell."
+},
+ar:{
+  vaPrivacy:"بيانات الضيوف والخصوصية", vaPrivacySub:"مدة الاحتفاظ ببيانات الضيوف قبل حذفها",
+  vaHealth:"تقارير المشاكل", vaHealthSub:"الأخطاء التي سجّلها التطبيق وفحص الحالة",
+  vaKeep:"الاحتفاظ ببيانات الضيف لمدة", vaDays:"يوماً بعد المغادرة",
+  vaKeepHint:"بعدها يُحذف الاسم والهاتف والدخول والرسائل. تبقى الحجوزات والتقييمات كأرقام فلا تتأثر إحصاءاتك.",
+  vaOff:"عدم الحذف نهائياً (غير مُستحسن)",
+  vaDue:"جاهز للحذف الآن", vaNothingDue:"لا شيء للحذف — كل شيء ضمن المدة المختارة.",
+  vaCleanNow:"احذفها الآن", vaCleanQ:"حذف بيانات الضيوف هذه؟",
+  vaCleaned:"تم حذف بيانات الضيوف", vaAuto:"فحص تلقائي", vaAutoHint:"يعمل مرة يومياً عند فتح التطبيق.",
+  vaLastRun:"آخر فحص", vaNever:"أبداً",
+  vaWhatGoes:"ما يُحذف", vaWhatStays:"ما يبقى",
+  vaGoes1:"الاسم والهاتف واسم المستخدم وكلمة المرور", vaGoes2:"رسائل الدردشة", vaGoes3:"طلبات الأغاني وأعياد الميلاد",
+  vaStays1:"أعداد الحجوزات والإشغال", vaStays2:"إحصاءات الجنسيات", vaStays3:"التقييمات والملاحظات",
+  vaAccounts:"حسابات ضيوف", vaMessages:"رسائل", vaRequests:"طلبات", vaNames:"أسماء في حجوزات قديمة",
+  vaNotice:"يُستخدم اسمك ورقم غرفتك وهاتفك فقط لتشغيل برنامج الترفيه أثناء إقامتك، وتُحذف بعد مغادرتك.",
+  vaNoErrors:"لا توجد مشاكل مسجّلة — وهذه نتيجة جيدة.",
+  vaErrCount:"المشاكل المسجّلة", vaClearErrs:"مسح القائمة", vaCleared:"تم المسح",
+  vaWhen:"متى", vaWhere:"الشاشة", vaWhat:"ماذا حدث",
+  vaHealthChk:"فحص الحالة", vaHealthOk:"يعمل", vaHealthWarn:"يحتاج مراجعة",
+  vaChkDb:"الاتصال بقاعدة البيانات", vaChkData:"استلام البيانات", vaChkMgr:"حساب مدير ثانٍ",
+  vaChkBackup:"نسخة احتياطية للإعدادات", vaChkPush:"الإشعارات", vaChkRetention:"مدة حفظ بيانات الضيوف",
+  vaMgrWarn:"يوجد حساب مدير واحد فقط — في غيابك لا يستطيع أحد إدارة التطبيق",
+  vaBackupWarn:"لا توجد نسخة احتياطية بعد — نزّل واحدة من النسخ والاستعادة",
+  vaBackupOk:"آخر نسخة", vaPushOff:"غير مُفعّل — التنبيهات تعمل فقط والتطبيق مفتوح",
+  vaRetOff:"مُعطّل — تبقى بيانات الضيوف للأبد",
+  vaCopyErr:"نسخ القائمة", vaCopied:"تم النسخ",
+  vaPhotoSmaller:"يتم تصغير الصور قبل الرفع لتظهر بسرعة على شبكة الفندق."
+}
+};
+Object.keys(V10_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V10_STR[l]); });
+
+/* --- the newest manager screens now exist in every language ---------------
+   Until now ru / pl / cs / nl / fr fell back to English on these screens. */
+const V10_FILL={
+ru:{ ccTab:"Центр управления", v9Tab:"Центр управления", v9Head:"Центр управления",
+  v9Sub:"Все настройки приложения, в одном месте.", v9Search:"Поиск настройки…",
+  v9SecLook:"Внешний вид", v9SecContent:"Содержание и тексты", v9SecOps:"Работа",
+  v9SecSystem:"Система", v9SecData:"Отчёты и данные", v9Insights:"Аналитика",
+  v9InsightsSub:"Все цифры приложения в одном месте", v9Overview:"Обзор", v9Guests:"Гости",
+  v9Program:"Программа", v9Team:"Команда", v9Quality:"Качество", v9Mode:"Светлая или тёмная",
+  v9ModeLight:"Светлая", v9ModeDark:"Тёмная", v9ModeAuto:"Как на телефоне",
+  v9Bookings:"Брони", v9People:"Человек", v9Rooms:"Комнаты", v9Occ:"Ср. заполняемость",
+  v9Workload:"Активностей на человека", v9Even:"Поровну", v9Gap:"Разница в",
+  v9OpenAnalytics:"Открыть аналитику", v9Settings2:"Настройки", v9Ops2:"Работа",
+  v9People2:"Люди", v9Reports2:"Отчёты", ccWording:"Слова и тексты", ccDesign:"Студия дизайна",
+  ccRoles:"Роли и правила смен", ccProgram:"Структура программы", ccReports:"Оформление отчётов",
+  ccBackup:"Резервная копия" },
+pl:{ ccTab:"Centrum sterowania", v9Tab:"Centrum sterowania", v9Head:"Centrum sterowania",
+  v9Sub:"Wszystkie ustawienia aplikacji w jednym miejscu.", v9Search:"Szukaj ustawienia…",
+  v9SecLook:"Wygląd", v9SecContent:"Treść i teksty", v9SecOps:"Działanie",
+  v9SecSystem:"System", v9SecData:"Raporty i dane", v9Insights:"Analizy",
+  v9InsightsSub:"Wszystkie liczby aplikacji w jednym miejscu", v9Overview:"Przegląd", v9Guests:"Goście",
+  v9Program:"Program", v9Team:"Zespół", v9Quality:"Jakość", v9Mode:"Jasny czy ciemny",
+  v9ModeLight:"Jasny", v9ModeDark:"Ciemny", v9ModeAuto:"Jak telefon",
+  v9Bookings:"Rezerwacje", v9People:"Osoby", v9Rooms:"Pokoje", v9Occ:"Śr. obłożenie",
+  v9Workload:"Zajęć na osobę", v9Even:"Równo", v9Gap:"Różnica",
+  v9OpenAnalytics:"Otwórz analizy", v9Settings2:"Ustawienia", v9Ops2:"Działanie",
+  v9People2:"Ludzie", v9Reports2:"Raporty", ccWording:"Słowa i teksty", ccDesign:"Studio projektu",
+  ccRoles:"Role i zasady dyżurów", ccProgram:"Struktura programu", ccReports:"Nagłówek raportu",
+  ccBackup:"Kopia zapasowa" },
+cs:{ ccTab:"Řídicí centrum", v9Tab:"Řídicí centrum", v9Head:"Řídicí centrum",
+  v9Sub:"Všechna nastavení aplikace na jednom místě.", v9Search:"Hledat nastavení…",
+  v9SecLook:"Vzhled", v9SecContent:"Obsah a texty", v9SecOps:"Provoz",
+  v9SecSystem:"Systém", v9SecData:"Reporty a data", v9Insights:"Analýzy",
+  v9InsightsSub:"Všechna čísla aplikace na jednom místě", v9Overview:"Přehled", v9Guests:"Hosté",
+  v9Program:"Program", v9Team:"Tým", v9Quality:"Kvalita", v9Mode:"Světlý nebo tmavý",
+  v9ModeLight:"Světlý", v9ModeDark:"Tmavý", v9ModeAuto:"Podle telefonu",
+  v9Bookings:"Rezervace", v9People:"Osoby", v9Rooms:"Pokoje", v9Occ:"Prům. obsazenost",
+  v9Workload:"Aktivit na osobu", v9Even:"Rovnoměrně", v9Gap:"Rozdíl",
+  v9OpenAnalytics:"Otevřít analýzy", v9Settings2:"Nastavení", v9Ops2:"Provoz",
+  v9People2:"Lidé", v9Reports2:"Reporty", ccWording:"Slova a texty", ccDesign:"Design studio",
+  ccRoles:"Role a pravidla služeb", ccProgram:"Struktura programu", ccReports:"Hlavička reportu",
+  ccBackup:"Záloha" },
+nl:{ ccTab:"Bedieningscentrum", v9Tab:"Bedieningscentrum", v9Head:"Bedieningscentrum",
+  v9Sub:"Alle instellingen van deze app op één plek.", v9Search:"Zoek een instelling…",
+  v9SecLook:"Uiterlijk", v9SecContent:"Inhoud en teksten", v9SecOps:"Werking",
+  v9SecSystem:"Systeem", v9SecData:"Rapporten en gegevens", v9Insights:"Analyses",
+  v9InsightsSub:"Alle cijfers van de app op één plek", v9Overview:"Overzicht", v9Guests:"Gasten",
+  v9Program:"Programma", v9Team:"Team", v9Quality:"Kwaliteit", v9Mode:"Licht of donker",
+  v9ModeLight:"Licht", v9ModeDark:"Donker", v9ModeAuto:"Volg de telefoon",
+  v9Bookings:"Boekingen", v9People:"Personen", v9Rooms:"Kamers", v9Occ:"Gem. bezetting",
+  v9Workload:"Activiteiten per persoon", v9Even:"Gelijk verdeeld", v9Gap:"Verschil van",
+  v9OpenAnalytics:"Analyses openen", v9Settings2:"Instellingen", v9Ops2:"Werking",
+  v9People2:"Mensen", v9Reports2:"Rapporten", ccWording:"Woorden en teksten", ccDesign:"Ontwerpstudio",
+  ccRoles:"Rollen en dienstregels", ccProgram:"Programmastructuur", ccReports:"Rapportkop",
+  ccBackup:"Back-up" },
+fr:{ ccTab:"Centre de contrôle", v9Tab:"Centre de contrôle", v9Head:"Centre de contrôle",
+  v9Sub:"Tous les réglages de l'application, au même endroit.", v9Search:"Chercher un réglage…",
+  v9SecLook:"Apparence", v9SecContent:"Contenu et textes", v9SecOps:"Exploitation",
+  v9SecSystem:"Système", v9SecData:"Rapports et données", v9Insights:"Analyses",
+  v9InsightsSub:"Tous les chiffres de l'app au même endroit", v9Overview:"Aperçu", v9Guests:"Clients",
+  v9Program:"Programme", v9Team:"Équipe", v9Quality:"Qualité", v9Mode:"Clair ou sombre",
+  v9ModeLight:"Clair", v9ModeDark:"Sombre", v9ModeAuto:"Suivre le téléphone",
+  v9Bookings:"Réservations", v9People:"Personnes", v9Rooms:"Chambres", v9Occ:"Occupation moy.",
+  v9Workload:"Activités par personne", v9Even:"Réparti équitablement", v9Gap:"Écart de",
+  v9OpenAnalytics:"Ouvrir les analyses", v9Settings2:"Paramètres", v9Ops2:"Exploitation",
+  v9People2:"Personnes", v9Reports2:"Rapports", ccWording:"Mots et textes", ccDesign:"Studio de design",
+  ccRoles:"Rôles et règles de service", ccProgram:"Structure du programme", ccReports:"En-tête de rapport",
+  ccBackup:"Sauvegarde" }
+};
+Object.keys(V10_FILL).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V10_FILL[l]); });
+
+/* ==========================================================================
+   1. PHOTOS ARE RESIZED BEFORE UPLOAD
+   A modern phone photo is 4–8 MB. Uploading it whole fills your storage and
+   makes galleries crawl on hotel wifi. This shrinks it first.
+   ========================================================================== */
+const V10_MAX_SIDE=1600, V10_QUALITY=0.82, V10_SKIP_UNDER=180*1024;
+function v10Resize(file){
+  return new Promise(resolve=>{
+    try{
+      if(!file || !/^image\//.test(file.type||"")) return resolve(file);
+      if(/gif|svg/i.test(file.type)) return resolve(file);      // animation / vectors: leave alone
+      if(file.size && file.size < V10_SKIP_UNDER) return resolve(file);
+      const url=URL.createObjectURL(file);
+      const img=new Image();
+      img.onload=()=>{
+        try{
+          const w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+          if(!w || !h){ URL.revokeObjectURL(url); return resolve(file); }
+          const scale=Math.min(1, V10_MAX_SIDE/Math.max(w,h));
+          if(scale>=1 && file.size<1.2*1024*1024){ URL.revokeObjectURL(url); return resolve(file); }
+          const cw=Math.max(1,Math.round(w*scale)), ch=Math.max(1,Math.round(h*scale));
+          const cv=document.createElement("canvas");
+          cv.width=cw; cv.height=ch;
+          const cx=cv.getContext("2d");
+          cx.drawImage(img,0,0,cw,ch);
+          cv.toBlob(blob=>{
+            URL.revokeObjectURL(url);
+            if(!blob || blob.size>=file.size) return resolve(file);   // never make it bigger
+            const name=String(file.name||"photo").replace(/\.[^.]+$/,"")+".jpg";
+            let out;
+            try{ out=new File([blob],name,{type:"image/jpeg"}); }
+            catch(e){ out=blob; out.name=name; }
+            resolve(out);
+          },"image/jpeg",V10_QUALITY);
+        }catch(e){ URL.revokeObjectURL(url); resolve(file); }
+      };
+      img.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
+      img.src=url;
+    }catch(e){ resolve(file); }
+  });
+}
+const __v9UploadAvatar=uploadAvatar;
+uploadAvatar=async function(file){
+  const smaller=await v10Resize(file);
+  return __v9UploadAvatar(smaller);
+};
+
+/* ==========================================================================
+   2. GUEST DATA RETENTION
+   Personal details are removed a set time after departure. The numbers your
+   statistics need (bookings, nationality, ratings) are deliberately kept.
+   ========================================================================== */
+function v10RetDays(){
+  const v=(S.settings&&S.settings.retentionDays);
+  if(v===0 || v==="0") return 0;                 // 0 = switched off
+  const n=Number(v);
+  return Number.isFinite(n)&&n>0 ? n : 90;       // sensible default
+}
+function v10RetAuto(){ return (S.settings&&S.settings.retentionAuto)!==false; }
+function v10Cutoff(days){
+  const d=new Date(Date.now()-Number(days)*86400000);
+  return d.toISOString().slice(0,10);
+}
+/* what is currently older than the retention period */
+function v10Due(){
+  const days=v10RetDays();
+  if(!days) return {off:true, accounts:[], messages:0, requests:0, names:0, total:0};
+  const cut=v10Cutoff(days);
+  const cutTs=cut+"T00:00:00";
+  const accounts=(S.accounts||[]).filter(a=>{
+    const dep=String(a.departure||"").slice(0,10);
+    return dep && dep < cut;
+  });
+  const messages=(S.messages||[]).filter(m=>String(m.created_at||"") < cutTs).length;
+  const requests=(S.requests||[]).filter(r=>String(r.created_at||"") < cutTs).length;
+  const names=(S.bookings||[]).filter(b=>String(b.created_at||"") < cutTs
+    && String(b.guest_name||"")!=="—").length;
+  return {off:false, cut, accounts, messages, requests, names,
+    total:accounts.length+messages+requests+names};
+}
+/* Remove the personal parts. Bookings and orders are kept but the name is
+   replaced, so occupancy and nationality statistics survive intact. */
+async function v10RunCleanup(){
+  const due=v10Due();
+  if(due.off || !due.total) return due;
+  const cutTs=due.cut+"T00:00:00";
+  if(typeof REMOTE!=="undefined" && REMOTE){
+    const enc=encodeURIComponent;
+    for(const a of due.accounts){
+      await sb("guest_accounts?id=eq."+a.id,{method:"DELETE"});
+    }
+    await sb("messages?created_at=lt."+enc(cutTs),{method:"DELETE"});
+    await sb("requests?created_at=lt."+enc(cutTs),{method:"DELETE"});
+    await sb("bookings?created_at=lt."+enc(cutTs),
+      {method:"PATCH",body:JSON.stringify({guest_name:"—",phone:""})});
+    await sb("ticket_orders?created_at=lt."+enc(cutTs),
+      {method:"PATCH",body:JSON.stringify({guest_name:"—"})});
+  }
+  const gone=new Set(due.accounts.map(a=>a.id));
+  S.accounts=(S.accounts||[]).filter(a=>!gone.has(a.id));
+  S.messages=(S.messages||[]).filter(m=>!(String(m.created_at||"") < cutTs));
+  S.requests=(S.requests||[]).filter(r=>!(String(r.created_at||"") < cutTs));
+  S.bookings=(S.bookings||[]).map(b=>String(b.created_at||"") < cutTs
+    ? {...b, guest_name:"—", phone:""} : b);
+  S.orders=(S.orders||[]).map(o=>String(o.created_at||"") < cutTs
+    ? {...o, guest_name:"—"} : o);
+  try{ await DB.saveSettings({...S.settings, retentionLast:new Date().toISOString()}); }catch(e){}
+  return due;
+}
+/* once a day, when the manager opens the app */
+async function v10AutoCleanup(){
+  try{
+    if(!S.session || S.session.role!=="manager") return;
+    if(!v10RetAuto() || !v10RetDays()) return;
+    const last=String((S.settings&&S.settings.retentionLast)||"").slice(0,10);
+    const today=new Date().toISOString().slice(0,10);
+    if(last===today) return;
+    const due=v10Due();
+    if(!due.total){
+      try{ await DB.saveSettings({...S.settings, retentionLast:new Date().toISOString()}); }catch(e){}
+      return;
+    }
+    await v10RunCleanup();
+  }catch(e){ console.warn("retention",e); }
+}
+function v10PrivacyView(){
+  const days=v10RetDays(), due=v10Due();
+  const last=(S.settings&&S.settings.retentionLast)
+    ? new Date(S.settings.retentionLast).toLocaleDateString() : t("vaNever");
+  const opts=[0,30,60,90,180,365];
+  return `<div class="screen fadein">
+    ${topBar(t("vaPrivacy"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="card">
+        <h3>${ic("shield",17)} ${esc(t("vaKeep"))}</h3>
+        <p class="mini">${esc(t("vaKeepHint"))}</p>
+        <select id="v10-days">
+          ${opts.map(n=>`<option value="${n}" ${days===n?"selected":""}>${
+            n===0?esc(t("vaOff")):n+" "+esc(t("vaDays"))}</option>`).join("")}
+        </select>
+        <label class="cc-check" style="margin-top:12px">
+          <input type="checkbox" id="v10-auto" ${v10RetAuto()?"checked":""}>
+          <span>${esc(t("vaAuto"))}</span></label>
+        <p class="mini">${esc(t("vaAutoHint"))} · ${esc(t("vaLastRun"))}: ${esc(last)}</p>
+        <button class="btn" id="v10-save">${ic("check",16)} ${t("save")}</button>
+      </div>
+
+      <div class="card">
+        <h3>${ic("trash",17)} ${esc(t("vaDue"))}</h3>
+        ${due.off
+          ? `<p class="mini">${esc(t("vaRetOff"))}</p>`
+          : due.total
+            ? `<div class="v10-due">
+                 ${due.accounts.length?`<span>${due.accounts.length} ${esc(t("vaAccounts"))}</span>`:""}
+                 ${due.messages?`<span>${due.messages} ${esc(t("vaMessages"))}</span>`:""}
+                 ${due.requests?`<span>${due.requests} ${esc(t("vaRequests"))}</span>`:""}
+                 ${due.names?`<span>${due.names} ${esc(t("vaNames"))}</span>`:""}
+               </div>
+               <button class="btn warn" id="v10-clean">${ic("trash",16)} ${t("vaCleanNow")}</button>`
+            : `<p class="mini">${esc(t("vaNothingDue"))}</p>`}
+      </div>
+
+      <div class="v10-two">
+        <div class="card">
+          <h3>${ic("close",16)} ${esc(t("vaWhatGoes"))}</h3>
+          <ul class="v10-list"><li>${esc(t("vaGoes1"))}</li><li>${esc(t("vaGoes2"))}</li><li>${esc(t("vaGoes3"))}</li></ul>
+        </div>
+        <div class="card">
+          <h3>${ic("check",16)} ${esc(t("vaWhatStays"))}</h3>
+          <ul class="v10-list"><li>${esc(t("vaStays1"))}</li><li>${esc(t("vaStays2"))}</li><li>${esc(t("vaStays3"))}</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function v10WirePrivacy(){
+  const save=document.getElementById("v10-save");
+  if(save) save.onclick=async ()=>{
+    const d=Number(document.getElementById("v10-days").value);
+    const auto=!!document.getElementById("v10-auto").checked;
+    try{
+      await DB.saveSettings({...S.settings, retentionDays:d, retentionAuto:auto});
+      toastOk(t("saved")); render();
+    }catch(e){ toastErr(t("errSave")); }
+  };
+  const clean=document.getElementById("v10-clean");
+  if(clean) clean.onclick=async ()=>{
+    const ok=await confirmAction({title:t("vaCleanQ"), text:t("cannotUndo"), danger:true});
+    if(!ok) return;
+    try{ await v10RunCleanup(); toastOk(t("vaCleaned")); render(); }
+    catch(e){ console.error(e); toastErr(t("errSave")); }
+  };
+}
+
+/* ==========================================================================
+   3. PROBLEM REPORTS — the app writes down its own errors
+   ========================================================================== */
+const V10_ERRS=[];
+function v10Log(kind,msg,extra){
+  try{
+    V10_ERRS.unshift({at:new Date().toISOString(), kind, msg:String(msg||"").slice(0,300),
+      where:(S&&S.tab)||"", who:(S&&S.session&&S.session.role)||"", extra:String(extra||"").slice(0,200)});
+    if(V10_ERRS.length>60) V10_ERRS.length=60;
+    try{ localStorage.setItem("entapp_errs", JSON.stringify(V10_ERRS.slice(0,40))); }catch(e){}
+  }catch(e){}
+}
+try{
+  const saved=JSON.parse(localStorage.getItem("entapp_errs")||"[]");
+  if(Array.isArray(saved)) saved.forEach(x=>V10_ERRS.push(x));
+}catch(e){}
+if(!window.__v10ErrHook){
+  window.__v10ErrHook=true;
+  window.addEventListener("error", e=>{
+    v10Log("error", e && (e.message||e.type), e && e.filename ? (e.filename+":"+e.lineno) : "");
+  });
+  window.addEventListener("unhandledrejection", e=>{
+    const r=e && e.reason;
+    v10Log("promise", r && (r.message||r), "");
+  });
+}
+function v10HealthRows(){
+  const rows=[];
+  const mgrs=(S.users||[]).filter(u=>u.role==="manager").length;
+  const dataOk=((S.activities||[]).length>0)||((S.users||[]).length>0);
+  const backup=(S.settings&&S.settings.backupLast)
+    ? new Date(S.settings.backupLast).toLocaleDateString() : "";
+  rows.push([t("vaChkDb"), (typeof REMOTE!=="undefined"&&REMOTE)?true:false,
+    (typeof REMOTE!=="undefined"&&REMOTE)?t("vaHealthOk"):t("demoNote")]);
+  rows.push([t("vaChkData"), dataOk, dataOk?t("vaHealthOk"):t("noDataTitle")]);
+  rows.push([t("vaChkMgr"), mgrs>1, mgrs>1?(mgrs+" "+t("manager")):t("vaMgrWarn")]);
+  rows.push([t("vaChkBackup"), !!backup, backup?(t("vaBackupOk")+": "+backup):t("vaBackupWarn")]);
+  rows.push([t("vaChkPush"), !!(S.settings&&S.settings.pushEndpoint),
+    (S.settings&&S.settings.pushEndpoint)?t("vaHealthOk"):t("vaPushOff")]);
+  rows.push([t("vaChkRetention"), v10RetDays()>0,
+    v10RetDays()>0?(v10RetDays()+" "+t("vaDays")):t("vaRetOff")]);
+  return rows;
+}
+function v10HealthView(){
+  const rows=v10HealthRows();
+  return `<div class="screen fadein">
+    ${topBar(t("vaHealth"),S.session.name)}
+    ${hubBack()}
+    <div class="cc-page">
+      <div class="card">
+        <h3>${ic("shield",17)} ${esc(t("vaHealthChk"))}</h3>
+        ${rows.map(([lb,ok,note])=>`<div class="v10-chk ${ok?"ok":"warn"}">
+          <span class="v10-dot">${ok?ic("check",14):ic("flag",14)}</span>
+          <span class="v10-chk-t"><b>${esc(lb)}</b><small>${esc(note)}</small></span>
+        </div>`).join("")}
+      </div>
+      <div class="card">
+        <h3>${ic("file",17)} ${esc(t("vaErrCount"))} · ${V10_ERRS.length}</h3>
+        ${V10_ERRS.length
+          ? `<div class="v10-errs">${V10_ERRS.slice(0,25).map(e=>`<div class="v10-err">
+               <span class="mini">${esc(new Date(e.at).toLocaleString())} · ${esc(e.where||"—")}</span>
+               <b>${esc(e.msg)}</b>${e.extra?`<span class="mini">${esc(e.extra)}</span>`:""}
+             </div>`).join("")}</div>
+             <div class="cc-bar">
+               <button class="btn ghost" id="v10-copy">${ic("file",15)} ${t("vaCopyErr")}</button>
+               <button class="btn ghost" id="v10-clear">${ic("trash",15)} ${t("vaClearErrs")}</button>
+             </div>`
+          : `<p class="mini">${esc(t("vaNoErrors"))}</p>`}
+      </div>
+    </div>
+  </div>`;
+}
+function v10WireHealth(){
+  const cp=document.getElementById("v10-copy");
+  if(cp) cp.onclick=async ()=>{
+    const txt=V10_ERRS.map(e=>`${e.at} [${e.where}] ${e.msg} ${e.extra}`).join("\n");
+    try{ await navigator.clipboard.writeText(txt); toastOk(t("vaCopied")); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+  const cl=document.getElementById("v10-clear");
+  if(cl) cl.onclick=async ()=>{
+    const ok=await confirmAction({title:t("vaClearErrs"), text:t("cannotUndo"), danger:true});
+    if(!ok) return;
+    V10_ERRS.length=0;
+    try{ localStorage.removeItem("entapp_errs"); }catch(e){}
+    toastOk(t("vaCleared")); render();
+  };
+}
+
+/* ==========================================================================
+   4. INTEGRATION — two new pages, each listed exactly once
+   ========================================================================== */
+V9_SETTINGS.forEach(g=>{
+  if(g.head==="v9SecSystem" && !g.items.some(i=>i[0]==="set:privacy")){
+    g.items.push(["set:privacy","shield","vaPrivacy","vaPrivacySub"]);
+    g.items.push(["set:health","flag","vaHealth","vaHealthSub"]);
+  }
+});
+const __v9ManagerViewV10=managerView;
+managerView=function(){
+  if(S.session && S.session.role==="manager"){
+    if(S.tab==="set:privacy") return v10PrivacyView();
+    if(S.tab==="set:health")  return v10HealthView();
+  }
+  return __v9ManagerViewV10();
+};
+const __v9WireCommonV10=wireCommon;
+wireCommon=function(){
+  __v9WireCommonV10();
+  try{ v10WirePrivacy(); }catch(e){ console.error(e); }
+  try{ v10WireHealth(); }catch(e){ console.error(e); }
+};
+/* remember when a backup was taken, so the health check can tell her */
+if(typeof v8DownloadBackup==="function"){
+  const __v8Backup=v8DownloadBackup;
+  v8DownloadBackup=function(){
+    const r=__v8Backup.apply(this,arguments);
+    try{ DB.saveSettings({...S.settings, backupLast:new Date().toISOString()}); }catch(e){}
+    return r;
+  };
+}
+setTimeout(()=>{ v10AutoCleanup(); }, 4000);
 
 </script>
 </body>
