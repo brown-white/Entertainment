@@ -11218,5 +11218,361 @@ if(typeof v8DownloadBackup==="function"){
 setTimeout(()=>{ v10AutoCleanup(); }, 4000);
 
 </script>
+
+
+<!-- =====================================================================
+     GLOBAL SEARCH — added 2026-08-27
+     One search across settings, rooms, guests, feedback, accounts and ops.
+     ===================================================================== -->
+<style id="global-search-style">
+.gs-bg{position:fixed;inset:0;z-index:260;background:rgba(10,18,32,.56);backdrop-filter:blur(8px);display:flex;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));animation:gsFade .16s ease}
+.gs-panel{width:min(540px,100%);max-height:min(82dvh,760px);display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--line);border-radius:24px;box-shadow:0 28px 90px -28px rgba(0,0,0,.72);overflow:hidden;margin-top:6px}
+.gs-head{padding:14px 14px 10px;border-bottom:1px solid var(--line);background:var(--bg)}
+.gs-box{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 12px;box-shadow:var(--sh-1)}
+.gs-mag{font-size:20px;color:var(--muted);flex:none}.gs-box input{border:0!important;box-shadow:none!important;outline:0!important;background:transparent;padding:13px 2px;min-width:0}.gs-close{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex:none}.gs-close:active{background:var(--sand)}
+.gs-hint{font-size:11.5px;color:var(--muted);padding:8px 4px 0}.gs-results{overflow:auto;padding:10px 10px 16px;overscroll-behavior:contain}.gs-group{margin:7px 0 14px}.gs-group-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;padding:0 8px 7px}.gs-item{width:100%;display:flex;align-items:center;gap:11px;text-align:start;padding:11px 10px;border-radius:14px}.gs-item:active,.gs-item:hover{background:var(--sand)}
+.gs-ic{width:38px;height:38px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;color:var(--cacao);font-size:17px}.gs-mid{min-width:0;flex:1}.gs-mid b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gs-mid span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}.gs-go{color:var(--muted);font-size:18px;flex:none}.gs-empty{text-align:center;padding:30px 18px;color:var(--muted)}.gs-empty .big{font-size:34px;margin-bottom:8px}.gs-count{font-size:11px;color:var(--muted);padding-inline-start:6px}
+[data-theme="dark"] .gs-ic{color:var(--bronze)}
+@keyframes gsFade{from{opacity:0}to{opacity:1}}
+@media(max-width:520px){.gs-bg{padding-inline:8px}.gs-panel{border-radius:20px;max-height:88dvh}}
+</style>
+<script id="global-search-v1">
+(function(){
+  "use strict";
+  let GS_RESULTS=[];
+  const gsTxt=v=>String(v==null?"":v);
+  const gsNorm=v=>gsTxt(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  const gsJoin=(...v)=>v.flat(Infinity).filter(x=>x!=null&&x!=="").map(gsTxt).join(" ");
+  const gsHas=(hay,q)=>{
+    const h=gsNorm(hay), parts=gsNorm(q).trim().split(/\s+/).filter(Boolean);
+    return parts.every(p=>h.includes(p));
+  };
+  const gsEsc=(v)=>typeof esc==="function"?esc(gsTxt(v)):gsTxt(v).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const gsRole=()=>S&&S.session?S.session.role:"guest";
+  const gsAdd=(a,x)=>{ if(x&&x.title) a.push(x); };
+  const gsRoomAccount=room=>(S.accounts||[]).find(a=>gsTxt(a.room)===gsTxt(room));
+  const gsActName=id=>{const a=(S.activities||[]).find(x=>gsTxt(x.id)===gsTxt(id));return a?a.name:"";};
+
+  function gsIndex(){
+    const a=[], role=gsRole(), manager=role==="manager", staff=role==="staff";
+
+    // Navigation / major areas
+    if(manager){
+      gsAdd(a,{group:"Pages",icon:"⌘",title:"Manager Control Center",sub:"Settings · administration · configuration",keys:"settings control center administration manager configure configuration",act:{type:"tab",tab:"settings"}});
+      gsAdd(a,{group:"Pages",icon:"◫",title:"Dashboard",sub:"Daily operations overview",keys:"dashboard overview analytics statistics occupancy",act:{type:"tab",tab:"dash"}});
+      gsAdd(a,{group:"Pages",icon:"◎",title:"Guest CRM",sub:"Guest directory · rooms · profiles",keys:"guest crm guests rooms room number directory profiles",act:{type:"sub",tab:"guests",group:"guests",sub:"crm"}});
+      gsAdd(a,{group:"Pages",icon:"★",title:"Guest Feedback",sub:"Ratings and comments",keys:"feedback reviews ratings comments guest experience",act:{type:"sub",tab:"guests",group:"guests",sub:"feedback"}});
+      gsAdd(a,{group:"Pages",icon:"♟",title:"Team Administration",sub:"Accounts · profiles · performance",keys:"team accounts staff entertainers employees users performance",act:{type:"tab",tab:"team"}});
+      gsAdd(a,{group:"Pages",icon:"▦",title:"Programme",sub:"Activities and ticket events",keys:"program programme activities events tickets schedule",act:{type:"tab",tab:"program"}});
+
+      // Every Control Center setting, using both translated labels and useful English aliases.
+      if(typeof V9_SETTINGS!=="undefined"){
+        V9_SETTINGS.forEach(g=>(g.items||[]).forEach(it=>{
+          const [id,icn,lb,sub]=it;
+          gsAdd(a,{group:"Settings",icon:"⚙",title:typeof t==="function"?t(lb):lb,sub:typeof t==="function"?t(sub):sub,
+            keys:gsJoin("settings option configuration",id,lb,sub,typeof t==="function"?t(lb):"",typeof t==="function"?t(sub):""),act:{type:"hub",id}});
+        }));
+      }
+    }
+
+    // Guest rooms / accounts. Managers see all; guests see only themselves.
+    (S.accounts||[]).forEach(x=>{
+      if(!manager && !(role==="guest" && S.session && gsTxt(S.session.username)===gsTxt(x.username))) return;
+      const detail=[x.nationality,x.phone,x.arrival&&x.departure?x.arrival+" → "+x.departure:""].filter(Boolean).join(" · ");
+      gsAdd(a,{group:"Guests & rooms",icon:"▣",title:"Room "+gsTxt(x.room)+" — "+gsTxt(x.name||x.username||"Guest"),sub:detail||"Guest profile",
+        keys:gsJoin("room room number guest account profile",x.room,x.name,x.username,x.nationality,x.phone,x.arrival,x.departure),act:manager?{type:"guest",id:x.id}:{type:"tab",tab:"stay"}});
+    });
+    // Registered rooms without an account yet.
+    if(manager)(S.rooms||[]).forEach(r=>{
+      const room=typeof r==="object"?(r.room??r.number??r.id):r;
+      if(room==null||gsRoomAccount(room)) return;
+      gsAdd(a,{group:"Guests & rooms",icon:"□",title:"Room "+gsTxt(room),sub:"Registered room · no guest account",keys:gsJoin("room room number registered",room),act:{type:"rooms"}});
+    });
+
+    if(manager){
+      // Team login accounts
+      (S.users||[]).forEach(u=>gsAdd(a,{group:"Team accounts",icon:"♟",title:gsTxt(u.display_name||u.username),sub:[u.username,u.position||u.role,u.number?"#"+u.number:""].filter(Boolean).join(" · "),
+        keys:gsJoin("account team staff entertainer employee user username",u.display_name,u.username,u.position,u.role,u.number,u.nationality,u.languages),act:{type:"employee",username:u.username}}));
+
+      // Feedback
+      (S.feedback||[]).forEach(f=>{const acc=gsRoomAccount(f.room);gsAdd(a,{group:"Feedback",icon:"★",title:"Room "+gsTxt(f.room)+" · "+gsTxt(f.rate||0)+"/5",sub:gsTxt(f.comment||"No written comment"),
+        keys:gsJoin("feedback review rating comment room",f.room,f.rate,f.comment,f.name,f.nationality,f.by_user),act:acc?{type:"guest",id:acc.id}:{type:"sub",tab:"guests",group:"guests",sub:"feedback"}})});
+
+      // Bookings
+      (S.bookings||[]).forEach(b=>{const acc=gsRoomAccount(b.room);gsAdd(a,{group:"Bookings",icon:"✓",title:"Room "+gsTxt(b.room)+" · "+gsTxt(gsActName(b.activity_id)||"Booking"),sub:[b.status,b.name,b.nationality].filter(Boolean).join(" · "),
+        keys:gsJoin("booking reservation room activity",b.room,b.name,b.nationality,b.status,gsActName(b.activity_id)),act:acc?{type:"guest",id:acc.id}:{type:"sub",tab:"guests",group:"guests",sub:"bookings"}})});
+
+      // Requests
+      (S.requests||[]).forEach(r=>{const acc=gsRoomAccount(r.room);gsAdd(a,{group:"Guest requests",icon:"!",title:"Room "+gsTxt(r.room)+" · "+gsTxt(r.type||"Request"),sub:gsTxt(r.detail||r.status||""),
+        keys:gsJoin("request guest room song birthday",r.room,r.type,r.detail,r.status,r.name),act:acc?{type:"guest",id:acc.id}:{type:"sub",tab:"guests",group:"guests",sub:"requests"}})});
+    }
+
+    // Programme is useful for every role.
+    (S.activities||[]).forEach(x=>gsAdd(a,{group:"Programme",icon:"◷",title:gsTxt(x.name),sub:[typeof t==="function"&&t("days")?t("days")[x.day]:"",x.time,x.location].filter(Boolean).join(" · "),
+      keys:gsJoin("activity programme program schedule event",x.name,x.desc,x.location,x.time,x.category,x.entertainer),act:{type:"activity",id:x.id,day:x.day}}));
+    (S.tickets||[]).forEach(x=>gsAdd(a,{group:"Tickets",icon:"◇",title:gsTxt(x.name),sub:[x.time,x.location,x.price].filter(Boolean).join(" · "),keys:gsJoin("ticket event buy reserve",x.name,x.desc,x.location,x.time,x.price),act:{type:"tickets"}}));
+
+    // Staff can find their own operational areas without exposing private guest directory data.
+    if(staff){
+      gsAdd(a,{group:"Pages",icon:"☀",title:"My Work Day",sub:"Today’s duties and programme",keys:"my work day duty work schedule today",act:{type:"tab",tab:"workday"}});
+      gsAdd(a,{group:"Pages",icon:"✓",title:"My Tasks",sub:"Assigned operational tasks",keys:"tasks assigned work",act:{type:"tab",tab:"tasks"}});
+      gsAdd(a,{group:"Pages",icon:"★",title:"Feedback",sub:"Collect guest feedback",keys:"feedback rating review collect",act:{type:"tab",tab:"feedback"}});
+    }
+    if(role==="guest"){
+      gsAdd(a,{group:"Pages",icon:"☀",title:"Today’s programme",sub:"Activities happening today",keys:"today programme program activities schedule",act:{type:"tab",tab:"home"}});
+      gsAdd(a,{group:"Pages",icon:"✓",title:"My bookings",sub:"Your reserved activities",keys:"my bookings reservations",act:{type:"tab",tab:"bookings"}});
+    }
+    return a;
+  }
+
+  function gsSearch(q){
+    const all=gsIndex();
+    if(!gsTxt(q).trim()) return all.filter(x=>x.group==="Pages"||x.group==="Settings").slice(0,18);
+    const hits=all.filter(x=>gsHas(gsJoin(x.title,x.sub,x.keys,x.group),q));
+    // Exact room/name/title matches naturally float to the top.
+    const nq=gsNorm(q).trim();
+    return hits.sort((x,y)=>{
+      const score=z=>{const t1=gsNorm(z.title), k=gsNorm(z.keys); return (t1===nq?0:t1.startsWith(nq)?1:k.includes(nq)?2:3)};
+      return score(x)-score(y);
+    }).slice(0,80);
+  }
+
+  function gsIconFor(group){
+    return ({"Pages":"⌘","Settings":"⚙","Guests & rooms":"▣","Team accounts":"♟","Feedback":"★","Bookings":"✓","Guest requests":"!","Programme":"◷","Tickets":"◇"})[group]||"•";
+  }
+  function gsRender(q){
+    GS_RESULTS=gsSearch(q);
+    const box=document.getElementById("gs-results"); if(!box) return;
+    if(!GS_RESULTS.length){box.innerHTML='<div class="gs-empty"><div class="big">⌕</div><b>No results</b><div class="mini" style="margin-top:5px">Try a room number, guest name, setting, account, activity or feedback text.</div></div>';return;}
+    const groups=[]; GS_RESULTS.forEach((x,i)=>{let g=groups.find(z=>z.name===x.group);if(!g){g={name:x.group,items:[]};groups.push(g)}g.items.push([x,i])});
+    box.innerHTML=groups.map(g=>`<div class="gs-group"><div class="gs-group-title">${gsEsc(g.name)} <span class="gs-count">${g.items.length}</span></div>${g.items.map(([x,i])=>`<button class="gs-item" data-gs-i="${i}"><span class="gs-ic">${gsEsc(x.icon||gsIconFor(g.name))}</span><span class="gs-mid"><b>${gsEsc(x.title)}</b><span>${gsEsc(x.sub||"")}</span></span><span class="gs-go">›</span></button>`).join("")}</div>`).join("");
+    box.querySelectorAll("[data-gs-i]").forEach(b=>b.onclick=()=>gsGo(GS_RESULTS[+b.dataset.gsI]));
+  }
+
+  function gsClose(){const e=document.getElementById("global-search");if(e)e.remove()}
+  function gsGo(x){
+    if(!x||!x.act) return; const z=x.act; gsClose();
+    if(z.type==="guest"){S.tab="g360:"+z.id;render();return;}
+    if(z.type==="employee"){S.tab="emp:"+z.username;render();return;}
+    if(z.type==="sub"){S.tab=z.tab;S.sub[z.group]=z.sub;render();return;}
+    if(z.type==="hub"){if(z.id==="export"){if(typeof openExportModal==="function")openExportModal();return;}S.tab=z.id;render();return;}
+    if(z.type==="rooms"){S.tab="dash";S.sub.dash="rooms";render();return;}
+    if(z.type==="tickets"){if(gsRole()==="manager"){S.tab="program";S.sub.program="tickets";}else S.tab="tickets";render();return;}
+    if(z.type==="activity"){
+      if(gsRole()==="manager"){S.day=+z.day;S.tab="program";S.sub.program="acts";render();setTimeout(()=>{const a=(S.activities||[]).find(v=>gsTxt(v.id)===gsTxt(z.id));if(a&&typeof openEditModal==="function")openEditModal(a)},30);}
+      else {S.day=+z.day;S.tab=gsRole()==="staff"?"week":"program";render();}
+      return;
+    }
+    if(z.type==="tab"){S.tab=z.tab;render();return;}
+  }
+
+  window.openGlobalSearch=function(initial){
+    gsClose();
+    const bg=document.createElement("div");bg.id="global-search";bg.className="gs-bg";bg.innerHTML=`<div class="gs-panel" role="dialog" aria-modal="true" aria-label="Search app"><div class="gs-head"><div class="gs-box"><span class="gs-mag">⌕</span><input id="gs-q" autocomplete="off" inputmode="search" placeholder="Search rooms, guests, settings, accounts, feedback…" aria-label="Search"><button class="gs-close" id="gs-x" aria-label="Close">✕</button></div><div class="gs-hint">Search the whole app · room number, name, setting, activity, account, feedback and more</div></div><div class="gs-results" id="gs-results"></div></div>`;
+    document.body.appendChild(bg);
+    bg.addEventListener("click",e=>{if(e.target===bg)gsClose()});
+    const q=bg.querySelector("#gs-q");q.value=initial||"";q.oninput=()=>gsRender(q.value);q.onkeydown=e=>{if(e.key==="Escape")gsClose();if(e.key==="Enter"&&GS_RESULTS[0])gsGo(GS_RESULTS[0])};
+    bg.querySelector("#gs-x").onclick=gsClose;gsRender(q.value);setTimeout(()=>q.focus(),20);
+  };
+
+  // Put the search button into every signed-in top bar without rewriting the original UI.
+  if(typeof topBar==="function"){
+    const __gsTopBar=topBar;
+    topBar=function(title,sub){
+      let h=__gsTopBar(title,sub);
+      const needle='<div class="toprow">\n      <button class="iconbtn" id="btn-notes"';
+      const repl='<div class="toprow">\n      <button class="iconbtn" id="btn-global-search" aria-label="Search" title="Search">⌕</button>\n      <button class="iconbtn" id="btn-notes"';
+      if(h.includes(needle)) h=h.replace(needle,repl);
+      return h;
+    };
+  }
+  if(typeof wireCommon==="function"){
+    const __gsWireCommon=wireCommon;
+    wireCommon=function(){
+      __gsWireCommon();
+      const b=document.getElementById("btn-global-search");if(b)b.onclick=()=>window.openGlobalSearch();
+    };
+  }
+  document.addEventListener("keydown",e=>{
+    if((e.ctrlKey||e.metaKey)&&String(e.key).toLowerCase()==="k"&&S&&S.session){e.preventDefault();window.openGlobalSearch();}
+    if(e.key==="Escape"&&document.getElementById("global-search"))gsClose();
+  });
+  // Refresh current screen once so the newly added search icon appears immediately.
+  try{if(S&&S.session&&typeof render==="function")render();}catch(e){console.error("Global search init",e)}
+})();
+</script>
+
+<!-- =====================================================================
+     v11 UNIFIED COLOR SYSTEM — single source of truth for every theme
+     ===================================================================== -->
+<style id="unified-color-system-v11">
+:root{
+  --success:#2F7D57;--success-bg:#E8F4ED;--success-border:#BFDCCB;
+  --warning:#8A6212;--warning-bg:#FBF2D9;--warning-border:#E7D29B;
+  --danger:#A23D32;--danger-bg:#F8E8E5;--danger-border:#E8C0BA;
+  --info:#315F8A;--info-bg:#E8F0F8;--info-border:#C4D7E9;
+  --on-brand:#FFFFFF;--on-accent:#101827;--overlay:rgba(7,14,24,.58);
+  --shadow-tint:rgba(15,27,45,.16);
+}
+[data-theme="dark"]{
+  --success:#8FD6AC;--success-bg:rgba(62,124,90,.22);--success-border:rgba(143,214,172,.28);
+  --warning:#E6C67E;--warning-bg:rgba(181,121,60,.22);--warning-border:rgba(230,198,126,.28);
+  --danger:#F0A79C;--danger-bg:rgba(192,57,43,.22);--danger-border:rgba(240,167,156,.28);
+  --info:#9FC6EB;--info-bg:rgba(62,110,155,.22);--info-border:rgba(159,198,235,.28);
+  --overlay:rgba(0,0,0,.68);--shadow-tint:rgba(0,0,0,.42);
+}
+
+/* Base surfaces and text */
+html,body,.app,.screen{background:var(--bg);color:var(--ink)}
+body{background:var(--bg)!important}
+.card,.stat,.tk,.modal,.gs-panel,.gs-head,.gs-box,.nav,.pickfield,.theme-card,.set-it,
+.quickrow button,.daytabs button,.pills button,.daychip,.tchip,.pill,.chip,.photo-pick,
+.week-board,.cc-rep-head,.v9-search input,.set-list,.notif-card,.exp-it,.bd-role,.plan-tab{
+  background-color:var(--card);color:var(--ink);border-color:var(--line)
+}
+input,select,textarea,.pickfield{background:var(--card)!important;color:var(--ink)!important;border-color:var(--line)!important}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.82}
+input:focus,select:focus,textarea:focus{border-color:var(--bronze)!important;box-shadow:var(--focus)!important}
+label,.mini,.hint,.gs-hint,.gs-count,.gs-group-title,.gs-mid span,.set-mid .mini{color:var(--muted)}
+
+/* Brand actions — no hard-coded navy/gold split */
+.btn:not(.ghost):not(.warn),.daychip.on,.daytabs button.on,.pills button.on,.dr-it.on,
+.theme-banner,.wd-banner.entrance,.wa-cta,.cc-seg button.on,.plan-tab.on,.bd-role.on,
+.bus-row.next,.tk-st.s-verified,.switch.on{
+  background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;
+  color:var(--on-brand)!important;border-color:transparent!important
+}
+.btn.ghost{background:var(--card)!important;color:var(--cacao)!important;border-color:var(--line)!important}
+.btn.warn{background:var(--danger)!important;color:#fff!important}
+.iconbtn,.socialtop,.set-ic,.gs-ic,.nt-ic,.sb-ic{color:var(--cacao)!important;background:var(--card);border-color:var(--line)}
+.iconbtn:hover,.socialtop:hover,.set-ic:hover,.gs-item:hover .gs-ic{color:var(--bronze)!important}
+.nav{background:var(--nav-bg)!important;border-color:var(--line)!important}
+.nav button{color:var(--muted)!important}.nav button.on{color:var(--nav-on)!important;font-weight:700}
+.nav::before,.sec>h3::after{background:linear-gradient(90deg,transparent,var(--bronze),transparent)!important}
+
+/* Brand avatars and decorative brand blocks */
+.pf-ava,.acct-av,.rnum,.mb-av,.dr-head .mono.sm,.bus-ic,.hub-ic,.crm-av,.g3-av,.loc-av,
+.export-seal,.cc-num{
+  background:linear-gradient(145deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;
+  color:var(--on-brand)!important;border-color:var(--bronze)!important
+}
+.catbadge,.tc-pos,.export-kicker,.pf-ch,.h3 .ic-s,h3 .ic-s,h4 .ic-s{color:var(--bronze)!important}
+
+/* Drawer and search */
+.drawer{background:var(--bg)!important;color:var(--ink)}
+.drawer-bg,.gs-bg{background:var(--overlay)!important}
+.gs-panel{background:var(--bg)!important}.gs-head{background:var(--bg)!important}
+.gs-item{color:var(--ink)}.gs-item:hover,.gs-item:active,.gs-close:active{background:var(--sand)!important}
+.gs-ic{background:var(--card)!important}.gs-mag,.gs-close,.gs-go{color:var(--muted)!important}
+
+/* Semantic states */
+.err,.bd-b.warn{color:var(--danger)!important}.reddot,.nav .ndot,.badge{background:var(--danger)!important;color:#fff!important}
+.setup{background:var(--warning-bg)!important;border-color:var(--warning-border)!important;color:var(--warning)!important}
+.chip.ok,.rstat.off,.tk-st.s-completed{background:var(--success-bg)!important;color:var(--success)!important;border-color:var(--success-border)!important}
+.chip.full,.tk-pr.p-urgent,.tk-over{background:var(--danger-bg)!important;color:var(--danger)!important;border-color:var(--danger-border)!important}
+.tk-over{background:var(--danger)!important;color:#fff!important}.row-over{box-shadow:inset 3px 0 0 var(--danger)!important}[dir="rtl"] .row-over{box-shadow:inset -3px 0 0 var(--danger)!important}
+.chip.res,.rstat.entrance,.tk-st.s-progress,.tk-pr.p-high,.aa-slot.morning{background:var(--warning-bg)!important;color:var(--warning)!important;border-color:var(--warning-border)!important}
+.tk-st.s-accepted,.aa-slot.afternoon{background:var(--info-bg)!important;color:var(--info)!important;border-color:var(--info-border)!important}
+.stat-dot.todo{background:var(--warning)!important}.stat-dot.live{background:var(--success)!important}.stat-dot.done{background:var(--danger)!important}
+.ring-todo{border-color:var(--warning)!important}.ring-live{border-color:var(--success)!important}.ring-done{border-color:var(--danger)!important}
+.wd-banner.off,.roster-row.off .rnum,.loc-av.g{background:linear-gradient(135deg,var(--success),color-mix(in srgb,var(--success),#000 18%))!important;color:#fff!important}
+.rstat.working{background:var(--sand)!important;color:var(--muted)!important}
+
+/* Chat, banners, toast */
+.bub.them{background:var(--card)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.bub.me,.chatbar button{background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;color:var(--on-brand)!important}
+.toast span,.toast{color:var(--on-brand)}
+.toast.t-success span{background:var(--success)!important}.toast.t-error span{background:var(--danger)!important}
+.toast.t-warn span{background:var(--warning)!important}.toast.t-info span{background:var(--info)!important}
+
+/* Theme/settings UI itself */
+.theme-card{border:1px solid var(--line)!important;background:var(--card)!important;color:var(--ink)!important}
+.theme-card.on{border-color:var(--bronze)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--bronze) 28%,transparent)!important}
+.v9-modes button{background:var(--card)!important;color:var(--muted)!important;border-color:var(--line)!important}
+.v9-modes button.on{background:var(--sand)!important;color:var(--cacao)!important;border-color:var(--bronze)!important}
+input[type="color"]{background:var(--card)!important;border-color:var(--line)!important}
+.switch{background:var(--sand)!important;border:1px solid var(--line)}.switch .knob{background:var(--card)!important}
+
+/* Remove legacy fixed gradients that could override a selected palette */
+.login-wrap{background:radial-gradient(130% 100% at 50% -10%,var(--brand-700,var(--cacao)) 0%,var(--brand-900,var(--espresso)) 62%,color-mix(in srgb,var(--brand-900,var(--espresso)) 82%,#000) 100%)!important}
+.login-wrap,.brandmark h1,.brandmark p,.brandmark .mono,.role-tabs button,.staff-link{color:var(--on-brand)!important}
+.role-tabs button{background:color-mix(in srgb,var(--card) 14%,transparent)!important;border-color:color-mix(in srgb,var(--card) 35%,transparent)!important}
+.role-tabs button.on,.lang-row button.on{background:var(--card)!important;color:var(--cacao)!important;border-color:var(--card)!important}
+.lang-row button{color:var(--on-brand)!important;border-color:color-mix(in srgb,var(--card) 35%,transparent)!important}
+
+/* Export/control-center pieces displayed inside the live app */
+.cc-hero,.v9-hero,.mgr-console{background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;color:var(--on-brand)!important}
+.cc-hero h2,.v9-hero h2,.mgr-console h2{color:inherit!important}
+.cc-rep-head{background:var(--card)!important;color:var(--ink)!important}.cc-rep-head small,.cc-rep-head .cc-rep-cls{color:var(--muted)!important}
+.export-brand{background:var(--card)!important;border-color:var(--line)!important}.export-format-note{background:var(--sand)!important;border-color:var(--bronze)!important}
+
+/* Media overlays intentionally stay neutral for readability */
+.hero .body,.hero .meta,.hero .desc,.opcard,.catcard,.pb-video,.photo-viewer{color:#fff}
+.hero .tag{background:rgba(255,255,255,.92)!important;color:#101827!important}
+
+/* Dark mode must not re-introduce old fixed gold/navy values */
+[data-theme="dark"] .btn:not(.ghost):not(.warn),[data-theme="dark"] .daychip.on,[data-theme="dark"] .daytabs button.on,
+[data-theme="dark"] .pills button.on,[data-theme="dark"] .dr-it.on,[data-theme="dark"] .theme-banner,[data-theme="dark"] .wd-banner.entrance,
+[data-theme="dark"] .wa-cta,[data-theme="dark"] .bus-row.next,[data-theme="dark"] .cc-seg button.on,[data-theme="dark"] .plan-tab.on,
+[data-theme="dark"] .bd-role.on,[data-theme="dark"] .tk-st.s-verified{
+  background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;
+  color:var(--on-brand)!important
+}
+[data-theme="dark"] .pf-ava,[data-theme="dark"] .acct-av,[data-theme="dark"] .rnum,[data-theme="dark"] .mb-av,
+[data-theme="dark"] .dr-head .mono.sm,[data-theme="dark"] .bus-ic,[data-theme="dark"] .hub-ic,[data-theme="dark"] .crm-av,[data-theme="dark"] .g3-av,
+[data-theme="dark"] .loc-av,[data-theme="dark"] .export-seal,[data-theme="dark"] .cc-num{
+  background:linear-gradient(145deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;color:var(--on-brand)!important
+}
+</style>
+<script id="unified-color-system-v11-js">
+(function(){
+  function hexRgb(hex){
+    hex=String(hex||"").trim();
+    if(/^#[0-9a-f]{3}$/i.test(hex)) hex="#"+hex.slice(1).split("").map(x=>x+x).join("");
+    if(!/^#[0-9a-f]{6}$/i.test(hex)) return null;
+    return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];
+  }
+  function lum(hex){
+    const rgb=hexRgb(hex); if(!rgb) return .5;
+    const c=rgb.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});
+    return .2126*c[0]+.7152*c[1]+.0722*c[2];
+  }
+  function readable(bg){ return lum(bg)>.46?"#101827":"#FFFFFF"; }
+  function validHex(v,fb){ return /^#[0-9A-F]{6}$/i.test(String(v||""))?String(v).toUpperCase():fb; }
+  function applySemanticColors(){
+    try{
+      if(typeof S==="undefined"||!S.settings) return;
+      const key=S.settings.palette, pal=(typeof PALETTES!=="undefined"&&PALETTES[key])||null;
+      const mode=S.theme==="dark"?"dark":"light";
+      const active=pal&&pal[mode]?pal[mode]:null;
+      const primary=validHex(active?active.primary:S.settings.primary,"#0F1B2D");
+      const accent=validHex(active?active.accent:S.settings.accent,"#C6A15B");
+      const root=document.documentElement.style;
+      root.setProperty("--on-brand",readable(primary));
+      root.setProperty("--on-accent",readable(accent));
+      root.setProperty("--shadow-tint",mode==="dark"?"rgba(0,0,0,.42)":"rgba(15,27,45,.16)");
+      document.documentElement.style.colorScheme=mode;
+    }catch(e){console.error("color system",e)}
+  }
+  window.applySemanticColors=applySemanticColors;
+  if(typeof window.applySettings==="function"){
+    const prev=window.applySettings;
+    window.applySettings=function(){const r=prev.apply(this,arguments);applySemanticColors();return r;};
+  }
+  if(typeof window.render==="function"){
+    const prevRender=window.render;
+    window.render=function(){applySemanticColors();return prevRender.apply(this,arguments);};
+  }
+  // Harden stored custom color values so malformed legacy settings cannot break CSS.
+  try{
+    if(typeof S!=="undefined"&&S.settings){
+      const d={primary:"#0F1B2D",accent:"#C6A15B",bg:"#F8F7F3",textColor:"#172033",navBg:"#FFFFFF",navActive:"#1F3657"};
+      Object.keys(d).forEach(k=>S.settings[k]=validHex(S.settings[k],d[k]));
+    }
+  }catch(e){}
+  applySemanticColors();
+})();
+</script>
+
 </body>
 </html>
