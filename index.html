@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Hotel Entertainment Operations</title>
+<title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -1703,9 +1703,14 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .cap-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.cap-head>div{display:flex;flex-direction:column;gap:3px}.cap-head>b{font-size:17px}.cap-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 8px}.cap-toolbar b{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.cap-toolbar span{display:flex;gap:6px}.cap-toolbar button{font-size:12px;padding:6px 9px;border:1px solid var(--line);background:var(--card);border-radius:999px}.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.cap-item,.ops-check{display:flex!important;align-items:center;gap:9px!important;text-transform:none!important;letter-spacing:0!important;color:var(--ink)!important;margin:0!important}.cap-item{padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:13px}.cap-item input,.ops-check input{width:19px!important;height:19px;flex:none;accent-color:var(--accent);margin:0!important}.ops-check{padding:11px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 8%,var(--card));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));font-size:14px!important}.ops-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}.ops-mini-actions{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:1px}.ops-section-title{margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--line);font-weight:700;font-family:var(--font-display);font-size:19px;display:flex;align-items:center;gap:7px;color:var(--ink)}
 .aa-row select:has(option[value=""]:checked){border-color:var(--warn)}
 @media(max-width:430px){.cap-grid,.ops-edit-grid{grid-template-columns:1fr}.cap-head{flex-direction:column}.ops-mini-actions{padding-bottom:0}.ops-mini-actions .btn{flex:1}}
+
+/* ================= INTELLIGENT PLANNER v6 ================= */
+.cap-dual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.cap-col{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--card)}.cap-col.can{border-color:color-mix(in srgb,var(--ok) 42%,var(--line));background:color-mix(in srgb,var(--ok) 5%,var(--card))}.cap-col.cant{border-color:color-mix(in srgb,var(--warn) 38%,var(--line));background:color-mix(in srgb,var(--warn) 4%,var(--card))}.cap-col-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.cap-col-h b{font-size:14px}.cap-col.can .cap-col-h b{color:var(--ok)}.cap-col.cant .cap-col-h b{color:var(--warn)}.cap-stack{display:flex;flex-direction:column;gap:6px;max-height:290px;overflow:auto}.cap-item.can.on{border-color:color-mix(in srgb,var(--ok) 55%,var(--line));background:color-mix(in srgb,var(--ok) 10%,var(--card))}.cap-item.cant.on{border-color:color-mix(in srgb,var(--warn) 50%,var(--line));background:color-mix(in srgb,var(--warn) 8%,var(--card))}.entrance-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 2px}.entrance-choice label{display:flex!important;align-items:center;gap:8px!important;text-transform:none!important;letter-spacing:0!important;margin:0!important;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--ink)!important}.entrance-choice input{width:18px!important;height:18px;margin:0!important;accent-color:var(--accent)}
+.plan-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.plan-tab{padding:10px 7px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:700;font-size:12.5px;color:var(--muted)}.plan-tab.on{background:linear-gradient(135deg,var(--brand-900),var(--brand-700));color:#fff;border-color:transparent;box-shadow:0 8px 22px -14px var(--brand-900)}.plan-meta{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 12px}.plan-chip{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-soft);border:1px solid var(--line);color:var(--muted)}.plan-chip.good{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,var(--line))}.plan-chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,var(--line))}.aa-entrance{display:grid;grid-template-columns:82px 1fr minmax(130px,42%);align-items:center;gap:9px;padding:11px 8px;border-bottom:1px solid var(--line)}.aa-entrance .aa-slot{background:color-mix(in srgb,var(--accent) 13%,var(--card));color:var(--brand-700)}.req-gender{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:3px}.ep-cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ep-cap-box{padding:13px;border:1px solid var(--line);border-radius:15px;background:var(--card)}.ep-cap-box b{display:block;font-size:13px;margin-bottom:7px}.ep-cap-box.can b{color:var(--ok)}.ep-cap-box.cant b{color:var(--warn)}.ep-cap-tags{display:flex;flex-wrap:wrap;gap:5px}.ep-cap-tags span{font-size:11px;padding:4px 8px;border-radius:999px;background:var(--surface-soft);border:1px solid var(--line)}
+@media(max-width:520px){.cap-dual,.ep-cap-grid{grid-template-columns:1fr}.aa-entrance{grid-template-columns:72px 1fr}.aa-entrance select{grid-column:1/-1}.plan-tabs{gap:5px}.plan-tab{font-size:11.5px}}
 </style>
 </head>
-<body data-build="executive-v3">
+<body data-build="intelligent-planner-v6">
 <div class="app" id="app"><div class="skel-wrap">
   <div class="skel skel-bar"></div>
   <div class="skel skel-title"></div>
@@ -1738,7 +1743,7 @@ const DEFAULT_SETTINGS = {
   tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
   instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:"",
   busToHotel:"", busToHouse:"",
-  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, hotelInfo:[], reviewAsk:true,
+  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
   logo:"", hotelName:"", timezone:"", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true}
@@ -1857,6 +1862,20 @@ const OPS_V5_STR={
   }
 };
 Object.keys(OPS_V5_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], OPS_V5_STR[l]); });
+const OPS_V6_STR={
+  en:{
+    iCanDo:"I can do", iCantDo:"I can't do", canDoHint:"Activities this entertainer is qualified to lead", cantDoHint:"Hard restrictions — never assign automatically",
+    entranceCan:"I can do Entrance", entranceCant:"I can't do Entrance", capabilityRuleHint:"If “I can do” contains activities, automatic planning uses only those. “I can't do” always blocks an activity.",
+    genderRule:"Automatic assignment gender", genderAny:"Any gender", genderMale:"Male only", genderFemale:"Female only", genderRuleHint:"Use only when this activity should be assigned by gender.",
+    entranceGender:"Entrance gender rule", entranceTime:"Entrance duty time", plannerPlans:"Fair plan options", plannerPlansHint:"Three valid alternatives are generated. Choose the one you prefer or generate three new ones.",
+    planOne:"Plan 1", planTwo:"Plan 2", planThree:"Plan 3", newPlans:"Generate 3 new plans", entrancePlan:"Entrance",
+    attendanceChecked:"Attendance checked", timeChecked:"Time conflicts checked", genderChecked:"Gender rules checked", qualificationChecked:"Can / can't do checked", historyChecked:"Repeat history checked",
+    noQualifiedGender:"No qualified person matches capability, gender, attendance and time rules", entranceUnassigned:"No eligible entrance person",
+    repeatProtection:"Repeat protection", planApplied:"Activities and entrance plan applied", managerSetRule:"Manager-set rule",
+    capabilityProfile:"Activity capability profile", notListed:"Not classified", entranceAvailability:"Entrance availability"
+  }
+};
+Object.keys(OPS_V6_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], OPS_V6_STR[l]); });
 const NATIONS=["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian","Botswanan","Brazilian","British","Bruneian","Bulgarian","Burkinabe","Burmese","Burundian","Cambodian","Cameroonian","Canadian","Cape Verdean","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech","Danish","Djiboutian","Dominican","Dutch","East Timorese","Ecuadorean","Egyptian","Emirati","Equatorial Guinean","Eritrean","Estonian","Ethiopian","Fijian","Filipino","Finnish","French","Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Guyanese","Haitian","Honduran","Hungarian","Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Ivorian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Kosovar","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish","Macedonian","Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Mauritanian","Mauritian","Mexican","Moldovan","Monacan","Mongolian","Montenegrin","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Nigerien","North Korean","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Salvadoran","Samoan","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovenian","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swazi","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Togolese","Trinidadian","Tunisian","Turkish","Turkmen","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean","Other"];
 
 /* ============ TEAM PLAN (from the internal 8-page plan) ============ */
@@ -1964,12 +1983,15 @@ function personTag(n){
 }
 function personTags(list){ return (list||[]).map(personTag).join(" · "); }
 function dayPlanFor(day){
-  const base=DAY_PLAN.find(d=>d.day===day)||DAY_PLAN[0];
+  const raw=DAY_PLAN.find(d=>d.day===day)||DAY_PLAN[0];
+  const base={...raw,entranceTime:raw.entranceTime||"",entranceGender:raw.entranceGender||"any"};
   const ov=(S.settings&&S.settings.dayOverrides)?S.settings.dayOverrides[String(day)]:null;
   if(!ov) return base;
   return {...base,
     off: Array.isArray(ov.off) ? ov.off.slice() : base.off,
     entrance: (typeof ov.entrance==="number") ? ov.entrance : base.entrance,
+    entranceTime: (ov.entranceTime!=null) ? ov.entranceTime : base.entranceTime,
+    entranceGender: (ov.entranceGender!=null) ? ov.entranceGender : base.entranceGender,
     theme: (ov.theme!=null) ? ov.theme : base.theme,
     dress: (ov.dress!=null) ? ov.dress : base.dress,
     practice: (typeof ov.practice==="boolean") ? ov.practice : base.practice,
@@ -4399,6 +4421,7 @@ function employeeView(username){
         ${line(t("nationality"), u.nationality)}
       </div>
     </div>
+    ${full?(()=>{const c=userCapability(u)||{canDo:[],cantDo:[],entrance:true};const label=k=>(distinctOperationalActivities().find(a=>a.key===k)||{name:k}).name;return `<div class="sec"><h3>${ic("check",17)} ${t("capabilityProfile")}</h3><div class="ep-cap-grid"><div class="ep-cap-box can"><b>✓ ${t("iCanDo")}</b><div class="ep-cap-tags">${(c.canDo||[]).length?c.canDo.map(k=>`<span>${esc(label(k))}</span>`).join(""):`<span>${t("notListed")}</span>`}</div></div><div class="ep-cap-box cant"><b>× ${t("iCantDo")}</b><div class="ep-cap-tags">${(c.cantDo||[]).length?c.cantDo.map(k=>`<span>${esc(label(k))}</span>`).join(""):`<span>${t("notListed")}</span>`}</div></div></div><div class="card" style="margin-top:10px"><div class="ep-row"><span class="mini">${t("entranceAvailability")}</span><b>${c.entrance!==false?t("entranceCan"):t("entranceCant")}</b></div></div></div>`;})():""}
     ${r.acts.length?`<div class="sec"><h3>${ic("calendar",17)} ${t("assignedActs")}</h3>
       <div class="card">${r.acts.map(a=>`<div class="g3-row"><b>${esc(a.name)}</b>
         <span class="mini">${t("daysShort")[a.day]||""} · ${esc(a.time||"")}${a.location?" · "+esc(a.location):""}</span></div>`).join("")}</div></div>`:""}
@@ -4538,9 +4561,16 @@ function activitySlot(a){
    existing installations without adding Supabase columns. */
 function capKeyName(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g," "); }
 function capabilityMap(){ return (S.settings&&S.settings.staffCapabilities&&typeof S.settings.staffCapabilities==="object") ? S.settings.staffCapabilities : {}; }
+function arrField(v){ if(Array.isArray(v)) return v.map(capKeyName).filter(Boolean); if(typeof v==="string"){ try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(capKeyName).filter(Boolean);}catch(e){} return v.split(",").map(capKeyName).filter(Boolean);} return []; }
 function userCapability(u){
-  const m=capabilityMap(); const c=m[String(u&&u.username||"").toLowerCase()];
-  return c&&typeof c==="object" ? c : null;
+  if(!u) return null;
+  const dbCan=arrField(u.can_do), dbCant=arrField(u.cant_do);
+  const dbConfigured=dbCan.length||dbCant.length||typeof u.entrance_eligible==="boolean";
+  if(dbConfigured) return {canDo:dbCan,cantDo:dbCant,entrance:u.entrance_eligible!==false,configured:true,source:"account"};
+  const m=capabilityMap(), old=m[String(u.username||"").toLowerCase()];
+  if(!old||typeof old!=="object") return null;
+  const can=arrField(old.canDo||old.can_do||old.activities), cant=arrField(old.cantDo||old.cant_do);
+  return {canDo:can,cantDo:cant,entrance:old.entrance!==false,configured:true,source:"settings"};
 }
 function distinctOperationalActivities(){
   const m=new Map();
@@ -4548,54 +4578,58 @@ function distinctOperationalActivities(){
   return [...m.entries()].map(([key,name])=>({key,name})).sort((a,b)=>a.name.localeCompare(b.name));
 }
 function canRunActivity(u,a){
-  const c=userCapability(u); if(!c || !Array.isArray(c.activities)) return true; // backward compatible until configured
-  return c.activities.includes(capKeyName(a&&a.name));
+  const c=userCapability(u); if(!c||!c.configured) return true;
+  const key=capKeyName(a&&a.name);
+  if(c.cantDo.includes(key)) return false;
+  return c.canDo.length ? c.canDo.includes(key) : true;
 }
+function activityGenderRule(a){
+  const direct=String(a&&a.gender_rule||"").toLowerCase(); if(["male","female","any"].includes(direct)) return direct;
+  const rules=(S.settings&&S.settings.activityGenderRules)||{}; const v=String(rules[capKeyName(a&&a.name)]||"any").toLowerCase(); return ["male","female"].includes(v)?v:"any";
+}
+function genderEligibleForActivity(u,a){ const r=activityGenderRule(a); return r==="any" || String(u&&u.gender||"").toLowerCase()===r; }
 function entranceEligible(u){
   if(!u || u.active===false || u.role!=="staff") return false;
   if(NO_ACTIVITY_NUMBERS.includes(+u.number)) return false;
   const c=userCapability(u); return !c || c.entrance!==false;
 }
-function eligibleStaffForActivity(day,a){ return assignableStaff(day).filter(u=>canRunActivity(u,a)); }
-function sameActivityExistingCount(u,a,ignoreAssigned){
-  const key=capKeyName(a&&a.name), un=String(u.username||"").toLowerCase();
-  return (S.activities||[]).filter(x=>capKeyName(x.name)===key && String(x.entertainer||"").toLowerCase()===un && (!ignoreAssigned || !String(x.entertainer||"").trim())).length;
+function currentWeekDateForDay(day){ const d=hotelNow(); const monday=new Date(d); monday.setHours(12,0,0,0); monday.setDate(d.getDate()-todayIndex()+day); return monday.getFullYear()+"-"+String(monday.getMonth()+1).padStart(2,"0")+"-"+String(monday.getDate()).padStart(2,"0"); }
+function attendanceUnavailable(u,day){ const date=currentWeekDateForDay(day); return (S.staffAtt||[]).some(x=>String(x.username).toLowerCase()===String(u.username).toLowerCase()&&String(x.date).slice(0,10)===date&&(x.status==="A"||x.status==="O")); }
+function assignableStaff(day){
+  const dp=dayPlanFor(day);
+  return (S.users||[]).filter(u=>u.role==="staff"&&u.number&&u.active!==false&&!NO_ACTIVITY_NUMBERS.includes(+u.number)&&!dp.off.includes(+u.number)&&!attendanceUnavailable(u,day)).sort((a,b)=>(a.number||99)-(b.number||99));
+}
+function eligibleStaffForActivity(day,a){ return assignableStaff(day).filter(u=>canRunActivity(u,a)&&genderEligibleForActivity(u,a)); }
+function plannerHistory(){ return Array.isArray(S.settings&&S.settings.plannerHistory)?S.settings.plannerHistory:[]; }
+function historyRepeatCount(u,a){ const key=capKeyName(a&&a.name), un=String(u&&u.username||"").toLowerCase(); const cutoff=Date.now()-70*24*3600*1000; return plannerHistory().filter(h=>h.type==="activity"&&String(h.username).toLowerCase()===un&&capKeyName(h.activity)===key&&new Date(h.at||0).getTime()>=cutoff).length; }
+function historyEntranceCount(u){ const un=String(u&&u.username||"").toLowerCase(), cutoff=Date.now()-42*24*3600*1000; return plannerHistory().filter(h=>h.type==="entrance"&&String(h.username).toLowerCase()===un&&new Date(h.at||0).getTime()>=cutoff).length; }
+function sameActivityExistingCount(u,a){ const key=capKeyName(a&&a.name), un=String(u.username||"").toLowerCase(); return (S.activities||[]).filter(x=>capKeyName(x.name)===key&&String(x.entertainer||"").toLowerCase()===un).length; }
+function intervalOf(v){ const s=String(v||""); const m=s.match(/(\d{1,2}):(\d{2})(?:\s*[–—-]\s*(\d{1,2}):(\d{2}))?/); if(!m)return null; let a=(+m[1])*60+(+m[2]), b=m[3]!=null?(+m[3])*60+(+m[4]):a+45; if(b<a)b+=1440; return {s:a,e:b}; }
+function intervalsOverlap(a,b){ return !!(a&&b&&a.s<b.e&&b.s<a.e); }
+function plannedTimeConflict(u,a,assigned,entranceChoice){
+  const k=loadKey(u), w=intervalOf(a&&a.time); if(!w) return false;
+  if((assigned[k]||[]).some(x=>intervalsOverlap(w,intervalOf(x.time)))) return true;
+  if(entranceChoice&&String(entranceChoice.username).toLowerCase()===k&&intervalsOverlap(w,intervalOf(entranceChoice.time))) return true;
+  return false;
 }
 function pickSmartFair(pool,load,usedThisSlot,a,plannedSame){
   if(!pool.length) return null;
   let candidates=pool.filter(u=>!usedThisSlot.has(u.username)); if(!candidates.length) candidates=pool.slice();
-  const scored=candidates.map(u=>{
-    const k=loadKey(u);
-    const repeat=(sameActivityExistingCount(u,a,false)+(plannedSame[k+"|"+capKeyName(a.name)]||0));
-    // fairness dominates; repeat penalty is next; random jitter makes recalculation genuinely variable among close candidates.
-    const score=loadOf(load,u)*1000 + repeat*420 + (load.last[k]||0)*2 + Math.random()*180;
-    return {u,score};
-  }).sort((a,b)=>a.score-b.score);
+  const scored=candidates.map(u=>{ const k=loadKey(u); const repeat=historyRepeatCount(u,a)+sameActivityExistingCount(u,a)+(plannedSame[k+"|"+capKeyName(a.name)]||0); const score=loadOf(load,u)*1000+repeat*330+(load.last[k]||0)*1.5+Math.random()*420; return {u,score}; }).sort((a,b)=>a.score-b.score);
   return scored[0].u;
 }
-function entrancePool(day){
-  const dp=dayPlanFor(day); const today=(day===todayIndex())?hotelDateStr():null;
-  return (S.users||[]).filter(u=>entranceEligible(u) && u.number && !dp.off.includes(+u.number) && !(today&&(S.staffAtt||[]).some(x=>x.username===u.username&&String(x.date).slice(0,10)===today&&(x.status==="A"||x.status==="O"))));
+function entrancePool(day,genderOverride){
+  const dp=dayPlanFor(day), rule=genderOverride||dp.entranceGender||"any";
+  return (S.users||[]).filter(u=>entranceEligible(u)&&u.number&&!dp.off.includes(+u.number)&&!attendanceUnavailable(u,day)&&(rule==="any"||String(u.gender||"").toLowerCase()===rule));
 }
-function entranceCounts(excludeDay){
-  const out={};
-  for(let d=0;d<7;d++){ if(d===excludeDay) continue; const p=dayPlanFor(d), u=(S.users||[]).find(x=>+x.number===+p.entrance); if(u){const k=loadKey(u);out[k]=(out[k]||0)+1;} }
-  return out;
+function entranceCounts(excludeDay){ const out={}; for(let d=0;d<7;d++){ if(d===excludeDay)continue; const p=dayPlanFor(d),u=(S.users||[]).find(x=>+x.number===+p.entrance); if(u){const k=loadKey(u);out[k]=(out[k]||0)+1;} } return out; }
+function chooseFairEntrance(day,extraCounts){
+  const dp=dayPlanFor(day), pool=entrancePool(day); if(!pool.length) return null; const c=extraCounts||entranceCounts(day);
+  const scored=pool.map(u=>({u,score:(c[loadKey(u)]||0)*1000+historyEntranceCount(u)*240+Math.random()*400})).sort((a,b)=>a.score-b.score); const u=scored[0].u;
+  return {...u,time:dp.entranceTime||"",genderRule:dp.entranceGender||"any"};
 }
-function chooseFairEntrance(day, extraCounts){
-  const pool=entrancePool(day); if(!pool.length) return null;
-  const c=extraCounts||entranceCounts(day);
-  const min=Math.min(...pool.map(u=>c[loadKey(u)]||0));
-  const shortlist=pool.filter(u=>(c[loadKey(u)]||0)===min);
-  return shortlist[Math.floor(Math.random()*shortlist.length)]||pool[0];
-}
-async function autoBalanceEntranceWeek(){
-  const counts={}; const next={...(S.settings.dayOverrides||{})};
-  // randomize day order so repeated clicks can create another equally fair rotation
-  const days=[0,1,2,3,4,5,6].sort(()=>Math.random()-.5);
-  days.forEach(day=>{ const u=chooseFairEntrance(day,counts); if(!u) return; counts[loadKey(u)]=(counts[loadKey(u)]||0)+1; const dp=dayPlanFor(day); next[String(day)]={...(next[String(day)]||{}), entrance:+u.number, off:dp.off.slice(), theme:dp.theme, dress:dp.dress, practice:!!dp.practice, practiceTime:dp.practiceTime||t("practiceWindow"), practiceTitle:dp.practiceTitle||t("practiceHead"), eveningShow:dp.eveningShow||"", showTime:dp.showTime||"", showLoc:dp.showLoc||"", liveBand:dp.liveBand||"", makeup:dp.makeup||null}; });
-  await DB.saveSettings({...S.settings,dayOverrides:next}); render(); toastOk(t("dutySaved"));
-}
+function makeEntrancePlan(days){ const counts={}, out={}; [...days].sort(()=>Math.random()-.5).forEach(day=>{const u=chooseFairEntrance(day,counts); if(!u)return; counts[loadKey(u)]=(counts[loadKey(u)]||0)+1;out[day]=u;}); return out; }
+async function autoBalanceEntranceWeek(){ const entrances=makeEntrancePlan([0,1,2,3,4,5,6]); const dayOverrides=await applyEntrancePlan(entrances); const now=new Date().toISOString(); const history=(plannerHistory().concat(Object.keys(entrances).map(d=>({type:"entrance",at:now,day:+d,username:entrances[d].username})))).slice(-350); await DB.saveSettings({...S.settings,dayOverrides,plannerHistory:history}); render(); toastOk(t("dutySaved")); }
 /* What each person ALREADY has that we are not going to touch.
    When she replaces everything, nothing is kept, so everyone starts at zero. */
 function baseLoad(opts){
@@ -4637,34 +4671,25 @@ function pickFairest(pool, load, usedThisSlot){
 }
 /* One day. Pass a shared `load` so a whole week stays balanced across days. */
 function autoAssignDay(day, opts, sharedLoad){
-  const o=opts||{};
-  const out=[];
-  const load=sharedLoad || baseLoad(o);
-  const plannedSame={};
+  const o=opts||{}, out=[], load=sharedLoad||baseLoad(o), plannedSame={}, assigned={};
+  const entranceChoice=o.entranceChoice||null;
   ["morning","afternoon"].forEach(slot=>{
-    const acts=(S.activities||[])
-      .filter(a=>a.day===day && activitySlot(a)===slot)
-      .filter(a=>o.onlyEmpty ? !String(a.entertainer||"").trim() : true)
-      .sort((x,y)=>String(x.time).localeCompare(String(y.time)));
-    if(!acts.length) return;
-    const usedThisSlot=new Set();
+    const acts=(S.activities||[]).filter(a=>a.day===day&&activitySlot(a)===slot).filter(a=>o.onlyEmpty?!String(a.entertainer||"").trim():true).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
+    if(!acts.length)return; const usedThisSlot=new Set();
     acts.forEach(a=>{
-      const pool=eligibleStaffForActivity(day,a);
+      let pool=eligibleStaffForActivity(day,a).filter(u=>!plannedTimeConflict(u,a,assigned,entranceChoice));
       const pick=pickSmartFair(pool,load,usedThisSlot,a,plannedSame);
-      if(!pick){ out.push({activity:a, username:"", name:t("noQualified"), slot, day, unassigned:true}); return; }
-      usedThisSlot.add(pick.username); bumpLoad(load,pick);
-      const rk=loadKey(pick)+"|"+capKeyName(a.name); plannedSame[rk]=(plannedSame[rk]||0)+1;
-      out.push({activity:a, username:pick.username, name:pick.display_name||pick.username, slot, day});
+      if(!pick){out.push({activity:a,username:"",name:t("noQualifiedGender"),slot,day,unassigned:true});return;}
+      usedThisSlot.add(pick.username); bumpLoad(load,pick); const k=loadKey(pick); (assigned[k]=assigned[k]||[]).push(a);
+      const rk=k+"|"+capKeyName(a.name);plannedSame[rk]=(plannedSame[rk]||0)+1;out.push({activity:a,username:pick.username,name:pick.display_name||pick.username,slot,day});
     });
-  });
-  return out;
+  }); return out;
 }
 /* The whole week, sharing ONE running count so everybody ends up even. */
 function autoAssignWeek(opts){
-  const load=baseLoad(opts||{});
-  let all=[];
-  for(let d=0; d<7; d++) all=all.concat(autoAssignDay(d, opts, load));
-  return balancePlan(all, opts||{});
+  const o=opts||{}, load=baseLoad(o); let all=[];
+  for(let d=0;d<7;d++) all=all.concat(autoAssignDay(d,{...o,entranceChoice:o.entrances&&o.entrances[d]},load));
+  return balancePlan(all,o);
 }
 /* Final tidy-up: if anyone is still more than one ahead, hand one of their
    activities to somebody who has fewer — but only if that person is actually
@@ -4714,88 +4739,52 @@ function planBalance(list, opts){
           spread:vals.length?Math.max(...vals)-Math.min(...vals):0};
 }
 async function applyAssignments(list){
-  for(const it of list){
-    if(!it.username || it.unassigned) continue;
-    try{ await DB.saveActivity({...it.activity, entertainer:it.username}); }
-    catch(e){ toastErr(t("errSave")); return false; }
-  }
-  return true;
+  for(const it of list){ if(!it.username||it.unassigned)continue; try{await DB.saveActivity({...it.activity,entertainer:it.username});}catch(e){toastErr(t("errSave"));return false;} } return true;
 }
-/* She sees the proposal, can change ANY name, and only then applies it. */
+function scopeDays(scope,day){return scope==="day"?[day]:[0,1,2,3,4,5,6];}
+function candidateSignature(c){return c.assignments.map(x=>x.activity.id+":"+x.username).join("|")+"#"+Object.keys(c.entrances).sort().map(d=>d+":"+(c.entrances[d]&&c.entrances[d].username)).join("|");}
+function buildPlanCandidate(scope,day,onlyEmpty){
+  const days=scopeDays(scope,day), entrances=makeEntrancePlan(days); let assignments=[];
+  if(scope==="day") assignments=autoAssignDay(day,{onlyEmpty,entranceChoice:entrances[day]});
+  else assignments=autoAssignWeek({onlyEmpty,entrances});
+  return {assignments,entrances,createdAt:new Date().toISOString()};
+}
+function buildPlanVariants(scope,day,onlyEmpty){
+  const out=[],seen=new Set(); for(let tries=0;tries<18&&out.length<3;tries++){const c=buildPlanCandidate(scope,day,onlyEmpty),s=candidateSignature(c);if(!seen.has(s)){seen.add(s);out.push(c);}}
+  while(out.length<3)out.push(buildPlanCandidate(scope,day,onlyEmpty)); return out;
+}
+async function applyEntrancePlan(entrances){
+  const next={...(S.settings.dayOverrides||{})}; Object.keys(entrances||{}).forEach(k=>{const day=+k,u=entrances[k],dp=dayPlanFor(day);if(!u)return;next[String(day)]={...(next[String(day)]||{}),off:dp.off.slice(),entrance:+u.number,entranceTime:dp.entranceTime||"",entranceGender:dp.entranceGender||"any",theme:dp.theme,dress:dp.dress,practice:!!dp.practice,practiceTime:dp.practiceTime||t("practiceWindow"),practiceTitle:dp.practiceTitle||t("practiceHead"),eveningShow:dp.eveningShow||"",showTime:dp.showTime||"",showLoc:dp.showLoc||"",liveBand:dp.liveBand||"",makeup:dp.makeup||null};});
+  return next;
+}
+async function applyPlanningCandidate(c){
+  const ok=await applyAssignments(c.assignments); if(!ok)return false;
+  const dayOverrides=await applyEntrancePlan(c.entrances); const now=new Date().toISOString();
+  const history=(plannerHistory().concat(c.assignments.filter(x=>x.username).map(x=>({type:"activity",at:now,day:x.day,activity:x.activity.name,activityId:x.activity.id,username:x.username})),Object.keys(c.entrances).map(d=>({type:"entrance",at:now,day:+d,username:c.entrances[d].username})))).slice(-350);
+  await DB.saveSettings({...S.settings,dayOverrides,plannerHistory:history}); return true;
+}
 function openAutoAssignModal(day){
-  let scope="day", onlyEmpty=true;
-  let plan=[];
-  const wrap=baseModal("");
-  const rebuild=()=>{ plan=(scope==="day")?autoAssignDay(day,{onlyEmpty}):autoAssignWeek({onlyEmpty}); };
-  rebuild();
+  let scope="day",onlyEmpty=true,variants=buildPlanVariants(scope,day,onlyEmpty),active=0; const wrap=baseModal("");
+  const regenerate=()=>{variants=buildPlanVariants(scope,day,onlyEmpty);active=0;};
   const draw=()=>{
-    const bal=planBalance(plan,{onlyEmpty});
-    const byDay={};
-    plan.forEach(x=>{ (byDay[x.activity.day]=byDay[x.activity.day]||[]).push(x); });
-    const nameOf=un=>{ const u=(S.users||[]).find(y=>y.username===un); return u?(u.display_name||u.username):un; };
-    wrap.innerHTML=`<div class="modal">
-      <h3>${ic("users",20)} ${t("autoAssign")}</h3>
-      <p class="mini"><b>${t("allocatorSmart")}</b><br>${t("allocatorSmartHint")}</p>
-      <div class="bd-roles" style="margin-top:12px">
-        <button class="bd-role ${scope==="day"?"on":""}" data-ascope="day">${t("autoDay")}</button>
-        <button class="bd-role ${scope==="week"?"on":""}" data-ascope="week">${t("autoWeek")}</button>
-      </div>
-      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:14.5px;color:var(--ink);margin:10px 0">
-        <input type="checkbox" id="a-empty" style="width:auto" ${onlyEmpty?"checked":""}> ${t("onlyEmptyLbl")}</label>
-      ${plan.length?`
-        <div class="aa-bal ${bal.spread<=1?"good":"warn"}">
-          <b>${t("balanceLbl")}</b>
-          <span>${bal.spread<=1?t("evenSpread"):(t("spreadOff")+" "+bal.spread)} · ${bal.min}–${bal.max} ${t("activityCount")}</span>
-        </div>
-        <p class="mini" style="margin:8px 0">${ic("pen",12)} ${t("editHint")}</p>
-        <div class="card aa-list">
-          ${Object.keys(byDay).sort((a,b)=>a-b).map(d=>{
-            return `<div class="aa-day"><b>${esc(t("days")[+d]||"")}</b></div>
-            ${byDay[d].map(x=>{
-              const pool=eligibleStaffForActivity(+d,x.activity);
-              const i=plan.indexOf(x);
-              return `<div class="aa-row">
-                <span class="aa-slot ${x.slot}">${x.slot==="morning"?t("morningSlot"):t("afternoonSlot")}</span>
-                <span class="aa-mid"><b>${esc(x.activity.name)}</b><span class="mini">${esc(x.activity.time||"")}</span></span>
-                <select class="aa-sel" data-aarow="${i}">
-                  <option value="">${t("noneAssigned")}</option>
-                  ${pool.map(u=>`<option value="${esc(u.username)}" ${u.username===x.username?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("")}
-                </select>
-              </div>`;
-            }).join("")}`;
-          }).join("")}
-        </div>
-        <label style="margin-top:10px">${t("perPerson")}</label>
-        <div class="aa-per">${Object.keys(bal.per).sort((a,b)=>bal.per[b]-bal.per[a]).map(k=>
-          `<span class="ts-chip ${bal.per[k]===bal.max&&bal.spread>1?"hot":""}">${esc(nameOf(k))} · ${bal.per[k]}</span>`).join("")}</div>
-        <p class="mini" style="margin-top:10px">${ic("sparkle",13)} ${t("eventsAllTeam")}</p>
-        <button class="btn ghost" id="a-recalc">${ic("back",15)} ${t("recalc")}</button>
-        <button class="btn" id="a-go">${ic("check",16)} ${t("autoApply")}</button>`
-      :`<div class="empty" style="margin-top:12px"><div class="big">${ic("users",28)}</div>${t("autoNothing")}</div>`}
-      <button class="btn ghost" id="a-x">${t("close")}</button>
-    </div>`;
-    wrap.querySelectorAll("[data-ascope]").forEach(b=>b.onclick=()=>{ scope=b.dataset.ascope; rebuild(); draw(); });
-    const ce=wrap.querySelector("#a-empty"); if(ce) ce.onchange=()=>{ onlyEmpty=ce.checked; rebuild(); draw(); };
-    // change any single assignment by hand
-    wrap.querySelectorAll("[data-aarow]").forEach(sel=>sel.onchange=()=>{
-      const i=+sel.dataset.aarow;
-      if(!plan[i]) return;
-      if(!sel.value){ plan.splice(i,1); }
-      else { plan[i]={...plan[i], username:sel.value,
-        name:((S.users||[]).find(u=>u.username===sel.value)||{}).display_name||sel.value}; }
-      draw();
-    });
-    const rc=wrap.querySelector("#a-recalc"); if(rc) rc.onclick=()=>{ rebuild(); draw(); };
-    wrap.querySelector("#a-x").onclick=()=>wrap.remove();
-    const go=wrap.querySelector("#a-go");
-    if(go) go.onclick=async ()=>{
-      go.disabled=true;
-      const ok=await applyAssignments(plan);
-      wrap.remove();
-      if(ok){ toastOk(t("autoDone")); render(); }
-    };
-  };
-  draw();
+    const cand=variants[active],plan=cand.assignments,bal=planBalance(plan,{onlyEmpty}),byDay={}; plan.forEach(x=>(byDay[x.activity.day]=byDay[x.activity.day]||[]).push(x));
+    const nameOf=un=>{const u=(S.users||[]).find(y=>String(y.username).toLowerCase()===String(un).toLowerCase());return u?(u.display_name||u.username):un;};
+    const labels=[t("planOne"),t("planTwo"),t("planThree")];
+    wrap.innerHTML=`<div class="modal"><h3>${ic("users",20)} ${t("autoAssign")}</h3><p class="mini"><b>${t("allocatorSmart")}</b><br>${t("plannerPlansHint")}</p>
+      <div class="bd-roles" style="margin-top:12px"><button class="bd-role ${scope==="day"?"on":""}" data-ascope="day">${t("autoDay")}</button><button class="bd-role ${scope==="week"?"on":""}" data-ascope="week">${t("autoWeek")}</button></div>
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:14.5px;color:var(--ink);margin:10px 0"><input type="checkbox" id="a-empty" style="width:auto" ${onlyEmpty?"checked":""}> ${t("onlyEmptyLbl")}</label>
+      <div class="plan-tabs">${variants.map((_,i)=>`<button class="plan-tab ${i===active?"on":""}" data-plan="${i}">${labels[i]}</button>`).join("")}</div>
+      <div class="plan-meta"><span class="plan-chip good">✓ ${t("qualificationChecked")}</span><span class="plan-chip good">✓ ${t("attendanceChecked")}</span><span class="plan-chip good">✓ ${t("timeChecked")}</span><span class="plan-chip good">✓ ${t("genderChecked")}</span><span class="plan-chip good">✓ ${t("historyChecked")}</span></div>
+      ${plan.length?`<div class="aa-bal ${bal.spread<=1?"good":"warn"}"><b>${t("balanceLbl")}</b><span>${bal.spread<=1?t("evenSpread"):(t("spreadOff")+" "+bal.spread)} · ${bal.min}–${bal.max} ${t("activityCount")}</span></div>
+      <p class="mini" style="margin:8px 0">${ic("pen",12)} ${t("editHint")}</p><div class="card aa-list">
+      ${scopeDays(scope,day).map(d=>{const ent=cand.entrances[d],ep=entrancePool(d);return `<div class="aa-day"><b>${esc(t("days")[d]||"")}</b></div><div class="aa-entrance"><span class="aa-slot">${t("entrancePlan")}</span><span class="aa-mid"><b>${ent?esc(ent.display_name||ent.username):t("entranceUnassigned")}</b><span class="mini">${esc(dayPlanFor(d).entranceTime||"")}${dayPlanFor(d).entranceGender!=="any"?" · "+genderLabel(dayPlanFor(d).entranceGender):""}</span></span><select data-entday="${d}"><option value="">${t("noneAssigned")}</option>${ep.map(u=>`<option value="${esc(u.username)}" ${ent&&u.username===ent.username?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("")}</select></div>${(byDay[d]||[]).map(x=>{const pool=eligibleStaffForActivity(+d,x.activity),i=plan.indexOf(x),gr=activityGenderRule(x.activity);return `<div class="aa-row"><span class="aa-slot ${x.slot}">${x.slot==="morning"?t("morningSlot"):t("afternoonSlot")}</span><span class="aa-mid"><b>${esc(x.activity.name)}</b><span class="mini">${esc(x.activity.time||"")}</span>${gr!=="any"?`<span class="req-gender">${ic("user",10)} ${gr==="male"?t("genderM"):t("genderF")}</span>`:""}</span><select class="aa-sel" data-aarow="${i}"><option value="">${t("noneAssigned")}</option>${pool.map(u=>`<option value="${esc(u.username)}" ${u.username===x.username?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("")}</select></div>`;}).join("")}`;}).join("")}</div>
+      <label style="margin-top:10px">${t("perPerson")}</label><div class="aa-per">${Object.keys(bal.per).sort((a,b)=>bal.per[b]-bal.per[a]).map(k=>`<span class="ts-chip ${bal.per[k]===bal.max&&bal.spread>1?"hot":""}">${esc(nameOf(k))} · ${bal.per[k]}</span>`).join("")}</div>
+      <button class="btn ghost" id="a-recalc">${ic("sparkle",15)} ${t("newPlans")}</button><button class="btn" id="a-go">${ic("check",16)} ${t("autoApply")}</button>`:`<div class="empty" style="margin-top:12px"><div class="big">${ic("users",28)}</div>${t("autoNothing")}</div>`}<button class="btn ghost" id="a-x">${t("close")}</button></div>`;
+    wrap.querySelectorAll("[data-ascope]").forEach(b=>b.onclick=()=>{scope=b.dataset.ascope;regenerate();draw();}); const ce=wrap.querySelector("#a-empty");if(ce)ce.onchange=()=>{onlyEmpty=ce.checked;regenerate();draw();}; wrap.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>{active=+b.dataset.plan;draw();});
+    wrap.querySelectorAll("[data-aarow]").forEach(sel=>sel.onchange=()=>{const i=+sel.dataset.aarow;if(!plan[i])return;if(!sel.value)plan.splice(i,1);else plan[i]={...plan[i],username:sel.value,name:((S.users||[]).find(u=>u.username===sel.value)||{}).display_name||sel.value};draw();});
+    wrap.querySelectorAll("[data-entday]").forEach(sel=>sel.onchange=()=>{const d=+sel.dataset.entday;if(!sel.value)delete cand.entrances[d];else{const u=(S.users||[]).find(x=>x.username===sel.value);if(u)cand.entrances[d]={...u,time:dayPlanFor(d).entranceTime||"",genderRule:dayPlanFor(d).entranceGender||"any"};}draw();});
+    const rc=wrap.querySelector("#a-recalc");if(rc)rc.onclick=()=>{regenerate();draw();};wrap.querySelector("#a-x").onclick=()=>wrap.remove();const go=wrap.querySelector("#a-go");if(go)go.onclick=async()=>{go.disabled=true;try{const ok=await applyPlanningCandidate(cand);wrap.remove();if(ok){toastOk(t("planApplied"));render();}}catch(e){console.error(e);go.disabled=false;toastErr(t("errSave"));}};
+  };draw();
 }
 /* ================= LIVE LOCATION (opt-in) =================
    Nothing is ever sent unless the person switches sharing on themselves.
@@ -6167,6 +6156,8 @@ function openDutyModal(day){
     <div class="ops-edit-grid">
       <div><label>${t("selectEntrance")}</label><select id="duty-ent"><option value="">—</option>${entPool.map(u=>`<option value="${u.number}" ${+dp.entrance===+u.number?"selected":""}>#${u.number} ${esc(u.display_name||u.username)}</option>`).join("")}</select></div>
       <div class="ops-mini-actions"><button class="btn sm ghost" id="duty-auto-ent" type="button">${ic("sparkle",14)} ${t("autoEntrance")}</button><button class="btn sm ghost" id="duty-auto-week" type="button">${ic("calendar",14)} ${t("autoEntranceWeek")}</button></div>
+      <div><label>${t("entranceTime")}</label><input id="duty-enttime" value="${esc(dp.entranceTime||"")}" placeholder="18:30 – 19:30"></div>
+      <div><label>${t("entranceGender")}</label><select id="duty-entgender"><option value="any" ${dp.entranceGender==="any"?"selected":""}>${t("genderAny")}</option><option value="male" ${dp.entranceGender==="male"?"selected":""}>${t("genderMale")}</option><option value="female" ${dp.entranceGender==="female"?"selected":""}>${t("genderFemale")}</option></select></div>
       <div><label>${t("restaurantTheme")}</label><input id="duty-theme" value="${esc(dp.theme||"")}"></div>
       <div><label>${t("dressCode")}</label><input id="duty-dress" value="${esc(dp.dress||"")}"></div>
     </div>
@@ -6181,12 +6172,14 @@ function openDutyModal(day){
     ${dayIsCustom(day)?`<button class="btn ghost" id="duty-reset">${ic("back",15)} ${t("resetDefault")}</button>`:""}
     <button class="btn ghost" id="duty-x">${t("close")}</button>`);
   wrap.querySelector("#duty-x").onclick=()=>wrap.remove();
-  wrap.querySelector("#duty-auto-ent").onclick=()=>{ const u=chooseFairEntrance(day); if(u){ wrap.querySelector("#duty-ent").value=String(u.number); toastOk((u.display_name||u.username)+" · "+t("entranceDuty")); } else toastErr(t("noOneAvailable")); };
+  const refreshEntranceOptions=()=>{ const g=wrap.querySelector("#duty-entgender").value||"any", cur=wrap.querySelector("#duty-ent").value, pool=entrancePool(day,g); wrap.querySelector("#duty-ent").innerHTML=`<option value="">—</option>${pool.map(x=>`<option value="${x.number}">#${x.number} ${esc(x.display_name||x.username)}</option>`).join("")}`; if(pool.some(x=>String(x.number)===String(cur)))wrap.querySelector("#duty-ent").value=cur; };
+  wrap.querySelector("#duty-entgender").onchange=refreshEntranceOptions;
+  wrap.querySelector("#duty-auto-ent").onclick=()=>{ const g=wrap.querySelector("#duty-entgender").value||"any",pool=entrancePool(day,g); if(!pool.length){toastErr(t("noOneAvailable"));return;} const counts=entranceCounts(day),u=pool.map(x=>({x,score:(counts[loadKey(x)]||0)*1000+historyEntranceCount(x)*240+Math.random()*400})).sort((a,b)=>a.score-b.score)[0].x; wrap.querySelector("#duty-ent").innerHTML=`<option value="">—</option>${pool.map(x=>`<option value="${x.number}">#${x.number} ${esc(x.display_name||x.username)}</option>`).join("")}`;wrap.querySelector("#duty-ent").value=String(u.number);toastOk((u.display_name||u.username)+" · "+t("entranceDuty")); };
   wrap.querySelector("#duty-auto-week").onclick=async ()=>{ try{ await autoBalanceEntranceWeek(); wrap.remove(); }catch(e){console.error(e);toastErr(t("errSave"));} };
   wrap.querySelector("#duty-save").onclick=async ()=>{
     const off=[...wrap.querySelectorAll(".duty-off")].filter(b=>b.checked).map(b=>+b.value);
     const entRaw=wrap.querySelector("#duty-ent").value;
-    const ov={off, entrance:entRaw?+entRaw:null, theme:wrap.querySelector("#duty-theme").value.trim(), dress:wrap.querySelector("#duty-dress").value.trim(),
+    const ov={off, entrance:entRaw?+entRaw:null, entranceTime:wrap.querySelector("#duty-enttime").value.trim(), entranceGender:wrap.querySelector("#duty-entgender").value||"any", theme:wrap.querySelector("#duty-theme").value.trim(), dress:wrap.querySelector("#duty-dress").value.trim(),
       practice:wrap.querySelector("#duty-practice").checked, practiceTime:wrap.querySelector("#duty-prtime").value.trim(), practiceTitle:wrap.querySelector("#duty-prtitle").value.trim(),
       eveningShow:wrap.querySelector("#duty-show").value.trim(), showTime:wrap.querySelector("#duty-showtime").value.trim(), showLoc:wrap.querySelector("#duty-showloc").value.trim(), liveBand:wrap.querySelector("#duty-band").value.trim(), makeup:dp.makeup||null};
     const all={...(S.settings.dayOverrides||{})}; all[String(day)]=ov;
@@ -7960,6 +7953,7 @@ function openEditModal(a){
     <label>${t("location")}</label><input id="e-loc" value="${esc(a.location)}">
     <label>${t("entertainer")}</label>
     <select id="e-ent">${entOptions}${knownEnt?"":`<option value="${esc(a.entertainer)}" selected>${esc(a.entertainer)}</option>`}</select>
+    <label>${t("genderRule")}</label><select id="e-gender"><option value="any" ${activityGenderRule(a)==="any"?"selected":""}>${t("genderAny")}</option><option value="male" ${activityGenderRule(a)==="male"?"selected":""}>${t("genderMale")}</option><option value="female" ${activityGenderRule(a)==="female"?"selected":""}>${t("genderFemale")}</option></select><p class="mini" style="margin-top:5px">${t("genderRuleHint")}</p>
     <div class="photo-pick"><div class="photo-box" data-photobox></div>
       <div class="pp-txt"><b>${t("photo")}</b><span class="mini">${t("uploadPhoto")}</span></div>
       <input type="file" accept="image/*" data-photoinput hidden></div>
@@ -7985,7 +7979,9 @@ function openEditModal(a){
       image:ePhoto,
       highlight:wrap.querySelector("#e-hl").checked};
     if(!upd.name) return;
-    await DB.saveActivity(upd); wrap.remove(); toast(t("saved")); render();
+    await DB.saveActivity(upd);
+    const rules={...(S.settings.activityGenderRules||{})}; const oldKey=capKeyName(a.name),newKey=capKeyName(upd.name); if(oldKey&&oldKey!==newKey)delete rules[oldKey]; rules[newKey]=wrap.querySelector("#e-gender").value||"any"; await DB.saveSettings({...S.settings,activityGenderRules:rules});
+    wrap.remove(); toast(t("saved")); render();
   };
   const del=wrap.querySelector("#e-del");
   if(del) del.onclick=async ()=>{
@@ -7995,23 +7991,23 @@ function openEditModal(a){
   };
 }
 function capabilityEditorHtml(prefix,u){
-  const c=userCapability(u); const configured=!!(c&&Array.isArray(c.activities));
-  const allowed=configured?new Set(c.activities):new Set(distinctOperationalActivities().map(a=>a.key));
-  const acts=distinctOperationalActivities();
-  return `<div class="cap-panel"><div class="cap-head"><div><b>${t("capabilityTitle")}</b><span class="mini">${t("capabilityHint")}</span></div><span class="chip ${configured?"ok":""}">${configured?t("skillsConfigured"):t("notConfigured")}</span></div>
-    <label class="ops-check"><input id="${prefix}-entrance" type="checkbox" ${(c?c.entrance!==false:true)?"checked":""}> <span>${t("canEntrance")}</span></label>
-    <div class="cap-toolbar"><b>${t("activityEligibility")}</b><span><button type="button" class="cap-all" data-capall="${prefix}">${t("selectAll")}</button><button type="button" class="cap-none" data-capnone="${prefix}">${t("clearAll")}</button></span></div>
-    <div class="cap-grid">${acts.map(a=>`<label class="cap-item"><input type="checkbox" data-capact="${prefix}" value="${esc(a.key)}" ${allowed.has(a.key)?"checked":""}><span>${esc(a.name)}</span></label>`).join("")||`<span class="mini">${t("noneToday")}</span>`}</div></div>`;
+  const c=userCapability(u)||{canDo:[],cantDo:[],entrance:true,configured:false}; const acts=distinctOperationalActivities(),can=new Set(c.canDo||[]),cant=new Set(c.cantDo||[]);
+  return `<div class="cap-panel"><div class="cap-head"><div><b>${t("capabilityProfile")}</b><span class="mini">${t("capabilityRuleHint")}</span></div><span class="chip ${c.configured?"ok":""}">${c.configured?t("skillsConfigured"):t("notConfigured")}</span></div>
+    <div class="entrance-choice"><label><input type="radio" name="${prefix}-entrance" value="yes" ${c.entrance!==false?"checked":""}><span><b>${t("entranceCan")}</b></span></label><label><input type="radio" name="${prefix}-entrance" value="no" ${c.entrance===false?"checked":""}><span><b>${t("entranceCant")}</b></span></label></div>
+    <div class="cap-dual"><div class="cap-col can"><div class="cap-col-h"><b>✓ ${t("iCanDo")}</b><button type="button" data-capall="${prefix}">${t("selectAll")}</button></div><span class="mini">${t("canDoHint")}</span><div class="cap-stack" style="margin-top:8px">${acts.map(a=>`<label class="cap-item can ${can.has(a.key)?"on":""}"><input type="checkbox" data-capcan="${prefix}" value="${esc(a.key)}" ${can.has(a.key)?"checked":""}><span>${esc(a.name)}</span></label>`).join("")||`<span class="mini">${t("noneToday")}</span>`}</div></div>
+    <div class="cap-col cant"><div class="cap-col-h"><b>× ${t("iCantDo")}</b><button type="button" data-capnone="${prefix}">${t("clearAll")}</button></div><span class="mini">${t("cantDoHint")}</span><div class="cap-stack" style="margin-top:8px">${acts.map(a=>`<label class="cap-item cant ${cant.has(a.key)?"on":""}"><input type="checkbox" data-capcant="${prefix}" value="${esc(a.key)}" ${cant.has(a.key)?"checked":""}><span>${esc(a.name)}</span></label>`).join("")||`<span class="mini">${t("noneToday")}</span>`}</div></div></div></div>`;
 }
 function wireCapabilityEditor(wrap,prefix){
-  const all=wrap.querySelector(`[data-capall="${prefix}"]`), none=wrap.querySelector(`[data-capnone="${prefix}"]`);
-  if(all) all.onclick=()=>wrap.querySelectorAll(`[data-capact="${prefix}"]`).forEach(x=>x.checked=true);
-  if(none) none.onclick=()=>wrap.querySelectorAll(`[data-capact="${prefix}"]`).forEach(x=>x.checked=false);
+  const can=()=>[...wrap.querySelectorAll(`[data-capcan="${prefix}"]`)],cant=()=>[...wrap.querySelectorAll(`[data-capcant="${prefix}"]`)];
+  can().forEach(x=>x.onchange=()=>{if(x.checked){const y=cant().find(z=>z.value===x.value);if(y)y.checked=false;} x.closest(".cap-item")?.classList.toggle("on",x.checked);cant().forEach(z=>z.closest(".cap-item")?.classList.toggle("on",z.checked));});
+  cant().forEach(x=>x.onchange=()=>{if(x.checked){const y=can().find(z=>z.value===x.value);if(y)y.checked=false;} x.closest(".cap-item")?.classList.toggle("on",x.checked);can().forEach(z=>z.closest(".cap-item")?.classList.toggle("on",z.checked));});
+  const all=wrap.querySelector(`[data-capall="${prefix}"]`),none=wrap.querySelector(`[data-capnone="${prefix}"]`);if(all)all.onclick=()=>{can().forEach(x=>{x.checked=true;x.closest(".cap-item")?.classList.add("on")});cant().forEach(x=>{x.checked=false;x.closest(".cap-item")?.classList.remove("on")});};if(none)none.onclick=()=>{cant().forEach(x=>{x.checked=false;x.closest(".cap-item")?.classList.remove("on")});};
 }
-function readCapabilityEditor(wrap,prefix){ return {entrance:!!wrap.querySelector(`#${prefix}-entrance`)?.checked, activities:[...wrap.querySelectorAll(`[data-capact="${prefix}"]`)].filter(x=>x.checked).map(x=>x.value)}; }
+function readCapabilityEditor(wrap,prefix){ const ent=wrap.querySelector(`input[name="${prefix}-entrance"]:checked`); return {entrance:!ent||ent.value==="yes",canDo:[...wrap.querySelectorAll(`[data-capcan="${prefix}"]`)].filter(x=>x.checked).map(x=>x.value),cantDo:[...wrap.querySelectorAll(`[data-capcant="${prefix}"]`)].filter(x=>x.checked).map(x=>x.value),configured:true}; }
 async function saveUserCapability(username,data,oldUsername){
-  const all={...capabilityMap()}; const old=String(oldUsername||username).toLowerCase(), key=String(username||"").toLowerCase();
-  if(old&&old!==key) delete all[old]; all[key]=data; await DB.saveSettings({...S.settings,staffCapabilities:all});
+  const all={...capabilityMap()},old=String(oldUsername||username).toLowerCase(),key=String(username||"").toLowerCase();if(old&&old!==key)delete all[old];all[key]=data;
+  const user=(S.users||[]).find(u=>String(u.username).toLowerCase()===key);if(user){try{await DB.updateUser(user.id,{can_do:data.canDo,cant_do:data.cantDo,entrance_eligible:data.entrance});}catch(e){console.warn("Capability columns unavailable; using app settings fallback",e);}}
+  await DB.saveSettings({...S.settings,staffCapabilities:all});
 }
 function openUserModal(){
   const wrap=baseModal(`
