@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v21.1 Manager Booking & Notification Fixed</title>
+<title>Entertainment Operations Control Center — v20 Message & Theme Fixed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <!--
@@ -2518,35 +2518,6 @@ html,body,#app,.app,.screen,.ex-screen.v14{
   border-color:var(--border-color)!important;
 }
 
-
-
-/* ================= v21 MANAGER CRUD CONTROL ================= */
-[data-approle="manager"] .booking-line{
-  position:relative;
-  cursor:pointer;
-  transition:border-color .15s,transform .12s,box-shadow .15s;
-}
-[data-approle="manager"] .booking-line[onclick]::after{
-  content:"›";
-  position:absolute;
-  top:50%;
-  right:14px;
-  transform:translateY(-50%);
-  font-size:24px;
-  color:var(--text-secondary);
-  opacity:.45;
-}
-[data-approle="manager"] .booking-line:active{
-  transform:scale(.992);
-  border-color:var(--accent-action)!important;
-}
-@media(hover:hover){
-  [data-approle="manager"] .booking-line:hover{
-    border-color:var(--accent-action)!important;
-    box-shadow:var(--sh-2);
-  }
-}
-
 </style>
 </head>
 <body data-build="audited-master-v16">
@@ -3888,12 +3859,6 @@ function myRequestsList(){ const g=S.session; if(!g||g.role!=="guest") return []
   return S.requests.filter(r=>r.room===g.room); }
 function accountName(room){ const a=S.accounts.find(x=>x.room===room); return a?a.name:room; }
 function isStaffRoom(room){ return String(room||"").startsWith("staff:"); }
-function managerGuestSectionBadge(){
-  // Guest area badge must represent guest-originated items only.
-  const guestMsgs=unreadGuestChatsForManager();
-  const guestReq=(S.requests||[]).filter(r=>String(r.status||"new")==="new").length;
-  return guestMsgs+guestReq;
-}
 function unreadGuestChatsForManager(){
   return S.messages.filter(m=>!isStaffRoom(m.room)&&m.sender==="guest"&&!m.read_by_team).length;
 }
@@ -4497,7 +4462,8 @@ function navGroupsBase(role){
         ["teaminfo","users",t("teamPage"),0]]}
     ];
   }
-  const guestBadge=managerGuestSectionBadge();
+  const un=unreadFor("manager");
+  const newReq=S.requests.filter(r=>r.status==="new").length;
   return [
     {head:t("secManage"), items:[
       ["dash","chart",t("dashboard"),0],
@@ -4510,7 +4476,7 @@ function navGroupsBase(role){
         ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
       ["qr","qr",t("qrTab"),0]]},
     {head:t("secGuests"), items:[
-      ["guests","user",t("guestsTab"),guestBadge],
+      ["guests","user",t("guestsTab"),un+newReq],
       ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("secSettings"), items:[
       ["settings","settings",t("settingsHub"),0]]}
@@ -7413,119 +7379,6 @@ function staffChatInbox(){
     </div>`).join("")||`<div class="empty"><div class="big">${ic("users",34)}</div>${t("none")}</div>`}
   </div>`;
 }
-
-/* ================= v21 MANAGER BOOKING CONTROL ================= */
-function bookingActivityById(id){
-  return (S.activities||[]).find(a=>String(a.id)===String(id))||null;
-}
-function bookingById(id){
-  return (S.bookings||[]).find(b=>String(b.id)===String(id))||null;
-}
-function bookingGuestLabel(b){
-  if(!b) return "";
-  return (b.guest_name||accountName(b.room)||("Room "+(b.room||""))).trim();
-}
-function managerBookingModal(id){
-  if(!S.session || S.session.role!=="manager") return;
-  const b=id?bookingById(id):null;
-  const act=b?bookingActivityById(b.activity_id):null;
-  const acts=(S.activities||[]).slice().sort((a,b)=>(a.day-b.day)||String(a.time||"").localeCompare(String(b.time||"")));
-  const actOpts=acts.map(a=>`<option value="${esc(a.id)}" ${b&&String(b.activity_id)===String(a.id)?"selected":""}>${esc(dayName(a.day))} · ${esc(a.time||"")} · ${esc(a.name||"")}</option>`).join("");
-  const title=b?"Edit booking":"Add booking";
-  const body=`
-    <div class="grab"></div>
-    <h3>${title}</h3>
-    <p class="mini">${b?"Change any booking detail or delete this booking.":"Create a booking manually as Manager."}</p>
-    <label>Activity</label>
-    <select id="mb-act"><option value="">Choose activity</option>${actOpts}</select>
-    <div class="row2">
-      <div><label>Room</label><input id="mb-room" value="${esc(b?.room||"")}" placeholder="Room number"></div>
-      <div><label>Guest name</label><input id="mb-name" value="${esc(b?.guest_name||"")}" placeholder="Guest name"></div>
-    </div>
-    <div class="row2">
-      <div><label>Adults</label><input id="mb-adults" type="number" min="0" value="${Number(b?.adults??1)}"></div>
-      <div><label>Children</label><input id="mb-children" type="number" min="0" value="${Number(b?.children??0)}"></div>
-    </div>
-    <label>Nationality</label>
-    <input id="mb-nationality" value="${esc(b?.nationality||"")}" placeholder="Nationality">
-    <label>Status</label>
-    <select id="mb-status">
-      ${["booked","confirmed","cancelled","completed"].map(s=>`<option value="${s}" ${b&&String(b.status||"booked")===s?"selected":""}>${s[0].toUpperCase()+s.slice(1)}</option>`).join("")}
-    </select>
-    <div class="cc-bar">
-      <button class="btn" id="mb-save">${b?"Save changes":"Create booking"}</button>
-      ${b?`<button class="btn warn" id="mb-delete">Delete booking</button>`:""}
-      <button class="btn ghost" id="mb-close">Close</button>
-    </div>`;
-  openModal(body);
-
-  setTimeout(()=>{
-    const close=document.getElementById("mb-close"); if(close) close.onclick=closeModal;
-    const save=document.getElementById("mb-save");
-    if(save) save.onclick=async()=>{
-      const activity_id=document.getElementById("mb-act").value;
-      const room=document.getElementById("mb-room").value.trim();
-      const guest_name=document.getElementById("mb-name").value.trim();
-      const adults=Math.max(0,parseInt(document.getElementById("mb-adults").value||"0",10));
-      const children=Math.max(0,parseInt(document.getElementById("mb-children").value||"0",10));
-      const nationality=document.getElementById("mb-nationality").value.trim();
-      const status=document.getElementById("mb-status").value||"booked";
-      if(!activity_id){ toast("Choose an activity","error"); return; }
-      if(!room){ toast("Room number is required","error"); return; }
-      save.disabled=true;
-      try{
-        if(b){
-          const updated=await sb("bookings?id=eq."+encodeURIComponent(b.id),{
-            method:"PATCH",
-            body:JSON.stringify({activity_id:Number(activity_id),room,guest_name,adults,children,nationality,status}),
-            headers:{"Prefer":"return=representation"}
-          });
-          const row=Array.isArray(updated)?updated[0]:updated;
-          const i=S.bookings.findIndex(x=>String(x.id)===String(b.id));
-          if(i>=0 && row) S.bookings[i]=row;
-          toast("Booking updated","success");
-        }else{
-          const created=await sb("bookings",{
-            method:"POST",
-            body:JSON.stringify({activity_id:Number(activity_id),room,guest_name,adults,children,nationality,status}),
-            headers:{"Prefer":"return=representation"}
-          });
-          const row=Array.isArray(created)?created[0]:created;
-          if(row) S.bookings.push(row);
-          toast("Booking created","success");
-        }
-        closeModal(); persist(); render();
-      }catch(e){
-        toast(e?.message||"Booking could not be saved","error");
-      }finally{
-        save.disabled=false;
-      }
-    };
-
-    const del=document.getElementById("mb-delete");
-    if(del) del.onclick=async()=>{
-      if(!confirm("Delete this booking permanently?")) return;
-      del.disabled=true;
-      try{
-        await sb("bookings?id=eq."+encodeURIComponent(b.id),{method:"DELETE"});
-        S.bookings=S.bookings.filter(x=>String(x.id)!==String(b.id));
-        S.attendance=S.attendance.filter(x=>String(x.booking_id)!==String(b.id));
-        toast("Booking deleted","success");
-        closeModal(); persist(); render();
-      }catch(e){
-        toast(e?.message||"Booking could not be deleted","error");
-      }finally{
-        del.disabled=false;
-      }
-    };
-  },0);
-}
-function managerBookingAddButton(){
-  return S.session&&S.session.role==="manager"
-    ? `<button class="btn sm" onclick="managerBookingModal(null)">＋ Add booking</button>`
-    : "";
-}
-
 function chatInboxInner(){
   const rooms={};
   // Guest inbox is strictly for hotel guest rooms. Staff conversations belong
@@ -7564,7 +7417,7 @@ function bookingsInner(){
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:${visible&&bks.length?8:0}px;gap:8px">
         <h4 style="font-size:17px;min-width:0">${visible?"":mi("lock")}${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></h4>
         <span class="pill">${a.capacity>0?seatsTaken(a.id)+"/"+a.capacity:bks.length+" "+t("guests")}</span></div>
-      ${visible?bks.map(b=>`<div class="booking-line" data-bid="${b.id}" ${isMgr?`onclick="managerBookingModal(${b.id})" style="cursor:pointer"`:""}>
+      ${visible?bks.map(b=>`<div class="booking-line">
         <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}${isMgr&&b.nationality?` · ${esc(b.nationality)}`:""}</span>
         <span class="pill">${((+b.adults)||0)+((+b.children)||0)} ${t("personsShort")}${b.status==="waitlist"?" · …":""}</span></div>`).join(""):""}
     </div>`;}).join(""):`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`);
@@ -7585,7 +7438,7 @@ function managerView(){
     if(sub==="chat" && S.chatRoom) return chatThreadScreen();
     let inner="";
     if(sub==="crm") inner=guestCrmInner();
-    else if(sub==="bookings") inner=`<div style="margin-bottom:12px">${managerBookingAddButton()}</div>`+bookingsInner();
+    else if(sub==="bookings") inner=bookingsInner();
     else if(sub==="chat") inner=chatInboxInner();
     else if(sub==="feedback") inner=feedbackInner();
     else inner=requestsInner();
@@ -11636,7 +11489,7 @@ navGroupsBase=function(role){
       ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
       ["qr","qr",t("qrTab"),0]]},
     {head:t("v9People2"), items:[
-      ["guests","user",t("guestsTab"),guestBadge],
+      ["guests","user",t("guestsTab"),un+newReq],
       ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("v9Reports2"), items:[
       ["approval","check",t("v9Approval"),0],
