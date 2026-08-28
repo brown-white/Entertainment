@@ -4920,6 +4920,8 @@ function openAutoAssignModal(day){
       <div class="plan-tabs">${variants.map((_,i)=>`<button class="plan-tab ${i===active?"on":""}" data-plan="${i}">${labels[i]}</button>`).join("")}</div>
       <div class="plan-meta"><span class="plan-chip good">✓ ${t("qualificationChecked")}</span><span class="plan-chip good">✓ ${t("attendanceChecked")}</span><span class="plan-chip good">✓ ${t("timeChecked")}</span><span class="plan-chip good">✓ ${t("genderChecked")}</span><span class="plan-chip good">✓ ${t("historyChecked")}</span></div>
       ${plan.length?`<div class="aa-bal ${bal.spread<=1?"good":"warn"}"><b>${t("balanceLbl")}</b><span>${bal.spread<=1?t("evenSpread"):(t("spreadOff")+" "+bal.spread)} · ${bal.min}–${bal.max} ${t("activityCount")}</span></div>
+      <div class="aa-var ${(bal.repeats||0)+(bal.backToBack||0)===0?"good":"warn"}">${ic((bal.repeats||0)+(bal.backToBack||0)===0?"check":"flag",15)} <b>${t("vbVariety")}</b> <span>${(bal.repeats||0)+(bal.backToBack||0)===0?t("vbNoRepeat"):((bal.repeats||0)+" "+t("vbRepeats")+(bal.backToBack?" · "+bal.backToBack+" "+t("vbBackToBack"):""))}</span></div>
+      <p class="mini" style="margin:6px 0 0">${t("vbPlanHint")}</p>
       <p class="mini" style="margin:8px 0">${ic("pen",12)} ${t("editHint")}</p><div class="card aa-list">
       ${scopeDays(scope,day).map(d=>{const ent=cand.entrances[d],ep=entrancePool(d);return `<div class="aa-day"><b>${esc(t("days")[d]||"")}</b></div><div class="aa-entrance"><span class="aa-slot">${t("entrancePlan")}</span><span class="aa-mid"><b>${ent?esc(ent.display_name||ent.username):t("entranceUnassigned")}</b><span class="mini">${esc(dayPlanFor(d).entranceTime||"")}${dayPlanFor(d).entranceGender!=="any"?" · "+genderLabel(dayPlanFor(d).entranceGender):""}</span></span><select data-entday="${d}"><option value="">${t("noneAssigned")}</option>${ep.map(u=>`<option value="${esc(u.username)}" ${ent&&u.username===ent.username?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("")}</select></div>${(byDay[d]||[]).map(x=>{const pool=eligibleStaffForActivity(+d,x.activity),i=plan.indexOf(x),gr=activityGenderRule(x.activity);return `<div class="aa-row"><span class="aa-slot ${x.slot}">${x.slot==="morning"?t("morningSlot"):t("afternoonSlot")}</span><span class="aa-mid"><b>${esc(x.activity.name)}</b><span class="mini">${esc(x.activity.time||"")}</span>${gr!=="any"?`<span class="req-gender">${ic("user",10)} ${gr==="male"?t("genderM"):t("genderF")}</span>`:""}</span><select class="aa-sel" data-aarow="${i}"><option value="">${t("noneAssigned")}</option>${pool.map(u=>`<option value="${esc(u.username)}" ${u.username===x.username?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("")}</select></div>`;}).join("")}`;}).join("")}</div>
       <label style="margin-top:10px">${t("perPerson")}</label><div class="aa-per">${Object.keys(bal.per).sort((a,b)=>bal.per[b]-bal.per[a]).map(k=>`<span class="ts-chip ${bal.per[k]===bal.max&&bal.spread>1?"hot":""}">${esc(nameOf(k))} · ${bal.per[k]}</span>`).join("")}</div>
@@ -9219,6 +9221,100 @@ const __v6Wire=wireCommon;wireCommon=function(){__v6Wire();document.querySelecto
 
 
 
+
+
+/* ---- v12: the Explore area (the public shop window) ---- */
+.ex-screen.v12{padding-bottom:40px}
+.ex-hero{position:relative;margin:var(--sp-3) var(--sp-4) 0;border-radius:var(--r-2xl);
+  overflow:hidden;aspect-ratio:4/5;max-height:66vh;background:var(--sand);box-shadow:var(--sh-2)}
+@media(min-width:620px){.ex-hero{aspect-ratio:16/9}}
+.ex-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.ex-hero.flat{aspect-ratio:auto;min-height:150px;display:flex;align-items:flex-end;
+  background:linear-gradient(135deg,var(--espresso),var(--cacao))}
+.ex-hero-sh{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.30) 0%,rgba(0,0,0,0) 32%,rgba(0,0,0,.72) 100%)}
+.ex-hero-txt{position:absolute;inset-inline:0;bottom:0;padding:var(--sp-5);color:#fff}
+.ex-hero-txt.static{position:relative;padding:var(--sp-5)}
+.ex-hero-txt h1{margin:6px 0 2px;color:#fff;font-size:clamp(24px,7vw,34px);line-height:1.1;
+  text-shadow:0 2px 14px rgba(0,0,0,.4)}
+.ex-hero-txt p{margin:0;font-size:var(--fs-label);opacity:.9}
+.ex-hero .ex-tag{display:inline-block;background:var(--champagne-500);color:#1a1206;
+  border-radius:var(--r-pill);padding:4px 11px;font-size:var(--fs-meta);font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase}
+
+/* what is on right now */
+.ex-live{display:flex;align-items:center;gap:var(--sp-3);margin:calc(var(--sp-3) * -1 + -6px) var(--sp-4) 0;
+  position:relative;z-index:2;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:12px 14px;box-shadow:var(--sh-2);width:auto;text-align:start}
+.ex-live-dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.ex-live.on .ex-live-dot{background:#2fae6a;box-shadow:0 0 0 4px rgba(47,174,106,.18)}
+.ex-live-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ex-live-kick{font-size:var(--fs-meta);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--bronze);font-weight:700}
+.ex-live-mid b{font-size:var(--fs-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex-live-when{flex:0 0 auto;font-weight:700;font-size:var(--fs-caption);color:var(--espresso);
+  background:var(--sand);border-radius:var(--r-pill);padding:5px 10px}
+
+/* today / a day, grouped by part of the day */
+.ex-part{margin:0 var(--sp-4) var(--sp-3)}
+.ex-part-h{margin:var(--sp-3) 0 6px;font-size:var(--fs-meta);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);font-family:var(--font-body);font-weight:700}
+.ex-screen .ex-act{display:flex;align-items:center;gap:var(--sp-3);width:100%;text-align:start;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:11px 13px;margin-bottom:7px;color:var(--ink);font-family:var(--font-body)}
+.ex-screen .ex-act:active{transform:scale(.995);background:var(--sand)}
+.ex-time{flex:0 0 52px;font-weight:700;font-size:var(--fs-caption);color:var(--espresso)}
+.ex-star{flex:0 0 auto;color:var(--bronze)}
+.ex-empty{margin:0 var(--sp-4) var(--sp-3);padding:14px;border-radius:var(--r-md);
+  background:var(--sand);color:var(--muted);font-size:var(--fs-caption);text-align:center}
+.ex-empty.soft{background:transparent;padding:6px}
+
+/* day picker */
+.ex-days{display:flex;gap:6px;overflow-x:auto;padding:0 var(--sp-4) var(--sp-2);
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.ex-days::-webkit-scrollbar{display:none}
+.ex-day{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px;
+  min-width:54px;padding:9px 6px;border-radius:var(--r-md);border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font-family:var(--font-body);
+  font-size:var(--fs-caption);font-weight:600}
+.ex-day small{font-size:var(--fs-meta);color:var(--muted);font-weight:600}
+.ex-day.today{border-color:var(--champagne-300)}
+.ex-day.on{background:var(--espresso);color:#fff;border-color:var(--espresso)}
+.ex-day.on small{color:var(--champagne-300)}
+
+/* sign-in invitation */
+.ex-cta{margin:var(--sp-5) var(--sp-4);padding:var(--sp-5);border-radius:var(--r-2xl);
+  background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#fff;box-shadow:var(--sh-2)}
+.ex-cta b{display:block;font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:6px}
+.ex-cta p{margin:0 0 var(--sp-4);font-size:var(--fs-label);opacity:.85;line-height:1.5}
+.ex-cta .btn{background:var(--champagne-500);color:#1a1206;border:0}
+
+/* follow / reviews */
+.ex-connect{margin:var(--sp-5) var(--sp-4) 0}
+.ex-soc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.ex-soc-b{display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:9px 15px;color:var(--ink);font-size:var(--fs-caption);font-weight:600}
+.ex-soc-b.rev{border-color:var(--champagne-300);color:var(--espresso)}
+/* ---- v11: search + planner variety ---- */
+.v11-box{display:flex;align-items:center;gap:8px;margin:var(--sp-3) var(--sp-4);
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:4px 10px}
+.v11-box input{flex:1;border:0;background:transparent;margin:0;padding:12px 0;
+  font-family:var(--font-body);font-size:var(--fs-body);color:var(--ink);outline:none}
+.v11-box input::-webkit-search-cancel-button{display:none}
+.v11-ic{display:flex;color:var(--muted);flex:0 0 auto}
+.v11-clear{display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:30px;height:30px;border:0;background:var(--sand);color:var(--ink);border-radius:50%}
+.v11-hint{margin:0 var(--sp-4) var(--sp-3);color:var(--muted)}
+.v11-group{margin:0 var(--sp-4) var(--sp-4)}
+.v11-group > h3{font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.13em;
+  color:var(--muted);margin:0 0 var(--sp-2);font-family:var(--font-body);font-weight:600}
+.v11-more{margin:8px 0 0;color:var(--muted);text-align:center}
+.aa-var{display:flex;align-items:center;gap:8px;margin:8px 0;padding:9px 13px;
+  border-radius:var(--r-md);font-size:var(--fs-caption);font-weight:600}
+.aa-var.good{background:var(--sand);color:var(--ink)}
+.aa-var.warn{background:var(--champagne-100);color:var(--espresso)}
+[data-theme="dark"] .aa-var.warn{background:var(--surface-2);color:var(--bronze)}
 /* ---- v10: retention, health, privacy notice ---- */
 .v10-due{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin:6px 0 12px}
 .v10-due span{background:var(--sand);border:1px solid var(--line);border-radius:var(--r-pill);
@@ -11218,361 +11314,848 @@ if(typeof v8DownloadBackup==="function"){
 setTimeout(()=>{ v10AutoCleanup(); }, 4000);
 
 </script>
+<script id="control-center-v11">
 
+/* ==========================================================================
+   v11
+   1. SEARCH — one box that finds anything: a room, a guest, an entertainer,
+      an activity, a setting, a note, a photo caption, a task.
+   2. AUTO-ASSIGN — fair AND varied. Nobody gets the same activity two days
+      running, and every press of the button really does give a new plan.
+   ========================================================================== */
+const V11_STR={
+en:{
+  vbSearch:"Search", vbSearchSub:"Find anything in the app",
+  vbSearchPh:"Room, name, activity, setting…",
+  vbNoHits:"Nothing found. Try a shorter word.",
+  vbStart:"Type to search rooms, guests, the team, activities and settings.",
+  vbHits:"results", vbMore:"more",
+  vbGuests:"Guests & rooms", vbTeam:"Team", vbActs:"Activities", vbSet:"Settings",
+  vbScreens:"Screens", vbInfo:"Hotel info", vbTasks:"Tasks", vbReq:"Guest requests",
+  vbMsgs:"Messages", vbFeed:"Feedback", vbPhotos:"Photos", vbQuiz:"Quiz",
+  vbTickets:"Ticket events", vbBus:"Bus times",
+  vbOpen:"Open",
 
-<!-- =====================================================================
-     GLOBAL SEARCH — added 2026-08-27
-     One search across settings, rooms, guests, feedback, accounts and ops.
-     ===================================================================== -->
-<style id="global-search-style">
-.gs-bg{position:fixed;inset:0;z-index:260;background:rgba(10,18,32,.56);backdrop-filter:blur(8px);display:flex;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));animation:gsFade .16s ease}
-.gs-panel{width:min(540px,100%);max-height:min(82dvh,760px);display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--line);border-radius:24px;box-shadow:0 28px 90px -28px rgba(0,0,0,.72);overflow:hidden;margin-top:6px}
-.gs-head{padding:14px 14px 10px;border-bottom:1px solid var(--line);background:var(--bg)}
-.gs-box{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 12px;box-shadow:var(--sh-1)}
-.gs-mag{font-size:20px;color:var(--muted);flex:none}.gs-box input{border:0!important;box-shadow:none!important;outline:0!important;background:transparent;padding:13px 2px;min-width:0}.gs-close{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex:none}.gs-close:active{background:var(--sand)}
-.gs-hint{font-size:11.5px;color:var(--muted);padding:8px 4px 0}.gs-results{overflow:auto;padding:10px 10px 16px;overscroll-behavior:contain}.gs-group{margin:7px 0 14px}.gs-group-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;padding:0 8px 7px}.gs-item{width:100%;display:flex;align-items:center;gap:11px;text-align:start;padding:11px 10px;border-radius:14px}.gs-item:active,.gs-item:hover{background:var(--sand)}
-.gs-ic{width:38px;height:38px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;color:var(--cacao);font-size:17px}.gs-mid{min-width:0;flex:1}.gs-mid b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gs-mid span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}.gs-go{color:var(--muted);font-size:18px;flex:none}.gs-empty{text-align:center;padding:30px 18px;color:var(--muted)}.gs-empty .big{font-size:34px;margin-bottom:8px}.gs-count{font-size:11px;color:var(--muted);padding-inline-start:6px}
-[data-theme="dark"] .gs-ic{color:var(--bronze)}
-@keyframes gsFade{from{opacity:0}to{opacity:1}}
-@media(max-width:520px){.gs-bg{padding-inline:8px}.gs-panel{border-radius:20px;max-height:88dvh}}
-</style>
-<script id="global-search-v1">
-(function(){
-  "use strict";
-  let GS_RESULTS=[];
-  const gsTxt=v=>String(v==null?"":v);
-  const gsNorm=v=>gsTxt(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  const gsJoin=(...v)=>v.flat(Infinity).filter(x=>x!=null&&x!=="").map(gsTxt).join(" ");
-  const gsHas=(hay,q)=>{
-    const h=gsNorm(hay), parts=gsNorm(q).trim().split(/\s+/).filter(Boolean);
-    return parts.every(p=>h.includes(p));
-  };
-  const gsEsc=(v)=>typeof esc==="function"?esc(gsTxt(v)):gsTxt(v).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const gsRole=()=>S&&S.session?S.session.role:"guest";
-  const gsAdd=(a,x)=>{ if(x&&x.title) a.push(x); };
-  const gsRoomAccount=room=>(S.accounts||[]).find(a=>gsTxt(a.room)===gsTxt(room));
-  const gsActName=id=>{const a=(S.activities||[]).find(x=>gsTxt(x.id)===gsTxt(id));return a?a.name:"";};
+  vbVariety:"Variety", vbNoRepeat:"Nobody repeats an activity",
+  vbRepeats:"repeat(s) this week", vbBackToBack:"back-to-back day(s)",
+  vbFairFirst:"Fair share first, then variety",
+  vbPlanNew:"New plans every time you press",
+  vbPlanHint:"Everyone gets the same number of activities. Within that, the app avoids giving the same person the same activity twice — and never on two days in a row."
+},
+de:{
+  vbSearch:"Suche", vbSearchSub:"Finde alles in der App",
+  vbSearchPh:"Zimmer, Name, Aktivität, Einstellung…",
+  vbNoHits:"Nichts gefunden. Versuche ein kürzeres Wort.",
+  vbStart:"Tippe, um Zimmer, Gäste, Team, Aktivitäten und Einstellungen zu finden.",
+  vbHits:"Treffer", vbMore:"weitere",
+  vbGuests:"Gäste & Zimmer", vbTeam:"Team", vbActs:"Aktivitäten", vbSet:"Einstellungen",
+  vbScreens:"Bildschirme", vbInfo:"Hotel-Infos", vbTasks:"Aufgaben", vbReq:"Gästewünsche",
+  vbMsgs:"Nachrichten", vbFeed:"Feedback", vbPhotos:"Fotos", vbQuiz:"Quiz",
+  vbTickets:"Ticket-Events", vbBus:"Buszeiten",
+  vbOpen:"Öffnen",
+  vbVariety:"Abwechslung", vbNoRepeat:"Niemand wiederholt eine Aktivität",
+  vbRepeats:"Wiederholung(en) diese Woche", vbBackToBack:"Tag(e) hintereinander",
+  vbFairFirst:"Erst faire Verteilung, dann Abwechslung",
+  vbPlanNew:"Bei jedem Druck neue Pläne",
+  vbPlanHint:"Alle bekommen gleich viele Aktivitäten. Innerhalb davon vermeidet die App, dass jemand dieselbe Aktivität zweimal macht — und nie an zwei Tagen hintereinander."
+},
+ar:{
+  vbSearch:"البحث", vbSearchSub:"ابحث عن أي شيء في التطبيق",
+  vbSearchPh:"غرفة، اسم، نشاط، إعداد…",
+  vbNoHits:"لا توجد نتائج. جرّب كلمة أقصر.",
+  vbStart:"اكتب للبحث في الغرف والضيوف والفريق والأنشطة والإعدادات.",
+  vbHits:"نتيجة", vbMore:"أخرى",
+  vbGuests:"الضيوف والغرف", vbTeam:"الفريق", vbActs:"الأنشطة", vbSet:"الإعدادات",
+  vbScreens:"الشاشات", vbInfo:"معلومات الفندق", vbTasks:"المهام", vbReq:"طلبات الضيوف",
+  vbMsgs:"الرسائل", vbFeed:"التقييمات", vbPhotos:"الصور", vbQuiz:"المسابقة",
+  vbTickets:"فعاليات التذاكر", vbBus:"مواعيد الحافلة",
+  vbOpen:"فتح",
+  vbVariety:"التنويع", vbNoRepeat:"لا أحد يكرّر نشاطاً",
+  vbRepeats:"تكرار هذا الأسبوع", vbBackToBack:"يوم متتالٍ",
+  vbFairFirst:"العدل أولاً ثم التنويع",
+  vbPlanNew:"خطة جديدة مع كل ضغطة",
+  vbPlanHint:"يحصل الجميع على نفس عدد الأنشطة. وضمن ذلك يتجنّب التطبيق إعطاء الشخص نفس النشاط مرتين — ولا في يومين متتاليين أبداً."
+}
+};
+Object.keys(V11_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V11_STR[l]); });
+const V11_FILL={
+ru:{vbSearch:"Поиск",vbSearchSub:"Найдите что угодно",vbSearchPh:"Комната, имя, активность, настройка…",vbNoHits:"Ничего не найдено.",vbStart:"Введите текст для поиска.",vbGuests:"Гости и комнаты",vbTeam:"Команда",vbActs:"Активности",vbSet:"Настройки",vbScreens:"Экраны",vbHits:"результатов",vbVariety:"Разнообразие",vbNoRepeat:"Никто не повторяет активность",vbFairFirst:"Сначала справедливо, потом разнообразно"},
+pl:{vbSearch:"Szukaj",vbSearchSub:"Znajdź wszystko w aplikacji",vbSearchPh:"Pokój, imię, zajęcia, ustawienie…",vbNoHits:"Nic nie znaleziono.",vbStart:"Wpisz, aby wyszukać.",vbGuests:"Goście i pokoje",vbTeam:"Zespół",vbActs:"Zajęcia",vbSet:"Ustawienia",vbScreens:"Ekrany",vbHits:"wyników",vbVariety:"Różnorodność",vbNoRepeat:"Nikt nie powtarza zajęć",vbFairFirst:"Najpierw sprawiedliwie, potem różnorodnie"},
+cs:{vbSearch:"Hledat",vbSearchSub:"Najděte cokoli v aplikaci",vbSearchPh:"Pokoj, jméno, aktivita, nastavení…",vbNoHits:"Nic nenalezeno.",vbStart:"Začněte psát.",vbGuests:"Hosté a pokoje",vbTeam:"Tým",vbActs:"Aktivity",vbSet:"Nastavení",vbScreens:"Obrazovky",vbHits:"výsledků",vbVariety:"Rozmanitost",vbNoRepeat:"Nikdo neopakuje aktivitu",vbFairFirst:"Nejdřív spravedlivě, pak pestře"},
+nl:{vbSearch:"Zoeken",vbSearchSub:"Vind alles in de app",vbSearchPh:"Kamer, naam, activiteit, instelling…",vbNoHits:"Niets gevonden.",vbStart:"Typ om te zoeken.",vbGuests:"Gasten & kamers",vbTeam:"Team",vbActs:"Activiteiten",vbSet:"Instellingen",vbScreens:"Schermen",vbHits:"resultaten",vbVariety:"Afwisseling",vbNoRepeat:"Niemand herhaalt een activiteit",vbFairFirst:"Eerst eerlijk, dan afwisselend"},
+fr:{vbSearch:"Rechercher",vbSearchSub:"Trouvez tout dans l'application",vbSearchPh:"Chambre, nom, activité, réglage…",vbNoHits:"Aucun résultat.",vbStart:"Tapez pour rechercher.",vbGuests:"Clients et chambres",vbTeam:"Équipe",vbActs:"Activités",vbSet:"Paramètres",vbScreens:"Écrans",vbHits:"résultats",vbVariety:"Variété",vbNoRepeat:"Personne ne répète une activité",vbFairFirst:"D'abord équitable, ensuite varié"}
+};
+Object.keys(V11_FILL).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V11_FILL[l]); });
 
-  function gsIndex(){
-    const a=[], role=gsRole(), manager=role==="manager", staff=role==="staff";
+/* ==========================================================================
+   1. SEARCH
+   ========================================================================== */
+function v11Norm(s){
+  return String(s==null?"":s).toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")   // é -> e, ü -> u
+    .trim();
+}
+function v11Match(hay, q){
+  const h=v11Norm(hay);
+  if(!h) return 0;
+  if(h===q) return 100;              // exact
+  if(h.startsWith(q)) return 70;     // starts with
+  if(h.includes(q)) return 40;       // contains
+  return 0;
+}
+/* score a record against the query using several fields */
+function v11Score(fields, q){
+  let best=0;
+  for(const f of fields){ const s=v11Match(f,q); if(s>best) best=s; }
+  return best;
+}
+function v11Row(icon, title, sub, tab, sub2){
+  return {icon, title:String(title||""), sub:String(sub||""), tab, sub2:sub2||null};
+}
+/* Everything the manager can search. Each result knows where it lives. */
+function v11Sources(q){
+  const groups=[];
+  const add=(key,rows)=>{ if(rows.length) groups.push({key, rows}); };
+  const isMgr=S.session && S.session.role==="manager";
+  const isStaff=S.session && S.session.role==="staff";
 
-    // Navigation / major areas
-    if(manager){
-      gsAdd(a,{group:"Pages",icon:"⌘",title:"Manager Control Center",sub:"Settings · administration · configuration",keys:"settings control center administration manager configure configuration",act:{type:"tab",tab:"settings"}});
-      gsAdd(a,{group:"Pages",icon:"◫",title:"Dashboard",sub:"Daily operations overview",keys:"dashboard overview analytics statistics occupancy",act:{type:"tab",tab:"dash"}});
-      gsAdd(a,{group:"Pages",icon:"◎",title:"Guest CRM",sub:"Guest directory · rooms · profiles",keys:"guest crm guests rooms room number directory profiles",act:{type:"sub",tab:"guests",group:"guests",sub:"crm"}});
-      gsAdd(a,{group:"Pages",icon:"★",title:"Guest Feedback",sub:"Ratings and comments",keys:"feedback reviews ratings comments guest experience",act:{type:"sub",tab:"guests",group:"guests",sub:"feedback"}});
-      gsAdd(a,{group:"Pages",icon:"♟",title:"Team Administration",sub:"Accounts · profiles · performance",keys:"team accounts staff entertainers employees users performance",act:{type:"tab",tab:"team"}});
-      gsAdd(a,{group:"Pages",icon:"▦",title:"Programme",sub:"Activities and ticket events",keys:"program programme activities events tickets schedule",act:{type:"tab",tab:"program"}});
+  /* --- settings pages (the Control Center registry) --- */
+  if(isMgr && typeof V9_SETTINGS!=="undefined"){
+    const rows=[];
+    V9_SETTINGS.forEach(g=>g.items.forEach(([id,icn,lb,sb])=>{
+      const sc=v11Score([t(lb), t(sb), t(g.head)], q);
+      if(sc) rows.push({...v11Row(icn, t(lb), t(sb), id), _s:sc+5});
+    }));
+    add("vbSet", rows);
+  }
+  /* --- screens in the menu --- */
+  {
+    const rows=[];
+    let menu=[];
+    try{ menu=navGroupsBase(S.session.role)||[]; }catch(e){ menu=[]; }
+    menu.forEach(g=>(g.items||[]).forEach(it=>{
+      const sc=v11Score([it[2], g.head], q);
+      if(sc) rows.push({...v11Row(it[1], it[2], g.head, it[0]), _s:sc});
+    }));
+    add("vbScreens", rows);
+  }
+  /* --- guests and rooms (manager only: these are personal details) --- */
+  if(isMgr){
+    const rows=[];
+    (S.accounts||[]).forEach(a=>{
+      const sc=v11Score([a.room, a.name, a.nationality, a.phone], q);
+      if(sc) rows.push({...v11Row("user", (a.room?("#"+a.room+" · "):"")+(a.name||""),
+        [a.nationality, a.arrival&&a.departure?(a.arrival+" → "+a.departure):""].filter(Boolean).join(" · "),
+        "guests"), _s:sc + (v11Match(a.room,q)?20:0)});
+    });
+    (S.rooms||[]).forEach(r=>{
+      if(rows.some(x=>x.title.indexOf("#"+r.room+" ")===0)) return;
+      const sc=v11Match(r.room, q);
+      if(sc) rows.push({...v11Row("door", "#"+r.room, t("rooms"), "guests"), _s:sc+15});
+    });
+    add("vbGuests", rows.sort((a,b)=>b._s-a._s));
+  }
+  /* --- team --- */
+  {
+    const rows=[];
+    (S.users||[]).forEach(u=>{
+      if(u.role==="guest") return;
+      const sc=v11Score([u.display_name, u.username, u.number, u.nationality], q);
+      if(sc) rows.push({...v11Row("users", u.display_name||u.username,
+        [u.number?("#"+u.number):"", u.role==="manager"?t("manager"):t("staff"), u.nationality]
+          .filter(Boolean).join(" · "), isMgr?"team":"teaminfo"), _s:sc});
+    });
+    add("vbTeam", rows);
+  }
+  /* --- activities --- */
+  {
+    const rows=[];
+    (S.activities||[]).forEach(a=>{
+      const sc=v11Score([a.name, a.location, a.entertainer, a.desc], q);
+      if(sc) rows.push({...v11Row("calendar", a.name,
+        [(t("daysShort")[a.day]||""), a.time, a.location, a.entertainer].filter(Boolean).join(" · "),
+        isMgr?"program":"program"), _s:sc});
+    });
+    add("vbActs", rows.sort((a,b)=>b._s-a._s));
+  }
+  /* --- ticket events --- */
+  {
+    const rows=[];
+    (S.tickets||[]).forEach(x=>{
+      const sc=v11Score([x.name, x.location, x.desc], q);
+      if(sc) rows.push({...v11Row("ticket", x.name,
+        [(t("daysShort")[x.day]||""), x.time, x.location].filter(Boolean).join(" · "),
+        "tickets"), _s:sc});
+    });
+    add("vbTickets", rows);
+  }
+  /* --- hotel info --- */
+  {
+    const rows=[];
+    (typeof hotelInfoList==="function"?hotelInfoList():[]).forEach(x=>{
+      const sc=v11Score([x.title, x.value, x.location], q);
+      if(sc) rows.push({...v11Row("building", x.title, x.value, "hotelinfo"), _s:sc});
+    });
+    add("vbInfo", rows);
+  }
+  /* --- manager-only records --- */
+  if(isMgr){
+    const tasks=[];
+    (S.tasks||[]).forEach(x=>{
+      const sc=v11Score([x.title, x.detail, x.location, x.assignee], q);
+      if(sc) tasks.push({...v11Row("clipboard", x.title||x.detail,
+        [x.assignee, x.status].filter(Boolean).join(" · "), "team"), _s:sc});
+    });
+    add("vbTasks", tasks);
 
-      // Every Control Center setting, using both translated labels and useful English aliases.
-      if(typeof V9_SETTINGS!=="undefined"){
-        V9_SETTINGS.forEach(g=>(g.items||[]).forEach(it=>{
-          const [id,icn,lb,sub]=it;
-          gsAdd(a,{group:"Settings",icon:"⚙",title:typeof t==="function"?t(lb):lb,sub:typeof t==="function"?t(sub):sub,
-            keys:gsJoin("settings option configuration",id,lb,sub,typeof t==="function"?t(lb):"",typeof t==="function"?t(sub):""),act:{type:"hub",id}});
-        }));
+    const reqs=[];
+    (S.requests||[]).forEach(x=>{
+      const sc=v11Score([x.detail, x.guest_name, x.room, x.note], q);
+      if(sc) reqs.push({...v11Row("gift", x.detail,
+        ["#"+x.room, x.guest_name, x.status].filter(Boolean).join(" · "), "guests"), _s:sc});
+    });
+    add("vbReq", reqs);
+
+    const msgs=[];
+    (S.messages||[]).forEach(x=>{
+      const sc=v11Score([x.text, x.sender_name, x.room], q);
+      if(sc) msgs.push({...v11Row("chat", x.text,
+        ["#"+x.room, x.sender_name].filter(Boolean).join(" · "), "guests"), _s:sc});
+    });
+    add("vbMsgs", msgs.slice(0,20));
+
+    const fb=[];
+    (S.feedback||[]).forEach(x=>{
+      const sc=v11Score([x.comment, x.room, x.entertainer, x.activity], q);
+      if(sc) fb.push({...v11Row("star", x.comment||("★ "+(x.rate||"")),
+        [x.room?("#"+x.room):"", x.entertainer, x.rate?("★ "+x.rate):""].filter(Boolean).join(" · "),
+        "insights"), _s:sc});
+    });
+    add("vbFeed", fb.slice(0,20));
+
+    const quiz=[];
+    (S.quizzes||[]).forEach(x=>{
+      const sc=v11Score([x.question, x.hint], q);
+      if(sc) quiz.push({...v11Row("trophy", x.question, x.hint||"", "quiz"), _s:sc});
+    });
+    add("vbQuiz", quiz);
+  }
+  /* --- photos --- */
+  {
+    const rows=[];
+    (S.photos||[]).forEach(x=>{
+      const sc=v11Score([x.caption], q);
+      if(sc) rows.push({...v11Row("image", x.caption, t("galleryTab"), "gallery"), _s:sc});
+    });
+    add("vbPhotos", rows);
+  }
+  /* --- bus --- */
+  {
+    const rows=[];
+    (S.buses||[]).forEach(x=>{
+      const sc=v11Score([x.time, x.note, x.direction], q);
+      if(sc) rows.push({...v11Row("bus", x.time,
+        [x.direction==="toHotel"?t("busToHotel"):t("busToHouse"), x.note].filter(Boolean).join(" · "),
+        isMgr?"bus":"bus"), _s:sc});
+    });
+    add("vbBus", rows);
+  }
+  return groups;
+}
+let __v11q="";
+function v11SearchView(){
+  const q=v11Norm(__v11q);
+  const groups=q.length>=1 ? v11Sources(q) : [];
+  const total=groups.reduce((n,g)=>n+g.rows.length,0);
+  return `<div class="screen fadein">
+    ${topBar(t("vbSearch"),S.session.name||"")}
+    <div class="v11-box">
+      <span class="v11-ic">${ic("grid",18)}</span>
+      <input id="v11-q" type="search" autocomplete="off"
+        placeholder="${esc(t("vbSearchPh"))}" value="${esc(__v11q)}">
+      ${__v11q?`<button class="v11-clear" id="v11-x" aria-label="clear">${ic("close",16)}</button>`:""}
+    </div>
+    ${!q ? `<p class="mini v11-hint">${esc(t("vbStart"))}</p>`
+      : total===0 ? `<div class="empty" style="margin-top:20px"><div class="big">${ic("grid",30)}</div>${esc(t("vbNoHits"))}</div>`
+      : `<p class="mini v11-hint">${total} ${esc(t("vbHits"))}</p>
+         ${groups.map(g=>`<div class="v11-group">
+           <h3>${esc(t(g.key))}</h3>
+           <div class="card set-list">
+             ${g.rows.slice(0,8).map(r=>`<button class="set-it" data-hub="${esc(r.tab)}">
+               <span class="set-ic">${ic(r.icon,18)}</span>
+               <span class="set-mid"><b>${esc(r.title)}</b>${r.sub?`<span class="mini">${esc(r.sub)}</span>`:""}</span>
+               <span class="set-go">${ic("back",16)}</span>
+             </button>`).join("")}
+             ${g.rows.length>8?`<p class="mini v11-more">+${g.rows.length-8} ${esc(t("vbMore"))}</p>`:""}
+           </div>
+         </div>`).join("")}`}
+  </div>`;
+}
+function v11WireSearch(){
+  const box=document.getElementById("v11-q");
+  if(box){
+    box.oninput=()=>{
+      __v11q=box.value;
+      const app=document.getElementById("app");
+      if(!app) return;
+      const pos=box.selectionStart;
+      render();
+      const nb=document.getElementById("v11-q");
+      if(nb){ nb.focus(); try{ nb.setSelectionRange(pos,pos); }catch(e){} }
+    };
+  }
+  const x=document.getElementById("v11-x");
+  if(x) x.onclick=()=>{ __v11q=""; render(); };
+}
+
+/* ==========================================================================
+   2. AUTO-ASSIGN — fair first, then varied, and different every press
+   ========================================================================== */
+function v11Shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const x=a[i]; a[i]=a[j]; a[j]=x; }
+  return a;
+}
+/* remembers, per person, which days they already have each activity name */
+function v11NameDays(load){
+  if(!load.names) load.names={};
+  return load.names;
+}
+function v11NoteName(load,u,a,day){
+  const nd=v11NameDays(load);
+  const k=loadKey(u)+"|"+capKeyName(a&&a.name);
+  (nd[k]=nd[k]||[]).push(day);
+}
+function v11SameNameCount(load,u,a){
+  const nd=v11NameDays(load);
+  return (nd[loadKey(u)+"|"+capKeyName(a&&a.name)]||[]).length;
+}
+function v11BackToBack(load,u,a,day){
+  const nd=v11NameDays(load);
+  const days=nd[loadKey(u)+"|"+capKeyName(a&&a.name)]||[];
+  return days.some(d=>Math.abs(d-day)===1 || Math.abs(d-day)===6) ? 1 : 0;   // 6 = Sun/Mon wrap
+}
+/* THE PICKER.
+   Stage 1 — fairness is never traded away: only people on the lowest activity
+             count are considered. Balance therefore cannot get worse.
+   Stage 2 — among those equally-loaded people, prefer whoever has NOT done
+             this activity recently, and never someone who did it yesterday.
+   Stage 3 — genuine random tie-break, so pressing the button again really
+             does produce a different plan. */
+function v11Pick(pool, load, usedThisSlot, a, day){
+  if(!pool || !pool.length) return null;
+  let cands=pool.filter(u=>!usedThisSlot.has(u.username));
+  if(!cands.length) cands=pool.slice();
+
+  /* stage 1 — fairness bucket: only the least-loaded people are considered */
+  let minLoad=Infinity;
+  cands.forEach(u=>{ const l=loadOf(load,u); if(l<minLoad) minLoad=l; });
+  let bucket=cands.filter(u=>loadOf(load,u)===minLoad);
+  /* If every one of them did this same activity yesterday, widen the bucket by
+     one. The balance pass below evens the numbers out again afterwards, so
+     this buys variety without costing fairness. */
+  if(bucket.every(u=>v11BackToBack(load,u,a,day))){
+    const wider=cands.filter(u=>loadOf(load,u)<=minLoad+1 && !v11BackToBack(load,u,a,day));
+    if(wider.length) bucket=wider;
+  }
+
+  /* stage 2 — variety, strongest signal first */
+  const varietyOf=u=>
+      v11BackToBack(load,u,a,day)*10000            // did it the day before/after
+    + v11SameNameCount(load,u,a)*3000              // already has it this plan
+    + sameActivityExistingCount(u,a)*600           // already has it in the programme
+    + historyRepeatCount(u,a)*200                  // had it in the last 70 days
+    + (load.last[loadKey(u)]||0)*2;                // waited longest goes first
+  let best=Infinity;
+  bucket.forEach(u=>{ const v=varietyOf(u); if(v<best) best=v; });
+  const finalists=bucket.filter(u=>varietyOf(u)===best);
+
+  /* stage 3 — real randomness among equals */
+  return v11Shuffle(finalists)[0] || null;
+}
+/* one day, using the shared running count */
+function v11AssignDay(day, opts, sharedLoad){
+  const o=opts||{}, out=[], load=sharedLoad||baseLoad(o), assigned={};
+  const entranceChoice=o.entranceChoice||null;
+  ["morning","afternoon"].forEach(slot=>{
+    let acts=(S.activities||[])
+      .filter(a=>a.day===day && activitySlot(a)===slot)
+      .filter(a=>o.onlyEmpty ? !String(a.entertainer||"").trim() : true);
+    if(!acts.length) return;
+    /* time order keeps the conflict checks honest; a light shuffle inside the
+       same start time adds variety without breaking anything */
+    acts=v11Shuffle(acts).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
+    const usedThisSlot=new Set();
+    acts.forEach(a=>{
+      const pool=eligibleStaffForActivity(day,a).filter(u=>!plannedTimeConflict(u,a,assigned,entranceChoice));
+      const pick=v11Pick(pool, load, usedThisSlot, a, day);
+      if(!pick){ out.push({activity:a, username:"", name:t("noQualifiedGender"), slot, day, unassigned:true}); return; }
+      usedThisSlot.add(pick.username);
+      bumpLoad(load,pick);
+      v11NoteName(load,pick,a,day);
+      const k=loadKey(pick);
+      (assigned[k]=assigned[k]||[]).push(a);
+      out.push({activity:a, username:pick.username, name:pick.display_name||pick.username, slot, day});
+    });
+  });
+  return out;
+}
+/* the whole week — days are visited in a random order so each press differs,
+   then the result is sorted back for display */
+function v11AssignWeek(opts){
+  const o=opts||{}, load=baseLoad(o);
+  let all=[];
+  v11Shuffle([0,1,2,3,4,5,6]).forEach(d=>{
+    all=all.concat(v11AssignDay(d,{...o, entranceChoice:o.entrances&&o.entrances[d]},load));
+  });
+  all=v11Balance(all,o);
+  all=v11RepairBest(all,25);
+  return all.sort((x,y)=> (x.activity.day-y.activity.day)
+    || String(x.activity.time).localeCompare(String(y.activity.time)));
+}
+/* Final tidy-up. Same purpose as before, but it now looks at swaps in a random
+   order and refuses a swap that would create a repeat, so evening out the
+   numbers can no longer undo the variety. */
+function v11Balance(plan, opts){
+  const nameDaysOf=(pl,un,nm)=>pl.filter(x=>String(x.username).toLowerCase()===un
+    && capKeyName(x.activity.name)===nm).map(x=>x.activity.day);
+  /* Pass 1 keeps the variety intact. If the numbers are still uneven after it,
+     pass 2 runs again without that restriction — a fair share matters more
+     than a perfect spread of activity names. */
+  v11BalancePass(plan, opts, "variety", nameDaysOf);   // best: keep every plan varied
+  v11BalancePass(plan, opts, "noAdjacent", nameDaysOf); // next: at least no two days running
+  v11BalancePass(plan, opts, "any", nameDaysOf);        // last resort: a fair share always wins
+  return plan;
+}
+function v11BalancePass(plan, opts, keepVariety, nameDaysOf){
+  for(let guard=0; guard<300; guard++){
+    const bal=planBalance(plan, opts);
+    if(bal.spread<=1) break;
+    const hi=v11Shuffle(Object.keys(bal.per).filter(k=>bal.per[k]===bal.max));
+    const lo=v11Shuffle(Object.keys(bal.per).filter(k=>bal.per[k]===bal.min));
+    let moved=false;
+    for(const h of hi){
+      for(const l of lo){
+        const idx=v11Shuffle(plan.map((_,i)=>i));
+        for(const i of idx){
+          const it=plan[i];
+          if(!it || String(it.username).toLowerCase()!==h) continue;
+          const day=it.activity.day, nm=capKeyName(it.activity.name);
+          const cand=eligibleStaffForActivity(day,it.activity)
+            .find(u=>String(u.username).toLowerCase()===l);
+          if(!cand) continue;
+          const clash=plan.some(x=>x!==it && x.activity.day===day && x.slot===it.slot
+            && String(x.username).toLowerCase()===l);
+          if(clash) continue;
+          const theirDays=nameDaysOf(plan,l,nm);
+          if(keepVariety==="variety" && theirDays.length) continue;
+          if(keepVariety==="noAdjacent" && theirDays.some(d=>Math.abs(d-day)===1)) continue;
+          plan[i]={...it, username:cand.username, name:cand.display_name||cand.username};
+          moved=true; break;
+        }
+        if(moved) break;
+      }
+      if(moved) break;
+    }
+    if(!moved) break;
+  }
+}
+/* VARIETY REPAIR — swaps that cannot change anyone's workload.
+   If two people each hold one activity, trading them leaves both counts
+   identical, so fairness is untouched by construction. We only accept a trade
+   that reduces repeats, and only when both people are actually allowed to run
+   the other activity on that day and have no time clash. */
+function v11RepeatCost(plan){
+  const map={};
+  plan.forEach(x=>{ if(!x.username) return;
+    const k=String(x.username).toLowerCase()+"|"+capKeyName(x.activity.name);
+    (map[k]=map[k]||[]).push(x.activity.day); });
+  let cost=0;
+  Object.keys(map).forEach(k=>{
+    const d=map[k].slice().sort((a,b)=>a-b);
+    if(d.length>1) cost += (d.length-1);
+    for(let i=1;i<d.length;i++) if(d[i]-d[i-1]===1) cost += 12;  // back-to-back hurts most
+  });
+  return cost;
+}
+function v11CanTake(plan, item, user){
+  const day=item.activity.day;
+  const ok=eligibleStaffForActivity(day,item.activity)
+    .some(u=>String(u.username).toLowerCase()===String(user).toLowerCase());
+  if(!ok) return false;
+  const w=intervalOf(item.activity.time);
+  if(!w) return true;
+  return !plan.some(x=>x!==item && String(x.username).toLowerCase()===String(user).toLowerCase()
+    && x.activity.day===day && intervalsOverlap(w, intervalOf(x.activity.time)));
+}
+function v11VarietyRepair(plan){
+  let cost=v11RepeatCost(plan);
+  for(let guard=0; guard<600 && cost>0; guard++){
+    let improved=false;
+    const idx=v11Shuffle(plan.map((_,i)=>i));
+    outer:
+    for(const i of idx){
+      const A=plan[i]; if(!A || !A.username) continue;
+      for(const j of idx){
+        if(j===i) continue;
+        const B=plan[j]; if(!B || !B.username) continue;
+        if(String(A.username).toLowerCase()===String(B.username).toLowerCase()) continue;
+        if(capKeyName(A.activity.name)===capKeyName(B.activity.name)) continue;
+        /* pretend to trade */
+        const a2={...A, username:B.username, name:B.name};
+        const b2={...B, username:A.username, name:A.name};
+        const trial=plan.slice(); trial[i]=a2; trial[j]=b2;
+        if(!v11CanTake(trial, a2, B.username)) continue;
+        if(!v11CanTake(trial, b2, A.username)) continue;
+        const c2=v11RepeatCost(trial);
+        if(c2 < cost){ plan[i]=a2; plan[j]=b2; cost=c2; improved=true; break outer; }
       }
     }
-
-    // Guest rooms / accounts. Managers see all; guests see only themselves.
-    (S.accounts||[]).forEach(x=>{
-      if(!manager && !(role==="guest" && S.session && gsTxt(S.session.username)===gsTxt(x.username))) return;
-      const detail=[x.nationality,x.phone,x.arrival&&x.departure?x.arrival+" → "+x.departure:""].filter(Boolean).join(" · ");
-      gsAdd(a,{group:"Guests & rooms",icon:"▣",title:"Room "+gsTxt(x.room)+" — "+gsTxt(x.name||x.username||"Guest"),sub:detail||"Guest profile",
-        keys:gsJoin("room room number guest account profile",x.room,x.name,x.username,x.nationality,x.phone,x.arrival,x.departure),act:manager?{type:"guest",id:x.id}:{type:"tab",tab:"stay"}});
-    });
-    // Registered rooms without an account yet.
-    if(manager)(S.rooms||[]).forEach(r=>{
-      const room=typeof r==="object"?(r.room??r.number??r.id):r;
-      if(room==null||gsRoomAccount(room)) return;
-      gsAdd(a,{group:"Guests & rooms",icon:"□",title:"Room "+gsTxt(room),sub:"Registered room · no guest account",keys:gsJoin("room room number registered",room),act:{type:"rooms"}});
-    });
-
-    if(manager){
-      // Team login accounts
-      (S.users||[]).forEach(u=>gsAdd(a,{group:"Team accounts",icon:"♟",title:gsTxt(u.display_name||u.username),sub:[u.username,u.position||u.role,u.number?"#"+u.number:""].filter(Boolean).join(" · "),
-        keys:gsJoin("account team staff entertainer employee user username",u.display_name,u.username,u.position,u.role,u.number,u.nationality,u.languages),act:{type:"employee",username:u.username}}));
-
-      // Feedback
-      (S.feedback||[]).forEach(f=>{const acc=gsRoomAccount(f.room);gsAdd(a,{group:"Feedback",icon:"★",title:"Room "+gsTxt(f.room)+" · "+gsTxt(f.rate||0)+"/5",sub:gsTxt(f.comment||"No written comment"),
-        keys:gsJoin("feedback review rating comment room",f.room,f.rate,f.comment,f.name,f.nationality,f.by_user),act:acc?{type:"guest",id:acc.id}:{type:"sub",tab:"guests",group:"guests",sub:"feedback"}})});
-
-      // Bookings
-      (S.bookings||[]).forEach(b=>{const acc=gsRoomAccount(b.room);gsAdd(a,{group:"Bookings",icon:"✓",title:"Room "+gsTxt(b.room)+" · "+gsTxt(gsActName(b.activity_id)||"Booking"),sub:[b.status,b.name,b.nationality].filter(Boolean).join(" · "),
-        keys:gsJoin("booking reservation room activity",b.room,b.name,b.nationality,b.status,gsActName(b.activity_id)),act:acc?{type:"guest",id:acc.id}:{type:"sub",tab:"guests",group:"guests",sub:"bookings"}})});
-
-      // Requests
-      (S.requests||[]).forEach(r=>{const acc=gsRoomAccount(r.room);gsAdd(a,{group:"Guest requests",icon:"!",title:"Room "+gsTxt(r.room)+" · "+gsTxt(r.type||"Request"),sub:gsTxt(r.detail||r.status||""),
-        keys:gsJoin("request guest room song birthday",r.room,r.type,r.detail,r.status,r.name),act:acc?{type:"guest",id:acc.id}:{type:"sub",tab:"guests",group:"guests",sub:"requests"}})});
+    if(!improved) break;
+  }
+  return plan;
+}
+/* A single repair pass can get stuck. This nudges the plan and repairs again,
+   keeping whichever attempt came out best. Cheap, and it matters most for a
+   small team where good swaps are rare. */
+function v11RepairBest(plan, rounds){
+  let best=plan.slice(), bestCost=v11RepeatCost(v11VarietyRepair(plan));
+  best=plan.slice();
+  for(let r=0; r<(rounds||3) && bestCost>0; r++){
+    const trial=best.slice();
+    /* nudge: trade a few random eligible pairs, workloads unchanged */
+    for(let k=0;k<3;k++){
+      const i=Math.floor(Math.random()*trial.length), j=Math.floor(Math.random()*trial.length);
+      const A=trial[i], B=trial[j];
+      if(!A||!B||i===j||!A.username||!B.username) continue;
+      if(String(A.username).toLowerCase()===String(B.username).toLowerCase()) continue;
+      const a2={...A,username:B.username,name:B.name}, b2={...B,username:A.username,name:A.name};
+      const t2=trial.slice(); t2[i]=a2; t2[j]=b2;
+      if(v11CanTake(t2,a2,B.username) && v11CanTake(t2,b2,A.username)){ trial[i]=a2; trial[j]=b2; }
     }
-
-    // Programme is useful for every role.
-    (S.activities||[]).forEach(x=>gsAdd(a,{group:"Programme",icon:"◷",title:gsTxt(x.name),sub:[typeof t==="function"&&t("days")?t("days")[x.day]:"",x.time,x.location].filter(Boolean).join(" · "),
-      keys:gsJoin("activity programme program schedule event",x.name,x.desc,x.location,x.time,x.category,x.entertainer),act:{type:"activity",id:x.id,day:x.day}}));
-    (S.tickets||[]).forEach(x=>gsAdd(a,{group:"Tickets",icon:"◇",title:gsTxt(x.name),sub:[x.time,x.location,x.price].filter(Boolean).join(" · "),keys:gsJoin("ticket event buy reserve",x.name,x.desc,x.location,x.time,x.price),act:{type:"tickets"}}));
-
-    // Staff can find their own operational areas without exposing private guest directory data.
-    if(staff){
-      gsAdd(a,{group:"Pages",icon:"☀",title:"My Work Day",sub:"Today’s duties and programme",keys:"my work day duty work schedule today",act:{type:"tab",tab:"workday"}});
-      gsAdd(a,{group:"Pages",icon:"✓",title:"My Tasks",sub:"Assigned operational tasks",keys:"tasks assigned work",act:{type:"tab",tab:"tasks"}});
-      gsAdd(a,{group:"Pages",icon:"★",title:"Feedback",sub:"Collect guest feedback",keys:"feedback rating review collect",act:{type:"tab",tab:"feedback"}});
-    }
-    if(role==="guest"){
-      gsAdd(a,{group:"Pages",icon:"☀",title:"Today’s programme",sub:"Activities happening today",keys:"today programme program activities schedule",act:{type:"tab",tab:"home"}});
-      gsAdd(a,{group:"Pages",icon:"✓",title:"My bookings",sub:"Your reserved activities",keys:"my bookings reservations",act:{type:"tab",tab:"bookings"}});
-    }
-    return a;
+    v11VarietyRepair(trial);
+    const c=v11RepeatCost(trial);
+    if(c<bestCost){ bestCost=c; best=trial.slice(); }
   }
-
-  function gsSearch(q){
-    const all=gsIndex();
-    if(!gsTxt(q).trim()) return all.filter(x=>x.group==="Pages"||x.group==="Settings").slice(0,18);
-    const hits=all.filter(x=>gsHas(gsJoin(x.title,x.sub,x.keys,x.group),q));
-    // Exact room/name/title matches naturally float to the top.
-    const nq=gsNorm(q).trim();
-    return hits.sort((x,y)=>{
-      const score=z=>{const t1=gsNorm(z.title), k=gsNorm(z.keys); return (t1===nq?0:t1.startsWith(nq)?1:k.includes(nq)?2:3)};
-      return score(x)-score(y);
-    }).slice(0,80);
-  }
-
-  function gsIconFor(group){
-    return ({"Pages":"⌘","Settings":"⚙","Guests & rooms":"▣","Team accounts":"♟","Feedback":"★","Bookings":"✓","Guest requests":"!","Programme":"◷","Tickets":"◇"})[group]||"•";
-  }
-  function gsRender(q){
-    GS_RESULTS=gsSearch(q);
-    const box=document.getElementById("gs-results"); if(!box) return;
-    if(!GS_RESULTS.length){box.innerHTML='<div class="gs-empty"><div class="big">⌕</div><b>No results</b><div class="mini" style="margin-top:5px">Try a room number, guest name, setting, account, activity or feedback text.</div></div>';return;}
-    const groups=[]; GS_RESULTS.forEach((x,i)=>{let g=groups.find(z=>z.name===x.group);if(!g){g={name:x.group,items:[]};groups.push(g)}g.items.push([x,i])});
-    box.innerHTML=groups.map(g=>`<div class="gs-group"><div class="gs-group-title">${gsEsc(g.name)} <span class="gs-count">${g.items.length}</span></div>${g.items.map(([x,i])=>`<button class="gs-item" data-gs-i="${i}"><span class="gs-ic">${gsEsc(x.icon||gsIconFor(g.name))}</span><span class="gs-mid"><b>${gsEsc(x.title)}</b><span>${gsEsc(x.sub||"")}</span></span><span class="gs-go">›</span></button>`).join("")}</div>`).join("");
-    box.querySelectorAll("[data-gs-i]").forEach(b=>b.onclick=()=>gsGo(GS_RESULTS[+b.dataset.gsI]));
-  }
-
-  function gsClose(){const e=document.getElementById("global-search");if(e)e.remove()}
-  function gsGo(x){
-    if(!x||!x.act) return; const z=x.act; gsClose();
-    if(z.type==="guest"){S.tab="g360:"+z.id;render();return;}
-    if(z.type==="employee"){S.tab="emp:"+z.username;render();return;}
-    if(z.type==="sub"){S.tab=z.tab;S.sub[z.group]=z.sub;render();return;}
-    if(z.type==="hub"){if(z.id==="export"){if(typeof openExportModal==="function")openExportModal();return;}S.tab=z.id;render();return;}
-    if(z.type==="rooms"){S.tab="dash";S.sub.dash="rooms";render();return;}
-    if(z.type==="tickets"){if(gsRole()==="manager"){S.tab="program";S.sub.program="tickets";}else S.tab="tickets";render();return;}
-    if(z.type==="activity"){
-      if(gsRole()==="manager"){S.day=+z.day;S.tab="program";S.sub.program="acts";render();setTimeout(()=>{const a=(S.activities||[]).find(v=>gsTxt(v.id)===gsTxt(z.id));if(a&&typeof openEditModal==="function")openEditModal(a)},30);}
-      else {S.day=+z.day;S.tab=gsRole()==="staff"?"week":"program";render();}
-      return;
-    }
-    if(z.type==="tab"){S.tab=z.tab;render();return;}
-  }
-
-  window.openGlobalSearch=function(initial){
-    gsClose();
-    const bg=document.createElement("div");bg.id="global-search";bg.className="gs-bg";bg.innerHTML=`<div class="gs-panel" role="dialog" aria-modal="true" aria-label="Search app"><div class="gs-head"><div class="gs-box"><span class="gs-mag">⌕</span><input id="gs-q" autocomplete="off" inputmode="search" placeholder="Search rooms, guests, settings, accounts, feedback…" aria-label="Search"><button class="gs-close" id="gs-x" aria-label="Close">✕</button></div><div class="gs-hint">Search the whole app · room number, name, setting, activity, account, feedback and more</div></div><div class="gs-results" id="gs-results"></div></div>`;
-    document.body.appendChild(bg);
-    bg.addEventListener("click",e=>{if(e.target===bg)gsClose()});
-    const q=bg.querySelector("#gs-q");q.value=initial||"";q.oninput=()=>gsRender(q.value);q.onkeydown=e=>{if(e.key==="Escape")gsClose();if(e.key==="Enter"&&GS_RESULTS[0])gsGo(GS_RESULTS[0])};
-    bg.querySelector("#gs-x").onclick=gsClose;gsRender(q.value);setTimeout(()=>q.focus(),20);
-  };
-
-  // Put the search button into every signed-in top bar without rewriting the original UI.
-  if(typeof topBar==="function"){
-    const __gsTopBar=topBar;
-    topBar=function(title,sub){
-      let h=__gsTopBar(title,sub);
-      const needle='<div class="toprow">\n      <button class="iconbtn" id="btn-notes"';
-      const repl='<div class="toprow">\n      <button class="iconbtn" id="btn-global-search" aria-label="Search" title="Search">⌕</button>\n      <button class="iconbtn" id="btn-notes"';
-      if(h.includes(needle)) h=h.replace(needle,repl);
-      return h;
-    };
-  }
-  if(typeof wireCommon==="function"){
-    const __gsWireCommon=wireCommon;
-    wireCommon=function(){
-      __gsWireCommon();
-      const b=document.getElementById("btn-global-search");if(b)b.onclick=()=>window.openGlobalSearch();
-    };
-  }
-  document.addEventListener("keydown",e=>{
-    if((e.ctrlKey||e.metaKey)&&String(e.key).toLowerCase()==="k"&&S&&S.session){e.preventDefault();window.openGlobalSearch();}
-    if(e.key==="Escape"&&document.getElementById("global-search"))gsClose();
+  for(let i=0;i<plan.length;i++) plan[i]=best[i];
+  return plan;
+}
+/* how varied a finished plan actually is — shown to her in the modal */
+function v11Variety(plan){
+  const byPerson={};
+  (plan||[]).forEach(x=>{
+    if(!x.username) return;
+    const k=String(x.username).toLowerCase()+"|"+capKeyName(x.activity.name);
+    (byPerson[k]=byPerson[k]||[]).push(x.activity.day);
   });
-  // Refresh current screen once so the newly added search icon appears immediately.
-  try{if(S&&S.session&&typeof render==="function")render();}catch(e){console.error("Global search init",e)}
-})();
-</script>
-
-<!-- =====================================================================
-     v11 UNIFIED COLOR SYSTEM — single source of truth for every theme
-     ===================================================================== -->
-<style id="unified-color-system-v11">
-:root{
-  --success:#2F7D57;--success-bg:#E8F4ED;--success-border:#BFDCCB;
-  --warning:#8A6212;--warning-bg:#FBF2D9;--warning-border:#E7D29B;
-  --danger:#A23D32;--danger-bg:#F8E8E5;--danger-border:#E8C0BA;
-  --info:#315F8A;--info-bg:#E8F0F8;--info-border:#C4D7E9;
-  --on-brand:#FFFFFF;--on-accent:#101827;--overlay:rgba(7,14,24,.58);
-  --shadow-tint:rgba(15,27,45,.16);
+  let repeats=0, backToBack=0;
+  Object.keys(byPerson).forEach(k=>{
+    const days=byPerson[k].slice().sort((a,b)=>a-b);
+    if(days.length>1) repeats += days.length-1;
+    for(let i=1;i<days.length;i++) if(days[i]-days[i-1]===1) backToBack++;
+  });
+  return {repeats, backToBack};
 }
-[data-theme="dark"]{
-  --success:#8FD6AC;--success-bg:rgba(62,124,90,.22);--success-border:rgba(143,214,172,.28);
-  --warning:#E6C67E;--warning-bg:rgba(181,121,60,.22);--warning-border:rgba(230,198,126,.28);
-  --danger:#F0A79C;--danger-bg:rgba(192,57,43,.22);--danger-border:rgba(240,167,156,.28);
-  --info:#9FC6EB;--info-bg:rgba(62,110,155,.22);--info-border:rgba(159,198,235,.28);
-  --overlay:rgba(0,0,0,.68);--shadow-tint:rgba(0,0,0,.42);
-}
+/* Route the existing planner through the new engine. */
+autoAssignDay = function(day, opts, sharedLoad){
+  const out=v11AssignDay(day, opts, sharedLoad);
+  return sharedLoad ? out : v11RepairBest(out,25);   // week runs its own repair at the end
+};
+autoAssignWeek = function(opts){ return v11AssignWeek(opts); };
+balancePlan   = function(plan, opts){ return v11Balance(plan, opts); };
 
-/* Base surfaces and text */
-html,body,.app,.screen{background:var(--bg);color:var(--ink)}
-body{background:var(--bg)!important}
-.card,.stat,.tk,.modal,.gs-panel,.gs-head,.gs-box,.nav,.pickfield,.theme-card,.set-it,
-.quickrow button,.daytabs button,.pills button,.daychip,.tchip,.pill,.chip,.photo-pick,
-.week-board,.cc-rep-head,.v9-search input,.set-list,.notif-card,.exp-it,.bd-role,.plan-tab{
-  background-color:var(--card);color:var(--ink);border-color:var(--line)
-}
-input,select,textarea,.pickfield{background:var(--card)!important;color:var(--ink)!important;border-color:var(--line)!important}
-input::placeholder,textarea::placeholder{color:var(--muted);opacity:.82}
-input:focus,select:focus,textarea:focus{border-color:var(--bronze)!important;box-shadow:var(--focus)!important}
-label,.mini,.hint,.gs-hint,.gs-count,.gs-group-title,.gs-mid span,.set-mid .mini{color:var(--muted)}
-
-/* Brand actions — no hard-coded navy/gold split */
-.btn:not(.ghost):not(.warn),.daychip.on,.daytabs button.on,.pills button.on,.dr-it.on,
-.theme-banner,.wd-banner.entrance,.wa-cta,.cc-seg button.on,.plan-tab.on,.bd-role.on,
-.bus-row.next,.tk-st.s-verified,.switch.on{
-  background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;
-  color:var(--on-brand)!important;border-color:transparent!important
-}
-.btn.ghost{background:var(--card)!important;color:var(--cacao)!important;border-color:var(--line)!important}
-.btn.warn{background:var(--danger)!important;color:#fff!important}
-.iconbtn,.socialtop,.set-ic,.gs-ic,.nt-ic,.sb-ic{color:var(--cacao)!important;background:var(--card);border-color:var(--line)}
-.iconbtn:hover,.socialtop:hover,.set-ic:hover,.gs-item:hover .gs-ic{color:var(--bronze)!important}
-.nav{background:var(--nav-bg)!important;border-color:var(--line)!important}
-.nav button{color:var(--muted)!important}.nav button.on{color:var(--nav-on)!important;font-weight:700}
-.nav::before,.sec>h3::after{background:linear-gradient(90deg,transparent,var(--bronze),transparent)!important}
-
-/* Brand avatars and decorative brand blocks */
-.pf-ava,.acct-av,.rnum,.mb-av,.dr-head .mono.sm,.bus-ic,.hub-ic,.crm-av,.g3-av,.loc-av,
-.export-seal,.cc-num{
-  background:linear-gradient(145deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;
-  color:var(--on-brand)!important;border-color:var(--bronze)!important
-}
-.catbadge,.tc-pos,.export-kicker,.pf-ch,.h3 .ic-s,h3 .ic-s,h4 .ic-s{color:var(--bronze)!important}
-
-/* Drawer and search */
-.drawer{background:var(--bg)!important;color:var(--ink)}
-.drawer-bg,.gs-bg{background:var(--overlay)!important}
-.gs-panel{background:var(--bg)!important}.gs-head{background:var(--bg)!important}
-.gs-item{color:var(--ink)}.gs-item:hover,.gs-item:active,.gs-close:active{background:var(--sand)!important}
-.gs-ic{background:var(--card)!important}.gs-mag,.gs-close,.gs-go{color:var(--muted)!important}
-
-/* Semantic states */
-.err,.bd-b.warn{color:var(--danger)!important}.reddot,.nav .ndot,.badge{background:var(--danger)!important;color:#fff!important}
-.setup{background:var(--warning-bg)!important;border-color:var(--warning-border)!important;color:var(--warning)!important}
-.chip.ok,.rstat.off,.tk-st.s-completed{background:var(--success-bg)!important;color:var(--success)!important;border-color:var(--success-border)!important}
-.chip.full,.tk-pr.p-urgent,.tk-over{background:var(--danger-bg)!important;color:var(--danger)!important;border-color:var(--danger-border)!important}
-.tk-over{background:var(--danger)!important;color:#fff!important}.row-over{box-shadow:inset 3px 0 0 var(--danger)!important}[dir="rtl"] .row-over{box-shadow:inset -3px 0 0 var(--danger)!important}
-.chip.res,.rstat.entrance,.tk-st.s-progress,.tk-pr.p-high,.aa-slot.morning{background:var(--warning-bg)!important;color:var(--warning)!important;border-color:var(--warning-border)!important}
-.tk-st.s-accepted,.aa-slot.afternoon{background:var(--info-bg)!important;color:var(--info)!important;border-color:var(--info-border)!important}
-.stat-dot.todo{background:var(--warning)!important}.stat-dot.live{background:var(--success)!important}.stat-dot.done{background:var(--danger)!important}
-.ring-todo{border-color:var(--warning)!important}.ring-live{border-color:var(--success)!important}.ring-done{border-color:var(--danger)!important}
-.wd-banner.off,.roster-row.off .rnum,.loc-av.g{background:linear-gradient(135deg,var(--success),color-mix(in srgb,var(--success),#000 18%))!important;color:#fff!important}
-.rstat.working{background:var(--sand)!important;color:var(--muted)!important}
-
-/* Chat, banners, toast */
-.bub.them{background:var(--card)!important;color:var(--ink)!important;border-color:var(--line)!important}
-.bub.me,.chatbar button{background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;color:var(--on-brand)!important}
-.toast span,.toast{color:var(--on-brand)}
-.toast.t-success span{background:var(--success)!important}.toast.t-error span{background:var(--danger)!important}
-.toast.t-warn span{background:var(--warning)!important}.toast.t-info span{background:var(--info)!important}
-
-/* Theme/settings UI itself */
-.theme-card{border:1px solid var(--line)!important;background:var(--card)!important;color:var(--ink)!important}
-.theme-card.on{border-color:var(--bronze)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--bronze) 28%,transparent)!important}
-.v9-modes button{background:var(--card)!important;color:var(--muted)!important;border-color:var(--line)!important}
-.v9-modes button.on{background:var(--sand)!important;color:var(--cacao)!important;border-color:var(--bronze)!important}
-input[type="color"]{background:var(--card)!important;border-color:var(--line)!important}
-.switch{background:var(--sand)!important;border:1px solid var(--line)}.switch .knob{background:var(--card)!important}
-
-/* Remove legacy fixed gradients that could override a selected palette */
-.login-wrap{background:radial-gradient(130% 100% at 50% -10%,var(--brand-700,var(--cacao)) 0%,var(--brand-900,var(--espresso)) 62%,color-mix(in srgb,var(--brand-900,var(--espresso)) 82%,#000) 100%)!important}
-.login-wrap,.brandmark h1,.brandmark p,.brandmark .mono,.role-tabs button,.staff-link{color:var(--on-brand)!important}
-.role-tabs button{background:color-mix(in srgb,var(--card) 14%,transparent)!important;border-color:color-mix(in srgb,var(--card) 35%,transparent)!important}
-.role-tabs button.on,.lang-row button.on{background:var(--card)!important;color:var(--cacao)!important;border-color:var(--card)!important}
-.lang-row button{color:var(--on-brand)!important;border-color:color-mix(in srgb,var(--card) 35%,transparent)!important}
-
-/* Export/control-center pieces displayed inside the live app */
-.cc-hero,.v9-hero,.mgr-console{background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;color:var(--on-brand)!important}
-.cc-hero h2,.v9-hero h2,.mgr-console h2{color:inherit!important}
-.cc-rep-head{background:var(--card)!important;color:var(--ink)!important}.cc-rep-head small,.cc-rep-head .cc-rep-cls{color:var(--muted)!important}
-.export-brand{background:var(--card)!important;border-color:var(--line)!important}.export-format-note{background:var(--sand)!important;border-color:var(--bronze)!important}
-
-/* Media overlays intentionally stay neutral for readability */
-.hero .body,.hero .meta,.hero .desc,.opcard,.catcard,.pb-video,.photo-viewer{color:#fff}
-.hero .tag{background:rgba(255,255,255,.92)!important;color:#101827!important}
-
-/* Dark mode must not re-introduce old fixed gold/navy values */
-[data-theme="dark"] .btn:not(.ghost):not(.warn),[data-theme="dark"] .daychip.on,[data-theme="dark"] .daytabs button.on,
-[data-theme="dark"] .pills button.on,[data-theme="dark"] .dr-it.on,[data-theme="dark"] .theme-banner,[data-theme="dark"] .wd-banner.entrance,
-[data-theme="dark"] .wa-cta,[data-theme="dark"] .bus-row.next,[data-theme="dark"] .cc-seg button.on,[data-theme="dark"] .plan-tab.on,
-[data-theme="dark"] .bd-role.on,[data-theme="dark"] .tk-st.s-verified{
-  background:linear-gradient(135deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;
-  color:var(--on-brand)!important
-}
-[data-theme="dark"] .pf-ava,[data-theme="dark"] .acct-av,[data-theme="dark"] .rnum,[data-theme="dark"] .mb-av,
-[data-theme="dark"] .dr-head .mono.sm,[data-theme="dark"] .bus-ic,[data-theme="dark"] .hub-ic,[data-theme="dark"] .crm-av,[data-theme="dark"] .g3-av,
-[data-theme="dark"] .loc-av,[data-theme="dark"] .export-seal,[data-theme="dark"] .cc-num{
-  background:linear-gradient(145deg,var(--brand-900,var(--espresso)),var(--brand-700,var(--cacao)))!important;color:var(--on-brand)!important
-}
-</style>
-<script id="unified-color-system-v11-js">
-(function(){
-  function hexRgb(hex){
-    hex=String(hex||"").trim();
-    if(/^#[0-9a-f]{3}$/i.test(hex)) hex="#"+hex.slice(1).split("").map(x=>x+x).join("");
-    if(!/^#[0-9a-f]{6}$/i.test(hex)) return null;
-    return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];
+/* More attempts, so three genuinely different plans are found every time. */
+const __v10BuildVariants=buildPlanVariants;
+buildPlanVariants=function(scope,day,onlyEmpty){
+  const out=[], seen=new Set();
+  for(let tries=0; tries<60 && out.length<3; tries++){
+    const c=buildPlanCandidate(scope,day,onlyEmpty);
+    const s=candidateSignature(c);
+    if(!seen.has(s)){ seen.add(s); out.push(c); }
   }
-  function lum(hex){
-    const rgb=hexRgb(hex); if(!rgb) return .5;
-    const c=rgb.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});
-    return .2126*c[0]+.7152*c[1]+.0722*c[2];
-  }
-  function readable(bg){ return lum(bg)>.46?"#101827":"#FFFFFF"; }
-  function validHex(v,fb){ return /^#[0-9A-F]{6}$/i.test(String(v||""))?String(v).toUpperCase():fb; }
-  function applySemanticColors(){
-    try{
-      if(typeof S==="undefined"||!S.settings) return;
-      const key=S.settings.palette, pal=(typeof PALETTES!=="undefined"&&PALETTES[key])||null;
-      const mode=S.theme==="dark"?"dark":"light";
-      const active=pal&&pal[mode]?pal[mode]:null;
-      const primary=validHex(active?active.primary:S.settings.primary,"#0F1B2D");
-      const accent=validHex(active?active.accent:S.settings.accent,"#C6A15B");
-      const root=document.documentElement.style;
-      root.setProperty("--on-brand",readable(primary));
-      root.setProperty("--on-accent",readable(accent));
-      root.setProperty("--shadow-tint",mode==="dark"?"rgba(0,0,0,.42)":"rgba(15,27,45,.16)");
-      document.documentElement.style.colorScheme=mode;
-    }catch(e){console.error("color system",e)}
-  }
-  window.applySemanticColors=applySemanticColors;
-  if(typeof window.applySettings==="function"){
-    const prev=window.applySettings;
-    window.applySettings=function(){const r=prev.apply(this,arguments);applySemanticColors();return r;};
-  }
-  if(typeof window.render==="function"){
-    const prevRender=window.render;
-    window.render=function(){applySemanticColors();return prevRender.apply(this,arguments);};
-  }
-  // Harden stored custom color values so malformed legacy settings cannot break CSS.
+  while(out.length<3) out.push(buildPlanCandidate(scope,day,onlyEmpty));
+  return out;
+};
+/* Show the variety result inside the auto-assign modal. */
+const __v10PlanBalance=planBalance;
+planBalance=function(plan,opts){
+  const bal=__v10PlanBalance(plan,opts);
+  try{ const v=v11Variety(plan); bal.repeats=v.repeats; bal.backToBack=v.backToBack; }catch(e){}
+  return bal;
+};
+
+/* ==========================================================================
+   3. INTEGRATION
+   ========================================================================== */
+const __v10NavGroupsV11=navGroupsBase;
+navGroupsBase=function(role){
+  const groups=__v10NavGroupsV11(role);
   try{
-    if(typeof S!=="undefined"&&S.settings){
-      const d={primary:"#0F1B2D",accent:"#C6A15B",bg:"#F8F7F3",textColor:"#172033",navBg:"#FFFFFF",navActive:"#1F3657"};
-      Object.keys(d).forEach(k=>S.settings[k]=validHex(S.settings[k],d[k]));
-    }
+    if(!groups || !groups.length) return groups;
+    if(groups.some(g=>(g.items||[]).some(i=>i[0]==="search"))) return groups;
+    const first=groups[0];
+    first.items=[["search","grid",t("vbSearch"),0]].concat(first.items||[]);
   }catch(e){}
-  applySemanticColors();
-})();
-</script>
+  return groups;
+};
+const __v10ManagerViewV11=managerView;
+managerView=function(){ if(S.tab==="search") return v11SearchView(); return __v10ManagerViewV11(); };
+const __v10StaffViewV11=staffView;
+staffView=function(){ if(S.tab==="search") return v11SearchView(); return __v10StaffViewV11(); };
+const __v10WireCommonV11=wireCommon;
+wireCommon=function(){
+  __v10WireCommonV11();
+  try{ v11WireSearch(); }catch(e){ console.error(e); }
+};
 
+</script>
+<script id="control-center-v12">
+
+/* ==========================================================================
+   v12 — THE EXPLORE AREA
+   This is the first thing a guest sees after scanning the QR code, before
+   they have an account. It is the shop window, so it is now built like one:
+   one strong image, what is happening RIGHT NOW, today's programme grouped by
+   time of day, a day picker for the rest of the week, then the photos and
+   videos, then a reason to sign in.
+   ========================================================================== */
+const V12_STR={
+en:{
+  exNow:"Happening now", exNext:"Up next", exToday:"Today", exWeek:"The rest of the week",
+  exNothing:"Nothing scheduled today — take a look at the week.",
+  exNothingDay:"Nothing scheduled on this day.",
+  exSeeToday:"See what's on today", exWatch:"Watch",
+  exMorning:"Morning", exAfternoon:"Afternoon", exEvening:"Evening",
+  exHighlight:"Highlight of the day",
+  exFollow:"Follow us", exReviews:"Read our reviews",
+  exJoin:"Join in", exJoinSub:"Sign in with your room number to book a place, save your favourites and message the team.",
+  exJoinBtn:"Sign in with my room",
+  exStartsIn:"starts in", exMin:"min", exOn:"on now",
+  exAllPhotos:"Photos & videos", exTapPlay:"Tap to play"
+},
+de:{
+  exNow:"Läuft gerade", exNext:"Als Nächstes", exToday:"Heute", exWeek:"Der Rest der Woche",
+  exNothing:"Heute ist nichts geplant — schau dir die Woche an.",
+  exNothingDay:"An diesem Tag ist nichts geplant.",
+  exSeeToday:"Sieh, was heute läuft", exWatch:"Ansehen",
+  exMorning:"Vormittag", exAfternoon:"Nachmittag", exEvening:"Abend",
+  exHighlight:"Highlight des Tages",
+  exFollow:"Folge uns", exReviews:"Unsere Bewertungen",
+  exJoin:"Mach mit", exJoinSub:"Melde dich mit deiner Zimmernummer an, um Plätze zu buchen, Favoriten zu speichern und dem Team zu schreiben.",
+  exJoinBtn:"Mit meinem Zimmer anmelden",
+  exStartsIn:"beginnt in", exMin:"Min", exOn:"läuft",
+  exAllPhotos:"Fotos & Videos", exTapPlay:"Zum Abspielen tippen"
+},
+ar:{
+  exNow:"يحدث الآن", exNext:"التالي", exToday:"اليوم", exWeek:"بقية الأسبوع",
+  exNothing:"لا يوجد شيء اليوم — ألقِ نظرة على الأسبوع.",
+  exNothingDay:"لا يوجد شيء في هذا اليوم.",
+  exSeeToday:"شاهد برنامج اليوم", exWatch:"شاهد",
+  exMorning:"الصباح", exAfternoon:"بعد الظهر", exEvening:"المساء",
+  exHighlight:"نشاط اليوم المميز",
+  exFollow:"تابعنا", exReviews:"اقرأ تقييماتنا",
+  exJoin:"انضم إلينا", exJoinSub:"سجّل الدخول برقم غرفتك لحجز مكانك وحفظ المفضلة ومراسلة الفريق.",
+  exJoinBtn:"الدخول برقم غرفتي",
+  exStartsIn:"يبدأ خلال", exMin:"دقيقة", exOn:"جارٍ الآن",
+  exAllPhotos:"الصور والفيديو", exTapPlay:"اضغط للتشغيل"
+}
+};
+Object.keys(V12_STR).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V12_STR[l]); });
+const V12_FILL={
+ru:{exNow:"Сейчас идёт",exNext:"Далее",exToday:"Сегодня",exWeek:"Остальная неделя",exNothing:"Сегодня ничего не запланировано.",exNothingDay:"В этот день ничего нет.",exSeeToday:"Программа на сегодня",exWatch:"Смотреть",exMorning:"Утро",exAfternoon:"День",exEvening:"Вечер",exHighlight:"Событие дня",exFollow:"Подписывайтесь",exReviews:"Наши отзывы",exJoin:"Присоединяйтесь",exJoinSub:"Войдите по номеру комнаты, чтобы записаться и написать команде.",exJoinBtn:"Войти по номеру комнаты",exStartsIn:"начнётся через",exMin:"мин",exOn:"идёт",exAllPhotos:"Фото и видео",exTapPlay:"Нажмите, чтобы включить"},
+pl:{exNow:"Teraz trwa",exNext:"Następnie",exToday:"Dziś",exWeek:"Reszta tygodnia",exNothing:"Dziś nic nie zaplanowano.",exNothingDay:"Tego dnia nic nie ma.",exSeeToday:"Zobacz dzisiejszy program",exWatch:"Obejrzyj",exMorning:"Rano",exAfternoon:"Popołudnie",exEvening:"Wieczór",exHighlight:"Atrakcja dnia",exFollow:"Obserwuj nas",exReviews:"Nasze opinie",exJoin:"Dołącz",exJoinSub:"Zaloguj się numerem pokoju, aby rezerwować i pisać do zespołu.",exJoinBtn:"Zaloguj numerem pokoju",exStartsIn:"start za",exMin:"min",exOn:"trwa",exAllPhotos:"Zdjęcia i wideo",exTapPlay:"Dotknij, aby odtworzyć"},
+cs:{exNow:"Právě probíhá",exNext:"Další",exToday:"Dnes",exWeek:"Zbytek týdne",exNothing:"Dnes není nic naplánováno.",exNothingDay:"Tento den nic není.",exSeeToday:"Dnešní program",exWatch:"Přehrát",exMorning:"Ráno",exAfternoon:"Odpoledne",exEvening:"Večer",exHighlight:"Zážitek dne",exFollow:"Sledujte nás",exReviews:"Naše recenze",exJoin:"Přidejte se",exJoinSub:"Přihlaste se číslem pokoje a rezervujte si místo.",exJoinBtn:"Přihlásit číslem pokoje",exStartsIn:"začíná za",exMin:"min",exOn:"probíhá",exAllPhotos:"Fotky a videa",exTapPlay:"Klepnutím přehrajete"},
+nl:{exNow:"Nu bezig",exNext:"Hierna",exToday:"Vandaag",exWeek:"De rest van de week",exNothing:"Vandaag staat er niets gepland.",exNothingDay:"Op deze dag staat niets gepland.",exSeeToday:"Bekijk het programma van vandaag",exWatch:"Bekijken",exMorning:"Ochtend",exAfternoon:"Middag",exEvening:"Avond",exHighlight:"Hoogtepunt van de dag",exFollow:"Volg ons",exReviews:"Onze reviews",exJoin:"Doe mee",exJoinSub:"Log in met je kamernummer om te boeken en het team te appen.",exJoinBtn:"Inloggen met mijn kamer",exStartsIn:"begint over",exMin:"min",exOn:"bezig",exAllPhotos:"Foto's en video's",exTapPlay:"Tik om af te spelen"},
+fr:{exNow:"En ce moment",exNext:"Ensuite",exToday:"Aujourd'hui",exWeek:"Le reste de la semaine",exNothing:"Rien de prévu aujourd'hui.",exNothingDay:"Rien de prévu ce jour.",exSeeToday:"Voir le programme du jour",exWatch:"Regarder",exMorning:"Matin",exAfternoon:"Après-midi",exEvening:"Soir",exHighlight:"Moment fort du jour",exFollow:"Suivez-nous",exReviews:"Nos avis",exJoin:"Rejoignez-nous",exJoinSub:"Connectez-vous avec votre chambre pour réserver et écrire à l'équipe.",exJoinBtn:"Me connecter avec ma chambre",exStartsIn:"commence dans",exMin:"min",exOn:"en cours",exAllPhotos:"Photos et vidéos",exTapPlay:"Toucher pour lire"}
+};
+Object.keys(V12_FILL).forEach(l=>{ if(DICT[l]) Object.assign(DICT[l], V12_FILL[l]); });
+
+/* ---- helpers ---- */
+let exploreDay = null;                       // which day the week list is showing
+function v12Day(){ return exploreDay==null ? todayIndex() : exploreDay; }
+function v12Mins(a){ const w=intervalOf(a&&a.time); return w?w.s:null; }
+function v12PartOfDay(a){
+  const m=v12Mins(a);
+  if(m==null) return "exEvening";
+  if(m<12*60) return "exMorning";
+  if(m<18*60) return "exAfternoon";
+  return "exEvening";
+}
+function v12DayActs(day){
+  return (S.activities||[]).filter(a=>a.day===day)
+    .sort((x,y)=>String(x.time||"").localeCompare(String(y.time||"")));
+}
+/* what is on right now, or what starts next today */
+function v12NowNext(){
+  const today=todayIndex();
+  const now=hotelNow();
+  const mins=now.getHours()*60+now.getMinutes();
+  const acts=v12DayActs(today);
+  let live=null, next=null;
+  acts.forEach(a=>{
+    const w=intervalOf(a.time); if(!w) return;
+    if(mins>=w.s && mins<w.e){ if(!live) live=a; }
+    else if(w.s>mins && (!next || w.s < intervalOf(next.time).s)) next=a;
+  });
+  if(live) return {kind:"now", act:live, mins:0};
+  if(next) return {kind:"next", act:next, mins:Math.max(0, intervalOf(next.time).s-mins)};
+  return null;
+}
+/* the single strongest image we have, for the hero */
+function v12Hero(){
+  const today=todayIndex();
+  const hi=(S.activities||[]).find(a=>a.day===today && a.highlight && a.image);
+  if(hi) return {img:hi.image, cap:hi.name, tag:t("exHighlight"), act:hi, video:""};
+  const m=exploreMoments();
+  if(m.vids.length && m.vids[0].img) return {...m.vids[0], tag:t("exWatch"), act:null};
+  const anyHi=(S.activities||[]).find(a=>a.highlight && a.image);
+  if(anyHi) return {img:anyHi.image, cap:anyHi.name, tag:t("exHighlight"), act:anyHi, video:""};
+  if(m.pics.length) return {...m.pics[0], tag:"", act:null};
+  const withImg=(S.activities||[]).find(a=>a.image);
+  if(withImg) return {img:withImg.image, cap:withImg.name, tag:"", act:withImg, video:""};
+  return null;
+}
+function v12Socials(){
+  const st=S.settings||{};
+  return [["Instagram",st.instagram],["TikTok",st.tiktok],["Facebook",st.facebook],["YouTube",st.youtube]]
+    .filter(([k,v])=>v && /^https?:\/\//i.test(v));
+}
+/* ---- the pieces ---- */
+function v12NowStrip(){
+  const nn=v12NowNext();
+  if(!nn) return "";
+  const a=nn.act;
+  const live=nn.kind==="now";
+  return `<div class="ex-live ${live?"on":""}" data-exact="${esc(a.id)}">
+    <span class="ex-live-dot"></span>
+    <span class="ex-live-mid">
+      <span class="ex-live-kick">${esc(live?t("exNow"):t("exNext"))}</span>
+      <b>${esc(a.name)}</b>
+      <span class="mini">${esc(a.time||"")}${a.location?" · "+esc(a.location):""}</span>
+    </span>
+    <span class="ex-live-when">${live?esc(t("exOn"))
+      :(nn.mins<60?(nn.mins+" "+esc(t("exMin"))):esc(a.time||""))}</span>
+  </div>`;
+}
+function v12DayList(day, emptyKey){
+  const acts=v12DayActs(day);
+  if(!acts.length) return `<div class="ex-empty">${esc(t(emptyKey||"exNothingDay"))}</div>`;
+  const parts=["exMorning","exAfternoon","exEvening"];
+  return parts.map(p=>{
+    const list=acts.filter(a=>v12PartOfDay(a)===p);
+    if(!list.length) return "";
+    return `<div class="ex-part">
+      <h4 class="ex-part-h">${esc(t(p))}</h4>
+      ${list.map(a=>`<button class="ex-act" data-exact="${esc(a.id)}" type="button">
+        <span class="ex-time">${esc(a.time||"")}</span>
+        <span class="ex-act-mid"><b>${esc(a.name)}</b>${a.location?`<span class="mini">${esc(a.location)}</span>`:""}</span>
+        ${a.highlight?`<span class="ex-star">${ic("star",13)}</span>`:""}
+        <span class="ex-act-go">${ic("back",15)}</span>
+      </button>`).join("")}
+    </div>`;
+  }).join("");
+}
+function v12WeekPicker(){
+  const today=todayIndex(), sel=v12Day();
+  const order=[0,1,2,3,4,5,6];
+  return `<div class="ex-days">${order.map(d=>{
+    const n=v12DayActs(d).length;
+    return `<button class="ex-day ${d===sel?"on":""} ${d===today?"today":""}" data-exday="${d}" type="button">
+      <span>${esc((t("daysShort")[d]||""))}</span><small>${n}</small></button>`;
+  }).join("")}</div>`;
+}
+function v12Moments(){
+  const m=exploreMoments();
+  const shown = exploreFilter==="videos"?m.vids : exploreFilter==="photos"?m.pics : m.all;
+  const isMgr=S.session && S.session.role==="manager";
+  const chip=(id,label)=>`<button class="ex-chip ${exploreFilter===id?"on":""}" data-exfilter="${id}" type="button">${esc(label)}</button>`;
+  const card=(it)=>`<figure class="ex-it"${it.video?` data-vid="${esc(it.video)}"`:""}>
+    <div class="ex-thumb">${it.img
+      ? `<img src="${esc(it.img)}" alt="" loading="lazy"${it.video?"":` data-pvsingle="${esc(it.img)}"`}>`
+      : `<div class="ex-noimg">${ic("sparkle",24)}</div>`}${it.video?`<span class="ex-play"></span>`:""}</div>
+    ${it.cap?`<figcaption>${esc(it.cap)}</figcaption>`:""}</figure>`;
+  return `<div class="ex-secrow">
+      <h3 class="ex-sec">${esc(t("exAllPhotos"))}</h3>
+      ${isMgr?`<button class="dd-edit" id="ex-addvid" type="button">${ic("plus",13)} ${t("ex_addvid")}</button>`:""}
+    </div>
+    ${m.all.length?`<div class="ex-chips">${chip("all",t("ex_all"))}${chip("videos",t("ex_videos"))}${chip("photos",t("ex_photos"))}</div>`:""}
+    ${shown.length
+      ? `<div class="ex-grid">${shown.map(card).join("")}</div>`
+      : `<div class="empty"><div class="big">${ic("sparkle",30)}</div>${t("ex_none")}</div>`}`;
+}
+function v12Connect(){
+  const soc=v12Socials(), rev=reviewLinks();
+  if(!soc.length && !rev.length) return "";
+  const label=k=>k==="google"?"Google":k==="tripadvisor"?"Tripadvisor":"HolidayCheck";
+  return `<div class="ex-connect">
+    ${soc.length?`<h3 class="ex-sec">${esc(t("exFollow"))}</h3>
+      <div class="ex-soc">${soc.map(([k,v])=>`<a class="ex-soc-b" href="${esc(v)}" target="_blank" rel="noopener">
+        ${ic(k,18)}<span>${esc(k)}</span></a>`).join("")}</div>`:""}
+    ${rev.length?`<h3 class="ex-sec" style="margin-top:16px">${esc(t("exReviews"))}</h3>
+      <div class="ex-soc">${rev.map(([k,v])=>`<a class="ex-soc-b rev" href="${esc(v)}" target="_blank" rel="noopener">
+        ${ic("star",17)}<span>${esc(label(k))}</span></a>`).join("")}</div>`:""}
+  </div>`;
+}
+/* ---- the screen ---- */
+exploreView=function(){
+  const hero=v12Hero();
+  const logo=S.settings&&S.settings.logo;
+  const hname=(S.settings&&S.settings.hotelName)||"";
+  const today=todayIndex(), sel=v12Day();
+  return `<div class="screen fadein ex-screen v12">
+    <div class="ex-top">
+      <button class="ex-round" id="ex-back" aria-label="back">${ic("back",18)}</button>
+      ${logo?`<img class="ex-logo" src="${esc(logo)}" alt="">`:(hname?`<b class="ex-brand">${esc(hname)}</b>`:"")}
+      <button class="ex-signin" id="ex-signin">${t("signin")}</button>
+    </div>
+
+    ${hero?`<div class="ex-hero"${hero.video?` data-vid="${esc(hero.video)}"`:(hero.act?` data-exact="${esc(hero.act.id)}"`:"")}>
+      ${hero.img?`<img src="${esc(hero.img)}" alt="">`:`<div class="ex-noimg big">${ic("sparkle",34)}</div>`}
+      <div class="ex-hero-sh"></div>
+      ${hero.video?`<span class="ex-play big"></span>`:""}
+      <div class="ex-hero-txt">
+        ${hero.tag?`<span class="ex-tag">${esc(hero.tag)}</span>`:""}
+        <h1>${esc(hero.cap||t("ex_title"))}</h1>
+        ${hname?`<p>${esc(hname)}</p>`:""}
+      </div>
+    </div>`:`<div class="ex-hero flat">
+      <div class="ex-hero-txt static"><h1>${t("ex_title")}</h1>
+      <p>${hname?esc(hname):t("ex_sub")}</p></div></div>`}
+
+    ${v12NowStrip()}
+
+    <div class="ex-secrow"><h3 class="ex-sec">${esc(t("exToday"))} · ${esc(t("days")[today]||"")}</h3></div>
+    ${v12DayList(today,"exNothing")}
+
+    <div class="ex-secrow"><h3 class="ex-sec">${esc(t("exWeek"))}</h3></div>
+    ${v12WeekPicker()}
+    ${sel===today ? `<div class="ex-empty soft">${esc(t("exToday"))} ↑</div>` : v12DayList(sel)}
+
+    <div class="ex-cta">
+      <b>${esc(t("exJoin"))}</b>
+      <p>${esc(t("exJoinSub"))}</p>
+      <button class="btn" id="ex-join">${ic("key",16)} ${esc(t("exJoinBtn"))}</button>
+    </div>
+
+    ${v12Moments()}
+    ${v12Connect()}
+  </div>`;
+};
+wireExplore=function(){
+  const b=document.getElementById("ex-back"); if(b) b.onclick=()=>{ showExplore=false; render(); };
+  const s=document.getElementById("ex-signin"); if(s) s.onclick=()=>{ showExplore=false; render(); };
+  const j=document.getElementById("ex-join");
+  if(j) j.onclick=()=>{ showExplore=false; loginMode="guest"; guestMode="new"; render(); };
+  document.querySelectorAll("[data-exfilter]").forEach(el=>el.onclick=()=>{ exploreFilter=el.dataset.exfilter; render(); });
+  document.querySelectorAll("[data-exday]").forEach(el=>el.onclick=()=>{ exploreDay=+el.dataset.exday; render(); });
+  document.querySelectorAll("[data-vid]").forEach(el=>el.onclick=()=>playVideo(el.dataset.vid));
+  document.querySelectorAll("[data-exact]").forEach(el=>el.onclick=ev=>{
+    if(el.hasAttribute("data-vid")) return;                 // the hero video wins
+    ev.stopPropagation(); openExploreBook(el.dataset.exact);
+  });
+  const av=document.getElementById("ex-addvid"); if(av) av.onclick=openVideoLinkModal;
+};
+
+</script>
 </body>
 </html>
