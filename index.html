@@ -1803,6 +1803,72 @@ body::before{content:"";position:fixed;inset:0;background-image:var(--app-bg-ima
 .login-wrap > *{position:relative;z-index:1}
 html[data-cardborder="off"] .card{border-color:transparent}
 </style>
+
+<style id="theme-contract-v14">
+/* ===== THEME CONTRACT v14.1 — selected palette must reach every workspace ===== */
+html,body,.app,.screen{background:var(--bg)!important;color:var(--ink)!important}
+body{background-image:none!important}
+.card,.stat,.tk,.login-card,.daytabs button,.pills button,.quickrow button,.iconbtn,
+.set-list,.set-it,.notif-card,.daycard,.showcard,.rostercard,.team-card,.explore-card,
+.modal,.chatbar input,.bub.them,input,select,textarea{background-color:var(--card)!important;color:var(--ink)}
+.drawer{background:var(--card)!important;color:var(--ink)!important;border-color:var(--line)!important}
+[data-theme="dark"] .drawer{background:var(--card)!important}
+.drawer-bg,.modal-bg{background:color-mix(in srgb,var(--bg) 64%,transparent)!important}
+.dr-head{border-color:var(--line)!important}
+.dr-head .mono.sm,.export-seal,.pf-ava,.acct-av,.rnum,.mb-av,.crm-av,.g3-av{
+  background:linear-gradient(145deg,var(--brand-900),var(--brand-700))!important;
+  border-color:var(--champagne-500)!important
+}
+.workspace-role,.set-ic{background:var(--surface-2)!important;color:var(--champagne-700)!important;border-color:var(--border-gold)!important}
+[data-theme="dark"] .workspace-role,[data-theme="dark"] .set-ic{background:var(--surface-2)!important;color:var(--champagne-500)!important}
+.dr-it.on,.daytabs button.on,.pills button.on,.daychip.on,
+.btn:not(.ghost):not(.warn),.theme-banner,.wd-banner.entrance,.wa-cta{
+  background:linear-gradient(135deg,var(--brand-900),var(--brand-700))!important;
+  color:var(--card)!important;border-color:transparent!important
+}
+[data-theme="dark"] .dr-it.on,[data-theme="dark"] .daytabs button.on,[data-theme="dark"] .pills button.on,[data-theme="dark"] .daychip.on,
+[data-theme="dark"] .btn:not(.ghost):not(.warn){
+  background:linear-gradient(135deg,var(--champagne-500),var(--champagne-300))!important;
+  color:var(--bg)!important;border-color:transparent!important
+}
+.iconbtn,.socialtop,.dr-ic,.nav button.on,.catbadge,.tc-pos,.export-kicker{color:var(--brand-700)!important}
+[data-theme="dark"] .iconbtn,[data-theme="dark"] .socialtop,[data-theme="dark"] .dr-ic,[data-theme="dark"] .nav button.on,[data-theme="dark"] .catbadge,[data-theme="dark"] .tc-pos{color:var(--champagne-500)!important}
+.sec>h3::after,.nav::before{background:linear-gradient(90deg,var(--champagne-500),transparent)!important}
+.nav{background:var(--nav-bg)!important;border-color:var(--line)!important}
+.btn.ghost{background:var(--card)!important;color:var(--brand-700)!important;border-color:var(--line)!important}
+[data-theme="dark"] .btn.ghost{color:var(--champagne-500)!important}
+.login-wrap{
+  background:
+    radial-gradient(110% 78% at 50% -5%,color-mix(in srgb,var(--brand-700) 90%,var(--bg)) 0%,color-mix(in srgb,var(--brand-900) 88%,var(--bg)) 48%,var(--bg) 100%)!important;
+}
+[data-theme="dark"] .login-wrap{
+  background:radial-gradient(110% 78% at 50% -5%,color-mix(in srgb,var(--surface-2) 88%,var(--champagne-500)) 0%,var(--card) 44%,var(--bg) 100%)!important;
+}
+.login-wrap .login-card{background:var(--card)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.login-wrap .brandmark h1{color:color-mix(in srgb,var(--ink) 12%,white)!important}
+.login-wrap .brandmark p,.login-wrap .staff-link{color:color-mix(in srgb,var(--ink) 20%,white)!important}
+[data-theme="light"] .login-wrap .brandmark h1,[data-theme="light"] .login-wrap .brandmark p,[data-theme="light"] .login-wrap .staff-link{color:#fff!important}
+.theme-card.on{border-color:var(--champagne-500)!important;box-shadow:var(--focus)!important}
+
+/* Messenger-style in-app notification — always above drawer/modal/nav */
+.msg-pop-notification{position:fixed;z-index:10000;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;max-width:520px;margin:auto;
+  display:flex;align-items:stretch;background:color-mix(in srgb,var(--card) 96%,transparent);color:var(--ink);border:1px solid var(--border-gold);
+  border-radius:19px;box-shadow:0 22px 60px -26px rgba(0,0,0,.58);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  opacity:0;transform:translateY(-24px) scale(.97);transition:opacity .22s ease,transform .24s cubic-bezier(.2,.8,.2,1);overflow:hidden}
+.msg-pop-notification.show{opacity:1;transform:none}
+.msg-pop-main{flex:1;min-width:0;display:flex;gap:11px;align-items:center;text-align:left;padding:12px 8px 12px 12px;color:inherit}
+.msg-pop-avatar{width:42px;height:42px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,var(--brand-900),var(--brand-700));color:#fff;border:1px solid var(--border-gold)}
+[data-theme="dark"] .msg-pop-avatar{background:linear-gradient(145deg,var(--champagne-500),var(--champagne-300));color:var(--bg)}
+.msg-pop-copy{min-width:0;display:flex;flex-direction:column;gap:1px;line-height:1.25}.msg-pop-copy b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-pop-app{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-pop-body{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
+.msg-pop-time{font-size:10.5px;color:var(--muted);margin-left:auto;align-self:flex-start;padding-top:1px;flex:none}
+.msg-pop-close{width:38px;flex:none;color:var(--muted);font-size:22px;border-left:1px solid var(--line)}
+.msg-pop-close:active{background:var(--surface-2)}
+@media (min-width:700px){.msg-pop-notification{top:20px}}
+</style>
+
 </head>
 <body data-build="intelligent-planner-v6">
 <div class="app" id="app"><div class="skel-wrap">
@@ -3005,6 +3071,7 @@ function applySettings(){
     root.setProperty("--btn-radius",br0[0]); root.setProperty("--btn-radius-sm",br0[1]);
     applyFontScale();          /* was missing here: text size did nothing with a theme */
     document.title=st.name||"Entertainment";
+    try{ const mc=document.querySelector('meta[name="theme-color"]'); if(mc) mc.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--bg").trim()||st.bg||"#0F1B2D"); }catch(e){}
     return;
   }
   const isDark=S.theme==="dark";
@@ -3039,6 +3106,7 @@ function applySettings(){
   root.setProperty("--btn-radius",br[0]); root.setProperty("--btn-radius-sm",br[1]);
   applyFontScale();
   document.title=st.name||"Entertainment";
+  try{ const mc=document.querySelector('meta[name="theme-color"]'); if(mc) mc.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--bg").trim()||st.bg||"#0F1B2D"); }catch(e){}
 }
 const FONT_SCALES={small:.92,normal:1,large:1.12,xl:1.25};
 /* Try a theme before committing to it. Cancel puts everything back. */
@@ -8886,7 +8954,6 @@ function showBanner(title,body){
   if(!notifSoundOn()) return;
   try{
     if("Notification" in window && Notification.permission==="granted"){
-      // Prefer the service worker — its notifications persist even when the tab is in the background.
       if(SW_REG && SW_REG.showNotification){
         SW_REG.showNotification(title,{body:body||"",tag:"ent-"+Date.now(),renotify:true,vibrate:[120,60,120]});
       } else {
@@ -8896,7 +8963,33 @@ function showBanner(title,body){
     }
   }catch(e){}
 }
-function notify(title,body){ playChime(); vibrate(); showBanner(title,body); toast(title); }
+function inAppNotification(title,body,type){
+  if(!S.session) return;
+  document.querySelectorAll(".msg-pop-notification").forEach(x=>x.remove());
+  const el=document.createElement("div");
+  el.className="msg-pop-notification";
+  el.setAttribute("role","alert");
+  const labels={message:t("notifMsg"),booking:t("notifBooking"),request:t("notifRequest"),task:t("notifTask"),announcement:t("notifNew"),activity_soon:t("notifications")};
+  const iconMap={message:"chat",chat:"chat",booking:"ticket",request:"bell",task:"check",assignment:"check",announcement:"bell",activity_soon:"clock"};
+  const now=hotelDateParts(new Date());
+  const tm=String(now.hour).padStart(2,"0")+":"+String(now.minute).padStart(2,"0");
+  el.innerHTML=`<button class="msg-pop-main" type="button">
+    <span class="msg-pop-avatar">${ic(iconMap[type]||"bell",22)}</span>
+    <span class="msg-pop-copy"><span class="msg-pop-app">${esc(S.settings.name||"Entertainment")} · ${esc(labels[type]||t("notifications"))}</span><b>${esc(title||t("notifNew"))}</b>${body?`<span class="msg-pop-body">${esc(body)}</span>`:""}</span>
+    <span class="msg-pop-time">${tm}</span>
+  </button><button class="msg-pop-close" type="button" aria-label="Close">×</button>`;
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add("show"));
+  const close=()=>{ el.classList.remove("show"); setTimeout(()=>el.remove(),240); };
+  el.querySelector(".msg-pop-close").onclick=e=>{e.stopPropagation();close();};
+  el.querySelector(".msg-pop-main").onclick=()=>{ close(); routeFromNotification(type||"announcement"); };
+  clearTimeout(window.__msgPopTimer);
+  window.__msgPopTimer=setTimeout(close,7200);
+}
+function notify(title,body,type){
+  if(notifSoundOn()){ playChime(); vibrate(); showBanner(title,body); }
+  inAppNotification(title,body,type||"announcement");
+}
 /* Public push key — already set. Nothing to edit. */
 const PUSH_PUBLIC_KEY="BBVFLaJhNy8JyyYiGPGOI7hFk9GVmgzWxo7ZSy5_Uo44xTg91TlQAppm8Y96xnmUHcr-4u81w4YxVrtZqqCSML8";
 function urlB64ToUint8(base64){
@@ -8956,17 +9049,17 @@ function detectAndNotify(before){
   const myRoom = role==="staff" ? ("staff:"+me) : role==="guest" ? String(S.session.room) : null;
   // MANAGER: new guest booking, new request, new incoming chat (from guest or staff)
   if(role==="manager"){
-    if(S.bookings.length>before.bookings) notify(t("notifBooking"), "");
-    if(S.requests.length>before.requests) notify(t("notifRequest"), "");
+    if(S.bookings.length>before.bookings){ const x=S.bookings[0]||S.bookings[S.bookings.length-1]; notify(t("notifBooking"), x?((x.guest_name||accountName(x.room)||"")+" · "+t("room")+" "+(x.room||"")):"", "booking"); }
+    if(S.requests.length>before.requests){ const x=S.requests[0]||S.requests[S.requests.length-1]; notify(t("notifRequest"), x?(x.detail||x.type||""):"", "request"); }
     const incoming=S.messages.filter(m=>m.sender==="guest").length;
-    if(incoming>before.incomingMsgs) notify(t("notifMsg"), "");
+    if(incoming>before.incomingMsgs){ const x=[...S.messages].reverse().find(m=>m.sender==="guest"); notify(t("notifMsg"), x?(x.body||x.message||x.text||""):"", "message"); }
   }
   // STAFF: new task assigned to me, or new chat reply from manager
   if(role==="staff"){
     const myTasks=S.tasks.filter(x=>!x.assigned_to||x.assigned_to===me).length;
-    if(myTasks>before.myTasks) notify(t("notifTask"), "");
+    if(myTasks>before.myTasks){ const x=[...S.tasks].reverse().find(q=>!q.assigned_to||q.assigned_to===me); notify(t("notifTask"), x?(x.title||x.detail||x.type||""):"", "task"); }
     const myMsgs=S.messages.filter(m=>m.room===myRoom&&m.sender==="team").length;
-    if(myMsgs>before.myMsgs) notify(t("notifMsg"), "");
+    if(myMsgs>before.myMsgs){ const x=[...S.messages].reverse().find(m=>m.room===myRoom&&m.sender==="team"); notify(t("notifMsg"), x?(x.body||x.message||x.text||""):"", "message"); }
   }
   // GUEST: new chat reply from team, or new announcement
   if(role==="guest"){
@@ -8974,7 +9067,7 @@ function detectAndNotify(before){
     if(myMsgs>before.myMsgs) notify(t("notifMsg"), "");
   }
   // EVERYONE: new announcement for them
-  if(S.notes.length>before.notes) notify(t("notifNew"), "");
+  if(S.notes.length>before.notes){ const x=visibleNotes(role)[0]||S.notes[0]; if(x) notify(x.title||t("notifNew"), x.body||"", "announcement"); else notify(t("notifNew"), "", "announcement"); }
 }
 function notifySnapshot(){
   const role=S.session?S.session.role:null, me=S.session?S.session.username:null;
@@ -9021,7 +9114,7 @@ function fireActivityAlarm(a, phase){
     else title=t("almDoneTeam");
     body=name;
   }
-  notify(title, body);
+  notify(title, body, "activity_soon");
 }
 function checkActivityAlarms(){
   if(!S.session) return;
