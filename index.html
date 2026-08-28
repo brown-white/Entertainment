@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v22 Three Luxury Themes</title>
+<title>Entertainment Operations Control Center — v22.1 Stable Luxury Themes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <!--
@@ -2549,129 +2549,15 @@ html,body,#app,.app,.screen,.ex-screen.v14{
 
 
 
-/* ==========================================================================
-   v22 — SINGLE GLOBAL LUXURY THEME CONTRACT
-   Exactly one semantic palette controls every workspace and every page.
-   ========================================================================== */
-html,body,#app,.app,.screen,.ex-screen.v14,.manager-settings{
-  background-color:var(--page-bg)!important;color:var(--text-main)!important;
+/* v22.1 theme compatibility aliases — no layout or interaction overrides */
+:root{
+  --primary:var(--primary-action);
+  --primary-text:var(--primary-on);
+  --accent:var(--accent-action);
+  --soft:var(--surface-bg);
+  --surface-soft:var(--surface-bg);
+  --serif:var(--font-display);
 }
-.card,.stat,.tk,.modal,.drawer,.login-card,.set-list,.set-it,.hub-it,.notif-card,
-.daycard,.showcard,.rostercard,.team-card,.teamcount,.profcard,.bus-col,.bus-row,
-.info-card,.infocard,.photo-it,.qrcard,.quizcard,.task-card,.rule-card,.dutybar,
-.attsum,.attn,.trend,.wd-photo,.v15-panel,.v15-theme-card,.v15-color,
-.v15-preview>div,.theme-card,.cc-card,.cc-prev,.cc-prev .cc-pv-card,.cap-panel,
-.cap-col,.ep-cap-box,.exec-card,.lux-kpi>div,.week-board,.warn-item,.v14-q,
-.v14-glance>div,.v14-schedule,.v14-day,.v14-person,.v14-link,.ratecard,.g3-head,
-.g3-s,.ep-card,.pb-card,.pb-edit,.pb-prev,.cred,.photo-pick,.pickfield,.pick-it,
-.chatlist .card,.bub.them{
-  background:var(--card-bg)!important;color:var(--text-main)!important;
-  border-color:var(--border-color)!important;
-}
-.chip,.pill,.tchip,.rstat,.workspace-role,.set-ic,.sb-ic,.nt-ic,.empty .big,
-.daychip,.daytabs button,.pills button,.crumb,.db-n,.as-n,.ts-chip,.cap-item,
-.ops-check,.exp-it,.v15-modes button,.v15-custom-tabs button,.aa-slot,.tk-st,
-.tk-pr,.sr-st,.ex-chip,.ms-d,.attn-it,.bus-row:not(.next),.duty-it,.bd-ic{
-  background:var(--surface-bg)!important;color:var(--text-main)!important;
-  border-color:var(--border-color)!important;
-}
-h1,h2,h3,h4,h5,h6,.serif,.pb-h,.ex-h1,.ex-sec,.lux-section-title,
-.v15-panel-title,.whobar h2,.tc-body h4,.quiz-q{color:var(--text-main)!important}
-.mini,.hint,.meta,.type-caption,.type-meta,.set-mid .mini,.ex-sub,.v14-person small,
-.v14-slot-copy small,.chatlist .lastm,.bus-note,.info-meta span,.info-mid span,
-.tk-meta span,label,.v15-panel-sub{color:var(--text-secondary)!important}
-input,select,textarea,.chatbar input{
-  background:var(--card-bg)!important;color:var(--text-main)!important;
-  border-color:var(--border-color)!important
-}
-input:focus,select:focus,textarea:focus{
-  border-color:var(--accent-action)!important;
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-action) 22%,transparent)!important
-}
-.nav,.chatbar,.ex-screen.v14 .ex-top{
-  background:color-mix(in srgb,var(--nav-background) 96%,transparent)!important;
-  color:var(--text-main)!important;border-color:var(--border-color)!important
-}
-.drawer{background:var(--nav-background)!important}
-.iconbtn,.socialtop,.ex-round,.dr-out,.bubtool{
-  background:var(--card-bg)!important;color:var(--text-main)!important;
-  border-color:var(--border-color)!important
-}
-.nav button,.dr-it,.dr-ic{color:var(--text-secondary)!important}
-.btn:not(.ghost):not(.warn),.chatbar button,.ex-signin,.dr-it.on,.nav button.on,
-.daychip.on,.daytabs button.on,.pills button.on,.v15-modes button.on,
-.v15-custom-tabs button.on,.bd-role.on,.plan-tab.on,.ex-chip.on,.v14-day.on,
-.v14-filter .ex-chip.on,.switch.on{
-  background:var(--primary-action)!important;color:var(--primary-on)!important;
-  border-color:var(--primary-action)!important
-}
-.dr-it.on .dr-ic,.nav button.on{color:var(--primary-on)!important}
-.btn.ghost{background:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important}
-a,.social-a,.wk-time,.tk .price,.cred b,.teamcount b,.std-t,.bus-next,.catbadge,
-.tc-pos,.export-kicker,.v14-q .ico,.v14-link .ico,.v14-slot-time,
-.v14-section-head .kicker,.tr-row span,.aa-day b{color:var(--accent-action)!important}
-.sec>h3::after,.nav::before,.cc-rep-head .cc-rep-line{
-  background:linear-gradient(90deg,var(--accent-action),transparent)!important
-}
-.v14-slot-dot{background:var(--accent-action)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-action) 15%,transparent)!important}
-.login-wrap,.cc-hero,.v9-hero,.manager-command,.mgr-console,.theme-banner,
-.wd-banner.entrance,.wa-cta,.v14-hero,.v14-join,.bus-row.next{
-  background:
-    radial-gradient(110% 90% at 90% -10%,color-mix(in srgb,var(--accent-action) 18%,transparent),transparent 58%),
-    linear-gradient(145deg,var(--hero-bg),color-mix(in srgb,var(--hero-bg) 80%,var(--accent-action)))!important;
-  color:var(--hero-text)!important
-}
-.login-wrap h1,.login-wrap p,.login-wrap .staff-link,.cc-hero h1,.cc-hero h2,
-.cc-hero p,.v9-hero h1,.v9-hero h2,.v9-hero p,.manager-command h1,
-.manager-command h2,.manager-command p,.mgr-console h1,.mgr-console h2,
-.mgr-console p,.theme-banner,.wd-banner.entrance,.wa-cta,.v14-hero,.v14-hero h1,
-.v14-hero h2,.v14-hero p,.v14-join,.v14-join h2,.v14-join p,.bus-row.next,
-.bus-row.next .bus-time,.bus-row.next .bus-note,.bus-row.next .bus-next{
-  color:var(--hero-text)!important
-}
-.cc-kick,.v9-kick,.mgr-kicker,.v14-join .ey{color:var(--accent-action)!important}
-.ex-screen.v14{
-  background:
-    radial-gradient(130% 38% at 50% -6%,color-mix(in srgb,var(--accent-action) 13%,transparent),transparent 68%),
-    var(--page-bg)!important
-}
-.v14-eyebrow{
-  background:color-mix(in srgb,var(--hero-text) 12%,transparent)!important;
-  color:var(--hero-text)!important;border-color:color-mix(in srgb,var(--hero-text) 22%,transparent)!important
-}
-.v14-primary,.v14-join button{
-  background:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important
-}
-.v14-secondary{
-  background:color-mix(in srgb,var(--hero-text) 10%,transparent)!important;
-  color:var(--hero-text)!important;border-color:color-mix(in srgb,var(--hero-text) 24%,transparent)!important
-}
-.v14-avatar,.crm-av,.g3-av,.acct-av,.rnum,.mb-av,.pf-ava,.wd-av,.loc-av{
-  background:linear-gradient(145deg,var(--primary-action),
-    color-mix(in srgb,var(--primary-action) 76%,var(--accent-action)))!important;
-  color:var(--primary-on)!important
-}
-.modal-bg,.drawer-bg{background:color-mix(in srgb,var(--page-bg) 54%,rgba(0,0,0,.62))!important}
-.msg-pop-notification{
-  background:color-mix(in srgb,var(--card-bg) 96%,transparent)!important;
-  color:var(--text-main)!important;
-  border-color:color-mix(in srgb,var(--accent-action) 36%,var(--border-color))!important
-}
-.msg-pop-avatar{
-  background:linear-gradient(145deg,var(--primary-action),
-    color-mix(in srgb,var(--primary-action) 74%,var(--accent-action)))!important;
-  color:var(--primary-on)!important
-}
-.btn.warn{background:var(--danger-color)!important;color:#fff!important}
-.badge,.reddot{background:var(--danger-color)!important;color:#fff!important}
-.v15-theme-grid{grid-template-columns:1fr!important;gap:12px!important}
-.v15-theme-card{min-height:118px!important;border-radius:20px!important;padding:16px!important;box-shadow:var(--sh-1)!important}
-.v15-theme-card.on{
-  outline:none!important;border-color:var(--accent-action)!important;
-  box-shadow:0 0 0 2px color-mix(in srgb,var(--accent-action) 42%,transparent),var(--sh-2)!important
-}
-.v15-swatches i{width:31px!important;height:31px!important}
-.v15-theme-card b{font-size:16px!important;margin-top:12px!important}
 
 </style>
 </head>
@@ -13367,7 +13253,7 @@ setThemeView=function(){
     <div class="v15-theme-shell">
       <section class="v15-panel">
         <div class="v15-panel-title">Luxury themes</div>
-        <div class="v15-panel-sub">Choose one of three complete luxury palettes. The same palette controls Explore, Guest, Staff and Manager.</div>
+        <div class="v15-panel-sub">Three coordinated luxury palettes. Each works across Explore, Guest, Staff and Manager in Light and Dark mode.</div>
         <div class="v15-theme-grid">
           ${paletteList().map(k=>{
             const p=PALETTES[k], L=v15PresetScheme(k,"light"), D=v15PresetScheme(k,"dark");
@@ -13383,7 +13269,7 @@ setThemeView=function(){
 
       <section class="v15-panel">
         <div class="v15-panel-title">Appearance mode</div>
-        <div class="v15-panel-sub">Choose Light, Dark or Follow phone. The entire application changes together.</div>
+        <div class="v15-panel-sub">Choose Light, Dark or Follow phone.</div>
         <div class="v15-modes">
           ${[["light","sun","Light"],["dark","moon","Dark"],["auto","settings","Follow phone"]].map(([k,i,l])=>
             `<button type="button" data-v15mode="${k}" class="${v9Mode()===k?"on":""}">${ic(i,17)} ${l}</button>`).join("")}
@@ -13392,7 +13278,7 @@ setThemeView=function(){
 
       <section class="v15-panel">
         <div class="v15-custom-head">
-          <div><div class="v15-panel-title">Custom theme</div><div class="v15-panel-sub" style="margin:0">Build your own complete palette. Custom Light and Dark colours are saved independently.</div></div>
+          <div><div class="v15-panel-title">Custom theme</div><div class="v15-panel-sub" style="margin:0">Customize the complete Light and Dark palette independently.</div></div>
           <span class="chip">${custom?"IN USE":"OPTIONAL"}</span>
         </div>
         <div class="v15-custom-tabs">
@@ -13452,6 +13338,15 @@ function v15Wire(){
 }
 const __v15Wire=wireCommon;
 wireCommon=function(){ __v15Wire(); try{v15Wire()}catch(e){console.error(e)} };
+
+/* v22.1 migrate removed preset names before applying the theme. */
+try{
+  const __allowedLuxuryThemes=new Set(["sapphireChampagne","emeraldIvory","bordeauxRoseGold",""]);
+  if(S.settings && !__allowedLuxuryThemes.has(String(S.settings.palette||""))){
+    S.settings.palette="sapphireChampagne";
+    try{persist()}catch(_){}
+  }
+}catch(e){console.error(e)}
 
 /* Re-apply immediately after this patch loads. */
 try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
@@ -13659,20 +13554,6 @@ try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
   setTimeout(()=>{try{normalizeState();applySettings();}catch(e){recordDiagnostic('normalize',e);}},50);
 })();
 
-
-
-
-/* v22: migrate removed theme presets to the new luxury default. */
-(function(){
-  try{
-    if(typeof S==="undefined"||!S.settings)return;
-    const allowed=new Set(["sapphireChampagne","emeraldIvory","bordeauxRoseGold",""]);
-    if(!allowed.has(String(S.settings.palette||""))){
-      S.settings.palette="sapphireChampagne";
-      try{persist()}catch(_){}
-    }
-  }catch(e){console.error(e)}
-})();
 
 </script>
 
