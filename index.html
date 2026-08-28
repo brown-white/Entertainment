@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#0F1B2D">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2270,6 +2270,79 @@ body{font-family:system-ui,sans-serif;text-align:center;padding:40px;color:#1720
     'h1{font-size:34px;margin:0 0 6px}p{color:#6b5a4a;margin:0 0 26px;font-size:18px}'+
     'img{width:70%;max-width:420px}small{display:block;margin-top:18px;color:#8a7a6a;word-break:break-all}
 "+css+"
+
+/* ==========================================================================\n   CLEAN MASTER v18 — AUTHORITATIVE APP SHELL\n   One final contract for viewport, safe areas, fixed UI, notifications and\n   settings hierarchy. This intentionally wins over legacy visual layers.\n   ========================================================================== */
+:root{
+  --shell-max:620px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+  --screen-x:18px;
+  --screen-top:14px;
+  --screen-bottom:28px;
+  --nav-h:0px;
+}
+html{width:100%;min-height:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+body{width:100%;min-height:100dvh;overflow-x:hidden;margin:0;overscroll-behavior-x:none;}
+.app{width:100%!important;max-width:var(--shell-max)!important;min-height:100dvh!important;margin:0 auto!important;overflow:visible;}
+.screen{width:100%!important;max-width:100%!important;padding:calc(var(--safe-top) + var(--screen-top)) calc(var(--safe-right) + var(--screen-x)) calc(var(--safe-bottom) + var(--screen-bottom)) calc(var(--safe-left) + var(--screen-x))!important;overflow-x:clip;}
+.login-wrap{width:100%;min-height:100dvh!important;padding:calc(var(--safe-top) + 24px) calc(var(--safe-right) + 20px) calc(var(--safe-bottom) + 24px) calc(var(--safe-left) + 20px)!important;}
+.top{min-height:44px;margin:0 0 14px!important;}
+.whobar{margin:0 0 20px!important;}
+img,video,iframe,canvas,svg{max-width:100%;}
+.row2{min-width:0}.row2>*{min-width:0;}
+input,select,textarea{max-width:100%;}
+
+/* Fixed bars use the SAME shell width as the page. Legacy 540px rules are ignored. */
+.nav,.chatbar{position:fixed!important;left:50%!important;right:auto!important;width:min(100%,var(--shell-max))!important;max-width:none!important;transform:translateX(-50%)!important;margin:0!important;}
+.nav{bottom:0!important;padding-bottom:calc(9px + var(--safe-bottom))!important;}
+.chatbar{bottom:calc(10px + var(--safe-bottom))!important;padding-left:calc(14px + var(--safe-left))!important;padding-right:calc(14px + var(--safe-right))!important;}
+body:has(.nav) .screen{padding-bottom:calc(var(--safe-bottom) + 88px)!important;}
+body:has(.chatbar) .thread{padding-bottom:94px!important;}
+
+/* Drawers and modals obey safe areas and never exceed the visible viewport. */
+.drawer{height:100dvh!important;padding-top:calc(var(--safe-top) + 18px)!important;padding-bottom:calc(var(--safe-bottom) + 18px)!important;overflow-y:auto;}
+.modal-bg{padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);}
+.modal{max-height:calc(100dvh - var(--safe-top) - 10px)!important;padding-bottom:calc(22px + var(--safe-bottom))!important;}
+@media(min-width:760px){
+  [data-approle="manager"]{--shell-max:920px;}
+  [data-approle="manager"] .screen{--screen-x:28px;}
+}
+@media(min-width:1080px){[data-approle="manager"]{--shell-max:1040px;}}
+@media(max-width:390px){:root{--screen-x:14px}.whobar h2{font-size:27px!important}}
+
+/* Notification stack: one predictable area, no overlapping banners. */
+.notification-stack{position:fixed;z-index:10000;top:calc(var(--safe-top) + 10px);left:50%;transform:translateX(-50%);width:min(calc(100% - 24px),520px);display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+body:has(.conn-banner) .notification-stack{top:calc(var(--safe-top) + 54px);}
+.notification-stack .msg-pop-notification{position:relative!important;inset:auto!important;top:auto!important;left:auto!important;right:auto!important;width:100%!important;max-width:none!important;margin:0!important;pointer-events:auto;transform:translateY(-10px) scale(.985);border-radius:16px;}
+.notification-stack .msg-pop-notification.show{transform:none;}
+.msg-pop-main{min-width:0;}
+.msg-pop-body{max-width:100%!important;}
+@media(max-width:420px){.msg-pop-avatar{width:38px;height:38px}.msg-pop-main{gap:9px;padding:10px 7px 10px 10px}.msg-pop-time{display:none}.msg-pop-close{width:34px}.msg-pop-copy b{font-size:13.5px}.msg-pop-body{font-size:12px}}
+
+/* Connection status has its own lane. */
+.conn-banner{top:0!important;left:0!important;right:0!important;width:100%!important;max-width:none!important;padding-top:calc(var(--safe-top) + 8px)!important;}
+
+/* Clean Settings information architecture */
+.settings-clean{display:block;}
+.settings-overview{padding:18px!important;margin-bottom:20px!important;}
+.settings-kicker,.settings-group-label{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-action);}
+.settings-overview h2{font-size:26px!important;margin:3px 0 5px;}
+.settings-overview p,.settings-section-head p{font-size:12.5px;color:var(--text-secondary);margin:0;}
+.settings-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:15px;}
+.settings-kpis span{padding:10px 6px;border-radius:12px;background:var(--surface-bg);text-align:center;border:1px solid var(--border-color);}
+.settings-kpis b{display:block;font-size:20px;line-height:1.1;}.settings-kpis small{font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;}
+.settings-section{margin:0 0 24px;}.settings-section-head{margin:0 2px 11px;}.settings-section-head h3{font-size:20px!important;margin:0 0 2px;padding:0!important;}.settings-section-head h3::after{display:none!important;}
+.settings-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.settings-action{display:flex;align-items:center;gap:11px;min-height:76px;padding:13px;text-align:start;background:var(--card-bg);border:1px solid var(--border-color);border-radius:15px;color:var(--text-main);}
+.settings-action-ic{width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex:none;border-radius:11px;background:var(--surface-bg);color:var(--accent-action);}.settings-action>span:nth-child(2){display:flex;flex:1;min-width:0;flex-direction:column;}.settings-action b{font-size:13.5px;}.settings-action small{font-size:10.5px;color:var(--text-secondary);margin-top:2px;line-height:1.3}.settings-action-go{opacity:.38;transform:scaleX(-1)}
+.settings-group{margin-bottom:13px;}.settings-group-label{margin:0 4px 7px;color:var(--text-secondary);}.settings-group .set-list{margin:0;padding:4px!important;}.settings-group .set-it{border-radius:12px!important;min-height:62px;}
+
+/* Notification settings */
+.settings-detail-head{margin:0 2px 14px}.settings-detail-head h2{font-size:26px!important;margin:0 0 4px}.settings-detail-head p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.45}.notif-settings-card{padding:4px!important;overflow:hidden}.notif-setting-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px;text-align:start;color:var(--text-main);background:transparent;border-radius:12px;}.notif-setting-row:not(:last-child){border-bottom:1px solid var(--border-color)}.notif-setting-copy{flex:1;min-width:0;display:flex;flex-direction:column}.notif-setting-copy b{font-size:14.5px}.notif-setting-copy small{font-size:11.5px;color:var(--text-secondary);margin-top:2px;line-height:1.35}.notif-setting-row .switch{flex:none;}
+
+@media(max-width:430px){.settings-action-grid{grid-template-columns:1fr}.settings-kpis{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body data-build="audited-master-v16">
@@ -8037,47 +8110,48 @@ function attendanceInner(){
 }
 /* Settings is a hub of small pages, not one long form. */
 const SETTINGS_GROUPS=[
-  {head:"secLook", items:[
+  {head:"APP EXPERIENCE", items:[
     ["set:theme","palette","setTheme","setThemeSub"],
     ["set:brand","building","setBrand","setBrandSub"],
     ["builder","menu","setMenus","setMenusSub"]]},
-  {head:"secManage", items:[
+  {head:"GUEST EXPERIENCE", items:[
     ["set:features","check","setFeatures","setFeaturesSub"],
-    ["set:notif","bell","setNotif","setNotifSub"],
     ["set:links","globe","setLinksT","setLinksSub"],
-    ["bus","bus","busItem","busItem"]]},
-  {head:"secSettings", items:[
-    ["set:location","pin","setLocation","setLocationSub"],
+    ["set:notif","bell","setNotif","setNotifSub"]]},
+  {head:"HOTEL & OPERATIONS", items:[
+    ["bus","bus","busItem","busItem"],
+    ["set:location","pin","setLocation","setLocationSub"]]},
+  {head:"DATA & SYSTEM", items:[
     ["export","file","setData","setDataSub"],
     ["set:advanced","shield","setAdvanced","setAdvancedSub"]]}
 ];
 function settingsHubView(){
   const openTasks=(S.tasks||[]).filter(x=>!["done","verified"].includes(x.status)).length;
   const lowFb=(S.feedback||[]).filter(x=>Number(x.rate||0)>0&&Number(x.rate||0)<4).length;
-  return `<div class="screen fadein manager-settings">
+  const operational=[
+    ["dayplan","calendar","Daily operation","Duty, events and show plan"],
+    ["program","calendar","Program & planner","Activities, capability rules and assignment"],
+    ["team","users","Team management","Accounts, attendance and performance"],
+    ["guests","user","Guest management","Rooms, profiles, requests and feedback"]
+  ];
+  return `<div class="screen fadein manager-settings settings-clean">
     ${topBar(t("settingsHub"),S.session.name)}
-    <div class="mgr-console">
-      <div><div class="mgr-kicker">MANAGER CONTROL CENTER</div><h2>Department administration</h2><p>Operations, people, guest experience, brand and reporting in one place.</p></div>
-      <div class="mgr-health"><span>${(S.users||[]).length}<small>Team</small></span><span>${(S.accounts||[]).length}<small>Guests</small></span><span>${openTasks}<small>Open tasks</small></span><span>${lowFb}<small>Low feedback</small></span></div>
-    </div>
-    <div class="mgr-actions">
-      <button data-hub="dayplan">${ic("calendar",19)}<span><b>Daily operation</b><small>Duty, events & show plan</small></span></button>
-      <button data-hub="team">${ic("users",19)}<span><b>Team administration</b><small>Accounts & performance</small></span></button>
-      <button data-hub="guests">${ic("user",19)}<span><b>Guest CRM</b><small>Rooms, nationality & profiles</small></span></button>
-      <button data-hub="program">${ic("calendar",19)}<span><b>Program control</b><small>Activities & assignment</small></span></button>
-      <button data-hub="export">${ic("file",19)}<span><b>Report center</b><small>Official PDF / Excel exports</small></span></button>
-      <button data-hub="builder">${ic("menu",19)}<span><b>Experience builder</b><small>Role menus & pages</small></span></button>
-    </div>
-    <p class="mini" style="margin:4px 2px 12px">Configuration changes affect the live hotel app. Operational shortcuts above do not change settings automatically.</p>
-    ${SETTINGS_GROUPS.map(g=>`
-      <div class="set-sec">${t(g.head)}</div>
-      <div class="card set-list">
-        ${g.items.map(([id,icn,lb,sub])=>`<button class="set-it" data-hub="${id}">
-          <span class="set-ic">${ic(icn,19)}</span>
-          <span class="set-mid"><b>${esc(t(lb))}</b>${sub&&sub!==lb?`<span class="mini">${esc(t(sub))}</span>`:""}</span>
-          <span class="set-go">${ic("back",16)}</span>
-        </button>`).join("")}
-      </div>`).join("")}
+    <section class="settings-overview card">
+      <div class="settings-overview-copy"><span class="settings-kicker">CONTROL CENTER</span><h2>Settings & administration</h2><p>Operational tools and app configuration are separated so changes are predictable.</p></div>
+      <div class="settings-kpis"><span><b>${(S.users||[]).length}</b><small>Team</small></span><span><b>${(S.accounts||[]).length}</b><small>Guests</small></span><span><b>${openTasks}</b><small>Open tasks</small></span><span><b>${lowFb}</b><small>Low ratings</small></span></div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-section-head"><h3>Operations</h3><p>Daily hotel work. These tools do not alter the app design.</p></div>
+      <div class="settings-action-grid">
+        ${operational.map(([id,icn,lb,sub])=>`<button class="settings-action" data-hub="${id}"><span class="settings-action-ic">${ic(icn,20)}</span><span><b>${lb}</b><small>${sub}</small></span><span class="settings-action-go">${ic("back",15)}</span></button>`).join("")}
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-section-head"><h3>Configuration</h3><p>Changes here affect the live application.</p></div>
+      ${SETTINGS_GROUPS.map(g=>`<div class="settings-group"><div class="settings-group-label">${esc(t(g.head))}</div><div class="card set-list">${g.items.map(([id,icn,lb,sub])=>`<button class="set-it" data-hub="${id}"><span class="set-ic">${ic(icn,19)}</span><span class="set-mid"><b>${esc(t(lb))}</b>${sub&&sub!==lb?`<span class="mini">${esc(t(sub))}</span>`:""}</span><span class="set-go">${ic("back",16)}</span></button>`).join("")}</div></div>`).join("")}
+    </section>
   </div>`;
 }
 function setThemeView(){
@@ -8226,14 +8300,20 @@ function setAdvancedView(){
   </div>`;
 }
 function setNotifView(){
-  return `<div class="screen fadein">
+  const p=notificationPrefs();
+  const permission=("Notification" in window)?Notification.permission:"unsupported";
+  const row=(key,icon,title,sub,on)=>`<button class="notif-setting-row" type="button" data-notif-pref="${key}"><span class="nt-ic">${ic(icon,20)}</span><span class="notif-setting-copy"><b>${title}</b><small>${sub}</small></span><span class="switch ${on?"on":""}"><span class="knob"></span></span></button>`;
+  return `<div class="screen fadein settings-detail-screen">
     ${topBar(t("setNotif"),S.session.name)}
     ${hubBack()}
-    <div class="card notif-card" id="notif-toggle">
-      <div class="nt-l"><span class="nt-ic">${ic(notifSoundOn()?"bell":"belloff",20)}</span>
-        <div><b>${t("notifSound")}</b><p class="mini">${t("enableNotif")}</p></div></div>
-      <span class="switch ${notifSoundOn()?"on":""}"><span class="knob"></span></span>
+    <div class="settings-detail-head"><h2>Notifications</h2><p>Choose exactly how alerts should appear on this device. These controls are independent.</p></div>
+    <div class="card notif-settings-card">
+      ${row("popup","bell","In-app pop-ups","Show a compact banner while the app is open.",p.popup)}
+      ${row("sound","music","Sound","Play the two-tone alert sound.",p.sound)}
+      ${row("vibrate","phone","Vibration","Vibrate when this device supports it.",p.vibrate)}
+      ${row("system","bell","Phone notifications",permission==="granted"?"Permission granted for this browser.":permission==="denied"?"Blocked in browser/iPhone settings.":permission==="unsupported"?"Not supported in this browser.":"Permission will be requested when enabled.",p.system)}
     </div>
+    <div class="cc-note"><b>Important:</b> in-app pop-ups work independently from browser push. The app no longer treats “notifications”, “sound” and “vibration” as one switch.</div>
   </div>`;
 }
 function appSettingsView(){ return setThemeView(); }
@@ -9149,12 +9229,16 @@ function wireCommon(){
     catch(e){ toastErr(t("errSave")); }
   });
   document.querySelectorAll("[data-palette]").forEach(b=>b.onclick=()=>openThemePreview(b.dataset.palette));
-  const nt=$("#notif-toggle"); if(nt) nt.onclick=()=>{
-    const turningOn=!notifSoundOn();
-    localStorage.setItem("ent_notif",turningOn?"on":"off");
-    if(turningOn){ askNotifPermission(); setTimeout(playChime,120); }
+  document.querySelectorAll("[data-notif-pref]").forEach(el=>el.onclick=async()=>{
+    const key=el.dataset.notifPref; const p=notificationPrefs(); const turningOn=!p[key];
+    if(key==="system" && turningOn){
+      await askNotifPermission();
+      if("Notification" in window && Notification.permission!=="granted"){ setNotificationPref("system",false); render(); return; }
+    }
+    setNotificationPref(key,turningOn);
+    if(key==="sound" && turningOn) setTimeout(playChime,100);
     render();
-  };
+  });
   const aks=$("#ai-savekey"); if(aks) aks.onclick=()=>{
     const v=$("#ai-key").value.trim(); if(!v) return;
     localStorage.setItem("ent_ai_key",v); toast(t("saved")); render();
@@ -9291,7 +9375,24 @@ function safeToRender(){
 }
 /* ============ NOTIFICATIONS (sound + vibrate + banner) ============ */
 let AUDIO_CTX=null;
-function notifSoundOn(){ return localStorage.getItem("ent_notif")!=="off"; }
+const NOTIF_PREF_DEFAULTS={popup:true,sound:true,vibrate:true,system:false};
+function notificationPrefs(){
+  const get=(k,d)=>{const v=localStorage.getItem("ent_notif_"+k);return v===null?d:v==="on";};
+  // Compatibility with the previous single ent_notif switch.
+  const legacy=localStorage.getItem("ent_notif");
+  const legacyOn=legacy!=="off";
+  return {
+    popup:get("popup",legacyOn),
+    sound:get("sound",legacyOn),
+    vibrate:get("vibrate",legacyOn),
+    system:get("system",false)
+  };
+}
+function setNotificationPref(key,on){localStorage.setItem("ent_notif_"+key,on?"on":"off");}
+function notifPopupOn(){return notificationPrefs().popup;}
+function notifVibrateOn(){return notificationPrefs().vibrate;}
+function notifSystemOn(){return notificationPrefs().system;}
+function notifSoundOn(){ return notificationPrefs().sound; }
 function playChime(){
   if(!notifSoundOn()) return;
   try{
@@ -9310,7 +9411,10 @@ function playChime(){
     });
   }catch(e){}
 }
-function vibrate(){ if(notifSoundOn() && navigator.vibrate){ try{ navigator.vibrate([120,60,120]); }catch(e){} } }
+function vibrate(){
+  if(!notifVibrateOn() || !navigator.vibrate) return;
+  try{ navigator.vibrate([90,45,90]); }catch(e){}
+}
 let SW_REG=null;
 let SW_READY=false;
 /* Registers the REAL static service worker file (sw.js) that sits next to index.html.
@@ -9382,44 +9486,55 @@ function applyOpenParam(){
   }catch(e){}
 }
 function showBanner(title,body){
-  if(!notifSoundOn()) return;
+  if(!notifSystemOn()) return;
   try{
-    if("Notification" in window && Notification.permission==="granted"){
-      if(SW_REG && SW_REG.showNotification){
-        SW_REG.showNotification(title,{body:body||"",tag:"ent-"+Date.now(),renotify:true,vibrate:[120,60,120]});
-      } else {
-        const n=new Notification(title,{body:body||"",tag:"ent-"+Date.now(),renotify:true});
-        setTimeout(()=>{ try{ n.close(); }catch(e){} },6000);
-      }
+    if(!("Notification" in window) || Notification.permission!=="granted") return;
+    if(SW_REG && SW_REG.showNotification){
+      SW_REG.showNotification(title,{body:body||"",tag:"ent-system",renotify:true,vibrate:notifVibrateOn()?[90,45,90]:[]});
+    }else{
+      const n=new Notification(title,{body:body||"",tag:"ent-system",renotify:true});
+      setTimeout(()=>{try{n.close();}catch(e){}},5500);
     }
-  }catch(e){}
+  }catch(e){console.warn("system notification:",e&&e.message);}
 }
 function inAppNotification(title,body,type){
-  if(!S.session) return;
-  document.querySelectorAll(".msg-pop-notification").forEach(x=>x.remove());
-  const el=document.createElement("div");
-  el.className="msg-pop-notification";
-  el.setAttribute("role","alert");
+  if(!S.session || !notifPopupOn()) return;
+  let stack=document.getElementById("notification-stack");
+  if(!stack){
+    stack=document.createElement("div");
+    stack.id="notification-stack";
+    stack.className="notification-stack";
+    stack.setAttribute("aria-live","polite");
+    stack.setAttribute("aria-atomic","false");
+    document.body.appendChild(stack);
+  }
+  // Avoid duplicate realtime/polling notifications arriving within a short period.
+  const signature=[type||"announcement",title||"",body||""].join("|");
+  const nowMs=Date.now();
+  if(stack.dataset.lastSig===signature && nowMs-Number(stack.dataset.lastAt||0)<1800) return;
+  stack.dataset.lastSig=signature; stack.dataset.lastAt=String(nowMs);
+
   const labels={message:t("notifMsg"),booking:t("notifBooking"),request:t("notifRequest"),task:t("notifTask"),announcement:t("notifNew"),activity_soon:t("notifications")};
   const iconMap={message:"chat",chat:"chat",booking:"ticket",request:"bell",task:"check",assignment:"check",announcement:"bell",activity_soon:"clock"};
-  const now=hotelDateParts(new Date());
-  const tm=String(now.hour).padStart(2,"0")+":"+String(now.minute).padStart(2,"0");
-  el.innerHTML=`<button class="msg-pop-main" type="button">
-    <span class="msg-pop-avatar">${ic(iconMap[type]||"bell",22)}</span>
-    <span class="msg-pop-copy"><span class="msg-pop-app">${esc(S.settings.name||"Entertainment")} · ${esc(labels[type]||t("notifications"))}</span><b>${esc(title||t("notifNew"))}</b>${body?`<span class="msg-pop-body">${esc(body)}</span>`:""}</span>
-    <span class="msg-pop-time">${tm}</span>
-  </button><button class="msg-pop-close" type="button" aria-label="Close">×</button>`;
-  document.body.appendChild(el);
+  const hp=hotelDateParts(new Date());
+  const tm=String(hp.hour).padStart(2,"0")+":"+String(hp.minute).padStart(2,"0");
+  const el=document.createElement("div");
+  el.className="msg-pop-notification";
+  el.setAttribute("role","status");
+  el.innerHTML=`<button class="msg-pop-main" type="button"><span class="msg-pop-avatar">${ic(iconMap[type]||"bell",21)}</span><span class="msg-pop-copy"><span class="msg-pop-app">${esc(S.settings.name||"Entertainment")} · ${esc(labels[type]||t("notifications"))}</span><b>${esc(title||t("notifNew"))}</b>${body?`<span class="msg-pop-body">${esc(body)}</span>`:""}</span><span class="msg-pop-time">${tm}</span></button><button class="msg-pop-close" type="button" aria-label="Close">×</button>`;
+  stack.prepend(el);
+  while(stack.children.length>3) stack.lastElementChild.remove();
   requestAnimationFrame(()=>el.classList.add("show"));
-  const close=()=>{ el.classList.remove("show"); setTimeout(()=>el.remove(),240); };
+  let timer=setTimeout(close,6500);
+  function close(){clearTimeout(timer);el.classList.remove("show");setTimeout(()=>{el.remove();if(stack&&!stack.children.length)stack.remove();},220);}
   el.querySelector(".msg-pop-close").onclick=e=>{e.stopPropagation();close();};
-  el.querySelector(".msg-pop-main").onclick=()=>{ close(); routeFromNotification(type||"announcement"); };
-  clearTimeout(window.__msgPopTimer);
-  window.__msgPopTimer=setTimeout(close,7200);
+  el.querySelector(".msg-pop-main").onclick=()=>{routeFromNotification(type);close();};
 }
 function notify(title,body,type){
-  if(notifSoundOn()){ playChime(); vibrate(); showBanner(title,body); }
-  inAppNotification(title,body,type||"announcement");
+  if(notifSoundOn()) playChime();
+  if(notifVibrateOn()) vibrate();
+  if(notifSystemOn()) showBanner(title,body);
+  if(notifPopupOn()) inAppNotification(title,body,type||"announcement");
 }
 /* Public push key — already set. Nothing to edit. */
 const PUSH_PUBLIC_KEY="BBVFLaJhNy8JyyYiGPGOI7hFk9GVmgzWxo7ZSy5_Uo44xTg91TlQAppm8Y96xnmUHcr-4u81w4YxVrtZqqCSML8";
@@ -13060,5 +13175,11 @@ try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
 
 
 </script>
+
+<!-- CLEAN MASTER v18
+     Rebuilt shell contract: responsive viewport, iOS safe areas, one fixed-bar width,
+     queued/deduplicated notifications, independent alert preferences, and separated
+     Operations vs Configuration settings. Functional application/data logic is preserved
+     from the audited v17 master and remains paired with Supabase setup v8.2 corrected. -->
 </body>
 </html>
