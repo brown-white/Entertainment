@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v22.1 Stable Luxury Themes</title>
+<title>Entertainment Operations Control Center — v22.2 Boot Fixed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <!--
@@ -2586,6 +2586,20 @@ html,body,#app,.app,.screen,.ex-screen.v14{
 
 <script id="app-script">
 setTimeout(function(){var s=document.getElementById("splash");if(s&&s.parentNode)s.parentNode.removeChild(s);},2600);
+
+/* v22.2 watchdog: never allow the hardcoded skeleton to become permanent. */
+window.__ENT_BOOT_OK=false;
+window.addEventListener("error",function(e){
+  try{console.error("startup error",e.error||e.message)}catch(_){}
+});
+setTimeout(function(){
+  var app=document.getElementById("app");
+  if(!app||window.__ENT_BOOT_OK) return;
+  if(app.querySelector(".skel-wrap") && typeof render==="function"){
+    try{render()}catch(e){console.error("watchdog render failed",e)}
+  }
+},3500);
+
 /* ================================================================
    ⚙️ SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup-production-v8.sql (one time)
@@ -10142,14 +10156,30 @@ function startRealtime(){
   document.documentElement.setAttribute("data-theme",S.theme);
   document.documentElement.lang=S.lang;
   document.documentElement.dir=(S.lang==="ar"?"rtl":"ltr");
-  try{ await DB.load(); }
+
+  /* v22.2 BOOT: show the real app before remote data loading finishes. */
+  try{ applySettings(); render(); }
+  catch(e){ console.error("initial render failed",e); }
+
+  const bootTimeout=new Promise((_,reject)=>setTimeout(
+    ()=>reject(new Error("Initial data load timed out")),10000
+  ));
+
+  try{
+    await Promise.race([DB.load(),bootTimeout]);
+    S.loadError=false;
+  }
   catch(e){
-    console.error(e);
-    if(REMOTE){ S.loadError=true; applySettings(); render(); return; }
-    S.activities=demoActivities(); S.bookings=demoBookings();
-    S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
-    S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
+    console.error("initial data load failed",e);
+    if(REMOTE){
+      S.loadError=true;
+    }else{
+      S.activities=demoActivities(); S.bookings=demoBookings();
+      S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
+      S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
+      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes();
+      S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
+    }
   }
   /* validate remembered session against fresh data */
   if(S.session){
@@ -13554,6 +13584,24 @@ try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
   setTimeout(()=>{try{normalizeState();applySettings();}catch(e){recordDiagnostic('normalize',e);}},50);
 })();
 
+
+
+
+/* v22.2 successful-render marker */
+(function(){
+  try{
+    if(typeof render!=="function") return;
+    const __renderBootSafe=render;
+    render=function(){
+      const result=__renderBootSafe.apply(this,arguments);
+      try{
+        const a=document.getElementById("app");
+        if(a && !a.querySelector(".skel-wrap")) window.__ENT_BOOT_OK=true;
+      }catch(_){}
+      return result;
+    };
+  }catch(e){console.error(e)}
+})();
 
 </script>
 
