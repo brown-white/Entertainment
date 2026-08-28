@@ -1838,7 +1838,7 @@ const DEFAULT_SETTINGS = {
   instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:"",
   busToHotel:"", busToHouse:"",
   aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
-  logo:"", hotelName:"", timezone:"", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
+  logo:"", hotelName:"", timezone:"Africa/Cairo", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true},
   /* --- Control Center v8: everything below is editable inside the app --- */
@@ -3094,8 +3094,9 @@ function featureOn(k){
 function menuLabel(key,fallback){ const v=(S.settings[key]||"").trim(); return v||fallback; }
 function fmtTime(ts){
   const d=new Date(ts); if(isNaN(d)) return "";
-  const hm=d.toTimeString().slice(0,5);
-  return d.toDateString()===new Date().toDateString() ? hm : t("daysShort")[(d.getDay()+6)%7]+" "+hm;
+  const p=hotelDateParts(d);
+  const hm=String(p.hour).padStart(2,"0")+":"+String(p.minute).padStart(2,"0");
+  return p.date===hotelDateStr() ? hm : t("daysShort")[(p.weekday+6)%7]+" "+hm;
 }
 function bookingsFor(actId){ return S.bookings.filter(b=>b.activity_id===actId); }
 function seatsTaken(actId){ return bookingsFor(actId).filter(b=>b.status==="booked").reduce((n,b)=>n+(+b.adults||0)+(+b.children||0),0); }
@@ -4455,7 +4456,7 @@ function busMinutes(tm){
 }
 /* next upcoming bus (today) among a list of bus rows */
 function nextBusId(list){
-  const now=new Date(); const cur=now.getHours()*60+now.getMinutes();
+  const cur=nowMinutes();
   let best=null, bestMin=Infinity;
   list.forEach(b=>{ const mins=busMinutes(b.time); if(mins>=cur && mins<bestMin){ bestMin=mins; best=b.id; } });
   return best;
@@ -7161,7 +7162,7 @@ async function askAI(text){
   S.aiBusy=false; render();
   window.scrollTo(0,document.body.scrollHeight);
 }
-function fmtDate(d){ return String(d||"").slice(0,16).replace("T"," "); }
+function fmtDate(d){ return formatHotelTimestamp(d); }
 /* build every exportable dataset as {title, headers, rows} */
 function buildDataset(kind){
   const acts=id=>{ const a=S.activities.find(x=>x.id===id); return a?a.name:("#"+id); };
@@ -7300,10 +7301,10 @@ function buildDataset(kind){
 }
 function fbPeriodKey(f, mode){
   const d=new Date(f.created_at||Date.now()); if(isNaN(d)) return "";
-  const y=d.getFullYear(), m=d.getMonth()+1, day=d.getDate();
+  const p=hotelDateParts(d), y=p.year, m=p.month, day=p.day;
   if(mode==="month") return `${y}-${String(m).padStart(2,"0")}`;
   if(mode==="week"){
-    const tt=new Date(Date.UTC(y,d.getMonth(),day)); const dn=(tt.getUTCDay()+6)%7;
+    const tt=new Date(Date.UTC(y,m-1,day)); const dn=(tt.getUTCDay()+6)%7;
     tt.setUTCDate(tt.getUTCDate()-dn+3); const ft=new Date(Date.UTC(tt.getUTCFullYear(),0,4));
     const wk=1+Math.round(((tt-ft)/86400000-3+((ft.getUTCDay()+6)%7))/7);
     return `${tt.getUTCFullYear()}-W${String(wk).padStart(2,"0")}`;
@@ -7365,8 +7366,8 @@ function reportMeta(){
 }
 function reportHotelName(){ return (S.settings&&S.settings.name)||"Hotel"; }
 function reportDateLabel(){
-  try{return new Intl.DateTimeFormat(lang||"en",{year:"numeric",month:"long",day:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date());}
-  catch(e){return new Date().toLocaleString();}
+  try{return new Intl.DateTimeFormat(lang||"en",{timeZone:hotelTz()||undefined,year:"numeric",month:"long",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());}
+  catch(e){return formatHotelTimestamp(new Date());}
 }
 function safeFilePart(x){return String(x||"").trim().replace(/[^a-zA-Z0-9_-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60)||"hotel";}
 function reportFileName(kind){return safeFilePart(reportHotelName())+"_Entertainment_"+kind+"_"+todayISO();}
@@ -8035,7 +8036,7 @@ function activityStatus(a, nowMin){
 const TIMEZONES=["","Africa/Cairo","Europe/Berlin","Europe/London","Europe/Moscow","Europe/Warsaw",
   "Europe/Prague","Europe/Amsterdam","Europe/Paris","Europe/Madrid","Europe/Rome","Europe/Istanbul",
   "Asia/Dubai","Asia/Riyadh","Atlantic/Canary","America/New_York"];
-function hotelTz(){ try{ return (typeof S!=="undefined" && S.settings && S.settings.timezone) || ""; }catch(e){ return ""; } }
+function hotelTz(){ try{ return (typeof S!=="undefined" && S.settings && S.settings.timezone) || "Africa/Cairo"; }catch(e){ return "Africa/Cairo"; } }
 function hotelNow(){
   const tz=hotelTz();
   if(!tz) return new Date();
@@ -8047,6 +8048,30 @@ function todayIndex(){ return (hotelNow().getDay()+6)%7; }
 function hotelDateStr(){
   const d=hotelNow();
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+/* Calendar/time parts for a real instant, always evaluated in the hotel timezone.
+   This is the safe path for database UTC timestamps and PDF/Excel display. */
+function hotelDateParts(value){
+  const d=value instanceof Date?value:new Date(value);
+  if(isNaN(d.getTime())) return {year:0,month:0,day:0,hour:0,minute:0,second:0,weekday:0,date:""};
+  const tz=hotelTz()||undefined;
+  try{
+    const parts=new Intl.DateTimeFormat("en-GB",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,weekday:"short"}).formatToParts(d);
+    const get=k=>(parts.find(x=>x.type===k)||{}).value||"";
+    const wd={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[get("weekday")];
+    const y=+get("year"),m=+get("month"),day=+get("day"),hour=+get("hour"),minute=+get("minute"),second=+get("second");
+    return {year:y,month:m,day,hour,minute,second,weekday:wd==null?d.getDay():wd,date:`${y}-${String(m).padStart(2,"0")}-${String(day).padStart(2,"0")}`};
+  }catch(e){
+    const y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate();
+    return {year:y,month:m,day,hour:d.getHours(),minute:d.getMinutes(),second:d.getSeconds(),weekday:d.getDay(),date:`${y}-${String(m).padStart(2,"0")}-${String(day).padStart(2,"0")}`};
+  }
+}
+function formatHotelTimestamp(value){
+  if(value==null||value==="") return "";
+  const d=value instanceof Date?value:new Date(value);
+  if(isNaN(d.getTime())) return String(value||"").slice(0,16).replace("T"," ");
+  const p=hotelDateParts(d);
+  return `${p.date} ${String(p.hour).padStart(2,"0")}:${String(p.minute).padStart(2,"0")}`;
 }
 /* only show status dots when looking at the actual current weekday */
 function isToday(day){ return day===(todayIndex()); }
@@ -8971,7 +8996,7 @@ let __polling=false;
    Each (activity, phase) fires only once per day per device (tracked in localStorage). */
 function alarmSeen(){ try{ return JSON.parse(localStorage.getItem("ent_alarms")||"{}"); }catch(e){ return {}; } }
 function alarmSeenSave(o){ try{ localStorage.setItem("ent_alarms", JSON.stringify(o)); }catch(e){} }
-function alarmKey(day,id,phase){ const d=new Date(); const stamp=d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); return stamp+":"+day+":"+id+":"+phase; }
+function alarmKey(day,id,phase){ const stamp=hotelDateStr(); return stamp+":"+day+":"+id+":"+phase; }
 function fireActivityAlarm(a, phase){
   if(!S.session) return;
   const role=S.session.role;
@@ -9022,7 +9047,7 @@ function checkActivityAlarms(){
   });
   if(changed) alarmSeenSave(seen);
   // prune old keys (keep it small) — drop anything not from today
-  const d=new Date(); const stamp=d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+  const stamp=hotelDateStr();
   const pruned={}; let prunedChanged=false;
   Object.keys(seen).forEach(k=>{ if(k.indexOf(stamp+":")===0) pruned[k]=1; else prunedChanged=true; });
   if(prunedChanged) alarmSeenSave(pruned);
@@ -9182,10 +9207,10 @@ function v7CommandView(){const warnings=v7Warnings(),hist=v7Audit().slice(-8).re
  <div class="lux-kpi"><div><b>${(S.users||[]).length}</b><small>Team</small></div><div><b>${(S.activities||[]).filter(a=>a.day===today).length}</b><small>Today</small></div><div><b>${warnings.length}</b><small>Warnings</small></div><div><b>${v7PlanScore(variants[0])}%</b><small>Plan score</small></div></div>
  <h2 class="lux-section-title">Needs attention</h2><div class="warn-list">${warnings.length?warnings.map(x=>`<div class="warn-item bad">⚠️ <span>${esc(x.text)}</span></div>`).join(''):`<div class="warn-item good">✓ <span>No operational conflicts detected for today.</span></div>`}</div>
  <h2 class="lux-section-title">This week</h2>${v7WeekBoard()}
- <h2 class="lux-section-title">Recent changes</h2><div class="card">${hist.length?hist.map(x=>`<div class="audit-row"><b>${esc(x.action)}</b><small>${esc(x.user)} · ${new Date(x.at).toLocaleString()}${x.detail?' · '+esc(x.detail):''}</small></div>`).join(''):'<p class="mini">No audit history yet.</p>'}</div></div>`}
+ <h2 class="lux-section-title">Recent changes</h2><div class="card">${hist.length?hist.map(x=>`<div class="audit-row"><b>${esc(x.action)}</b><small>${esc(x.user)} · ${formatHotelTimestamp(x.at)}${x.detail?' · '+esc(x.detail):''}</small></div>`).join(''):'<p class="mini">No audit history yet.</p>'}</div></div>`}
 function v7WeeklyPlannerView(){const vars=buildPlanVariants('week',todayIndex(),false);return `<div class="screen fadein">${topBar('Weekly Planner',S.session.name)}${hubBack()}<h2 class="lux-section-title">Master week</h2><p class="mini">Days off, attendance, Entrance, training, activities, events and evening program in one operational view.</p>${v7WeekBoard()}<h2 class="lux-section-title">Build My Week</h2><div class="exec-grid">${vars.map((c,i)=>`<button class="exec-card" data-v7plan="${i}"><div style="display:flex;align-items:center;justify-content:space-between"><b>Plan ${String.fromCharCode(65+i)}</b><span class="score-ring">${v7PlanScore(c)}%</span></div><small>${i===0?'Best overall balance':i===1?'Alternative rotation':'Alternative skill distribution'} · ${c.assignments.filter(x=>x.username).length} assignments</small></button>`).join('')}</div><button class="btn" id="v7-generate">Generate 3 new plans</button><button class="btn ghost" data-v7go="dayplan" style="margin-top:8px">Edit daily operation manually</button></div>`}
 function v7ApprovalView(){const st=S.settings.weekWorkflow||{status:'draft',updatedAt:''};return `<div class="screen fadein">${topBar('Approval Center',S.session.name)}${hubBack()}<div class="card"><label>Current weekly schedule status</label><h2 style="margin:6px 0 12px;text-transform:capitalize">${esc(st.status||'draft')}</h2><div class="approval"><button class="btn sm ghost" data-v7status="draft">Draft</button><button class="btn sm ghost" data-v7status="review">Review</button><button class="btn sm ghost" data-v7status="approved">Approve</button><button class="btn sm" data-v7status="published">Publish to Team</button></div><p class="mini" style="margin-top:12px">Published schedules are the official team plan. Later changes should be reviewed and published again.</p></div><h2 class="lux-section-title">Publication safeguards</h2><div class="warn-list">${v7Warnings().length?v7Warnings().map(x=>`<div class="warn-item bad">⚠️ <span>${esc(x.text)}</span></div>`).join(''):`<div class="warn-item good">✓ No blocking warnings detected.</div>`}</div></div>`}
-function v7AuditView(){const h=v7Audit().slice().reverse();return `<div class="screen fadein">${topBar('Audit History',S.session.name)}${hubBack()}<div class="card">${h.length?h.map(x=>`<div class="audit-row"><b>${esc(x.action)}</b><small>${esc(x.user)} · ${new Date(x.at).toLocaleString()}</small>${x.detail?`<div class="mini">${esc(x.detail)}</div>`:''}</div>`).join(''):'<p class="mini">Changes will appear here after v7 actions are used.</p>'}</div></div>`}
+function v7AuditView(){const h=v7Audit().slice().reverse();return `<div class="screen fadein">${topBar('Audit History',S.session.name)}${hubBack()}<div class="card">${h.length?h.map(x=>`<div class="audit-row"><b>${esc(x.action)}</b><small>${esc(x.user)} · ${formatHotelTimestamp(x.at)}</small>${x.detail?`<div class="mini">${esc(x.detail)}</div>`:''}</div>`).join(''):'<p class="mini">Changes will appear here after v7 actions are used.</p>'}</div></div>`}
 const __v6ManagerView=managerView;managerView=function(){if(S.tab==='command')return v7CommandView();if(S.tab==='weekplanner')return v7WeeklyPlannerView();if(S.tab==='approval')return v7ApprovalView();if(S.tab==='audit')return v7AuditView();return __v6ManagerView()}
 const __v6SettingsHub=settingsHubView;settingsHubView=function(){const base=__v6SettingsHub();return base.replace('<div class="mgr-actions">','<div class="mgr-actions"><button data-hub="command">'+ic('sparkle',19)+'<span><b>Operations Command Center</b><small>Warnings, week, approval & audit</small></span></button><button data-hub="weekplanner">'+ic('calendar',19)+'<span><b>Master Weekly Planner</b><small>Build My Week & plan alternatives</small></span></button>')}
 const __v6Wire=wireCommon;wireCommon=function(){__v6Wire();document.querySelectorAll('[data-v7go]').forEach(b=>b.onclick=()=>{const x=b.dataset.v7go;S.tab=x==='week'?'weekplanner':x==='publish'?'approval':x==='audit'?'audit':x;render()});const gen=document.getElementById('v7-generate');if(gen)gen.onclick=()=>render();document.querySelectorAll('[data-v7plan]').forEach(b=>b.onclick=async()=>{const idx=+b.dataset.v7plan,vars=buildPlanVariants('week',todayIndex(),false),c=vars[idx]||vars[0];if(await applyPlanningCandidate(c)){await v7Log('Weekly plan applied',`Plan ${String.fromCharCode(65+idx)} · score ${v7PlanScore(c)}%`);toast('Weekly plan applied');render()}});document.querySelectorAll('[data-v7status]').forEach(b=>b.onclick=async()=>{const status=b.dataset.v7status;if(status==='published'&&v7Warnings().length&&!confirm('There are operational warnings. Publish anyway?'))return;const weekWorkflow={status,updatedAt:new Date().toISOString(),by:S.session.name};await DB.saveSettings({...S.settings,weekWorkflow});S.settings.weekWorkflow=weekWorkflow;await v7Log('Schedule status changed',status);toast('Schedule: '+status);render()})}
@@ -11250,7 +11275,7 @@ function v10HealthView(){
         <h3>${ic("file",17)} ${esc(t("vaErrCount"))} · ${V10_ERRS.length}</h3>
         ${V10_ERRS.length
           ? `<div class="v10-errs">${V10_ERRS.slice(0,25).map(e=>`<div class="v10-err">
-               <span class="mini">${esc(new Date(e.at).toLocaleString())} · ${esc(e.where||"—")}</span>
+               <span class="mini">${esc(formatHotelTimestamp(e.at))} · ${esc(e.where||"—")}</span>
                <b>${esc(e.msg)}</b>${e.extra?`<span class="mini">${esc(e.extra)}</span>`:""}
              </div>`).join("")}</div>
              <div class="cc-bar">
