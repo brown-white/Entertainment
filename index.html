@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v19 Rebuilt Audited Master</title>
+<title>Entertainment Operations Control Center — v20 Message & Theme Fixed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <!--
@@ -2401,6 +2401,123 @@ body{min-height:100dvh!important;text-align:initial!important;}
   #app,.app{max-width:100vw!important;}
 }
 
+
+
+/* ==========================================================================
+   v20 GLOBAL THEME CONTRACT
+   One palette controls Explore + Login + Guest + Staff + Manager + overlays.
+   Media overlays may retain white text for readability over photographs.
+   ========================================================================== */
+:root{
+  --primary:var(--primary-action);
+  --primary-text:var(--primary-on);
+  --accent:var(--accent-action);
+  --soft:var(--surface-bg);
+  --surface-soft:var(--surface-bg);
+  --serif:var(--font-display);
+}
+html,body,#app,.app,.screen,.ex-screen.v14{
+  background-color:var(--page-bg)!important;
+  color:var(--text-main)!important;
+}
+.ex-screen.v14{
+  background:
+    radial-gradient(120% 42% at 50% -8%,color-mix(in srgb,var(--accent-action) 16%,transparent),transparent 64%),
+    var(--page-bg)!important;
+}
+.ex-screen.v14 .ex-top{
+  background:color-mix(in srgb,var(--nav-background) 90%,transparent)!important;
+  border-color:var(--border-color)!important;
+  color:var(--text-main)!important;
+}
+.ex-screen.v14 .ex-round,
+.v14-q,.v14-glance>div,.v14-schedule,.v14-day,.v14-person,.v14-link,
+.ex-chip,.ex-screen.v14 .ex-empty{
+  background:var(--card-bg)!important;
+  color:var(--text-main)!important;
+  border-color:var(--border-color)!important;
+}
+.ex-screen.v14 .ex-signin,
+.v14-day.on,.v14-filter .ex-chip.on,.ex-chips .ex-chip.on{
+  background:var(--primary-action)!important;
+  color:var(--primary-on)!important;
+  border-color:var(--primary-action)!important;
+}
+.v14-q .ico,.v14-link .ico{
+  background:var(--surface-bg)!important;
+  color:var(--accent-action)!important;
+}
+.v14-section-head .kicker,.v14-glance b,.v14-slot-time{
+  color:var(--accent-action)!important;
+}
+.v14-slot-dot{
+  background:var(--accent-action)!important;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-action) 14%,transparent)!important;
+}
+.v14-avatar{
+  background:linear-gradient(145deg,var(--primary-action),color-mix(in srgb,var(--primary-action) 72%,var(--accent-action)))!important;
+  color:var(--primary-on)!important;
+}
+.v14-hero{
+  background:linear-gradient(150deg,var(--hero-bg),color-mix(in srgb,var(--hero-bg) 78%,var(--accent-action)))!important;
+}
+.v14-hero-body,.v14-hero h1,.v14-live-pill{
+  color:var(--hero-text)!important;
+}
+.v14-eyebrow{
+  color:var(--hero-text)!important;
+  background:color-mix(in srgb,var(--hero-text) 14%,transparent)!important;
+  border-color:color-mix(in srgb,var(--hero-text) 24%,transparent)!important;
+}
+.v14-primary{
+  background:var(--card-bg)!important;
+  color:var(--text-main)!important;
+}
+.v14-secondary{
+  color:var(--hero-text)!important;
+  background:color-mix(in srgb,var(--hero-text) 12%,transparent)!important;
+  border-color:color-mix(in srgb,var(--hero-text) 24%,transparent)!important;
+}
+.v14-live-pill .pulse{background:var(--success-color)!important;}
+.v14-join{
+  background:linear-gradient(145deg,var(--hero-bg),color-mix(in srgb,var(--hero-bg) 80%,var(--accent-action)))!important;
+  color:var(--hero-text)!important;
+  box-shadow:var(--sh-2)!important;
+}
+.v14-join:after{background:color-mix(in srgb,var(--accent-action) 18%,transparent)!important;}
+.v14-join .ey{color:var(--accent-action)!important;}
+.v14-join h2,.v14-join p{color:var(--hero-text)!important;}
+.v14-join button{
+  background:var(--card-bg)!important;
+  color:var(--text-main)!important;
+}
+.manager-command,.mgr-console,.cc-hero,.theme-banner,.wd-banner.entrance{
+  background:linear-gradient(135deg,var(--hero-bg),color-mix(in srgb,var(--hero-bg) 78%,var(--accent-action)))!important;
+  color:var(--hero-text)!important;
+}
+.manager-command h2,.manager-command p,.mgr-console h2,.mgr-console p,
+.cc-hero h2,.cc-hero p{color:var(--hero-text)!important;}
+.manager-command .mgr-kicker,.mgr-kicker,.cc-kick{color:var(--accent-action)!important;}
+.command-actions button{
+  color:var(--hero-text)!important;
+  border-color:color-mix(in srgb,var(--hero-text) 20%,transparent)!important;
+  background:color-mix(in srgb,var(--hero-text) 8%,transparent)!important;
+}
+.notification-stack .msg-pop-notification{
+  background:color-mix(in srgb,var(--card-bg) 96%,transparent)!important;
+  color:var(--text-main)!important;
+  border-color:color-mix(in srgb,var(--accent-action) 34%,var(--border-color))!important;
+}
+.msg-pop-avatar{
+  background:linear-gradient(145deg,var(--primary-action),color-mix(in srgb,var(--primary-action) 74%,var(--accent-action)))!important;
+  color:var(--primary-on)!important;
+}
+.msg-pop-app,.msg-pop-body,.msg-pop-time,.msg-pop-close{color:var(--text-secondary)!important;}
+.modal,.drawer,.nav,.chatbar,.settings-action,.settings-group,.v15-panel,
+.card,.stat,.tk,.set-list,.set-it,.hub-it,.bus-col,.info-card{
+  border-color:var(--border-color)!important;
+}
+
 </style>
 </head>
 <body data-build="audited-master-v16">
@@ -3741,8 +3858,19 @@ function myOrders(){ const g=S.session; if(!g||g.role!=="guest") return [];
 function myRequestsList(){ const g=S.session; if(!g||g.role!=="guest") return [];
   return S.requests.filter(r=>r.room===g.room); }
 function accountName(room){ const a=S.accounts.find(x=>x.room===room); return a?a.name:room; }
+function isStaffRoom(room){ return String(room||"").startsWith("staff:"); }
+function unreadGuestChatsForManager(){
+  return S.messages.filter(m=>!isStaffRoom(m.room)&&m.sender==="guest"&&!m.read_by_team).length;
+}
+function unreadTeamChatsForManager(){
+  return S.messages.filter(m=>isStaffRoom(m.room)&&m.sender==="guest"&&!m.read_by_team).length;
+}
 function unreadFor(role){
-  if(role==="guest"){ const g=S.session; return S.messages.filter(m=>m.room===g.room&&m.sender==="team"&&!m.read_by_guest).length; }
+  if(role==="guest"){
+    const g=S.session;
+    return S.messages.filter(m=>String(m.room)===String(g.room)&&m.sender==="team"&&!m.read_by_guest).length;
+  }
+  if(role==="manager") return unreadGuestChatsForManager();
   return S.messages.filter(m=>m.sender==="guest"&&!m.read_by_team).length;
 }
 function visibleNotes(role){
@@ -4349,7 +4477,7 @@ function navGroupsBase(role){
       ["qr","qr",t("qrTab"),0]]},
     {head:t("secGuests"), items:[
       ["guests","user",t("guestsTab"),un+newReq],
-      ["team","users",t("teamTab"),0]]},
+      ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("secSettings"), items:[
       ["settings","settings",t("settingsHub"),0]]}
   ];
@@ -7253,7 +7381,9 @@ function staffChatInbox(){
 }
 function chatInboxInner(){
   const rooms={};
-  S.messages.forEach(m=>{ (rooms[m.room]=rooms[m.room]||[]).push(m); });
+  // Guest inbox is strictly for hotel guest rooms. Staff conversations belong
+  // exclusively to Team > Team chat and must never leak into the Guest section.
+  S.messages.filter(m=>!isStaffRoom(m.room)).forEach(m=>{ (rooms[m.room]=rooms[m.room]||[]).push(m); });
   const list=Object.entries(rooms).map(([room,ms])=>({room,last:ms[ms.length-1],
     unread:ms.filter(m=>m.sender==="guest"&&!m.read_by_team).length}))
     .sort((a,b)=>new Date(b.last.created_at)-new Date(a.last.created_at));
@@ -9522,15 +9652,33 @@ function registerServiceWorker(){
 /* Opens the right page when a notification is tapped */
 const NOTIF_ROUTE={
   booking:"bookings", booking_confirmed:"tickets", booking_cancelled:"tickets",
-  activity_soon:"program", announcement:"home", message:"chat", chat:"chat",
+  activity_soon:"program", announcement:"home",
+  message:"chat", chat:"chat", guest_message:"guests", team_message:"team",
   ticket:"tickets", request:"guests", task:"tasks", assignment:"tasks",
   attendance:"workday", feedback:"guests", occupancy:"dash"
 };
-function routeFromNotification(type){
+function routeFromNotification(type,meta){
   if(!S.session) return;
+  meta=meta||{};
+  const role=S.session.role;
+
+  // Manager chat notifications have two independent destinations.
+  if(role==="manager" && type==="guest_message"){
+    S.tab="guests"; S.sub.guests="chat"; S.chatRoom=meta.room||null;
+    S.op=null; S.cat=null; persist(); render(); return;
+  }
+  if(role==="manager" && type==="team_message"){
+    S.tab="team"; S.sub.team="chat"; S.chatRoom=meta.room||null;
+    S.op=null; S.cat=null; persist(); render(); return;
+  }
+
   const tab=NOTIF_ROUTE[type]; if(!tab) return;
-  const allowed=navItems(S.session.role).map(x=>x[0]);
-  if(allowed.includes(tab)){ S.tab=tab; S.op=null; S.cat=null; persist(); render(); }
+  const allowed=navItems(role).map(x=>x[0]);
+  if(allowed.includes(tab)){
+    S.tab=tab; S.op=null; S.cat=null;
+    if(tab!=="guests" && tab!=="team") S.chatRoom=null;
+    persist(); render();
+  }
 }
 /* If the app was opened fresh from a notification (?open=tab) */
 function applyOpenParam(){
@@ -9555,7 +9703,7 @@ function showBanner(title,body){
     }
   }catch(e){console.warn("system notification:",e&&e.message);}
 }
-function inAppNotification(title,body,type){
+function inAppNotification(title,body,type,meta){
   if(!S.session || !notifPopupOn()) return;
   let stack=document.getElementById("notification-stack");
   if(!stack){
@@ -9586,13 +9734,13 @@ function inAppNotification(title,body,type){
   let timer=setTimeout(close,6500);
   function close(){clearTimeout(timer);el.classList.remove("show");setTimeout(()=>{el.remove();if(stack&&!stack.children.length)stack.remove();},220);}
   el.querySelector(".msg-pop-close").onclick=e=>{e.stopPropagation();close();};
-  el.querySelector(".msg-pop-main").onclick=()=>{routeFromNotification(type);close();};
+  el.querySelector(".msg-pop-main").onclick=()=>{routeFromNotification(type,meta||{});close();};
 }
-function notify(title,body,type){
+function notify(title,body,type,meta){
   if(notifSoundOn()) playChime();
   if(notifVibrateOn()) vibrate();
   if(notifSystemOn()) showBanner(title,body);
-  if(notifPopupOn()) inAppNotification(title,body,type||"announcement");
+  if(notifPopupOn()) inAppNotification(title,body,type||"announcement",meta||{});
 }
 /* Public push key — already set. Nothing to edit. */
 const PUSH_PUBLIC_KEY="BBVFLaJhNy8JyyYiGPGOI7hFk9GVmgzWxo7ZSy5_Uo44xTg91TlQAppm8Y96xnmUHcr-4u81w4YxVrtZqqCSML8";
@@ -9647,40 +9795,79 @@ function askNotifPermission(){
   }catch(e){}
 }
 /* decide what changed after a poll and alert the current user accordingly */
+function latestMessage(predicate){
+  const rows=(S.messages||[]).filter(predicate);
+  return rows.length ? rows.slice().sort((a,b)=>Date.parse(a.created_at||0)-Date.parse(b.created_at||0)).pop() : null;
+}
 function detectAndNotify(before){
   if(!S.session) return;
   const role=S.session.role, me=S.session.username;
   const myRoom = role==="staff" ? ("staff:"+me) : role==="guest" ? String(S.session.room) : null;
-  // MANAGER: new guest booking, new request, new incoming chat (from guest or staff)
+
   if(role==="manager"){
-    if(S.bookings.length>before.bookings){ const x=S.bookings[0]||S.bookings[S.bookings.length-1]; notify(t("notifBooking"), x?((x.guest_name||accountName(x.room)||"")+" · "+t("room")+" "+(x.room||"")):"", "booking"); }
-    if(S.requests.length>before.requests){ const x=S.requests[0]||S.requests[S.requests.length-1]; notify(t("notifRequest"), x?(x.detail||x.type||""):"", "request"); }
-    const incoming=S.messages.filter(m=>m.sender==="guest").length;
-    if(incoming>before.incomingMsgs){ const x=[...S.messages].reverse().find(m=>m.sender==="guest"); notify(t("notifMsg"), x?(x.body||x.message||x.text||""):"", "message"); }
+    if(S.bookings.length>before.bookings){
+      const x=S.bookings[S.bookings.length-1]||S.bookings[0];
+      notify(t("notifBooking"),x?((x.guest_name||accountName(x.room)||"")+" · "+t("room")+" "+(x.room||"")):"","booking");
+    }
+    if(S.requests.length>before.requests){
+      const x=S.requests[S.requests.length-1]||S.requests[0];
+      notify(t("notifRequest"),x?(x.detail||x.type||""):"","request");
+    }
+
+    // Guest and staff conversations are deliberately counted and routed separately.
+    const guestIncoming=(S.messages||[]).filter(m=>!isStaffRoom(m.room)&&m.sender==="guest").length;
+    if(guestIncoming>before.guestIncomingMsgs){
+      const x=latestMessage(m=>!isStaffRoom(m.room)&&m.sender==="guest");
+      notify(t("notifMsg"),x?(x.text||x.body||x.message||""):"","guest_message",{room:x&&x.room});
+    }
+
+    const teamIncoming=(S.messages||[]).filter(m=>isStaffRoom(m.room)&&m.sender==="guest").length;
+    if(teamIncoming>before.teamIncomingMsgs){
+      const x=latestMessage(m=>isStaffRoom(m.room)&&m.sender==="guest");
+      const username=x&&String(x.room||"").slice(6);
+      const u=(S.users||[]).find(q=>String(q.username)===String(username));
+      const who=(u&&(u.display_name||u.username))||username||t("staff");
+      notify(who,x?(x.text||x.body||x.message||""):"","team_message",{room:x&&x.room});
+    }
   }
-  // STAFF: new task assigned to me, or new chat reply from manager
+
   if(role==="staff"){
-    const myTasks=S.tasks.filter(x=>!x.assigned_to||x.assigned_to===me).length;
-    if(myTasks>before.myTasks){ const x=[...S.tasks].reverse().find(q=>!q.assigned_to||q.assigned_to===me); notify(t("notifTask"), x?(x.title||x.detail||x.type||""):"", "task"); }
-    const myMsgs=S.messages.filter(m=>m.room===myRoom&&m.sender==="team").length;
-    if(myMsgs>before.myMsgs){ const x=[...S.messages].reverse().find(m=>m.room===myRoom&&m.sender==="team"); notify(t("notifMsg"), x?(x.body||x.message||x.text||""):"", "message"); }
+    const myTasks=(S.tasks||[]).filter(x=>!x.assigned_to||x.assigned_to===me).length;
+    if(myTasks>before.myTasks){
+      const x=[...(S.tasks||[])].reverse().find(q=>!q.assigned_to||q.assigned_to===me);
+      notify(t("notifTask"),x?(x.title||x.detail||x.type||""):"","task");
+    }
+    const myMsgs=(S.messages||[]).filter(m=>String(m.room)===String(myRoom)&&m.sender==="team").length;
+    if(myMsgs>before.myMsgs){
+      const x=latestMessage(m=>String(m.room)===String(myRoom)&&m.sender==="team");
+      notify(t("notifMsg"),x?(x.text||x.body||x.message||""):"","message",{room:myRoom});
+    }
   }
-  // GUEST: new chat reply from team, or new announcement
+
   if(role==="guest"){
-    const myMsgs=S.messages.filter(m=>m.room===myRoom&&m.sender==="team").length;
-    if(myMsgs>before.myMsgs) notify(t("notifMsg"), "");
+    const myMsgs=(S.messages||[]).filter(m=>String(m.room)===String(myRoom)&&m.sender==="team").length;
+    if(myMsgs>before.myMsgs){
+      const x=latestMessage(m=>String(m.room)===String(myRoom)&&m.sender==="team");
+      notify(t("notifMsg"),x?(x.text||x.body||x.message||""):"","message",{room:myRoom});
+    }
   }
-  // EVERYONE: new announcement for them
-  if(S.notes.length>before.notes){ const x=visibleNotes(role)[0]||S.notes[0]; if(x) notify(x.title||t("notifNew"), x.body||"", "announcement"); else notify(t("notifNew"), "", "announcement"); }
+
+  if(S.notes.length>before.notes){
+    const x=visibleNotes(role)[0]||S.notes[0];
+    if(x) notify(x.title||t("notifNew"),x.body||"","announcement");
+  }
 }
 function notifySnapshot(){
   const role=S.session?S.session.role:null, me=S.session?S.session.username:null;
   const myRoom = role==="staff" ? ("staff:"+me) : role==="guest" ? String(S.session.room) : null;
   return {
-    bookings:S.bookings.length, requests:S.requests.length, notes:S.notes.length,
-    incomingMsgs:S.messages.filter(m=>m.sender==="guest").length,
-    myTasks:role==="staff"?S.tasks.filter(x=>!x.assigned_to||x.assigned_to===me).length:0,
-    myMsgs:myRoom?S.messages.filter(m=>m.room===myRoom&&m.sender==="team").length:0
+    bookings:(S.bookings||[]).length,
+    requests:(S.requests||[]).length,
+    notes:(S.notes||[]).length,
+    guestIncomingMsgs:(S.messages||[]).filter(m=>!isStaffRoom(m.room)&&m.sender==="guest").length,
+    teamIncomingMsgs:(S.messages||[]).filter(m=>isStaffRoom(m.room)&&m.sender==="guest").length,
+    myTasks:role==="staff"?(S.tasks||[]).filter(x=>!x.assigned_to||x.assigned_to===me).length:0,
+    myMsgs:myRoom?(S.messages||[]).filter(m=>String(m.room)===String(myRoom)&&m.sender==="team").length:0
   };
 }
 let __polling=false;
@@ -11303,7 +11490,7 @@ navGroupsBase=function(role){
       ["qr","qr",t("qrTab"),0]]},
     {head:t("v9People2"), items:[
       ["guests","user",t("guestsTab"),un+newReq],
-      ["team","users",t("teamTab"),0]]},
+      ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("v9Reports2"), items:[
       ["approval","check",t("v9Approval"),0],
       ["audit","file",t("v9Audit"),0]]},
@@ -12906,6 +13093,10 @@ function v15Apply(s){
   set("--champagne-500",s.accent); set("--champagne-600",v9Darken(s.accent,.06)); set("--champagne-700",v9Darken(s.accent,.14));
   set("--champagne-300",v9Lighten(s.accent,.42)); set("--champagne-100",v9Lighten(s.accent,.82));
   set("--ok",s.success); set("--warn",s.danger);
+  /* Universal aliases used by older Executive/Planner/Explore modules. */
+  set("--primary",s.primary); set("--primary-text",primaryText);
+  set("--accent",s.accent); set("--soft",s.surface); set("--surface-soft",s.surface);
+  set("--serif","var(--font-display)");
   set("--focus","0 0 0 3px "+v9Mix(s.accent,s.bg,.72));
   try{const mc=document.querySelector('meta[name="theme-color"]');if(mc)mc.setAttribute("content",s.bg)}catch(e){}
 }
