@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v20 Message & Theme Fixed</title>
+<title>Entertainment Operations Control Center — v22 Three Luxury Themes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <!--
@@ -2518,6 +2518,161 @@ html,body,#app,.app,.screen,.ex-screen.v14{
   border-color:var(--border-color)!important;
 }
 
+
+
+/* ================= v21 MANAGER CRUD CONTROL ================= */
+[data-approle="manager"] .booking-line{
+  position:relative;
+  cursor:pointer;
+  transition:border-color .15s,transform .12s,box-shadow .15s;
+}
+[data-approle="manager"] .booking-line[onclick]::after{
+  content:"›";
+  position:absolute;
+  top:50%;
+  right:14px;
+  transform:translateY(-50%);
+  font-size:24px;
+  color:var(--text-secondary);
+  opacity:.45;
+}
+[data-approle="manager"] .booking-line:active{
+  transform:scale(.992);
+  border-color:var(--accent-action)!important;
+}
+@media(hover:hover){
+  [data-approle="manager"] .booking-line:hover{
+    border-color:var(--accent-action)!important;
+    box-shadow:var(--sh-2);
+  }
+}
+
+
+
+/* ==========================================================================
+   v22 — SINGLE GLOBAL LUXURY THEME CONTRACT
+   Exactly one semantic palette controls every workspace and every page.
+   ========================================================================== */
+html,body,#app,.app,.screen,.ex-screen.v14,.manager-settings{
+  background-color:var(--page-bg)!important;color:var(--text-main)!important;
+}
+.card,.stat,.tk,.modal,.drawer,.login-card,.set-list,.set-it,.hub-it,.notif-card,
+.daycard,.showcard,.rostercard,.team-card,.teamcount,.profcard,.bus-col,.bus-row,
+.info-card,.infocard,.photo-it,.qrcard,.quizcard,.task-card,.rule-card,.dutybar,
+.attsum,.attn,.trend,.wd-photo,.v15-panel,.v15-theme-card,.v15-color,
+.v15-preview>div,.theme-card,.cc-card,.cc-prev,.cc-prev .cc-pv-card,.cap-panel,
+.cap-col,.ep-cap-box,.exec-card,.lux-kpi>div,.week-board,.warn-item,.v14-q,
+.v14-glance>div,.v14-schedule,.v14-day,.v14-person,.v14-link,.ratecard,.g3-head,
+.g3-s,.ep-card,.pb-card,.pb-edit,.pb-prev,.cred,.photo-pick,.pickfield,.pick-it,
+.chatlist .card,.bub.them{
+  background:var(--card-bg)!important;color:var(--text-main)!important;
+  border-color:var(--border-color)!important;
+}
+.chip,.pill,.tchip,.rstat,.workspace-role,.set-ic,.sb-ic,.nt-ic,.empty .big,
+.daychip,.daytabs button,.pills button,.crumb,.db-n,.as-n,.ts-chip,.cap-item,
+.ops-check,.exp-it,.v15-modes button,.v15-custom-tabs button,.aa-slot,.tk-st,
+.tk-pr,.sr-st,.ex-chip,.ms-d,.attn-it,.bus-row:not(.next),.duty-it,.bd-ic{
+  background:var(--surface-bg)!important;color:var(--text-main)!important;
+  border-color:var(--border-color)!important;
+}
+h1,h2,h3,h4,h5,h6,.serif,.pb-h,.ex-h1,.ex-sec,.lux-section-title,
+.v15-panel-title,.whobar h2,.tc-body h4,.quiz-q{color:var(--text-main)!important}
+.mini,.hint,.meta,.type-caption,.type-meta,.set-mid .mini,.ex-sub,.v14-person small,
+.v14-slot-copy small,.chatlist .lastm,.bus-note,.info-meta span,.info-mid span,
+.tk-meta span,label,.v15-panel-sub{color:var(--text-secondary)!important}
+input,select,textarea,.chatbar input{
+  background:var(--card-bg)!important;color:var(--text-main)!important;
+  border-color:var(--border-color)!important
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--accent-action)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-action) 22%,transparent)!important
+}
+.nav,.chatbar,.ex-screen.v14 .ex-top{
+  background:color-mix(in srgb,var(--nav-background) 96%,transparent)!important;
+  color:var(--text-main)!important;border-color:var(--border-color)!important
+}
+.drawer{background:var(--nav-background)!important}
+.iconbtn,.socialtop,.ex-round,.dr-out,.bubtool{
+  background:var(--card-bg)!important;color:var(--text-main)!important;
+  border-color:var(--border-color)!important
+}
+.nav button,.dr-it,.dr-ic{color:var(--text-secondary)!important}
+.btn:not(.ghost):not(.warn),.chatbar button,.ex-signin,.dr-it.on,.nav button.on,
+.daychip.on,.daytabs button.on,.pills button.on,.v15-modes button.on,
+.v15-custom-tabs button.on,.bd-role.on,.plan-tab.on,.ex-chip.on,.v14-day.on,
+.v14-filter .ex-chip.on,.switch.on{
+  background:var(--primary-action)!important;color:var(--primary-on)!important;
+  border-color:var(--primary-action)!important
+}
+.dr-it.on .dr-ic,.nav button.on{color:var(--primary-on)!important}
+.btn.ghost{background:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important}
+a,.social-a,.wk-time,.tk .price,.cred b,.teamcount b,.std-t,.bus-next,.catbadge,
+.tc-pos,.export-kicker,.v14-q .ico,.v14-link .ico,.v14-slot-time,
+.v14-section-head .kicker,.tr-row span,.aa-day b{color:var(--accent-action)!important}
+.sec>h3::after,.nav::before,.cc-rep-head .cc-rep-line{
+  background:linear-gradient(90deg,var(--accent-action),transparent)!important
+}
+.v14-slot-dot{background:var(--accent-action)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-action) 15%,transparent)!important}
+.login-wrap,.cc-hero,.v9-hero,.manager-command,.mgr-console,.theme-banner,
+.wd-banner.entrance,.wa-cta,.v14-hero,.v14-join,.bus-row.next{
+  background:
+    radial-gradient(110% 90% at 90% -10%,color-mix(in srgb,var(--accent-action) 18%,transparent),transparent 58%),
+    linear-gradient(145deg,var(--hero-bg),color-mix(in srgb,var(--hero-bg) 80%,var(--accent-action)))!important;
+  color:var(--hero-text)!important
+}
+.login-wrap h1,.login-wrap p,.login-wrap .staff-link,.cc-hero h1,.cc-hero h2,
+.cc-hero p,.v9-hero h1,.v9-hero h2,.v9-hero p,.manager-command h1,
+.manager-command h2,.manager-command p,.mgr-console h1,.mgr-console h2,
+.mgr-console p,.theme-banner,.wd-banner.entrance,.wa-cta,.v14-hero,.v14-hero h1,
+.v14-hero h2,.v14-hero p,.v14-join,.v14-join h2,.v14-join p,.bus-row.next,
+.bus-row.next .bus-time,.bus-row.next .bus-note,.bus-row.next .bus-next{
+  color:var(--hero-text)!important
+}
+.cc-kick,.v9-kick,.mgr-kicker,.v14-join .ey{color:var(--accent-action)!important}
+.ex-screen.v14{
+  background:
+    radial-gradient(130% 38% at 50% -6%,color-mix(in srgb,var(--accent-action) 13%,transparent),transparent 68%),
+    var(--page-bg)!important
+}
+.v14-eyebrow{
+  background:color-mix(in srgb,var(--hero-text) 12%,transparent)!important;
+  color:var(--hero-text)!important;border-color:color-mix(in srgb,var(--hero-text) 22%,transparent)!important
+}
+.v14-primary,.v14-join button{
+  background:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important
+}
+.v14-secondary{
+  background:color-mix(in srgb,var(--hero-text) 10%,transparent)!important;
+  color:var(--hero-text)!important;border-color:color-mix(in srgb,var(--hero-text) 24%,transparent)!important
+}
+.v14-avatar,.crm-av,.g3-av,.acct-av,.rnum,.mb-av,.pf-ava,.wd-av,.loc-av{
+  background:linear-gradient(145deg,var(--primary-action),
+    color-mix(in srgb,var(--primary-action) 76%,var(--accent-action)))!important;
+  color:var(--primary-on)!important
+}
+.modal-bg,.drawer-bg{background:color-mix(in srgb,var(--page-bg) 54%,rgba(0,0,0,.62))!important}
+.msg-pop-notification{
+  background:color-mix(in srgb,var(--card-bg) 96%,transparent)!important;
+  color:var(--text-main)!important;
+  border-color:color-mix(in srgb,var(--accent-action) 36%,var(--border-color))!important
+}
+.msg-pop-avatar{
+  background:linear-gradient(145deg,var(--primary-action),
+    color-mix(in srgb,var(--primary-action) 74%,var(--accent-action)))!important;
+  color:var(--primary-on)!important
+}
+.btn.warn{background:var(--danger-color)!important;color:#fff!important}
+.badge,.reddot{background:var(--danger-color)!important;color:#fff!important}
+.v15-theme-grid{grid-template-columns:1fr!important;gap:12px!important}
+.v15-theme-card{min-height:118px!important;border-radius:20px!important;padding:16px!important;box-shadow:var(--sh-1)!important}
+.v15-theme-card.on{
+  outline:none!important;border-color:var(--accent-action)!important;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--accent-action) 42%,transparent),var(--sh-2)!important
+}
+.v15-swatches i{width:31px!important;height:31px!important}
+.v15-theme-card b{font-size:16px!important;margin-top:12px!important}
+
 </style>
 </head>
 <body data-build="audited-master-v16">
@@ -2567,7 +2722,7 @@ const DEFAULT_SETTINGS = {
   tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
   instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:"",
   busToHotel:"", busToHouse:"",
-  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
+  aiEndpoint:"", pushEndpoint:"", palette:"sapphireChampagne", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
   logo:"", hotelName:"", timezone:"Africa/Cairo", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true},
@@ -3655,51 +3810,15 @@ function shade(hex,p){
 
 /* ============ COLOUR PALETTES (each works in light AND dark) ============ */
 const PALETTES = {
-  brownWhite: { label:"Brown & White",
-    light:{ primary:"#0F1B2D", accent:"#C6A15B", bg:"#F8F7F3", text:"#172033", card:"#FFFFFF", sand:"#EFE6D8", line:"#E2D6C4" },
-    dark: { primary:"#D9B47F", accent:"#C9A26B", bg:"#17110C", text:"#F2E7D8", card:"#221913", sand:"#2C211A", line:"#3A2C22" } },
-  whiteBrown: { label:"White & Brown",
-    light:{ primary:"#1F3657", accent:"#8A6A4A", bg:"#FFFFFF", text:"#33241A", card:"#FBF8F4", sand:"#F3EDE5", line:"#E7DED2" },
-    dark: { primary:"#E4CBA9", accent:"#C79A66", bg:"#1B1614", text:"#F6EFE7", card:"#251E19", sand:"#2E251F", line:"#3C3128" } },
-  blackWhite: { label:"Black & White",
-    light:{ primary:"#111111", accent:"#555555", bg:"#FFFFFF", text:"#111111", card:"#FAFAFA", sand:"#F0F0F0", line:"#E0E0E0" },
-    dark: { primary:"#FFFFFF", accent:"#BBBBBB", bg:"#0B0B0B", text:"#F2F2F2", card:"#161616", sand:"#1F1F1F", line:"#2C2C2C" } },
-  grayWhite: { label:"Grey & White",
-    light:{ primary:"#4A5057", accent:"#7C858E", bg:"#FBFBFC", text:"#23272B", card:"#FFFFFF", sand:"#EFF1F3", line:"#E1E4E8" },
-    dark: { primary:"#D6DBE0", accent:"#9AA3AC", bg:"#111417", text:"#EDEFF2", card:"#1A1E22", sand:"#22272C", line:"#2E343A" } },
-  grayBlack: { label:"Grey & Black",
-    light:{ primary:"#2B2F33", accent:"#6E767E", bg:"#F2F3F5", text:"#1B1E21", card:"#FFFFFF", sand:"#E7E9EC", line:"#D8DBDF" },
-    dark: { primary:"#C8CDD3", accent:"#848C94", bg:"#0C0E10", text:"#E9ECEF", card:"#15181B", sand:"#1D2125", line:"#282D32" } },
-  navyGold: { label:"Navy & Gold",
-    light:{ primary:"#12263F", accent:"#C9A85F", bg:"#F7F8FA", text:"#101A28", card:"#FFFFFF", sand:"#E9EDF3", line:"#D7DEE8" },
-    dark: { primary:"#E3C567", accent:"#C9A85F", bg:"#0A1220", text:"#EAF0F8", card:"#111E31", sand:"#17263C", line:"#22344E" } },
-  emeraldCream: { label:"Emerald & Cream",
-    light:{ primary:"#12503C", accent:"#C2A15B", bg:"#FAF8F2", text:"#12241C", card:"#FFFFFF", sand:"#ECF1EC", line:"#D9E3DB" },
-    dark: { primary:"#7FCBA6", accent:"#C2A15B", bg:"#08150F", text:"#E9F4EE", card:"#0F241B", sand:"#153026", line:"#1E4033" } },
-  burgundyGold: { label:"Burgundy & Gold",
-    light:{ primary:"#5C1A2B", accent:"#B9903F", bg:"#FAF6F5", text:"#2A1017", card:"#FFFFFF", sand:"#F1E7E7", line:"#E2D2D3" },
-    dark: { primary:"#E0A6B4", accent:"#C9A24E", bg:"#15080C", text:"#F6E9EC", card:"#221016", sand:"#2E161E", line:"#3E1F29" } },
-  charcoalCopper: { label:"Charcoal & Copper",
-    light:{ primary:"#26292E", accent:"#B3703C", bg:"#F6F5F3", text:"#1A1C20", card:"#FFFFFF", sand:"#ECEAE7", line:"#DCD9D4" },
-    dark: { primary:"#E0A876", accent:"#B3703C", bg:"#0D0E10", text:"#EFEDEA", card:"#17191C", sand:"#1F2226", line:"#2B2F34" } },
-  midnightSilver: { label:"Midnight & Silver",
-    light:{ primary:"#1B1F2A", accent:"#8E9AAF", bg:"#F7F8FB", text:"#141822", card:"#FFFFFF", sand:"#ECEEF3", line:"#DBDFE8" },
-    dark: { primary:"#CBD3E1", accent:"#8E9AAF", bg:"#070911", text:"#EDF0F6", card:"#10141F", sand:"#171C29", line:"#222839" } },
-  sandTeal: { label:"Sand & Teal",
-    light:{ primary:"#0F5257", accent:"#C89F6B", bg:"#F7F8FA", text:"#10282A", card:"#FFFFFF", sand:"#EDF2F1", line:"#DAE4E3" },
-    dark: { primary:"#7FC8CC", accent:"#C89F6B", bg:"#07171A", text:"#E7F3F4", card:"#0E2529", sand:"#143135", line:"#1D4348" } },
-  plumGold: { label:"Plum & Gold",
-    light:{ primary:"#3F2350", accent:"#C6A052", bg:"#F9F7FB", text:"#211430", card:"#FFFFFF", sand:"#EFEAF3", line:"#DFD6E6" },
-    dark: { primary:"#C9AEDD", accent:"#C6A052", bg:"#100918", text:"#F1E9F7", card:"#1C1128", sand:"#261735", line:"#342248" } },
-  roseIvory: { label:"Rose & Ivory",
-    light:{ primary:"#7A4250", accent:"#C08A93", bg:"#FDF9F8", text:"#2C1A20", card:"#FFFFFF", sand:"#F5EBEC", line:"#E8D8DA" },
-    dark: { primary:"#E7B6BF", accent:"#C08A93", bg:"#150D10", text:"#F8ECEE", card:"#22151A", sand:"#2E1D23", line:"#3E2830" } },
-  forestGold: { label:"Forest & Gold",
-    light:{ primary:"#1E3A2B", accent:"#BE9B4E", bg:"#F8FAF7", text:"#141F18", card:"#FFFFFF", sand:"#EAF0EA", line:"#D8E2D9" },
-    dark: { primary:"#9CC9AC", accent:"#BE9B4E", bg:"#08120C", text:"#EAF3EC", card:"#0F1F16", sand:"#152A1E", line:"#1F3B2A" } },
-  oceanPearl: { label:"Ocean & Pearl",
-    light:{ primary:"#14456B", accent:"#7FB2CE", bg:"#F6FAFD", text:"#0E2436", card:"#FFFFFF", sand:"#E7F0F7", line:"#D3E2EE" },
-    dark: { primary:"#9AC9E6", accent:"#5D93B5", bg:"#061420", text:"#E7F2FA", card:"#0C2233", sand:"#122E44", line:"#1B3F5B" } }
+  sapphireChampagne: { label:"Sapphire & Champagne",
+    light:{ primary:"#10243E", accent:"#C7A56A", bg:"#F7F5F0", text:"#172235", card:"#FFFFFF", sand:"#EEE8DD", line:"#DED6C8" },
+    dark: { primary:"#D9BD7A", accent:"#C7A56A", bg:"#07111E", text:"#F5F0E7", card:"#0E1B2B", sand:"#16263A", line:"#25374E" } },
+  emeraldIvory: { label:"Emerald & Ivory",
+    light:{ primary:"#123F36", accent:"#B99A62", bg:"#FAF8F1", text:"#16251F", card:"#FFFFFF", sand:"#EEF0E8", line:"#DDE2D7" },
+    dark: { primary:"#C8AD72", accent:"#B99A62", bg:"#07140F", text:"#F2F1E9", card:"#0E211A", sand:"#173128", line:"#28453A" } },
+  bordeauxRoseGold: { label:"Bordeaux & Rose Gold",
+    light:{ primary:"#542532", accent:"#B98A76", bg:"#FBF7F5", text:"#2D1820", card:"#FFFFFF", sand:"#F1E7E4", line:"#E4D5D1" },
+    dark: { primary:"#D7A693", accent:"#B98A76", bg:"#160A0E", text:"#F7EDEA", card:"#241218", sand:"#321B23", line:"#472833" } }
 };
 function paletteList(){ return Object.keys(PALETTES); }
 function applyPalette(){
@@ -3859,6 +3978,12 @@ function myRequestsList(){ const g=S.session; if(!g||g.role!=="guest") return []
   return S.requests.filter(r=>r.room===g.room); }
 function accountName(room){ const a=S.accounts.find(x=>x.room===room); return a?a.name:room; }
 function isStaffRoom(room){ return String(room||"").startsWith("staff:"); }
+function managerGuestSectionBadge(){
+  // Guest area badge must represent guest-originated items only.
+  const guestMsgs=unreadGuestChatsForManager();
+  const guestReq=(S.requests||[]).filter(r=>String(r.status||"new")==="new").length;
+  return guestMsgs+guestReq;
+}
 function unreadGuestChatsForManager(){
   return S.messages.filter(m=>!isStaffRoom(m.room)&&m.sender==="guest"&&!m.read_by_team).length;
 }
@@ -4462,8 +4587,7 @@ function navGroupsBase(role){
         ["teaminfo","users",t("teamPage"),0]]}
     ];
   }
-  const un=unreadFor("manager");
-  const newReq=S.requests.filter(r=>r.status==="new").length;
+  const guestBadge=managerGuestSectionBadge();
   return [
     {head:t("secManage"), items:[
       ["dash","chart",t("dashboard"),0],
@@ -4476,7 +4600,7 @@ function navGroupsBase(role){
         ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
       ["qr","qr",t("qrTab"),0]]},
     {head:t("secGuests"), items:[
-      ["guests","user",t("guestsTab"),un+newReq],
+      ["guests","user",t("guestsTab"),guestBadge],
       ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("secSettings"), items:[
       ["settings","settings",t("settingsHub"),0]]}
@@ -7379,6 +7503,119 @@ function staffChatInbox(){
     </div>`).join("")||`<div class="empty"><div class="big">${ic("users",34)}</div>${t("none")}</div>`}
   </div>`;
 }
+
+/* ================= v21 MANAGER BOOKING CONTROL ================= */
+function bookingActivityById(id){
+  return (S.activities||[]).find(a=>String(a.id)===String(id))||null;
+}
+function bookingById(id){
+  return (S.bookings||[]).find(b=>String(b.id)===String(id))||null;
+}
+function bookingGuestLabel(b){
+  if(!b) return "";
+  return (b.guest_name||accountName(b.room)||("Room "+(b.room||""))).trim();
+}
+function managerBookingModal(id){
+  if(!S.session || S.session.role!=="manager") return;
+  const b=id?bookingById(id):null;
+  const act=b?bookingActivityById(b.activity_id):null;
+  const acts=(S.activities||[]).slice().sort((a,b)=>(a.day-b.day)||String(a.time||"").localeCompare(String(b.time||"")));
+  const actOpts=acts.map(a=>`<option value="${esc(a.id)}" ${b&&String(b.activity_id)===String(a.id)?"selected":""}>${esc(dayName(a.day))} · ${esc(a.time||"")} · ${esc(a.name||"")}</option>`).join("");
+  const title=b?"Edit booking":"Add booking";
+  const body=`
+    <div class="grab"></div>
+    <h3>${title}</h3>
+    <p class="mini">${b?"Change any booking detail or delete this booking.":"Create a booking manually as Manager."}</p>
+    <label>Activity</label>
+    <select id="mb-act"><option value="">Choose activity</option>${actOpts}</select>
+    <div class="row2">
+      <div><label>Room</label><input id="mb-room" value="${esc(b?.room||"")}" placeholder="Room number"></div>
+      <div><label>Guest name</label><input id="mb-name" value="${esc(b?.guest_name||"")}" placeholder="Guest name"></div>
+    </div>
+    <div class="row2">
+      <div><label>Adults</label><input id="mb-adults" type="number" min="0" value="${Number(b?.adults??1)}"></div>
+      <div><label>Children</label><input id="mb-children" type="number" min="0" value="${Number(b?.children??0)}"></div>
+    </div>
+    <label>Nationality</label>
+    <input id="mb-nationality" value="${esc(b?.nationality||"")}" placeholder="Nationality">
+    <label>Status</label>
+    <select id="mb-status">
+      ${["booked","confirmed","cancelled","completed"].map(s=>`<option value="${s}" ${b&&String(b.status||"booked")===s?"selected":""}>${s[0].toUpperCase()+s.slice(1)}</option>`).join("")}
+    </select>
+    <div class="cc-bar">
+      <button class="btn" id="mb-save">${b?"Save changes":"Create booking"}</button>
+      ${b?`<button class="btn warn" id="mb-delete">Delete booking</button>`:""}
+      <button class="btn ghost" id="mb-close">Close</button>
+    </div>`;
+  openModal(body);
+
+  setTimeout(()=>{
+    const close=document.getElementById("mb-close"); if(close) close.onclick=closeModal;
+    const save=document.getElementById("mb-save");
+    if(save) save.onclick=async()=>{
+      const activity_id=document.getElementById("mb-act").value;
+      const room=document.getElementById("mb-room").value.trim();
+      const guest_name=document.getElementById("mb-name").value.trim();
+      const adults=Math.max(0,parseInt(document.getElementById("mb-adults").value||"0",10));
+      const children=Math.max(0,parseInt(document.getElementById("mb-children").value||"0",10));
+      const nationality=document.getElementById("mb-nationality").value.trim();
+      const status=document.getElementById("mb-status").value||"booked";
+      if(!activity_id){ toast("Choose an activity","error"); return; }
+      if(!room){ toast("Room number is required","error"); return; }
+      save.disabled=true;
+      try{
+        if(b){
+          const updated=await sb("bookings?id=eq."+encodeURIComponent(b.id),{
+            method:"PATCH",
+            body:JSON.stringify({activity_id:Number(activity_id),room,guest_name,adults,children,nationality,status}),
+            headers:{"Prefer":"return=representation"}
+          });
+          const row=Array.isArray(updated)?updated[0]:updated;
+          const i=S.bookings.findIndex(x=>String(x.id)===String(b.id));
+          if(i>=0 && row) S.bookings[i]=row;
+          toast("Booking updated","success");
+        }else{
+          const created=await sb("bookings",{
+            method:"POST",
+            body:JSON.stringify({activity_id:Number(activity_id),room,guest_name,adults,children,nationality,status}),
+            headers:{"Prefer":"return=representation"}
+          });
+          const row=Array.isArray(created)?created[0]:created;
+          if(row) S.bookings.push(row);
+          toast("Booking created","success");
+        }
+        closeModal(); persist(); render();
+      }catch(e){
+        toast(e?.message||"Booking could not be saved","error");
+      }finally{
+        save.disabled=false;
+      }
+    };
+
+    const del=document.getElementById("mb-delete");
+    if(del) del.onclick=async()=>{
+      if(!confirm("Delete this booking permanently?")) return;
+      del.disabled=true;
+      try{
+        await sb("bookings?id=eq."+encodeURIComponent(b.id),{method:"DELETE"});
+        S.bookings=S.bookings.filter(x=>String(x.id)!==String(b.id));
+        S.attendance=S.attendance.filter(x=>String(x.booking_id)!==String(b.id));
+        toast("Booking deleted","success");
+        closeModal(); persist(); render();
+      }catch(e){
+        toast(e?.message||"Booking could not be deleted","error");
+      }finally{
+        del.disabled=false;
+      }
+    };
+  },0);
+}
+function managerBookingAddButton(){
+  return S.session&&S.session.role==="manager"
+    ? `<button class="btn sm" onclick="managerBookingModal(null)">＋ Add booking</button>`
+    : "";
+}
+
 function chatInboxInner(){
   const rooms={};
   // Guest inbox is strictly for hotel guest rooms. Staff conversations belong
@@ -7417,7 +7654,7 @@ function bookingsInner(){
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:${visible&&bks.length?8:0}px;gap:8px">
         <h4 style="font-size:17px;min-width:0">${visible?"":mi("lock")}${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></h4>
         <span class="pill">${a.capacity>0?seatsTaken(a.id)+"/"+a.capacity:bks.length+" "+t("guests")}</span></div>
-      ${visible?bks.map(b=>`<div class="booking-line">
+      ${visible?bks.map(b=>`<div class="booking-line" data-bid="${b.id}" ${isMgr?`onclick="managerBookingModal(${b.id})" style="cursor:pointer"`:""}>
         <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}${isMgr&&b.nationality?` · ${esc(b.nationality)}`:""}</span>
         <span class="pill">${((+b.adults)||0)+((+b.children)||0)} ${t("personsShort")}${b.status==="waitlist"?" · …":""}</span></div>`).join(""):""}
     </div>`;}).join(""):`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`);
@@ -7438,7 +7675,7 @@ function managerView(){
     if(sub==="chat" && S.chatRoom) return chatThreadScreen();
     let inner="";
     if(sub==="crm") inner=guestCrmInner();
-    else if(sub==="bookings") inner=bookingsInner();
+    else if(sub==="bookings") inner=`<div style="margin-bottom:12px">${managerBookingAddButton()}</div>`+bookingsInner();
     else if(sub==="chat") inner=chatInboxInner();
     else if(sub==="feedback") inner=feedbackInner();
     else inner=requestsInner();
@@ -11489,7 +11726,7 @@ navGroupsBase=function(role){
       ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
       ["qr","qr",t("qrTab"),0]]},
     {head:t("v9People2"), items:[
-      ["guests","user",t("guestsTab"),un+newReq],
+      ["guests","user",t("guestsTab"),guestBadge],
       ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("v9Reports2"), items:[
       ["approval","check",t("v9Approval"),0],
@@ -13035,7 +13272,7 @@ function v15Mode(){ return (S.theme==="dark")?"dark":"light"; }
 function v15On(bg){ return v9Contrast("#ffffff",bg)>=4.5 ? "#ffffff" : "#111111"; }
 
 function v15PresetScheme(key,mode){
-  const p=PALETTES[key]||PALETTES.navyGold, c=p[mode]||p.light, dark=mode==="dark";
+  const p=PALETTES[key]||PALETTES.sapphireChampagne, c=p[mode]||p.light, dark=mode==="dark";
   const hero = dark
     ? v9Mix(c.card, (v9Lum(c.primary)>.72 ? c.accent : c.primary), .12)
     : (v9Contrast(c.primary,"#ffffff")>=4.5 ? c.primary : v9Darken(c.primary,.28));
@@ -13052,14 +13289,14 @@ function v15PresetScheme(key,mode){
   };
 }
 function v15DefaultCustom(){
-  const base=(S.settings&&PALETTES[S.settings.palette])?S.settings.palette:"navyGold";
+  const base=(S.settings&&PALETTES[S.settings.palette])?S.settings.palette:"sapphireChampagne";
   return {light:v15PresetScheme(base,"light"),dark:v15PresetScheme(base,"dark")};
 }
 function v15EnsureCustom(){
   if(!S.settings.customTheme) S.settings.customTheme=v15DefaultCustom();
   for(const mode of ["light","dark"]){
-    if(!S.settings.customTheme[mode]) S.settings.customTheme[mode]=v15PresetScheme("navyGold",mode);
-    const d=v15PresetScheme("navyGold",mode), x=S.settings.customTheme[mode];
+    if(!S.settings.customTheme[mode]) S.settings.customTheme[mode]=v15PresetScheme("sapphireChampagne",mode);
+    const d=v15PresetScheme("sapphireChampagne",mode), x=S.settings.customTheme[mode];
     V15_ROLES.forEach(([k])=>{ if(!v9Hex(x[k])) x[k]=d[k]; });
   }
   return S.settings.customTheme;
@@ -13129,8 +13366,8 @@ setThemeView=function(){
     ${hubBack()}
     <div class="v15-theme-shell">
       <section class="v15-panel">
-        <div class="v15-panel-title">Ready themes</div>
-        <div class="v15-panel-sub">Every theme below has its own complete Light and Dark colour system.</div>
+        <div class="v15-panel-title">Luxury themes</div>
+        <div class="v15-panel-sub">Choose one of three complete luxury palettes. The same palette controls Explore, Guest, Staff and Manager.</div>
         <div class="v15-theme-grid">
           ${paletteList().map(k=>{
             const p=PALETTES[k], L=v15PresetScheme(k,"light"), D=v15PresetScheme(k,"dark");
@@ -13145,8 +13382,8 @@ setThemeView=function(){
       </section>
 
       <section class="v15-panel">
-        <div class="v15-panel-title">Light or Dark</div>
-        <div class="v15-panel-sub">The same selected theme works correctly in both modes.</div>
+        <div class="v15-panel-title">Appearance mode</div>
+        <div class="v15-panel-sub">Choose Light, Dark or Follow phone. The entire application changes together.</div>
         <div class="v15-modes">
           ${[["light","sun","Light"],["dark","moon","Dark"],["auto","settings","Follow phone"]].map(([k,i,l])=>
             `<button type="button" data-v15mode="${k}" class="${v9Mode()===k?"on":""}">${ic(i,17)} ${l}</button>`).join("")}
@@ -13155,7 +13392,7 @@ setThemeView=function(){
 
       <section class="v15-panel">
         <div class="v15-custom-head">
-          <div><div class="v15-panel-title">Custom theme</div><div class="v15-panel-sub" style="margin:0">Edit every important colour separately for Light and Dark.</div></div>
+          <div><div class="v15-panel-title">Custom theme</div><div class="v15-panel-sub" style="margin:0">Build your own complete palette. Custom Light and Dark colours are saved independently.</div></div>
           <span class="chip">${custom?"IN USE":"OPTIONAL"}</span>
         </div>
         <div class="v15-custom-tabs">
@@ -13190,7 +13427,7 @@ async function v15SaveCustom(){
   }catch(e){ toastErr(t("errSave")); }
 }
 function v15CopyPreset(){
-  const key=PALETTES[S.settings.palette]?S.settings.palette:"navyGold";
+  const key=PALETTES[S.settings.palette]?S.settings.palette:"sapphireChampagne";
   S.settings.customTheme={light:v15PresetScheme(key,"light"),dark:v15PresetScheme(key,"dark")};
   v15EditMode=v15Mode(); render();
 }
@@ -13422,6 +13659,20 @@ try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
   setTimeout(()=>{try{normalizeState();applySettings();}catch(e){recordDiagnostic('normalize',e);}},50);
 })();
 
+
+
+
+/* v22: migrate removed theme presets to the new luxury default. */
+(function(){
+  try{
+    if(typeof S==="undefined"||!S.settings)return;
+    const allowed=new Set(["sapphireChampagne","emeraldIvory","bordeauxRoseGold",""]);
+    if(!allowed.has(String(S.settings.palette||""))){
+      S.settings.palette="sapphireChampagne";
+      try{persist()}catch(_){}
+    }
+  }catch(e){console.error(e)}
+})();
 
 </script>
 
