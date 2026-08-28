@@ -11676,6 +11676,7 @@ function v11Pick(pool, load, usedThisSlot, a, day){
 /* one day, using the shared running count */
 function v11AssignDay(day, opts, sharedLoad){
   const o=opts||{}, out=[], load=sharedLoad||baseLoad(o), assigned={};
+  if(!sharedLoad) v11ResetCaches();
   const entranceChoice=o.entranceChoice||null;
   ["morning","afternoon"].forEach(slot=>{
     let acts=(S.activities||[])
@@ -11687,7 +11688,7 @@ function v11AssignDay(day, opts, sharedLoad){
     acts=v11Shuffle(acts).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
     const usedThisSlot=new Set();
     acts.forEach(a=>{
-      const pool=eligibleStaffForActivity(day,a).filter(u=>!plannedTimeConflict(u,a,assigned,entranceChoice));
+      const pool=v11EligibleList(day,a).filter(u=>!plannedTimeConflict(u,a,assigned,entranceChoice));
       const pick=v11Pick(pool, load, usedThisSlot, a, day);
       if(!pick){ out.push({activity:a, username:"", name:t("noQualifiedGender"), slot, day, unassigned:true}); return; }
       usedThisSlot.add(pick.username);
@@ -11702,33 +11703,38 @@ function v11AssignDay(day, opts, sharedLoad){
 }
 /* the whole week — days are visited in a random order so each press differs,
    then the result is sorted back for display */
+const V11_PLAN_MS=200;                 // hard ceiling for polishing one plan
 function v11AssignWeek(opts){
   const o=opts||{}, load=baseLoad(o);
+  v11ResetCaches();
+  const stopAt=Date.now()+V11_PLAN_MS;
   let all=[];
   v11Shuffle([0,1,2,3,4,5,6]).forEach(d=>{
     all=all.concat(v11AssignDay(d,{...o, entranceChoice:o.entrances&&o.entrances[d]},load));
   });
-  all=v11Balance(all,o);
-  all=v11RepairBest(all,25);
+  all=v11Balance(all,o,stopAt);
+  all=v11RepairBest(all,25,stopAt);
   return all.sort((x,y)=> (x.activity.day-y.activity.day)
     || String(x.activity.time).localeCompare(String(y.activity.time)));
 }
 /* Final tidy-up. Same purpose as before, but it now looks at swaps in a random
    order and refuses a swap that would create a repeat, so evening out the
    numbers can no longer undo the variety. */
-function v11Balance(plan, opts){
+function v11Balance(plan, opts, stopAt){
   const nameDaysOf=(pl,un,nm)=>pl.filter(x=>String(x.username).toLowerCase()===un
     && capKeyName(x.activity.name)===nm).map(x=>x.activity.day);
   /* Pass 1 keeps the variety intact. If the numbers are still uneven after it,
      pass 2 runs again without that restriction — a fair share matters more
      than a perfect spread of activity names. */
-  v11BalancePass(plan, opts, "variety", nameDaysOf);   // best: keep every plan varied
-  v11BalancePass(plan, opts, "noAdjacent", nameDaysOf); // next: at least no two days running
-  v11BalancePass(plan, opts, "any", nameDaysOf);        // last resort: a fair share always wins
+  const dl = stopAt || (Date.now()+V11_PLAN_MS);
+  v11BalancePass(plan, opts, "variety", nameDaysOf, dl);   // best: keep every plan varied
+  v11BalancePass(plan, opts, "noAdjacent", nameDaysOf, dl); // next: at least no two days running
+  v11BalancePass(plan, opts, "any", nameDaysOf, dl);        // last resort: a fair share always wins
   return plan;
 }
-function v11BalancePass(plan, opts, keepVariety, nameDaysOf){
+function v11BalancePass(plan, opts, keepVariety, nameDaysOf, stopAt){
   for(let guard=0; guard<300; guard++){
+    if(stopAt && Date.now()>stopAt) break;
     const bal=planBalance(plan, opts);
     if(bal.spread<=1) break;
     const hi=v11Shuffle(Object.keys(bal.per).filter(k=>bal.per[k]===bal.max));
@@ -11741,8 +11747,8 @@ function v11BalancePass(plan, opts, keepVariety, nameDaysOf){
           const it=plan[i];
           if(!it || String(it.username).toLowerCase()!==h) continue;
           const day=it.activity.day, nm=capKeyName(it.activity.name);
-          const cand=eligibleStaffForActivity(day,it.activity)
-            .find(u=>String(u.username).toLowerCase()===l);
+          if(!v11EligibleSet(day,it.activity).has(l)) continue;
+          const cand=(S.users||[]).find(u=>String(u.username).toLowerCase()===l);
           if(!cand) continue;
           const clash=plan.some(x=>x!==it && x.activity.day===day && x.slot===it.slot
             && String(x.username).toLowerCase()===l);
@@ -11760,80 +11766,145 @@ function v11BalancePass(plan, opts, keepVariety, nameDaysOf){
     if(!moved) break;
   }
 }
-/* VARIETY REPAIR — swaps that cannot change anyone's workload.
-   If two people each hold one activity, trading them leaves both counts
-   identical, so fairness is untouched by construction. We only accept a trade
-   that reduces repeats, and only when both people are actually allowed to run
-   the other activity on that day and have no time clash. */
-function v11RepeatCost(plan){
-  const map={};
-  plan.forEach(x=>{ if(!x.username) return;
-    const k=String(x.username).toLowerCase()+"|"+capKeyName(x.activity.name);
-    (map[k]=map[k]||[]).push(x.activity.day); });
-  let cost=0;
-  Object.keys(map).forEach(k=>{
-    const d=map[k].slice().sort((a,b)=>a-b);
-    if(d.length>1) cost += (d.length-1);
-    for(let i=1;i<d.length;i++) if(d[i]-d[i-1]===1) cost += 12;  // back-to-back hurts most
-  });
-  return cost;
+/* ---------------------------------------------------------------------------
+   PERFORMANCE. The first version of this repair recomputed the whole plan's
+   cost inside a double loop and re-derived who is eligible every time. On a
+   real week (84 activities, capability rules, day-offs) that took over twenty
+   seconds on a laptop — minutes on a phone, which looked like the app hanging.
+   It now works out the cost change of a single swap directly, caches
+   eligibility, and stops at a time limit no matter what the data looks like.
+   --------------------------------------------------------------------------- */
+let __v11Elig={};                                  // activity id -> Set of usernames
+function v11ResetCaches(){ __v11Elig={}; }
+function v11EligibleSet(day, a){
+  const id=a&&a.id;
+  const k=id!=null?("a"+id):(day+"|"+capKeyName(a&&a.name)+"|"+(a&&a.time));
+  let set=__v11Elig[k];
+  if(!set){
+    set=new Set(eligibleStaffForActivity(day,a).map(u=>String(u.username).toLowerCase()));
+    __v11Elig[k]=set;
+  }
+  return set;
 }
-function v11CanTake(plan, item, user){
+function v11EligibleList(day, a){
+  const set=v11EligibleSet(day,a);
+  return (S.users||[]).filter(u=>set.has(String(u.username).toLowerCase()));
+}
+/* cost of one person doing one activity on a set of days */
+function v11KeyCost(days){
+  if(!days || days.length<2) return 0;
+  const s=days.slice().sort((x,y)=>x-y);
+  let c=s.length-1;                                 // each extra time it repeats
+  for(let i=1;i<s.length;i++) if(s[i]-s[i-1]===1) c+=12;   // two days running is much worse
+  return c;
+}
+function v11KeyMap(plan){
+  const m={};
+  (plan||[]).forEach(x=>{
+    if(!x || !x.username) return;
+    const k=String(x.username).toLowerCase()+"|"+capKeyName(x.activity.name);
+    (m[k]=m[k]||[]).push(x.activity.day);
+  });
+  return m;
+}
+function v11RepeatCost(plan){
+  const m=v11KeyMap(plan); let c=0;
+  for(const k in m) c+=v11KeyCost(m[k]);
+  return c;
+}
+/* can this person take this activity, ignoring the two rows being swapped? */
+function v11CanTakeAt(plan, i, j, userLc, item){
   const day=item.activity.day;
-  const ok=eligibleStaffForActivity(day,item.activity)
-    .some(u=>String(u.username).toLowerCase()===String(user).toLowerCase());
-  if(!ok) return false;
+  if(!v11EligibleSet(day,item.activity).has(userLc)) return false;
   const w=intervalOf(item.activity.time);
   if(!w) return true;
-  return !plan.some(x=>x!==item && String(x.username).toLowerCase()===String(user).toLowerCase()
-    && x.activity.day===day && intervalsOverlap(w, intervalOf(x.activity.time)));
+  for(let k=0;k<plan.length;k++){
+    if(k===i || k===j) continue;
+    const x=plan[k];
+    if(!x || !x.username) continue;
+    if(String(x.username).toLowerCase()!==userLc) continue;
+    if(x.activity.day!==day) continue;
+    if(intervalsOverlap(w, intervalOf(x.activity.time))) return false;
+  }
+  return true;
 }
-function v11VarietyRepair(plan){
-  let cost=v11RepeatCost(plan);
-  for(let guard=0; guard<600 && cost>0; guard++){
+/* VARIETY REPAIR — swaps that cannot change anyone's workload.
+   Trading two people's activities leaves both counts identical, so fairness is
+   untouched by construction. Only trades that reduce repeats are kept. */
+function v11VarietyRepair(plan, deadline){
+  const stopAt = deadline || (Date.now()+250);
+  const keyOf=(un,nm)=>String(un).toLowerCase()+"|"+capKeyName(nm);
+  const map=v11KeyMap(plan);
+  const cost=k=>v11KeyCost(map[k]);
+  const rm=(k,d)=>{ const arr=map[k]; if(!arr) return; const p=arr.indexOf(d); if(p>=0) arr.splice(p,1); };
+  const add=(k,d)=>{ (map[k]=map[k]||[]).push(d); };
+  for(let guard=0; guard<400; guard++){
+    if(Date.now()>stopAt) break;
+    /* only rows that currently cost something are worth moving */
+    const probs=[];
+    for(let i=0;i<plan.length;i++){
+      const x=plan[i];
+      if(x && x.username && cost(keyOf(x.username,x.activity.name))>0) probs.push(i);
+    }
+    if(!probs.length) break;
     let improved=false;
-    const idx=v11Shuffle(plan.map((_,i)=>i));
-    outer:
-    for(const i of idx){
-      const A=plan[i]; if(!A || !A.username) continue;
-      for(const j of idx){
+    const order=v11Shuffle(probs);
+    for(const i of order){
+      if(Date.now()>stopAt) break;
+      const A=plan[i]; if(!A||!A.username) continue;
+      const aLc=String(A.username).toLowerCase(), aNm=capKeyName(A.activity.name);
+      const partners=v11Shuffle(plan.map((_,k)=>k));
+      for(const j of partners){
         if(j===i) continue;
-        const B=plan[j]; if(!B || !B.username) continue;
-        if(String(A.username).toLowerCase()===String(B.username).toLowerCase()) continue;
-        if(capKeyName(A.activity.name)===capKeyName(B.activity.name)) continue;
-        /* pretend to trade */
-        const a2={...A, username:B.username, name:B.name};
-        const b2={...B, username:A.username, name:A.name};
-        const trial=plan.slice(); trial[i]=a2; trial[j]=b2;
-        if(!v11CanTake(trial, a2, B.username)) continue;
-        if(!v11CanTake(trial, b2, A.username)) continue;
-        const c2=v11RepeatCost(trial);
-        if(c2 < cost){ plan[i]=a2; plan[j]=b2; cost=c2; improved=true; break outer; }
+        const B=plan[j]; if(!B||!B.username) continue;
+        const bLc=String(B.username).toLowerCase(), bNm=capKeyName(B.activity.name);
+        if(aLc===bLc || aNm===bNm) continue;
+        const kAa=aLc+"|"+aNm, kBb=bLc+"|"+bNm, kAb=aLc+"|"+bNm, kBa=bLc+"|"+aNm;
+        const before=cost(kAa)+cost(kBb)+cost(kAb)+cost(kBa);
+        /* apply to the map only, then measure */
+        rm(kAa,A.activity.day); add(kBa,A.activity.day);
+        rm(kBb,B.activity.day); add(kAb,B.activity.day);
+        const after=cost(kAa)+cost(kBb)+cost(kAb)+cost(kBa);
+        if(after<before
+           && v11CanTakeAt(plan,i,j,bLc,A)
+           && v11CanTakeAt(plan,i,j,aLc,B)){
+          const a2={...A, username:B.username, name:B.name};
+          const b2={...B, username:A.username, name:A.name};
+          plan[i]=a2; plan[j]=b2;
+          improved=true;
+          break;
+        }
+        /* put the map back */
+        rm(kBa,A.activity.day); add(kAa,A.activity.day);
+        rm(kAb,B.activity.day); add(kBb,B.activity.day);
       }
+      if(improved) break;
     }
     if(!improved) break;
   }
   return plan;
 }
-/* A single repair pass can get stuck. This nudges the plan and repairs again,
-   keeping whichever attempt came out best. Cheap, and it matters most for a
-   small team where good swaps are rare. */
-function v11RepairBest(plan, rounds){
-  let best=plan.slice(), bestCost=v11RepeatCost(v11VarietyRepair(plan));
-  best=plan.slice();
+/* A single pass can get stuck. This nudges the plan and repairs again, keeping
+   whichever attempt came out best — within the same overall time limit. */
+function v11RepairBest(plan, rounds, deadline){
+  const stopAt = deadline || (Date.now()+400);
+  v11VarietyRepair(plan, stopAt);
+  let best=plan.slice(), bestCost=v11RepeatCost(plan);
   for(let r=0; r<(rounds||3) && bestCost>0; r++){
+    if(Date.now()>stopAt) break;
     const trial=best.slice();
-    /* nudge: trade a few random eligible pairs, workloads unchanged */
     for(let k=0;k<3;k++){
       const i=Math.floor(Math.random()*trial.length), j=Math.floor(Math.random()*trial.length);
       const A=trial[i], B=trial[j];
       if(!A||!B||i===j||!A.username||!B.username) continue;
-      if(String(A.username).toLowerCase()===String(B.username).toLowerCase()) continue;
-      const a2={...A,username:B.username,name:B.name}, b2={...B,username:A.username,name:A.name};
-      const t2=trial.slice(); t2[i]=a2; t2[j]=b2;
-      if(v11CanTake(t2,a2,B.username) && v11CanTake(t2,b2,A.username)){ trial[i]=a2; trial[j]=b2; }
+      const aLc=String(A.username).toLowerCase(), bLc=String(B.username).toLowerCase();
+      if(aLc===bLc) continue;
+      if(v11CanTakeAt(trial,i,j,bLc,A) && v11CanTakeAt(trial,i,j,aLc,B)){
+        trial[i]={...A,username:B.username,name:B.name};
+        trial[j]={...B,username:A.username,name:A.name};
+      }
     }
-    v11VarietyRepair(trial);
+    v11VarietyRepair(trial, stopAt);
     const c=v11RepeatCost(trial);
     if(c<bestCost){ bestCost=c; best=trial.slice(); }
   }
@@ -11859,7 +11930,12 @@ function v11Variety(plan){
 /* Route the existing planner through the new engine. */
 autoAssignDay = function(day, opts, sharedLoad){
   const out=v11AssignDay(day, opts, sharedLoad);
-  return sharedLoad ? out : v11RepairBest(out,25);   // week runs its own repair at the end
+  if(sharedLoad) return out;                       // the week shares one budget
+  const stopAt=Date.now()+V11_PLAN_MS;
+  /* A single day is balanced too now. Before, only the week was, so one day
+     could show "difference of 2" with somebody on 0 and somebody on 2. */
+  v11Balance(out, opts||{}, stopAt);
+  return v11RepairBest(out,25,stopAt);   // week runs its own repair at the end
 };
 autoAssignWeek = function(opts){ return v11AssignWeek(opts); };
 balancePlan   = function(plan, opts){ return v11Balance(plan, opts); };
@@ -11868,12 +11944,14 @@ balancePlan   = function(plan, opts){ return v11Balance(plan, opts); };
 const __v10BuildVariants=buildPlanVariants;
 buildPlanVariants=function(scope,day,onlyEmpty){
   const out=[], seen=new Set();
+  const stopAt=Date.now()+700;                 // the button must always answer quickly
   for(let tries=0; tries<60 && out.length<3; tries++){
     const c=buildPlanCandidate(scope,day,onlyEmpty);
     const s=candidateSignature(c);
     if(!seen.has(s)){ seen.add(s); out.push(c); }
+    if(Date.now()>stopAt) break;
   }
-  while(out.length<3) out.push(buildPlanCandidate(scope,day,onlyEmpty));
+  while(out.length<3) out.push(out.length?out[out.length-1]:buildPlanCandidate(scope,day,onlyEmpty));
   return out;
 };
 /* Show the variety result inside the auto-assign modal. */
