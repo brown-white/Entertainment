@@ -1870,6 +1870,127 @@ body{background-image:none!important}
 </style>
 
 </head>
+<style id="theme-v15-complete">
+/* ==========================================================================
+   v15 COMPLETE THEME SYSTEM
+   Semantic colour roles. Every preset and Custom has independent Light/Dark.
+   ========================================================================== */
+:root{
+  --page-bg:var(--bg);
+  --card-bg:var(--card);
+  --surface-bg:var(--sand);
+  --hero-bg:var(--espresso);
+  --hero-text:#fff;
+  --primary-action:var(--espresso);
+  --primary-on:#fff;
+  --accent-action:var(--bronze);
+  --text-main:var(--ink);
+  --text-secondary:var(--muted);
+  --nav-background:var(--card);
+  --border-color:var(--line);
+  --success-color:#2f8f5b;
+  --warning-color:#d69b2d;
+  --danger-color:#c94b43;
+}
+
+/* Page and surface layers */
+html,body,.app,.screen,.manager-settings,.ex-screen.v14{background-color:var(--page-bg)!important;color:var(--text-main)!important}
+.card,.stat,.modal,.login-card,.set-list,.theme-card,.notif-card,.tk,.daycard,.showcard,.rostercard,
+.v14-q,.v14-glance,.v14-slot,.v14-day,.v14-person,.v14-link,.v14-section .ex-empty,
+.pickfield,.pick-it,.cred,.photo-pick,.acct-row,.bus-row,.hub-btn,.att-table,.task-card{
+  background-color:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important
+}
+input,select,textarea,.chatbar input{
+  background:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important
+}
+input::placeholder,textarea::placeholder{color:var(--text-secondary)!important;opacity:.86}
+label,.mini,.hint,.meta,.set-mid .mini,.v9-modenow,.tc-pos,.tc-chips,.att-name span,
+.v14-person small,.v14-slot-copy small,.v14-section .kicker{color:var(--text-secondary)!important}
+.screen h1,.screen h2,.screen h3,.screen h4,.card h1,.card h2,.card h3,.card h4,
+.set-mid b,.tc-lb,.rl-title,.type-body,.type-label{color:var(--text-main)!important}
+
+/* Navigation and controls */
+.iconbtn,.socialtop,.ex-round,.drawer .dr-out,.bubtool,.quickrow button{
+  background:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important
+}
+.nav,.drawer,.chatbar,.ex-screen.v14 .ex-top{
+  background:var(--nav-background)!important;border-color:var(--border-color)!important
+}
+.nav button,.dr-it,.dr-ic{color:var(--text-secondary)!important}
+.nav button.on,.dr-it.on{
+  background:var(--primary-action)!important;color:var(--primary-on)!important
+}
+.dr-it.on .dr-ic,.nav button.on{color:var(--primary-on)!important}
+.btn:not(.ghost):not(.warn),.chatbar button,.ex-signin,.v14-join button{
+  background:var(--primary-action)!important;color:var(--primary-on)!important;border-color:transparent!important;
+  box-shadow:none!important
+}
+.btn.ghost,.crumb,.daytabs button,.pills button,.daychip{
+  background:var(--card-bg)!important;color:var(--text-main)!important;border-color:var(--border-color)!important
+}
+.daytabs button.on,.pills button.on,.daychip.on,.theme-card.on{
+  background:var(--primary-action)!important;color:var(--primary-on)!important;border-color:var(--primary-action)!important
+}
+.btn.warn{background:var(--danger-color)!important;color:#fff!important}
+
+/* Hero / featured / branded areas use a dedicated token, never "primary" blindly */
+.login-wrap{
+  background:
+    radial-gradient(120% 95% at 50% -10%,color-mix(in srgb,var(--accent-action) 18%,transparent),transparent 60%),
+    linear-gradient(160deg,var(--hero-bg),var(--page-bg))!important;
+  color:var(--hero-text)!important
+}
+.brandmark h1,.brandmark p,.login-wrap>.brandmark,.login-wrap .staff-link{color:var(--hero-text)!important}
+.cc-hero,.v9-hero,.theme-banner,.wd-banner.entrance{
+  background:var(--hero-bg)!important;color:var(--hero-text)!important
+}
+.cc-hero h2,.cc-hero p,.cc-hero .cc-kick,.v9-hero h2,.v9-hero p,.v9-hero .v9-kick,
+.v9-hero .v9-num,.v9-hero .v9-num span{color:var(--hero-text)!important}
+.cc-hero .cc-kick,.v9-hero .v9-kick{opacity:.72}
+.v9-hero-btn{color:var(--hero-text)!important;border-color:color-mix(in srgb,var(--hero-text) 32%,transparent)!important}
+
+/* Accent role */
+a,.social-a,.socialtop:hover,.wk-time,.tk .price,.cred b,.teamcount b,.std-t,.bus-next,
+.ex-sec,.v14-q .ico,.theme-card.on .tc-lb{color:var(--accent-action)}
+.switch.on{background:var(--primary-action)!important}
+input:focus,textarea:focus,select:focus{border-color:var(--accent-action)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-action) 22%,transparent)!important}
+
+/* Semantic states */
+.chip.ok,.rstat.off,.stat-pill.live{color:var(--success-color)!important}
+.setup,.chip.res,.stat-pill.todo{color:var(--warning-color)!important}
+.err,.chip.full,.badge,.reddot,.stat-pill.done{color:var(--danger-color)}
+.badge,.reddot{background:var(--danger-color)!important;color:#fff!important}
+
+/* Theme editor */
+.v15-theme-shell{display:flex;flex-direction:column;gap:16px}
+.v15-panel{background:var(--card-bg);border:1px solid var(--border-color);border-radius:22px;padding:16px}
+.v15-panel-title{font-family:var(--font-display);font-size:21px;font-weight:700;color:var(--text-main);margin-bottom:4px}
+.v15-panel-sub{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:12px}
+.v15-theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v15-theme-card{padding:14px 12px;border:1px solid var(--border-color);border-radius:18px;background:var(--card-bg);text-align:start;min-height:104px;position:relative}
+.v15-theme-card.on{outline:2px solid var(--accent-action);outline-offset:1px}
+.v15-theme-card b{display:block;margin-top:10px;font-size:14px;color:var(--text-main)}
+.v15-swatches{display:flex;align-items:center;gap:6px}
+.v15-swatches i{display:block;width:27px;height:27px;border-radius:50%;border:1px solid color-mix(in srgb,var(--border-color) 88%,transparent)}
+.v15-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.v15-modes button{padding:12px 8px;border-radius:14px;background:var(--surface-bg);color:var(--text-secondary);border:1px solid var(--border-color);font-weight:700}
+.v15-modes button.on{background:var(--primary-action);color:var(--primary-on);border-color:var(--primary-action)}
+.v15-custom-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.v15-custom-head .chip{background:var(--surface-bg);color:var(--text-secondary)}
+.v15-custom-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.v15-custom-tabs button{padding:11px;border:1px solid var(--border-color);border-radius:13px;background:var(--surface-bg);color:var(--text-main);font-weight:700}
+.v15-custom-tabs button.on{background:var(--primary-action);color:var(--primary-on)}
+.v15-colors{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v15-color{background:var(--surface-bg);border:1px solid var(--border-color);border-radius:14px;padding:10px}
+.v15-color label{margin:0 0 7px;text-transform:none;letter-spacing:0;font-size:11px}
+.v15-color input[type=color]{height:42px;padding:3px;border-radius:10px;background:var(--card-bg)!important}
+.v15-preview{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.v15-preview>div{padding:13px;border-radius:14px;border:1px solid var(--border-color)}
+.v15-preview .pv-card{background:var(--card-bg);color:var(--text-main)}
+.v15-preview .pv-hero{background:var(--hero-bg);color:var(--hero-text)}
+.v15-preview small{display:block;color:inherit;opacity:.72;margin-top:3px}
+@media(max-width:390px){.v15-theme-grid,.v15-colors{grid-template-columns:1fr}}
+</style>
 <body data-build="intelligent-planner-v6">
 <div class="app" id="app"><div class="skel-wrap">
   <div class="skel skel-bar"></div>
@@ -12487,6 +12608,213 @@ function team14(){const us=teamList();if(!us.length)return '';return `<section c
 function connect14(){const soc=v12Socials(),rev=reviewLinks();if(!soc.length&&!rev.length)return '';const label=k=>k==='google'?'Google':k==='tripadvisor'?'Tripadvisor':'HolidayCheck';return `<section class="v14-connect" id="x14-connect"><div class="v14-section-head"><div><span class="kicker">${esc(x14('follow'))}</span><h2>${esc(x14('connect'))}</h2></div></div><div class="v14-connect-grid">${soc.map(([k,v])=>`<a class="v14-link" href="${esc(v)}" target="_blank" rel="noopener"><span class="ico">${ic(k,17)}</span><span>${esc(k)}</span></a>`).join('')}${rev.map(([k,v])=>`<a class="v14-link" href="${esc(v)}" target="_blank" rel="noopener"><span class="ico">${ic('star',16)}</span><span>${esc(label(k))}</span></a>`).join('')}</div></section>`}
 exploreView=function(){const logo=S.settings&&S.settings.logo,hname=(S.settings&&S.settings.hotelName)||'',sel=v12Day();return `<div class="screen fadein ex-screen v14"><div class="ex-top"><button class="ex-round" id="ex-back" aria-label="back">${ic('back',18)}</button>${logo?`<img class="ex-logo" src="${esc(logo)}" alt="">`:(hname?`<b class="ex-brand">${esc(hname)}</b>`:'<span style="flex:1"></span>')}<button class="ex-signin" id="ex-signin">${esc(x14('signin'))}</button></div>${hero14()}${quick14()}${glance14()}${featured14()}<section class="v14-section" id="x14-program"><div class="v14-section-head"><div><span class="kicker">${esc(t('exToday'))} · ${esc(t('days')[todayIndex()]||'')}</span><h2>${esc(x14('schedule'))}</h2></div></div>${sched14(todayIndex())}</section><section class="v14-section"><div class="v14-section-head"><div><span class="kicker">7 days</span><h2>${esc(x14('week'))}</h2></div></div>${days14()}${sel===todayIndex()?`<div class="ex-empty soft">${esc(t('exToday'))} ↑</div>`:sched14(sel)}</section><section class="v14-join"><span class="ey">${esc(x14('guest'))}</span><h2>${esc(x14('discover'))}</h2><p>${esc(x14('join'))}</p><button id="ex-join">${ic('key',15)} ${esc(x14('signin'))}</button></section>${moments14()}${team14()}${connect14()}</div>`}
 wireExplore=function(){const b=document.getElementById('ex-back');if(b)b.onclick=()=>{showExplore=false;render()};const sign=()=>{showExplore=false;loginMode='guest';guestMode='new';render()};const s=document.getElementById('ex-signin');if(s)s.onclick=sign;const s2=document.getElementById('x14-signin');if(s2)s2.onclick=sign;const j=document.getElementById('ex-join');if(j)j.onclick=sign;document.querySelectorAll('[data-xscroll]').forEach(el=>el.onclick=e=>{e.stopPropagation();scrollX14(el.dataset.xscroll)});document.querySelectorAll('[data-exfilter]').forEach(el=>el.onclick=()=>{exploreFilter=el.dataset.exfilter;render()});document.querySelectorAll('[data-exday]').forEach(el=>el.onclick=()=>{exploreDay=+el.dataset.exday;render()});document.querySelectorAll('[data-vid]').forEach(el=>el.onclick=()=>playVideo(el.dataset.vid));document.querySelectorAll('[data-exact]').forEach(el=>el.onclick=e=>{if(el.hasAttribute('data-vid'))return;e.stopPropagation();openExploreBook(el.dataset.exact)});const av=document.getElementById('ex-addvid');if(av)av.onclick=openVideoLinkModal;};
+})();
+</script>
+<script id="theme-v15-complete-js">
+(function(){
+"use strict";
+
+/* ---------- semantic theme helpers ---------- */
+const V15_ROLES=[
+ ["bg","Page background"],
+ ["card","Card background"],
+ ["surface","Secondary surface"],
+ ["hero","Hero / header background"],
+ ["text","Main text"],
+ ["muted","Secondary text"],
+ ["primary","Buttons / active items"],
+ ["primaryText","Text on buttons"],
+ ["accent","Accent / highlights"],
+ ["nav","Navigation background"],
+ ["line","Borders / dividers"],
+ ["success","Success"],
+ ["warning","Warning"],
+ ["danger","Danger / alerts"]
+];
+
+function v15Mode(){ return (S.theme==="dark")?"dark":"light"; }
+function v15On(bg){ return v9Contrast("#ffffff",bg)>=4.5 ? "#ffffff" : "#111111"; }
+
+function v15PresetScheme(key,mode){
+  const p=PALETTES[key]||PALETTES.navyGold, c=p[mode]||p.light, dark=mode==="dark";
+  const hero = dark
+    ? v9Mix(c.card, (v9Lum(c.primary)>.72 ? c.accent : c.primary), .12)
+    : (v9Contrast(c.primary,"#ffffff")>=4.5 ? c.primary : v9Darken(c.primary,.28));
+  const primary=c.primary;
+  return {
+    bg:c.bg, card:c.card, surface:c.sand, hero,
+    text:v9Readable(c.text,c.bg,7),
+    muted:v9Readable(v9Mix(c.text,c.bg,dark?.38:.48),c.bg,3.2),
+    primary, primaryText:v15On(primary),
+    accent:c.accent, nav:c.card, line:c.line,
+    success:dark?"#77d49e":"#2f8f5b",
+    warning:dark?"#f0c46a":"#b87912",
+    danger:dark?"#f29a94":"#c94b43"
+  };
+}
+function v15DefaultCustom(){
+  const base=(S.settings&&PALETTES[S.settings.palette])?S.settings.palette:"navyGold";
+  return {light:v15PresetScheme(base,"light"),dark:v15PresetScheme(base,"dark")};
+}
+function v15EnsureCustom(){
+  if(!S.settings.customTheme) S.settings.customTheme=v15DefaultCustom();
+  for(const mode of ["light","dark"]){
+    if(!S.settings.customTheme[mode]) S.settings.customTheme[mode]=v15PresetScheme("navyGold",mode);
+    const d=v15PresetScheme("navyGold",mode), x=S.settings.customTheme[mode];
+    V15_ROLES.forEach(([k])=>{ if(!v9Hex(x[k])) x[k]=d[k]; });
+  }
+  return S.settings.customTheme;
+}
+function v15CurrentScheme(){
+  const mode=v15Mode(), key=S.settings.palette;
+  if(PALETTES[key]) return v15PresetScheme(key,mode);
+  v15EnsureCustom();
+  return {...S.settings.customTheme[mode]};
+}
+function v15Apply(s){
+  const r=document.documentElement.style, mode=v15Mode();
+  const heroText=v15On(s.hero);
+  const primaryText=v9Hex(s.primaryText)||v15On(s.primary);
+  const set=(k,v)=>r.setProperty(k,v);
+  set("--page-bg",s.bg); set("--card-bg",s.card); set("--surface-bg",s.surface);
+  set("--hero-bg",s.hero); set("--hero-text",heroText);
+  set("--primary-action",s.primary); set("--primary-on",primaryText);
+  set("--accent-action",s.accent); set("--text-main",s.text); set("--text-secondary",s.muted);
+  set("--nav-background",s.nav); set("--border-color",s.line);
+  set("--success-color",s.success); set("--warning-color",s.warning); set("--danger-color",s.danger);
+
+  /* legacy tokens used throughout 12k+ lines */
+  set("--bg",s.bg); set("--card",s.card); set("--sand",s.surface); set("--line",s.line);
+  set("--ink",s.text); set("--muted",s.muted); set("--espresso",s.primary);
+  set("--cacao",mode==="dark"?v9Lighten(s.primary,.08):v9Darken(s.primary,.08));
+  set("--bronze",s.accent); set("--nav-bg",s.nav); set("--nav-on",s.primary);
+  set("--surface-0",s.card); set("--surface-1",s.bg); set("--surface-2",s.surface);
+  set("--text-1",s.text); set("--text-2",s.muted); set("--border",s.line);
+  set("--brand-900",s.primary); set("--brand-700",v9Darken(s.primary,.10)); set("--brand-600",v9Lighten(s.primary,.10));
+  set("--champagne-500",s.accent); set("--champagne-600",v9Darken(s.accent,.06)); set("--champagne-700",v9Darken(s.accent,.14));
+  set("--champagne-300",v9Lighten(s.accent,.42)); set("--champagne-100",v9Lighten(s.accent,.82));
+  set("--ok",s.success); set("--warn",s.danger);
+  set("--focus","0 0 0 3px "+v9Mix(s.accent,s.bg,.72));
+  try{const mc=document.querySelector('meta[name="theme-color"]');if(mc)mc.setAttribute("content",s.bg)}catch(e){}
+}
+const __v15OldApplySettings=applySettings;
+applySettings=function(){
+  try{ applyDesignTokens(); }catch(e){}
+  try{ applyAutoDark(); }catch(e){}
+  v15Apply(v15CurrentScheme());
+  try{
+    const st=S.settings,f=FONTS[st.fontStyle]||FONTS.elegant,br=BTN_R[st.buttonStyle]||BTN_R.rounded;
+    document.documentElement.style.setProperty("--font-display",f[0]);
+    document.documentElement.style.setProperty("--font-body",f[1]);
+    document.documentElement.style.setProperty("--btn-radius",br[0]);
+    document.documentElement.style.setProperty("--btn-radius-sm",br[1]);
+    applyFontScale();
+    document.title=st.name||"Entertainment";
+  }catch(e){}
+};
+
+/* ---------- theme UI ---------- */
+let v15EditMode="light";
+function v15ColorField(mode,key,label,value){
+  return `<div class="v15-color"><label>${esc(label)}</label><input type="color" data-v15color="${mode}|${key}" value="${esc(value)}"></div>`;
+}
+setThemeView=function(){
+  const st=S.settings; v15EnsureCustom();
+  const mode=v15Mode(), custom=!PALETTES[st.palette], x=st.customTheme[v15EditMode];
+  return `<div class="screen fadein">
+    ${topBar(t("setTheme"),S.session.name)}
+    ${hubBack()}
+    <div class="v15-theme-shell">
+      <section class="v15-panel">
+        <div class="v15-panel-title">Ready themes</div>
+        <div class="v15-panel-sub">Every theme below has its own complete Light and Dark colour system.</div>
+        <div class="v15-theme-grid">
+          ${paletteList().map(k=>{
+            const p=PALETTES[k], L=v15PresetScheme(k,"light"), D=v15PresetScheme(k,"dark");
+            return `<button class="v15-theme-card ${st.palette===k?"on":""}" data-v15preset="${k}" type="button">
+              <span class="v15-swatches">
+                <i style="background:${L.primary}"></i><i style="background:${L.accent}"></i><i style="background:${L.bg}"></i>
+                <i style="background:${D.bg};margin-left:auto"></i><i style="background:${D.text}"></i>
+              </span><b>${esc(p.label)}</b>
+            </button>`;
+          }).join("")}
+        </div>
+      </section>
+
+      <section class="v15-panel">
+        <div class="v15-panel-title">Light or Dark</div>
+        <div class="v15-panel-sub">The same selected theme works correctly in both modes.</div>
+        <div class="v15-modes">
+          ${[["light","sun","Light"],["dark","moon","Dark"],["auto","settings","Follow phone"]].map(([k,i,l])=>
+            `<button type="button" data-v15mode="${k}" class="${v9Mode()===k?"on":""}">${ic(i,17)} ${l}</button>`).join("")}
+        </div>
+      </section>
+
+      <section class="v15-panel">
+        <div class="v15-custom-head">
+          <div><div class="v15-panel-title">Custom theme</div><div class="v15-panel-sub" style="margin:0">Edit every important colour separately for Light and Dark.</div></div>
+          <span class="chip">${custom?"IN USE":"OPTIONAL"}</span>
+        </div>
+        <div class="v15-custom-tabs">
+          <button type="button" data-v15ed="light" class="${v15EditMode==="light"?"on":""}">${ic("sun",15)} Light colours</button>
+          <button type="button" data-v15ed="dark" class="${v15EditMode==="dark"?"on":""}">${ic("moon",15)} Dark colours</button>
+        </div>
+        <div class="v15-colors">
+          ${V15_ROLES.map(([k,l])=>v15ColorField(v15EditMode,k,l,x[k])).join("")}
+        </div>
+        <div class="v15-preview">
+          <div class="pv-card"><b>Main text</b><small>Card + secondary text</small></div>
+          <div class="pv-hero"><b>Hero / header</b><small>Independent background</small></div>
+        </div>
+        <button class="btn" id="v15-save-custom" type="button">Save & use Custom theme</button>
+        ${PALETTES[st.palette]?`<button class="btn ghost" id="v15-copy-preset" type="button">Copy current preset into Custom</button>`:""}
+      </section>
+    </div>
+  </div>`;
+};
+
+async function v15SaveCustom(){
+  v15EnsureCustom();
+  document.querySelectorAll("[data-v15color]").forEach(el=>{
+    const [mode,key]=el.dataset.v15color.split("|");
+    if(S.settings.customTheme[mode]) S.settings.customTheme[mode][key]=el.value;
+  });
+  const st={...S.settings,customTheme:S.settings.customTheme,palette:""};
+  try{
+    await DB.saveSettings(st);
+    S.settings=st;
+    applySettings(); toastOk(t("saved")); render();
+  }catch(e){ toastErr(t("errSave")); }
+}
+function v15CopyPreset(){
+  const key=PALETTES[S.settings.palette]?S.settings.palette:"navyGold";
+  S.settings.customTheme={light:v15PresetScheme(key,"light"),dark:v15PresetScheme(key,"dark")};
+  v15EditMode=v15Mode(); render();
+}
+async function v15UsePreset(key){
+  if(!PALETTES[key]) return;
+  try{
+    const st={...S.settings,palette:key};
+    await DB.saveSettings(st); S.settings=st; applySettings(); toastOk(t("saved")); render();
+  }catch(e){ toastErr(t("errSave")); }
+}
+function v15Wire(){
+  document.querySelectorAll("[data-v15preset]").forEach(b=>b.onclick=()=>v15UsePreset(b.dataset.v15preset));
+  document.querySelectorAll("[data-v15mode]").forEach(b=>b.onclick=()=>v9SetMode(b.dataset.v15mode));
+  document.querySelectorAll("[data-v15ed]").forEach(b=>b.onclick=()=>{v15EditMode=b.dataset.v15ed;render()});
+  const save=document.getElementById("v15-save-custom"); if(save)save.onclick=v15SaveCustom;
+  const cp=document.getElementById("v15-copy-preset"); if(cp)cp.onclick=v15CopyPreset;
+  document.querySelectorAll("[data-v15color]").forEach(el=>el.oninput=()=>{
+    const [mode,key]=el.dataset.v15color.split("|"); v15EnsureCustom();
+    S.settings.customTheme[mode][key]=el.value;
+    if(!PALETTES[S.settings.palette] && mode===v15Mode()) applySettings();
+  });
+}
+const __v15Wire=wireCommon;
+wireCommon=function(){ __v15Wire(); try{v15Wire()}catch(e){console.error(e)} };
+
+/* Re-apply immediately after this patch loads. */
+try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
 })();
 </script>
 </body>
