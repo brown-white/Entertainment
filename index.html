@@ -4656,6 +4656,7 @@ function guest360View(id){
     ${r.fb.length?`<div class="sec"><h3>${ic("star",17)} ${t("feedback")}</h3>
       <div class="card">${r.fb.map(f=>`<div class="g3-row"><b>${"\u2605".repeat(Math.max(0,Math.min(5,+f.rate||0)))}</b>
         <span class="mini">${esc(f.comment||"")} · ${fmtDate(f.created_at)}</span></div>`).join("")}</div></div>`:""}
+    ${S.session&&S.session.role==="manager"?`<div class="sec"><button class="btn" data-gedit="${acc.id}">${ic("pen",16)} ${t("editUser")}</button></div>`:""}
   </div>`;
 }
 /* ================= AUTOMATIC ACTIVITY ROSTER =================
@@ -9236,6 +9237,13 @@ const __v6Wire=wireCommon;wireCommon=function(){__v6Wire();document.querySelecto
 .v9-none{margin:0 var(--sp-4);color:var(--muted);font-size:var(--fs-label)}
 .v9-lead{margin:0 var(--sp-4) var(--sp-2);color:var(--muted)}
 
+/* ---- clickable analytics cards ---- */
+.v9-statlink{width:100%;text-align:start;display:block;color:var(--ink);font-family:var(--font-body);cursor:pointer;position:relative;transition:transform .14s ease,border-color .16s ease,box-shadow .16s ease}
+.v9-statlink::after{content:"›";position:absolute;right:14px;top:12px;color:var(--muted);font-size:22px;line-height:1;opacity:.65}
+[dir="rtl"] .v9-statlink::after{right:auto;left:14px;transform:rotate(180deg)}
+.v9-statlink:active{transform:scale(.985);border-color:var(--bronze)}
+.v9-statlink b,.v9-statlink span{pointer-events:none}
+
 /* ---- mode picker (light / dark / follow phone) ---- */
 .v9-modes{display:flex;gap:var(--sp-2);flex-wrap:wrap;margin:6px 0 4px}
 .v9-modes button{flex:1 1 30%;display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -10600,7 +10608,10 @@ function v9Bar(label,value,max,extra){
     <span class="v9-bt"><i style="width:${w}%"></i></span>
     <span class="v9-bv">${esc(String(extra!=null?extra:value))}</span></div>`;
 }
-function v9Stat(value,label){
+function v9Stat(value,label,target){
+  if(target){
+    return `<button type="button" class="stat v9-statlink" data-v9open="${esc(target)}" aria-label="${esc(label)}"><b>${esc(String(value))}</b><span>${esc(label)}</span></button>`;
+  }
   return `<div class="stat"><b>${esc(String(value))}</b><span>${esc(label)}</span></div>`;
 }
 function v9Card(title,icon,body){
@@ -10619,48 +10630,58 @@ function v9ActsOf(u){
     return e && (e===a || e===b || e.split(/[,/]+/).map(s=>s.trim()).includes(a));
   }).length;
 }
+function v9ActiveGuests(){
+  return (S.accounts||[]).filter(a=>a && a.active!==false && !stayExpired(a));
+}
 function v9OverviewInner(){
   const bk=v9Booked();
   const withCap=(S.activities||[]).filter(a=>+a.capacity>0);
   const occ=withCap.length?Math.round(withCap.reduce((n,a)=>n+Math.min(1,seatsTaken(a.id)/a.capacity),0)/withCap.length*100):0;
-  const people=bk.reduce((n,b)=>n+v9PeopleOn(b),0);
-  const rooms=new Set(bk.map(b=>b.room)).size;
+  const guests=v9ActiveGuests();
+  const people=guests.length;
+  const rooms=new Set(guests.map(a=>String(a.room||"")).filter(Boolean)).size;
   const tSold=(S.orders||[]).reduce((n,o)=>n+v9Num(+o.qty||0),0);
   const wait=(S.bookings||[]).filter(b=>b.status==="waitlist").length;
   const fb=(S.feedback||[]).filter(f=>+f.rate>0);
   const avg=fb.length?(fb.reduce((n,f)=>n+ +f.rate,0)/fb.length):0;
   const openTasks=(S.tasks||[]).filter(x=>!["done","verified","completed"].includes(String(x.status))).length;
   return `<div class="stat-grid">
-      ${v9Stat(bk.length,t("v9Bookings"))}
-      ${v9Stat(occ+"%",t("v9Occ"))}
-      ${v9Stat(people,t("v9People"))}
-      ${v9Stat(rooms,t("v9Rooms"))}
-      ${v9Stat(tSold,t("v9Tickets"))}
-      ${v9Stat(wait,t("v9Waitlist"))}
-      ${v9Stat((S.activities||[]).length,t("activities"))}
-      ${v9Stat(v9StaffList().length,t("v9Team"))}
-      ${v9Stat(avg?avg.toFixed(1):"—",t("v9RateAvg"))}
-      ${v9Stat(openTasks,t("v9TaskOpen"))}
+      ${v9Stat(bk.length,t("v9Bookings"),"guests:bookings")}
+      ${v9Stat(occ+"%",t("v9Occ"),"program:acts")}
+      ${v9Stat(people,t("v9People"),"guests:crm")}
+      ${v9Stat(rooms,t("v9Rooms"),"guests:crm")}
+      ${v9Stat(tSold,t("v9Tickets"),"program:tickets")}
+      ${v9Stat(wait,t("v9Waitlist"),"guests:bookings")}
+      ${v9Stat((S.activities||[]).length,t("activities"),"program:acts")}
+      ${v9Stat(v9StaffList().length,t("v9Team"),"team:accounts")}
+      ${v9Stat(avg?avg.toFixed(1):"—",t("v9RateAvg"),"guests:feedback")}
+      ${v9Stat(openTasks,t("v9TaskOpen"),"team:tasks")}
     </div>
     ${typeof attentionCard==="function"?attentionCard():""}`;
 }
 function v9GuestsInner(){
-  const bk=v9Booked();
+  const guests=v9ActiveGuests();
+  const activeRooms=new Set(guests.map(a=>String(a.room||"")).filter(Boolean));
   const natMap={};
-  bk.forEach(b=>{ if(b.nationality) (natMap[b.nationality]=natMap[b.nationality]||new Set()).add(b.room); });
-  (S.orders||[]).forEach(o=>{ if(o.nationality) (natMap[o.nationality]=natMap[o.nationality]||new Set()).add(o.room); });
+  guests.forEach(a=>{
+    const nat=String(a.nationality||"").trim();
+    const room=String(a.room||"").trim();
+    if(nat) (natMap[nat]=natMap[nat]||new Set()).add(room||String(a.id));
+  });
   const nats=Object.entries(natMap).map(([n,s])=>[n,s.size]).sort((a,b)=>b[1]-a[1]);
   const maxN=nats.length?nats[0][1]:0;
   const total=nats.reduce((n,x)=>n+x[1],0);
-  const msgs=(S.messages||[]).length;
-  const quiz=(S.quizReplies||[]).length;
+  const guestRoomOf=x=>String((x&&x.room)||"").trim();
+  const msgs=(S.messages||[]).filter(m=>{ const r=guestRoomOf(m); return r && !r.startsWith("staff:") && (activeRooms.size===0 || activeRooms.has(r)); }).length;
+  const quiz=(S.quizReplies||[]).filter(q=>{ const who=String((q&&q.who)||"").trim(); return activeRooms.size===0 ? q.audience==="guest" : activeRooms.has(who); }).length;
+  const reqs=(S.requests||[]).filter(r=>r.status==="new" && (!guestRoomOf(r) || activeRooms.size===0 || activeRooms.has(guestRoomOf(r)))).length;
   return `<div class="stat-grid">
-      ${v9Stat(new Set(bk.map(b=>b.room)).size,t("v9Rooms"))}
-      ${v9Stat(bk.reduce((n,b)=>n+v9PeopleOn(b),0),t("v9People"))}
-      ${v9Stat(nats.length,t("v9Nations"))}
-      ${v9Stat(msgs,t("v9Messages"))}
-      ${v9Stat(quiz,t("v9Answered"))}
-      ${v9Stat((S.requests||[]).filter(r=>r.status==="new").length,t("requests"))}
+      ${v9Stat(activeRooms.size,t("v9Rooms"),"guests:crm")}
+      ${v9Stat(guests.length,t("v9People"),"guests:crm")}
+      ${v9Stat(nats.length,t("v9Nations"),"guests:crm")}
+      ${v9Stat(msgs,t("v9Messages"),"guests:chat")}
+      ${v9Stat(quiz,t("v9Answered"),"quiz")}
+      ${v9Stat(reqs,t("requests"),"guests:requests")}
     </div>
     ${v9Card(t("v9Nations"),"globe", nats.length
       ? nats.slice(0,12).map(([n,c])=>v9Bar(n,c,maxN,c+" · "+v9Pct(c,total)+"%")).join("")
@@ -10707,10 +10728,10 @@ function v9TeamInner(){
   const marked=new Set((S.staffAtt||[]).filter(x=>String(x.date).slice(0,10)===date).map(x=>x.username));
   const unmarked=staff.filter(u=>!marked.has(u.username)).length;
   return `<div class="stat-grid">
-      ${v9Stat(staff.length,t("totalEntertainers"))}
-      ${v9Stat(openT,t("v9TaskOpen"))}
-      ${v9Stat(lateT,t("v9TaskLate"))}
-      ${v9Stat(unmarked,t("attNoShow"))}
+      ${v9Stat(staff.length,t("totalEntertainers"),"team:accounts")}
+      ${v9Stat(openT,t("v9TaskOpen"),"team:tasks")}
+      ${v9Stat(lateT,t("v9TaskLate"),"team:tasks")}
+      ${v9Stat(unmarked,t("attNoShow"),"team:attendance")}
     </div>
     <div class="v9-flag ${spread<=1?"ok":"warn"}">${spread<=1?ic("check",15):ic("flag",15)}
       ${spread<=1?esc(t("v9Even")):esc(t("v9Gap"))+" "+spread}</div>
@@ -10726,10 +10747,10 @@ function v9QualityInner(){
   const good=fb.filter(f=>+f.rate>=4).length;
   const low=fb.filter(f=>+f.rate<=3).length;
   return `<div class="stat-grid">
-      ${v9Stat(fb.length,t("feedback"))}
-      ${v9Stat(avg?avg.toFixed(1):"—",t("v9RateAvg"))}
-      ${v9Stat(good,t("v9Reviews"))}
-      ${v9Stat(low,t("v9RateLow"))}
+      ${v9Stat(fb.length,t("feedback"),"guests:feedback")}
+      ${v9Stat(avg?avg.toFixed(1):"—",t("v9RateAvg"),"guests:feedback")}
+      ${v9Stat(good,t("v9Reviews"),"guests:feedback")}
+      ${v9Stat(low,t("v9RateLow"),"guests:feedback")}
     </div>
     ${v9Card(t("feedback"),"star", fb.length
       ? dist.map(x=>v9Bar("★".repeat(x.r), x.n, max)).join("")
@@ -10799,9 +10820,23 @@ function v9WireMode(){
     b.onclick=()=>v9SetMode(b.dataset.v9mode);
   });
 }
+function v9OpenDetail(target){
+  const raw=String(target||"");
+  const parts=raw.split(":");
+  const tab=parts[0], sub=parts[1]||"";
+  if(tab==="guests"){ S.tab="guests"; S.sub.guests=sub||"crm"; S.chatRoom=null; }
+  else if(tab==="program"){ S.tab="program"; S.sub.program=sub||"acts"; }
+  else if(tab==="team"){ S.tab="team"; S.sub.team=sub||"accounts"; }
+  else if(tab==="insights"){ S.tab="insights"; S.sub.insights=sub||"overview"; }
+  else { S.tab=tab||"insights"; }
+  render();
+}
 function v9Wire(){
   try{ v9WireSearch(); }catch(e){ console.error(e); }
   try{ v9WireMode(); }catch(e){ console.error(e); }
+  document.querySelectorAll("[data-v9open]").forEach(el=>{
+    el.onclick=()=>v9OpenDetail(el.dataset.v9open);
+  });
 }
 const __v8WireCommonV9=wireCommon;
 wireCommon=function(){ __v8WireCommonV9(); v9Wire(); };
@@ -12259,6 +12294,107 @@ wireExplore=function(){
   const av=document.getElementById("ex-addvid"); if(av) av.onclick=openVideoLinkModal;
 };
 
+</script>
+
+<style id="explore-v14-css">
+/* ===== EXPLORE v14 — resort discovery experience ===== */
+.ex-screen.v14{padding:0 0 54px;background:
+  radial-gradient(120% 42% at 50% -8%,rgba(198,161,91,.16),transparent 64%),var(--bg)}
+.ex-screen.v14 .ex-top{position:sticky;top:0;z-index:18;display:flex;align-items:center;gap:10px;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 10px;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.ex-screen.v14 .ex-round{width:42px;height:42px;border-radius:15px;background:var(--card);border:1px solid var(--line);box-shadow:var(--sh-1);display:flex;align-items:center;justify-content:center}
+.ex-screen.v14 .ex-logo{height:34px;max-width:160px;object-fit:contain;margin:auto}
+.ex-screen.v14 .ex-brand{font-family:var(--font-display);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:auto}
+.ex-screen.v14 .ex-signin{padding:10px 14px;border-radius:14px;background:var(--espresso);color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
+[data-theme="dark"] .ex-screen.v14 .ex-signin{background:var(--bronze);color:#111827}
+
+.v14-hero{position:relative;margin:14px 16px 0;border-radius:28px;overflow:hidden;min-height:460px;background:linear-gradient(150deg,var(--espresso),var(--cacao));box-shadow:0 24px 60px -28px rgba(15,27,45,.72)}
+.v14-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.v14-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,12,23,.08) 10%,rgba(4,12,23,.20) 42%,rgba(4,12,23,.91) 100%)}
+.v14-hero-body{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:24px;color:#fff}
+.v14-eyebrow{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(12px);font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.v14-hero h1{font-size:clamp(32px,9vw,48px);line-height:.98;margin:12px 0 8px;color:#fff;letter-spacing:-.02em;text-shadow:0 4px 22px rgba(0,0,0,.34)}
+.v14-hero-sub{font-size:14px;line-height:1.5;opacity:.88;max-width:430px}
+.v14-hero-actions{display:flex;gap:8px;margin-top:18px}
+.v14-hero-actions button{min-height:45px;border-radius:14px;padding:0 15px;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;gap:7px}
+.v14-primary{background:#fff;color:#111827;flex:1}.v14-secondary{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.v14-live-pill{position:absolute;z-index:3;top:16px;left:16px;right:16px;display:flex;align-items:center;gap:10px;color:#fff}
+.v14-live-pill .pulse{width:9px;height:9px;border-radius:50%;background:#43d17d;box-shadow:0 0 0 5px rgba(67,209,125,.16)}
+.v14-live-pill .v14-live-copy{min-width:0;display:flex;flex-direction:column}.v14-live-pill b{font-size:13px}.v14-live-pill small{font-size:10.5px;opacity:.8}
+.v14-live-pill .when{margin-left:auto;background:rgba(7,14,25,.36);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(10px);padding:6px 10px;border-radius:999px;font-size:10.5px;font-weight:700}
+
+.v14-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:13px 16px 0}
+.v14-q{min-width:0;padding:12px 6px 10px;border:1px solid var(--line);background:var(--card);border-radius:18px;box-shadow:var(--sh-1);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink)}
+.v14-q .ico{width:34px;height:34px;border-radius:12px;background:var(--sand);display:flex;align-items:center;justify-content:center;color:var(--cacao)}
+.v14-q span:last-child{font-size:10.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+.v14-section{margin:28px 16px 0}.v14-section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.v14-section-head .kicker{display:block;font-size:10px;color:var(--bronze);font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}
+.v14-section-head h2{font-size:25px;line-height:1.05}.v14-section-head .mini{font-size:11px}
+.v14-glance{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.v14-glance>div{padding:14px 12px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh-1)}
+.v14-glance b{display:block;font-family:var(--font-display);font-size:27px;line-height:1;color:var(--cacao)}
+[data-theme="dark"] .v14-glance b{color:var(--bronze)}
+.v14-glance span{display:block;margin-top:5px;font-size:9.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+
+.v14-featured{display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x mandatory;padding:1px 16px 7px;margin:0 -16px;scrollbar-width:none}.v14-featured::-webkit-scrollbar{display:none}
+.v14-feature{position:relative;flex:0 0 78%;max-width:330px;aspect-ratio:1.18;border-radius:22px;overflow:hidden;background:var(--sand);scroll-snap-align:start;text-align:left;color:#fff;box-shadow:0 15px 32px -20px rgba(15,27,45,.62)}
+.v14-feature img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.v14-feature .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.78))}
+.v14-feature .copy{position:absolute;left:15px;right:15px;bottom:14px}.v14-feature .time{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f3d99e}.v14-feature h3{font-size:22px;margin:3px 0;color:#fff}.v14-feature p{font-size:11px;opacity:.82;margin:0}
+.v14-feature .arrow{position:absolute;right:13px;top:13px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.17);backdrop-filter:blur(8px)}
+
+.v14-schedule{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--sh-1)}
+.v14-slot{display:grid;grid-template-columns:57px 13px 1fr auto;gap:10px;align-items:center;padding:12px 13px;position:relative;text-align:left;width:100%;color:var(--ink)}
+.v14-slot:not(:last-child){border-bottom:1px solid var(--line)}.v14-slot-time{font-size:12px;font-weight:800;color:var(--cacao)}[data-theme="dark"] .v14-slot-time{color:var(--bronze)}
+.v14-slot-dot{width:8px;height:8px;border-radius:50%;background:var(--bronze);box-shadow:0 0 0 4px color-mix(in srgb,var(--bronze) 14%,transparent)}
+.v14-slot-copy{display:flex;flex-direction:column;min-width:0}.v14-slot-copy b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v14-slot-copy small{font-size:10.5px;color:var(--muted);margin-top:2px}
+.v14-slot-go{color:var(--muted)}
+
+.v14-days{display:flex;gap:7px;overflow:auto;scrollbar-width:none;margin-bottom:10px}.v14-days::-webkit-scrollbar{display:none}
+.v14-day{flex:0 0 auto;min-width:61px;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:10px 8px;text-align:center;color:var(--ink)}
+.v14-day b{display:block;font-size:11px}.v14-day small{display:block;font-size:9.5px;color:var(--muted);margin-top:2px}.v14-day.on{background:var(--espresso);color:#fff;border-color:var(--espresso)}.v14-day.on small{color:#d7dfeb}
+
+.v14-moments{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:1px 16px 8px;margin:0 -16px;scrollbar-width:none}.v14-moments::-webkit-scrollbar{display:none}
+.v14-moment{position:relative;flex:0 0 45%;aspect-ratio:.76;border-radius:20px;overflow:hidden;background:var(--sand);scroll-snap-align:start}.v14-moment img{width:100%;height:100%;object-fit:cover}.v14-moment .shade{position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.68))}.v14-moment figcaption{position:absolute;left:11px;right:11px;bottom:10px;color:#fff;font-size:11px;font-weight:700}.v14-moment .ex-play{left:50%;top:45%;transform:translate(-50%,-50%)}
+.v14-filter{display:flex;gap:7px;margin:0 0 11px}.v14-filter .ex-chip{box-shadow:none}
+
+.v14-team{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none}.v14-team::-webkit-scrollbar{display:none}.v14-person{flex:0 0 112px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px;text-align:center}.v14-avatar{width:64px;height:64px;border-radius:18px;margin:0 auto 8px;overflow:hidden;background:linear-gradient(135deg,var(--espresso),var(--cacao));display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--font-display);font-size:24px}.v14-avatar img{width:100%;height:100%;object-fit:cover}.v14-person b{display:block;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v14-person small{font-size:9.5px;color:var(--muted);display:block;margin-top:2px}
+
+.v14-join{margin:28px 16px 0;border-radius:25px;padding:22px;background:linear-gradient(145deg,#0f1b2d,#28476e);color:#fff;position:relative;overflow:hidden;box-shadow:0 20px 45px -24px rgba(15,27,45,.75)}
+.v14-join:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-70px;top:-85px;background:rgba(198,161,91,.17)}.v14-join>*{position:relative;z-index:1}.v14-join .ey{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#e5c981;font-weight:800}.v14-join h2{font-size:27px;color:#fff;margin:6px 0}.v14-join p{font-size:12px;line-height:1.55;opacity:.82;max-width:360px}.v14-join button{margin-top:14px;background:#fff;color:#111827;border-radius:14px;padding:12px 16px;font-weight:800;font-size:12px;display:inline-flex;align-items:center;gap:7px}
+.v14-connect{margin:28px 16px 0}.v14-connect-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v14-link{display:flex;align-items:center;gap:10px;padding:13px;border:1px solid var(--line);background:var(--card);border-radius:17px;color:var(--ink);text-decoration:none;font-size:11px;font-weight:700}.v14-link .ico{width:32px;height:32px;border-radius:11px;background:var(--sand);display:flex;align-items:center;justify-content:center;color:var(--cacao)}
+@media(min-width:620px){.v14-hero{min-height:420px}.v14-feature{flex-basis:45%}.v14-moment{flex-basis:28%}}
+</style>
+<script id="explore-v14-js">
+(function(){
+const X14={
+ en:{discover:"Discover your stay",sub:"Entertainment, experiences and moments — all in one place.",today:"Today at a glance",activities:"Activities",next:"Next",evening:"Evening",featured:"Featured experiences",featuredSub:"Tap any experience for details",schedule:"Today's programme",week:"Explore the week",moments:"Moments from the resort",team:"Meet the entertainment team",teamSub:"The people behind the experience",program:"Programme",photos:"Moments",people:"Team",connect:"Connect",guest:"Your stay, your programme",join:"Sign in with your room to book activities, message the team and join the experience.",signin:"Guest sign in",live:"Happening now",soon:"Coming up",nothing:"No activities are scheduled yet.",follow:"Stay connected",reviews:"Guest reviews",all:"All",videos:"Videos",photo:"Photos"},
+ de:{discover:"Entdecke deinen Aufenthalt",sub:"Entertainment, Erlebnisse und Momente – alles an einem Ort.",today:"Heute auf einen Blick",activities:"Aktivitäten",next:"Als Nächstes",evening:"Abend",featured:"Highlights & Erlebnisse",featuredSub:"Tippe auf ein Erlebnis für Details",schedule:"Heutiges Programm",week:"Die Woche entdecken",moments:"Momente aus dem Resort",team:"Lerne das Entertainment-Team kennen",teamSub:"Die Menschen hinter deinem Erlebnis",program:"Programm",photos:"Momente",people:"Team",connect:"Kontakt",guest:"Dein Aufenthalt, dein Programm",join:"Melde dich mit deinem Zimmer an, um Aktivitäten zu buchen und dem Team zu schreiben.",signin:"Gast-Login",live:"Jetzt live",soon:"Als Nächstes",nothing:"Noch keine Aktivitäten geplant.",follow:"Bleib verbunden",reviews:"Gästebewertungen",all:"Alle",videos:"Videos",photo:"Fotos"},
+ ru:{discover:"Откройте свой отдых",sub:"Развлечения, события и лучшие моменты — в одном месте.",today:"Сегодня",activities:"Активности",next:"Далее",evening:"Вечер",featured:"Главные события",featuredSub:"Нажмите, чтобы узнать подробнее",schedule:"Программа на сегодня",week:"Программа недели",moments:"Моменты из отеля",team:"Наша команда анимации",teamSub:"Люди, которые создают атмосферу",program:"Программа",photos:"Моменты",people:"Команда",connect:"Связь",guest:"Ваш отдых, ваша программа",join:"Войдите по номеру комнаты, чтобы бронировать активности и писать команде.",signin:"Войти",live:"Сейчас",soon:"Далее",nothing:"Активности пока не запланированы.",follow:"Мы в соцсетях",reviews:"Отзывы гостей",all:"Все",videos:"Видео",photo:"Фото"},
+ ar:{discover:"اكتشف إقامتك",sub:"الترفيه والتجارب واللحظات — كلها في مكان واحد.",today:"اليوم بنظرة واحدة",activities:"الأنشطة",next:"التالي",evening:"المساء",featured:"تجارب مميزة",featuredSub:"اضغط على أي تجربة للتفاصيل",schedule:"برنامج اليوم",week:"اكتشف الأسبوع",moments:"لحظات من المنتجع",team:"تعرف على فريق الترفيه",teamSub:"الأشخاص وراء التجربة",program:"البرنامج",photos:"اللحظات",people:"الفريق",connect:"تواصل",guest:"إقامتك، برنامجك",join:"سجل الدخول برقم الغرفة للحجز ومراسلة الفريق.",signin:"دخول الضيف",live:"يحدث الآن",soon:"التالي",nothing:"لا توجد أنشطة مجدولة بعد.",follow:"ابقَ على تواصل",reviews:"تقييمات الضيوف",all:"الكل",videos:"فيديو",photo:"صور"}
+};
+function x14(k){const l=(S.lang||'en').toLowerCase();return (X14[l]&&X14[l][k])||(X14.en[k]||k)}
+function scrollX14(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+function actImg(a){return a&&a.image?esc(a.image):''}
+function teamList(){return (S.users||[]).filter(u=>u && u.active!==false).slice(0,6)}
+function eveningName(){try{const p=dayPlanFor(todayIndex());return (p&&p.eveningShow)||'—'}catch(e){return '—'}}
+function nextInfo(){const n=v12NowNext();return n&&n.act?n:null}
+function hero14(){const h=v12Hero(),n=nextInfo(),name=(S.settings&&S.settings.hotelName)||'';const img=h&&h.img?h.img:'';return `<section class="v14-hero"${h&&h.video?` data-vid="${esc(h.video)}"`:''}>
+ ${img?`<img src="${esc(img)}" alt="" loading="eager">`:''}
+ ${n?`<div class="v14-live-pill" data-exact="${esc(n.act.id)}"><span class="pulse"></span><span class="v14-live-copy"><b>${esc(n.kind==='now'?x14('live'):x14('soon'))}</b><small>${esc(n.act.name)} · ${esc(n.act.time||'')}</small></span><span class="when">${n.kind==='now'?esc(t('exOn')):(n.mins<60?esc(n.mins+' '+t('exMin')):esc(n.act.time||''))}</span></div>`:''}
+ <div class="v14-hero-body"><span class="v14-eyebrow">${ic('sparkle',13)} ${esc(name||t('ex_title'))}</span><h1>${esc(x14('discover'))}</h1><p class="v14-hero-sub">${esc(x14('sub'))}</p><div class="v14-hero-actions"><button class="v14-primary" data-xscroll="x14-program">${ic('calendar',15)} ${esc(x14('program'))}</button><button class="v14-secondary" id="x14-signin">${ic('key',14)} ${esc(x14('signin'))}</button></div></div></section>`}
+function quick14(){return `<div class="v14-quick"><button class="v14-q" data-xscroll="x14-program"><span class="ico">${ic('calendar',17)}</span><span>${esc(x14('program'))}</span></button><button class="v14-q" data-xscroll="x14-moments"><span class="ico">${ic('image',17)}</span><span>${esc(x14('photos'))}</span></button><button class="v14-q" data-xscroll="x14-team"><span class="ico">${ic('users',17)}</span><span>${esc(x14('people'))}</span></button><button class="v14-q" data-xscroll="x14-connect"><span class="ico">${ic('share',17)}</span><span>${esc(x14('connect'))}</span></button></div>`}
+function glance14(){const acts=v12DayActs(todayIndex()),n=nextInfo();return `<section class="v14-section"><div class="v14-section-head"><div><span class="kicker">${esc(t('days')[todayIndex()]||'')}</span><h2>${esc(x14('today'))}</h2></div></div><div class="v14-glance"><div><b>${acts.length}</b><span>${esc(x14('activities'))}</span></div><div><b style="font-size:17px;line-height:1.1">${esc(n&&n.act?n.act.time:'—')}</b><span>${esc(x14('next'))}</span></div><div><b style="font-size:16px;line-height:1.1">${esc(eveningName())}</b><span>${esc(x14('evening'))}</span></div></div></section>`}
+function featured14(){let acts=(S.activities||[]).filter(a=>a.image&&(a.highlight||a.day===todayIndex()));if(!acts.length)acts=(S.activities||[]).filter(a=>a.image);acts=acts.slice(0,6);if(!acts.length)return '';return `<section class="v14-section"><div class="v14-section-head"><div><span class="kicker">${esc(t('ex_featured')||'Featured')}</span><h2>${esc(x14('featured'))}</h2><span class="mini">${esc(x14('featuredSub'))}</span></div></div><div class="v14-featured">${acts.map(a=>`<button class="v14-feature" data-exact="${esc(a.id)}"><img src="${esc(a.image)}" alt="" loading="lazy"><span class="shade"></span><span class="arrow">${ic('back',15)}</span><span class="copy"><span class="time">${esc((t('daysShort')[a.day]||''))} · ${esc(a.time||'')}</span><h3>${esc(a.name)}</h3><p>${esc(a.location||'')}</p></span></button>`).join('')}</div></section>`}
+function sched14(day){const acts=v12DayActs(day);if(!acts.length)return `<div class="ex-empty">${esc(x14('nothing'))}</div>`;return `<div class="v14-schedule">${acts.map(a=>`<button class="v14-slot" data-exact="${esc(a.id)}"><span class="v14-slot-time">${esc(a.time||'')}</span><span class="v14-slot-dot"></span><span class="v14-slot-copy"><b>${esc(a.name)}</b><small>${esc(a.location||'')}</small></span><span class="v14-slot-go">${ic('back',14)}</span></button>`).join('')}</div>`}
+function days14(){const sel=v12Day();return `<div class="v14-days">${[0,1,2,3,4,5,6].map(d=>`<button class="v14-day ${d===sel?'on':''}" data-exday="${d}"><b>${esc(t('daysShort')[d]||'')}</b><small>${v12DayActs(d).length} ${esc(x14('activities').toLowerCase())}</small></button>`).join('')}</div>`}
+function moments14(){const m=exploreMoments(),shown=exploreFilter==='videos'?m.vids:exploreFilter==='photos'?m.pics:m.all,isMgr=S.session&&S.session.role==='manager';if(!m.all.length&&!isMgr)return '';const chip=(id,label)=>`<button class="ex-chip ${exploreFilter===id?'on':''}" data-exfilter="${id}">${esc(label)}</button>`;return `<section class="v14-section" id="x14-moments"><div class="v14-section-head"><div><span class="kicker">${esc(t('ex_moments')||'Moments')}</span><h2>${esc(x14('moments'))}</h2></div>${isMgr?`<button class="dd-edit" id="ex-addvid">${ic('plus',13)} ${esc(t('ex_addvid'))}</button>`:''}</div>${m.all.length?`<div class="v14-filter">${chip('all',x14('all'))}${chip('videos',x14('videos'))}${chip('photos',x14('photo'))}</div>`:''}<div class="v14-moments">${shown.map(it=>`<figure class="v14-moment"${it.video?` data-vid="${esc(it.video)}"`:''}>${it.img?`<img src="${esc(it.img)}" alt="" loading="lazy"${it.video?'':` data-pvsingle="${esc(it.img)}"`}>`:`<div class="ex-noimg">${ic('sparkle',24)}</div>`}<span class="shade"></span>${it.video?`<span class="ex-play"></span>`:''}${it.cap?`<figcaption>${esc(it.cap)}</figcaption>`:''}</figure>`).join('')}</div></section>`}
+function team14(){const us=teamList();if(!us.length)return '';return `<section class="v14-section" id="x14-team"><div class="v14-section-head"><div><span class="kicker">Entertainment</span><h2>${esc(x14('team'))}</h2><span class="mini">${esc(x14('teamSub'))}</span></div></div><div class="v14-team">${us.map(u=>{const nm=u.display_name||u.name||u.username||'Team';const ph=u.photo||u.avatar||u.image||'';const role=u.position||u.roleName||u.role||'';return `<div class="v14-person"><div class="v14-avatar">${ph?`<img src="${esc(ph)}" alt="">`:esc(nm.slice(0,1).toUpperCase())}</div><b>${esc(nm)}</b><small>${esc(role)}</small></div>`}).join('')}</div></section>`}
+function connect14(){const soc=v12Socials(),rev=reviewLinks();if(!soc.length&&!rev.length)return '';const label=k=>k==='google'?'Google':k==='tripadvisor'?'Tripadvisor':'HolidayCheck';return `<section class="v14-connect" id="x14-connect"><div class="v14-section-head"><div><span class="kicker">${esc(x14('follow'))}</span><h2>${esc(x14('connect'))}</h2></div></div><div class="v14-connect-grid">${soc.map(([k,v])=>`<a class="v14-link" href="${esc(v)}" target="_blank" rel="noopener"><span class="ico">${ic(k,17)}</span><span>${esc(k)}</span></a>`).join('')}${rev.map(([k,v])=>`<a class="v14-link" href="${esc(v)}" target="_blank" rel="noopener"><span class="ico">${ic('star',16)}</span><span>${esc(label(k))}</span></a>`).join('')}</div></section>`}
+exploreView=function(){const logo=S.settings&&S.settings.logo,hname=(S.settings&&S.settings.hotelName)||'',sel=v12Day();return `<div class="screen fadein ex-screen v14"><div class="ex-top"><button class="ex-round" id="ex-back" aria-label="back">${ic('back',18)}</button>${logo?`<img class="ex-logo" src="${esc(logo)}" alt="">`:(hname?`<b class="ex-brand">${esc(hname)}</b>`:'<span style="flex:1"></span>')}<button class="ex-signin" id="ex-signin">${esc(x14('signin'))}</button></div>${hero14()}${quick14()}${glance14()}${featured14()}<section class="v14-section" id="x14-program"><div class="v14-section-head"><div><span class="kicker">${esc(t('exToday'))} · ${esc(t('days')[todayIndex()]||'')}</span><h2>${esc(x14('schedule'))}</h2></div></div>${sched14(todayIndex())}</section><section class="v14-section"><div class="v14-section-head"><div><span class="kicker">7 days</span><h2>${esc(x14('week'))}</h2></div></div>${days14()}${sel===todayIndex()?`<div class="ex-empty soft">${esc(t('exToday'))} ↑</div>`:sched14(sel)}</section><section class="v14-join"><span class="ey">${esc(x14('guest'))}</span><h2>${esc(x14('discover'))}</h2><p>${esc(x14('join'))}</p><button id="ex-join">${ic('key',15)} ${esc(x14('signin'))}</button></section>${moments14()}${team14()}${connect14()}</div>`}
+wireExplore=function(){const b=document.getElementById('ex-back');if(b)b.onclick=()=>{showExplore=false;render()};const sign=()=>{showExplore=false;loginMode='guest';guestMode='new';render()};const s=document.getElementById('ex-signin');if(s)s.onclick=sign;const s2=document.getElementById('x14-signin');if(s2)s2.onclick=sign;const j=document.getElementById('ex-join');if(j)j.onclick=sign;document.querySelectorAll('[data-xscroll]').forEach(el=>el.onclick=e=>{e.stopPropagation();scrollX14(el.dataset.xscroll)});document.querySelectorAll('[data-exfilter]').forEach(el=>el.onclick=()=>{exploreFilter=el.dataset.exfilter;render()});document.querySelectorAll('[data-exday]').forEach(el=>el.onclick=()=>{exploreDay=+el.dataset.exday;render()});document.querySelectorAll('[data-vid]').forEach(el=>el.onclick=()=>playVideo(el.dataset.vid));document.querySelectorAll('[data-exact]').forEach(el=>el.onclick=e=>{if(el.hasAttribute('data-vid'))return;e.stopPropagation();openExploreBook(el.dataset.exact)});const av=document.getElementById('ex-addvid');if(av)av.onclick=openVideoLinkModal;};
+})();
 </script>
 </body>
 </html>
