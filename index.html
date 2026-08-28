@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v22.2 Boot Fixed</title>
+<title>Entertainment Operations Control Center — v21.1 Manager Booking & Notification Fixed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <!--
@@ -2547,18 +2547,6 @@ html,body,#app,.app,.screen,.ex-screen.v14{
   }
 }
 
-
-
-/* v22.1 theme compatibility aliases — no layout or interaction overrides */
-:root{
-  --primary:var(--primary-action);
-  --primary-text:var(--primary-on);
-  --accent:var(--accent-action);
-  --soft:var(--surface-bg);
-  --surface-soft:var(--surface-bg);
-  --serif:var(--font-display);
-}
-
 </style>
 </head>
 <body data-build="audited-master-v16">
@@ -2586,20 +2574,6 @@ html,body,#app,.app,.screen,.ex-screen.v14{
 
 <script id="app-script">
 setTimeout(function(){var s=document.getElementById("splash");if(s&&s.parentNode)s.parentNode.removeChild(s);},2600);
-
-/* v22.2 watchdog: never allow the hardcoded skeleton to become permanent. */
-window.__ENT_BOOT_OK=false;
-window.addEventListener("error",function(e){
-  try{console.error("startup error",e.error||e.message)}catch(_){}
-});
-setTimeout(function(){
-  var app=document.getElementById("app");
-  if(!app||window.__ENT_BOOT_OK) return;
-  if(app.querySelector(".skel-wrap") && typeof render==="function"){
-    try{render()}catch(e){console.error("watchdog render failed",e)}
-  }
-},3500);
-
 /* ================================================================
    ⚙️ SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup-production-v8.sql (one time)
@@ -2622,7 +2596,7 @@ const DEFAULT_SETTINGS = {
   tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
   instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:"",
   busToHotel:"", busToHouse:"",
-  aiEndpoint:"", pushEndpoint:"", palette:"sapphireChampagne", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
+  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
   logo:"", hotelName:"", timezone:"Africa/Cairo", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true},
@@ -3710,15 +3684,51 @@ function shade(hex,p){
 
 /* ============ COLOUR PALETTES (each works in light AND dark) ============ */
 const PALETTES = {
-  sapphireChampagne: { label:"Sapphire & Champagne",
-    light:{ primary:"#10243E", accent:"#C7A56A", bg:"#F7F5F0", text:"#172235", card:"#FFFFFF", sand:"#EEE8DD", line:"#DED6C8" },
-    dark: { primary:"#D9BD7A", accent:"#C7A56A", bg:"#07111E", text:"#F5F0E7", card:"#0E1B2B", sand:"#16263A", line:"#25374E" } },
-  emeraldIvory: { label:"Emerald & Ivory",
-    light:{ primary:"#123F36", accent:"#B99A62", bg:"#FAF8F1", text:"#16251F", card:"#FFFFFF", sand:"#EEF0E8", line:"#DDE2D7" },
-    dark: { primary:"#C8AD72", accent:"#B99A62", bg:"#07140F", text:"#F2F1E9", card:"#0E211A", sand:"#173128", line:"#28453A" } },
-  bordeauxRoseGold: { label:"Bordeaux & Rose Gold",
-    light:{ primary:"#542532", accent:"#B98A76", bg:"#FBF7F5", text:"#2D1820", card:"#FFFFFF", sand:"#F1E7E4", line:"#E4D5D1" },
-    dark: { primary:"#D7A693", accent:"#B98A76", bg:"#160A0E", text:"#F7EDEA", card:"#241218", sand:"#321B23", line:"#472833" } }
+  brownWhite: { label:"Brown & White",
+    light:{ primary:"#0F1B2D", accent:"#C6A15B", bg:"#F8F7F3", text:"#172033", card:"#FFFFFF", sand:"#EFE6D8", line:"#E2D6C4" },
+    dark: { primary:"#D9B47F", accent:"#C9A26B", bg:"#17110C", text:"#F2E7D8", card:"#221913", sand:"#2C211A", line:"#3A2C22" } },
+  whiteBrown: { label:"White & Brown",
+    light:{ primary:"#1F3657", accent:"#8A6A4A", bg:"#FFFFFF", text:"#33241A", card:"#FBF8F4", sand:"#F3EDE5", line:"#E7DED2" },
+    dark: { primary:"#E4CBA9", accent:"#C79A66", bg:"#1B1614", text:"#F6EFE7", card:"#251E19", sand:"#2E251F", line:"#3C3128" } },
+  blackWhite: { label:"Black & White",
+    light:{ primary:"#111111", accent:"#555555", bg:"#FFFFFF", text:"#111111", card:"#FAFAFA", sand:"#F0F0F0", line:"#E0E0E0" },
+    dark: { primary:"#FFFFFF", accent:"#BBBBBB", bg:"#0B0B0B", text:"#F2F2F2", card:"#161616", sand:"#1F1F1F", line:"#2C2C2C" } },
+  grayWhite: { label:"Grey & White",
+    light:{ primary:"#4A5057", accent:"#7C858E", bg:"#FBFBFC", text:"#23272B", card:"#FFFFFF", sand:"#EFF1F3", line:"#E1E4E8" },
+    dark: { primary:"#D6DBE0", accent:"#9AA3AC", bg:"#111417", text:"#EDEFF2", card:"#1A1E22", sand:"#22272C", line:"#2E343A" } },
+  grayBlack: { label:"Grey & Black",
+    light:{ primary:"#2B2F33", accent:"#6E767E", bg:"#F2F3F5", text:"#1B1E21", card:"#FFFFFF", sand:"#E7E9EC", line:"#D8DBDF" },
+    dark: { primary:"#C8CDD3", accent:"#848C94", bg:"#0C0E10", text:"#E9ECEF", card:"#15181B", sand:"#1D2125", line:"#282D32" } },
+  navyGold: { label:"Navy & Gold",
+    light:{ primary:"#12263F", accent:"#C9A85F", bg:"#F7F8FA", text:"#101A28", card:"#FFFFFF", sand:"#E9EDF3", line:"#D7DEE8" },
+    dark: { primary:"#E3C567", accent:"#C9A85F", bg:"#0A1220", text:"#EAF0F8", card:"#111E31", sand:"#17263C", line:"#22344E" } },
+  emeraldCream: { label:"Emerald & Cream",
+    light:{ primary:"#12503C", accent:"#C2A15B", bg:"#FAF8F2", text:"#12241C", card:"#FFFFFF", sand:"#ECF1EC", line:"#D9E3DB" },
+    dark: { primary:"#7FCBA6", accent:"#C2A15B", bg:"#08150F", text:"#E9F4EE", card:"#0F241B", sand:"#153026", line:"#1E4033" } },
+  burgundyGold: { label:"Burgundy & Gold",
+    light:{ primary:"#5C1A2B", accent:"#B9903F", bg:"#FAF6F5", text:"#2A1017", card:"#FFFFFF", sand:"#F1E7E7", line:"#E2D2D3" },
+    dark: { primary:"#E0A6B4", accent:"#C9A24E", bg:"#15080C", text:"#F6E9EC", card:"#221016", sand:"#2E161E", line:"#3E1F29" } },
+  charcoalCopper: { label:"Charcoal & Copper",
+    light:{ primary:"#26292E", accent:"#B3703C", bg:"#F6F5F3", text:"#1A1C20", card:"#FFFFFF", sand:"#ECEAE7", line:"#DCD9D4" },
+    dark: { primary:"#E0A876", accent:"#B3703C", bg:"#0D0E10", text:"#EFEDEA", card:"#17191C", sand:"#1F2226", line:"#2B2F34" } },
+  midnightSilver: { label:"Midnight & Silver",
+    light:{ primary:"#1B1F2A", accent:"#8E9AAF", bg:"#F7F8FB", text:"#141822", card:"#FFFFFF", sand:"#ECEEF3", line:"#DBDFE8" },
+    dark: { primary:"#CBD3E1", accent:"#8E9AAF", bg:"#070911", text:"#EDF0F6", card:"#10141F", sand:"#171C29", line:"#222839" } },
+  sandTeal: { label:"Sand & Teal",
+    light:{ primary:"#0F5257", accent:"#C89F6B", bg:"#F7F8FA", text:"#10282A", card:"#FFFFFF", sand:"#EDF2F1", line:"#DAE4E3" },
+    dark: { primary:"#7FC8CC", accent:"#C89F6B", bg:"#07171A", text:"#E7F3F4", card:"#0E2529", sand:"#143135", line:"#1D4348" } },
+  plumGold: { label:"Plum & Gold",
+    light:{ primary:"#3F2350", accent:"#C6A052", bg:"#F9F7FB", text:"#211430", card:"#FFFFFF", sand:"#EFEAF3", line:"#DFD6E6" },
+    dark: { primary:"#C9AEDD", accent:"#C6A052", bg:"#100918", text:"#F1E9F7", card:"#1C1128", sand:"#261735", line:"#342248" } },
+  roseIvory: { label:"Rose & Ivory",
+    light:{ primary:"#7A4250", accent:"#C08A93", bg:"#FDF9F8", text:"#2C1A20", card:"#FFFFFF", sand:"#F5EBEC", line:"#E8D8DA" },
+    dark: { primary:"#E7B6BF", accent:"#C08A93", bg:"#150D10", text:"#F8ECEE", card:"#22151A", sand:"#2E1D23", line:"#3E2830" } },
+  forestGold: { label:"Forest & Gold",
+    light:{ primary:"#1E3A2B", accent:"#BE9B4E", bg:"#F8FAF7", text:"#141F18", card:"#FFFFFF", sand:"#EAF0EA", line:"#D8E2D9" },
+    dark: { primary:"#9CC9AC", accent:"#BE9B4E", bg:"#08120C", text:"#EAF3EC", card:"#0F1F16", sand:"#152A1E", line:"#1F3B2A" } },
+  oceanPearl: { label:"Ocean & Pearl",
+    light:{ primary:"#14456B", accent:"#7FB2CE", bg:"#F6FAFD", text:"#0E2436", card:"#FFFFFF", sand:"#E7F0F7", line:"#D3E2EE" },
+    dark: { primary:"#9AC9E6", accent:"#5D93B5", bg:"#061420", text:"#E7F2FA", card:"#0C2233", sand:"#122E44", line:"#1B3F5B" } }
 };
 function paletteList(){ return Object.keys(PALETTES); }
 function applyPalette(){
@@ -10156,30 +10166,14 @@ function startRealtime(){
   document.documentElement.setAttribute("data-theme",S.theme);
   document.documentElement.lang=S.lang;
   document.documentElement.dir=(S.lang==="ar"?"rtl":"ltr");
-
-  /* v22.2 BOOT: show the real app before remote data loading finishes. */
-  try{ applySettings(); render(); }
-  catch(e){ console.error("initial render failed",e); }
-
-  const bootTimeout=new Promise((_,reject)=>setTimeout(
-    ()=>reject(new Error("Initial data load timed out")),10000
-  ));
-
-  try{
-    await Promise.race([DB.load(),bootTimeout]);
-    S.loadError=false;
-  }
+  try{ await DB.load(); }
   catch(e){
-    console.error("initial data load failed",e);
-    if(REMOTE){
-      S.loadError=true;
-    }else{
-      S.activities=demoActivities(); S.bookings=demoBookings();
-      S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
-      S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes();
-      S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
-    }
+    console.error(e);
+    if(REMOTE){ S.loadError=true; applySettings(); render(); return; }
+    S.activities=demoActivities(); S.bookings=demoBookings();
+    S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
+    S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
+    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
   }
   /* validate remembered session against fresh data */
   if(S.session){
@@ -13188,7 +13182,7 @@ function v15Mode(){ return (S.theme==="dark")?"dark":"light"; }
 function v15On(bg){ return v9Contrast("#ffffff",bg)>=4.5 ? "#ffffff" : "#111111"; }
 
 function v15PresetScheme(key,mode){
-  const p=PALETTES[key]||PALETTES.sapphireChampagne, c=p[mode]||p.light, dark=mode==="dark";
+  const p=PALETTES[key]||PALETTES.navyGold, c=p[mode]||p.light, dark=mode==="dark";
   const hero = dark
     ? v9Mix(c.card, (v9Lum(c.primary)>.72 ? c.accent : c.primary), .12)
     : (v9Contrast(c.primary,"#ffffff")>=4.5 ? c.primary : v9Darken(c.primary,.28));
@@ -13205,14 +13199,14 @@ function v15PresetScheme(key,mode){
   };
 }
 function v15DefaultCustom(){
-  const base=(S.settings&&PALETTES[S.settings.palette])?S.settings.palette:"sapphireChampagne";
+  const base=(S.settings&&PALETTES[S.settings.palette])?S.settings.palette:"navyGold";
   return {light:v15PresetScheme(base,"light"),dark:v15PresetScheme(base,"dark")};
 }
 function v15EnsureCustom(){
   if(!S.settings.customTheme) S.settings.customTheme=v15DefaultCustom();
   for(const mode of ["light","dark"]){
-    if(!S.settings.customTheme[mode]) S.settings.customTheme[mode]=v15PresetScheme("sapphireChampagne",mode);
-    const d=v15PresetScheme("sapphireChampagne",mode), x=S.settings.customTheme[mode];
+    if(!S.settings.customTheme[mode]) S.settings.customTheme[mode]=v15PresetScheme("navyGold",mode);
+    const d=v15PresetScheme("navyGold",mode), x=S.settings.customTheme[mode];
     V15_ROLES.forEach(([k])=>{ if(!v9Hex(x[k])) x[k]=d[k]; });
   }
   return S.settings.customTheme;
@@ -13282,8 +13276,8 @@ setThemeView=function(){
     ${hubBack()}
     <div class="v15-theme-shell">
       <section class="v15-panel">
-        <div class="v15-panel-title">Luxury themes</div>
-        <div class="v15-panel-sub">Three coordinated luxury palettes. Each works across Explore, Guest, Staff and Manager in Light and Dark mode.</div>
+        <div class="v15-panel-title">Ready themes</div>
+        <div class="v15-panel-sub">Every theme below has its own complete Light and Dark colour system.</div>
         <div class="v15-theme-grid">
           ${paletteList().map(k=>{
             const p=PALETTES[k], L=v15PresetScheme(k,"light"), D=v15PresetScheme(k,"dark");
@@ -13298,8 +13292,8 @@ setThemeView=function(){
       </section>
 
       <section class="v15-panel">
-        <div class="v15-panel-title">Appearance mode</div>
-        <div class="v15-panel-sub">Choose Light, Dark or Follow phone.</div>
+        <div class="v15-panel-title">Light or Dark</div>
+        <div class="v15-panel-sub">The same selected theme works correctly in both modes.</div>
         <div class="v15-modes">
           ${[["light","sun","Light"],["dark","moon","Dark"],["auto","settings","Follow phone"]].map(([k,i,l])=>
             `<button type="button" data-v15mode="${k}" class="${v9Mode()===k?"on":""}">${ic(i,17)} ${l}</button>`).join("")}
@@ -13308,7 +13302,7 @@ setThemeView=function(){
 
       <section class="v15-panel">
         <div class="v15-custom-head">
-          <div><div class="v15-panel-title">Custom theme</div><div class="v15-panel-sub" style="margin:0">Customize the complete Light and Dark palette independently.</div></div>
+          <div><div class="v15-panel-title">Custom theme</div><div class="v15-panel-sub" style="margin:0">Edit every important colour separately for Light and Dark.</div></div>
           <span class="chip">${custom?"IN USE":"OPTIONAL"}</span>
         </div>
         <div class="v15-custom-tabs">
@@ -13343,7 +13337,7 @@ async function v15SaveCustom(){
   }catch(e){ toastErr(t("errSave")); }
 }
 function v15CopyPreset(){
-  const key=PALETTES[S.settings.palette]?S.settings.palette:"sapphireChampagne";
+  const key=PALETTES[S.settings.palette]?S.settings.palette:"navyGold";
   S.settings.customTheme={light:v15PresetScheme(key,"light"),dark:v15PresetScheme(key,"dark")};
   v15EditMode=v15Mode(); render();
 }
@@ -13368,15 +13362,6 @@ function v15Wire(){
 }
 const __v15Wire=wireCommon;
 wireCommon=function(){ __v15Wire(); try{v15Wire()}catch(e){console.error(e)} };
-
-/* v22.1 migrate removed preset names before applying the theme. */
-try{
-  const __allowedLuxuryThemes=new Set(["sapphireChampagne","emeraldIvory","bordeauxRoseGold",""]);
-  if(S.settings && !__allowedLuxuryThemes.has(String(S.settings.palette||""))){
-    S.settings.palette="sapphireChampagne";
-    try{persist()}catch(_){}
-  }
-}catch(e){console.error(e)}
 
 /* Re-apply immediately after this patch loads. */
 try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
@@ -13584,24 +13569,6 @@ try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
   setTimeout(()=>{try{normalizeState();applySettings();}catch(e){recordDiagnostic('normalize',e);}},50);
 })();
 
-
-
-
-/* v22.2 successful-render marker */
-(function(){
-  try{
-    if(typeof render!=="function") return;
-    const __renderBootSafe=render;
-    render=function(){
-      const result=__renderBootSafe.apply(this,arguments);
-      try{
-        const a=document.getElementById("app");
-        if(a && !a.querySelector(".skel-wrap")) window.__ENT_BOOT_OK=true;
-      }catch(_){}
-      return result;
-    };
-  }catch(e){console.error(e)}
-})();
 
 </script>
 
