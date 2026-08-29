@@ -14360,5 +14360,292 @@ html[data-v18-view="explore"] body{background:#FFF8F3}
 })();
 </script>
 
+
+
+<style id="design-v20-haute-living">
+/* ============================================================
+   v20 — HAUTE LIVING / DARK CONCIERGE MASTER DESIGN
+   Visual reference: charcoal concierge UI + champagne accents.
+   Applied globally to Visitor, Guest, Entertainer and Manager.
+   ============================================================ */
+:root{
+  --hl-bg:#242424;
+  --hl-bg-2:#202020;
+  --hl-panel:#2C2C2C;
+  --hl-panel-2:#303030;
+  --hl-panel-3:#343434;
+  --hl-line:#3A3A3A;
+  --hl-line-soft:#333333;
+  --hl-text:#F1EEE8;
+  --hl-soft:#B3AFA8;
+  --hl-muted:#85827E;
+  --hl-gold:#C7A276;
+  --hl-gold-2:#D2B184;
+  --hl-danger:#C97568;
+  --hl-success:#8FA48A;
+  --bg:var(--hl-bg)!important;
+  --card:var(--hl-panel)!important;
+  --ink:var(--hl-text)!important;
+  --muted:var(--hl-soft)!important;
+  --line:var(--hl-line)!important;
+  --sand:var(--hl-panel-3)!important;
+  --bronze:var(--hl-gold)!important;
+  --espresso:#1E1E1E!important;
+  --cacao:#2B2B2B!important;
+  --ok:var(--hl-success)!important;
+  --warn:var(--hl-danger)!important;
+  --shadow:none!important;
+  --radius:4px!important;
+  --btn-radius:2px!important;
+  --btn-radius-sm:2px!important;
+  --v18-role:var(--hl-gold)!important;
+  --v18-role2:var(--hl-gold-2)!important;
+  --v18-accent:var(--hl-gold)!important;
+  --nav-bg:#252525!important;
+  --nav-on:var(--hl-gold)!important;
+}
+html,html[data-theme="dark"],html[data-theme="light"],body{
+  background:var(--hl-bg)!important;color:var(--hl-text)!important;color-scheme:dark;
+}
+body{font-family:'Jost',sans-serif!important;font-weight:300!important;letter-spacing:.015em!important}
+.app{background:var(--hl-bg)!important;max-width:560px!important;box-shadow:none!important}
+[data-approle="manager"] .app{max-width:980px!important}
+.screen,.explore-screen{background:var(--hl-bg)!important;padding-inline:18px!important}
+h1,h2,h3,h4,.serif{color:var(--hl-text)!important;font-family:'Jost',sans-serif!important;font-weight:400!important;letter-spacing:.01em!important}
+.top .who h2,.whobar h2{font-size:25px!important;font-weight:300!important;letter-spacing:.01em!important}
+.top .who p,.whobar p,.mini,.hint,.meta,.desc{color:var(--hl-soft)!important;font-weight:300!important}
+
+/* Minimal concierge top chrome */
+.top{margin-bottom:19px!important;padding-bottom:12px;border-bottom:1px solid var(--hl-line-soft)}
+.iconbtn,.socialtop{
+  width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;
+  border:0!important;background:transparent!important;color:var(--hl-gold)!important;border-radius:0!important;box-shadow:none!important;
+}
+.iconbtn:hover,.iconbtn:active,.socialtop:hover,.socialtop:active{background:var(--hl-panel)!important;transform:none!important}
+.reddot,.nav .ndot{background:var(--hl-gold)!important;border-color:var(--hl-bg)!important}
+
+/* Cards — architectural, flat, squared */
+.card,.stat,.tk,.daycard,.stdcard,.prcard,.showcard,.profcard,.attn,.attsum,.v15-strip,.v15-mnow,
+.ex-prog-card,.ex-act,.notif-card,.teamcount,.team-card,.cred,.photo-pick,.login-card{
+  background:var(--hl-panel)!important;border:1px solid var(--hl-line)!important;box-shadow:none!important;border-radius:2px!important;
+}
+.card{padding:15px!important}
+.card:active{transform:none!important}
+.sec{margin-top:27px!important;margin-bottom:27px!important}
+.sec>h3{font-size:13px!important;font-weight:500!important;letter-spacing:.11em!important;text-transform:uppercase!important;color:var(--hl-text)!important;margin-bottom:11px!important}
+.sec>h3::after{display:none!important}
+.sec>h3 .count{font-size:10px!important;color:var(--hl-gold)!important;background:none!important;padding:0!important}
+
+/* Concierge labels / pills */
+.chip,.pill,.tchip,.rstat,.cc-tag,.ex-tag{
+  border-radius:1px!important;border:1px solid #4A443D!important;background:#302D29!important;color:var(--hl-gold)!important;
+  text-transform:uppercase!important;letter-spacing:.09em!important;font-size:9.5px!important;font-weight:500!important;padding:4px 7px!important;
+}
+.chip.ok,.rstat.off{background:#2C322D!important;border-color:#414C43!important;color:#A8B9A5!important}
+.chip.full{background:#342B29!important;border-color:#4A3935!important;color:#D49484!important}
+
+/* Typography hierarchy */
+.catbadge,.tc-pos,label,.theme-banner .tb-l,.dc-cell span,.v15-kicker,.v15-mn-label,.v14-w-label{
+  color:var(--hl-gold)!important;text-transform:uppercase!important;letter-spacing:.12em!important;font-size:9.5px!important;font-weight:500!important
+}
+.stat b,.teamcount b,.cred b,.price,.v15-mn-cell b,.v9-statlink b{font-family:'Jost',sans-serif!important;color:var(--hl-text)!important;font-weight:300!important}
+
+/* Buttons — muted panels + champagne interaction */
+.btn,.btn:not(.ghost):not(.warn),.wa-cta,.v9-hero-btn,.v9-dashbtns .btn{
+  background:#353535!important;color:var(--hl-text)!important;border:1px solid #414141!important;box-shadow:none!important;border-radius:1px!important;
+  min-height:44px!important;font-size:11px!important;font-weight:500!important;letter-spacing:.09em!important;text-transform:uppercase!important;
+}
+.btn:hover,.btn:active,.wa-cta:hover{background:#3B3732!important;border-color:#6A5844!important;color:var(--hl-gold-2)!important;transform:none!important}
+.btn::after{display:none!important}
+.btn.ghost{background:transparent!important;color:var(--hl-gold)!important;border:1px solid #51483D!important}
+.btn.warn{background:#3B2E2B!important;border-color:#5A403A!important;color:#D49B8D!important}
+.btn.sm{min-height:34px!important;padding:8px 11px!important}
+
+/* Forms */
+input,select,textarea,.pickfield{
+  background:#292929!important;color:var(--hl-text)!important;border:1px solid #414141!important;border-radius:1px!important;box-shadow:none!important;
+}
+input::placeholder,textarea::placeholder{color:#77736E!important}
+input:focus,select:focus,textarea:focus{border-color:var(--hl-gold)!important;box-shadow:none!important;outline:none!important}
+label{color:var(--hl-gold)!important}
+
+/* Tabs = understated segmented charcoal controls */
+.daytabs,.pills,.ex-chips{gap:5px!important}
+.daytabs button,.pills button,.ex-chip,.daychip,.role-tabs button,.lang-row button{
+  background:#2B2B2B!important;color:var(--hl-muted)!important;border:1px solid #393939!important;border-radius:1px!important;box-shadow:none!important;
+  text-transform:uppercase!important;letter-spacing:.08em!important;font-size:10px!important;font-weight:500!important;
+}
+.daytabs button.on,.pills button.on,.ex-chip.on,.daychip.on,.role-tabs button.on,.lang-row button.on{
+  background:#35312D!important;color:var(--hl-gold-2)!important;border-color:#65533F!important;
+}
+
+/* Navigation — integrated bottom bar, not floating app-store dock */
+.nav{
+  position:sticky!important;bottom:0!important;margin:0!important;width:100%!important;max-width:none!important;
+  padding:9px 5px calc(9px + env(safe-area-inset-bottom))!important;background:#242424!important;border:0!important;border-top:1px solid #363636!important;
+  border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important
+}
+.nav::before{display:none!important}
+.nav button{background:transparent!important;color:#77736E!important;border-radius:0!important;min-height:48px!important;font-size:8.5px!important;letter-spacing:.07em!important;text-transform:uppercase!important}
+.nav button .ic{font-size:19px!important;color:inherit!important}
+.nav button.on{background:transparent!important;color:var(--hl-gold)!important}
+
+/* Drawer */
+.drawer-bg{background:rgba(0,0,0,.58)!important;backdrop-filter:blur(2px)!important}
+.drawer{background:#232323!important;border-inline-end:1px solid #383838!important;box-shadow:none!important}
+.dr-head{border-bottom:1px solid #363636;padding-bottom:17px!important}
+.dr-head .mono.sm,.pf-ava,.acct-av,.mb-av,.rnum{background:#302D29!important;color:var(--hl-gold)!important;border:1px solid #4B4339!important;border-radius:2px!important;box-shadow:none!important}
+.dr-head h3{font-weight:300!important}
+.dr-sec{color:#6F6B66!important;font-size:9px!important;letter-spacing:.15em!important;font-weight:500!important}
+.dr-it{border-radius:1px!important;color:var(--hl-soft)!important}
+.dr-it.on{background:#302D29!important;color:var(--hl-gold-2)!important;border-inline-start:2px solid var(--hl-gold)!important;box-shadow:none!important}
+.dr-ic{color:var(--hl-gold)!important}
+.dr-foot{border-color:#383838!important}
+.dr-out{background:#292929!important;border-color:#404040!important;color:var(--hl-soft)!important;border-radius:1px!important}
+
+/* Login — like personal concierge opening screen */
+.login-wrap{
+  background:radial-gradient(100% 55% at 50% -5%,#34312D 0%,#252525 52%,#202020 100%)!important;
+  color:var(--hl-text)!important;justify-content:center!important
+}
+.brandmark .mono{
+  width:64px!important;height:64px!important;background:transparent!important;border:1px solid #51483D!important;border-radius:0!important;
+  color:var(--hl-text)!important;font-family:'Cormorant Garamond',serif!important;font-size:34px!important;font-weight:500!important
+}
+.brandmark h1{font-family:'Cormorant Garamond',serif!important;font-size:35px!important;font-weight:500!important;letter-spacing:.04em!important}
+.brandmark p{color:#A9A49C!important;font-size:9.5px!important;letter-spacing:.16em!important}
+.login-card{background:#292929!important;padding:19px!important}
+
+/* Photography: darker, editorial, integrated */
+.hero,.tk,.opcard,.catcard,.ex-feat,.ex-it{border-radius:2px!important;box-shadow:none!important;border:1px solid #3D3D3D!important;background:#292929!important}
+.hero img,.tk img,.opcard img,.catcard img,.ex-feat img,.ex-thumb img{filter:saturate(.62) brightness(.72) contrast(1.04)!important}
+.hero .veil,.opcard .veil,.catcard .veil{background:linear-gradient(180deg,rgba(20,20,20,.12),rgba(20,20,20,.88))!important}
+.hero .tag{background:rgba(37,37,37,.92)!important;color:var(--hl-gold)!important;border:1px solid #5C4D3E!important;border-radius:1px!important;font-size:9px!important;letter-spacing:.12em!important}
+.hero .body h3{font-size:25px!important;font-weight:400!important}
+.hero .meta{color:#C7C1B8!important;font-size:11px!important}
+
+/* Operation and category browse */
+.opgrid{gap:8px!important}
+.catgrid{gap:8px!important}
+.opcard,.catcard{min-height:108px!important}
+.opc-txt{padding:13px!important}
+.opc-txt h3,.opc-txt h4{font-family:'Jost',sans-serif!important;font-weight:400!important;text-shadow:none!important}
+.opc-txt h3{font-size:20px!important}.opc-txt h4{font-size:14px!important;text-transform:uppercase!important;letter-spacing:.08em!important}
+.opc-txt span{font-size:10px!important;color:#C6C0B8!important}
+.opc-go{color:var(--hl-gold)!important}
+.crumb{background:#292929!important;border-color:#404040!important;color:var(--hl-gold)!important;border-radius:1px!important}
+
+/* Activity list resembles yacht offer rows */
+.card.act{grid-template-columns:104px minmax(0,1fr) auto!important;gap:12px!important;padding:8px!important;border-radius:1px!important}
+.card.act .thumb{width:104px!important;height:78px!important;border-radius:1px!important;filter:saturate(.65) brightness(.78)!important}
+.card.act .mid h4{font-size:14px!important;font-weight:500!important;letter-spacing:.02em!important}
+.card.act .meta{font-size:10.5px!important;color:#9B9791!important}
+.card.act .side{justify-content:center!important}
+.fav{color:var(--hl-gold)!important}
+
+/* Quick actions = concierge grid */
+.quickrow{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important}
+.quickrow button{
+  min-height:96px!important;padding:14px 11px!important;background:#2E2E2E!important;border:1px solid #393939!important;border-radius:1px!important;
+  color:#D7D2CB!important;text-align:center!important;text-transform:uppercase!important;font-size:9px!important;letter-spacing:.10em!important;font-weight:500!important
+}
+.quickrow button span{
+  width:auto!important;height:31px!important;background:transparent!important;color:var(--hl-gold)!important;margin:0 auto 7px!important;font-size:24px!important
+}
+
+/* VISITOR / EXPLORE — premium marketplace */
+html[data-v18-view="explore"] body,html[data-v18-view="explore"] .app,html[data-v18-view="explore"] .screen{background:var(--hl-bg)!important}
+.ex-h1{font-family:'Cormorant Garamond',serif!important;color:var(--hl-text)!important;font-size:31px!important;font-weight:500!important;letter-spacing:.015em!important}
+.ex-sub{color:#99958E!important;font-size:11px!important;letter-spacing:.04em!important}
+.ex-feat{margin-bottom:15px!important;min-height:260px!important}
+.ex-feat img{height:260px!important}
+.ex-feat::after{background:linear-gradient(180deg,rgba(20,20,20,.08),rgba(20,20,20,.90))!important}
+.ex-feat-cap b{font-size:20px!important;font-weight:400!important}
+.ex-grid{gap:6px!important;padding-bottom:18px!important}
+.ex-it{background:#2B2B2B!important}
+.ex-thumb{aspect-ratio:1.25/1!important}
+.ex-cap{padding:9px!important;color:var(--hl-text)!important;font-size:11px!important;text-transform:uppercase!important;letter-spacing:.08em!important}
+
+/* GUEST — personal concierge */
+[data-approle="guest"] .screen[data-v18-tab="home"]{background:var(--hl-bg)!important}
+[data-approle="guest"] .v14-welcome,
+[data-approle="guest"] .theme-banner{
+  background:#2A2928!important;border:1px solid #443D35!important;border-radius:1px!important;color:var(--hl-text)!important;box-shadow:none!important
+}
+[data-approle="guest"] .v14-w-cell{background:#30302F!important;border:1px solid #3C3C3B!important;border-radius:1px!important}
+[data-approle="guest"] .hero{border-radius:1px!important;margin-top:12px!important}
+[data-approle="guest"] .hero img{height:230px!important}
+[data-approle="guest"] .hero .tag{background:#302D29!important;color:var(--hl-gold)!important}
+
+/* ENTERTAINER — same luxury language, operational content */
+[data-approle="staff"] .screen[data-v18-tab="workday"]{background:var(--hl-bg)!important}
+[data-approle="staff"] .v15-focus,
+[data-approle="staff"] .v15-focus.live,
+[data-approle="staff"] .v15-focus.quiet,
+[data-approle="staff"] .v15-focus.done{
+  background:#2B2B2B!important;color:var(--hl-text)!important;border:1px solid #403A34!important;border-radius:1px!important;box-shadow:none!important
+}
+[data-approle="staff"] .v15-focus.live::before{width:2px!important;background:var(--hl-gold)!important}
+[data-approle="staff"] .v15-f-name{font-size:23px!important;font-weight:300!important}
+[data-approle="staff"] .v15-f-when{background:#32302D!important;border:1px solid #474039!important;border-radius:1px!important;color:var(--hl-gold)!important}
+[data-approle="staff"] .std-t{color:var(--hl-gold)!important;font-weight:400!important}
+
+/* MANAGER — dark operations cockpit */
+[data-approle="manager"] body,[data-approle="manager"] .screen[data-v18-tab="dash"]{background:var(--hl-bg)!important}
+[data-approle="manager"] .v15-mnow{background:#292929!important;border:1px solid #433C34!important;border-radius:1px!important;color:var(--hl-text)!important}
+[data-approle="manager"] .v15-mn-cell{background:#303030!important;border:1px solid #3D3D3D!important;border-radius:1px!important;color:var(--hl-text)!important}
+[data-approle="manager"] .v15-mn-cell.hot{background:#342F29!important;border-color:#554938!important}
+[data-approle="manager"] .stat,.v9-statlink{background:#2B2B2B!important;border-radius:1px!important}
+[data-approle="manager"] .stat b,.v9-statlink b{color:var(--hl-text)!important}
+[data-approle="manager"] .stat span,.v9-statlink span{color:#8D8983!important}
+@media(min-width:760px){
+  [data-approle="manager"] .screen{padding-inline:22px!important}
+  [data-approle="manager"] .stat-grid,[data-approle="manager"] .v9-stats{gap:7px!important}
+}
+
+/* Team / notifications / chat */
+.tc-photo,.tc-photo.sm{border-radius:1px!important;border-color:#424242!important}
+.tc-photo img{filter:saturate(.65) brightness(.82)!important}
+.tc-pos{color:var(--hl-gold)!important}
+.notif-card .nt-ic,.sb-ic{background:#302D29!important;border-color:#484139!important;color:var(--hl-gold)!important;border-radius:1px!important}
+.switch{background:#414141!important}.switch.on{background:#6D5943!important}
+.thread{background:var(--hl-bg)!important}
+.bub{border-radius:1px!important;box-shadow:none!important;font-size:13px!important}
+.bub.me{background:#3A3631!important;color:var(--hl-text)!important;border:1px solid #4D443A!important}
+.bub.them{background:#2D2D2D!important;color:var(--hl-text)!important;border:1px solid #393939!important}
+.chatbar{background:#232323!important;border-top:1px solid #393939!important}
+.chatbar button{background:#B8956B!important;color:#26221D!important;border-radius:1px!important}
+.bubtool{background:#303030!important;border-color:#414141!important;color:#AAA59D!important;border-radius:1px!important}
+
+/* remove bright legacy gradients globally */
+.rankb,.rankb.r0,.rankb.r1,.rankb.r2{background:#302D29!important;color:var(--hl-gold)!important;border:1px solid #4D443A!important;box-shadow:none!important}
+.wd-banner,.wd-banner.off,.wd-banner.entrance,.wd-banner.makeup,.wd-banner.dj{background:#2D2D2D!important;color:var(--hl-text)!important;border:1px solid #414141!important;border-radius:1px!important;box-shadow:none!important}
+.rnum{border-radius:50%!important}
+
+/* keep touch comfortable while retaining the square visual language */
+@media(max-width:410px){
+  .screen{padding-inline:14px!important}
+  .card.act{grid-template-columns:88px minmax(0,1fr)!important}
+  .card.act .thumb{width:88px!important;height:72px!important}
+  .ex-grid{padding-inline:14px!important}
+}
+</style>
+<script id="design-v20-haute-living-js">
+(function(){
+  if(window.__hl20) return; window.__hl20=true;
+  function applyHL(){
+    try{
+      document.documentElement.setAttribute('data-hl-design','concierge');
+      document.documentElement.setAttribute('data-theme','dark');
+      var meta=document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute('content','#242424');
+    }catch(e){}
+  }
+  applyHL();
+  document.addEventListener('DOMContentLoaded',applyHL);
+  var _r=window.render;
+  if(typeof _r==='function') window.render=function(){var x=_r.apply(this,arguments);applyHL();return x;};
+})();
+</script>
 </body>
 </html>
