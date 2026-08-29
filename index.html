@@ -1803,6 +1803,131 @@ body::before{content:"";position:fixed;inset:0;background-image:var(--app-bg-ima
 .login-wrap > *{position:relative;z-index:1}
 html[data-cardborder="off"] .card{border-color:transparent}
 </style>
+
+<style id="guest-v22-digital-concierge">
+/* =========================================================
+   v22 — DIGITAL GUEST CONCIERGE
+   Personal guest experience matching the Explore guide.
+   ========================================================= */
+html[data-approle="guest"]{
+  --g22-bg:#171717;--g22-panel:#202020;--g22-panel2:#252525;--g22-line:rgba(255,255,255,.09);
+  --g22-gold:#c8a878;--g22-gold2:#e2c494;--g22-text:#f3f0ea;--g22-muted:#aaa59d;
+  --g22-soft:#2b2926;--g22-danger:#bd6b5e;--g22-ok:#8aa783;
+}
+html[data-approle="guest"] body,html[data-approle="guest"] .app{background:var(--g22-bg)!important;color:var(--g22-text)}
+html[data-approle="guest"] .screen{background:var(--g22-bg)!important}
+.g22{padding-inline:0!important;padding-bottom:96px!important;overflow-x:hidden}
+.g22-shell{padding:0 18px}
+.g22-top{display:flex;align-items:center;justify-content:space-between;padding:2px 18px 15px;gap:12px}
+.g22-menu,.g22-icon{width:40px;height:40px;border:1px solid var(--g22-line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--g22-gold);background:rgba(255,255,255,.025)}
+.g22-logo{height:32px;max-width:105px;object-fit:contain;filter:brightness(1.08)}
+.g22-brand{font-family:var(--font-display);font-size:22px;letter-spacing:.08em;color:var(--g22-text)}
+.g22-actions{display:flex;gap:8px}
+.g22-eyebrow{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--g22-gold);margin-bottom:7px}
+.g22-welcome{padding:4px 18px 20px}
+.g22-welcome h1{font-family:var(--font-display);font-size:34px;line-height:1.08;font-weight:500;letter-spacing:.01em;color:var(--g22-text)}
+.g22-welcome p{font-size:13px;color:var(--g22-muted);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.g22-dot{width:3px;height:3px;border-radius:50%;background:var(--g22-gold);display:inline-block}
+.g22-livehero{position:relative;height:330px;margin:0 18px 26px;border-radius:24px;overflow:hidden;background:#242424;border:1px solid var(--g22-line)}
+.g22-livehero>img{width:100%;height:100%;object-fit:cover;filter:saturate(.78) brightness(.74)}
+.g22-livehero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.06) 10%,rgba(10,10,10,.2) 45%,rgba(10,10,10,.94) 100%)}
+.g22-hero-top{position:absolute;z-index:2;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center}
+.g22-live{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:rgba(18,18,18,.7);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);padding:7px 10px;border-radius:999px;color:#fff}
+.g22-hero-fav{width:36px;height:36px;border-radius:50%;background:rgba(18,18,18,.7);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);color:#fff;display:flex;align-items:center;justify-content:center}
+.g22-hero-copy{position:absolute;z-index:2;left:18px;right:18px;bottom:18px;color:#fff}
+.g22-hero-copy .g22-k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g22-gold2);margin-bottom:6px}
+.g22-hero-copy h2{font-family:var(--font-display);font-size:30px;line-height:1.08;font-weight:500;color:#fff}
+.g22-hero-copy p{font-size:13px;color:rgba(255,255,255,.75);margin:7px 0 13px;display:flex;gap:12px;flex-wrap:wrap}
+.g22-hero-cta{display:flex;gap:8px}
+.g22-btn{min-height:42px;padding:0 15px;border-radius:12px;background:var(--g22-gold);color:#171717;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.g22-btn.ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;backdrop-filter:blur(8px)}
+.g22-sec{margin:0 0 28px}
+.g22-sech{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:0 18px;margin-bottom:12px}
+.g22-sech h3{font-family:var(--font-display);font-size:24px;font-weight:500;color:var(--g22-text);line-height:1.1}
+.g22-sech p{font-size:11px;color:var(--g22-muted);margin-top:4px}
+.g22-sech button{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g22-gold);white-space:nowrap}
+.g22-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding:0 18px}
+.g22-action{min-height:112px;border-radius:18px;border:1px solid var(--g22-line);background:linear-gradient(145deg,#242424,#1e1e1e);padding:15px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.g22-action:before{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:rgba(200,168,120,.08);right:-24px;top:-28px}
+.g22-action .ico{width:34px;height:34px;border-radius:12px;background:rgba(200,168,120,.11);color:var(--g22-gold);display:flex;align-items:center;justify-content:center;border:1px solid rgba(200,168,120,.12)}
+.g22-action b{font-size:14px;font-weight:600;color:var(--g22-text)}
+.g22-action small{font-size:10.5px;color:var(--g22-muted);display:block;margin-top:2px}
+.g22-scroll{display:flex;gap:11px;overflow-x:auto;padding:0 18px 6px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.g22-scroll::-webkit-scrollbar{display:none}
+.g22-plan{flex:0 0 82%;scroll-snap-align:start;border-radius:20px;border:1px solid var(--g22-line);background:var(--g22-panel);overflow:hidden;display:grid;grid-template-columns:105px 1fr;min-height:128px}
+.g22-plan img{width:100%;height:100%;object-fit:cover;filter:saturate(.78) brightness(.78)}
+.g22-plan-body{padding:14px 13px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.g22-plan-body .time{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--g22-gold)}
+.g22-plan-body b{font-family:var(--font-display);font-size:19px;font-weight:500;margin-top:4px;line-height:1.15;color:var(--g22-text)}
+.g22-plan-body p{font-size:11px;color:var(--g22-muted);margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
+.g22-plan-body .status{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--g22-gold2);margin-top:8px}
+.g22-tonight{flex:0 0 72%;height:230px;border-radius:20px;overflow:hidden;position:relative;border:1px solid var(--g22-line);scroll-snap-align:start;background:#242424}
+.g22-tonight img{width:100%;height:100%;object-fit:cover;filter:saturate(.75) brightness(.68)}
+.g22-tonight:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 22%,rgba(12,12,12,.88) 100%)}
+.g22-tonight-copy{position:absolute;z-index:2;left:15px;right:15px;bottom:15px}
+.g22-tonight-copy span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--g22-gold2)}
+.g22-tonight-copy b{display:block;font-family:var(--font-display);font-size:22px;font-weight:500;color:#fff;margin-top:3px}
+.g22-tonight-copy p{font-size:11px;color:rgba(255,255,255,.72);margin-top:5px}
+.g22-snapshot{margin:0 18px;border:1px solid var(--g22-line);border-radius:20px;background:var(--g22-panel);overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+.g22-stat{padding:17px 15px;min-height:92px;border-bottom:1px solid var(--g22-line)}
+.g22-stat:nth-child(odd){border-right:1px solid var(--g22-line)}
+.g22-stat:nth-last-child(-n+2){border-bottom:0}
+.g22-stat span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--g22-muted)}
+.g22-stat b{display:block;font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--g22-text);margin-top:6px;line-height:1.15}
+.g22-concierge{margin:0 18px 28px;padding:18px;border-radius:20px;border:1px solid rgba(200,168,120,.22);background:linear-gradient(135deg,#27241f,#1e1e1e);display:flex;align-items:center;gap:14px}
+.g22-concierge .mark{width:48px;height:48px;border-radius:50%;flex:none;background:var(--g22-gold);color:#171717;display:flex;align-items:center;justify-content:center}
+.g22-concierge b{font-family:var(--font-display);font-size:20px;font-weight:500;display:block;color:var(--g22-text)}
+.g22-concierge p{font-size:11px;color:var(--g22-muted);margin-top:2px}
+.g22-concierge .go{margin-left:auto;color:var(--g22-gold);flex:none}
+.g22-empty{margin:0 18px;padding:25px;border:1px dashed var(--g22-line);border-radius:18px;text-align:center;color:var(--g22-muted);font-size:12px}
+/* My Stay */
+.g22-stayhead{padding:3px 18px 18px}
+.g22-stayhead h1{font-family:var(--font-display);font-weight:500;font-size:34px;color:var(--g22-text)}
+.g22-pass{margin:0 18px 26px;border-radius:24px;overflow:hidden;position:relative;background:linear-gradient(135deg,#2b2823,#1d1d1d);border:1px solid rgba(200,168,120,.25);padding:21px}
+.g22-pass:before{content:"";position:absolute;width:180px;height:180px;border:1px solid rgba(200,168,120,.08);border-radius:50%;right:-90px;top:-70px}
+.g22-pass-top{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.g22-pass-top .label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--g22-gold)}
+.g22-pass h2{font-family:var(--font-display);font-size:28px;font-weight:500;color:var(--g22-text);margin-top:5px}
+.g22-room{font-family:var(--font-display);font-size:27px;color:var(--g22-gold2);text-align:right;line-height:1}
+.g22-room small{display:block;font-family:var(--font-body);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--g22-muted);margin-bottom:5px}
+.g22-passline{height:1px;background:rgba(255,255,255,.09);margin:18px 0 15px}
+.g22-passgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g22-passgrid span{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--g22-muted)}
+.g22-passgrid b{display:block;font-size:12px;font-weight:500;color:var(--g22-text);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g22-itinerary{margin:0 18px;position:relative;padding-left:23px}
+.g22-itinerary:before{content:"";position:absolute;left:6px;top:9px;bottom:9px;width:1px;background:var(--g22-line)}
+.g22-it{position:relative;margin-bottom:12px;border:1px solid var(--g22-line);border-radius:18px;background:var(--g22-panel);overflow:hidden;display:grid;grid-template-columns:88px 1fr;min-height:108px}
+.g22-it:before{content:"";position:absolute;width:9px;height:9px;border-radius:50%;left:-21px;top:20px;background:var(--g22-gold);box-shadow:0 0 0 5px var(--g22-bg)}
+.g22-it img{width:100%;height:100%;object-fit:cover;filter:saturate(.75) brightness(.75)}
+.g22-it-body{padding:12px;min-width:0}
+.g22-it-body .type{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--g22-gold)}
+.g22-it-body b{display:block;font-size:14px;color:var(--g22-text);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g22-it-body p{font-size:10.5px;color:var(--g22-muted);margin-top:5px}
+.g22-it-tools{display:flex;gap:7px;margin-top:8px;align-items:center}
+.g22-mini{padding:6px 9px;border-radius:9px;border:1px solid var(--g22-line);color:var(--g22-gold);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.g22-mini.danger{color:#d39387;border-color:rgba(189,107,94,.3)}
+.g22-request{margin:0 18px 9px;border:1px solid var(--g22-line);border-radius:16px;background:var(--g22-panel);padding:14px;display:flex;gap:11px;align-items:center}
+.g22-request .ri{width:34px;height:34px;border-radius:11px;background:rgba(200,168,120,.1);color:var(--g22-gold);display:flex;align-items:center;justify-content:center;flex:none}
+.g22-request b{font-size:12px;color:var(--g22-text);display:block}
+.g22-request p{font-size:10px;color:var(--g22-muted);margin-top:2px}
+.g22-request .rs{margin-left:auto;font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:var(--g22-gold)}
+.g22-profileactions{padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
+.g22-profileactions button{min-height:45px;border:1px solid var(--g22-line);border-radius:13px;background:var(--g22-panel);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--g22-gold);display:flex;align-items:center;justify-content:center;gap:7px}
+/* Make remaining guest pages consistent with the digital concierge */
+html[data-approle="guest"] .card,html[data-approle="guest"] .tk{background:var(--g22-panel)!important;border:1px solid var(--g22-line)!important;box-shadow:none!important;color:var(--g22-text)}
+html[data-approle="guest"] .top h2,html[data-approle="guest"] .whobar h2,html[data-approle="guest"] .sec>h3{color:var(--g22-text)!important;font-weight:500}
+html[data-approle="guest"] .mini,html[data-approle="guest"] .meta,html[data-approle="guest"] .top p{color:var(--g22-muted)!important}
+html[data-approle="guest"] .iconbtn{background:var(--g22-panel)!important;border:1px solid var(--g22-line)!important;color:var(--g22-gold)!important;box-shadow:none!important}
+html[data-approle="guest"] .btn:not(.warn){background:var(--g22-gold)!important;color:#171717!important;box-shadow:none!important}
+html[data-approle="guest"] .btn.ghost{background:transparent!important;border:1px solid var(--g22-line)!important;color:var(--g22-gold)!important}
+html[data-approle="guest"] .nav{background:rgba(23,23,23,.92)!important;border-top:1px solid var(--g22-line)!important;backdrop-filter:blur(18px);box-shadow:none!important}
+html[data-approle="guest"] .nav button{color:#8f8b85!important}
+html[data-approle="guest"] .nav button.on{color:var(--g22-gold)!important}
+html[data-approle="guest"] .nav:before{background:linear-gradient(90deg,transparent,var(--g22-gold),transparent)!important;opacity:.32!important}
+html[data-approle="guest"] input,html[data-approle="guest"] select,html[data-approle="guest"] textarea{background:#202020!important;color:var(--g22-text)!important;border-color:var(--g22-line)!important}
+@media(max-width:390px){.g22-livehero{height:305px}.g22-welcome h1{font-size:31px}.g22-plan{flex-basis:88%}.g22-tonight{flex-basis:78%}}
+@media(min-width:500px){.g22-grid{grid-template-columns:repeat(3,1fr)}.g22-plan{flex-basis:68%}.g22-tonight{flex-basis:58%}}
+</style>
 </head>
 <body data-build="intelligent-planner-v6">
 <div class="app" id="app"><div class="skel-wrap">
@@ -14799,5 +14924,68 @@ html[data-v18-view="explore"] body,html[data-v18-view="explore"] .app,html[data-
 })();
 </script>
 
+
+<script id="guest-v22-digital-concierge-script">
+(function(){
+  if(typeof guestView!=='function') return;
+  var __guestViewV21=guestView;
+  function g22TimeGreeting(){var h=new Date().getHours();return h<12?'Good morning':h<18?'Good afternoon':'Good evening';}
+  function g22DateLabel(){try{return new Intl.DateTimeFormat(S.lang||'en',{weekday:'long',month:'short',day:'numeric'}).format(new Date())}catch(e){return t('days')[todayIndex()]}}
+  function g22Img(a){return a?imageOf(a):((typeof IMG!=='undefined'&&IMG.show)||'');}
+  function g22When(a){if(!a)return '';return (t('days')[a.day]||'')+' · '+(a.time||'');}
+  function g22Upcoming(){
+    var now=new Date(), di=todayIndex(), mins=now.getHours()*60+now.getMinutes();
+    function st(a){var w=intervalOf(a.time);return w?w.s:9999}
+    var today=S.activities.filter(function(a){return a.day===di&&st(a)>=mins-30}).sort(function(a,b){return st(a)-st(b)});
+    return today[0]||S.activities.filter(function(a){return a.day===di}).sort(function(a,b){return st(a)-st(b)})[0]||S.activities[0]||null;
+  }
+  function g22NightsLeft(g){
+    if(!g||!g.departure)return '—'; var d=new Date(g.departure+'T12:00:00'), n=new Date();
+    return Math.max(0,Math.ceil((d-n)/86400000));
+  }
+  function g22Tonight(){
+    var di=todayIndex(); return S.activities.filter(function(a){if(a.day!==di)return false;var w=intervalOf(a.time);return w&&w.s>=17*60}).sort(function(a,b){var x=intervalOf(a.time),y=intervalOf(b.time);return (x?x.s:0)-(y?y.s:0)}).slice(0,6);
+  }
+  function g22MyPlan(g){
+    var rows=[], di=todayIndex();
+    S.bookings.filter(function(b){return b.room===g.room}).forEach(function(b){var a=S.activities.find(function(x){return x.id===b.activity_id});if(a)rows.push({a:a,type:b.status==='booked'?'Booked':'Waitlist',rank:a.day===di?0:1});});
+    S.activities.filter(function(a){return S.favorites.includes(a.id)}).forEach(function(a){if(!rows.some(function(r){return r.a.id===a.id}))rows.push({a:a,type:'Favourite',rank:a.day===di?0:2});});
+    rows.sort(function(x,y){if(x.rank!==y.rank)return x.rank-y.rank;var xx=intervalOf(x.a.time),yy=intervalOf(y.a.time);return (xx?xx.s:0)-(yy?yy.s:0)});return rows.slice(0,7);
+  }
+  function g22Top(){
+    var logo=S.settings.logo||'', name=S.settings.name||'';
+    return '<div class="g22-top"><button class="g22-menu" id="btn-menu" aria-label="Menu">'+ic('menu',17)+'</button>'+(logo?'<img class="g22-logo" src="'+esc(logo)+'" alt="">':'<div class="g22-brand">'+esc(name||'SAPPHIRE')+'</div>')+'<div class="g22-actions"><button class="g22-icon" data-tab="chat" aria-label="Concierge">'+ic('chat',16)+'</button><button class="g22-icon" id="btn-notes" aria-label="Notifications">'+ic('bell',16)+'</button></div></div>';
+  }
+  function g22Action(tab,icon,title,sub,extra){return '<button class="g22-action" '+(extra||('data-tab="'+tab+'"'))+'><span class="ico">'+ic(icon,17)+'</span><span><b>'+title+'</b><small>'+sub+'</small></span></button>';}
+  function g22Home(){
+    var g=S.session, next=g22Upcoming(), plan=g22MyPlan(g), tonight=g22Tonight(), mine=S.bookings.filter(function(b){return b.room===g.room}), favs=S.favorites.length, orders=myOrders(), nights=g22NightsLeft(g), wm=(S.settings.welcomeMsg||'').trim();
+    var hero=next;
+    var heroHtml=hero?'<section class="g22-livehero"><img src="'+esc(g22Img(hero))+'" alt=""><div class="g22-hero-top"><span class="g22-live">'+(hero.day===todayIndex()?'Happening today':'Recommended')+'</span><button class="g22-hero-fav" data-fav="'+hero.id+'">'+ic(S.favorites.includes(hero.id)?'heartfill':'heart',16)+'</button></div><div class="g22-hero-copy"><div class="g22-k">What’s next</div><h2>'+esc(hero.name)+'</h2><p><span>'+mi('clock')+esc(hero.time)+'</span><span>'+mi('pin')+esc(hero.location||'Hotel')+'</span></p><div class="g22-hero-cta"><button class="g22-btn" data-book="'+hero.id+'">'+(myBooking(hero.id)?'View booking':'Join activity')+'</button><button class="g22-btn ghost" data-v22-explore>Explore more</button></div></div></section>':'<div class="g22-empty">Your holiday guide will show the next experience here.</div>';
+    var planHtml=plan.length?'<div class="g22-scroll">'+plan.map(function(r){var a=r.a;return '<button class="g22-plan" data-v22-act="'+a.id+'"><img src="'+esc(g22Img(a))+'" alt=""><span class="g22-plan-body"><span class="time">'+esc(g22When(a))+'</span><b>'+esc(a.name)+'</b><p><span>'+mi('pin')+esc(a.location||'Hotel')+'</span></p><span class="status">'+esc(r.type)+'</span></span></button>';}).join('')+'</div>':'<div class="g22-empty">Save something in Explore or book an activity and your personal plan will appear here.</div>';
+    var tonightHtml=tonight.length?'<div class="g22-scroll">'+tonight.map(function(a){return '<button class="g22-tonight" data-v22-act="'+a.id+'"><img src="'+esc(g22Img(a))+'" alt=""><span class="g22-tonight-copy"><span>'+esc(a.time)+' · '+esc(a.location||'Hotel')+'</span><b>'+esc(a.name)+'</b><p>'+esc((a.desc||'').slice(0,80))+'</p></span></button>';}).join('')+'</div>':'<div class="g22-empty">Tonight’s programme will appear here.</div>';
+    return '<div class="screen fadein g22">'+g22Top()+'<header class="g22-welcome"><div class="g22-eyebrow">YOUR DIGITAL CONCIERGE</div><h1>'+g22TimeGreeting()+', '+esc(g.name||'Guest')+'.</h1><p><span>'+ic('key',12)+' Room '+esc(g.room)+'</span><i class="g22-dot"></i><span>'+esc(g22DateLabel())+'</span>'+(nights!=='—'?'<i class="g22-dot"></i><span>'+nights+' night'+(nights===1?'':'s')+' left</span>':'')+'</p></header>'+heroHtml+(wm?'<div class="g22-concierge" style="margin-bottom:26px"><span class="mark">'+ic('sparkle',20)+'</span><span><b>Welcome to your stay</b><p>'+esc(wm)+'</p></span></div>':'')+'<section class="g22-sec"><div class="g22-sech"><span><h3>How can we help?</h3><p>Everything for your stay, one tap away.</p></span></div><div class="g22-grid">'+g22Action('', 'sparkle','Explore','Find something to do','data-v22-explore')+g22Action('stay','ticket','My Stay','Bookings & favourites')+g22Action('tickets','calendar','Tickets','Events & experiences')+g22Action('chat','chat','Ask our team','Your concierge chat')+g22Action('weather','sun','Weather','Plan the perfect moment')+g22Action('hotelinfo','building','Hotel guide','Useful stay information')+'</div></section><section class="g22-sec"><div class="g22-sech"><span><h3>Your next moments</h3><p>Bookings and favourites, organised for you.</p></span><button data-tab="stay">My stay</button></div>'+planHtml+'</section><section class="g22-sec"><div class="g22-sech"><span><h3>Tonight at the hotel</h3><p>What’s worth staying up for.</p></span><button data-v22-explore>Discover</button></div>'+tonightHtml+'</section><section class="g22-sec"><div class="g22-sech"><span><h3>Your stay at a glance</h3><p>Only what matters right now.</p></span></div><div class="g22-snapshot"><div class="g22-stat"><span>Room</span><b>'+esc(g.room)+'</b></div><div class="g22-stat"><span>Nights left</span><b>'+esc(String(nights))+'</b></div><div class="g22-stat"><span>Bookings</span><b>'+mine.length+'</b></div><div class="g22-stat"><span>Saved</span><b>'+favs+'</b></div></div></section><button class="g22-concierge" data-tab="chat"><span class="mark">'+ic('chat',20)+'</span><span><b>Your personal concierge</b><p>Questions, recommendations or help during your stay.</p></span><span class="go">'+ic('back',17)+'</span></button><section class="g22-sec"><div class="g22-sech"><span><h3>Make it personal</h3><p>Small requests, handled by the entertainment team.</p></span></div><div class="g22-grid">'+g22Action('', 'music','Request a song','Tell our DJ what you love','id="btn-req-song"')+g22Action('', 'gift','Birthday moment','Let the team know','id="btn-req-bday"')+'</div></section>'+(reviewDue(g)?reviewBlock():'')+'</div>';
+  }
+  function g22Stay(){
+    var g=S.session,mine=S.bookings.filter(function(b){return b.room===g.room}),orders=myOrders(),reqs=myRequestsList(),favActs=S.activities.filter(function(a){return S.favorites.includes(a.id)}),items=[];
+    mine.forEach(function(b){var a=S.activities.find(function(x){return x.id===b.activity_id});if(a)items.push({kind:'Activity',title:a.name,meta:(t('days')[a.day]||'')+' · '+a.time+' · '+(a.location||''),img:g22Img(a),status:b.status,id:b.id,aid:a.id,cancel:'booking'});});
+    orders.forEach(function(o){var tk=S.tickets.find(function(x){return x.id===o.ticket_id});if(tk)items.push({kind:'Ticket',title:tk.name,meta:(t('days')[tk.day]||'')+' · '+tk.time+' · '+(tk.location||''),img:tk.image||((typeof IMG!=='undefined'&&IMG.show)||''),status:o.status,id:o.id,cancel:o.status==='paid'?'':'order'});});
+    favActs.forEach(function(a){if(!items.some(function(x){return x.aid===a.id}))items.push({kind:'Favourite',title:a.name,meta:(t('days')[a.day]||'')+' · '+a.time+' · '+(a.location||''),img:g22Img(a),status:'Saved',aid:a.id});});
+    var itinerary=items.length?'<div class="g22-itinerary">'+items.map(function(x){return '<div class="g22-it">'+(x.img?'<img src="'+esc(x.img)+'" alt="">':'<div></div>')+'<div class="g22-it-body"><span class="type">'+esc(x.kind)+' · '+esc(x.status||'')+'</span><b>'+esc(x.title)+'</b><p>'+esc(x.meta)+'</p><div class="g22-it-tools">'+(x.aid?'<button class="g22-mini" data-v22-act="'+x.aid+'">Details</button>':'')+(x.cancel==='booking'?'<button class="g22-mini danger" data-cancel="'+x.id+'">Cancel</button>':x.cancel==='order'?'<button class="g22-mini danger" data-cancelorder="'+x.id+'">Cancel</button>':'')+'</div></div></div>';}).join('')+'</div>':'<div class="g22-empty">Your bookings, tickets and saved experiences will build your stay itinerary here.</div>';
+    var requests=reqs.length?'<section class="g22-sec"><div class="g22-sech"><span><h3>Your requests</h3><p>Follow what you asked the team for.</p></span></div>'+reqs.map(function(r){return '<div class="g22-request"><span class="ri">'+ic(r.type==='song'?'music':'gift',16)+'</span><span><b>'+esc(r.detail)+'</b><p>'+(r.date?esc(r.date):'Sent to the team')+'</p></span><span class="rs">'+(r.status==='done'?'Done':'In progress')+'</span></div>';}).join('')+'</section>':'';
+    return '<div class="screen fadein g22">'+g22Top()+'<header class="g22-stayhead"><div class="g22-eyebrow">YOUR HOLIDAY WALLET</div><h1>My Stay</h1></header><section class="g22-pass"><div class="g22-pass-top"><span><span class="label">Guest</span><h2>'+esc(g.name)+'</h2></span><span class="g22-room"><small>Room</small>'+esc(g.room)+'</span></div><div class="g22-passline"></div><div class="g22-passgrid"><span>Arrival<b>'+esc(g.arrival||'—')+'</b></span><span>Departure<b>'+esc(g.departure||'—')+'</b></span><span>Nationality<b>'+esc(g.nationality||'—')+'</b></span></div></section><section class="g22-sec"><div class="g22-sech"><span><h3>Your itinerary</h3><p>Bookings, tickets and saved moments together.</p></span><button data-v22-explore>Add more</button></div>'+itinerary+'</section>'+requests+'<div class="g22-profileactions"><button id="btn-chpass">'+ic('key',14)+' Change password</button><button data-tab="chat">'+ic('chat',14)+' Ask our team</button></div>'+(reviewDue(g)?reviewBlock():'')+'</div>';
+  }
+  guestView=function(){
+    if(S.tab==='home')return g22Home();
+    if(S.tab==='stay')return g22Stay();
+    return __guestViewV21();
+  };
+  var __wireCommonV21=wireCommon;
+  wireCommon=function(){
+    __wireCommonV21();
+    document.querySelectorAll('[data-v22-explore]').forEach(function(b){b.onclick=function(){showExplore=true;render();};});
+    document.querySelectorAll('[data-v22-act]').forEach(function(b){b.onclick=function(){var a=S.activities.find(function(x){return x.id===+b.dataset.v22Act});if(!a)return;if(typeof ex21OpenDetail==='function'){showExplore=true;render();setTimeout(function(){try{ex21OpenDetail(a.id)}catch(e){}},0);}else if(typeof openBookModal==='function'){openBookModal(a);}};});
+  };
+})();
+</script>
 </body>
 </html>
