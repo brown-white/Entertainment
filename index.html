@@ -10,7 +10,7 @@
 
 
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v23.2 Guest Admin Control</title>
+<title>Entertainment Operations Control Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -2553,7 +2553,7 @@ html,body,#app,.app,.screen,.ex-screen.v14{
 :root{--primary:var(--primary-action);--primary-text:var(--primary-on);--accent:var(--accent-action);--soft:var(--surface-bg);--surface-soft:var(--surface-bg);--serif:var(--font-display)}
 </style>
 </head>
-<body data-build="23.1.0">
+<body data-build="24.0.0">
 
 <div class="app" id="app"><div class="skel-wrap">
 <div class="skel skel-bar"></div>
@@ -2589,7 +2589,7 @@ const CONFIG = {
   SUPABASE_ANON_KEY: "sb_publishable_qY_DPSrOOR7nclHgXC05lQ_BMNSaf3V"
 };
 const REMOTE = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
-const APP_BUILD=Object.freeze({version:"23.1.0",database:"9.1"});
+const APP_BUILD=Object.freeze({version:"24.0.0",database:"10.0"});
 const LS_KEY = "entapp_v23_prefs";
 const AUTH_TOKEN_KEY = "entapp_v23_session";
 function authToken(){
@@ -3757,6 +3757,101 @@ const DB = {
     }
   }
 };
+
+
+/* ==========================================================================
+   v24 RELIABLE DATA CONTRACT
+   Each dataset loads independently. A single endpoint failure can no longer
+   prevent login/startup or erase successfully loaded datasets.
+   ========================================================================== */
+(function(){
+  if(typeof DB==="undefined") return;
+
+  async function settle(path){
+    try{return {ok:true,data:await sb(path)}}catch(error){
+      console.warn("dataset unavailable:",path,error&&error.message);
+      return {ok:false,error};
+    }
+  }
+  function assignIf(result,key,fallback){
+    if(result&&result.ok) S[key]=Array.isArray(result.data)?result.data:(fallback||[]);
+  }
+
+  DB.loadPublic=async function(){
+    if(!REMOTE){
+      S.activities=demoActivities(); S.tickets=demoTickets(); S.profiles=demoProfiles();
+      S.buses=[{id:1,direction:"toHotel",time:"08:00",note:"",sort:0},{id:2,direction:"toHotel",time:"15:00",note:"",sort:1},{id:3,direction:"toHouse",time:"00:30",note:"",sort:2},{id:4,direction:"toHouse",time:"13:15",note:"",sort:3}];
+      return true;
+    }
+    const [a,st,tk,tp,bs,qz,ph]=await Promise.all([
+      settle("activities?select=*&order=time"),
+      settle("app_settings?select=*&id=eq.1"),
+      settle("tickets?select=*&order=time"),
+      settle("team_profiles?select=*&order=id"),
+      settle("buses?select=*&order=sort"),
+      settle("quizzes?select=*&order=quiz_date.desc"),
+      settle("photos?select=*&order=created_at.desc")
+    ]);
+    assignIf(a,"activities"); assignIf(tk,"tickets"); assignIf(tp,"profiles");
+    assignIf(bs,"buses"); assignIf(qz,"quizzes"); assignIf(ph,"photos");
+    if(st.ok && st.data && st.data[0] && st.data[0].data){
+      S.settings={...DEFAULT_SETTINGS,...st.data[0].data};
+    }
+    return [a,st,tk,tp,bs,qz,ph].some(x=>x.ok);
+  };
+
+  DB.loadPrivate=async function(){
+    if(!S.session) return true;
+    if(!REMOTE){
+      S.bookings=demoBookings(); S.users=DEMO_USERS.map(u=>({...u}));
+      S.orders=demoOrders(); S.rooms=demoRooms(); S.accounts=demoAccounts();
+      S.messages=demoMessages(); S.requests=demoRequests(); S.tasks=demoTasks();
+      S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback();
+      S.quizReplies=[]; S.staffAtt=[]; S.staffReqs=[]; S.locations=[];
+      return true;
+    }
+    const specs=[
+      ["bookings","bookings?select=*"],
+      ["users","app_users?select=*"],
+      ["orders","ticket_orders?select=*"],
+      ["rooms","rooms?select=*&order=room"],
+      ["accounts","guest_accounts?select=*"],
+      ["messages","messages?select=*&order=created_at"],
+      ["requests","requests?select=*&order=created_at.desc"],
+      ["tasks","tasks?select=*&order=created_at.desc"],
+      ["notes","announcements?select=*&order=created_at.desc"],
+      ["attendance","attendance?select=*"],
+      ["feedback","feedback?select=*&order=created_at.desc"],
+      ["quizReplies","quiz_replies?select=*&order=created_at.desc"],
+      ["staffAtt","staff_attendance?select=*"],
+      ["staffReqs","staff_requests?select=*&order=created_at.desc"],
+      ["locations","live_locations?select=*"]
+    ];
+    const results=await Promise.all(specs.map(([,path])=>settle(path)));
+    results.forEach((r,i)=>assignIf(r,specs[i][0]));
+    return results.some(x=>x.ok);
+  };
+
+  DB.poll=async function(){
+    if(!REMOTE || !S.session || document.hidden || !navigator.onLine) return false;
+    const specs=[
+      ["messages","messages?select=*&order=created_at"],
+      ["requests","requests?select=*&order=created_at.desc"],
+      ["notes","announcements?select=*&order=created_at.desc"],
+      ["bookings","bookings?select=*"],
+      ["orders","ticket_orders?select=*"],
+      ["tasks","tasks?select=*&order=created_at.desc"]
+    ];
+    const results=await Promise.all(specs.map(([,path])=>settle(path)));
+    let changed=false;
+    results.forEach((r,i)=>{
+      if(!r.ok) return;
+      const key=specs[i][0], next=Array.isArray(r.data)?r.data:[];
+      if(JSON.stringify(next)!==JSON.stringify(S[key]||[])){ S[key]=next; changed=true; }
+    });
+    return changed;
+  };
+})();
 
 /* ---------------- helpers ---------------- */
 const $ = sel => document.querySelector(sel);
@@ -5419,7 +5514,8 @@ function guestCrmInner(){
   });
   return `<div class="card" style="margin-bottom:12px">
       <b>Guest account administration</b>
-      <p class="mini" style="margin:5px 0 0">Active, inactive and departed guest accounts are shown here. Open any record to edit, reset credentials, deactivate or permanently delete it.</p>
+      <p class="mini" style="margin:5px 0 10px">Active, inactive and departed guest accounts are shown here. Open any record to edit, reset credentials, deactivate or permanently delete it.</p>
+      <button class="btn sm" id="crm-add-guest" type="button">${ic("plus",15)} Add guest account</button>
     </div>
     <input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
     ${list.length?`<div class="card">${list.map(a=>{
@@ -5479,18 +5575,26 @@ function guest360View(id){
   </div>`;
 }
 /* ================= AUTOMATIC ACTIVITY ROSTER =================
-   Rules (agreed with the manager):
-   - every entertainer gets ONE morning and ONE afternoon activity
-   - EVENTS are joined by the whole team, so they are never assigned to one person
-   - the MANAGER (#1) and the DJ (#3) never get activities
-   - anyone on their day off is skipped
-   - it is FAIR: whoever has done the least so far goes first, and the
-     starting point rotates each day so it is never the same person. */
-const NO_ACTIVITY_NUMBERS=[1,3];          // manager and DJ (factory default)
+   Operational eligibility is based on account role/capabilities, never on a
+   shirt number. Shirt numbers are display/scheduling identifiers only. */
+const NO_ACTIVITY_NUMBERS=[];             // no factory magic numbers
 /* Manager-editable in Control Center -> Team roles & duty rules */
 function noActivityNums(){
   const v=(S.settings&&S.settings.noActivity);
   return Array.isArray(v) ? v.map(Number) : NO_ACTIVITY_NUMBERS;
+}
+function operationalRolesOf(u){
+  return Array.isArray(u&&u.operational_roles)
+    ? u.operational_roles.map(x=>String(x).toLowerCase())
+    : [];
+}
+function excludedFromActivities(u){
+  if(!u || u.role!=="staff" || u.active===false) return true;
+  const roles=operationalRolesOf(u);
+  if(roles.includes("dj") || roles.includes("no_activity")) return true;
+  /* legacy manager-configured exclusions are still honoured, but there are
+     no automatic shirt-number exclusions anymore. */
+  return !!(u.number && noActivityNums().includes(+u.number));
 }
 /* Superseded by the capability-aware version further down. Kept for reference. */
 function assignableStaffLegacy(day){
@@ -5554,15 +5658,18 @@ function activityGenderRule(a){
 }
 function genderEligibleForActivity(u,a){ const r=activityGenderRule(a); return r==="any" || String(u&&u.gender||"").toLowerCase()===r; }
 function entranceEligible(u){
-  if(!u || u.active===false || u.role!=="staff") return false;
-  if(noActivityNums().includes(+u.number)) return false;
+  if(excludedFromActivities(u)) return false;
+  const roles=operationalRolesOf(u);
+  if(roles.includes("no_entrance")) return false;
   const c=userCapability(u); return !c || c.entrance!==false;
 }
 function currentWeekDateForDay(day){ const d=hotelNow(); const monday=new Date(d); monday.setHours(12,0,0,0); monday.setDate(d.getDate()-todayIndex()+day); return monday.getFullYear()+"-"+String(monday.getMonth()+1).padStart(2,"0")+"-"+String(monday.getDate()).padStart(2,"0"); }
 function attendanceUnavailable(u,day){ const date=currentWeekDateForDay(day); return (S.staffAtt||[]).some(x=>String(x.username).toLowerCase()===String(u.username).toLowerCase()&&String(x.date).slice(0,10)===date&&(x.status==="A"||x.status==="O")); }
 function assignableStaff(day){
   const dp=dayPlanFor(day);
-  return (S.users||[]).filter(u=>u.role==="staff"&&u.number&&u.active!==false&&!noActivityNums().includes(+u.number)&&!dp.off.includes(+u.number)&&!attendanceUnavailable(u,day)).sort((a,b)=>(a.number||99)-(b.number||99));
+  return (S.users||[]).filter(u=>u.number && !excludedFromActivities(u)
+    && !dp.off.includes(+u.number) && !attendanceUnavailable(u,day))
+    .sort((a,b)=>(a.number||99)-(b.number||99));
 }
 function eligibleStaffForActivity(day,a){ return assignableStaff(day).filter(u=>canRunActivity(u,a)&&genderEligibleForActivity(u,a)); }
 function plannerHistory(){ return Array.isArray(S.settings&&S.settings.plannerHistory)?S.settings.plannerHistory:[]; }
@@ -9096,6 +9203,10 @@ function openUserModal(){
     <label>${t("shirtNumber")} (2–10)</label><input id="u-num" type="number" min="2" max="10" placeholder="e.g. 4">
     <label>${t("nationality")}</label>${nationField("u-nat","u-natx","")}
     <label>${t("genderLbl")}</label><select id="u-gen">${genderOptions("")}</select>
+    <label>Operational roles</label>
+    <div class="pills" data-oproles-add>
+      ${["dj","social","no_activity","no_entrance"].map(r=>`<button type="button" data-uop="${r}">${r.replace("_"," ")}</button>`).join("")}
+    </div>
     ${capabilityEditorHtml("ucap",{username:"",role:"staff",number:null})}
     <button class="btn" id="u-save">${t("save")}</button>
     <div class="err" id="u-err"></div>
@@ -9105,6 +9216,7 @@ function openUserModal(){
   wirePhotoPicker(wrap, ()=>uPhoto, v=>{ uPhoto=v; });
   wireNatPicker(wrap,"u-nat","u-natx");
   wireCapabilityEditor(wrap,"ucap");
+  wrap.querySelectorAll("[data-uop]").forEach(b=>b.onclick=()=>b.classList.toggle("on"));
   wrap.querySelector("#u-save").onclick=async ()=>{
     const username=wrap.querySelector("#u-name").value.trim();
     const password=wrap.querySelector("#u-pass").value;
@@ -9117,7 +9229,8 @@ function openUserModal(){
     if(S.users.some(x=>x.username===username)){ err.textContent=t("userExists"); return; }
     await DB.addUser({username,password,role,display_name,number,photo:uPhoto,
       nationality:readNatField(wrap,"u-nat","u-natx"),
-      gender:wrap.querySelector("#u-gen").value});
+      gender:wrap.querySelector("#u-gen").value,
+      operational_roles:[...wrap.querySelectorAll("[data-uop].on")].map(b=>b.dataset.uop)});
     await saveUserCapability(username,readCapabilityEditor(wrap,"ucap"));
     wrap.remove(); toast(t("saved")); render();
   };
@@ -9183,7 +9296,7 @@ function openUserEditModal(u){
     <label>${t("languagesLbl")}</label><input id="ue-lang" value="${esc(u.languages||"")}" placeholder="DE · EN · RU">
     <label>${t("skills")}</label><input id="ue-skills" value="${esc(u.skills||"")}">
     <label>${t("hireDate")}</label><input id="ue-hire" type="date" value="${esc(u.hire_date||"")}">
-    <label>Operational roles</label><div class="pills" data-oproles>${["dj","social","manager","entrance"].map(r=>`<button type="button" class="${(u.operational_roles||[]).includes(r)?"on":""}" data-oprole="${r}">${r}</button>`).join("")}</div>
+    <label>Operational roles</label><div class="pills" data-oproles>${["dj","social","no_activity","no_entrance"].map(r=>`<button type="button" class="${(u.operational_roles||[]).includes(r)?"on":""}" data-oprole="${r}">${r.replace("_"," ")}</button>`).join("")}</div>
     ${capabilityEditorHtml("uecap",u)}
     ${photoListEditor("uep", (()=>{try{return Array.isArray(u.photos)?u.photos:JSON.parse(u.photos||"[]");}catch(e){return [];}})())}
     <label>${t("nationality")}</label>${nationField("ue-nat","ue-natx",u.nationality||"")}
@@ -9236,6 +9349,49 @@ function openUserEditModal(u){
     wrap.remove(); toast(t("saved")); render();
   };
 }
+
+function openGuestCreateModal(){
+  const wrap=baseModal(`
+    <h3>${ic("plus",20)} Add guest account</h3>
+    <div class="row2">
+      <div><label for="gc-room">${t("room")}</label><input id="gc-room" inputmode="numeric"></div>
+      <div><label for="gc-user">${t("user")}</label><input id="gc-user" autocapitalize="none" placeholder="Defaults to room"></div>
+    </div>
+    <label for="gc-name">${t("name")}</label><input id="gc-name">
+    <label for="gc-phone">${t("phone")}</label><input id="gc-phone" inputmode="tel">
+    <label for="gc-nat">${t("nationality")}</label><input id="gc-nat" list="gc-nations">
+    <datalist id="gc-nations">${NATIONS.map(n=>`<option value="${esc(n)}">`).join("")}</datalist>
+    <div class="row2">
+      <div><label for="gc-arr">${t("arrival")}</label><input id="gc-arr" type="date"></div>
+      <div><label for="gc-dep">${t("departure")}</label><input id="gc-dep" type="date"></div>
+    </div>
+    <label for="gc-pass">Temporary password</label><input id="gc-pass" type="text" autocomplete="new-password" value="${esc(makePassword())}">
+    <button class="btn" id="gc-save">${t("save")}</button>
+    <div class="err" id="gc-err"></div>
+    <button class="btn ghost" id="gc-close">${t("close")}</button>`);
+  wrap.querySelector("#gc-close").onclick=()=>wrap.remove();
+  wrap.querySelector("#gc-save").onclick=async()=>{
+    const room=wrap.querySelector("#gc-room").value.trim();
+    const username=(wrap.querySelector("#gc-user").value.trim()||room).toLowerCase();
+    const name=wrap.querySelector("#gc-name").value.trim();
+    const password=wrap.querySelector("#gc-pass").value;
+    const err=wrap.querySelector("#gc-err");
+    if(!room||!name||password.length<8){err.textContent="Room, guest name and password (8+ characters) are required.";return;}
+    if((S.accounts||[]).some(a=>String(a.username||a.room).toLowerCase()===username)){err.textContent="This username already exists.";return;}
+    try{
+      await DB.addAccount({
+        room,username,name,password,
+        phone:wrap.querySelector("#gc-phone").value.trim(),
+        nationality:wrap.querySelector("#gc-nat").value.trim(),
+        arrival:wrap.querySelector("#gc-arr").value,
+        departure:wrap.querySelector("#gc-dep").value,
+        active:true
+      });
+      wrap.remove(); toastOk(t("saved")); render();
+    }catch(e){err.textContent=e&&e.message?e.message:t("errSave");}
+  };
+}
+
 function openGuestEditModal(acc){
   const wrap=baseModal(`
     <h3>${ic("pen",20)} Guest account · ${t("room")} ${esc(acc.room)}</h3>
@@ -9413,6 +9569,7 @@ function wireCommon(){
   document.querySelectorAll("[data-gedit]").forEach(b=>b.onclick=()=>{
     const a=S.accounts.find(x=>x.id===+b.dataset.gedit); if(a) openGuestEditModal(a);
   });
+  const addGuest=$("#crm-add-guest"); if(addGuest) addGuest.onclick=openGuestCreateModal;
   const ex=$("#btn-export"); if(ex) ex.onclick=exportReport;
   const exd=$("#btn-exportdata"); if(exd) exd.onclick=openExportModal;
   document.querySelectorAll("[data-busedit]").forEach(el=>el.onclick=()=>{
