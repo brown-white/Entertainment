@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Hotel Entertainment Operations — Intelligent Planner</title>
+<title>Hotel Entertainment Opشerations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -13424,6 +13424,696 @@ input:focus, select:focus, textarea:focus{
 @supports not (selector(:has(*))){
   .card.act::before{ display: none; }
 }
+
+</style>
+
+<style id="design-v17">
+/* ============================================================
+   v17  —  NEW DESIGN SYSTEM
+   A complete visual rebuild covering every element the app
+   renders across all 65 screens. Styling only: no markup,
+   no behaviour, no data is touched.
+
+   The language:
+     · one surface style with soft depth instead of flat boxes
+     · display serif for anything that is a headline or a number
+     · the accent colour carries meaning, not decoration
+     · generous, consistent spacing
+     · every interactive thing responds to touch
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   0. FOUNDATION
+   ------------------------------------------------------------ */
+:root{
+  --x-r-sm: 12px;
+  --x-r-md: 16px;
+  --x-r-lg: 20px;
+  --x-r-xl: 26px;
+  --x-pill: 999px;
+
+  --x-s1: 6px;  --x-s2: 10px; --x-s3: 14px;
+  --x-s4: 18px; --x-s5: 24px; --x-s6: 32px;
+
+  --x-e: cubic-bezier(.22,.9,.24,1);
+
+  --x-sh1: 0 1px 2px rgba(20,14,8,.045), 0 6px 16px -10px rgba(20,14,8,.28);
+  --x-sh2: 0 1px 3px rgba(20,14,8,.06),  0 14px 34px -16px rgba(20,14,8,.40);
+  --x-sh3: 0 2px 6px rgba(20,14,8,.08),  0 28px 60px -22px rgba(20,14,8,.52);
+  --x-hair: 0 0 0 1px rgba(20,14,8,.055);
+
+  --x-ink: var(--ink);
+  --x-soft: var(--muted);
+  --x-line: color-mix(in srgb, var(--line) 62%, transparent);
+  --x-accent: var(--cacao);
+  --x-tint: color-mix(in srgb, var(--cacao) 8%, var(--card));
+  --x-tint-2: color-mix(in srgb, var(--cacao) 14%, transparent);
+
+  --x-ok: #2F7D53;  --x-ok-bg: rgba(47,125,83,.13);
+  --x-warn:#9A6B12;  --x-warn-bg: rgba(229,161,0,.15);
+  --x-bad: #97362B;  --x-bad-bg: rgba(151,54,43,.12);
+}
+[data-theme="dark"]{
+  --x-sh1: 0 1px 2px rgba(0,0,0,.4),  0 6px 16px -10px rgba(0,0,0,.7);
+  --x-sh2: 0 1px 3px rgba(0,0,0,.45), 0 14px 34px -16px rgba(0,0,0,.8);
+  --x-sh3: 0 2px 6px rgba(0,0,0,.5),  0 28px 60px -22px rgba(0,0,0,.9);
+  --x-hair: 0 0 0 1px rgba(255,255,255,.055);
+  --x-line: color-mix(in srgb, var(--line) 80%, transparent);
+  --x-accent: var(--bronze);
+  --x-tint: color-mix(in srgb, var(--bronze) 7%, var(--card));
+  --x-tint-2: color-mix(in srgb, var(--bronze) 16%, transparent);
+  --x-ok: #8FD6AC;  --x-ok-bg: rgba(47,125,83,.22);
+  --x-warn:#F0C97A;  --x-warn-bg: rgba(229,161,0,.20);
+  --x-bad: #F0A79C;  --x-bad-bg: rgba(151,54,43,.24);
+}
+
+/* ------------------------------------------------------------
+   1. SURFACES — every card in the app
+   ------------------------------------------------------------ */
+.card, .opcard, .profcard, .stdcard, .prcard, .showcard, .daycard, .evcard,
+.ep-card, .exec-card, .rostercard, .quizcard, .ratecard, .notif-card,
+.theme-card, .team-card, .info-card, .qrcard, .v11-box, .cc-pv-card,
+.attn, .attsum, .wnow, .wweek, .v10-list, .week-board, .bus-grid, .cc-page{
+  border-radius: var(--x-r-lg);
+  background: var(--card);
+  border: 1px solid var(--x-line);
+  box-shadow: var(--x-sh1);
+  transition: box-shadow .22s var(--x-e), transform .22s var(--x-e);
+}
+.v9-hero, .hero{
+  border-radius: var(--x-r-xl);
+  box-shadow: var(--x-sh2);
+  overflow: hidden;
+}
+/* a warm tinted surface for anything that leads a screen */
+.v9-hero, .attn, .attsum, .wnow, .v15-mnow, .v14-welcome{
+  background: linear-gradient(152deg, var(--x-tint) 0%, var(--card) 68%);
+}
+[data-theme="dark"] .v14-welcome, [data-theme="dark"] .v15-focus{
+  background: linear-gradient(152deg, var(--x-tint) 0%, var(--card) 68%);
+}
+
+/* ------------------------------------------------------------
+   2. TYPE
+   ------------------------------------------------------------ */
+h2, h3, .serif, .lux-section-title, .v9-lead{
+  font-family: var(--font-display);
+  letter-spacing: -.015em;
+}
+.sec > h3{
+  font-size: 23px;
+  margin-bottom: 2px;
+  display: flex; align-items: center; gap: 9px;
+}
+.sec > h3::after{
+  content:""; flex: none; display: block; width: 42px; height: 2px;
+  background: linear-gradient(90deg, var(--x-accent), transparent);
+  border-radius: 2px; margin-inline-start: 2px;
+}
+.sec{ margin-top: var(--x-s6); }
+.type-meta, .mgr-kicker, .v9-kick, .cc-lb, .tc-lb{
+  font-size: 10px; font-weight: 800; letter-spacing: .17em;
+  text-transform: uppercase; color: var(--x-soft);
+}
+.mini, .meta, .desc, .db-meta, .cc-note, .v11-hint{
+  font-size: 12.5px; line-height: 1.5; color: var(--x-soft);
+}
+/* every number that matters is set in the display face */
+.r0, .rnum, .db-n, .ts-big, .mf-avg, .as-n b, .g3-s b, .attn-n,
+.v9-stats span, .v15-mn-cell b, .v14-w-cell b, .wn-t, .count, .teamcount{
+  font-family: var(--font-display);
+  letter-spacing: -.025em;
+}
+
+/* ------------------------------------------------------------
+   3. BUTTONS
+   ------------------------------------------------------------ */
+.btn{
+  border-radius: var(--x-pill);
+  padding: 13px 22px;
+  font-weight: 650;
+  letter-spacing: .005em;
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F7EEE0;
+  border: 0;
+  box-shadow: 0 2px 6px -2px rgba(20,14,8,.35), 0 12px 26px -14px rgba(20,14,8,.8);
+  transition: transform .16s var(--x-e), box-shadow .16s var(--x-e), opacity .16s;
+}
+[data-theme="dark"] .btn{
+  background: linear-gradient(135deg, var(--bronze), #D9B47F);
+  color: #201607;
+}
+.btn:active{ transform: translateY(1px) scale(.985); box-shadow: 0 1px 3px rgba(20,14,8,.3); }
+.btn.ghost{
+  background: transparent; color: var(--x-ink);
+  border: 1px solid var(--x-line); box-shadow: none;
+}
+.btn.ghost:active{ background: var(--sand); }
+.btn.sm{ padding: 9px 16px; font-size: 13px; }
+.btn.warn{ background: linear-gradient(135deg, #8E2C22, #B3453A); color: #fff; }
+.iconbtn{
+  border-radius: var(--x-r-sm);
+  border: 1px solid var(--x-line);
+  background: var(--card);
+  box-shadow: var(--x-sh1);
+  transition: transform .16s var(--x-e), background .16s;
+}
+.iconbtn:active{ transform: scale(.9); }
+.crumb{
+  border-radius: var(--x-pill); padding: 8px 15px;
+  border: 1px solid var(--x-line); background: transparent;
+  font-size: 13px; font-weight: 600; color: var(--x-soft);
+}
+.bd-b, .rs, .ph-del{ border-radius: var(--x-r-sm); }
+.v9-hero-btn{
+  border-radius: var(--x-r-lg);
+  padding: 17px 20px; font-size: 15.5px; font-weight: 650;
+  box-shadow: var(--x-sh2);
+}
+
+/* ------------------------------------------------------------
+   4. LIST ROWS — one shared rhythm everywhere
+   ------------------------------------------------------------ */
+.booking-line, .acct-row, .std-row, .pr-row, .ev-row, .sr-row, .mf-row,
+.bd-it, .set-it, .cc-row, .roster-row, .week-row, .v10-two, .feat-it,
+.warn-item, .g3-row, .sc-row, .ep-row, .info-row, .loc-row, .crm-row,
+.aa-row, .tk-cm, .tk-h{
+  padding: 14px 16px;
+  gap: 12px;
+  transition: background .16s var(--x-e);
+}
+.booking-line + .booking-line, .acct-row + .acct-row, .std-row + .std-row,
+.pr-row + .pr-row, .ev-row + .ev-row, .sr-row + .sr-row, .mf-row + .mf-row,
+.bd-it + .bd-it, .set-it + .set-it, .cc-row + .cc-row, .g3-row + .g3-row{
+  border-top: 1px solid var(--x-line);
+}
+.set-it:active, .bd-it:active, .crm-row:active, .loc-row:active{ background: var(--sand); }
+.set-ic, .bd-ic, .sb-ic, .v11-ic, .nt-ic{
+  border-radius: var(--x-r-sm);
+  background: var(--x-tint-2);
+  color: var(--x-accent);
+}
+
+/* ------------------------------------------------------------
+   5. BADGES, PILLS, STATUS
+   ------------------------------------------------------------ */
+.pill, .chip, .tchip, .ts-chip, .tag, .catbadge, .stat-pill,
+.sr-st, .cc-tag, .rankb, .v15-seat, .tk-st, .tk-pr{
+  border-radius: var(--x-pill);
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.catbadge{
+  background: transparent; border: 0; padding: 0;
+  font-size: 9.5px; letter-spacing: .17em; text-transform: uppercase;
+  color: var(--x-accent);
+}
+.pill{
+  background: var(--x-tint-2); color: var(--x-accent);
+  border: 0; padding: 5px 12px; font-size: 11px;
+}
+.stat-dot{ box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 15%, transparent); }
+.stat-dot.todo, .v10-dot.warn{ color: var(--x-warn); background: var(--x-warn); }
+.stat-dot.live{ color: var(--x-ok);  background: var(--x-ok); }
+.stat-dot.done{ color: var(--x-bad); background: var(--x-bad); }
+.stat-legend{
+  border-radius: var(--x-pill); padding: 9px 15px;
+  background: var(--card); border: 1px solid var(--x-line); box-shadow: var(--x-sh1);
+}
+.ok,  .can  { color: var(--x-ok); }
+.warn, .res { color: var(--x-warn); }
+.bad, .cant, .absent { color: var(--x-bad); }
+
+/* ------------------------------------------------------------
+   6. THE ACTIVITY CARD
+   ------------------------------------------------------------ */
+.card.act{
+  position: relative;
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  padding: 0; overflow: hidden;
+  border-radius: var(--x-r-lg);
+  box-shadow: var(--x-sh1);
+  margin-bottom: var(--x-s3);
+}
+.card.act:active{ transform: scale(.992); box-shadow: var(--x-sh2); }
+.card.act > .thumb{
+  width: 100px; height: 100%; min-height: 112px;
+  border-radius: 0; object-fit: cover; display: block; align-self: stretch;
+}
+.card.act::after{
+  content:""; position: absolute; inset-inline-start: 88px; top: 0; bottom: 0; width: 16px;
+  background: linear-gradient(90deg, transparent, var(--card)); pointer-events: none;
+}
+[dir="rtl"] .card.act::after{ background: linear-gradient(270deg, transparent, var(--card)); }
+.card.act > .mid{
+  padding: 14px 15px; display: flex; flex-direction: column; gap: 5px;
+  justify-content: center; min-width: 0;
+}
+.card.act .mid h4{
+  font-family: var(--font-display); font-size: 20.5px; line-height: 1.14;
+  margin: 2px 0; display: flex; align-items: center; gap: 8px; color: var(--x-ink);
+}
+.card.act .meta{ display: flex; flex-wrap: wrap; gap: 3px 14px; font-size: 12.5px; }
+.card.act .meta > span{ display: inline-flex; align-items: center; gap: 5px; }
+.card.act .mi{ opacity: .5; }
+.card.act > .side{
+  display: flex; flex-direction: column; align-items: flex-end;
+  justify-content: center; gap: 8px; padding: 12px 14px;
+}
+.card.act .btn{ padding: 10px 19px; font-size: 13.5px; }
+.card.act::before{
+  content:""; position: absolute; inset-inline-start: 0; top: 0; bottom: 0;
+  width: 3px; z-index: 2; background: transparent;
+}
+.card.act:has(.stat-dot.live)::before{ background: var(--x-ok); }
+.card.act:has(.stat-dot.todo)::before{ background: var(--x-warn); }
+.card.act:has(.stat-dot.done){ opacity: .7; }
+.card.act:has(.stat-dot.done) .thumb{ filter: grayscale(.4); }
+
+/* ------------------------------------------------------------
+   7. NAVIGATION AND HEADERS
+   ------------------------------------------------------------ */
+.who, .whobar{
+  border-radius: var(--x-r-lg);
+  border: 1px solid var(--x-line);
+  padding: 16px 18px;
+  background: var(--x-tint);
+}
+.whobar h2{ font-size: 27px; line-height: 1.1; }
+.daytabs, .daychips{ gap: 7px; }
+.daytabs > button, .daychip{
+  border-radius: var(--x-r-sm);
+  border: 1px solid var(--x-line);
+  background: var(--card);
+  font-weight: 650; font-size: 13.5px;
+  transition: transform .16s var(--x-e);
+}
+.daytabs > button.on, .daychip.on{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F7EEE0; border-color: transparent;
+  box-shadow: 0 8px 18px -10px rgba(20,14,8,.9);
+}
+[data-theme="dark"] .daytabs > button.on, [data-theme="dark"] .daychip.on{
+  background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #201607;
+}
+.daytabs > button:active{ transform: scale(.94); }
+.socialrow, .social-big{ gap: 8px; }
+.quickrow{ gap: 11px; }
+.quickrow > button{
+  border-radius: var(--x-r-lg); padding: 19px 12px;
+  background: var(--card); border: 1px solid var(--x-line);
+  box-shadow: var(--x-sh1); font-weight: 650;
+  transition: transform .18s var(--x-e);
+}
+.quickrow > button:active{ transform: translateY(1px) scale(.985); }
+.quickrow > button span{ color: var(--x-accent); }
+.theme-banner{
+  border-radius: var(--x-r-md);
+  background: var(--x-tint); border: 1px solid var(--x-line);
+  padding: 12px 15px;
+}
+
+/* ------------------------------------------------------------
+   8. CHAT
+   ------------------------------------------------------------ */
+.bub{
+  border-radius: 20px; padding: 12px 15px; line-height: 1.5;
+  box-shadow: var(--x-sh1);
+}
+.bub.me{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F7EEE0; border-bottom-right-radius: 7px;
+}
+[data-theme="dark"] .bub.me{ background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #201607; }
+.bub.them{ background: var(--card); border: 1px solid var(--x-line); border-bottom-left-radius: 7px; }
+.chatbar{
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-top: 1px solid var(--x-line);
+}
+
+/* ------------------------------------------------------------
+   9. FORMS
+   ------------------------------------------------------------ */
+input, select, textarea{
+  border-radius: var(--x-r-sm);
+  border: 1px solid var(--x-line);
+  background: var(--card);
+  padding: 13px 14px;
+  transition: border-color .16s var(--x-e), box-shadow .16s var(--x-e);
+}
+input:focus, select:focus, textarea:focus{
+  border-color: var(--x-accent);
+  box-shadow: 0 0 0 3px rgba(140,105,70,.16);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--x-accent) 17%, transparent);
+  outline: none;
+}
+label{
+  font-size: 10.5px; font-weight: 800; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--x-soft);
+}
+.switch{ border-radius: var(--x-pill); }
+.switch.on{ background: var(--x-accent); }
+.knob{ box-shadow: 0 2px 6px rgba(0,0,0,.28); }
+.photo-pick{
+  border-radius: var(--x-r-md); border: 1px dashed var(--x-line);
+  background: var(--x-tint); padding: 13px;
+}
+.photo-box{ border-radius: var(--x-r-sm); }
+.row2{ gap: 11px; }
+
+/* ------------------------------------------------------------
+   10. NUMBER TILES AND STAT BLOCKS
+   ------------------------------------------------------------ */
+.stat, .v9-statlink, .g3-s, .as-n, .v15-mn-cell, .v14-w-cell, .lux-kpi, .ep-cap-box{
+  border-radius: var(--x-r-md);
+  border: 1px solid var(--x-line);
+  background: var(--card);
+  box-shadow: var(--x-sh1);
+}
+.stat, .v9-statlink{
+  position: relative; padding: 19px 17px; overflow: hidden;
+  border-radius: var(--x-r-lg);
+}
+.stat::before, .v9-statlink::before{
+  content:""; position: absolute; inset-inline-start: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, var(--x-accent), transparent); opacity: .6;
+}
+.stat .r0, .v9-statlink .r0{ font-size: 35px; line-height: 1; }
+.stat .r1, .v9-statlink .r1{
+  font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--x-soft);
+}
+.v9-stats{ gap: 9px; }
+.v9-stats span{ border-radius: var(--x-r-md); background: var(--x-tint-2); padding: 12px 8px; }
+.stat-grid, .exec-grid, .dc-grid, .theme-grid, .opgrid, .photogrid, .infogrid{ gap: 11px; }
+
+/* ------------------------------------------------------------
+   11. OPERATION CARDS (Explore)
+   ------------------------------------------------------------ */
+.opcard{
+  border-radius: var(--x-r-lg); overflow: hidden;
+  box-shadow: var(--x-sh2);
+  transition: transform .22s var(--x-e);
+}
+.opcard:active{ transform: scale(.985); }
+.opcard .veil{
+  background: linear-gradient(180deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,.36) 46%, rgba(0,0,0,.80) 100%);
+}
+.opc-txt{ font-family: var(--font-display); font-size: 19px; letter-spacing: -.01em; }
+.opc-go{ opacity: .85; }
+
+/* ------------------------------------------------------------
+   12. PEOPLE
+   ------------------------------------------------------------ */
+.acct-av, .g3-av, .wd-av, .pf-ava, .tc-photo, .crm-av, .loc-av{
+  border-radius: 50%;
+  box-shadow: 0 3px 10px -4px rgba(20,14,8,.5);
+}
+.team-card{ border-radius: var(--x-r-lg); overflow: hidden; }
+.team-card.tappable:active{ transform: scale(.99); }
+.tc-body{ padding: 15px 16px; }
+.tchip, .ts-chip{
+  background: var(--x-tint-2); color: var(--x-accent);
+  padding: 5px 11px; font-size: 11px; border: 0;
+}
+.avring{ box-shadow: 0 0 0 3px var(--card); }
+.score-ring, .rankb{ font-family: var(--font-display); }
+
+/* ------------------------------------------------------------
+   13. WORK DAY
+   ------------------------------------------------------------ */
+.dc-cell{ padding: 15px 17px; }
+.dc-flag{
+  background: linear-gradient(135deg, var(--x-tint-2), transparent);
+  border-radius: 0 0 var(--x-r-lg) var(--x-r-lg); padding: 13px 17px;
+}
+.pr-time, .ev-time, .std-t{
+  font-family: var(--font-display); font-size: 15px; color: var(--x-accent);
+}
+.dd-h{ padding: 15px 17px; }
+
+/* ------------------------------------------------------------
+   14. EMPTY STATES
+   ------------------------------------------------------------ */
+.empty, .v9-none, .bus-empty, .cc-noact{
+  border-radius: var(--x-r-lg);
+  background: linear-gradient(152deg, var(--x-tint) 0%, var(--card) 70%);
+  border: 1px dashed var(--x-line);
+  padding: 32px 22px; text-align: center; color: var(--x-soft);
+}
+.empty .big{ opacity: .3; margin-bottom: 8px; }
+
+/* ------------------------------------------------------------
+   15. MOTION
+   ------------------------------------------------------------ */
+.screen.fadein{ animation: xIn .32s var(--x-e); }
+@keyframes xIn{ from{ opacity:0; transform: translateY(7px); } to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce){
+  .screen.fadein{ animation: none; }
+  .card, .btn, .act, .iconbtn, .opcard, .daytabs > button{ transition: none; }
+}
+
+/* ------------------------------------------------------------
+   16. SMALL SCREENS
+   ------------------------------------------------------------ */
+@media (max-width: 380px){
+  .card.act{ grid-template-columns: 82px 1fr; }
+  .card.act > .thumb{ width: 82px; }
+  .card.act::after{ inset-inline-start: 70px; }
+  .card.act .mid h4{ font-size: 18px; }
+  .sec > h3{ font-size: 21px; }
+  .whobar h2{ font-size: 24px; }
+  .stat .r0, .v9-statlink .r0{ font-size: 30px; }
+}
+
+/* ------------------------------------------------------------
+   17. OLDER BROWSERS
+   ------------------------------------------------------------ */
+@supports not (selector(:has(*))){
+  .card.act::before{ display: none; }
+}
+@supports not (color: color-mix(in srgb, red 50%, blue)){
+  :root{ --x-line: rgba(120,100,80,.20); --x-tint: var(--sand); --x-tint-2: rgba(140,105,70,.14); }
+  [data-theme="dark"]{ --x-line: rgba(255,255,255,.10); --x-tint: var(--sand); --x-tint-2: rgba(217,180,127,.16); }
+}
+
+/* ============================================================
+   18. THE REMAINING COMPONENTS
+   Everything else the app renders, so no screen is left with
+   the old look.
+   ============================================================ */
+
+/* --- dashboard attention panel --- */
+.attn-list{ display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.attn-it{
+  border-radius: var(--x-r-md); border: 1px solid var(--x-line);
+  background: var(--card); padding: 13px 15px;
+  transition: transform .16s var(--x-e);
+}
+.attn-it:active{ transform: scale(.99); }
+.attn-it.bad{ background: var(--x-bad-bg); border-color: transparent; }
+.attn-it.warn{ background: var(--x-warn-bg); border-color: transparent; }
+.attn-n{ font-size: 22px; min-width: 30px; }
+.attn-lb{ font-size: 13.5px; font-weight: 650; }
+.attn-go{ opacity: .45; }
+
+/* --- month attendance --- */
+.att-head{ display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--x-s2); }
+.att-month{ font-family: var(--font-display); font-size: 22px; }
+.ms-strip{ display: flex; flex-wrap: wrap; gap: 3px; margin-top: 12px; }
+.ms-d{ border-radius: 7px; font-weight: 700; }
+.as-row{ display: flex; gap: 9px; margin-top: 10px; }
+.as-n{ flex: 1; text-align: center; padding: 12px 6px; }
+.as-n b{ font-size: 22px; }
+
+/* --- team summary --- */
+.ts-top{ display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--x-line); }
+.ts-big{ font-size: 30px; }
+.ts-nats, .tc-chips, .ep-cap-tags, .g3-tags{ display: flex; flex-wrap: wrap; gap: 7px; }
+.ts-nat, .ts-gen{ font-size: 12px; color: var(--x-soft); }
+.tsum{ padding: 15px 16px; }
+
+/* --- menu builder --- */
+.bd-roles{ display: flex; gap: 8px; margin-bottom: 12px; }
+.bd-role{
+  flex: 1; padding: 11px; border-radius: var(--x-r-sm);
+  border: 1px solid var(--x-line); background: var(--card);
+  font-size: 13.5px; font-weight: 650; color: var(--x-soft);
+}
+.bd-role.on{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F7EEE0; border-color: transparent;
+}
+[data-theme="dark"] .bd-role.on{ background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #201607; }
+.bd-list{ padding: 2px 0; }
+.bd-nm{ font-size: 14.5px; font-weight: 650; }
+.bd-acts{ display: flex; gap: 4px; }
+
+/* --- control center --- */
+.v9-search input{ border-radius: var(--x-pill); padding-inline-start: 16px; }
+.v9-group{ margin-bottom: var(--x-s5); }
+.v9-group h3{ font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--x-soft); margin-bottom: 8px; }
+.v9-modes{ display: flex; gap: 8px; flex-wrap: wrap; }
+.v9-modenow{ font-weight: 650; color: var(--x-accent); }
+.set-list{ padding: 2px 0; }
+.set-mid b{ font-size: 15.5px; font-weight: 650; }
+.set-go{ opacity: .4; }
+.sb-nm{ font-size: 15px; font-weight: 650; }
+.sb-go{ opacity: .4; }
+
+/* --- control-center editors --- */
+.cc-page{ padding: 16px; }
+.cc-row{ display: flex; align-items: center; gap: 12px; }
+.cc-kv{ display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--x-line); }
+.cc-word{ font-size: 14px; }
+.cc-in, .cc-num, .cc-range, .cc-file{ width: 100%; }
+.cc-seg{
+  display: inline-flex; border-radius: var(--x-pill);
+  border: 1px solid var(--x-line); overflow: hidden; background: var(--card);
+}
+.cc-seg > *{ padding: 8px 14px; font-size: 13px; font-weight: 650; }
+.cc-tag{ background: var(--x-tint-2); color: var(--x-accent); padding: 4px 10px; font-size: 11px; }
+.cc-thumb, .cc-prev{ border-radius: var(--x-r-sm); overflow: hidden; }
+.cc-bar{ height: 8px; border-radius: var(--x-pill); background: var(--sand); overflow: hidden; }
+.cc-bar > *{ background: linear-gradient(90deg, var(--x-accent), transparent); }
+.cc-check{ accent-color: var(--x-accent); }
+.cc-rep-head{ font-family: var(--font-display); font-size: 17px; }
+.cc-rep-line{ padding: 10px 0; border-bottom: 1px solid var(--x-line); font-size: 13.5px; }
+.cc-rep-cls{ color: var(--x-soft); font-size: 12px; }
+.cc-role{ font-size: 12.5px; color: var(--x-soft); }
+.cc-mini-actions{ display: flex; gap: 7px; flex-wrap: wrap; }
+.cc-wreset{ font-size: 12px; color: var(--x-soft); }
+
+/* --- bus schedule --- */
+.bus-grid{ padding: 4px; }
+.bus-col-head{
+  font-size: 10.5px; font-weight: 800; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--x-soft); padding: 10px 12px 6px;
+}
+.bus-col{ min-width: 0; }
+.bus-ic{ color: var(--x-accent); opacity: .8; }
+.bus-add{ border-radius: var(--x-pill); }
+
+/* --- weekly planner --- */
+.week-board{ padding: 4px; overflow-x: auto; }
+.week-head{
+  font-size: 10.5px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--x-soft); padding: 10px 8px;
+}
+.week-row{ border-top: 1px solid var(--x-line); }
+
+/* --- duty bar and day plan --- */
+.dutybar{
+  border-radius: var(--x-r-md); background: var(--x-tint);
+  border: 1px solid var(--x-line); padding: 13px 15px;
+}
+.entrance, .working, .off{ font-weight: 650; }
+.working{ color: var(--x-ok); }
+.off{ color: var(--x-warn); }
+
+/* --- chat thread --- */
+.thread{ display: flex; flex-direction: column; gap: 10px; padding-bottom: 12px; }
+.bubwrap{ display: flex; flex-direction: column; max-width: 84%; }
+.bubwrap.me{ align-self: flex-end; align-items: flex-end; }
+.tm{ font-size: 10.5px; opacity: .65; margin-top: 4px; }
+
+/* --- work day person header --- */
+.wd-photo, .wd-av{ border-radius: 50%; overflow: hidden; }
+.wd-num{
+  font-family: var(--font-display); font-size: 13px;
+  background: var(--card); border-radius: 50%; box-shadow: var(--x-sh1);
+}
+.wd-who b{ font-size: 17px; }
+
+/* --- feedback and ratings --- */
+.mf-top{ display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--x-line); }
+.mf-avg{ font-size: 30px; }
+.mf-rate{ color: var(--x-accent); letter-spacing: 1px; }
+.mf-c{ font-size: 14.5px; color: var(--x-ink); }
+.rate-stars{ display: flex; justify-content: center; gap: 6px; }
+.rs{ background: transparent; border: 0; color: var(--x-line); transition: color .16s, transform .16s var(--x-e); }
+.rs:active{ color: var(--x-accent); transform: scale(1.14); }
+.star, .fav{ color: var(--x-accent); }
+
+/* --- guest 360 and employee profile --- */
+.g3-head{ display: flex; align-items: center; gap: 14px; padding: 17px; }
+.g3-info b{ font-size: 18px; font-family: var(--font-display); }
+.g3-stats{ display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.g3-s{ text-align: center; padding: 12px 4px; }
+.g3-s b{ font-size: 21px; display: block; line-height: 1; }
+.ep-cap-grid{ display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+.ep-cap-box{ padding: 13px; }
+
+/* --- hotel info --- */
+.info-card{ overflow: hidden; }
+.info-img{ width: 100%; height: 140px; object-fit: cover; display: block; }
+.info-body{ padding: 15px 17px; display: flex; flex-direction: column; gap: 4px; }
+.info-body b{ font-family: var(--font-display); font-size: 18px; }
+.info-meta{ display: flex; flex-wrap: wrap; gap: 12px; margin-top: 5px; font-size: 12.5px; color: var(--x-soft); }
+.info-go{ opacity: .8; }
+
+/* --- gallery and photo strips --- */
+.photo-it{ border-radius: var(--x-r-md); overflow: hidden; box-shadow: var(--x-sh1); }
+.pstrip img{ border-radius: var(--x-r-md); }
+.ph-del{ background: rgba(0,0,0,.55); color: #fff; }
+
+/* --- quiz --- */
+.quiz-q{ font-family: var(--font-display); font-size: 20px; line-height: 1.25; }
+.quizcard{ padding: 17px; }
+
+/* --- tickets --- */
+.price{ font-family: var(--font-display); font-size: 20px; color: var(--x-accent); }
+.seats{ font-size: 12px; color: var(--x-soft); }
+
+/* --- map --- */
+.livemap{ height: 340px; border-radius: var(--x-r-lg); overflow: hidden; border: 1px solid var(--x-line); }
+
+/* --- weather --- */
+.wn-t{ font-size: 44px; line-height: 1; }
+.wn-ic{ color: var(--x-accent); }
+.wn-mid span{ font-size: 14.5px; }
+
+/* --- qr --- */
+.qrcard{ padding: 20px; text-align: center; }
+.qr-img{ border-radius: var(--x-r-md); max-width: 280px; width: 100%; }
+.qr-url{ word-break: break-all; margin-top: 12px; }
+
+/* --- features list --- */
+.feat-list{ border-radius: var(--x-r-md); border: 1px solid var(--x-line); padding: 8px 10px; }
+.feat-it{ padding: 9px 4px; text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--x-ink); }
+.feat-cb{ accent-color: var(--x-accent); }
+
+/* --- health / warnings --- */
+.warn-list{ display: flex; flex-direction: column; }
+.warn-item{ border-top: 1px solid var(--x-line); font-size: 13.5px; }
+.v10-chk{ display: flex; align-items: center; gap: 10px; padding: 12px 0; }
+.v10-chk-t{ font-size: 14px; }
+.v10-dot{ width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+/* --- approval --- */
+.approval .card{ border-inline-start: 3px solid var(--x-accent); }
+
+/* --- small helpers --- */
+.reddot{ background: var(--x-bad); box-shadow: 0 0 0 3px var(--x-bad-bg); }
+.st-new{ background: var(--x-warn-bg); color: var(--x-warn); }
+.istoday{ box-shadow: inset 0 0 0 2px var(--x-accent); }
+.ring-done{ box-shadow: 0 0 0 3px var(--x-bad-bg); }
+.haspic img{ object-fit: cover; }
+.navbtn:disabled, .fwd:disabled{ opacity: .3; }
+.tb-l{ font-size: 12.5px; color: var(--x-soft); }
+.tc-pos{ font-size: 12.5px; color: var(--x-soft); }
+.tc-sw{ border-radius: var(--x-pill); }
+.dd-edit{ border-radius: var(--x-pill); }
+.command-actions{ display: flex; flex-wrap: wrap; gap: 9px; }
+.manager-command .card, .manager-settings .card{ border-radius: var(--x-r-lg); }
+.rinfo{ font-size: 12.5px; color: var(--x-soft); }
+.rstat{ font-weight: 650; }
+.db-nums{ display: flex; gap: 10px; }
+.pr-mid, .ev-mid, .sr-mid, .acct-info{ min-width: 0; }
+.acct-num{ font-family: var(--font-display); color: var(--x-accent); }
+.std-x{ color: var(--x-soft); font-size: 12.5px; }
+.pills{ display: flex; flex-wrap: wrap; gap: 6px; }
 
 </style>
 </body>
