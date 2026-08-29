@@ -4,25 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#0F1B2D">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="app-version" content="23.1.0">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Amarina Sapphire entertainment programme, guest experience and team operations.">
+
+
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment Operations Control Center — v20 Message & Theme Fixed</title>
+<title>Amarina Sapphire — Entertainment Operations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-<!--
-  ENTERTAINMENT OPERATIONS CONTROL CENTER — PRODUCTION MASTER v17
-  Source: v15 complete theme system FIXED
-  Organization: one CSS bundle + one JS bundle, original cascade/execution order preserved.
-  Stability layer at the end adds transactional settings and relationship-safe deletes.
--->
-<style id="production-v17-styles">
+<!-- Entertainment Operations Control Center — production build 23.1.0 -->
+<style id="production-styles">
 /* ==========================================================================
-   PRODUCTION MASTER v17 — CONSOLIDATED STYLE BUNDLE
+   PRODUCTION STYLE BUNDLE
    Original cascade order preserved exactly; later rules remain authoritative.
    ========================================================================== */
 
-/* ===== SOURCE STYLE LAYER 1/7 ===== */
+/* production component */
 
 :root{
 /* ================= DESIGN SYSTEM TOKENS ================= */
@@ -242,7 +241,7 @@ img{display:block;max-width:100%}
 [data-theme="dark"] .setup{background:#33290F;border-color:#5A4A1E;color:#E3CE96}
 .roomgrid{max-height:340px;overflow-y:auto}
 
-/* ================= LUXURY LAYER ================= */
+/* production component */
 .social-a{display:inline-flex;align-items:center;gap:7px}
 .social-a .ic-s{vertical-align:0;color:var(--cacao)}
 [data-theme="dark"] .social-a .ic-s{color:var(--bronze)}
@@ -300,7 +299,7 @@ h3 .ic-s,h4 .ic-s{color:var(--bronze);vertical-align:-3px}
 @media (prefers-reduced-motion: reduce){.hero img,.fadein>*{animation:none}}
 
 
-/* ================= LUXURY LAYER 2 — drawer, top bar, pages ================= */
+/* production component */
 .screen{padding:18px 18px 48px}
 .chatbar{bottom:calc(10px + env(safe-area-inset-bottom))}
 .thread{padding-bottom:88px}
@@ -644,7 +643,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--bronze);
 .acct-info{flex:1;min-width:0;display:flex;flex-direction:column}
 .acct-info b{font-size:15px}
 
-/* ===== PROFESSIONAL POLISH v4 ===== */
+/* production component */
 /* softer, more premium cards and depth */
 .card{border-radius:var(--r-xl);box-shadow:0 2px 8px -4px rgba(38,24,14,.10),0 12px 30px -18px rgba(38,24,14,.22)}
 .opcard,.catcard{border-radius:var(--r-2xl)}
@@ -1524,10 +1523,7 @@ body{background:linear-gradient(180deg,#F9FAFC 0%,#F1F4F8 100%)}[data-theme="dar
 .export-format-note{border-left-color:#C6A15B;background:#F3F0E8}[data-theme="dark"] .export-format-note{background:#162337}input:focus,textarea:focus,select:focus{border-color:#C6A15B;box-shadow:0 0 0 3px rgba(198,161,91,.16)}
 
 
-/* =====================================================================
-   EXECUTIVE PRODUCT SYSTEM v7 — authoritative visual layer
-   Hotel Entertainment Operations / mobile-first + management responsive
-   ===================================================================== */
+/* production component */
 :root{
   --brand-950:#081321; --brand-900:#0D1B2A; --brand-800:#142A43;
   --brand-700:#1D3B5D; --brand-600:#28517B;
@@ -1722,7 +1718,7 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .plan-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.plan-tab{padding:10px 7px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:700;font-size:12.5px;color:var(--muted)}.plan-tab.on{background:linear-gradient(135deg,var(--brand-900),var(--brand-700));color:#fff;border-color:transparent;box-shadow:0 8px 22px -14px var(--brand-900)}.plan-meta{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 12px}.plan-chip{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-soft);border:1px solid var(--line);color:var(--muted)}.plan-chip.good{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,var(--line))}.plan-chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,var(--line))}.aa-entrance{display:grid;grid-template-columns:82px 1fr minmax(130px,42%);align-items:center;gap:9px;padding:11px 8px;border-bottom:1px solid var(--line)}.aa-entrance .aa-slot{background:color-mix(in srgb,var(--accent) 13%,var(--card));color:var(--brand-700)}.req-gender{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:3px}.ep-cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ep-cap-box{padding:13px;border:1px solid var(--line);border-radius:15px;background:var(--card)}.ep-cap-box b{display:block;font-size:13px;margin-bottom:7px}.ep-cap-box.can b{color:var(--ok)}.ep-cap-box.cant b{color:var(--warn)}.ep-cap-tags{display:flex;flex-wrap:wrap;gap:5px}.ep-cap-tags span{font-size:11px;padding:4px 8px;border-radius:999px;background:var(--surface-soft);border:1px solid var(--line)}
 @media(max-width:520px){.cap-dual,.ep-cap-grid{grid-template-columns:1fr}.aa-entrance{grid-template-columns:72px 1fr}.aa-entrance select{grid-column:1/-1}.plan-tabs{gap:5px}.plan-tab{font-size:11.5px}}
 
-/* ===== SOURCE STYLE LAYER 2/7 ===== */
+/* production component */
 
 :root{--lux-radius:22px;--lux-shadow:0 18px 48px rgba(7,18,34,.08)}
 .exec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}.exec-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--lux-shadow);text-align:left}.exec-card b{display:block;font-size:15px}.exec-card small{display:block;color:var(--muted);margin-top:4px;line-height:1.35}.exec-wide{grid-column:1/-1}.lux-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.lux-kpi>div{padding:12px 8px;border:1px solid var(--line);border-radius:16px;background:var(--card);text-align:center}.lux-kpi b{font-size:20px;display:block}.lux-kpi small{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
@@ -1730,7 +1726,7 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .audit-row{padding:11px 0;border-bottom:1px solid var(--line)}.audit-row:last-child{border:0}.audit-row b{font-size:13px}.audit-row small{display:block;color:var(--muted);margin-top:3px}.approval{display:flex;gap:8px;flex-wrap:wrap}.approval .pill{padding:8px 12px}.lux-section-title{font-family:var(--serif);font-size:27px;margin:20px 0 8px}.skill-legend{display:flex;gap:7px;flex-wrap:wrap}.skill-legend span{padding:6px 9px;border-radius:999px;background:var(--soft);font-size:11px;font-weight:800}.manager-command{background:linear-gradient(135deg,var(--primary),color-mix(in srgb,var(--primary) 76%,#000));color:#fff;border-radius:26px;padding:20px;margin-bottom:16px;box-shadow:0 20px 55px color-mix(in srgb,var(--primary) 20%,transparent)}.manager-command h2{font-family:var(--serif);font-size:30px;margin:3px 0 6px}.manager-command p{opacity:.8}.command-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}.command-actions button{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:15px;padding:12px;text-align:left;font-weight:800}.command-actions small{display:block;opacity:.65;margin-top:3px;font-weight:500}
 @media(min-width:850px){.exec-grid{grid-template-columns:repeat(3,1fr)}.exec-wide{grid-column:auto}.command-actions{grid-template-columns:repeat(4,1fr)}}
 
-/* ===== SOURCE STYLE LAYER 3/7 ===== */
+/* production component */
 
 /* ===== CONTROL CENTER v8 — manager control surfaces ===== */
 .cc-hero{background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#fff;border-radius:var(--r-2xl);
@@ -1818,9 +1814,9 @@ body::before{content:"";position:fixed;inset:0;background-image:var(--app-bg-ima
 .login-wrap > *{position:relative;z-index:1}
 html[data-cardborder="off"] .card{border-color:transparent}
 
-/* ===== SOURCE STYLE LAYER 4/7 ===== */
+/* production component */
 
-/* ===== THEME CONTRACT v14.1 — selected palette must reach every workspace ===== */
+/* production component */
 html,body,.app,.screen{background:var(--bg)!important;color:var(--ink)!important}
 body{background-image:none!important}
 .card,.stat,.tk,.login-card,.daytabs button,.pills button,.quickrow button,.iconbtn,
@@ -1883,10 +1879,10 @@ body{background-image:none!important}
 .msg-pop-close:active{background:var(--surface-2)}
 @media (min-width:700px){.msg-pop-notification{top:20px}}
 
-/* ===== SOURCE STYLE LAYER 5/7 ===== */
+/* production component */
 
 /* ==========================================================================
-   v15 COMPLETE THEME SYSTEM
+   PRODUCTION COMPONENT
    Semantic colour roles. Every preset and Custom has independent Light/Dark.
    ========================================================================== */
 :root{
@@ -2005,7 +2001,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent-action)!import
 .v15-preview small{display:block;color:inherit;opacity:.72;margin-top:3px}
 @media(max-width:390px){.v15-theme-grid,.v15-colors{grid-template-columns:1fr}}
 
-/* ===== SOURCE STYLE LAYER 6/7 ===== */
+/* production component */
 
 /* ===== CONTROL CENTER v9 — settings home + analytics center ===== */
 .v9-hero{background:linear-gradient(135deg,var(--espresso),var(--cacao));color:#fff;border-radius:var(--r-2xl);
@@ -2194,9 +2190,9 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent-action)!import
 @media(min-width:620px){.v9-dashbtns{flex-direction:row}.v9-dashbtns .btn{flex:1}}
 
 
-/* ===== SOURCE STYLE LAYER 7/7 ===== */
+/* production component */
 
-/* ===== EXPLORE v14 — resort discovery experience ===== */
+/* production component */
 .ex-screen.v14{padding:0 0 54px;background:
   radial-gradient(120% 42% at 50% -8%,rgba(198,161,91,.16),transparent 64%),var(--bg)}
 .ex-screen.v14 .ex-top{position:sticky;top:0;z-index:18;display:flex;align-items:center;gap:10px;
@@ -2267,7 +2263,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent-action)!import
 
 
 
-/* ==========================================================================\n   REBUILT MASTER v19 — AUTHORITATIVE APP SHELL\n   One final contract for viewport, safe areas, fixed UI, notifications and\n   settings hierarchy. This intentionally wins over legacy visual layers.\n   ========================================================================== */
+/* ==========================================================================\n   23.0.0 — AUTHORITATIVE APP SHELL\n   One final contract for viewport, safe areas, fixed UI, notifications and\n   settings hierarchy. This intentionally wins over legacy visual layers.\n   ========================================================================== */
 :root{
   --shell-max:620px;
   --safe-top:env(safe-area-inset-top,0px);
@@ -2342,7 +2338,7 @@ body:has(.conn-banner) .notification-stack{top:calc(var(--safe-top) + 54px);}
 
 
 /* ==========================================================================
-   v19 MOBILE VIEWPORT CONTRACT
+   PRODUCTION COMPONENT
    Explore/Guest discovery is a full-width screen and owns its own gutters.
    Do NOT apply the generic .screen padding to this view.
    ========================================================================== */
@@ -2379,7 +2375,7 @@ body:has(.conn-banner) .notification-stack{top:calc(var(--safe-top) + 54px);}
 
 
 /* ==========================================================================
-   v19 FINAL VIEWPORT CONTRACT
+   PRODUCTION COMPONENT
    The document itself is edge-to-edge. Individual screens own their gutters.
    ========================================================================== */
 html,body{
@@ -2404,7 +2400,7 @@ body{min-height:100dvh!important;text-align:initial!important;}
 
 
 /* ==========================================================================
-   v20 GLOBAL THEME CONTRACT
+   PRODUCTION COMPONENT
    One palette controls Explore + Login + Guest + Staff + Manager + overlays.
    Media overlays may retain white text for readability over photographs.
    ========================================================================== */
@@ -2518,9 +2514,46 @@ html,body,#app,.app,.screen,.ex-screen.v14{
   border-color:var(--border-color)!important;
 }
 
+
+
+/* ================= PRODUCTION COMPONENT ================= */
+[data-approle="manager"] .booking-line{
+  position:relative;
+  cursor:pointer;
+  transition:border-color .15s,transform .12s,box-shadow .15s;
+}
+[data-approle="manager"] .booking-line[onclick]::after{
+  content:"›";
+  position:absolute;
+  top:50%;
+  right:14px;
+  transform:translateY(-50%);
+  font-size:24px;
+  color:var(--text-secondary);
+  opacity:.45;
+}
+[data-approle="manager"] .booking-line:active{
+  transform:scale(.992);
+  border-color:var(--accent-action)!important;
+}
+@media(hover:hover){
+  [data-approle="manager"] .booking-line:hover{
+    border-color:var(--accent-action)!important;
+    box-shadow:var(--sh-2);
+  }
+}
+
+
+/* v23 final accessibility/touch contract */
+.pedit-rm,.ph-del,.bubtool{min-width:44px!important;min-height:44px!important;width:44px!important;height:44px!important}
+[role="dialog"]:focus{outline:none}
+[role="switch"]{cursor:pointer}
+[data-pv],[data-pvsingle]{outline-offset:3px}
+[data-pv]:focus-visible,[data-pvsingle]:focus-visible{outline:2px solid var(--accent-action)}
+:root{--primary:var(--primary-action);--primary-text:var(--primary-on);--accent:var(--accent-action);--soft:var(--surface-bg);--surface-soft:var(--surface-bg);--serif:var(--font-display)}
 </style>
 </head>
-<body data-build="audited-master-v16">
+<body data-build="23.1.0">
 
 <div class="app" id="app"><div class="skel-wrap">
 <div class="skel skel-bar"></div>
@@ -2546,8 +2579,8 @@ html,body,#app,.app,.screen,.ex-screen.v14{
 <script id="app-script">
 setTimeout(function(){var s=document.getElementById("splash");if(s&&s.parentNode)s.parentNode.removeChild(s);},2600);
 /* ================================================================
-   ⚙️ SETUP — make it real in 2 steps:
-   1) In Supabase: SQL Editor -> run supabase-setup-production-v8.sql (one time)
+   SETUP — hardened production database + application:
+   1) In Supabase: SQL Editor -> run supabase-setup-production-v9.1-HARDENED.sql (one time)
    2) Paste your project values below (Supabase -> Settings -> API)
    While both are empty the app runs on sample data for preview.
 ================================================================ */
@@ -2556,7 +2589,48 @@ const CONFIG = {
   SUPABASE_ANON_KEY: "sb_publishable_qY_DPSrOOR7nclHgXC05lQ_BMNSaf3V"
 };
 const REMOTE = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
-const LS_KEY = "entapp_v3";
+const APP_BUILD=Object.freeze({version:"23.1.0",database:"9.1"});
+const LS_KEY = "entapp_v23_prefs";
+const AUTH_TOKEN_KEY = "entapp_v23_session";
+function authToken(){
+  try{return sessionStorage.getItem(AUTH_TOKEN_KEY)||localStorage.getItem(AUTH_TOKEN_KEY)||""}catch(_){return ""}
+}
+function saveAuthToken(token,remember=true){
+  try{
+    localStorage.removeItem(AUTH_TOKEN_KEY); sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    (remember?localStorage:sessionStorage).setItem(AUTH_TOKEN_KEY,String(token||""));
+  }catch(_){ }
+}
+function clearAuthToken(){try{localStorage.removeItem(AUTH_TOKEN_KEY);sessionStorage.removeItem(AUTH_TOKEN_KEY)}catch(_){}}
+function principalToSession(p){
+  if(!p||!p.role) return null;
+  if(p.role==="guest") return {role:"guest",room:p.room,name:p.name||p.username||p.room,phone:p.phone||"",nationality:p.nationality||"",arrival:p.arrival||"",departure:p.departure||"",accountId:p.accountId,username:p.username||p.room};
+  return {role:p.role,name:p.name||p.username,username:p.username,userId:p.userId,number:p.number||null,photo:p.photo||""};
+}
+async function rpcApp(name,payload={},opts={}){
+  return sb("rpc/"+encodeURIComponent(name),{method:"POST",body:JSON.stringify(payload),...opts});
+}
+async function serverLogin(login,password,kind,remember){
+  const r=await rpcApp("app_login",{p_login:login,p_password:password,p_kind:kind,p_remember:!!remember});
+  const data=Array.isArray(r)?r[0]:r;
+  if(!data||!data.token||!data.principal) throw new Error("Login failed");
+  saveAuthToken(data.token,remember); S.remember=!!remember; S.session=principalToSession(data.principal); return S.session;
+}
+async function resumeServerSession(){
+  const token=authToken(); if(!token) return null;
+  try{
+    const r=await rpcApp("app_resume_session",{p_token:token});
+    const data=Array.isArray(r)?r[0]:r;
+    if(!data||!data.principal){clearAuthToken();return null}
+    S.session=principalToSession(data.principal); return S.session;
+  }catch(e){clearAuthToken();return null}
+}
+async function logoutServer(){
+  const token=authToken();
+  try{if(REMOTE&&token) await rpcApp("app_logout",{p_token:token})}catch(_){ }
+  clearAuthToken(); S.session=null;
+}
+
 
 const DEFAULT_SETTINGS = {
   name:"Entertainment Operations", subtitle:"Guest Experience · Activities · Team Operations", welcomeMsg:"",
@@ -2564,15 +2638,15 @@ const DEFAULT_SETTINGS = {
   navBg:"#FFFFFF", navActive:"#1F3657",
   fontStyle:"elegant", buttonStyle:"rounded",
   menuHome:"", menuProgram:"", menuTickets:"", menuChat:"", menuStay:"",
-  tripadvisor:"https://www.tripadvisor.com", google:"https://www.google.com/maps", holidaycheck:"https://www.holidaycheck.de",
+  tripadvisor:"", google:"", holidaycheck:"",
   instagram:"", facebook:"", tiktok:"", youtube:"", whatsapp:"",
   busToHotel:"", busToHouse:"",
-  aiEndpoint:"", pushEndpoint:"", palette:"navyGold", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
+  aiEndpoint:"", pushEndpoint:"", palette:"sapphireChampagne", dayOverrides:{}, staffCapabilities:{}, activityGenderRules:{}, plannerHistory:[], hotelInfo:[], reviewAsk:true,
   logo:"", hotelName:"", timezone:"Africa/Cairo", currency:"EUR", contact:"", fontScale:"normal", autoDark:false,
   lat:"", lon:"",
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true,map:true},
   /* --- Control Center v8: everything below is editable inside the app --- */
-  labels:{}, design:{}, teamRoles:{}, noActivity:[1,3], slotSplit:"13:00",
+  labels:{}, design:{}, teamRoles:{}, noActivity:[], slotSplit:"13:00",
   reportMeta:{}, catImages:{}
 };
 const FONTS={
@@ -2586,9 +2660,9 @@ const BTN_R={rounded:["14px","11px"],pill:["999px","999px"],square:["8px","7px"]
 /* ---------------- i18n ---------------- */
 const LANGS=[["en","English"],["de","Deutsch"],["ru","Русский"],["pl","Polski"],["cs","Čeština"],["nl","Nederlands"],["fr","Français"],["ar","العربية"]];
 const EXTRA={
-en:{chat:"Chat",typeMessage:"Write a message…",send:"Send",noMessages:"No messages yet — say hello!",requests:"Requests",songRequest:"Song request",birthdayRequest:"Birthday",songName:"Song / artist",forWhom:"For whom?",birthdayDate:"Date",reqNote:"Message (optional)",myRequests:"My requests",statusNew:"New",done:"Done",markDone:"Mark done",tasks:"Tasks",addTask:"Add task",taskFor:"Assign to",allTeam:"Whole team",myTasks:"My tasks",noTasks:"No tasks — enjoy the sun!",attendance:"Attendance",present:"Present",notifications:"Notifications",newAnnouncement:"New notification",audience:"Send to",audAll:"Everyone",audGuests:"Guests",audTeam:"Team",noNotifs:"Nothing new right now.",rooms:"Rooms",addRooms:"Add rooms",roomsHint:"One room per line or separated by commas",activeLbl:"Active",roomNotFound:"This room number is not registered. Please ask at the reception.",guestAccounts:"Guest accounts",welcomeMsgLbl:"Welcome message (optional)",textC:"Text color",navC:"Menu color",navActiveC:"Active menu color",guestsTab:"Guests",teamTab:"Team",taskType:"Task type",ttCome:"Come to location",ttLeave:"Leave location",ttActivity:"Run activity",ttFeedback:"Collect feedback",ttCollect:"Collect guests",accept:"Accept",still:"Still working",cantDo:"I can't",accepted:"Accepted",late:"Late",points:"Points",rank:"Team ranking",exportReport:"Weekly report (Excel)",feedback:"Feedback",addFeedback:"Add feedback",rate:"Rating",comment:"Short comment",avgRate:"Average rating",taskStats:"Tasks per entertainer",dueLbl:"Deadline",aiTab:"AI Assistant",aiKeyLbl:"Anthropic API key",aiKeyHint:"Saved only in this browser — never in the app file or database.",aiAsk:"Ask your assistant…",aiIntro:"Professional help for planning, announcements, ideas and problems — it knows your live program and statistics.",aiErr:"AI request failed — check key and credit.",profile:"Profile",changePass:"Change password",newPass:"New password",yourLogin:"Your login details",saveThese:"Save these — you need them to sign in on other phones.",firstVisit:"First visit",accountExists:"This room already has an account — please sign in with the password.",editUser:"Edit user",overview:"Overview",menu:"Menu",logout:"Sign out",socialPage:"Social & Reviews",teamPage:"Meet the Team",contactWa:"Chat with us on WhatsApp",leaveReview:"Leave a review",ourTeam:"Our entertainment team",entertainersWord:"entertainers",profiles:"Profiles",addProfile:"Add profile",positionLbl:"Position",skills:"Skills",languagesLbl:"Languages",instagramLbl:"Instagram profile",whatsappLbl:"WhatsApp number",rememberMe:"Stay signed in",nextStep:"Next",backStep:"Back",createAccount:"Create account",chooseRoom:"Choose your room",chooseNat:"Choose your nationality",collectFrom:"Collect your tickets from",chooseMember:"Please choose a team member",handTo:"Hand over to",exportData:"Export data",exportExcel:"Export to Excel",exportPdf:"Export to PDF",exportWhat:"What would you like to export?",expBookings:"Bookings",expRequests:"Guest requests",expChat:"Chat messages",expUsers:"Team accounts",expGuests:"Guest list (rooms & nationality)",expTickets:"Ticket orders",expFeedback:"Guest feedback",expAll:"Everything",daysHere:"days in the app",joinedActs:"Joined activities",notifSound:"Sound & alerts",notifOn:"Notifications on",notifNew:"New notification",notifMsg:"New message",notifBooking:"New booking",notifTask:"New activity assigned",notifRequest:"New guest request",enableNotif:"Enable sound & pop-up alerts"},
-de:{chat:"Chat",typeMessage:"Nachricht schreiben…",send:"Senden",noMessages:"Noch keine Nachrichten — sag Hallo!",requests:"Wünsche",songRequest:"Musikwunsch",birthdayRequest:"Geburtstag",songName:"Song / Künstler",forWhom:"Für wen?",birthdayDate:"Datum",reqNote:"Nachricht (optional)",myRequests:"Meine Wünsche",statusNew:"Neu",done:"Erledigt",markDone:"Als erledigt markieren",tasks:"Aufgaben",addTask:"Aufgabe hinzufügen",taskFor:"Zuweisen an",allTeam:"Ganzes Team",myTasks:"Meine Aufgaben",noTasks:"Keine Aufgaben — genieß die Sonne!",attendance:"Anwesenheit",present:"Anwesend",notifications:"Mitteilungen",newAnnouncement:"Neue Mitteilung",audience:"Senden an",audAll:"Alle",audGuests:"Gäste",audTeam:"Team",noNotifs:"Gerade nichts Neues.",rooms:"Zimmer",addRooms:"Zimmer hinzufügen",roomsHint:"Ein Zimmer pro Zeile oder mit Komma getrennt",activeLbl:"Aktiv",roomNotFound:"Diese Zimmernummer ist nicht registriert. Bitte frag an der Rezeption.",guestAccounts:"Gäste-Konten",welcomeMsgLbl:"Willkommenstext (optional)",textC:"Textfarbe",navC:"Menüfarbe",navActiveC:"Aktive Menüfarbe",guestsTab:"Gäste",teamTab:"Team",taskType:"Aufgabentyp",ttCome:"Zum Ort kommen",ttLeave:"Ort verlassen",ttActivity:"Aktivität durchführen",ttFeedback:"Feedback sammeln",ttCollect:"Gäste einsammeln",accept:"Annehmen",still:"Noch dabei",cantDo:"Ich kann nicht",accepted:"Angenommen",late:"Verspätet",points:"Punkte",rank:"Team-Rangliste",exportReport:"Wochenbericht (Excel)",feedback:"Feedback",addFeedback:"Feedback hinzufügen",rate:"Bewertung",comment:"Kurzer Kommentar",avgRate:"Ø Bewertung",taskStats:"Aufgaben pro Animateur",dueLbl:"Frist",aiTab:"KI-Assistent",aiKeyLbl:"Anthropic API-Schlüssel",aiKeyHint:"Nur in diesem Browser gespeichert — nie in der App-Datei oder Datenbank.",aiAsk:"Frag deinen Assistenten…",aiIntro:"Professionelle Hilfe für Planung, Mitteilungen, Ideen und Probleme — kennt dein Live-Programm und deine Statistiken.",aiErr:"KI-Anfrage fehlgeschlagen — prüfe Schlüssel und Guthaben.",profile:"Profil",changePass:"Passwort ändern",newPass:"Neues Passwort",yourLogin:"Deine Zugangsdaten",saveThese:"Speichere sie — du brauchst sie zum Anmelden auf anderen Handys.",firstVisit:"Erster Besuch",accountExists:"Dieses Zimmer hat bereits ein Konto — bitte mit Passwort anmelden.",editUser:"Nutzer bearbeiten",overview:"Statistik",menu:"Menü",logout:"Abmelden",socialPage:"Social & Bewertungen",teamPage:"Unser Team",contactWa:"Schreib uns auf WhatsApp",leaveReview:"Bewertung abgeben",ourTeam:"Unser Animationsteam",entertainersWord:"Animateure",profiles:"Profile",addProfile:"Profil hinzufügen",positionLbl:"Position",skills:"Fähigkeiten",languagesLbl:"Sprachen",instagramLbl:"Instagram-Profil",whatsappLbl:"WhatsApp-Nummer",rememberMe:"Angemeldet bleiben",nextStep:"Weiter",backStep:"Zurück",createAccount:"Konto erstellen",chooseRoom:"Zimmer wählen",chooseNat:"Nationalität wählen",collectFrom:"Tickets abholen bei",chooseMember:"Bitte ein Teammitglied wählen",handTo:"Übergabe durch",exportData:"Daten exportieren",exportExcel:"Als Excel exportieren",exportPdf:"Als PDF exportieren",exportWhat:"Was möchtest du exportieren?",expBookings:"Buchungen",expRequests:"Gästewünsche",expChat:"Chat-Nachrichten",expUsers:"Team-Konten",expGuests:"Gästeliste (Zimmer & Nationalität)",expTickets:"Ticket-Bestellungen",expFeedback:"Gästefeedback",expAll:"Alles",daysHere:"Tage in der App",joinedActs:"Teilgenommene Aktivitäten",notifSound:"Ton & Hinweise",notifOn:"Benachrichtigungen an",notifNew:"Neue Benachrichtigung",notifMsg:"Neue Nachricht",notifBooking:"Neue Buchung",notifTask:"Neue Aktivität zugewiesen",notifRequest:"Neuer Gästewunsch",enableNotif:"Ton & Pop-up-Hinweise aktivieren"},
-ru:{chat:"Чат",typeMessage:"Напишите сообщение…",send:"Отправить",noMessages:"Пока нет сообщений — напишите нам!",requests:"Заявки",songRequest:"Заказ песни",birthdayRequest:"День рождения",songName:"Песня / исполнитель",forWhom:"Для кого?",birthdayDate:"Дата",reqNote:"Сообщение (необязательно)",myRequests:"Мои заявки",statusNew:"Новая",done:"Готово",markDone:"Отметить выполненной",tasks:"Задачи",addTask:"Добавить задачу",taskFor:"Назначить",allTeam:"Вся команда",myTasks:"Мои задачи",noTasks:"Задач нет — наслаждайтесь солнцем!",attendance:"Посещаемость",present:"Присутствует",notifications:"Уведомления",newAnnouncement:"Новое уведомление",audience:"Кому",audAll:"Всем",audGuests:"Гостям",audTeam:"Команде",noNotifs:"Пока ничего нового.",rooms:"Комнаты",addRooms:"Добавить комнаты",roomsHint:"По одной комнате в строке или через запятую",activeLbl:"Активна",roomNotFound:"Этот номер комнаты не зарегистрирован. Обратитесь на ресепшен.",guestAccounts:"Аккаунты гостей",welcomeMsgLbl:"Приветственный текст (необязательно)",textC:"Цвет текста",navC:"Цвет меню",navActiveC:"Цвет активного пункта",guestsTab:"Гости",teamTab:"Команда",taskType:"Тип задачи",ttCome:"Прийти в локацию",ttLeave:"Покинуть локацию",ttActivity:"Провести активность",ttFeedback:"Собрать отзывы",ttCollect:"Собрать гостей",accept:"Принять",still:"Ещё в процессе",cantDo:"Не могу",accepted:"Принято",late:"С опозданием",points:"Очки",rank:"Рейтинг команды",exportReport:"Недельный отчёт (Excel)",feedback:"Отзывы",addFeedback:"Добавить отзыв",rate:"Оценка",comment:"Короткий комментарий",avgRate:"Средняя оценка",taskStats:"Задачи по аниматорам",dueLbl:"Срок",aiTab:"ИИ-ассистент",aiKeyLbl:"API-ключ Anthropic",aiKeyHint:"Хранится только в этом браузере — не в файле приложения и не в базе.",aiAsk:"Спросите ассистента…",aiIntro:"Профессиональная помощь: планирование, тексты, идеи и проблемы — знает вашу программу и статистику.",aiErr:"Запрос к ИИ не удался — проверьте ключ и баланс.",profile:"Профиль",changePass:"Сменить пароль",newPass:"Новый пароль",yourLogin:"Ваши данные для входа",saveThese:"Сохраните их — они нужны для входа на других телефонах.",firstVisit:"Первый визит",accountExists:"У этой комнаты уже есть аккаунт — войдите с паролем.",editUser:"Редактировать пользователя",overview:"Статистика",menu:"Меню",logout:"Выйти",socialPage:"Соцсети и отзывы",teamPage:"Наша команда",contactWa:"Напишите нам в WhatsApp",leaveReview:"Оставить отзыв",ourTeam:"Наша команда анимации",entertainersWord:"аниматоров",profiles:"Профили",addProfile:"Добавить профиль",positionLbl:"Должность",skills:"Навыки",languagesLbl:"Языки",instagramLbl:"Профиль Instagram",whatsappLbl:"Номер WhatsApp",rememberMe:"Оставаться в системе",nextStep:"Далее",backStep:"Назад",createAccount:"Создать аккаунт",chooseRoom:"Выберите комнату",chooseNat:"Выберите национальность",collectFrom:"Забрать билеты у",chooseMember:"Пожалуйста, выберите сотрудника",handTo:"Выдаёт",exportData:"Экспорт данных",exportExcel:"Экспорт в Excel",exportPdf:"Экспорт в PDF",exportWhat:"Что вы хотите экспортировать?",expBookings:"Бронирования",expRequests:"Запросы гостей",expChat:"Сообщения чата",expUsers:"Аккаунты команды",expGuests:"Список гостей (комнаты и национальность)",expTickets:"Заказы билетов",expFeedback:"Отзывы гостей",expAll:"Всё",daysHere:"дней в приложении",joinedActs:"Посещённые активности",notifSound:"Звук и оповещения",notifOn:"Уведомления включены",notifNew:"Новое уведомление",notifMsg:"Новое сообщение",notifBooking:"Новая запись",notifTask:"Назначена новая активность",notifRequest:"Новый запрос гостя",enableNotif:"Включить звук и всплывающие оповещения"},
+en:{chat:"Chat",typeMessage:"Write a message…",send:"Send",noMessages:"No messages yet — say hello!",requests:"Requests",songRequest:"Song request",birthdayRequest:"Birthday",songName:"Song / artist",forWhom:"For whom?",birthdayDate:"Date",reqNote:"Message (optional)",myRequests:"My requests",statusNew:"New",done:"Done",markDone:"Mark done",tasks:"Tasks",addTask:"Add task",taskFor:"Assign to",allTeam:"Whole team",myTasks:"My tasks",noTasks:"No tasks — enjoy the sun!",attendance:"Attendance",present:"Present",notifications:"Notifications",newAnnouncement:"New notification",audience:"Send to",audAll:"Everyone",audGuests:"Guests",audTeam:"Team",noNotifs:"Nothing new right now.",rooms:"Rooms",addRooms:"Add rooms",roomsHint:"One room per line or separated by commas",activeLbl:"Active",roomNotFound:"This room number is not registered. Please ask at the reception.",guestAccounts:"Guest accounts",welcomeMsgLbl:"Welcome message (optional)",textC:"Text color",navC:"Menu color",navActiveC:"Active menu color",guestsTab:"Guests",teamTab:"Team",taskType:"Task type",ttCome:"Come to location",ttLeave:"Leave location",ttActivity:"Run activity",ttFeedback:"Collect feedback",ttCollect:"Collect guests",accept:"Accept",still:"Still working",cantDo:"I can't",accepted:"Accepted",late:"Late",points:"Points",rank:"Team ranking",exportReport:"Weekly report (Excel)",feedback:"Feedback",addFeedback:"Add feedback",rate:"Rating",comment:"Short comment",avgRate:"Average rating",taskStats:"Tasks per entertainer",dueLbl:"Deadline",aiTab:"AI Assistant",aiKeyLbl:"AI server endpoint",aiKeyHint:"Browser API keys are disabled. Configure the approved server endpoint.",aiAsk:"Ask your assistant…",aiIntro:"Professional help for planning, announcements, ideas and problems — it knows your live program and statistics.",aiErr:"AI request failed — check key and credit.",profile:"Profile",changePass:"Change password",newPass:"New password",yourLogin:"Your login details",saveThese:"Save these — you need them to sign in on other phones.",firstVisit:"First visit",accountExists:"This room already has an account — please sign in with the password.",editUser:"Edit user",overview:"Overview",menu:"Menu",logout:"Sign out",socialPage:"Social & Reviews",teamPage:"Meet the Team",contactWa:"Chat with us on WhatsApp",leaveReview:"Leave a review",ourTeam:"Our entertainment team",entertainersWord:"entertainers",profiles:"Profiles",addProfile:"Add profile",positionLbl:"Position",skills:"Skills",languagesLbl:"Languages",instagramLbl:"Instagram profile",whatsappLbl:"WhatsApp number",rememberMe:"Stay signed in",nextStep:"Next",backStep:"Back",createAccount:"Create account",chooseRoom:"Choose your room",chooseNat:"Choose your nationality",collectFrom:"Collect your tickets from",chooseMember:"Please choose a team member",handTo:"Hand over to",exportData:"Export data",exportExcel:"Export to Excel",exportPdf:"Export to PDF",exportWhat:"What would you like to export?",expBookings:"Bookings",expRequests:"Guest requests",expChat:"Chat messages",expUsers:"Team accounts",expGuests:"Guest list (rooms & nationality)",expTickets:"Ticket orders",expFeedback:"Guest feedback",expAll:"Everything",daysHere:"days in the app",joinedActs:"Joined activities",notifSound:"Sound & alerts",notifOn:"Notifications on",notifNew:"New notification",notifMsg:"New message",notifBooking:"New booking",notifTask:"New activity assigned",notifRequest:"New guest request",enableNotif:"Enable sound & pop-up alerts"},
+de:{chat:"Chat",typeMessage:"Nachricht schreiben…",send:"Senden",noMessages:"Noch keine Nachrichten — sag Hallo!",requests:"Wünsche",songRequest:"Musikwunsch",birthdayRequest:"Geburtstag",songName:"Song / Künstler",forWhom:"Für wen?",birthdayDate:"Datum",reqNote:"Nachricht (optional)",myRequests:"Meine Wünsche",statusNew:"Neu",done:"Erledigt",markDone:"Als erledigt markieren",tasks:"Aufgaben",addTask:"Aufgabe hinzufügen",taskFor:"Zuweisen an",allTeam:"Ganzes Team",myTasks:"Meine Aufgaben",noTasks:"Keine Aufgaben — genieß die Sonne!",attendance:"Anwesenheit",present:"Anwesend",notifications:"Mitteilungen",newAnnouncement:"Neue Mitteilung",audience:"Senden an",audAll:"Alle",audGuests:"Gäste",audTeam:"Team",noNotifs:"Gerade nichts Neues.",rooms:"Zimmer",addRooms:"Zimmer hinzufügen",roomsHint:"Ein Zimmer pro Zeile oder mit Komma getrennt",activeLbl:"Aktiv",roomNotFound:"Diese Zimmernummer ist nicht registriert. Bitte frag an der Rezeption.",guestAccounts:"Gäste-Konten",welcomeMsgLbl:"Willkommenstext (optional)",textC:"Textfarbe",navC:"Menüfarbe",navActiveC:"Aktive Menüfarbe",guestsTab:"Gäste",teamTab:"Team",taskType:"Aufgabentyp",ttCome:"Zum Ort kommen",ttLeave:"Ort verlassen",ttActivity:"Aktivität durchführen",ttFeedback:"Feedback sammeln",ttCollect:"Gäste einsammeln",accept:"Annehmen",still:"Noch dabei",cantDo:"Ich kann nicht",accepted:"Angenommen",late:"Verspätet",points:"Punkte",rank:"Team-Rangliste",exportReport:"Wochenbericht (Excel)",feedback:"Feedback",addFeedback:"Feedback hinzufügen",rate:"Bewertung",comment:"Kurzer Kommentar",avgRate:"Ø Bewertung",taskStats:"Aufgaben pro Animateur",dueLbl:"Frist",aiTab:"KI-Assistent",aiKeyLbl:"Anthropic API-Schlüssel",aiKeyHint:"Browser-API-Schlüssel sind deaktiviert. Nutze den sicheren Server-Endpunkt.",aiAsk:"Frag deinen Assistenten…",aiIntro:"Professionelle Hilfe für Planung, Mitteilungen, Ideen und Probleme — kennt dein Live-Programm und deine Statistiken.",aiErr:"KI-Anfrage fehlgeschlagen — prüfe Schlüssel und Guthaben.",profile:"Profil",changePass:"Passwort ändern",newPass:"Neues Passwort",yourLogin:"Deine Zugangsdaten",saveThese:"Speichere sie — du brauchst sie zum Anmelden auf anderen Handys.",firstVisit:"Erster Besuch",accountExists:"Dieses Zimmer hat bereits ein Konto — bitte mit Passwort anmelden.",editUser:"Nutzer bearbeiten",overview:"Statistik",menu:"Menü",logout:"Abmelden",socialPage:"Social & Bewertungen",teamPage:"Unser Team",contactWa:"Schreib uns auf WhatsApp",leaveReview:"Bewertung abgeben",ourTeam:"Unser Animationsteam",entertainersWord:"Animateure",profiles:"Profile",addProfile:"Profil hinzufügen",positionLbl:"Position",skills:"Fähigkeiten",languagesLbl:"Sprachen",instagramLbl:"Instagram-Profil",whatsappLbl:"WhatsApp-Nummer",rememberMe:"Angemeldet bleiben",nextStep:"Weiter",backStep:"Zurück",createAccount:"Konto erstellen",chooseRoom:"Zimmer wählen",chooseNat:"Nationalität wählen",collectFrom:"Tickets abholen bei",chooseMember:"Bitte ein Teammitglied wählen",handTo:"Übergabe durch",exportData:"Daten exportieren",exportExcel:"Als Excel exportieren",exportPdf:"Als PDF exportieren",exportWhat:"Was möchtest du exportieren?",expBookings:"Buchungen",expRequests:"Gästewünsche",expChat:"Chat-Nachrichten",expUsers:"Team-Konten",expGuests:"Gästeliste (Zimmer & Nationalität)",expTickets:"Ticket-Bestellungen",expFeedback:"Gästefeedback",expAll:"Alles",daysHere:"Tage in der App",joinedActs:"Teilgenommene Aktivitäten",notifSound:"Ton & Hinweise",notifOn:"Benachrichtigungen an",notifNew:"Neue Benachrichtigung",notifMsg:"Neue Nachricht",notifBooking:"Neue Buchung",notifTask:"Neue Aktivität zugewiesen",notifRequest:"Neuer Gästewunsch",enableNotif:"Ton & Pop-up-Hinweise aktivieren"},
+ru:{chat:"Чат",typeMessage:"Напишите сообщение…",send:"Отправить",noMessages:"Пока нет сообщений — напишите нам!",requests:"Заявки",songRequest:"Заказ песни",birthdayRequest:"День рождения",songName:"Песня / исполнитель",forWhom:"Для кого?",birthdayDate:"Дата",reqNote:"Сообщение (необязательно)",myRequests:"Мои заявки",statusNew:"Новая",done:"Готово",markDone:"Отметить выполненной",tasks:"Задачи",addTask:"Добавить задачу",taskFor:"Назначить",allTeam:"Вся команда",myTasks:"Мои задачи",noTasks:"Задач нет — наслаждайтесь солнцем!",attendance:"Посещаемость",present:"Присутствует",notifications:"Уведомления",newAnnouncement:"Новое уведомление",audience:"Кому",audAll:"Всем",audGuests:"Гостям",audTeam:"Команде",noNotifs:"Пока ничего нового.",rooms:"Комнаты",addRooms:"Добавить комнаты",roomsHint:"По одной комнате в строке или через запятую",activeLbl:"Активна",roomNotFound:"Этот номер комнаты не зарегистрирован. Обратитесь на ресепшен.",guestAccounts:"Аккаунты гостей",welcomeMsgLbl:"Приветственный текст (необязательно)",textC:"Цвет текста",navC:"Цвет меню",navActiveC:"Цвет активного пункта",guestsTab:"Гости",teamTab:"Команда",taskType:"Тип задачи",ttCome:"Прийти в локацию",ttLeave:"Покинуть локацию",ttActivity:"Провести активность",ttFeedback:"Собрать отзывы",ttCollect:"Собрать гостей",accept:"Принять",still:"Ещё в процессе",cantDo:"Не могу",accepted:"Принято",late:"С опозданием",points:"Очки",rank:"Рейтинг команды",exportReport:"Недельный отчёт (Excel)",feedback:"Отзывы",addFeedback:"Добавить отзыв",rate:"Оценка",comment:"Короткий комментарий",avgRate:"Средняя оценка",taskStats:"Задачи по аниматорам",dueLbl:"Срок",aiTab:"ИИ-ассистент",aiKeyLbl:"Серверная конечная точка ИИ",aiKeyHint:"Ключи API в браузере отключены. Используйте защищённый серверный endpoint.",aiAsk:"Спросите ассистента…",aiIntro:"Профессиональная помощь: планирование, тексты, идеи и проблемы — знает вашу программу и статистику.",aiErr:"Запрос к ИИ не удался — проверьте ключ и баланс.",profile:"Профиль",changePass:"Сменить пароль",newPass:"Новый пароль",yourLogin:"Ваши данные для входа",saveThese:"Сохраните их — они нужны для входа на других телефонах.",firstVisit:"Первый визит",accountExists:"У этой комнаты уже есть аккаунт — войдите с паролем.",editUser:"Редактировать пользователя",overview:"Статистика",menu:"Меню",logout:"Выйти",socialPage:"Соцсети и отзывы",teamPage:"Наша команда",contactWa:"Напишите нам в WhatsApp",leaveReview:"Оставить отзыв",ourTeam:"Наша команда анимации",entertainersWord:"аниматоров",profiles:"Профили",addProfile:"Добавить профиль",positionLbl:"Должность",skills:"Навыки",languagesLbl:"Языки",instagramLbl:"Профиль Instagram",whatsappLbl:"Номер WhatsApp",rememberMe:"Оставаться в системе",nextStep:"Далее",backStep:"Назад",createAccount:"Создать аккаунт",chooseRoom:"Выберите комнату",chooseNat:"Выберите национальность",collectFrom:"Забрать билеты у",chooseMember:"Пожалуйста, выберите сотрудника",handTo:"Выдаёт",exportData:"Экспорт данных",exportExcel:"Экспорт в Excel",exportPdf:"Экспорт в PDF",exportWhat:"Что вы хотите экспортировать?",expBookings:"Бронирования",expRequests:"Запросы гостей",expChat:"Сообщения чата",expUsers:"Аккаунты команды",expGuests:"Список гостей (комнаты и национальность)",expTickets:"Заказы билетов",expFeedback:"Отзывы гостей",expAll:"Всё",daysHere:"дней в приложении",joinedActs:"Посещённые активности",notifSound:"Звук и оповещения",notifOn:"Уведомления включены",notifNew:"Новое уведомление",notifMsg:"Новое сообщение",notifBooking:"Новая запись",notifTask:"Назначена новая активность",notifRequest:"Новый запрос гостя",enableNotif:"Включить звук и всплывающие оповещения"},
 pl:{chat:"Czat",typeMessage:"Napisz wiadomość…",send:"Wyślij",noMessages:"Brak wiadomości — przywitaj się!",requests:"Prośby",songRequest:"Prośba o piosenkę",birthdayRequest:"Urodziny",songName:"Piosenka / wykonawca",forWhom:"Dla kogo?",birthdayDate:"Data",reqNote:"Wiadomość (opcjonalnie)",myRequests:"Moje prośby",statusNew:"Nowa",done:"Zrobione",markDone:"Oznacz jako zrobione",tasks:"Zadania",addTask:"Dodaj zadanie",taskFor:"Przypisz do",allTeam:"Cały zespół",myTasks:"Moje zadania",noTasks:"Brak zadań — ciesz się słońcem!",attendance:"Obecność",present:"Obecny",notifications:"Powiadomienia",newAnnouncement:"Nowe powiadomienie",audience:"Wyślij do",audAll:"Wszyscy",audGuests:"Goście",audTeam:"Zespół",noNotifs:"Na razie nic nowego.",rooms:"Pokoje",addRooms:"Dodaj pokoje",roomsHint:"Jeden pokój w linii lub po przecinku",activeLbl:"Aktywny",roomNotFound:"Ten numer pokoju nie jest zarejestrowany. Zapytaj w recepcji.",guestAccounts:"Konta gości",welcomeMsgLbl:"Tekst powitalny (opcjonalnie)",textC:"Kolor tekstu",navC:"Kolor menu",navActiveC:"Kolor aktywnego menu",guestsTab:"Goście",teamTab:"Zespół",taskType:"Typ zadania",ttCome:"Przyjdź na miejsce",ttLeave:"Opuść miejsce",ttActivity:"Poprowadź aktywność",ttFeedback:"Zbierz opinie",ttCollect:"Zbierz gości",accept:"Przyjmij",still:"Wciąż w trakcie",cantDo:"Nie mogę",accepted:"Przyjęte",late:"Po czasie",points:"Punkty",rank:"Ranking zespołu",exportReport:"Raport tygodniowy (Excel)",feedback:"Opinie",addFeedback:"Dodaj opinię",rate:"Ocena",comment:"Krótki komentarz",avgRate:"Średnia ocena",taskStats:"Zadania wg animatorów",dueLbl:"Termin",aiTab:"Asystent AI",aiKeyLbl:"Klucz API Anthropic",aiKeyHint:"Zapisany tylko w tej przeglądarce — nigdy w pliku aplikacji ani w bazie.",aiAsk:"Zapytaj asystenta…",aiIntro:"Profesjonalna pomoc: planowanie, komunikaty, pomysły i problemy — zna Twój program i statystyki.",aiErr:"Zapytanie AI nie powiodło się — sprawdź klucz i środki.",profile:"Profil",changePass:"Zmień hasło",newPass:"Nowe hasło",yourLogin:"Twoje dane logowania",saveThese:"Zapisz je — będą potrzebne do logowania na innych telefonach.",firstVisit:"Pierwsza wizyta",accountExists:"Ten pokój ma już konto — zaloguj się hasłem.",editUser:"Edytuj użytkownika",overview:"Statystyki",menu:"Menu",logout:"Wyloguj",socialPage:"Social i opinie",teamPage:"Nasz zespół",contactWa:"Napisz do nas na WhatsApp",leaveReview:"Zostaw opinię",ourTeam:"Nasz zespół animacji",entertainersWord:"animatorów",profiles:"Profile",addProfile:"Dodaj profil",positionLbl:"Stanowisko",skills:"Umiejętności",languagesLbl:"Języki",instagramLbl:"Profil na Instagramie",whatsappLbl:"Numer WhatsApp",rememberMe:"Nie wylogowuj mnie",nextStep:"Dalej",backStep:"Wstecz",createAccount:"Utwórz konto",chooseRoom:"Wybierz pokój",chooseNat:"Wybierz narodowość",collectFrom:"Odbiór biletów u",chooseMember:"Wybierz członka zespołu",handTo:"Wydaje",exportData:"Eksport danych",exportExcel:"Eksportuj do Excela",exportPdf:"Eksportuj do PDF",exportWhat:"Co chcesz wyeksportować?",expBookings:"Rezerwacje",expRequests:"Prośby gości",expChat:"Wiadomości czatu",expUsers:"Konta zespołu",expGuests:"Lista gości (pokoje i narodowość)",expTickets:"Zamówienia biletów",expFeedback:"Opinie gości",expAll:"Wszystko",daysHere:"dni w aplikacji",joinedActs:"Dołączone aktywności",notifSound:"Dźwięk i alerty",notifOn:"Powiadomienia włączone",notifNew:"Nowe powiadomienie",notifMsg:"Nowa wiadomość",notifBooking:"Nowa rezerwacja",notifTask:"Przypisano nową aktywność",notifRequest:"Nowa prośba gościa",enableNotif:"Włącz dźwięk i alerty pop-up"},
 cs:{chat:"Chat",typeMessage:"Napište zprávu…",send:"Odeslat",noMessages:"Zatím žádné zprávy — pozdravte nás!",requests:"Přání",songRequest:"Přání písničky",birthdayRequest:"Narozeniny",songName:"Píseň / interpret",forWhom:"Pro koho?",birthdayDate:"Datum",reqNote:"Zpráva (volitelné)",myRequests:"Moje přání",statusNew:"Nové",done:"Hotovo",markDone:"Označit jako hotové",tasks:"Úkoly",addTask:"Přidat úkol",taskFor:"Přiřadit",allTeam:"Celý tým",myTasks:"Moje úkoly",noTasks:"Žádné úkoly — užijte si slunce!",attendance:"Docházka",present:"Přítomen",notifications:"Oznámení",newAnnouncement:"Nové oznámení",audience:"Komu",audAll:"Všem",audGuests:"Hostům",audTeam:"Týmu",noNotifs:"Zatím nic nového.",rooms:"Pokoje",addRooms:"Přidat pokoje",roomsHint:"Jeden pokoj na řádek nebo oddělené čárkou",activeLbl:"Aktivní",roomNotFound:"Toto číslo pokoje není registrováno. Zeptejte se na recepci.",guestAccounts:"Účty hostů",welcomeMsgLbl:"Uvítací text (volitelné)",textC:"Barva textu",navC:"Barva menu",navActiveC:"Barva aktivní položky",guestsTab:"Hosté",teamTab:"Tým",taskType:"Typ úkolu",ttCome:"Přijď na místo",ttLeave:"Opusť místo",ttActivity:"Veď aktivitu",ttFeedback:"Sbírej hodnocení",ttCollect:"Shromáždi hosty",accept:"Přijmout",still:"Stále na tom",cantDo:"Nemůžu",accepted:"Přijato",late:"Pozdě",points:"Body",rank:"Žebříček týmu",exportReport:"Týdenní report (Excel)",feedback:"Hodnocení hostů",addFeedback:"Přidat hodnocení",rate:"Hodnocení",comment:"Krátký komentář",avgRate:"Prům. hodnocení",taskStats:"Úkoly podle animátorů",dueLbl:"Termín",aiTab:"AI asistent",aiKeyLbl:"Anthropic API klíč",aiKeyHint:"Uložen jen v tomto prohlížeči — nikdy v souboru aplikace ani v databázi.",aiAsk:"Zeptej se asistenta…",aiIntro:"Profesionální pomoc: plánování, texty, nápady i problémy — zná tvůj program a statistiky.",aiErr:"AI požadavek selhal — zkontroluj klíč a kredit.",profile:"Profil",changePass:"Změnit heslo",newPass:"Nové heslo",yourLogin:"Vaše přihlašovací údaje",saveThese:"Uložte si je — potřebujete je pro přihlášení na dalších telefonech.",firstVisit:"První návštěva",accountExists:"Tento pokoj už má účet — přihlaste se heslem.",editUser:"Upravit uživatele",overview:"Statistiky",menu:"Menu",logout:"Odhlásit",socialPage:"Sociální sítě a recenze",teamPage:"Náš tým",contactWa:"Napište nám na WhatsApp",leaveReview:"Napsat recenzi",ourTeam:"Náš animační tým",entertainersWord:"animátorů",profiles:"Profily",addProfile:"Přidat profil",positionLbl:"Pozice",skills:"Dovednosti",languagesLbl:"Jazyky",instagramLbl:"Instagram profil",whatsappLbl:"Číslo WhatsApp",rememberMe:"Zůstat přihlášen",nextStep:"Další",backStep:"Zpět",createAccount:"Vytvořit účet",chooseRoom:"Vyberte pokoj",chooseNat:"Vyberte národnost",collectFrom:"Vyzvednout vstupenky u",chooseMember:"Vyberte prosím člena týmu",handTo:"Předá",exportData:"Exportovat data",exportExcel:"Exportovat do Excelu",exportPdf:"Exportovat do PDF",exportWhat:"Co chcete exportovat?",expBookings:"Rezervace",expRequests:"Přání hostů",expChat:"Zprávy chatu",expUsers:"Účty týmu",expGuests:"Seznam hostů (pokoje a národnost)",expTickets:"Objednávky vstupenek",expFeedback:"Hodnocení hostů",expAll:"Vše",daysHere:"dní v aplikaci",joinedActs:"Navštívené aktivity",notifSound:"Zvuk a upozornění",notifOn:"Oznámení zapnuta",notifNew:"Nové oznámení",notifMsg:"Nová zpráva",notifBooking:"Nová rezervace",notifTask:"Přiřazena nová aktivita",notifRequest:"Nové přání hosta",enableNotif:"Zapnout zvuk a vyskakovací upozornění"},
 nl:{chat:"Chat",typeMessage:"Schrijf een bericht…",send:"Versturen",noMessages:"Nog geen berichten — zeg hallo!",requests:"Verzoeken",songRequest:"Muziekverzoek",birthdayRequest:"Verjaardag",songName:"Nummer / artiest",forWhom:"Voor wie?",birthdayDate:"Datum",reqNote:"Bericht (optioneel)",myRequests:"Mijn verzoeken",statusNew:"Nieuw",done:"Klaar",markDone:"Markeer als klaar",tasks:"Taken",addTask:"Taak toevoegen",taskFor:"Toewijzen aan",allTeam:"Hele team",myTasks:"Mijn taken",noTasks:"Geen taken — geniet van de zon!",attendance:"Aanwezigheid",present:"Aanwezig",notifications:"Meldingen",newAnnouncement:"Nieuwe melding",audience:"Versturen naar",audAll:"Iedereen",audGuests:"Gasten",audTeam:"Team",noNotifs:"Even niets nieuws.",rooms:"Kamers",addRooms:"Kamers toevoegen",roomsHint:"Eén kamer per regel of gescheiden door komma's",activeLbl:"Actief",roomNotFound:"Dit kamernummer is niet geregistreerd. Vraag het bij de receptie.",guestAccounts:"Gastaccounts",welcomeMsgLbl:"Welkomsttekst (optioneel)",textC:"Tekstkleur",navC:"Menukleur",navActiveC:"Actieve menukleur",guestsTab:"Gasten",teamTab:"Team",taskType:"Taaktype",ttCome:"Kom naar locatie",ttLeave:"Verlaat locatie",ttActivity:"Activiteit leiden",ttFeedback:"Feedback verzamelen",ttCollect:"Gasten verzamelen",accept:"Accepteren",still:"Nog bezig",cantDo:"Ik kan niet",accepted:"Geaccepteerd",late:"Te laat",points:"Punten",rank:"Teamranking",exportReport:"Weekrapport (Excel)",feedback:"Feedback",addFeedback:"Feedback toevoegen",rate:"Beoordeling",comment:"Korte opmerking",avgRate:"Gem. beoordeling",taskStats:"Taken per entertainer",dueLbl:"Deadline",aiTab:"AI-assistent",aiKeyLbl:"Anthropic API-sleutel",aiKeyHint:"Alleen in deze browser opgeslagen — nooit in het app-bestand of de database.",aiAsk:"Vraag je assistent…",aiIntro:"Professionele hulp: planning, teksten, ideeën en problemen — kent je programma en statistieken.",aiErr:"AI-verzoek mislukt — controleer sleutel en tegoed.",profile:"Profiel",changePass:"Wachtwoord wijzigen",newPass:"Nieuw wachtwoord",yourLogin:"Je inloggegevens",saveThese:"Bewaar ze — je hebt ze nodig om op andere telefoons in te loggen.",firstVisit:"Eerste bezoek",accountExists:"Deze kamer heeft al een account — log in met het wachtwoord.",editUser:"Gebruiker bewerken",overview:"Statistieken",menu:"Menu",logout:"Uitloggen",socialPage:"Social & Reviews",teamPage:"Ons team",contactWa:"App ons op WhatsApp",leaveReview:"Laat een review achter",ourTeam:"Ons animatieteam",entertainersWord:"entertainers",profiles:"Profielen",addProfile:"Profiel toevoegen",positionLbl:"Functie",skills:"Vaardigheden",languagesLbl:"Talen",instagramLbl:"Instagram-profiel",whatsappLbl:"WhatsApp-nummer",rememberMe:"Ingelogd blijven",nextStep:"Volgende",backStep:"Terug",createAccount:"Account aanmaken",chooseRoom:"Kies je kamer",chooseNat:"Kies je nationaliteit",collectFrom:"Tickets ophalen bij",chooseMember:"Kies een teamlid",handTo:"Overhandigd door",exportData:"Gegevens exporteren",exportExcel:"Naar Excel exporteren",exportPdf:"Naar PDF exporteren",exportWhat:"Wat wil je exporteren?",expBookings:"Boekingen",expRequests:"Gastverzoeken",expChat:"Chatberichten",expUsers:"Teamaccounts",expGuests:"Gastenlijst (kamers & nationaliteit)",expTickets:"Ticketbestellingen",expFeedback:"Gastfeedback",expAll:"Alles",daysHere:"dagen in de app",joinedActs:"Deelgenomen activiteiten",notifSound:"Geluid & meldingen",notifOn:"Meldingen aan",notifNew:"Nieuwe melding",notifMsg:"Nieuw bericht",notifBooking:"Nieuwe boeking",notifTask:"Nieuwe activiteit toegewezen",notifRequest:"Nieuw gastverzoek",enableNotif:"Geluid & pop-upmeldingen inschakelen"},
@@ -2881,8 +2955,11 @@ function personDayInfo(num,day){
   const dp=dayPlanFor(day);
   const isOff=dp.off.includes(num);
   const isEntrance=dp.entrance===num;
-  const isDJ=num===3;
-  const isSocial=num===2;
+  const u=(S.users||[]).find(x=>Number(x.number)===Number(num))||{};
+  const opRoles=Array.isArray(u.operational_roles)?u.operational_roles:[];
+  const roleText=(String(u.position||"")+" "+String(u.skills||"")).toLowerCase();
+  const isDJ=opRoles.includes("dj")||/\bdj\b/.test(roleText);
+  const isSocial=opRoles.includes("social")||/social|content/.test(roleText);
   // DJ special schedule
   let djNote="";
   if(isDJ){
@@ -2901,11 +2978,9 @@ function personDayInfo(num,day){
 /* A gentle brake on password guessing (per device) */
 /* A readable password the manager can hand over verbally */
 function makePassword(){
-  const a="abcdefghjkmnpqrstuvwxyz", n="23456789";
-  let out="";
-  for(let i=0;i<4;i++) out+=a[Math.floor(Math.random()*a.length)];
-  for(let i=0;i<3;i++) out+=n[Math.floor(Math.random()*n.length)];
-  return out;
+  const A="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$";
+  const bytes=new Uint32Array(14); crypto.getRandomValues(bytes);
+  return Array.from(bytes,n=>A[n%A.length]).join("");
 }
 function showNewPassword(pw){
   const wrap=baseModal(`
@@ -2962,24 +3037,20 @@ function enforceAccess(){
 function persist(){
   try{ localStorage.setItem(LS_KEY, JSON.stringify({
     lang:S.lang, theme:S.theme, themeManual:!!S.themeManual,
-    favorites:S.favorites, seenNote:S.seenNote,
-    remember:S.remember!==false, session:(S.remember===false?null:S.session)
+    favorites:S.favorites, seenNote:S.seenNote, remember:S.remember!==false
   })); }catch(e){}
 }
 function restore(){
   try{
-    const savedLang=localStorage.getItem("entapp_lang");
-    if(savedLang) S.lang=savedLang;
-    const d=JSON.parse(localStorage.getItem(LS_KEY)||"null");
-    if(!d) return;
-    if(d.lang) S.lang=d.lang;
-    if(d.theme) S.theme=d.theme;
+    const savedLang=localStorage.getItem("entapp_lang"); if(savedLang) S.lang=savedLang;
+    const d=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(!d) return;
+    if(d.lang) S.lang=d.lang; if(d.theme) S.theme=d.theme;
     if(typeof d.themeManual!=="undefined") S.themeManual=!!d.themeManual;
     if(Array.isArray(d.favorites)) S.favorites=d.favorites;
     if(typeof d.remember!=="undefined") S.remember=d.remember!==false;
-    if(d.session){ S.session=d.session; S.tab = d.session.role==="manager" ? "dash" : d.session.role==="staff" ? "workday" : "home"; }
     if(d.seenNote) S.seenNote=d.seenNote;
-  }catch(e){}
+    S.session=null;
+  }catch(e){S.session=null}
 }
 
 /* ---------------- sample data (preview only) ---------------- */
@@ -3027,8 +3098,8 @@ function demoOrders(){
   return [{id:1,ticket_id:1,room:"4215",guest_name:"Familie Weber",nationality:"German",qty:2,status:"reserved"}];
 }
 const DEMO_USERS=[
-  {id:1,username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager"},
-  {id:2,username:"team",password:"1234",role:"staff",display_name:"Entertainer"}
+  {id:1,username:"manager",role:"manager",display_name:"Entertainment Manager",operational_roles:["manager"]},
+  {id:2,username:"team",role:"staff",display_name:"Entertainer",operational_roles:[]}
 ];
 function demoRooms(){ return ["4215","4308","4510","4102","4103"].map((r,i)=>({id:i+1,room:r,active:true})); }
 function demoAccounts(){
@@ -3073,6 +3144,7 @@ async function sb(path, opts={}){
       headers:{
         "apikey":CONFIG.SUPABASE_ANON_KEY,
         "Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
+        ...(authToken()?{"X-Client-Info":"entapp-session:"+authToken()}:{}),
         "Content-Type":"application/json",
         "Accept":"application/json",
         ...(prefer?{"Prefer":prefer}:{}),
@@ -3104,15 +3176,19 @@ function __sbParse(txt){
 /* Upload an image file to Supabase Storage bucket "avatars"; returns the public URL. */
 async function uploadAvatar(file){
   if(!REMOTE) throw new Error("offline");
-  const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
-  const path="avatars/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+  const allowed=new Set(["image/jpeg","image/png","image/webp"]);
+  if(!file||!allowed.has(String(file.type||"").toLowerCase())) throw new Error("Unsupported image format");
+  if(file.size>5*1024*1024) throw new Error("Image is too large (max 5 MB)");
+  const ext={"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[file.type];
+  const rand=crypto.getRandomValues(new Uint32Array(3)).join("");
+  const path="avatars/"+Date.now()+"-"+rand+"."+ext;
   const res=await fetch(CONFIG.SUPABASE_URL+"/storage/v1/object/"+path,{
     method:"POST",
-    headers:{ "apikey":CONFIG.SUPABASE_ANON_KEY, "Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
-      "Content-Type":file.type||"image/jpeg", "x-upsert":"true" },
+    headers:{"apikey":CONFIG.SUPABASE_ANON_KEY,"Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
+      ...(authToken()?{"X-Client-Info":"entapp-session:"+authToken()}:{}),"Content-Type":file.type,"x-upsert":"false"},
     body:file
   });
-  if(!res.ok){ throw new Error("upload "+res.status); }
+  if(!res.ok) throw new Error("upload "+res.status);
   return CONFIG.SUPABASE_URL+"/storage/v1/object/public/"+path;
 }
 /* Wire a photo picker: an avatar preview + hidden file input + upload-on-change. */
@@ -3123,6 +3199,10 @@ async function uploadAvatar(file){
 function initPhotoTaps(){
   if(window.__photoTaps) return;
   window.__photoTaps=true;
+  document.addEventListener("keydown",ev=>{
+    if(ev.key!=="Enter"&&ev.key!==" ")return;const h=ev.target&&ev.target.closest&&ev.target.closest("[data-pv],[data-pvsingle]");if(!h)return;ev.preventDefault();h.click();
+  });
+  new MutationObserver(()=>document.querySelectorAll("[data-pv],[data-pvsingle]").forEach(h=>{if(!h.hasAttribute("tabindex"))h.tabIndex=0;if(!h.hasAttribute("role"))h.setAttribute("role","button")})).observe(document.body,{childList:true,subtree:true});
   document.addEventListener("click", ev=>{
     const target=ev.target;
     if(!target || !target.closest) return;
@@ -3139,13 +3219,7 @@ function initPhotoTaps(){
       try{ strip=document.querySelector('[data-strip="'+String(parts[0]).replace(/["\\]/g,"")+'"]'); }catch(e){}
       if(strip) urls=[...strip.querySelectorAll("img")].map(i=>i.getAttribute("src"));
       else { const im=holder.tagName==="IMG"?holder:holder.querySelector("img"); if(im) urls=[im.getAttribute("src")]; }
-    } else {
-      // a plain photo with no marker (gallery grid, avatars, proof shots…)
-      if(target.tagName!=="IMG") return;
-      const src=target.getAttribute("src");
-      if(!src || /^data:/.test(src)) return;
-      urls=[src];
-    }
+    } else { return; }
     urls=(urls||[]).filter(Boolean);
     if(!urls.length) return;
     ev.preventDefault();
@@ -3164,7 +3238,7 @@ function openPhotoViewer(urls, start){
     wrap.innerHTML=`
       <button class="pv-x" aria-label="${t("close")}">${ic("close",20)}</button>
       ${list.length>1?`<button class="pv-nav prev" aria-label="prev">${ic("back",22)}</button>`:""}
-      <img class="pv-img" src="${esc(list[i])}" alt="">
+      <img class="pv-img" src="${esc(list[i])}" alt="Entertainment photo ${i+1} of ${list.length}">
       ${list.length>1?`<button class="pv-nav next" aria-label="next">${ic("back",22)}</button>`:""}
       ${list.length>1?`<span class="pv-count">${i+1} ${t("photoOf")} ${list.length}</span>`:""}`;
     const x=wrap.querySelector(".pv-x"); if(x) x.onclick=close;
@@ -3327,36 +3401,35 @@ function wirePhotoPicker(wrap, getUrl, setUrl){
   };
 }
 const DB = {
-  async load(){
-    if(REMOTE){
-      const [a,b,u,s,tk,o,rm,ac,ms,rq,ts,nt,at,fb,tp,bs,qz,qr,sa,ph,sr,ll] = await Promise.all([
-        sb("activities?select=*&order=time"), sb("bookings?select=*"),
-        sb("app_users?select=*"), sb("app_settings?select=*&id=eq.1"),
-        sb("tickets?select=*&order=time"), sb("ticket_orders?select=*"),
-        sb("rooms?select=*&order=room"), sb("guest_accounts?select=*"),
-        sb("messages?select=*&order=created_at"), sb("requests?select=*&order=created_at.desc"),
-        sb("tasks?select=*&order=created_at.desc"), sb("announcements?select=*&order=created_at.desc"),
-        sb("attendance?select=*"), sb("feedback?select=*&order=created_at.desc"),
-        sb("team_profiles?select=*&order=id"), sb("buses?select=*&order=sort"),
-        sb("quizzes?select=*&order=quiz_date.desc"), sb("quiz_replies?select=*&order=created_at.desc"),
-        sb("staff_attendance?select=*"),
-        sb("photos?select=*&order=created_at.desc"), sb("staff_requests?select=*&order=created_at.desc"),
-        sb("live_locations?select=*")
-      ]);
-      S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
-      S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
-      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.feedback=fb||[]; S.profiles=tp||[]; S.buses=bs||[];
-      S.quizzes=qz||[]; S.quizReplies=qr||[]; S.staffAtt=sa||[]; S.photos=ph||[]; S.staffReqs=sr||[]; S.locations=ll||[];
-      if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
-    } else {
-      S.activities=demoActivities(); S.bookings=demoBookings();
-      S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
-      S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
-      S.quizzes=[]; S.quizReplies=[]; S.staffAtt=[]; S.photos=[]; S.staffReqs=[]; S.locations=[];
+  async loadPublic(){
+    if(!REMOTE){
+      S.activities=demoActivities(); S.tickets=demoTickets(); S.profiles=demoProfiles();
       S.buses=[{id:1,direction:"toHotel",time:"08:00",note:"",sort:0},{id:2,direction:"toHotel",time:"15:00",note:"",sort:1},{id:3,direction:"toHouse",time:"00:30",note:"",sort:2},{id:4,direction:"toHouse",time:"13:15",note:"",sort:3}];
+      return;
     }
+    const [a,s,tk,tp,bs,qz,ph]=await Promise.all([
+      sb("activities?select=*&order=time"),sb("app_settings?select=*&id=eq.1"),sb("tickets?select=*&order=time"),
+      sb("team_profiles?select=*&order=id"),sb("buses?select=*&order=sort"),sb("quizzes?select=*&order=quiz_date.desc"),sb("photos?select=*&order=created_at.desc")
+    ]);
+    S.activities=a||[]; S.tickets=tk||[]; S.profiles=tp||[]; S.buses=bs||[]; S.quizzes=qz||[]; S.photos=ph||[];
+    if(s&&s[0]&&s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
   },
+  async loadPrivate(){
+    if(!S.session){return}
+    if(!REMOTE){
+      S.bookings=demoBookings();S.users=DEMO_USERS.map(u=>({...u}));S.orders=demoOrders();S.rooms=demoRooms();S.accounts=demoAccounts();
+      S.messages=demoMessages();S.requests=demoRequests();S.tasks=demoTasks();S.notes=demoNotes();S.attendance=[];S.feedback=demoFeedback();S.quizReplies=[];S.staffAtt=[];S.staffReqs=[];S.locations=[];return;
+    }
+    const [b,u,o,rm,ac,ms,rq,ts,nt,at,fb,qr,sa,sr,ll]=await Promise.all([
+      sb("bookings?select=*"),sb("app_users?select=*"),sb("ticket_orders?select=*"),sb("rooms?select=*&order=room"),sb("guest_accounts?select=*"),
+      sb("messages?select=*&order=created_at"),sb("requests?select=*&order=created_at.desc"),sb("tasks?select=*&order=created_at.desc"),
+      sb("announcements?select=*&order=created_at.desc"),sb("attendance?select=*"),sb("feedback?select=*&order=created_at.desc"),
+      sb("quiz_replies?select=*&order=created_at.desc"),sb("staff_attendance?select=*"),sb("staff_requests?select=*&order=created_at.desc"),sb("live_locations?select=*")
+    ]);
+    S.bookings=b||[];S.users=u||[];S.orders=o||[];S.rooms=rm||[];S.accounts=ac||[];S.messages=ms||[];S.requests=rq||[];S.tasks=ts||[];
+    S.notes=nt||[];S.attendance=at||[];S.feedback=fb||[];S.quizReplies=qr||[];S.staffAtt=sa||[];S.staffReqs=sr||[];S.locations=ll||[];
+  },
+  async load(){await this.loadPublic();if(S.session)await this.loadPrivate();},
   async poll(){
     if(!REMOTE) return false;
     const [ms,rq,nt,b,o,ts]=await Promise.all([
@@ -3532,16 +3605,35 @@ const DB = {
     S.accounts=S.accounts.filter(a=>a.room!==rm.room);
   },
   async addAccount(acc){
-    if(REMOTE){ const r=await sb("guest_accounts",{method:"POST",body:JSON.stringify(acc)}); const created=__row(r,acc); S.accounts.push(created); return created; }
+    if(REMOTE){
+      if(!S.session||S.session.role!=="manager") throw new Error("Manager must create guest accounts");
+      const payload={...acc}; const password=payload.password||""; delete payload.password;
+      const r=await rpcApp("manager_save_guest",{p_id:null,p_payload:payload,p_password:password});
+      const created=Array.isArray(r)?r[0]:r; if(created)S.accounts.push(created); return created;
+    }
     acc.id=Date.now(); S.accounts.push(acc); return acc;
   },
   async updateAccount(id,patch){
-    if(REMOTE) await sb("guest_accounts?id=eq."+id,{method:"PATCH",body:JSON.stringify(patch)});
-    S.accounts=S.accounts.map(a=>a.id===id?{...a,...patch}:a);
+    if(REMOTE){
+      const password=patch.password||""; const payload={...patch}; delete payload.password;
+      if(S.session&&S.session.role==="manager"){
+        const current=S.accounts.find(a=>String(a.id)===String(id))||{};
+        const r=await rpcApp("manager_save_guest",{p_id:Number(id),p_payload:{...current,...payload},p_password:password||null});
+        const row=Array.isArray(r)?r[0]:r; if(row)S.accounts=S.accounts.map(a=>String(a.id)===String(id)?row:a); return row;
+      }
+      if(S.session&&S.session.role==="guest"&&password){await rpcApp("change_own_password",{p_password:password});return true;}
+      if(Object.keys(payload).length) await sb("guest_accounts?id=eq."+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(payload)});
+    }
+    S.accounts=S.accounts.map(a=>String(a.id)===String(id)?{...a,...patch,password:undefined}:a);
   },
   async updateUser(id,patch){
-    if(REMOTE) await sb("app_users?id=eq."+id,{method:"PATCH",body:JSON.stringify(patch)});
-    S.users=S.users.map(u=>u.id===id?{...u,...patch}:u);
+    if(REMOTE){
+      const password=patch.password||""; const payload={...patch}; delete payload.password;
+      const current=S.users.find(u=>String(u.id)===String(id))||{};
+      const r=await rpcApp("manager_save_user",{p_id:Number(id),p_payload:{...current,...payload},p_password:password||null});
+      const row=Array.isArray(r)?r[0]:r; if(row)S.users=S.users.map(u=>String(u.id)===String(id)?row:u); return row;
+    }
+    S.users=S.users.map(u=>String(u.id)===String(id)?{...u,...patch}:u);
   },
   async addMessage(m){
     if(REMOTE){ const r=await sb("messages",{method:"POST",body:JSON.stringify(m)}); S.messages.push(__row(r,m)); }
@@ -3556,12 +3648,12 @@ const DB = {
     S.messages=S.messages.filter(m=>m.id!==id);
   },
   async markRead(room,side){
-    const flag = side==="team" ? "read_by_team" : "read_by_guest";
-    const sender = side==="team" ? "guest" : "team";
-    const unread=S.messages.filter(m=>m.room===room&&m.sender===sender&&!m[flag]);
+    const flag=side==="team"?"read_by_team":"read_by_guest";
+    const sender=side==="team"?"guest":"team";
+    const unread=S.messages.filter(m=>String(m.room)===String(room)&&m.sender===sender&&!m[flag]);
     if(!unread.length) return;
-    if(REMOTE) await sb("messages?room=eq."+encodeURIComponent(room)+"&sender=eq."+sender,{method:"PATCH",body:JSON.stringify({[flag]:true})});
-    S.messages=S.messages.map(m=>m.room===room&&m.sender===sender?{...m,[flag]:true}:m);
+    if(REMOTE) await rpcApp("mark_messages_read",{p_room:String(room),p_side:side});
+    S.messages=S.messages.map(m=>String(m.room)===String(room)&&m.sender===sender?{...m,[flag]:true}:m);
   },
   async addRequest(r){
     if(REMOTE){ const x=await sb("requests",{method:"POST",body:JSON.stringify(r)}); S.requests.unshift(__row(x,r)); }
@@ -3639,6 +3731,15 @@ const DB = {
 /* ---------------- helpers ---------------- */
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function safeExternalUrl(raw){
+  const v=String(raw||"").trim(); if(!v) return "";
+  try{
+    const u=new URL(v,location.href);
+    if(!["https:","mailto:","tel:"].includes(u.protocol)) return "";
+    if((u.protocol==="mailto:"||u.protocol==="tel:") && /[\r\n]/.test(v)) return "";
+    return u.href;
+  }catch(_){return ""}
+}
 function shade(hex,p){
   /* Lighten (p>0) or darken (p<0). Clamped on both sides and tolerant of a bad
      value, so it can never return an invalid colour like "#-2f0000" — that was
@@ -3655,51 +3756,15 @@ function shade(hex,p){
 
 /* ============ COLOUR PALETTES (each works in light AND dark) ============ */
 const PALETTES = {
-  brownWhite: { label:"Brown & White",
-    light:{ primary:"#0F1B2D", accent:"#C6A15B", bg:"#F8F7F3", text:"#172033", card:"#FFFFFF", sand:"#EFE6D8", line:"#E2D6C4" },
-    dark: { primary:"#D9B47F", accent:"#C9A26B", bg:"#17110C", text:"#F2E7D8", card:"#221913", sand:"#2C211A", line:"#3A2C22" } },
-  whiteBrown: { label:"White & Brown",
-    light:{ primary:"#1F3657", accent:"#8A6A4A", bg:"#FFFFFF", text:"#33241A", card:"#FBF8F4", sand:"#F3EDE5", line:"#E7DED2" },
-    dark: { primary:"#E4CBA9", accent:"#C79A66", bg:"#1B1614", text:"#F6EFE7", card:"#251E19", sand:"#2E251F", line:"#3C3128" } },
-  blackWhite: { label:"Black & White",
-    light:{ primary:"#111111", accent:"#555555", bg:"#FFFFFF", text:"#111111", card:"#FAFAFA", sand:"#F0F0F0", line:"#E0E0E0" },
-    dark: { primary:"#FFFFFF", accent:"#BBBBBB", bg:"#0B0B0B", text:"#F2F2F2", card:"#161616", sand:"#1F1F1F", line:"#2C2C2C" } },
-  grayWhite: { label:"Grey & White",
-    light:{ primary:"#4A5057", accent:"#7C858E", bg:"#FBFBFC", text:"#23272B", card:"#FFFFFF", sand:"#EFF1F3", line:"#E1E4E8" },
-    dark: { primary:"#D6DBE0", accent:"#9AA3AC", bg:"#111417", text:"#EDEFF2", card:"#1A1E22", sand:"#22272C", line:"#2E343A" } },
-  grayBlack: { label:"Grey & Black",
-    light:{ primary:"#2B2F33", accent:"#6E767E", bg:"#F2F3F5", text:"#1B1E21", card:"#FFFFFF", sand:"#E7E9EC", line:"#D8DBDF" },
-    dark: { primary:"#C8CDD3", accent:"#848C94", bg:"#0C0E10", text:"#E9ECEF", card:"#15181B", sand:"#1D2125", line:"#282D32" } },
-  navyGold: { label:"Navy & Gold",
-    light:{ primary:"#12263F", accent:"#C9A85F", bg:"#F7F8FA", text:"#101A28", card:"#FFFFFF", sand:"#E9EDF3", line:"#D7DEE8" },
-    dark: { primary:"#E3C567", accent:"#C9A85F", bg:"#0A1220", text:"#EAF0F8", card:"#111E31", sand:"#17263C", line:"#22344E" } },
-  emeraldCream: { label:"Emerald & Cream",
-    light:{ primary:"#12503C", accent:"#C2A15B", bg:"#FAF8F2", text:"#12241C", card:"#FFFFFF", sand:"#ECF1EC", line:"#D9E3DB" },
-    dark: { primary:"#7FCBA6", accent:"#C2A15B", bg:"#08150F", text:"#E9F4EE", card:"#0F241B", sand:"#153026", line:"#1E4033" } },
-  burgundyGold: { label:"Burgundy & Gold",
-    light:{ primary:"#5C1A2B", accent:"#B9903F", bg:"#FAF6F5", text:"#2A1017", card:"#FFFFFF", sand:"#F1E7E7", line:"#E2D2D3" },
-    dark: { primary:"#E0A6B4", accent:"#C9A24E", bg:"#15080C", text:"#F6E9EC", card:"#221016", sand:"#2E161E", line:"#3E1F29" } },
-  charcoalCopper: { label:"Charcoal & Copper",
-    light:{ primary:"#26292E", accent:"#B3703C", bg:"#F6F5F3", text:"#1A1C20", card:"#FFFFFF", sand:"#ECEAE7", line:"#DCD9D4" },
-    dark: { primary:"#E0A876", accent:"#B3703C", bg:"#0D0E10", text:"#EFEDEA", card:"#17191C", sand:"#1F2226", line:"#2B2F34" } },
-  midnightSilver: { label:"Midnight & Silver",
-    light:{ primary:"#1B1F2A", accent:"#8E9AAF", bg:"#F7F8FB", text:"#141822", card:"#FFFFFF", sand:"#ECEEF3", line:"#DBDFE8" },
-    dark: { primary:"#CBD3E1", accent:"#8E9AAF", bg:"#070911", text:"#EDF0F6", card:"#10141F", sand:"#171C29", line:"#222839" } },
-  sandTeal: { label:"Sand & Teal",
-    light:{ primary:"#0F5257", accent:"#C89F6B", bg:"#F7F8FA", text:"#10282A", card:"#FFFFFF", sand:"#EDF2F1", line:"#DAE4E3" },
-    dark: { primary:"#7FC8CC", accent:"#C89F6B", bg:"#07171A", text:"#E7F3F4", card:"#0E2529", sand:"#143135", line:"#1D4348" } },
-  plumGold: { label:"Plum & Gold",
-    light:{ primary:"#3F2350", accent:"#C6A052", bg:"#F9F7FB", text:"#211430", card:"#FFFFFF", sand:"#EFEAF3", line:"#DFD6E6" },
-    dark: { primary:"#C9AEDD", accent:"#C6A052", bg:"#100918", text:"#F1E9F7", card:"#1C1128", sand:"#261735", line:"#342248" } },
-  roseIvory: { label:"Rose & Ivory",
-    light:{ primary:"#7A4250", accent:"#C08A93", bg:"#FDF9F8", text:"#2C1A20", card:"#FFFFFF", sand:"#F5EBEC", line:"#E8D8DA" },
-    dark: { primary:"#E7B6BF", accent:"#C08A93", bg:"#150D10", text:"#F8ECEE", card:"#22151A", sand:"#2E1D23", line:"#3E2830" } },
-  forestGold: { label:"Forest & Gold",
-    light:{ primary:"#1E3A2B", accent:"#BE9B4E", bg:"#F8FAF7", text:"#141F18", card:"#FFFFFF", sand:"#EAF0EA", line:"#D8E2D9" },
-    dark: { primary:"#9CC9AC", accent:"#BE9B4E", bg:"#08120C", text:"#EAF3EC", card:"#0F1F16", sand:"#152A1E", line:"#1F3B2A" } },
-  oceanPearl: { label:"Ocean & Pearl",
-    light:{ primary:"#14456B", accent:"#7FB2CE", bg:"#F6FAFD", text:"#0E2436", card:"#FFFFFF", sand:"#E7F0F7", line:"#D3E2EE" },
-    dark: { primary:"#9AC9E6", accent:"#5D93B5", bg:"#061420", text:"#E7F2FA", card:"#0C2233", sand:"#122E44", line:"#1B3F5B" } }
+  sapphireChampagne: { label:"Sapphire & Champagne",
+    light:{ primary:"#10243E", accent:"#C7A56A", bg:"#F7F5F0", text:"#172235", card:"#FFFFFF", sand:"#EEE8DD", line:"#DED6C8" },
+    dark: { primary:"#D9BD7A", accent:"#C7A56A", bg:"#07111E", text:"#F5F0E7", card:"#0E1B2B", sand:"#16263A", line:"#25374E" } },
+  emeraldIvory: { label:"Emerald & Ivory",
+    light:{ primary:"#123F36", accent:"#B99A62", bg:"#FAF8F1", text:"#16251F", card:"#FFFFFF", sand:"#EEF0E8", line:"#DDE2D7" },
+    dark: { primary:"#C8AD72", accent:"#B99A62", bg:"#07140F", text:"#F2F1E9", card:"#0E211A", sand:"#173128", line:"#28453A" } },
+  bordeauxRoseGold: { label:"Bordeaux & Rose Gold",
+    light:{ primary:"#542532", accent:"#B98A76", bg:"#FBF7F5", text:"#2D1820", card:"#FFFFFF", sand:"#F1E7E4", line:"#E4D5D1" },
+    dark: { primary:"#D7A693", accent:"#B98A76", bg:"#160A0E", text:"#F7EDEA", card:"#241218", sand:"#321B23", line:"#472833" } }
 };
 function paletteList(){ return Object.keys(PALETTES); }
 function applyPalette(){
@@ -3859,6 +3924,12 @@ function myRequestsList(){ const g=S.session; if(!g||g.role!=="guest") return []
   return S.requests.filter(r=>r.room===g.room); }
 function accountName(room){ const a=S.accounts.find(x=>x.room===room); return a?a.name:room; }
 function isStaffRoom(room){ return String(room||"").startsWith("staff:"); }
+function managerGuestSectionBadge(){
+  // Guest area badge must represent guest-originated items only.
+  const guestMsgs=unreadGuestChatsForManager();
+  const guestReq=(S.requests||[]).filter(r=>String(r.status||"new")==="new").length;
+  return guestMsgs+guestReq;
+}
 function unreadGuestChatsForManager(){
   return S.messages.filter(m=>!isStaffRoom(m.room)&&m.sender==="guest"&&!m.read_by_team).length;
 }
@@ -4058,7 +4129,11 @@ function ic(name,size=20){ return `<svg class="ic-s" width="${size}" height="${s
 function mi(name){ return `<span class="mi">${ic(name,13)}</span>`; }
 function brandIc(name){ return `<svg class="ic-s" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">${BRAND[name]||""}</svg>`; }
 function rankBadge(i){ return `<span class="rankb r${i<3?i:"x"}">${i+1}</span>`; }
-function genPass(){ const A="abcdefghjkmnpqrstuvwxyz23456789"; let x=""; for(let i=0;i<6;i++) x+=A[Math.floor(Math.random()*A.length)]; return x; }
+function genPass(){
+  const A="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$";
+  const bytes=new Uint32Array(14); crypto.getRandomValues(bytes);
+  return Array.from(bytes,n=>A[n%A.length]).join("");
+}
 function taskTypeLabel(ty){return {come:t("ttCome"),leave:t("ttLeave"),activity:t("ttActivity"),feedback:t("ttFeedback"),collect:t("ttCollect")}[ty]||ty;}
 function canSeeGuests(a){
   if(!S.session) return false;
@@ -4182,7 +4257,7 @@ function errorView(){
 
 /* ---------------- login ---------------- */
 let loginMode="guest";
-let guestMode="new";
+let guestMode="signin";
 let rememberMe=true;
 let wiz={step:0,room:"",nat:"",name:"",phone:"",arr:"",dep:"",username:"",password:""};
 function resetWiz(){ wiz={step:0,room:"",nat:"",name:"",phone:"",arr:"",dep:"",username:"",password:""}; }
@@ -4224,19 +4299,16 @@ function loginView(){
           : `<p class="mini v10-notice">${t("vaNotice")}</p>
              <button class="btn" id="wz-create">${t("createAccount")}</button>`}
         ${backLink}`;
-    const fields = guestMode==="new" ? wizard : `
-        <label>${t("user")} · ${t("room")}</label><input id="f-room" inputmode="numeric" value="${esc(wiz.room)}" placeholder="4215">
-        <label>${t("pass")}</label><input id="f-gpass" type="password" placeholder="••••••">
-        ${remRow}`;
+    const fields = `
+        <label for="f-room">${t("user")} · ${t("room")}</label><input id="f-room" autocomplete="username" value="${esc(wiz.room)}" placeholder="4215">
+        <label for="f-gpass">${t("pass")}</label><input id="f-gpass" type="password" autocomplete="current-password" placeholder="••••••••">
+        ${remRow}<p class="hint">First visit? Ask Entertainment or Reception to activate your room account securely.</p>`;
     return `<div class="login-wrap fadein">
       ${brand}
-      <div class="role-tabs">
-        <button data-gmode="signin" class="${guestMode==="signin"?"on":""}">${t("signin")}</button>
-        <button data-gmode="new" class="${guestMode==="new"?"on":""}">${t("firstVisit")}</button>
-      </div>
+      <div class="role-tabs"><button data-gmode="signin" class="on">${t("signin")}</button></div>
       <div class="login-card">
         ${fields}
-        ${guestMode==="signin"?`<button class="btn" id="btn-login">${t("signin")}</button>`:""}
+        <button class="btn" id="btn-login">${t("signin")}</button>
         <div class="err" id="login-err"></div>
         ${!REMOTE?`<p class="hint">${t("demoNote")}</p>`:""}
       </div>
@@ -4250,11 +4322,11 @@ function loginView(){
       ${["staff","manager"].map(r=>`<button data-role="${r}" class="${loginRole===r?"on":""}">${t(r)}</button>`).join("")}
     </div>
     <div class="login-card">
-      <label>${t("user")}</label><input id="f-user" autocapitalize="none" placeholder="${loginRole}">
-      <label>${t("pass")}</label><input id="f-pass" type="password" placeholder="••••">
+      <label for="f-user">${t("user")}</label><input id="f-user" autocomplete="username" autocapitalize="none" placeholder="${loginRole}">
+      <label for="f-pass">${t("pass")}</label><input id="f-pass" type="password" autocomplete="current-password" placeholder="••••••••">
       <button class="btn" id="btn-login">${t("signin")}</button>
       <div class="err" id="login-err"></div>
-      ${!REMOTE?`<p class="hint">${t("demoNote")}<br>Demo: manager / 1234 · team / 1234</p>`:""}
+      ${!REMOTE?`<p class="hint">${t("demoNote")}</p>`:""}
     </div>
     <button class="staff-link" id="btn-guestlink"><span>${t("backToGuest")}</span></button>
   </div>`;
@@ -4266,77 +4338,28 @@ function wireLogin(){
   const tl=$("#btn-teamlink"); if(tl) tl.onclick=()=>{loginMode="team";render();};
   const bex=$("#btn-explore"); if(bex) bex.onclick=()=>{ showExplore=true; render(); };
   const gl=$("#btn-guestlink"); if(gl) gl.onclick=()=>{loginMode="guest";render();};
-  const wireWizard=()=>{
-    const err=$("#login-err");
-    const pick=$("#wz-pick");
-    if(pick) pick.onclick=()=>{ wiz.step===0?openRoomPicker():openNatPicker(); };
-    const back=$("#wz-back");
-    if(back) back.onclick=()=>{ wiz.step=Math.max(0,wiz.step-1); render(); };
-    const next=$("#wz-next");
-    if(next) next.onclick=()=>{
-      if(wiz.step===0){
-        if(!wiz.room){ err.textContent=t("loginErr"); return; }
-        const existing=S.accounts.find(a=>String(a.room)===String(wiz.room));
-        if(existing){ err.textContent=t("accountExists"); guestMode="signin"; setTimeout(render,1500); return; }
-      }
-      if(wiz.step===1 && !wiz.nat){ err.textContent=t("loginErr"); return; }
-      if(wiz.step===2){ wiz.name=$("#wz-in").value.trim(); if(!wiz.name){ err.textContent=t("loginErr"); return; } }
-      if(wiz.step===3){ wiz.phone=$("#wz-in").value.trim(); if(!wiz.phone){ err.textContent=t("loginErr"); return; } }
-      if(wiz.step===4){ wiz.arr=$("#wz-in").value; if(!wiz.arr){ err.textContent=t("loginErr"); return; } }
-      if(wiz.step===5){
-        wiz.dep=$("#wz-in").value;
-        if(!wiz.dep || Date.parse(wiz.dep)<Date.parse(wiz.arr)){ err.textContent=t("loginErr"); return; }
-      }
-      wiz.step++; render();
-    };
-    const create=$("#wz-create");
-    if(create) create.onclick=async ()=>{
-      wiz.username=$("#wz-user").value.trim();
-      wiz.password=$("#wz-pass").value.trim();
-      const cb=$("#cb-rem"); rememberMe=cb?cb.checked:true;
-      if(wiz.username.length<3 || wiz.password.length<4){ err.textContent=t("loginErr"); return; }
-      const taken=S.accounts.some(a=>String(a.username||"").toLowerCase()===wiz.username.toLowerCase())
-        || (S.rooms.some(r=>String(r.room)===wiz.username) && wiz.username!==String(wiz.room));
-      if(taken){ err.textContent=t("userExists"); return; }
-      const rm=S.rooms.find(x=>String(x.room)===String(wiz.room));
-      if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
-      if(S.accounts.some(a=>String(a.room)===String(wiz.room))){ err.textContent=t("accountExists"); guestMode="signin"; setTimeout(render,1500); return; }
-      let acc;
-      try{ acc=await DB.addAccount({room:wiz.room,name:wiz.name,phone:wiz.phone,nationality:wiz.nat,
-        arrival:wiz.arr,departure:wiz.dep,username:wiz.username,password:wiz.password}); }
-      catch(e){ err.textContent=t("loginErr"); return; }
-      S.remember=rememberMe;
-      resetWiz();
-      startGuestSession(acc);
-    };
-  };
-  if(loginMode==="guest" && guestMode==="new") wireWizard();
-  const bl=$("#btn-login");
+  // Guest account creation is manager-controlled in the hardened build.
+const bl=$("#btn-login");
   if(bl) bl.onclick=async ()=>{
-    const err=$("#login-err");
-    if(loginMode==="guest"){
-      const room=$("#f-room").value.trim();
-      if(!room){ err.textContent=t("loginErr"); return; }
-      const existing=S.accounts.find(a=>String(a.room)===room || String(a.username||"")===room);
-      if(!existing){ err.textContent=t("roomNotFound"); return; }
-      const rm=S.rooms.find(x=>String(x.room)===String(existing.room));
-      if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
-      const p=$("#f-gpass").value;
-      if(existing.password && existing.password!==p){ err.textContent=t("loginErr"); return; }
-      const cb=$("#cb-rem"); S.remember=rememberMe=(cb?cb.checked:true);
-      startGuestSession(existing);
-    } else {
-      const u=$("#f-user").value.trim(), p=$("#f-pass").value;
-      if(tooManyAttempts()){ err.textContent=t("tooManyTries"); return; }
-      const found=S.users.find(x=>x.username===u && x.password===p && (loginRole==="manager"?x.role==="manager":true));
-      if(!found){ noteFailedAttempt(); err.textContent=t("loginErr"); return; }
-      if(!accountActive(found)){ err.textContent=t("accountOff"); return; }
-      clearAttempts();
-      const role = found.role==="manager" && loginRole==="manager" ? "manager" : "staff";
-      S.session={role,name:found.display_name||found.username,username:found.username,userId:found.id,number:found.number||null,photo:found.photo||''};
-      S.tab = role==="manager" ? "dash" : "workday"; navReset(); persist(); render();
-      askNotifPermission();
-    }
+    const err=$("#login-err"); err.textContent=""; bl.disabled=true;
+    try{
+      const cb=$("#cb-rem"); const remember=cb?cb.checked:true;
+      if(loginMode==="guest"){
+        const login=$("#f-room").value.trim(), password=$("#f-gpass").value;
+        if(!login||!password) throw new Error("invalid");
+        await serverLogin(login,password,"guest",remember);
+        await DB.loadPrivate();
+        S.tab="home"; navReset(); persist(); render();
+      }else{
+        const login=$("#f-user").value.trim(), password=$("#f-pass").value;
+        if(!login||!password) throw new Error("invalid");
+        await serverLogin(login,password,loginRole,remember);
+        if(loginRole==="manager"&&S.session.role!=="manager") throw new Error("manager required");
+        await DB.loadPrivate();
+        S.tab=S.session.role==="manager"?"dash":"workday"; navReset(); persist(); render();
+      }
+    }catch(e){ console.warn("login failed",e&&e.message); err.textContent=t("loginErr"); }
+    finally{bl.disabled=false;}
   };
 }
 
@@ -4395,14 +4418,13 @@ function startGuestSession(acc){
     nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure,
     accountId:acc.id,username:acc.username||acc.room};
   S.tab="home"; persist(); render();
-  askNotifPermission();
 }
 function openCredentialsModal(acc){
   const wrap=baseModal(`
     <h3>${ic("key",22)} ${t("yourLogin")}</h3>
     <div class="cred">
       <div><span>${t("user")}</span><b>${esc(acc.username||acc.room)}</b></div>
-      <div><span>${t("pass")}</span><b>${esc(acc.password||"")}</b></div>
+      <div><span>${t("pass")}</span><b>••••••••</b></div>
     </div>
     <p class="mini" style="margin-top:10px">${t("saveThese")}</p>
     <button class="btn" id="cr-x">${t("close")}</button>`);
@@ -4412,7 +4434,7 @@ function openCredentialsModal(acc){
 function socialTopIcons(){
   const st=S.settings;
   const links=[["Facebook",st.facebook],["Instagram",st.instagram],["TikTok",st.tiktok],["YouTube",st.youtube],["WhatsApp",waLink()]].filter(x=>x[1]);
-  return links.map(([n,u])=>`<a class="iconbtn socialtop" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${brandIc(n)}</a>`).join("");
+  return links.map(([n,u])=>`<a class="iconbtn socialtop" href="${esc(safeExternalUrl(u))}" target="_blank" rel="noopener" aria-label="${n}">${brandIc(n)}</a>`).join("");
 }
 function waLink(){
   const num=String(S.settings.whatsapp||"").replace(/[^0-9]/g,"");
@@ -4462,8 +4484,7 @@ function navGroupsBase(role){
         ["teaminfo","users",t("teamPage"),0]]}
     ];
   }
-  const un=unreadFor("manager");
-  const newReq=S.requests.filter(r=>r.status==="new").length;
+  const guestBadge=managerGuestSectionBadge();
   return [
     {head:t("secManage"), items:[
       ["dash","chart",t("dashboard"),0],
@@ -4476,7 +4497,7 @@ function navGroupsBase(role){
         ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
       ["qr","qr",t("qrTab"),0]]},
     {head:t("secGuests"), items:[
-      ["guests","user",t("guestsTab"),un+newReq],
+      ["guests","user",t("guestsTab"),guestBadge],
       ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("secSettings"), items:[
       ["settings","settings",t("settingsHub"),0]]}
@@ -4543,7 +4564,6 @@ function drawerOpenSection(i, hasCurrent){
   return !!S.drawerOpen[i];
 }
 function openMenuDrawer(){
-  askNotifPermission();
   const role=S.session?S.session.role:"guest";
   const wrap=document.createElement("div"); wrap.className="drawer-bg";
   wrap.innerHTML=`<div class="drawer">
@@ -4564,7 +4584,7 @@ function openMenuDrawer(){
         </button>
         <div class="dr-group ${open?"open":""}">
           ${g.items.map(([id,icn,lb,dot])=>`<button class="dr-it ${S.tab===id?"on":""}" data-drtab="${id}">
-            <span class="dr-ic">${ic(icn,19)}</span><span class="dr-lb">${lb}</span>${dot?`<span class="badge">${dot}</span>`:""}
+            <span class="dr-ic">${ic(icn,19)}</span><span class="dr-lb">${esc(lb)}</span>${dot?`<span class="badge">${dot}</span>`:""}
           </button>`).join("")}
         </div>`;
       }).join("")}
@@ -4599,7 +4619,7 @@ function openMenuDrawer(){
     if(turningOn){ askNotifPermission(); setTimeout(playChime,120); }
     close(()=>render());
   };
-  wrap.querySelector("#dr-out").onclick=()=>close(()=>{S.session=null;S.chatRoom=null;loginMode="guest";guestMode="new";resetWiz();persist();render();});
+  wrap.querySelector("#dr-out").onclick=()=>close(async()=>{await logoutServer();S.chatRoom=null;loginMode="guest";guestMode="signin";resetWiz();persist();render();});
 }
 function heroCard(a){
   if(!a) return "";
@@ -4653,7 +4673,7 @@ function dayTabs(){
 }
 function subTabs(group,items){
   return `<div class="pills">${items.map(([id,lb])=>
-    `<button data-sub="${group}:${id}" class="${S.sub[group]===id?"on":""}">${lb}</button>`).join("")}</div>`;
+    `<button data-sub="${group}:${id}" class="${S.sub[group]===id?"on":""}">${esc(lb)}</button>`).join("")}</div>`;
 }
 function listByCat(acts,opts){
   if(!acts.length) return `<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`;
@@ -4750,16 +4770,12 @@ function weeklyView(title){
 const TRANS_CACHE={};
 const TRANS_SHOWN={};
 function transKey(id,lang){ return id+"|"+lang; }
-async function translateText(text, to){
-  const from="auto";
-  const url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(text)+
-    "&langpair="+encodeURIComponent(from+"|"+to);
-  const res=await fetch(url);
+async function translateText(text,to){
+  const endpoint=String(S.settings.translationEndpoint||"").trim();
+  if(!endpoint) throw new Error("No approved translation endpoint configured");
+  const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({text:String(text||""),to:String(to||"en")})});
   if(!res.ok) throw new Error("translate "+res.status);
-  const data=await res.json();
-  const out=data && data.responseData && data.responseData.translatedText;
-  if(!out || /^please select|invalid/i.test(out)) throw new Error("no translation");
-  return String(out);
+  const data=await res.json(); return String(data.text||data.translation||"").trim();
 }
 async function translateMessage(id){
   const m=S.messages.find(x=>String(x.id)===String(id));
@@ -4912,13 +4928,13 @@ function socialPageView(){
       <b>${t("howWasIt")}</b>
       <div class="rate-stars">${[1,2,3,4,5].map(r=>`<button class="rs" data-guestrate="${r}" aria-label="${r}">${ic("star",26)}</button>`).join("")}</div>
     </div>`:""}
-    ${wa?`<a class="wa-cta" href="${esc(wa)}" target="_blank" rel="noopener">${brandIc("WhatsApp")} ${t("contactWa")}</a>`:""}
+    ${wa?`<a class="wa-cta" href="${esc(safeExternalUrl(wa))}" target="_blank" rel="noopener">${brandIc("WhatsApp")} ${t("contactWa")}</a>`:""}
     ${socials.length?`<div class="sec"><h3>${t("followUs")}</h3>
-      ${socials.map(([n,u])=>`<a class="card social-big" href="${esc(u)}" target="_blank" rel="noopener">
+      ${socials.map(([n,u])=>`<a class="card social-big" href="${esc(safeExternalUrl(u))}" target="_blank" rel="noopener">
         <span class="sb-ic">${brandIc(n)}</span><span class="sb-nm">${n}</span><span class="sb-go">${ic("back",16)}</span></a>`).join("")}
     </div>`:""}
     ${reviews.length?`<div class="sec"><h3>${t("leaveReview")}</h3>
-      ${reviews.map(([n,u])=>`<a class="card social-big" href="${esc(u)}" target="_blank" rel="noopener">
+      ${reviews.map(([n,u])=>`<a class="card social-big" href="${esc(safeExternalUrl(u))}" target="_blank" rel="noopener">
         <span class="sb-ic star">${ic("star",17)}</span><span class="sb-nm">${n}</span><span class="sb-go">${ic("back",16)}</span></a>`).join("")}
     </div>`:""}
   </div>`;
@@ -4952,7 +4968,7 @@ function teamCard(p){
       <p class="tc-pos">${esc(p.position||"")}</p>
       <p class="mini">${esc(p.nationality||"")}${p.nationality&&p.languages?" · ":""}${esc(p.languages||"")}</p>
       ${p.skills?`<div class="tc-chips">${chips(p.skills)}</div>`:""}
-      ${p.instagram?`<a class="btn sm ghost social-a" href="${esc(p.instagram)}" target="_blank" rel="noopener">${brandIc("Instagram")} Instagram</a>`:""}
+      ${p.instagram?`<a class="btn sm ghost social-a" href="${esc(safeExternalUrl(p.instagram))}" target="_blank" rel="noopener">${brandIc("Instagram")} Instagram</a>`:""}
     </div>
   </div>`;
 }
@@ -4986,7 +5002,7 @@ function reviewBlock(){
     <h3 style="font-size:22px">${t("reviews")}</h3>
     <p class="mini" style="margin:4px 0 12px">${t("reviewsSub")}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      ${links.map(([n,u])=>`<a class="btn sm ghost" style="text-decoration:none" href="${esc(u)}" target="_blank" rel="noopener">${ic("star",14)} ${n}</a>`).join("")}
+      ${links.map(([n,u])=>`<a class="btn sm ghost" style="text-decoration:none" href="${esc(safeExternalUrl(u))}" target="_blank" rel="noopener">${ic("star",14)} ${n}</a>`).join("")}
     </div></div>`;
 }
 function socialBlock(){
@@ -4996,7 +5012,7 @@ function socialBlock(){
   return `<div class="sec card" style="padding:18px">
     <h3 style="font-size:22px">${t("followUs")}</h3>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-      ${links.map(([n,u])=>`<a class="btn sm ghost social-a" style="text-decoration:none" href="${esc(u)}" target="_blank" rel="noopener">${brandIc(n)} ${n}</a>`).join("")}
+      ${links.map(([n,u])=>`<a class="btn sm ghost social-a" style="text-decoration:none" href="${esc(safeExternalUrl(u))}" target="_blank" rel="noopener">${brandIc(n)} ${n}</a>`).join("")}
     </div></div>`;
 }
 
@@ -5955,14 +5971,14 @@ function renderBlock(b, ix, pageKey){
       const align=b.align==="left"?"flex-start":b.align==="right"?"flex-end":"center";
       const bg=b.bg||"";
       return `<div class="pb-b" style="display:flex;justify-content:${align}">
-        <a class="pb-btn" ${b.url?`href="${esc(b.url)}" target="_blank" rel="noopener"`:""}
+        <a class="pb-btn" ${b.url?`href="${esc(safeExternalUrl(b.url))}" target="_blank" rel="noopener"`:""}
           style="border-radius:${shape};padding:${pad};font-size:${fs}${bg?";background:"+esc(bg):""}${b.color?";color:"+esc(b.color):""}">${esc(b.text||"")}</a></div>`;
     }
     case "card":
       return `<div class="pb-b"><div class="card pb-card"${b.bg?` style="background:${esc(b.bg)}"`:""}>
         ${b.title?`<b style="${st}">${esc(b.title)}</b>`:""}
         ${b.text?`<p style="${st}">${esc(b.text)}</p>`:""}
-        ${b.url?`<a class="pb-btn sm" href="${esc(b.url)}" target="_blank" rel="noopener">${t("openLink")}</a>`:""}
+        ${b.url?`<a class="pb-btn sm" href="${esc(safeExternalUrl(b.url))}" target="_blank" rel="noopener">${t("openLink")}</a>`:""}
       </div></div>`;
     case "list": {
       const items=String(b.text||"").split("\n").map(x=>x.trim()).filter(Boolean);
@@ -6272,7 +6288,7 @@ function customPageView(id){
     ${topBar(pg.title,"")}
     ${blocks.length?renderBlocks(blocks,"cp"+id):""}
     ${(!blocks.length&&pg.text)?`<div class="card" style="padding:16px"><p style="white-space:pre-wrap;font-size:15px;line-height:1.55">${esc(pg.text)}</p></div>`:""}
-    ${(!blocks.length&&pg.url)?`<a class="btn" href="${esc(pg.url)}" target="_blank" rel="noopener"
+    ${(!blocks.length&&pg.url)?`<a class="btn" href="${esc(safeExternalUrl(pg.url))}" target="_blank" rel="noopener"
       style="display:block;text-align:center;margin-top:12px">${ic("back",15)} ${t("openLink")}</a>`:""}
     ${(!blocks.length&&!pg.text&&!pg.url)?`<div class="empty"><div class="big">${ic("grid",30)}</div>${t("pbEmpty")}</div>`:""}
     ${isMgr?`<button class="btn ghost" data-pbedit="${esc(pg.id)}" style="margin-top:16px">${ic("pen",15)} ${t("pbEditPage")}</button>`:""}
@@ -6775,7 +6791,7 @@ function openReviewInvite(rate){
     <h3>${ic("star",20)} ${t("thankYou")}</h3>
     <p class="mini">${t("shareExp")}</p>
     <div style="margin-top:14px">
-      ${links.map(([k,v])=>`<a class="btn" href="${esc(v)}" target="_blank" rel="noopener"
+      ${links.map(([k,v])=>`<a class="btn" href="${esc(safeExternalUrl(v))}" target="_blank" rel="noopener"
         style="display:block;text-align:center;margin-bottom:8px">${k==="google"?"Google":k==="tripadvisor"?"Tripadvisor":"HolidayCheck"}</a>`).join("")}
     </div>
     <button class="btn ghost" id="rv-x">${t("reviewLater")}</button>`);
@@ -7379,6 +7395,119 @@ function staffChatInbox(){
     </div>`).join("")||`<div class="empty"><div class="big">${ic("users",34)}</div>${t("none")}</div>`}
   </div>`;
 }
+
+/* ================= PRODUCTION COMPONENT ================= */
+function bookingActivityById(id){
+  return (S.activities||[]).find(a=>String(a.id)===String(id))||null;
+}
+function bookingById(id){
+  return (S.bookings||[]).find(b=>String(b.id)===String(id))||null;
+}
+function bookingGuestLabel(b){
+  if(!b) return "";
+  return (b.guest_name||accountName(b.room)||("Room "+(b.room||""))).trim();
+}
+function managerBookingModal(id){
+  if(!S.session || S.session.role!=="manager") return;
+  const b=id?bookingById(id):null;
+  const act=b?bookingActivityById(b.activity_id):null;
+  const acts=(S.activities||[]).slice().sort((a,b)=>(a.day-b.day)||String(a.time||"").localeCompare(String(b.time||"")));
+  const actOpts=acts.map(a=>`<option value="${esc(a.id)}" ${b&&String(b.activity_id)===String(a.id)?"selected":""}>${esc(dayName(a.day))} · ${esc(a.time||"")} · ${esc(a.name||"")}</option>`).join("");
+  const title=b?"Edit booking":"Add booking";
+  const body=`
+    <div class="grab"></div>
+    <h3>${title}</h3>
+    <p class="mini">${b?"Change any booking detail or delete this booking.":"Create a booking manually as Manager."}</p>
+    <label>Activity</label>
+    <select id="mb-act"><option value="">Choose activity</option>${actOpts}</select>
+    <div class="row2">
+      <div><label>Room</label><input id="mb-room" value="${esc(b?.room||"")}" placeholder="Room number"></div>
+      <div><label>Guest name</label><input id="mb-name" value="${esc(b?.guest_name||"")}" placeholder="Guest name"></div>
+    </div>
+    <div class="row2">
+      <div><label>Adults</label><input id="mb-adults" type="number" min="0" value="${Number(b?.adults??1)}"></div>
+      <div><label>Children</label><input id="mb-children" type="number" min="0" value="${Number(b?.children??0)}"></div>
+    </div>
+    <label>Nationality</label>
+    <input id="mb-nationality" value="${esc(b?.nationality||"")}" placeholder="Nationality">
+    <label>Status</label>
+    <select id="mb-status">
+      ${["booked","confirmed","cancelled","completed"].map(s=>`<option value="${s}" ${b&&String(b.status||"booked")===s?"selected":""}>${s[0].toUpperCase()+s.slice(1)}</option>`).join("")}
+    </select>
+    <div class="cc-bar">
+      <button class="btn" id="mb-save">${b?"Save changes":"Create booking"}</button>
+      ${b?`<button class="btn warn" id="mb-delete">Delete booking</button>`:""}
+      <button class="btn ghost" id="mb-close">Close</button>
+    </div>`;
+  openModal(body);
+
+  setTimeout(()=>{
+    const close=document.getElementById("mb-close"); if(close) close.onclick=closeModal;
+    const save=document.getElementById("mb-save");
+    if(save) save.onclick=async()=>{
+      const activity_id=document.getElementById("mb-act").value;
+      const room=document.getElementById("mb-room").value.trim();
+      const guest_name=document.getElementById("mb-name").value.trim();
+      const adults=Math.max(0,parseInt(document.getElementById("mb-adults").value||"0",10));
+      const children=Math.max(0,parseInt(document.getElementById("mb-children").value||"0",10));
+      const nationality=document.getElementById("mb-nationality").value.trim();
+      const status=document.getElementById("mb-status").value||"booked";
+      if(!activity_id){ toast("Choose an activity","error"); return; }
+      if(!room){ toast("Room number is required","error"); return; }
+      save.disabled=true;
+      try{
+        if(b){
+          const updated=await sb("bookings?id=eq."+encodeURIComponent(b.id),{
+            method:"PATCH",
+            body:JSON.stringify({activity_id:Number(activity_id),room,guest_name,adults,children,nationality,status}),
+            headers:{"Prefer":"return=representation"}
+          });
+          const row=Array.isArray(updated)?updated[0]:updated;
+          const i=S.bookings.findIndex(x=>String(x.id)===String(b.id));
+          if(i>=0 && row) S.bookings[i]=row;
+          toast("Booking updated","success");
+        }else{
+          const created=await sb("bookings",{
+            method:"POST",
+            body:JSON.stringify({activity_id:Number(activity_id),room,guest_name,adults,children,nationality,status}),
+            headers:{"Prefer":"return=representation"}
+          });
+          const row=Array.isArray(created)?created[0]:created;
+          if(row) S.bookings.push(row);
+          toast("Booking created","success");
+        }
+        closeModal(); persist(); render();
+      }catch(e){
+        toast(e?.message||"Booking could not be saved","error");
+      }finally{
+        save.disabled=false;
+      }
+    };
+
+    const del=document.getElementById("mb-delete");
+    if(del) del.onclick=async()=>{
+      if(!confirm("Delete this booking permanently?")) return;
+      del.disabled=true;
+      try{
+        await sb("bookings?id=eq."+encodeURIComponent(b.id),{method:"DELETE"});
+        S.bookings=S.bookings.filter(x=>String(x.id)!==String(b.id));
+        S.attendance=S.attendance.filter(x=>String(x.booking_id)!==String(b.id));
+        toast("Booking deleted","success");
+        closeModal(); persist(); render();
+      }catch(e){
+        toast(e?.message||"Booking could not be deleted","error");
+      }finally{
+        del.disabled=false;
+      }
+    };
+  },0);
+}
+function managerBookingAddButton(){
+  return S.session&&S.session.role==="manager"
+    ? `<button class="btn sm" onclick="managerBookingModal(null)">＋ Add booking</button>`
+    : "";
+}
+
 function chatInboxInner(){
   const rooms={};
   // Guest inbox is strictly for hotel guest rooms. Staff conversations belong
@@ -7417,7 +7546,7 @@ function bookingsInner(){
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:${visible&&bks.length?8:0}px;gap:8px">
         <h4 style="font-size:17px;min-width:0">${visible?"":mi("lock")}${esc(a.name)} <span class="mini">· ${esc(a.time)}</span></h4>
         <span class="pill">${a.capacity>0?seatsTaken(a.id)+"/"+a.capacity:bks.length+" "+t("guests")}</span></div>
-      ${visible?bks.map(b=>`<div class="booking-line">
+      ${visible?bks.map(b=>`<div class="booking-line" data-bid="${b.id}" ${isMgr?`onclick="managerBookingModal(${b.id})" style="cursor:pointer"`:""}>
         <span><b>${t("room")} ${esc(b.room)}</b> · ${esc(b.guest_name)}${isMgr&&b.nationality?` · ${esc(b.nationality)}`:""}</span>
         <span class="pill">${((+b.adults)||0)+((+b.children)||0)} ${t("personsShort")}${b.status==="waitlist"?" · …":""}</span></div>`).join(""):""}
     </div>`;}).join(""):`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`);
@@ -7438,7 +7567,7 @@ function managerView(){
     if(sub==="chat" && S.chatRoom) return chatThreadScreen();
     let inner="";
     if(sub==="crm") inner=guestCrmInner();
-    else if(sub==="bookings") inner=bookingsInner();
+    else if(sub==="bookings") inner=`<div style="margin-bottom:12px">${managerBookingAddButton()}</div>`+bookingsInner();
     else if(sub==="chat") inner=chatInboxInner();
     else if(sub==="feedback") inner=feedbackInner();
     else inner=requestsInner();
@@ -7800,52 +7929,29 @@ function tasksInner(){
 }
 /* ---------------- AI assistant (manager only) ---------------- */
 function aiView(){
-  const key=localStorage.getItem("ent_ai_key")||"";
-  if(!key){
+  const endpoint=String(S.settings.aiEndpoint||"").trim();
+  if(!endpoint){
     return `<div class="screen fadein">
-      ${topBar(t("aiTab"),S.session.name)}
-      ${hubBack()}
+      ${topBar(t("aiTab"),S.session.name)}${hubBack()}
       <div class="card" style="padding:16px">
         <p style="font-size:15px">${ic("sparkle",16)} ${t("aiIntro")}</p>
-        <label>${t("aiKeyLbl")}</label>
-        <input id="ai-key" type="password" placeholder="sk-ant-...">
-        <p class="hint" style="text-align:start">${t("aiKeyHint")}<br>→ console.anthropic.com</p>
-        <button class="btn" id="ai-savekey">${t("save")}</button>
-      </div>
-    </div>`;
+        <p class="hint" style="text-align:start">For privacy and security, browser API keys are disabled. Configure an approved AI server/Edge Function endpoint in Advanced settings.</p>
+      </div></div>`;
   }
   return `<div class="screen fadein">
-    ${topBar(t("aiTab"),S.session.name)}
-    ${hubBack()}
+    ${topBar(t("aiTab"),S.session.name)}${hubBack()}
     <div class="thread">
-      ${S.aiChat.length?S.aiChat.map(m=>`<div class="bub ${m.role==="user"?"me":"them"}">${esc(m.content)}</div>`).join("")
-        :`<div class="empty"><div class="big">${ic("sparkle",30)}</div>${t("aiIntro")}</div>`}
+      ${S.aiChat.length?S.aiChat.map(m=>`<div class="bub ${m.role==="user"?"me":"them"}">${esc(m.content)}</div>`).join(""):`<div class="empty"><div class="big">${ic("sparkle",30)}</div>${t("aiIntro")}</div>`}
       ${S.aiBusy?`<div class="bub them">…</div>`:""}
     </div>
-    <div class="chatbar">
-      <input id="ai-in" placeholder="${t("aiAsk")}" autocomplete="off">
-      <button id="ai-send" aria-label="${t("send")}">${ic("send",17)}</button>
-    </div>
+    <div class="chatbar"><input id="ai-in" placeholder="${t("aiAsk")}" autocomplete="off"><button id="ai-send" aria-label="${t("send")}">${ic("send",17)}</button></div>
   </div>`;
 }
 function aiContext(){
-  const days=t("days");
-  const prog=S.activities.slice(0,200).map(a=>`${days[a.day]} ${a.time} ${a.name} @${a.location}${a.entertainer?" [entertainer:"+a.entertainer+"]":""}`).join("; ");
-  const rk=rankingRows().map(r=>`${r.u.display_name||r.u.username}: ${r.points}pts (done ${r.done}, late ${r.late}, can't ${r.cant}, open ${r.open})`).join("; ");
   const avg=S.feedback.length?(S.feedback.reduce((n,f)=>n+(+f.rate||0),0)/S.feedback.length).toFixed(1):"n/a";
-  // full guest directory — lets the assistant answer "tell me about room 1111"
-  const guests=S.accounts.map(a=>{
-    const info=guestFullInfo(a.room); if(!info) return "";
-    return `Room ${info.room}: ${info.name} (user ${info.username}), ${info.nationality||"?"}, phone ${info.phone||"?"}, stay ${info.arrival||"?"}→${info.departure||"?"}, ${info.days!=null?info.days+" days in app":""}, joined: ${info.activities.join("/")||"none"}, ${info.tickets} tickets, ${info.requests} requests`;
-  }).filter(Boolean).join(" | ");
-  const reqs=S.requests.slice(0,40).map(r=>`${r.type} "${r.detail}" room ${r.room} (${r.status})`).join("; ");
-  const team=S.profiles.map(p=>`${p.name} — ${p.position||""} (${p.languages||""})`).join("; ");
-  return `App: ${S.settings.name}. Today totals — bookings ${S.bookings.length}, ticket orders ${S.orders.reduce((n,o)=>n+(+o.qty||0),0)}, open requests ${S.requests.filter(r=>r.status==="new").length}, registered guest rooms ${S.accounts.length}, feedback avg ${avg}/5 (${S.feedback.length}). 
-TEAM: ${team||"none"}. 
-TEAM RANKING: ${rk||"none"}. 
-GUEST DIRECTORY: ${guests||"no guests yet"}. 
-RECENT REQUESTS: ${reqs||"none"}. 
-WEEKLY PROGRAM: ${prog}`;
+  const today=todayIndex();
+  const acts=S.activities.filter(a=>a.day===today).map(a=>`${a.time} ${a.name} (${seatsTaken(a.id)} booked)`).join("; ");
+  return `App: ${S.settings.name}. Aggregated operational data only — today activities ${S.activities.filter(a=>a.day===today).length}, bookings ${S.bookings.length}, ticket quantity ${S.orders.reduce((n,o)=>n+(+o.qty||0),0)}, open guest requests ${S.requests.filter(r=>r.status==="new").length}, active guest accounts ${S.accounts.length}, feedback average ${avg}/5 (${S.feedback.length}). TODAY: ${acts||"none"}. Do not request or reveal personal guest data.`;
 }
 function aiSystemPrompt(){
   return "You are the professional entertainment assistant inside a luxury 5-star hotel management app in Hurghada, working directly for the entertainment manager.\n\n"+
@@ -7874,54 +7980,14 @@ async function askAIViaEndpoint(endpoint){
   return String(data.text||"").trim();
 }
 async function askAI(text){
-  const key=localStorage.getItem("ent_ai_key");
   const endpoint=(S.settings.aiEndpoint||"").trim();
-  S.aiChat.push({role:"user",content:text});
-  S.aiBusy=true; render();
-  // Secure path first — only fall back to the browser key if no endpoint is set up yet.
-  if(endpoint){
-    try{
-      const reply=await askAIViaEndpoint(endpoint);
-      S.aiChat.push({role:"assistant",content:reply||"…"});
-      S.aiBusy=false; render();
-      window.scrollTo(0,document.body.scrollHeight);
-      return;
-    }catch(e){
-      console.error("AI endpoint failed:", e && e.message);
-      // The server link is wrong or not deployed yet.
-      if(!key){
-        S.aiChat.pop(); toastErr(t("aiEndpointErr"));
-        S.aiBusy=false; render();
-        window.scrollTo(0,document.body.scrollHeight);
-        return;
-      }
-      // A key is stored on this device -> keep the assistant working and say so.
-      toastWarn(t("aiEndpointFallback"));
-    }
-  }
+  if(!endpoint){toastWarn("Configure the approved AI server endpoint in Advanced settings.");return;}
+  S.aiChat.push({role:"user",content:text}); S.aiBusy=true; render();
   try{
-    const res=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
-      headers:{"content-type":"application/json","x-api-key":key,
-        "anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1000,
-        system:"You are the professional entertainment assistant inside a luxury 5-star hotel management app in Hurghada, working directly for the entertainment manager.\n\n"+
-          "ABSOLUTE RULE — NEVER INVENT DATA. Every number, name, room, nationality, rating or activity you state must come word-for-word from the LIVE DATA below. "+
-          "If the answer is not in the LIVE DATA, reply exactly: \"I don\'t have this information in the current system.\" and then say what the manager could add so you could answer next time. "+
-          "Never estimate, never guess, never fill gaps with plausible-sounding examples, and never invent a guest, a room, an entertainer or a statistic.\n\n"+
-          "WHAT YOU CAN SEE: the full guest directory (room, name, nationality, phone, arrival/departure, days using the app, joined activities, tickets, requests), the whole team and their ranking, all guest requests, the feedback ratings, and the full weekly programme.\n\n"+
-          "WHAT YOU DO WELL: look up a room or guest and answer with the concrete details; spot the most popular and the emptiest activities; compare nationalities; report team performance and open tasks; write guest announcements, team briefings, WhatsApp messages and department requests (F&B, engineering, housekeeping); summarise today\'s performance and suggest what to improve tomorrow.\n\n"+
-          "PROACTIVE BUT SAFE: when the data clearly shows a problem (for example activities with very low participation, many open requests, or a low rating), say so plainly with the real numbers and offer to prepare a recommendation. Never take an action yourself — you only suggest, and anything that would change or delete data must be confirmed and carried out by the manager in the app.\n\n"+
-          "STYLE: warm, concise, practical. Short paragraphs or small lists. Always reply in the same language the manager writes in.\n\nLIVE DATA:\n"+aiContext(),
-        messages:S.aiChat.map(m=>({role:m.role,content:m.content}))})
-    });
-    if(!res.ok) throw new Error("AI "+res.status);
-    const data=await res.json();
-    const reply=(data.content||[]).map(c=>c.text||"").join("\n").trim();
+    const reply=await askAIViaEndpoint(endpoint);
     S.aiChat.push({role:"assistant",content:reply||"…"});
-  }catch(e){ console.error(e); S.aiChat.pop(); toast(t("aiErr")); }
+  }catch(e){console.error(e);toastErr(t("aiErr"));}
   S.aiBusy=false; render();
-  window.scrollTo(0,document.body.scrollHeight);
 }
 function fmtDate(d){ return formatHotelTimestamp(d); }
 /* build every exportable dataset as {title, headers, rows} */
@@ -8499,7 +8565,7 @@ function setNotifView(){
       ${row("popup","bell","In-app pop-ups","Show a compact banner while the app is open.",p.popup)}
       ${row("sound","music","Sound","Play the two-tone alert sound.",p.sound)}
       ${row("vibrate","phone","Vibration","Vibrate when this device supports it.",p.vibrate)}
-      ${row("system","bell","Phone notifications",permission==="granted"?"Permission granted for this browser.":permission==="denied"?"Blocked in browser/iPhone settings.":permission==="unsupported"?"Not supported in this browser.":"Permission will be requested when enabled.",p.system)}
+      ${row("system","bell","Browser notifications while open",permission==="granted"?"Permission granted for this browser.":permission==="denied"?"Blocked in browser/iPhone settings.":permission==="unsupported"?"Not supported in this browser.":"Permission will be requested when enabled.",p.system)}
     </div>
     <div class="cc-note"><b>Important:</b> in-app pop-ups work independently from browser push. The app no longer treats “notifications”, “sound” and “vibration” as one switch.</div>
   </div>`;
@@ -8507,11 +8573,35 @@ function setNotifView(){
 function appSettingsView(){ return setThemeView(); }
 
 /* ---------------- modals ---------------- */
+function enhanceFormA11y(root=document){
+  root.querySelectorAll("label:not([for])").forEach(label=>{
+    let control=label.querySelector("input,select,textarea,button");
+    if(!control){let n=label.nextElementSibling;if(n&&/^(INPUT|SELECT|TEXTAREA)$/.test(n.tagName))control=n;}
+    if(control){if(!control.id)control.id="fld-"+crypto.getRandomValues(new Uint32Array(1))[0].toString(36);label.setAttribute("for",control.id);}
+  });
+  root.querySelectorAll("button").forEach(b=>{const sw=b.querySelector(":scope > .switch, .switch");if(sw){b.setAttribute("role","switch");b.setAttribute("aria-checked",sw.classList.contains("on")?"true":"false");}});
+}
 function baseModal(html){
-  const wrap=document.createElement("div"); wrap.className="modal-bg";
-  wrap.innerHTML=`<div class="modal"><div class="grab"></div>${html}</div>`;
+  const opener=document.activeElement;
+  const wrap=document.createElement("div");wrap.className="modal-bg";
+  wrap.innerHTML=`<div class="modal" role="dialog" aria-modal="true"><div class="grab" aria-hidden="true"></div>${html}</div>`;
   document.body.appendChild(wrap);
-  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
+  const dialog=wrap.querySelector(".modal");
+  const title=dialog.querySelector("h1,h2,h3");
+  if(title){if(!title.id)title.id="dlg-"+crypto.getRandomValues(new Uint32Array(1))[0].toString(36);dialog.setAttribute("aria-labelledby",title.id);title.tabIndex=-1;}
+  else dialog.setAttribute("aria-label","Dialog");
+  enhanceFormA11y(wrap);
+  const originalRemove=wrap.remove.bind(wrap);
+  let closed=false;
+  function cleanup(){if(closed)return;closed=true;document.removeEventListener("keydown",onKey,true);try{originalRemove()}catch(_){};try{opener&&opener.focus&&opener.focus()}catch(_){}}
+  function focusables(){return [...dialog.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(x=>x.offsetParent!==null)}
+  function onKey(e){
+    if(e.key==="Escape"){e.preventDefault();cleanup();return}
+    if(e.key!=="Tab")return;const f=focusables();if(!f.length){e.preventDefault();dialog.focus();return}
+    const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+  wrap.remove=cleanup;wrap.onclick=e=>{if(e.target===wrap)cleanup()};document.addEventListener("keydown",onKey,true);
+  setTimeout(()=>{(title||focusables()[0]||dialog).focus()},0);
   return wrap;
 }
 function openBookModal(a){
@@ -8980,7 +9070,7 @@ function openUserModal(){
     const numRaw=wrap.querySelector("#u-num").value;
     const number=numRaw?Math.max(2,Math.min(10,+numRaw)):null;
     const err=wrap.querySelector("#u-err");
-    if(!username||!password){ err.textContent=t("loginErr"); return; }
+    if(!username||password.length<8){ err.textContent="Username and password (8+ characters) are required."; return; }
     if(S.users.some(x=>x.username===username)){ err.textContent=t("userExists"); return; }
     await DB.addUser({username,password,role,display_name,number,photo:uPhoto,
       nationality:readNatField(wrap,"u-nat","u-natx"),
@@ -9016,7 +9106,7 @@ function openChangePassModal(){
   wrap.querySelector("#cp-x").onclick=()=>wrap.remove();
   wrap.querySelector("#cp-go").onclick=async ()=>{
     const v=wrap.querySelector("#cp-new").value.trim();
-    if(v.length<4){ wrap.querySelector("#cp-err").textContent=t("loginErr"); return; }
+    if(v.length<8){ wrap.querySelector("#cp-err").textContent="Use at least 8 characters."; return; }
     await DB.updateAccount(S.session.accountId,{password:v});
     wrap.remove(); toast(t("saved"));
   };
@@ -9031,7 +9121,7 @@ function openUserEditModal(u){
       <input type="file" accept="image/*" data-photoinput hidden></div>
     <label>${t("user")}</label><input id="ue-user" value="${esc(u.username)}" autocapitalize="none">
     <label>${t("displayName")}</label><input id="ue-disp" value="${esc(u.display_name||"")}">
-    <label>${t("pass")}</label><input id="ue-pass" value="${esc(u.password||"")}">
+    <label for="ue-pass">New password (optional)</label><input id="ue-pass" type="password" autocomplete="new-password" placeholder="Leave blank to keep current password">
     <label>${t("roleLabel")}</label>
     <select id="ue-role" ${lastManager?"disabled":""}>
       <option value="staff" ${u.role==="staff"?"selected":""}>${t("staff")}</option>
@@ -9050,6 +9140,7 @@ function openUserEditModal(u){
     <label>${t("languagesLbl")}</label><input id="ue-lang" value="${esc(u.languages||"")}" placeholder="DE · EN · RU">
     <label>${t("skills")}</label><input id="ue-skills" value="${esc(u.skills||"")}">
     <label>${t("hireDate")}</label><input id="ue-hire" type="date" value="${esc(u.hire_date||"")}">
+    <label>Operational roles</label><div class="pills" data-oproles>${["dj","social","manager","entrance"].map(r=>`<button type="button" class="${(u.operational_roles||[]).includes(r)?"on":""}" data-oprole="${r}">${r}</button>`).join("")}</div>
     ${capabilityEditorHtml("uecap",u)}
     ${photoListEditor("uep", (()=>{try{return Array.isArray(u.photos)?u.photos:JSON.parse(u.photos||"[]");}catch(e){return [];}})())}
     <label>${t("nationality")}</label>${nationField("ue-nat","ue-natx",u.nationality||"")}
@@ -9064,6 +9155,7 @@ function openUserEditModal(u){
   wirePhotoPicker(wrap, ()=>uePhoto, v=>{ uePhoto=v; });
   wireNatPicker(wrap,"ue-nat","ue-natx");
   wireCapabilityEditor(wrap,"uecap");
+  wrap.querySelectorAll("[data-oprole]").forEach(b=>b.onclick=()=>b.classList.toggle("on"));
   let uePics=(()=>{try{return Array.isArray(u.photos)?u.photos.slice():JSON.parse(u.photos||"[]");}catch(e){return [];}})();
   wirePhotoList(wrap,"uep",()=>uePics,l=>{ uePics=l; });
   const ueReset=wrap.querySelector("#ue-reset");
@@ -9087,6 +9179,7 @@ function openUserEditModal(u){
       languages:wrap.querySelector("#ue-lang").value.trim(),
       skills:wrap.querySelector("#ue-skills").value.trim(),
       hire_date:wrap.querySelector("#ue-hire").value,
+      operational_roles:[...wrap.querySelectorAll("[data-oprole].on")].map(b=>b.dataset.oprole),
       photos:uePics};
     const numRaw=wrap.querySelector("#ue-num").value;
     patch.number=numRaw?Math.max(2,Math.min(10,+numRaw)):null;
@@ -9095,7 +9188,6 @@ function openUserEditModal(u){
       if(S.users.some(x=>x.id!==u.id && String(x.username).toLowerCase()===newUser.toLowerCase())){ toast(t("userExists")); return; }
       patch.username=newUser;
     }
-    if(!patch.password){ return; }
     await DB.updateUser(u.id,patch);
     await saveUserCapability(patch.username||u.username,readCapabilityEditor(wrap,"uecap"),u.username);
     wrap.remove(); toast(t("saved")); render();
@@ -9113,7 +9205,7 @@ function openGuestEditModal(acc){
       <div><label>${t("arrival")}</label><input id="ge-arr" type="date" value="${esc(acc.arrival||"")}"></div>
       <div><label>${t("departure")}</label><input id="ge-dep" type="date" value="${esc(acc.departure||"")}"></div>
     </div>
-    <label>${t("pass")}</label><input id="ge-pass" value="${esc(acc.password||"")}">
+    <label for="ge-pass">New password (optional)</label><input id="ge-pass" type="password" autocomplete="new-password" placeholder="Leave blank to keep current password">
     <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:15px;color:var(--ink);margin-top:10px">
       <input id="ge-active" type="checkbox" style="width:auto" ${acc.active!==false?"checked":""}> ${t("activeAcc")}</label>
     <button class="btn ghost" id="ge-reset" style="margin-top:8px">${ic("bell",15)} ${t("resetPass")}</button>
@@ -9427,10 +9519,6 @@ function wireCommon(){
     if(key==="sound" && turningOn) setTimeout(playChime,100);
     render();
   });
-  const aks=$("#ai-savekey"); if(aks) aks.onclick=()=>{
-    const v=$("#ai-key").value.trim(); if(!v) return;
-    localStorage.setItem("ent_ai_key",v); toast(t("saved")); render();
-  };
   const ais=$("#ai-send");
   if(ais){
     const go=()=>{ const inp=$("#ai-in"); const v=inp.value.trim(); if(!v||S.aiBusy) return; inp.value=""; askAI(v); };
@@ -9613,42 +9701,9 @@ let SW_READY=false;
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
 const USE_SERVICE_WORKER = false;
-
-function cleanupServiceWorkers(){
-  if(!("serviceWorker" in navigator)) return;
-  try{
-    navigator.serviceWorker.getRegistrations().then(regs=>{
-      regs.forEach(r=>{ r.unregister().catch(()=>{}); });
-      if(regs.length){ console.warn("removed", regs.length, "old service worker(s)"); }
-    }).catch(()=>{});
-    if(window.caches && caches.keys){
-      caches.keys().then(keys=>keys.forEach(k=>caches.delete(k).catch(()=>{}))).catch(()=>{});
-    }
-  }catch(e){ console.warn("sw cleanup:", e && e.message); }
-}
-
-function registerServiceWorker(){
-  if(!("serviceWorker" in navigator)) return;
-  if(!USE_SERVICE_WORKER){ cleanupServiceWorkers(); return; }
-  try{
-    navigator.serviceWorker.register("sw.js").then(reg=>{
-      SW_REG=reg; SW_READY=true;
-      if(reg.waiting) reg.waiting.postMessage({kind:"skip-waiting"});
-      reg.addEventListener&&reg.addEventListener("updatefound",()=>{
-        const nw=reg.installing;
-        if(nw) nw.addEventListener("statechange",()=>{
-          if(nw.state==="installed" && navigator.serviceWorker.controller) toastOk(t("updateReady"));
-        });
-      });
-    }).catch(err=>{ console.warn("service worker not registered:", err && err.message); });
-
-    navigator.serviceWorker.addEventListener("message", ev=>{
-      const d=ev.data||{};
-      if(d.kind==="notification-click"){ routeFromNotification(d.type); }
-      if(d.kind==="resubscribe"){ subscribeForPush(); }
-    });
-  }catch(e){ console.warn("service worker error:", e && e.message); }
-}
+function cleanupServiceWorkers(){ /* intentionally no origin-wide cleanup */ }
+function registerServiceWorker(){ SW_REG=null; SW_READY=false; /* Web Push disabled until a scoped audited sw.js is deployed */ }
+async function subscribeForPush(){ return false; }
 /* Opens the right page when a notification is tapped */
 const NOTIF_ROUTE={
   booking:"bookings", booking_confirmed:"tickets", booking_cancelled:"tickets",
@@ -9742,55 +9797,13 @@ function notify(title,body,type,meta){
   if(notifSystemOn()) showBanner(title,body);
   if(notifPopupOn()) inAppNotification(title,body,type||"announcement",meta||{});
 }
-/* Public push key — already set. Nothing to edit. */
-const PUSH_PUBLIC_KEY="BBVFLaJhNy8JyyYiGPGOI7hFk9GVmgzWxo7ZSy5_Uo44xTg91TlQAppm8Y96xnmUHcr-4u81w4YxVrtZqqCSML8";
-function urlB64ToUint8(base64){
-  const pad="=".repeat((4-base64.length%4)%4);
-  const b=(base64+pad).replace(/-/g,"+").replace(/_/g,"/");
-  const raw=atob(b); const out=new Uint8Array(raw.length);
-  for(let i=0;i<raw.length;i++) out[i]=raw.charCodeAt(i);
-  return out;
-}
-async function subscribeForPush(){
-  try{
-    if(!("serviceWorker" in navigator) || !("PushManager" in window)) return;
-    if(!PUSH_PUBLIC_KEY || PUSH_PUBLIC_KEY.indexOf("__")===0) return; // key not set → skip silently
-    const reg = SW_REG || await navigator.serviceWorker.ready;
-    if(!reg || !reg.pushManager) return;
-    let sub = await reg.pushManager.getSubscription();
-    if(!sub){
-      sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToUint8(PUSH_PUBLIC_KEY)});
-    }
-    const j = sub.toJSON();
-    const sess = S.session||{};
-    const row = {
-      endpoint: j.endpoint,
-      p256dh: j.keys && j.keys.p256dh,
-      auth: j.keys && j.keys.auth,
-      role: sess.role||"",
-      username: sess.username||"",
-      room: sess.role==="guest" ? String(sess.room||"") : ""
-    };
-    // upsert into push_subscriptions (endpoint is primary key)
-    if(REMOTE){
-      await sb("push_subscriptions?on_conflict=endpoint",{
-        method:"POST",
-        headers:{ "Prefer":"resolution=merge-duplicates" },
-        body: JSON.stringify(row)
-      });
-    }
-  }catch(e){}
-}
+/* v23.1 notification policy: foreground browser notifications only.
+   Web Push remains intentionally disabled until a scoped, audited service worker exists. */
+async function subscribeForPush(){ return false; }
 function askNotifPermission(){
   try{
-    registerServiceWorker();
-    if("Notification" in window && Notification.permission==="default"){
-      Notification.requestPermission().then(p=>{ if(p==="granted") subscribeForPush(); }).catch(()=>{});
-    } else if("Notification" in window && Notification.permission==="granted"){
-      subscribeForPush();
-    }
-    // unlock audio on this user gesture
-    AUDIO_CTX = AUDIO_CTX || new (window.AudioContext||window.webkitAudioContext)();
+    if("Notification" in window && Notification.permission==="default") Notification.requestPermission().catch(()=>{});
+    AUDIO_CTX=AUDIO_CTX||new (window.AudioContext||window.webkitAudioContext)();
     if(AUDIO_CTX.state==="suspended") AUDIO_CTX.resume();
   }catch(e){}
 }
@@ -9985,97 +9998,34 @@ function applyRealtimeChange(payload){
   }catch(e){ console.warn("realtime patch failed:", e && e.message); }
   return false;
 }
-function startRealtime(){
-  if(!REMOTE || window.__rt) return;
-  window.__rt=true;
-  const sc=document.createElement("script");
-  sc.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
-  sc.onload=()=>{ try{
-    const client=window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-    let tmr=null, pending=false;
-    client.channel("live-changes")
-      .on("postgres_changes",{event:"*",schema:"public"},payload=>{
-        const before=notifySnapshot();
-        const patched=applyRealtimeChange(payload);
-        if(patched){
-          // targeted update: state is already correct, just alert + repaint
-          detectAndNotify(before);
-          clearTimeout(tmr);
-          tmr=setTimeout(()=>{ if(S.session && safeToRender()) render(); }, 120);
-        } else if(!pending){
-          // unknown table -> fall back to a single full refresh
-          pending=true;
-          clearTimeout(tmr);
-          tmr=setTimeout(()=>{ pending=false; runPoll(); }, 300);
-        }
-      })
-      .subscribe();
-  }catch(e){ console.warn("realtime unavailable",e); } };
-  sc.onerror=()=>console.warn("realtime script blocked — polling continues");
-  document.head.appendChild(sc);
-}
+function startRealtime(){ /* Disabled in v23: custom server sessions use RLS-backed REST. */ }
 (async function(){
   restore();
   document.documentElement.setAttribute("data-theme",S.theme);
   document.documentElement.lang=S.lang;
   document.documentElement.dir=(S.lang==="ar"?"rtl":"ltr");
-  try{ await DB.load(); }
-  catch(e){
-    console.error(e);
-    if(REMOTE){ S.loadError=true; applySettings(); render(); return; }
-    S.activities=demoActivities(); S.bookings=demoBookings();
-    S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
-    S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
-  }
-  /* validate remembered session against fresh data */
-  if(S.session){
-    if(S.session.role==="guest"){
-      const rm=S.rooms.find(x=>String(x.room)===String(S.session.room));
-      const acc=S.accounts.find(a=>String(a.room)===String(S.session.room));
-      if(!rm || !rm.active || !acc) S.session=null;
-      else S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
-        nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure,
-        accountId:acc.id,username:acc.username||acc.room};
-    } else {
-      const u=S.users.find(x=>x.username===S.session.username);
-      if(!u || (S.session.role==="manager" && u.role!=="manager")) S.session=null;
-      else S.session={...S.session,name:u.display_name||u.username,userId:u.id,number:u.number||null,photo:u.photo||''};
-    }
-    if(!S.session){ S.tab="home"; }
-    persist();
-  }
-  applySettings();
-  render();
-  startRealtime();
-  // Fast polling backup — makes updates feel instant even if websockets are blocked.
+  try{applySettings();render();}catch(e){console.error("initial render",e)}
   if(REMOTE){
-    setInterval(()=>{ if(S.session) runPoll(); }, 5000);
-    // Poll immediately when the app regains focus or becomes visible
-    window.addEventListener("focus", ()=>{ if(S.session) runPoll(); });
-    document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && S.session) runPoll(); });
+    try{
+      await Promise.race([DB.loadPublic(),new Promise((_,rej)=>setTimeout(()=>rej(new Error("public load timeout")),10000))]);
+      await resumeServerSession();
+      if(S.session) await Promise.race([DB.loadPrivate(),new Promise((_,rej)=>setTimeout(()=>rej(new Error("private load timeout")),10000))]);
+      S.loadError=false;
+    }catch(e){console.error("startup",e);S.loadError=false;}
+  }else{await DB.load();}
+  applySettings(); render();
+  if(REMOTE){
+    setInterval(()=>{if(S.session&&!document.hidden&&navigator.onLine)runPoll()},30000);
+    window.addEventListener("focus",()=>{if(S.session&&navigator.onLine)runPoll()});
+    document.addEventListener("visibilitychange",()=>{if(!document.hidden&&S.session&&navigator.onLine)runPoll()});
   }
   initPhotoTaps();
   if(locSharingOn()) startLocationShare();
-  enforceAccess();
-  applyOpenParam();
-  setTimeout(()=>loadWeather(false), 800);
-  initConnectionWatch();
-  initErrorGuard();
-  // ===== Activity alarms + live status dots =====
-  // Check every 30s so a minute boundary is never missed; re-render keeps dots current.
+  enforceAccess(); applyOpenParam(); setTimeout(()=>loadWeather(false),800); initConnectionWatch(); initErrorGuard();
   let __lastMin=-1;
-  function alarmTick(){
-    try{
-      checkActivityAlarms();
-      const m=nowMinutes();
-      if(m!==__lastMin){ __lastMin=m; tickStatus(); }   // refresh dots once per minute
-    }catch(e){}
-  }
-  setInterval(alarmTick, 30000);
-  setTimeout(alarmTick, 1500);                            // run shortly after load
-  window.addEventListener("focus", alarmTick);            // catch phone waking up
-  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) alarmTick(); });
+  function alarmTick(){try{checkActivityAlarms();const m=nowMinutes();if(m!==__lastMin){__lastMin=m;tickStatus()}}catch(e){}}
+  setInterval(alarmTick,30000);setTimeout(alarmTick,1500);window.addEventListener("focus",alarmTick);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)alarmTick()});
 })();
 
 /* Luxury Operations v7 — executive workflow, weekly command board, warnings, approvals and audit */
@@ -10812,7 +10762,7 @@ function v8WireRoles(){
   if(rst) rst.onclick=async ()=>{
     const ok=await confirmAction({title:t("resetDefault"), text:t("cannotUndo"), danger:true});
     if(!ok) return;
-    try{ await DB.saveSettings({...S.settings, teamRoles:{}, noActivity:[1,3], slotSplit:"13:00"}); toastOk(t("saved")); render(); }
+    try{ await DB.saveSettings({...S.settings, teamRoles:{}, noActivity:[], slotSplit:"13:00"}); toastOk(t("saved")); render(); }
     catch(e){ toastErr(t("errSave")); }
   };
 }
@@ -11489,7 +11439,7 @@ navGroupsBase=function(role){
       ...(featureOn("map")?[["map","map",t("mapTab"),0]]:[]),
       ["qr","qr",t("qrTab"),0]]},
     {head:t("v9People2"), items:[
-      ["guests","user",t("guestsTab"),un+newReq],
+      ["guests","user",t("guestsTab"),guestBadge],
       ["team","users",t("teamTab"),unreadTeamChatsForManager()]]},
     {head:t("v9Reports2"), items:[
       ["approval","check",t("v9Approval"),0],
@@ -12913,10 +12863,10 @@ function v12Connect(){
   const label=k=>k==="google"?"Google":k==="tripadvisor"?"Tripadvisor":"HolidayCheck";
   return `<div class="ex-connect">
     ${soc.length?`<h3 class="ex-sec">${esc(t("exFollow"))}</h3>
-      <div class="ex-soc">${soc.map(([k,v])=>`<a class="ex-soc-b" href="${esc(v)}" target="_blank" rel="noopener">
+      <div class="ex-soc">${soc.map(([k,v])=>`<a class="ex-soc-b" href="${esc(safeExternalUrl(v))}" target="_blank" rel="noopener">
         ${ic(k,18)}<span>${esc(k)}</span></a>`).join("")}</div>`:""}
     ${rev.length?`<h3 class="ex-sec" style="margin-top:16px">${esc(t("exReviews"))}</h3>
-      <div class="ex-soc">${rev.map(([k,v])=>`<a class="ex-soc-b rev" href="${esc(v)}" target="_blank" rel="noopener">
+      <div class="ex-soc">${rev.map(([k,v])=>`<a class="ex-soc-b rev" href="${esc(safeExternalUrl(v))}" target="_blank" rel="noopener">
         ${ic("star",17)}<span>${esc(label(k))}</span></a>`).join("")}</div>`:""}
   </div>`;
 }
@@ -12969,7 +12919,7 @@ wireExplore=function(){
   const b=document.getElementById("ex-back"); if(b) b.onclick=()=>{ showExplore=false; render(); };
   const s=document.getElementById("ex-signin"); if(s) s.onclick=()=>{ showExplore=false; render(); };
   const j=document.getElementById("ex-join");
-  if(j) j.onclick=()=>{ showExplore=false; loginMode="guest"; guestMode="new"; render(); };
+  if(j) j.onclick=()=>{ showExplore=false; loginMode="guest"; guestMode="signin"; render(); };
   document.querySelectorAll("[data-exfilter]").forEach(el=>el.onclick=()=>{ exploreFilter=el.dataset.exfilter; render(); });
   document.querySelectorAll("[data-exday]").forEach(el=>el.onclick=()=>{ exploreDay=+el.dataset.exday; render(); });
   document.querySelectorAll("[data-vid]").forEach(el=>el.onclick=()=>playVideo(el.dataset.vid));
@@ -13005,9 +12955,9 @@ function sched14(day){const acts=v12DayActs(day);if(!acts.length)return `<div cl
 function days14(){const sel=v12Day();return `<div class="v14-days">${[0,1,2,3,4,5,6].map(d=>`<button class="v14-day ${d===sel?'on':''}" data-exday="${d}"><b>${esc(t('daysShort')[d]||'')}</b><small>${v12DayActs(d).length} ${esc(x14('activities').toLowerCase())}</small></button>`).join('')}</div>`}
 function moments14(){const m=exploreMoments(),shown=exploreFilter==='videos'?m.vids:exploreFilter==='photos'?m.pics:m.all,isMgr=S.session&&S.session.role==='manager';if(!m.all.length&&!isMgr)return '';const chip=(id,label)=>`<button class="ex-chip ${exploreFilter===id?'on':''}" data-exfilter="${id}">${esc(label)}</button>`;return `<section class="v14-section" id="x14-moments"><div class="v14-section-head"><div><span class="kicker">${esc(t('ex_moments')||'Moments')}</span><h2>${esc(x14('moments'))}</h2></div>${isMgr?`<button class="dd-edit" id="ex-addvid">${ic('plus',13)} ${esc(t('ex_addvid'))}</button>`:''}</div>${m.all.length?`<div class="v14-filter">${chip('all',x14('all'))}${chip('videos',x14('videos'))}${chip('photos',x14('photo'))}</div>`:''}<div class="v14-moments">${shown.map(it=>`<figure class="v14-moment"${it.video?` data-vid="${esc(it.video)}"`:''}>${it.img?`<img src="${esc(it.img)}" alt="" loading="lazy"${it.video?'':` data-pvsingle="${esc(it.img)}"`}>`:`<div class="ex-noimg">${ic('sparkle',24)}</div>`}<span class="shade"></span>${it.video?`<span class="ex-play"></span>`:''}${it.cap?`<figcaption>${esc(it.cap)}</figcaption>`:''}</figure>`).join('')}</div></section>`}
 function team14(){const us=teamList();if(!us.length)return '';return `<section class="v14-section" id="x14-team"><div class="v14-section-head"><div><span class="kicker">Entertainment</span><h2>${esc(x14('team'))}</h2><span class="mini">${esc(x14('teamSub'))}</span></div></div><div class="v14-team">${us.map(u=>{const nm=u.display_name||u.name||u.username||'Team';const ph=u.photo||u.avatar||u.image||'';const role=u.position||u.roleName||u.role||'';return `<div class="v14-person"><div class="v14-avatar">${ph?`<img src="${esc(ph)}" alt="">`:esc(nm.slice(0,1).toUpperCase())}</div><b>${esc(nm)}</b><small>${esc(role)}</small></div>`}).join('')}</div></section>`}
-function connect14(){const soc=v12Socials(),rev=reviewLinks();if(!soc.length&&!rev.length)return '';const label=k=>k==='google'?'Google':k==='tripadvisor'?'Tripadvisor':'HolidayCheck';return `<section class="v14-connect" id="x14-connect"><div class="v14-section-head"><div><span class="kicker">${esc(x14('follow'))}</span><h2>${esc(x14('connect'))}</h2></div></div><div class="v14-connect-grid">${soc.map(([k,v])=>`<a class="v14-link" href="${esc(v)}" target="_blank" rel="noopener"><span class="ico">${ic(k,17)}</span><span>${esc(k)}</span></a>`).join('')}${rev.map(([k,v])=>`<a class="v14-link" href="${esc(v)}" target="_blank" rel="noopener"><span class="ico">${ic('star',16)}</span><span>${esc(label(k))}</span></a>`).join('')}</div></section>`}
+function connect14(){const soc=v12Socials(),rev=reviewLinks();if(!soc.length&&!rev.length)return '';const label=k=>k==='google'?'Google':k==='tripadvisor'?'Tripadvisor':'HolidayCheck';return `<section class="v14-connect" id="x14-connect"><div class="v14-section-head"><div><span class="kicker">${esc(x14('follow'))}</span><h2>${esc(x14('connect'))}</h2></div></div><div class="v14-connect-grid">${soc.map(([k,v])=>`<a class="v14-link" href="${esc(safeExternalUrl(v))}" target="_blank" rel="noopener"><span class="ico">${ic(k,17)}</span><span>${esc(k)}</span></a>`).join('')}${rev.map(([k,v])=>`<a class="v14-link" href="${esc(safeExternalUrl(v))}" target="_blank" rel="noopener"><span class="ico">${ic('star',16)}</span><span>${esc(label(k))}</span></a>`).join('')}</div></section>`}
 exploreView=function(){const logo=S.settings&&S.settings.logo,hname=(S.settings&&S.settings.hotelName)||'',sel=v12Day();return `<div class="screen fadein ex-screen v14"><div class="ex-top"><button class="ex-round" id="ex-back" aria-label="back">${ic('back',18)}</button>${logo?`<img class="ex-logo" src="${esc(logo)}" alt="">`:(hname?`<b class="ex-brand">${esc(hname)}</b>`:'<span style="flex:1"></span>')}<button class="ex-signin" id="ex-signin">${esc(x14('signin'))}</button></div>${hero14()}${quick14()}${glance14()}${featured14()}<section class="v14-section" id="x14-program"><div class="v14-section-head"><div><span class="kicker">${esc(t('exToday'))} · ${esc(t('days')[todayIndex()]||'')}</span><h2>${esc(x14('schedule'))}</h2></div></div>${sched14(todayIndex())}</section><section class="v14-section"><div class="v14-section-head"><div><span class="kicker">7 days</span><h2>${esc(x14('week'))}</h2></div></div>${days14()}${sel===todayIndex()?`<div class="ex-empty soft">${esc(t('exToday'))} ↑</div>`:sched14(sel)}</section><section class="v14-join"><span class="ey">${esc(x14('guest'))}</span><h2>${esc(x14('discover'))}</h2><p>${esc(x14('join'))}</p><button id="ex-join">${ic('key',15)} ${esc(x14('signin'))}</button></section>${moments14()}${team14()}${connect14()}</div>`}
-wireExplore=function(){const b=document.getElementById('ex-back');if(b)b.onclick=()=>{showExplore=false;render()};const sign=()=>{showExplore=false;loginMode='guest';guestMode='new';render()};const s=document.getElementById('ex-signin');if(s)s.onclick=sign;const s2=document.getElementById('x14-signin');if(s2)s2.onclick=sign;const j=document.getElementById('ex-join');if(j)j.onclick=sign;document.querySelectorAll('[data-xscroll]').forEach(el=>el.onclick=e=>{e.stopPropagation();scrollX14(el.dataset.xscroll)});document.querySelectorAll('[data-exfilter]').forEach(el=>el.onclick=()=>{exploreFilter=el.dataset.exfilter;render()});document.querySelectorAll('[data-exday]').forEach(el=>el.onclick=()=>{exploreDay=+el.dataset.exday;render()});document.querySelectorAll('[data-vid]').forEach(el=>el.onclick=()=>playVideo(el.dataset.vid));document.querySelectorAll('[data-exact]').forEach(el=>el.onclick=e=>{if(el.hasAttribute('data-vid'))return;e.stopPropagation();openExploreBook(el.dataset.exact)});const av=document.getElementById('ex-addvid');if(av)av.onclick=openVideoLinkModal;};
+wireExplore=function(){const b=document.getElementById('ex-back');if(b)b.onclick=()=>{showExplore=false;render()};const sign=()=>{showExplore=false;loginMode='guest';guestMode='signin';render()};const s=document.getElementById('ex-signin');if(s)s.onclick=sign;const s2=document.getElementById('x14-signin');if(s2)s2.onclick=sign;const j=document.getElementById('ex-join');if(j)j.onclick=sign;document.querySelectorAll('[data-xscroll]').forEach(el=>el.onclick=e=>{e.stopPropagation();scrollX14(el.dataset.xscroll)});document.querySelectorAll('[data-exfilter]').forEach(el=>el.onclick=()=>{exploreFilter=el.dataset.exfilter;render()});document.querySelectorAll('[data-exday]').forEach(el=>el.onclick=()=>{exploreDay=+el.dataset.exday;render()});document.querySelectorAll('[data-vid]').forEach(el=>el.onclick=()=>playVideo(el.dataset.vid));document.querySelectorAll('[data-exact]').forEach(el=>el.onclick=e=>{if(el.hasAttribute('data-vid'))return;e.stopPropagation();openExploreBook(el.dataset.exact)});const av=document.getElementById('ex-addvid');if(av)av.onclick=openVideoLinkModal;};
 })();
 
 (function(){
@@ -13035,7 +12985,7 @@ function v15Mode(){ return (S.theme==="dark")?"dark":"light"; }
 function v15On(bg){ return v9Contrast("#ffffff",bg)>=4.5 ? "#ffffff" : "#111111"; }
 
 function v15PresetScheme(key,mode){
-  const p=PALETTES[key]||PALETTES.navyGold, c=p[mode]||p.light, dark=mode==="dark";
+  const p=PALETTES[key]||PALETTES.sapphireChampagne, c=p[mode]||p.light, dark=mode==="dark";
   const hero = dark
     ? v9Mix(c.card, (v9Lum(c.primary)>.72 ? c.accent : c.primary), .12)
     : (v9Contrast(c.primary,"#ffffff")>=4.5 ? c.primary : v9Darken(c.primary,.28));
@@ -13052,14 +13002,14 @@ function v15PresetScheme(key,mode){
   };
 }
 function v15DefaultCustom(){
-  const base=(S.settings&&PALETTES[S.settings.palette])?S.settings.palette:"navyGold";
+  const base=(S.settings&&PALETTES[S.settings.palette])?S.settings.palette:"sapphireChampagne";
   return {light:v15PresetScheme(base,"light"),dark:v15PresetScheme(base,"dark")};
 }
 function v15EnsureCustom(){
   if(!S.settings.customTheme) S.settings.customTheme=v15DefaultCustom();
   for(const mode of ["light","dark"]){
-    if(!S.settings.customTheme[mode]) S.settings.customTheme[mode]=v15PresetScheme("navyGold",mode);
-    const d=v15PresetScheme("navyGold",mode), x=S.settings.customTheme[mode];
+    if(!S.settings.customTheme[mode]) S.settings.customTheme[mode]=v15PresetScheme("sapphireChampagne",mode);
+    const d=v15PresetScheme("sapphireChampagne",mode), x=S.settings.customTheme[mode];
     V15_ROLES.forEach(([k])=>{ if(!v9Hex(x[k])) x[k]=d[k]; });
   }
   return S.settings.customTheme;
@@ -13129,8 +13079,8 @@ setThemeView=function(){
     ${hubBack()}
     <div class="v15-theme-shell">
       <section class="v15-panel">
-        <div class="v15-panel-title">Ready themes</div>
-        <div class="v15-panel-sub">Every theme below has its own complete Light and Dark colour system.</div>
+        <div class="v15-panel-title">Luxury themes</div>
+        <div class="v15-panel-sub">Three coordinated luxury palettes. Each controls Explore, Guest, Staff and Manager in Light and Dark mode.</div>
         <div class="v15-theme-grid">
           ${paletteList().map(k=>{
             const p=PALETTES[k], L=v15PresetScheme(k,"light"), D=v15PresetScheme(k,"dark");
@@ -13190,7 +13140,7 @@ async function v15SaveCustom(){
   }catch(e){ toastErr(t("errSave")); }
 }
 function v15CopyPreset(){
-  const key=PALETTES[S.settings.palette]?S.settings.palette:"navyGold";
+  const key=PALETTES[S.settings.palette]?S.settings.palette:"sapphireChampagne";
   S.settings.customTheme={light:v15PresetScheme(key,"light"),dark:v15PresetScheme(key,"dark")};
   v15EditMode=v15Mode(); render();
 }
@@ -13220,7 +13170,7 @@ wireCommon=function(){ __v15Wire(); try{v15Wire()}catch(e){console.error(e)} };
 try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
 })();
 
-/* ==========================================================================\n   v17 PRODUCTION STABILITY + DATA-CONTRACT LAYER\n   --------------------------------------------------------------------------\n   Goals\n   • Normalize all state received from local storage / Supabase.\n   • Keep settings transactional: failed writes never become local truth.\n   • Keep dependent state consistent after destructive operations.\n   • Use string-safe identifier comparisons for REST/realtime payloads.\n   • Record runtime diagnostics without interrupting the user workflow.\n   ========================================================================== */
+/* ==========================================================================\n   PRODUCTION COMPONENT\n   --------------------------------------------------------------------------\n   Goals\n   • Normalize all state received from local storage / Supabase.\n   • Keep settings transactional: failed writes never become local truth.\n   • Keep dependent state consistent after destructive operations.\n   • Use string-safe identifier comparisons for REST/realtime payloads.\n   • Record runtime diagnostics without interrupting the user workflow.\n   ========================================================================== */
 (function(){
   'use strict';
   if(typeof S==='undefined' || typeof DB==='undefined') return;
@@ -13423,12 +13373,32 @@ try{v15EnsureCustom();applySettings()}catch(e){console.error(e)}
 })();
 
 
+
+/* ================= v23 AUDIT REMEDIATION FINAL CONTRACT ================= */
+(function(){
+  const oldRender=render;
+  render=function(){const r=oldRender.apply(this,arguments);try{enhanceFormA11y(document)}catch(_){ }return r;};
+  const oldDeletePhoto=DB.deletePhoto.bind(DB);
+  DB.deletePhoto=async function(id){
+    const ph=(S.photos||[]).find(x=>String(x.id)===String(id));
+    if(REMOTE&&ph&&ph.url){
+      try{
+        const marker="/storage/v1/object/public/avatars/";
+        const pos=String(ph.url).indexOf(marker);
+        if(pos>=0){const objectPath="avatars/"+String(ph.url).slice(pos+marker.length);await fetch(CONFIG.SUPABASE_URL+"/storage/v1/object/"+objectPath,{method:"DELETE",headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+CONFIG.SUPABASE_ANON_KEY,...(authToken()?{"X-Client-Info":"entapp-session:"+authToken()}: {})}})}
+      }catch(e){console.warn("storage delete",e&&e.message)}
+    }
+    return oldDeletePhoto(id);
+  };
+  // Removed theme presets from old stored settings migrate safely.
+  try{const ok=new Set(["sapphireChampagne","emeraldIvory","bordeauxRoseGold",""]);if(S.settings&&!ok.has(String(S.settings.palette||"")))S.settings.palette="sapphireChampagne"}catch(_){ }
+})();
 </script>
 
-<!-- CLEAN MASTER v18
+<!-- 23.0.0
      Rebuilt shell contract: responsive viewport, iOS safe areas, one fixed-bar width,
      queued/deduplicated notifications, independent alert preferences, and separated
      Operations vs Configuration settings. Functional application/data logic is preserved
-     from the audited v17 master and remains paired with Supabase setup v8.2 corrected. -->
+     from the PRODUCTION COMPONENT and remains paired with Supabase setup v8.2 corrected. -->
 </body>
 </html>
