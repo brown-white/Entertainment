@@ -10,7 +10,7 @@
 
 
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Amarina Sapphire — Entertainment Operations</title>
+<title>Entertainment Operations Control Center — v23.2 Guest Admin Control</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3626,6 +3626,36 @@ const DB = {
     }
     S.accounts=S.accounts.map(a=>String(a.id)===String(id)?{...a,...patch,password:undefined}:a);
   },
+  async deleteAccount(id,deleteHistory=true){
+    const acc=S.accounts.find(a=>String(a.id)===String(id));
+    if(!acc) return false;
+    if(REMOTE){
+      if(!S.session||S.session.role!=="manager") throw new Error("Manager permission required");
+      await rpcApp("manager_delete_guest",{p_id:Number(id),p_delete_history:deleteHistory!==false});
+    }
+    const room=String(acc.room||"");
+    const bookingIds=new Set((S.bookings||[]).filter(b=>String(b.room)===room).map(b=>String(b.id)));
+    S.accounts=(S.accounts||[]).filter(a=>String(a.id)!==String(id));
+    if(deleteHistory!==false){
+      S.messages=(S.messages||[]).filter(x=>String(x.room)!==room);
+      S.requests=(S.requests||[]).filter(x=>String(x.room)!==room);
+      S.feedback=(S.feedback||[]).filter(x=>String(x.room)!==room);
+      S.locations=(S.locations||[]).filter(x=>String(x.who)!==room);
+      S.quizReplies=(S.quizReplies||[]).filter(x=>String(x.who)!==room);
+      S.orders=(S.orders||[]).filter(x=>String(x.room)!==room);
+      S.bookings=(S.bookings||[]).filter(x=>String(x.room)!==room);
+      S.attendance=(S.attendance||[]).filter(x=>!bookingIds.has(String(x.booking_id)));
+    }else{
+      S.messages=(S.messages||[]).filter(x=>String(x.room)!==room);
+      S.requests=(S.requests||[]).filter(x=>String(x.room)!==room);
+      S.locations=(S.locations||[]).filter(x=>String(x.who)!==room);
+      S.feedback=(S.feedback||[]).map(x=>String(x.room)===room?{...x,room:"deleted",nationality:"",comment:"",by_user:""}:x);
+      S.orders=(S.orders||[]).map(x=>String(x.room)===room?{...x,guest_name:"—",nationality:""}:x);
+      S.bookings=(S.bookings||[]).map(x=>String(x.room)===room?{...x,guest_name:"—",phone:"",nationality:""}:x);
+    }
+    try{persist()}catch(_){}
+    return true;
+  },
   async updateUser(id,patch){
     if(REMOTE){
       const password=patch.password||""; const payload={...patch}; delete payload.password;
@@ -5379,16 +5409,26 @@ function guestRecord(acc){
 }
 function guestCrmInner(){
   const q=(S.crmQuery||"").trim().toLowerCase();
-  let list=(S.accounts||[]).slice().filter(a=>!stayExpired(a));
-  if(q) list=list.filter(a=>[a.room,a.name,a.nationality].some(v=>String(v||"").toLowerCase().includes(q)));
-  list.sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
-  return `<input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
+  // Manager CRM intentionally includes active, inactive AND departed accounts.
+  // Old records must remain visible until the Manager explicitly deletes them.
+  let list=(S.accounts||[]).slice();
+  if(q) list=list.filter(a=>[a.room,a.name,a.username,a.phone,a.nationality].some(v=>String(v||"").toLowerCase().includes(q)));
+  list.sort((a,b)=>{
+    const ax=stayExpired(a)?1:0, bx=stayExpired(b)?1:0;
+    return ax-bx || String(a.room).localeCompare(String(b.room),undefined,{numeric:true});
+  });
+  return `<div class="card" style="margin-bottom:12px">
+      <b>Guest account administration</b>
+      <p class="mini" style="margin:5px 0 0">Active, inactive and departed guest accounts are shown here. Open any record to edit, reset credentials, deactivate or permanently delete it.</p>
+    </div>
+    <input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
     ${list.length?`<div class="card">${list.map(a=>{
       const r=guestRecord(a);
       return `<div class="crm-row" data-crm="${a.id}">
         <div class="crm-av">${esc(String(a.name||"?").trim().charAt(0).toUpperCase())}</div>
         <div class="crm-mid"><b>${esc(a.name||"")}</b>
           <span class="mini">${t("room")} ${esc(a.room)}${a.nationality?" · "+esc(a.nationality):""}</span>
+          <span class="mini">${stayExpired(a)?"Departed / expired":(a.active===false?"Inactive":"Active")} · Username: ${esc(a.username||a.room||"")}</span>
           <span class="mini">${r.bookings.length} ${t("bookings").toLowerCase()} · ${r.reqs.length} ${t("requests").toLowerCase()}${r.fb.length?" · ★ "+r.avg:""}</span>
         </div>
         <span class="crm-go">${ic("back",15)}</span>
@@ -5432,7 +5472,10 @@ function guest360View(id){
     ${r.fb.length?`<div class="sec"><h3>${ic("star",17)} ${t("feedback")}</h3>
       <div class="card">${r.fb.map(f=>`<div class="g3-row"><b>${"\u2605".repeat(Math.max(0,Math.min(5,+f.rate||0)))}</b>
         <span class="mini">${esc(f.comment||"")} · ${fmtDate(f.created_at)}</span></div>`).join("")}</div></div>`:""}
-    ${S.session&&S.session.role==="manager"?`<div class="sec"><button class="btn" data-gedit="${acc.id}">${ic("pen",16)} ${t("editUser")}</button></div>`:""}
+    ${S.session&&S.session.role==="manager"?`<div class="sec">
+      <button class="btn" data-gedit="${acc.id}">${ic("pen",16)} Manage guest account</button>
+      <p class="mini" style="margin-top:7px">Edit room, username, personal details, active status and password, or permanently delete this guest and linked data.</p>
+    </div>`:""}
   </div>`;
 }
 /* ================= AUTOMATIC ACTIVITY ROSTER =================
@@ -9195,8 +9238,12 @@ function openUserEditModal(u){
 }
 function openGuestEditModal(acc){
   const wrap=baseModal(`
-    <h3>${ic("pen",20)} ${t("profile")} · ${t("room")} ${esc(acc.room)}</h3>
-    <label>${t("name")}</label><input id="ge-name" value="${esc(acc.name||"")}">
+    <h3>${ic("pen",20)} Guest account · ${t("room")} ${esc(acc.room)}</h3>
+    <div class="row2">
+      <div><label for="ge-room">${t("room")}</label><input id="ge-room" value="${esc(acc.room||"")}"></div>
+      <div><label for="ge-user">${t("user")}</label><input id="ge-user" value="${esc(acc.username||acc.room||"")}"></div>
+    </div>
+    <label for="ge-name">${t("name")}</label><input id="ge-name" value="${esc(acc.name||"")}">
     <label>${t("phone")}</label><input id="ge-phone" value="${esc(acc.phone||"")}">
     <label>${t("nationality")}</label>
     <input id="ge-nat" list="genatlist" value="${esc(acc.nationality||"")}">
@@ -9210,6 +9257,7 @@ function openGuestEditModal(acc){
       <input id="ge-active" type="checkbox" style="width:auto" ${acc.active!==false?"checked":""}> ${t("activeAcc")}</label>
     <button class="btn ghost" id="ge-reset" style="margin-top:8px">${ic("bell",15)} ${t("resetPass")}</button>
     <button class="btn" id="ge-go">${t("save")}</button>
+    <button class="btn warn" id="ge-delete" type="button">${ic("trash",15)} Permanently delete guest + data</button>
     <button class="btn ghost" id="ge-x">${t("close")}</button>`);
   wrap.querySelector("#ge-x").onclick=()=>wrap.remove();
   const geReset=wrap.querySelector("#ge-reset");
@@ -9218,10 +9266,30 @@ function openGuestEditModal(acc){
     try{ await DB.updateAccount(acc.id,{password:pw}); wrap.remove(); showNewPassword(pw); render(); }
     catch(e){ toastErr(t("errSave")); }
   };
+  const geDelete=wrap.querySelector("#ge-delete");
+  if(geDelete) geDelete.onclick=async ()=>{
+    const label=(acc.name||"Guest")+" · Room "+(acc.room||"");
+    const ok=confirm("Permanently delete "+label+"?\n\nThis removes the guest account, credentials, sessions, bookings, attendance, ticket orders, messages, requests, feedback, quiz replies and live-location records linked to this room. This cannot be undone.");
+    if(!ok) return;
+    geDelete.disabled=true;
+    try{
+      await DB.deleteAccount(acc.id,true);
+      wrap.remove();
+      S.guest360=null;
+      toast("Guest account and linked data deleted","success");
+      render();
+    }catch(e){
+      geDelete.disabled=false;
+      toast(e?.message||"Guest could not be deleted","error");
+    }
+  };
   wrap.querySelector("#ge-go").onclick=async ()=>{
     const name=wrap.querySelector("#ge-name").value.trim();
     if(!name) return;
-    await DB.updateAccount(acc.id,{name,
+    await DB.updateAccount(acc.id,{
+      room:wrap.querySelector("#ge-room").value.trim(),
+      username:wrap.querySelector("#ge-user").value.trim().toLowerCase(),
+      name,
       phone:wrap.querySelector("#ge-phone").value.trim(),
       nationality:wrap.querySelector("#ge-nat").value.trim(),
       arrival:wrap.querySelector("#ge-arr").value,
@@ -11784,7 +11852,7 @@ async function v10RunCleanup(){
   if(typeof REMOTE!=="undefined" && REMOTE){
     const enc=encodeURIComponent;
     for(const a of due.accounts){
-      await sb("guest_accounts?id=eq."+a.id,{method:"DELETE"});
+      await DB.deleteAccount(a.id,true);
     }
     await sb("messages?created_at=lt."+enc(cutTs),{method:"DELETE"});
     await sb("requests?created_at=lt."+enc(cutTs),{method:"DELETE"});
