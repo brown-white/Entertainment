@@ -12295,5 +12295,438 @@ wireExplore=function(){
 };
 
 </script>
+
+<style id="design-v14">
+/* ============================================================
+   DESIGN v14  —  visual refresh
+   Layered on top of everything else. Changes only how things
+   LOOK; no behaviour, no data, no markup is replaced.
+   ============================================================ */
+
+/* ---------- 1. depth + rhythm tokens ---------- */
+:root{
+  --v14-lift: 0 1px 2px rgba(16,12,8,.05), 0 4px 14px rgba(16,12,8,.07);
+  --v14-lift-2: 0 2px 4px rgba(16,12,8,.06), 0 12px 30px rgba(16,12,8,.11);
+  --v14-lift-3: 0 4px 8px rgba(16,12,8,.07), 0 24px 60px rgba(16,12,8,.16);
+  --v14-ring: 0 0 0 1px rgba(16,12,8,.05);
+  --v14-glass: rgba(255,255,255,.72);
+  --v14-ease: cubic-bezier(.22,.9,.24,1);
+}
+[data-theme="dark"]{
+  --v14-lift: 0 1px 2px rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.4);
+  --v14-lift-2: 0 2px 4px rgba(0,0,0,.4), 0 12px 30px rgba(0,0,0,.5);
+  --v14-lift-3: 0 4px 8px rgba(0,0,0,.45), 0 24px 60px rgba(0,0,0,.6);
+  --v14-ring: 0 0 0 1px rgba(255,255,255,.06);
+  --v14-glass: rgba(20,20,24,.72);
+}
+
+/* ---------- 2. cards ---------- */
+.card{
+  border-radius: 18px;
+  box-shadow: var(--v14-lift), var(--v14-ring);
+  border-color: transparent;
+  transition: box-shadow .22s var(--v14-ease), transform .22s var(--v14-ease);
+}
+.card:active{ transform: scale(.995); }
+.opcard, .daycard, .stdcard, .prcard, .showcard, .profcard, .attn, .attsum{
+  box-shadow: var(--v14-lift), var(--v14-ring);
+  border-radius: 18px;
+}
+
+/* ---------- 3. buttons ---------- */
+.btn{
+  border-radius: var(--btn-radius, 15px);
+  box-shadow: 0 1px 2px rgba(16,12,8,.10), 0 6px 16px -6px rgba(16,12,8,.32);
+  letter-spacing: .005em;
+  transition: transform .16s var(--v14-ease), box-shadow .16s var(--v14-ease), opacity .16s;
+}
+.btn:active{ transform: translateY(1px) scale(.985); box-shadow: 0 1px 2px rgba(16,12,8,.12); }
+.btn.ghost{
+  box-shadow: none;
+  border: 1px solid var(--line);
+  background: transparent;
+}
+.btn.ghost:active{ background: var(--sand); }
+.btn.sm{ border-radius: var(--btn-radius-sm, 12px); }
+.iconbtn{
+  border-radius: 13px;
+  transition: background .16s var(--v14-ease), transform .16s var(--v14-ease);
+}
+.iconbtn:active{ transform: scale(.92); }
+
+/* ---------- 4. top bar ---------- */
+.top{ padding-bottom: 4px; }
+.toprow h2, .top h2{ letter-spacing: -.02em; }
+.whobar{
+  border-radius: 16px;
+  box-shadow: var(--v14-ring);
+}
+
+/* ---------- 5. activity cards ---------- */
+.act{
+  border-radius: 18px;
+  box-shadow: var(--v14-lift), var(--v14-ring);
+  overflow: hidden;
+  transition: transform .2s var(--v14-ease), box-shadow .2s var(--v14-ease);
+}
+.act:active{ transform: scale(.99); box-shadow: var(--v14-lift-2); }
+.act .thumb{
+  border-radius: 13px;
+  transition: transform .35s var(--v14-ease);
+}
+.act:hover .thumb{ transform: scale(1.03); }
+.hero{
+  border-radius: 20px;
+  box-shadow: var(--v14-lift-2);
+  overflow: hidden;
+}
+.hero .veil{
+  background: linear-gradient(180deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,.28) 42%, rgba(0,0,0,.72) 100%);
+}
+
+/* ---------- 6. pills, chips, badges ---------- */
+.pill, .chip, .ts-chip, .tag, .catbadge{
+  border-radius: 999px;
+  letter-spacing: .01em;
+}
+.stat-pill, .stat-dot{ box-shadow: 0 0 0 3px rgba(255,255,255,.55); }
+[data-theme="dark"] .stat-pill, [data-theme="dark"] .stat-dot{ box-shadow: 0 0 0 3px rgba(0,0,0,.35); }
+
+/* ---------- 7. sections ---------- */
+.sec > h3{
+  letter-spacing: .01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sec{ margin-top: 22px; }
+
+/* ---------- 8. the accent colour actually shows ---------- */
+.v14-accent{ color: var(--cacao); }
+[data-theme="dark"] .v14-accent{ color: var(--bronze); }
+.sec > h3 svg{ color: var(--cacao); opacity: .9; }
+[data-theme="dark"] .sec > h3 svg{ color: var(--bronze); }
+
+/* ---------- 9. guest welcome hero ---------- */
+.v14-welcome{
+  position: relative;
+  border-radius: 22px;
+  padding: 20px 20px 18px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: linear-gradient(140deg, var(--espresso) 0%, var(--cacao) 100%);
+  color: #F7EEE0;
+  box-shadow: var(--v14-lift-2);
+}
+[data-theme="dark"] .v14-welcome{
+  background: linear-gradient(140deg, var(--card) 0%, var(--sand) 120%);
+  color: var(--ink);
+  box-shadow: var(--v14-lift-2), var(--v14-ring);
+}
+.v14-welcome::after{
+  content:"";
+  position: absolute; inset: -40% -30% auto auto;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 68%);
+  pointer-events: none;
+}
+.v14-w-hi{ font-size: 13px; opacity: .82; letter-spacing: .04em; text-transform: uppercase; font-weight: 700; }
+.v14-w-name{ font-family: var(--font-display); font-size: 27px; line-height: 1.12; margin: 4px 0 2px; }
+.v14-w-sub{ font-size: 14px; opacity: .86; }
+.v14-w-row{ display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.v14-w-cell{
+  flex: 1 1 0; min-width: 96px;
+  background: rgba(255,255,255,.14);
+  border-radius: 14px; padding: 10px 12px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+[data-theme="dark"] .v14-w-cell{ background: rgba(255,255,255,.06); }
+.v14-w-cell b{ display: block; font-family: var(--font-display); font-size: 19px; line-height: 1.15; }
+.v14-w-cell span{ display: block; font-size: 11px; opacity: .8; margin-top: 2px; }
+.v14-w-next{
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 13px; padding: 11px 13px;
+  background: rgba(255,255,255,.16); border-radius: 14px;
+  width: 100%; text-align: start; border: 0; color: inherit; cursor: pointer;
+}
+[data-theme="dark"] .v14-w-next{ background: rgba(255,255,255,.07); }
+.v14-w-next:active{ transform: scale(.99); }
+.v14-w-next .t{ flex: 1; min-width: 0; }
+.v14-w-next b{ display: block; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v14-w-next span{ font-size: 11.5px; opacity: .82; }
+.v14-w-dot{
+  flex: none; width: 9px; height: 9px; border-radius: 50%;
+  background: #7ED9A0; box-shadow: 0 0 0 4px rgba(126,217,160,.22);
+}
+.v14-w-dot.soon{ background: #F3C969; box-shadow: 0 0 0 4px rgba(243,201,105,.22); }
+
+/* ---------- 10. entertainer work-day timeline ---------- */
+.v14-tl{ position: relative; padding-inline-start: 22px; margin-top: 4px; }
+.v14-tl::before{
+  content:""; position: absolute; inset-inline-start: 6px; top: 6px; bottom: 6px;
+  width: 2px; background: linear-gradient(180deg, var(--line), transparent);
+}
+.v14-tl-item{ position: relative; padding: 9px 0; }
+.v14-tl-item::before{
+  content:""; position: absolute; inset-inline-start: -20px; top: 16px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--card); border: 2px solid var(--line);
+}
+.v14-tl-item.now::before{
+  background: #3E9B5F; border-color: #3E9B5F;
+  box-shadow: 0 0 0 5px rgba(62,155,95,.18);
+}
+.v14-tl-item.past::before{ background: var(--line); border-color: var(--line); }
+
+/* ---------- 11. manager dashboard emphasis ---------- */
+.v9-stats, .stat-grid{ gap: 10px; }
+.v9-statlink, .stat{
+  border-radius: 16px;
+  box-shadow: var(--v14-lift), var(--v14-ring);
+  transition: transform .18s var(--v14-ease), box-shadow .18s var(--v14-ease);
+}
+.v9-statlink:active, .stat:active{ transform: translateY(1px) scale(.99); }
+.v9-hero{
+  border-radius: 20px;
+  box-shadow: var(--v14-lift-2);
+}
+.attn-it{ border-radius: 14px; transition: transform .16s var(--v14-ease); }
+.attn-it:active{ transform: scale(.99); }
+
+/* ---------- 12. menu drawer ---------- */
+.dr-it{
+  border-radius: 13px;
+  transition: background .16s var(--v14-ease), transform .16s var(--v14-ease);
+}
+.dr-it:active{ transform: scale(.985); }
+.dr-it.on{ box-shadow: var(--v14-ring); }
+.dr-ic{ border-radius: 11px; }
+
+/* ---------- 13. settings + list rows ---------- */
+.set-it, .booking-line, .acct-row, .std-row, .pr-row, .sc-row{
+  transition: background .16s var(--v14-ease);
+}
+.set-ic{ border-radius: 12px; }
+
+/* ---------- 14. inputs ---------- */
+input, select, textarea{
+  border-radius: 13px;
+  transition: border-color .16s var(--v14-ease), box-shadow .16s var(--v14-ease);
+}
+input:focus, select:focus, textarea:focus{
+  box-shadow: 0 0 0 3px rgba(120,90,60,.18);                       /* works everywhere */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cacao) 18%, transparent);
+}
+
+/* ---------- 15. screen entrance ---------- */
+.screen.fadein{ animation: v14In .3s var(--v14-ease); }
+@keyframes v14In{
+  from{ opacity: 0; transform: translateY(6px); }
+  to{ opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce){
+  .screen.fadein{ animation: none; }
+  .card, .btn, .act, .iconbtn{ transition: none; }
+}
+
+/* ---------- 16. empty states ---------- */
+.empty{ padding: 34px 20px; }
+.empty .big{ opacity: .35; }
+
+</style>
+<script id="design-v14-js">
+/* ============================================================
+   DESIGN v14  —  behaviour layer
+   Wraps existing views. If anything here fails, the original
+   screen is returned unchanged, so nothing can break.
+   ============================================================ */
+(function(){
+  "use strict";
+  if (window.__v14) return;
+  window.__v14 = true;
+
+  var T = function(k){ try { return t(k); } catch(e){ return k; } };
+  var E = function(s){ try { return esc(s); } catch(e){ return String(s==null?"":s); } };
+
+  /* ---------- words, in every language the app already speaks ---------- */
+  var W = {
+    en:{morning:"Good morning",afternoon:"Good afternoon",evening:"Good evening",night:"Good evening",
+        nextUp:"Next for you",nothingNext:"Nothing booked yet — have a look at the programme",
+        yourDay:"Your day",booked:"Booked",today:"Today",live:"On now",soon:"Starting soon",
+        nightsLeft:"nights left",lastDay:"Last day",dayOfStay:"Day"},
+    de:{morning:"Guten Morgen",afternoon:"Guten Tag",evening:"Guten Abend",night:"Guten Abend",
+        nextUp:"Als Nächstes für dich",nothingNext:"Noch nichts gebucht — schau ins Programm",
+        yourDay:"Dein Tag",booked:"Gebucht",today:"Heute",live:"Läuft gerade",soon:"Startet gleich",
+        nightsLeft:"Nächte übrig",lastDay:"Letzter Tag",dayOfStay:"Tag"},
+    ru:{morning:"Доброе утро",afternoon:"Добрый день",evening:"Добрый вечер",night:"Добрый вечер",
+        nextUp:"Далее для вас",nothingNext:"Пока ничего не забронировано — загляните в программу",
+        yourDay:"Ваш день",booked:"Забронировано",today:"Сегодня",live:"Идёт сейчас",soon:"Скоро начнётся",
+        nightsLeft:"ночей осталось",lastDay:"Последний день",dayOfStay:"День"},
+    pl:{morning:"Dzień dobry",afternoon:"Dzień dobry",evening:"Dobry wieczór",night:"Dobry wieczór",
+        nextUp:"Następnie dla Ciebie",nothingNext:"Nic jeszcze nie zarezerwowano — zajrzyj do programu",
+        yourDay:"Twój dzień",booked:"Zarezerwowane",today:"Dziś",live:"Trwa teraz",soon:"Wkrótce start",
+        nightsLeft:"nocy zostało",lastDay:"Ostatni dzień",dayOfStay:"Dzień"},
+    cs:{morning:"Dobré ráno",afternoon:"Dobrý den",evening:"Dobrý večer",night:"Dobrý večer",
+        nextUp:"Další pro vás",nothingNext:"Zatím nic nerezervováno — podívejte se do programu",
+        yourDay:"Váš den",booked:"Rezervováno",today:"Dnes",live:"Právě probíhá",soon:"Brzy začíná",
+        nightsLeft:"nocí zbývá",lastDay:"Poslední den",dayOfStay:"Den"},
+    nl:{morning:"Goedemorgen",afternoon:"Goedemiddag",evening:"Goedenavond",night:"Goedenavond",
+        nextUp:"Hierna voor jou",nothingNext:"Nog niets geboekt — bekijk het programma",
+        yourDay:"Jouw dag",booked:"Geboekt",today:"Vandaag",live:"Nu bezig",soon:"Begint zo",
+        nightsLeft:"nachten over",lastDay:"Laatste dag",dayOfStay:"Dag"},
+    fr:{morning:"Bonjour",afternoon:"Bon après-midi",evening:"Bonsoir",night:"Bonsoir",
+        nextUp:"Ensuite pour vous",nothingNext:"Rien de réservé — regardez le programme",
+        yourDay:"Votre journée",booked:"Réservé",today:"Aujourd'hui",live:"En cours",soon:"Commence bientôt",
+        nightsLeft:"nuits restantes",lastDay:"Dernier jour",dayOfStay:"Jour"},
+    ar:{morning:"صباح الخير",afternoon:"طاب يومك",evening:"مساء الخير",night:"مساء الخير",
+        nextUp:"التالي لك",nothingNext:"لا يوجد حجز بعد — اطلع على البرنامج",
+        yourDay:"يومك",booked:"محجوز",today:"اليوم",live:"جارٍ الآن",soon:"يبدأ قريباً",
+        nightsLeft:"ليالٍ متبقية",lastDay:"آخر يوم",dayOfStay:"اليوم"}
+  };
+  function w(k){
+    var lang = (typeof S!=="undefined" && S.lang) ? S.lang : "en";
+    return (W[lang] && W[lang][k]) || W.en[k] || k;
+  }
+
+  function nowMin(){
+    try { return nowMinutes(); }
+    catch(e){ var d=new Date(); return d.getHours()*60+d.getMinutes(); }
+  }
+  function todayIdx(){
+    try { return todayIndex(); }
+    catch(e){ return (new Date().getDay()+6)%7; }
+  }
+  function greeting(){
+    var h = Math.floor(nowMin()/60);
+    if (h < 12) return w("morning");
+    if (h < 17) return w("afternoon");
+    return w("evening");
+  }
+  /* start time of an activity in minutes, or null */
+  function startMin(a){
+    var m = String(a && a.time || "").match(/(\d{1,2}):(\d{2})/);
+    return m ? (+m[1])*60 + (+m[2]) : null;
+  }
+
+  /* ---------- guest welcome card ---------- */
+  function guestWelcome(){
+    if (typeof S==="undefined" || !S.session || S.session.role!=="guest") return "";
+    var name = String(S.session.name||"").trim().split(/\s+/)[0] || "";
+    var acc = (S.accounts||[]).filter(function(a){ return a.id===S.session.accountId; })[0]
+           || (S.accounts||[]).filter(function(a){ return String(a.room)===String(S.session.room); })[0]
+           || {};
+    /* how much of the stay is left */
+    var nights = null, lastDay = false;
+    if (acc.departure){
+      var dep = new Date(String(acc.departure)+"T00:00:00");
+      var diff = Math.round((dep - new Date(new Date().toDateString()))/864e5);
+      if (!isNaN(diff)) { nights = Math.max(0, diff); lastDay = diff <= 0; }
+    }
+    /* their booked activities today */
+    var day = todayIdx(), now = nowMin();
+    var myRooms = String(S.session.room||"");
+    var mine = (S.bookings||[]).filter(function(b){ return String(b.room)===myRooms; })
+      .map(function(b){ return (S.activities||[]).filter(function(a){ return a.id===b.activity_id; })[0]; })
+      .filter(function(a){ return a && a.day===day; });
+    mine.sort(function(x,y){ return (startMin(x)||0)-(startMin(y)||0); });
+    var next = null, isLive = false;
+    for (var i=0;i<mine.length;i++){
+      var st = startMin(mine[i]);
+      if (st===null) continue;
+      if (st+45 >= now){ next = mine[i]; isLive = (st <= now); break; }
+    }
+    var todayCount = (S.activities||[]).filter(function(a){ return a.day===day; }).length;
+
+    var cells = "";
+    cells += '<div class="v14-w-cell"><b>'+mine.length+'</b><span>'+E(w("booked"))+'</span></div>';
+    cells += '<div class="v14-w-cell"><b>'+todayCount+'</b><span>'+E(w("today"))+'</span></div>';
+    if (nights!==null){
+      cells += '<div class="v14-w-cell"><b>'+(lastDay ? "—" : nights)+'</b><span>'
+             + E(lastDay ? w("lastDay") : w("nightsLeft"))+'</span></div>';
+    }
+
+    var nextHtml = "";
+    if (next){
+      nextHtml = '<button class="v14-w-next" data-v14open="'+E(next.id)+'">'
+        + '<span class="v14-w-dot'+(isLive?"":" soon")+'"></span>'
+        + '<span class="t"><b>'+E(next.name)+'</b><span>'
+        + E(isLive ? w("live") : w("nextUp")) + ' · ' + E(next.time||"")
+        + (next.location ? ' · '+E(next.location) : '') + '</span></span></button>';
+    } else {
+      nextHtml = '<button class="v14-w-next" data-v14tab="program">'
+        + '<span class="v14-w-dot soon"></span>'
+        + '<span class="t"><b>'+E(w("nothingNext"))+'</b></span></button>';
+    }
+
+    return '<div class="v14-welcome">'
+      + '<div class="v14-w-hi">'+E(greeting())+'</div>'
+      + '<div class="v14-w-name">'+E(name || (S.settings&&S.settings.name) || "")+'</div>'
+      + '<div class="v14-w-sub">'+E(w("yourDay"))+'</div>'
+      + '<div class="v14-w-row">'+cells+'</div>'
+      + nextHtml
+      + '</div>';
+  }
+
+  /* ---------- wrap the guest home ---------- */
+  if (typeof guestView === "function"){
+    var _guest = guestView;
+    window.guestView = function(){
+      var out = _guest.apply(this, arguments);
+      try{
+        if (S.tab !== "home") return out;
+        if (out.indexOf("v14-welcome") >= 0) return out;
+        var card = guestWelcome();
+        if (!card) return out;
+        /* place it right after the top bar */
+        var end = out.indexOf("</div>", out.indexOf('class="top"'));
+        var close = out.indexOf("</div>", end + 6);
+        var at = close > 0 ? close + 6 : -1;
+        if (at < 0) return out;
+        return out.slice(0, at) + card + out.slice(at);
+      }catch(e){ return out; }
+    };
+  }
+
+  /* ---------- work-day timeline marker for entertainers ---------- */
+  if (typeof staffView === "function"){
+    var _staff = staffView;
+    window.staffView = function(){
+      var out = _staff.apply(this, arguments);
+      try{
+        if (S.tab !== "workday") return out;
+        return out;   /* styling only — handled in CSS */
+      }catch(e){ return out; }
+    };
+  }
+
+  /* ---------- wiring for the welcome card ---------- */
+  function wireV14(){
+    try{
+      document.querySelectorAll("[data-v14open]").forEach(function(b){
+        b.onclick = function(){
+          var id = +b.dataset.v14open;
+          var a = (S.activities||[]).filter(function(x){ return x.id===id; })[0];
+          if (a && typeof openActivity === "function") openActivity(a);
+          else if (a && typeof openBookModal === "function") openBookModal(a);
+          else { S.tab = "program"; render(); }
+        };
+      });
+      document.querySelectorAll("[data-v14tab]").forEach(function(b){
+        b.onclick = function(){ S.tab = b.dataset.v14tab; render(); };
+      });
+    }catch(e){}
+  }
+  if (typeof render === "function"){
+    var _render = render;
+    window.render = function(){
+      var r = _render.apply(this, arguments);
+      wireV14();
+      return r;
+    };
+  }
+})();
+
+</script>
 </body>
 </html>
