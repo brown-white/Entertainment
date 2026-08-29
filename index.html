@@ -12537,6 +12537,7 @@ input:focus, select:focus, textarea:focus{
 .empty .big{ opacity: .35; }
 
 </style>
+
 <script id="design-v14-js">
 /* ============================================================
    DESIGN v14  —  behaviour layer  (rev 2)
@@ -12662,6 +12663,22 @@ input:focus, select:focus, textarea:focus{
   }
 
   /* ---------- real DOM placement ---------- */
+  /* Find the LAST top-level header/title block and sit right after it, so the
+     card is always a sibling at screen level and never above the page title.
+     Handles both layouts: .ex-top (icon row) + .ex-hero.flat (title), and the
+     older .top + .whobar. */
+  function hostOf(screen){
+    var kids = screen.children || [];
+    var idx = -1;
+    for (var i = 0; i < kids.length && i < 6; i++){
+      var cls = " " + String(kids[i].className || "") + " ";
+      var isHeader = /\s(ex-top|top)\s/.test(cls)
+                  || /\s(who|whobar)\s/.test(cls)
+                  || (/\sex-hero\s/.test(cls) && /\sflat\s/.test(cls));
+      if (isHeader) idx = i;
+    }
+    return idx >= 0 ? kids[idx] : null;
+  }
   function placeWelcome(){
     try{
       if (typeof S==="undefined" || !S.session) return;
@@ -12674,7 +12691,7 @@ input:focus, select:focus, textarea:focus{
       if (!html) return;
       /* the header block is called .ex-top in the luxury layout and .top in the
          original one — take whichever exists and sit directly after it */
-      var host = screen.querySelector(".ex-top") || screen.querySelector(".top") || null;
+      var host = hostOf(screen);
       if (host && host.insertAdjacentHTML) host.insertAdjacentHTML("afterend", html);
       else if (screen.insertAdjacentHTML) screen.insertAdjacentHTML("afterbegin", html);
     }catch(e){}
@@ -12851,6 +12868,7 @@ input:focus, select:focus, textarea:focus{
 }
 
 </style>
+
 <script id="design-v15-js">
 /* ============================================================
    v15  —  "Right now" for every role
@@ -13042,9 +13060,23 @@ input:focus, select:focus, textarea:focus{
   }
 
   /* ---------- placement ---------- */
+  /* Find the LAST top-level header/title block and sit right after it, so the
+     card is always a sibling at screen level and never above the page title.
+     Handles both layouts: .ex-top (icon row) + .ex-hero.flat (title), and the
+     older .top + .whobar. */
   function headerOf(screen){
-    return screen.querySelector(".ex-top") || screen.querySelector(".top") || null;
+    var kids = screen.children || [];
+    var idx = -1;
+    for (var i = 0; i < kids.length && i < 6; i++){
+      var cls = " " + String(kids[i].className || "") + " ";
+      var isHeader = /\s(ex-top|top)\s/.test(cls)
+                  || /\s(who|whobar)\s/.test(cls)
+                  || (/\sex-hero\s/.test(cls) && /\sflat\s/.test(cls));
+      if (isHeader) idx = i;
+    }
+    return idx >= 0 ? kids[idx] : null;
   }
+
   function place(marker, html){
     try{
       var app = document.getElementById("app") || document.querySelector("#app");
@@ -13095,5 +13127,304 @@ input:focus, select:focus, textarea:focus{
 })();
 
 </script>
+
+<style id="design-v16">
+/* ============================================================
+   v16  —  LUXURY RESTYLE
+   Rebuilds the look of the activity cards, the entertainer's
+   work day and the manager's dashboard. Styling only — no
+   markup, no behaviour, no data is touched.
+   ============================================================ */
+
+/* ---------- 1. the activity card ---------- */
+.card.act{
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(16,12,8,.05), 0 10px 26px -12px rgba(16,12,8,.28);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  margin-bottom: 12px;
+  transition: transform .22s var(--v14-ease, ease), box-shadow .22s var(--v14-ease, ease);
+}
+[data-theme="dark"] .card.act{
+  box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 26px -12px rgba(0,0,0,.7);
+}
+.card.act:active{ transform: scale(.992); box-shadow: 0 2px 6px rgba(16,12,8,.10), 0 16px 34px -14px rgba(16,12,8,.34); }
+
+/* photo fills its column edge to edge */
+.card.act > .thumb{
+  width: 96px; height: 100%; min-height: 108px;
+  border-radius: 0;
+  object-fit: cover;
+  display: block;
+  align-self: stretch;
+}
+.card.act::after{                       /* a soft fade so text never fights the photo */
+  content:""; position: absolute; inset-inline-start: 84px; top: 0; bottom: 0; width: 18px;
+  background: linear-gradient(90deg, transparent, var(--card));
+  pointer-events: none;
+}
+[dir="rtl"] .card.act::after{ background: linear-gradient(270deg, transparent, var(--card)); }
+
+/* the middle column */
+.card.act > .mid{
+  padding: 13px 14px 13px 15px;
+  display: flex; flex-direction: column; gap: 5px; justify-content: center;
+  min-width: 0;
+}
+.card.act .catbadge{
+  align-self: flex-start;
+  font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--cacao);
+  background: transparent; padding: 0; border: 0;
+  opacity: .85;
+}
+[data-theme="dark"] .card.act .catbadge{ color: var(--bronze); }
+.card.act .mid h4{
+  font-family: var(--font-display);
+  font-size: 20px; line-height: 1.15; letter-spacing: -.01em;
+  margin: 1px 0 2px;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--ink);
+}
+.card.act .meta{
+  display: flex; flex-wrap: wrap; gap: 4px 14px;
+  font-size: 12.5px; color: var(--muted);
+}
+.card.act .meta > span{ display: inline-flex; align-items: center; gap: 5px; }
+.card.act .meta .mi{ opacity: .55; display: inline-flex; }
+
+/* the right side: book button / guest count / heart */
+.card.act > .side{
+  display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
+  gap: 8px; padding: 12px 14px;
+}
+.card.act .btn{
+  padding: 10px 18px; font-size: 13.5px; border-radius: 999px;
+  box-shadow: 0 2px 10px -4px rgba(16,12,8,.5);
+}
+.card.act .pill{
+  font-size: 10.5px; font-weight: 700; letter-spacing: .04em;
+  padding: 5px 11px;
+}
+
+/* status dot becomes a small refined marker */
+.card.act .stat-dot{
+  width: 8px; height: 8px; flex: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 14%, transparent);
+}
+
+/* a thin colour edge on the photo side shows the status at a glance */
+.card.act::before{
+  content:""; position: absolute; inset-inline-start: 0; top: 0; bottom: 0; width: 3px;
+  background: transparent; z-index: 2;
+}
+.card.act:has(.stat-dot.live)::before{ background: #3E9B5F; }
+.card.act:has(.stat-dot.todo)::before{ background: #E5A100; }
+.card.act:has(.stat-dot.done)::before{ background: transparent; }
+.card.act:has(.stat-dot.done){ opacity: .72; }
+.card.act:has(.stat-dot.done) .thumb{ filter: grayscale(.35); }
+
+/* ---------- 2. section headings ---------- */
+.sec > h3{
+  font-family: var(--font-display);
+  font-size: 23px; letter-spacing: -.01em; margin-bottom: 4px;
+}
+.sec > h3::after{
+  content:""; display: block; width: 46px; height: 2px; margin-top: 7px;
+  background: linear-gradient(90deg, var(--cacao), transparent);
+  border-radius: 2px;
+}
+[data-theme="dark"] .sec > h3::after{ background: linear-gradient(90deg, var(--bronze), transparent); }
+
+/* ---------- 3. quick action buttons (Song request / Birthday) ---------- */
+.quickrow{ gap: 11px; }
+.quickrow > button{
+  border-radius: 18px;
+  padding: 18px 12px;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  box-shadow: 0 1px 2px rgba(16,12,8,.04), 0 8px 20px -14px rgba(16,12,8,.4);
+  font-weight: 600;
+  transition: transform .18s var(--v14-ease, ease), box-shadow .18s;
+}
+.quickrow > button:active{ transform: translateY(1px) scale(.985); }
+.quickrow > button span{ color: var(--cacao); }
+[data-theme="dark"] .quickrow > button span{ color: var(--bronze); }
+
+/* ---------- 4. the legend strip ---------- */
+.stat-legend{
+  border-radius: 999px;
+  padding: 9px 14px;
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(16,12,8,.04), 0 6px 18px -12px rgba(16,12,8,.4);
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+.stat-legend .stat-pill{ font-size: 11.5px; }
+
+/* ---------- 5. entertainer: the plain white boxes ---------- */
+.v15-focus.quiet, .v15-focus.done{
+  padding: 22px 20px;
+  text-align: center;
+  background: linear-gradient(150deg,
+      color-mix(in srgb, var(--cacao) 8%, var(--card)) 0%, var(--card) 70%);
+}
+.v15-focus.quiet .v15-f-lab, .v15-focus.done .v15-f-lab{
+  font-size: 11px; letter-spacing: .15em;
+}
+.v15-focus.quiet .v15-f-btn{
+  margin-top: 14px; padding: 11px 22px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F6ECDD; border: 0; font-weight: 600;
+  box-shadow: 0 6px 18px -8px rgba(16,12,8,.7);
+}
+[data-theme="dark"] .v15-focus.quiet .v15-f-btn{
+  background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #221708;
+}
+
+/* work-day cards get the same warmth */
+.stdcard, .prcard, .showcard, .daycard{
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(16,12,8,.05), 0 10px 26px -14px rgba(16,12,8,.3);
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+.dc-cell, .dd-h{ padding: 14px 16px; }
+.dc-flag{
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--cacao) 14%, transparent),
+      color-mix(in srgb, var(--cacao) 6%, transparent));
+  border-radius: 0 0 18px 18px;
+}
+.pr-time{
+  font-family: var(--font-display); font-size: 15px; color: var(--cacao);
+}
+[data-theme="dark"] .pr-time{ color: var(--bronze); }
+.std-row{ padding: 13px 16px; }
+.std-t{
+  font-family: var(--font-display); font-size: 14.5px;
+  color: var(--cacao); letter-spacing: .01em;
+}
+[data-theme="dark"] .std-t{ color: var(--bronze); }
+
+/* the day tabs */
+.daytabs > button, .daychip{
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  font-weight: 600;
+  transition: transform .16s var(--v14-ease, ease);
+}
+.daytabs > button.on, .daychip.on{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F6ECDD; border-color: transparent;
+  box-shadow: 0 6px 16px -8px rgba(16,12,8,.75);
+}
+[data-theme="dark"] .daytabs > button.on, [data-theme="dark"] .daychip.on{
+  background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #221708;
+}
+.daytabs > button:active{ transform: scale(.95); }
+
+/* ---------- 6. manager dashboard ---------- */
+.v15-mnow{
+  padding: 16px;
+  background: linear-gradient(150deg,
+      color-mix(in srgb, var(--cacao) 10%, var(--card)) 0%, var(--card) 65%);
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+.v15-mn-cell{
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(16,12,8,.05), 0 6px 16px -12px rgba(16,12,8,.5);
+  border: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
+  padding: 12px 4px;
+}
+.v15-mn-cell b{ font-size: 23px; }
+.v15-mn-cell.hot{
+  background: linear-gradient(150deg, rgba(229,161,0,.22), rgba(229,161,0,.10));
+  border-color: transparent;
+}
+
+/* the six stat tiles */
+.stat, .v9-statlink{
+  position: relative;
+  border-radius: 20px;
+  padding: 18px 16px;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  box-shadow: 0 1px 2px rgba(16,12,8,.05), 0 10px 26px -16px rgba(16,12,8,.45);
+  overflow: hidden;
+}
+.stat::before, .v9-statlink::before{
+  content:""; position: absolute; inset-inline-start: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, var(--cacao), transparent);
+  opacity: .55;
+}
+[data-theme="dark"] .stat::before, [data-theme="dark"] .v9-statlink::before{
+  background: linear-gradient(180deg, var(--bronze), transparent);
+}
+.stat b, .v9-statlink b, .stat .n, .v9-statlink .n{
+  font-family: var(--font-display);
+  letter-spacing: -.02em;
+}
+.stat .r0, .v9-statlink .r0{ font-size: 34px; }
+
+/* attention panel */
+.attn{
+  border-radius: 20px;
+  background: linear-gradient(150deg,
+      color-mix(in srgb, var(--ok, #3E9B5F) 10%, var(--card)) 0%, var(--card) 70%);
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+.attn-ic{ box-shadow: 0 4px 12px -6px rgba(62,155,95,.8); }
+
+/* the big call-to-action button */
+.v9-hero-btn, .v9-dashbtns .btn{
+  border-radius: 18px;
+  padding: 17px 20px;
+  font-size: 15.5px;
+  letter-spacing: .01em;
+  box-shadow: 0 10px 26px -12px rgba(16,12,8,.75);
+}
+
+/* ---------- 7. the operation cards on Explore ---------- */
+.opcard{
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(16,12,8,.06), 0 14px 34px -18px rgba(16,12,8,.5);
+  transition: transform .22s var(--v14-ease, ease), box-shadow .22s;
+}
+.opcard:active{ transform: scale(.985); }
+.opcard .veil{
+  background: linear-gradient(180deg, rgba(0,0,0,.06) 0%, rgba(0,0,0,.34) 45%, rgba(0,0,0,.78) 100%);
+}
+.opc-txt{ font-family: var(--font-display); letter-spacing: -.005em; }
+
+/* ---------- 8. empty states, warmer ---------- */
+.empty{
+  border-radius: 20px;
+  background: linear-gradient(150deg,
+      color-mix(in srgb, var(--cacao) 6%, var(--card)) 0%, var(--card) 70%);
+  border: 1px dashed color-mix(in srgb, var(--line) 80%, transparent);
+  padding: 30px 22px;
+}
+
+/* ---------- 9. narrow phones ---------- */
+@media (max-width: 380px){
+  .card.act{ grid-template-columns: 78px 1fr; }
+  .card.act > .thumb{ width: 78px; }
+  .card.act::after{ inset-inline-start: 66px; }
+  .card.act .mid h4{ font-size: 18px; }
+}
+
+/* ---------- 10. browsers without :has() ---------- */
+@supports not (selector(:has(*))){
+  .card.act::before{ display: none; }
+}
+
+</style>
 </body>
 </html>
