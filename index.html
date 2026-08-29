@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Hotel Entertainment Opشerations — Intelligent Planner</title>
+<title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -14116,5 +14116,246 @@ label{
 .pills{ display: flex; flex-wrap: wrap; gap: 6px; }
 
 </style>
+<style id="design-v18-full-redesign">
+/* ============================================================
+   v18 — FULL EXPERIENCE REDESIGN
+   Not another shadow layer. This changes the visual language,
+   role identity, controls, cards and page composition globally.
+   ============================================================ */
+:root{
+  --v18-radius:22px; --v18-radius-sm:14px; --v18-gap:16px;
+  --v18-guest:#16697A; --v18-guest2:#27A6A1; --v18-guest-accent:#FFB24A;
+  --v18-staff:#4E46C7; --v18-staff2:#786DEB; --v18-staff-accent:#28C7D9;
+  --v18-manager:#13283F; --v18-manager2:#245A73; --v18-manager-accent:#B8D94A;
+  --v18-explore:#EC6F5C; --v18-explore2:#F3A45B; --v18-explore-accent:#1E8D92;
+  --v18-role:var(--v18-guest); --v18-role2:var(--v18-guest2); --v18-accent:var(--v18-guest-accent);
+  --bg:#F4F7F8; --card:#FFFFFF; --ink:#152332; --muted:#6B7784; --line:#E1E8EC;
+  --shadow:0 10px 30px rgba(25,45,60,.07);
+  --font-display:'Jost',sans-serif; --font-body:'Jost',sans-serif;
+  --radius:var(--v18-radius); --btn-radius:16px; --btn-radius-sm:12px;
+}
+[data-theme="dark"]{
+  --bg:#0B131C; --card:#121D27; --ink:#F3F7F9; --muted:#9DAAB4; --line:#253542;
+}
+[data-approle="guest"]{--v18-role:var(--v18-guest);--v18-role2:var(--v18-guest2);--v18-accent:var(--v18-guest-accent)}
+[data-approle="staff"]{--v18-role:var(--v18-staff);--v18-role2:var(--v18-staff2);--v18-accent:var(--v18-staff-accent)}
+[data-approle="manager"]{--v18-role:var(--v18-manager);--v18-role2:var(--v18-manager2);--v18-accent:var(--v18-manager-accent)}
+html[data-v18-view="explore"]{--v18-role:var(--v18-explore);--v18-role2:var(--v18-explore2);--v18-accent:var(--v18-explore-accent)}
+
+body{background:var(--bg);font-family:var(--font-body);letter-spacing:-.005em}
+.app{max-width:620px;background:var(--bg)}
+[data-approle="manager"] .app{max-width:1180px}
+.screen{padding-inline:16px!important;padding-bottom:34px!important}
+h1,h2,h3,.serif{font-family:var(--font-display);font-weight:700;letter-spacing:-.025em}
+
+/* --- top chrome: simple, clear, strongly branded --- */
+.top{margin-bottom:14px!important;align-items:center}
+.top .who h2,.whobar h2{font-family:var(--font-body);font-weight:800;font-size:28px!important;letter-spacing:-.035em}
+.top .who p,.whobar p{font-size:13px!important;color:var(--muted)}
+.iconbtn,.socialtop{
+  width:44px!important;height:44px!important;border-radius:14px!important;background:var(--card)!important;
+  border:1px solid var(--line)!important;box-shadow:none!important;color:var(--v18-role)!important
+}
+.iconbtn:active,.socialtop:active{transform:scale(.94);background:color-mix(in srgb,var(--v18-role) 8%,var(--card))!important}
+.reddot{background:#FF4D5F!important;border-color:var(--card)!important}
+
+/* --- buttons: color is now a core interaction signal --- */
+.btn:not(.ghost):not(.warn),.wa-cta,.v9-hero-btn,.v9-dashbtns .btn{
+  background:linear-gradient(135deg,var(--v18-role),var(--v18-role2))!important;
+  color:#fff!important;border:0!important;box-shadow:none!important;border-radius:16px!important;
+  min-height:50px;font-weight:750;letter-spacing:0
+}
+.btn:not(.ghost):not(.warn)::after{display:none!important}
+.btn.ghost{
+  background:color-mix(in srgb,var(--v18-role) 7%,var(--card))!important;
+  color:var(--v18-role)!important;border:1px solid color-mix(in srgb,var(--v18-role) 18%,var(--line))!important;
+  box-shadow:none!important
+}
+.btn.warn{background:#D94747!important;box-shadow:none!important}
+.btn.sm{min-height:38px;padding:9px 14px!important}
+
+/* --- cards: flatter, clearer, less beige/luxury-template --- */
+.card,.stat,.tk,.daycard,.stdcard,.prcard,.showcard,.profcard,.attn,.attsum,.v15-strip,.v15-mnow{
+  background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:none!important;
+  border-radius:var(--v18-radius)!important
+}
+.card{padding:17px}
+.sec{margin-top:26px!important;margin-bottom:24px!important}
+.sec>h3{font-size:20px!important;font-family:var(--font-body);font-weight:800;margin-bottom:12px!important;padding-bottom:0!important}
+.sec>h3::after{display:none!important}
+.sec>h3 .count{background:color-mix(in srgb,var(--v18-role) 10%,transparent);color:var(--v18-role);padding:4px 8px;border-radius:999px}
+.mini{color:var(--muted)!important}
+.chip,.pill,.tchip,.rstat,.cc-tag{
+  border:0!important;background:color-mix(in srgb,var(--v18-role) 9%,var(--card))!important;color:var(--v18-role)!important;
+  font-weight:700!important;border-radius:999px!important
+}
+
+/* --- forms / tabs / pickers --- */
+input,select,textarea,.pickfield{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:none!important}
+input:focus,select:focus,textarea:focus{border-color:var(--v18-role)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--v18-role) 14%,transparent)!important}
+.daytabs,.pills,.ex-chips{gap:8px!important}
+.daytabs button,.pills button,.ex-chip,.daychip{
+  background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:none!important;border-radius:999px!important;color:var(--muted)!important
+}
+.daytabs button.on,.pills button.on,.ex-chip.on,.daychip.on{
+  background:var(--v18-role)!important;color:#fff!important;border-color:var(--v18-role)!important;box-shadow:none!important
+}
+
+/* --- nav becomes a modern floating dock --- */
+.nav{
+  position:sticky!important;bottom:10px!important;margin:8px 12px calc(8px + env(safe-area-inset-bottom))!important;width:calc(100% - 24px)!important;
+  max-width:none!important;border:1px solid var(--line)!important;border-radius:22px!important;background:color-mix(in srgb,var(--card) 92%,transparent)!important;
+  backdrop-filter:blur(18px);box-shadow:0 12px 34px rgba(19,40,63,.12)!important;padding:8px!important
+}
+.nav::before{display:none!important}
+.nav button{min-height:52px;border-radius:15px!important;gap:2px!important;color:var(--muted)!important;font-weight:650!important}
+.nav button .ic{font-size:20px!important}
+.nav button.on{background:color-mix(in srgb,var(--v18-role) 11%,var(--card))!important;color:var(--v18-role)!important}
+
+/* --- drawer: grouped, compact, colored active item --- */
+.drawer{background:var(--bg)!important;box-shadow:24px 0 70px rgba(9,20,30,.22)!important}
+.dr-head .mono.sm,.pf-ava,.acct-av,.mb-av,.rnum{
+  background:linear-gradient(135deg,var(--v18-role),var(--v18-role2))!important;color:#fff!important;box-shadow:none!important
+}
+.dr-sec{color:var(--v18-role)!important;font-weight:800!important;opacity:1!important}
+.dr-it{border-radius:14px!important}
+.dr-it.on{background:var(--v18-role)!important;color:#fff!important;box-shadow:none!important}
+.dr-ic{color:var(--v18-role)!important}
+
+/* --- activity cards: visual-first across guest/staff/manager --- */
+.card.act{
+  display:grid!important;grid-template-columns:96px minmax(0,1fr) auto!important;gap:14px!important;align-items:center!important;
+  padding:10px!important;overflow:hidden
+}
+.card.act .thumb{width:96px!important;height:96px!important;border-radius:16px!important}
+.card.act .mid h4{font-size:17px!important;font-weight:800!important}
+.card.act .catbadge{color:var(--v18-role)!important;font-weight:800!important}
+.card.act .side{padding-inline-end:4px}
+@media(max-width:410px){.card.act{grid-template-columns:82px minmax(0,1fr)!important}.card.act .thumb{width:82px!important;height:88px!important}.card.act .side{grid-column:2;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important}}
+
+/* ============================================================
+   VISITOR / EXPLORE — editorial discovery, not a login preview
+   ============================================================ */
+html[data-v18-view="explore"] body{background:#FFF8F3}
+[data-theme="dark"] html[data-v18-view="explore"] body{background:#16110F}
+.explore-screen{padding-inline:0!important;overflow:hidden}
+.ex-top{padding:0 16px 12px!important;position:relative;z-index:2}
+.ex-h1{font-size:38px!important;line-height:1!important;padding:4px 18px 0!important;color:#17212A}
+[data-theme="dark"] .ex-h1{color:var(--ink)}
+.ex-sub{padding:6px 18px 16px!important;font-size:15px!important;color:var(--muted)!important}
+.ex-chips{padding:0 18px 14px!important;overflow-x:auto;display:flex;scrollbar-width:none}
+.ex-feat{margin:0 16px 24px!important;border-radius:28px!important;min-height:340px!important;box-shadow:none!important;overflow:hidden!important}
+.ex-feat img{height:340px!important;object-fit:cover!important}
+.ex-feat::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 32%,rgba(12,19,24,.78));pointer-events:none}
+.ex-feat-cap{z-index:2!important;padding:22px!important}
+.ex-feat-cap b{font-size:24px!important;line-height:1.08!important}
+.ex-tag{background:#fff!important;color:var(--v18-explore)!important;border:0!important;font-weight:800!important}
+.ex-sec,.ex-secrow,.ex-program{margin-inline:18px!important}
+.ex-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;padding:0 18px 24px!important}
+.ex-it{border-radius:20px!important;overflow:hidden!important;background:#fff!important;border:0!important;box-shadow:none!important}
+.ex-thumb{aspect-ratio:4/5!important}
+.ex-cap{padding:11px 12px!important;font-weight:700!important}
+.ex-prog-card,.ex-act{border-radius:20px!important;border:0!important;background:#fff!important;box-shadow:none!important}
+
+/* ============================================================
+   GUEST — holiday companion: warmth + next action hierarchy
+   ============================================================ */
+[data-approle="guest"] .screen[data-v18-tab="home"]{background:linear-gradient(180deg,#EAF8F7 0,#F4F7F8 280px)!important;border-radius:0 0 32px 32px}
+[data-approle="guest"] .v14-welcome{
+  background:linear-gradient(135deg,var(--v18-guest),var(--v18-guest2))!important;border-radius:28px!important;box-shadow:none!important;padding:22px!important
+}
+[data-approle="guest"] .v14-w-cell{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.16)!important}
+[data-approle="guest"] .hero{border-radius:28px!important;box-shadow:none!important;margin-top:16px!important}
+[data-approle="guest"] .hero img{height:280px!important}
+[data-approle="guest"] .hero .body h3{font-size:30px!important;font-family:var(--font-body)!important;font-weight:800!important}
+[data-approle="guest"] .hero .tag{background:var(--v18-guest-accent)!important;color:#24303A!important;border:0!important}
+[data-approle="guest"] .quickrow{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
+[data-approle="guest"] .quickrow button{padding:18px!important;border-radius:20px!important;border:1px solid var(--line)!important;box-shadow:none!important;text-align:start!important}
+[data-approle="guest"] .quickrow button span{width:42px;height:42px;border-radius:13px;background:#DDF3F1;color:var(--v18-guest)!important;display:flex!important;align-items:center;justify-content:center;margin-bottom:10px!important}
+
+/* ============================================================
+   ENTERTAINER — live shift console with high-energy identity
+   ============================================================ */
+[data-approle="staff"] .screen[data-v18-tab="workday"]{background:linear-gradient(180deg,#F0EFFF 0,#F4F7F8 300px)!important}
+[data-approle="staff"] .v15-focus{
+  border-radius:28px!important;background:linear-gradient(135deg,var(--v18-staff),var(--v18-staff2))!important;color:#fff!important;box-shadow:none!important;padding:24px!important
+}
+[data-approle="staff"] .v15-focus.live::before{width:6px!important;background:var(--v18-staff-accent)!important}
+[data-approle="staff"] .v15-f-name{font-family:var(--font-body)!important;font-size:28px!important;font-weight:850!important}
+[data-approle="staff"] .v15-f-when{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.15)!important}
+[data-approle="staff"] .v15-focus.quiet,[data-approle="staff"] .v15-focus.done{background:var(--card)!important;color:var(--ink)!important}
+[data-approle="staff"] .daycard{overflow:hidden!important}
+[data-approle="staff"] .dc-cell b{font-size:16px!important}
+[data-approle="staff"] .std-row{padding:14px 16px!important}
+[data-approle="staff"] .std-t{color:var(--v18-staff)!important;font-weight:800!important}
+[data-approle="staff"] .rankb.r0{background:var(--v18-staff-accent)!important;color:#14313B!important}
+
+/* ============================================================
+   MANAGER — dense operations cockpit, responsive wide layout
+   ============================================================ */
+[data-approle="manager"] body{background:#EEF2F5}
+[data-theme="dark"][data-approle="manager"] body{background:#09121A}
+[data-approle="manager"] .screen[data-v18-tab="dash"]{background:linear-gradient(180deg,#E8EFF4 0,#EEF2F5 300px)!important}
+[data-approle="manager"] .v15-mnow{background:var(--v18-manager)!important;color:#fff!important;border:0!important;padding:20px!important;border-radius:26px!important}
+[data-approle="manager"] .v15-mn-cell{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.10)!important;color:#fff!important;box-shadow:none!important}
+[data-approle="manager"] .v15-mn-cell b,[data-approle="manager"] .v15-mn-cell span{color:#fff!important}
+[data-approle="manager"] .v15-mn-cell.hot{background:rgba(184,217,74,.20)!important}
+[data-approle="manager"] .v15-mn-run,[data-approle="manager"] .v15-mn-run b,[data-approle="manager"] .v15-mn-run span{color:#fff!important}
+[data-approle="manager"] .stat-grid,.v9-stats{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:12px!important}
+[data-approle="manager"] .stat,.v9-statlink{padding:18px!important;border-radius:20px!important}
+[data-approle="manager"] .stat::before,.v9-statlink::before{display:none!important}
+[data-approle="manager"] .stat b,.v9-statlink b{color:var(--v18-manager)!important;font-family:var(--font-body)!important;font-weight:850!important}
+[data-theme="dark"][data-approle="manager"] .stat b,[data-theme="dark"] .v9-statlink b{color:var(--v18-manager-accent)!important}
+@media(min-width:760px){
+ [data-approle="manager"] .screen[data-v18-tab="dash"] .stat-grid,[data-approle="manager"] .screen[data-v18-tab="dash"] .v9-stats{grid-template-columns:repeat(4,1fr)!important}
+ [data-approle="manager"] .screen{padding-inline:24px!important}
+ [data-approle="manager"] .opgrid{grid-template-columns:repeat(3,1fr)!important}
+ [data-approle="manager"] .catgrid{grid-template-columns:repeat(4,1fr)!important}
+}
+
+/* --- login rebuilt visually to match the product --- */
+.login-wrap{background:linear-gradient(150deg,#0F2738 0%,#17697A 55%,#3CB7B1 100%)!important;padding-inline:20px!important}
+.brandmark .mono{border:0!important;background:rgba(255,255,255,.13)!important;color:#fff!important;box-shadow:none!important;border-radius:24px!important}
+.brandmark h1{font-family:var(--font-body)!important;font-weight:850!important;letter-spacing:-.03em!important}
+.brandmark p{opacity:.8!important}
+.login-card{border-radius:28px!important;box-shadow:none!important;border:1px solid rgba(255,255,255,.2)!important}
+.role-tabs button{border-radius:999px!important;background:rgba(255,255,255,.10)!important}
+.role-tabs button.on{background:#fff!important;color:#173746!important}
+.lang-row button{border-radius:999px!important}
+
+/* motion stays restrained */
+.fadein>*{animation:none!important}.hero img{animation:none!important}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script id="design-v18-full-redesign-js">
+(function(){
+  if(window.__v18Full) return; window.__v18Full=true;
+  function applyV18(){
+    try{
+      var root=document.documentElement, app=document.getElementById('app');
+      if(!app) return;
+      var explore=!!(typeof showExplore!=='undefined' && showExplore);
+      root.setAttribute('data-v18-view', explore?'explore':'app');
+      var screen=app.querySelector('.screen');
+      if(screen){ screen.setAttribute('data-v18-tab', (typeof S!=='undefined' && S.tab)?String(S.tab):''); }
+      if(explore && screen) screen.classList.add('explore-screen');
+      /* make icon-only controls semantically visible to CSS/accessibility without changing actions */
+      app.querySelectorAll('.iconbtn:not([data-v18-ready])').forEach(function(b){
+        b.setAttribute('data-v18-ready','1'); if(!b.getAttribute('aria-label')) b.setAttribute('aria-label','Action');
+      });
+    }catch(e){}
+  }
+  var old=window.render;
+  if(typeof old==='function'){
+    window.render=function(){ var r=old.apply(this,arguments); applyV18(); return r; };
+  }
+  var oe=window.wireExplore;
+  if(typeof oe==='function'){
+    window.wireExplore=function(){ var r=oe.apply(this,arguments); applyV18(); return r; };
+  }
+  document.addEventListener('DOMContentLoaded',applyV18);
+  setTimeout(applyV18,0);
+})();
+</script>
 </body>
 </html>
