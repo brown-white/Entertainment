@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14549,6 +14549,36 @@ ar:{wd23Kicker:"دليل يوم الفريق",wd23Sub:"كل ما تحتاجه ا
 Object.keys(V23_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V23_STR[l]); });
 </script>
 
+<script id="v24-i18n">
+/* v24 — texts for the organisation round, all 8 languages */
+const V24_STR={
+en:{v24Appearance:"Appearance",v24GrpToday:"Today",v24GrpProgram:"Programme",v24GrpPeople:"People & tasks",v24GrpReports:"Insights & reports",v24GrpTools:"Tools",wd24FbH:"Guest feedback",wd24FbSub:"What you collected from guests",wd24FbToday:"Today",wd24FbMonth:"This month",wd24FbAvg:"Average",wd24FbNone:"You haven't collected any guest feedback yet.",wd24FbAll:"See all",ccGrpExplore:"Explore screen (guests)",ccGrpWorkday:"Work day screen (team)",v24Overdue:"overdue"},
+de:{v24Appearance:"Darstellung",v24GrpToday:"Heute",v24GrpProgram:"Programm",v24GrpPeople:"Personen & Aufgaben",v24GrpReports:"Auswertung & Berichte",v24GrpTools:"Werkzeuge",wd24FbH:"Gästefeedback",wd24FbSub:"Was du von Gästen gesammelt hast",wd24FbToday:"Heute",wd24FbMonth:"Diesen Monat",wd24FbAvg:"Durchschnitt",wd24FbNone:"Du hast noch kein Gästefeedback gesammelt.",wd24FbAll:"Alle ansehen",ccGrpExplore:"Entdecken-Seite (Gäste)",ccGrpWorkday:"Arbeitstag-Seite (Team)",v24Overdue:"überfällig"},
+ru:{v24Appearance:"Оформление",v24GrpToday:"Сегодня",v24GrpProgram:"Программа",v24GrpPeople:"Люди и задачи",v24GrpReports:"Аналитика и отчёты",v24GrpTools:"Инструменты",wd24FbH:"Отзывы гостей",wd24FbSub:"Что вы собрали у гостей",wd24FbToday:"Сегодня",wd24FbMonth:"В этом месяце",wd24FbAvg:"Средняя",wd24FbNone:"Вы ещё не собрали ни одного отзыва.",wd24FbAll:"Смотреть все",ccGrpExplore:"Экран «Обзор» (гости)",ccGrpWorkday:"Экран рабочего дня (команда)",v24Overdue:"просрочено"},
+pl:{v24Appearance:"Wygląd",v24GrpToday:"Dziś",v24GrpProgram:"Program",v24GrpPeople:"Ludzie i zadania",v24GrpReports:"Analizy i raporty",v24GrpTools:"Narzędzia",wd24FbH:"Opinie gości",wd24FbSub:"Co zebrałeś od gości",wd24FbToday:"Dziś",wd24FbMonth:"W tym miesiącu",wd24FbAvg:"Średnia",wd24FbNone:"Nie zebrałeś jeszcze żadnych opinii.",wd24FbAll:"Zobacz wszystkie",ccGrpExplore:"Ekran Odkrywaj (goście)",ccGrpWorkday:"Ekran dnia pracy (zespół)",v24Overdue:"po terminie"},
+cs:{v24Appearance:"Vzhled",v24GrpToday:"Dnes",v24GrpProgram:"Program",v24GrpPeople:"Lidé a úkoly",v24GrpReports:"Analýzy a zprávy",v24GrpTools:"Nástroje",wd24FbH:"Zpětná vazba hostů",wd24FbSub:"Co jste od hostů sesbírali",wd24FbToday:"Dnes",wd24FbMonth:"Tento měsíc",wd24FbAvg:"Průměr",wd24FbNone:"Zatím jste nesesbírali žádnou zpětnou vazbu.",wd24FbAll:"Zobrazit vše",ccGrpExplore:"Obrazovka Objevujte (hosté)",ccGrpWorkday:"Obrazovka pracovního dne (tým)",v24Overdue:"po termínu"},
+nl:{v24Appearance:"Weergave",v24GrpToday:"Vandaag",v24GrpProgram:"Programma",v24GrpPeople:"Mensen & taken",v24GrpReports:"Analyses & rapporten",v24GrpTools:"Hulpmiddelen",wd24FbH:"Gastfeedback",wd24FbSub:"Wat je bij gasten hebt opgehaald",wd24FbToday:"Vandaag",wd24FbMonth:"Deze maand",wd24FbAvg:"Gemiddeld",wd24FbNone:"Je hebt nog geen gastfeedback verzameld.",wd24FbAll:"Alles bekijken",ccGrpExplore:"Ontdekken-scherm (gasten)",ccGrpWorkday:"Werkdag-scherm (team)",v24Overdue:"te laat"},
+fr:{v24Appearance:"Apparence",v24GrpToday:"Aujourd'hui",v24GrpProgram:"Programme",v24GrpPeople:"Personnes et tâches",v24GrpReports:"Analyses et rapports",v24GrpTools:"Outils",wd24FbH:"Avis des clients",wd24FbSub:"Ce que vous avez recueilli auprès des clients",wd24FbToday:"Aujourd'hui",wd24FbMonth:"Ce mois-ci",wd24FbAvg:"Moyenne",wd24FbNone:"Vous n'avez pas encore recueilli d'avis.",wd24FbAll:"Voir tout",ccGrpExplore:"Écran Explorer (clients)",ccGrpWorkday:"Écran journée de travail (équipe)",v24Overdue:"en retard"},
+ar:{v24Appearance:"المظهر",v24GrpToday:"اليوم",v24GrpProgram:"البرنامج",v24GrpPeople:"الأشخاص والمهام",v24GrpReports:"التحليلات والتقارير",v24GrpTools:"الأدوات",wd24FbH:"آراء الضيوف",wd24FbSub:"ما جمعته من الضيوف",wd24FbToday:"اليوم",wd24FbMonth:"هذا الشهر",wd24FbAvg:"المتوسط",wd24FbNone:"لم تجمع أي رأي من الضيوف بعد.",wd24FbAll:"عرض الكل",ccGrpExplore:"شاشة استكشف (الضيوف)",ccGrpWorkday:"شاشة يوم العمل (الفريق)",v24Overdue:"متأخرة"}
+};
+Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24_STR[l]); });
+</script>
+
+<script id="v25-i18n">
+/* v25 — role duty texts, all 8 languages */
+const V25_STR={
+en:{rdH:"My duties",rdSub:"Your role tasks for today",rdNone:"No duties set for today.",rdEditor:"Role duties",rdEditorSub:"What the DJ and social media do each day",rdPick:"Shirt number",rdAdd:"Add duty",rdDays:"Days",rdEvery:"Every day",rdTitle:"Duty",rdNote:"Details",rdSaved:"Duties saved",rdReset:"Back to the default list",rdHint:"These are not guest activities. They never appear in the programme and are never booked.",rdEmpty:"No duties for this shirt number yet.",rdDj1:"Update today's music",rdDj1n:"Add the new tracks and go through the guest requests",rdDj2:"Arrange the music folders",rdDj2n:"Sort by operation: morning, afternoon, evening",rdDj3:"Sound check",rdDj3n:"Test the stage sound before the evening show",rdDj4:"Play the live set",rdDj4n:"Evening programme and sound for the show",rdSm1:"Shots of the morning activities",rdSm1n:"A few good pictures at the pool and on the beach",rdSm2:"Cover the event of the day",rdSm2n:"Nice shots and short clips from the main event",rdSm3:"Film the hotel in general",rdSm3n:"Pool, beach, restaurant, lobby, gardens",rdSm4:"Make the video of the day",rdSm4n:"Cut it and post the daily reel"},
+de:{rdH:"Meine Aufgaben",rdSub:"Deine Rollenaufgaben für heute",rdNone:"Für heute sind keine Aufgaben hinterlegt.",rdEditor:"Rollenaufgaben",rdEditorSub:"Was DJ und Social Media täglich machen",rdPick:"Trikotnummer",rdAdd:"Aufgabe hinzufügen",rdDays:"Tage",rdEvery:"Jeden Tag",rdTitle:"Aufgabe",rdNote:"Details",rdSaved:"Aufgaben gespeichert",rdReset:"Zurück zur Standardliste",rdHint:"Das sind keine Gästeaktivitäten. Sie erscheinen nie im Programm und werden nie gebucht.",rdEmpty:"Für diese Trikotnummer gibt es noch keine Aufgaben.",rdDj1:"Musik für heute aktualisieren",rdDj1n:"Neue Tracks einpflegen und die Gästewünsche durchgehen",rdDj2:"Musikordner sortieren",rdDj2n:"Nach Bereich sortieren: Vormittag, Nachmittag, Abend",rdDj3:"Soundcheck",rdDj3n:"Ton auf der Bühne vor der Abendshow testen",rdDj4:"Live-Set spielen",rdDj4n:"Abendprogramm und Ton für die Show",rdSm1:"Aufnahmen der Vormittagsaktivitäten",rdSm1n:"Ein paar gute Bilder am Pool und am Strand",rdSm2:"Das Event des Tages begleiten",rdSm2n:"Schöne Aufnahmen und kurze Clips vom Hauptevent",rdSm3:"Das Hotel allgemein filmen",rdSm3n:"Pool, Strand, Restaurant, Lobby, Gärten",rdSm4:"Video des Tages erstellen",rdSm4n:"Schneiden und das tägliche Reel posten"},
+ru:{rdH:"Мои задачи",rdSub:"Ваши задачи по роли на сегодня",rdNone:"На сегодня задачи не заданы.",rdEditor:"Задачи по ролям",rdEditorSub:"Чем занимаются диджей и SMM каждый день",rdPick:"Номер",rdAdd:"Добавить задачу",rdDays:"Дни",rdEvery:"Каждый день",rdTitle:"Задача",rdNote:"Детали",rdSaved:"Задачи сохранены",rdReset:"Вернуть список по умолчанию",rdHint:"Это не гостевые активности. Они никогда не появляются в программе и не бронируются.",rdEmpty:"Для этого номера задач пока нет.",rdDj1:"Обновить музыку на сегодня",rdDj1n:"Добавить новые треки и просмотреть заявки гостей",rdDj2:"Разобрать музыкальные папки",rdDj2n:"Отсортировать по частям дня: утро, день, вечер",rdDj3:"Саундчек",rdDj3n:"Проверить звук на сцене перед вечерним шоу",rdDj4:"Отыграть живой сет",rdDj4n:"Вечерняя программа и звук для шоу",rdSm1:"Съёмка утренних активностей",rdSm1n:"Несколько хороших кадров у бассейна и на пляже",rdSm2:"Снять событие дня",rdSm2n:"Красивые кадры и короткие клипы с главного события",rdSm3:"Снять отель в целом",rdSm3n:"Бассейн, пляж, ресторан, лобби, сады",rdSm4:"Смонтировать видео дня",rdSm4n:"Собрать и выложить ежедневный ролик"},
+pl:{rdH:"Moje obowiązki",rdSub:"Twoje zadania z roli na dziś",rdNone:"Na dziś nie ustawiono obowiązków.",rdEditor:"Obowiązki ról",rdEditorSub:"Co DJ i social media robią każdego dnia",rdPick:"Numer koszulki",rdAdd:"Dodaj obowiązek",rdDays:"Dni",rdEvery:"Codziennie",rdTitle:"Obowiązek",rdNote:"Szczegóły",rdSaved:"Obowiązki zapisane",rdReset:"Wróć do listy domyślnej",rdHint:"To nie są zajęcia dla gości. Nigdy nie pojawiają się w programie ani nie są rezerwowane.",rdEmpty:"Dla tego numeru nie ma jeszcze obowiązków.",rdDj1:"Zaktualizuj dzisiejszą muzykę",rdDj1n:"Dodaj nowe utwory i przejrzyj prośby gości",rdDj2:"Uporządkuj foldery z muzyką",rdDj2n:"Posortuj wg pory: rano, popołudnie, wieczór",rdDj3:"Próba dźwięku",rdDj3n:"Sprawdź nagłośnienie sceny przed wieczornym pokazem",rdDj4:"Zagraj set na żywo",rdDj4n:"Program wieczorny i dźwięk do pokazu",rdSm1:"Zdjęcia porannych zajęć",rdSm1n:"Kilka dobrych ujęć przy basenie i na plaży",rdSm2:"Zrelacjonuj wydarzenie dnia",rdSm2n:"Ładne ujęcia i krótkie klipy z głównego wydarzenia",rdSm3:"Nakręć hotel ogólnie",rdSm3n:"Basen, plaża, restauracja, lobby, ogrody",rdSm4:"Zmontuj wideo dnia",rdSm4n:"Zmontuj i opublikuj codzienną rolkę"},
+cs:{rdH:"Moje povinnosti",rdSub:"Vaše úkoly podle role na dnešek",rdNone:"Na dnešek nejsou nastaveny žádné povinnosti.",rdEditor:"Povinnosti rolí",rdEditorSub:"Co dělá DJ a social media každý den",rdPick:"Číslo dresu",rdAdd:"Přidat povinnost",rdDays:"Dny",rdEvery:"Každý den",rdTitle:"Povinnost",rdNote:"Detaily",rdSaved:"Povinnosti uloženy",rdReset:"Zpět na výchozí seznam",rdHint:"Toto nejsou aktivity pro hosty. Nikdy se neobjeví v programu a nedají se rezervovat.",rdEmpty:"Pro toto číslo dresu zatím nejsou povinnosti.",rdDj1:"Aktualizovat dnešní hudbu",rdDj1n:"Přidat nové skladby a projít přání hostů",rdDj2:"Uspořádat hudební složky",rdDj2n:"Seřadit podle části dne: dopoledne, odpoledne, večer",rdDj3:"Zvuková zkouška",rdDj3n:"Otestovat zvuk na pódiu před večerní show",rdDj4:"Zahrát živý set",rdDj4n:"Večerní program a zvuk pro show",rdSm1:"Záběry z dopoledních aktivit",rdSm1n:"Pár dobrých fotek u bazénu a na pláži",rdSm2:"Zachytit akci dne",rdSm2n:"Pěkné záběry a krátké klipy z hlavní akce",rdSm3:"Natočit hotel obecně",rdSm3n:"Bazén, pláž, restaurace, lobby, zahrady",rdSm4:"Sestříhat video dne",rdSm4n:"Sestříhat a zveřejnit denní reel"},
+nl:{rdH:"Mijn taken",rdSub:"Je roltaken voor vandaag",rdNone:"Voor vandaag zijn geen taken ingesteld.",rdEditor:"Roltaken",rdEditorSub:"Wat de DJ en social media elke dag doen",rdPick:"Rugnummer",rdAdd:"Taak toevoegen",rdDays:"Dagen",rdEvery:"Elke dag",rdTitle:"Taak",rdNote:"Details",rdSaved:"Taken opgeslagen",rdReset:"Terug naar de standaardlijst",rdHint:"Dit zijn geen gastactiviteiten. Ze staan nooit in het programma en worden nooit geboekt.",rdEmpty:"Voor dit rugnummer zijn nog geen taken.",rdDj1:"Muziek van vandaag bijwerken",rdDj1n:"Nieuwe nummers toevoegen en de gastverzoeken doornemen",rdDj2:"Muziekmappen ordenen",rdDj2n:"Sorteren per dagdeel: ochtend, middag, avond",rdDj3:"Soundcheck",rdDj3n:"Het podiumgeluid testen voor de avondshow",rdDj4:"Liveset draaien",rdDj4n:"Avondprogramma en geluid voor de show",rdSm1:"Beelden van de ochtendactiviteiten",rdSm1n:"Een paar goede foto's bij het zwembad en op het strand",rdSm2:"Het evenement van de dag vastleggen",rdSm2n:"Mooie beelden en korte clips van het hoofdevenement",rdSm3:"Het hotel in het algemeen filmen",rdSm3n:"Zwembad, strand, restaurant, lobby, tuinen",rdSm4:"De video van de dag maken",rdSm4n:"Monteren en de dagelijkse reel plaatsen"},
+fr:{rdH:"Mes missions",rdSub:"Vos tâches de poste pour aujourd'hui",rdNone:"Aucune mission prévue aujourd'hui.",rdEditor:"Missions par poste",rdEditorSub:"Ce que font le DJ et les réseaux sociaux chaque jour",rdPick:"Numéro de maillot",rdAdd:"Ajouter une mission",rdDays:"Jours",rdEvery:"Tous les jours",rdTitle:"Mission",rdNote:"Détails",rdSaved:"Missions enregistrées",rdReset:"Revenir à la liste par défaut",rdHint:"Ce ne sont pas des activités clients. Elles n'apparaissent jamais au programme et ne sont jamais réservées.",rdEmpty:"Aucune mission pour ce numéro de maillot.",rdDj1:"Mettre à jour la musique du jour",rdDj1n:"Ajouter les nouveaux titres et passer en revue les demandes des clients",rdDj2:"Ranger les dossiers de musique",rdDj2n:"Trier par moment : matin, après-midi, soir",rdDj3:"Balance son",rdDj3n:"Tester le son de la scène avant le spectacle du soir",rdDj4:"Jouer le set live",rdDj4n:"Programme du soir et son du spectacle",rdSm1:"Images des activités du matin",rdSm1n:"Quelques belles prises à la piscine et sur la plage",rdSm2:"Couvrir l'événement du jour",rdSm2n:"De belles images et de courts clips de l'événement principal",rdSm3:"Filmer l'hôtel en général",rdSm3n:"Piscine, plage, restaurant, lobby, jardins",rdSm4:"Monter la vidéo du jour",rdSm4n:"Monter et publier le reel quotidien"},
+ar:{rdH:"مهامي",rdSub:"مهام دورك لهذا اليوم",rdNone:"لا توجد مهام محددة لليوم.",rdEditor:"مهام الأدوار",rdEditorSub:"ما يقوم به الدي جي ومسؤول التواصل كل يوم",rdPick:"رقم القميص",rdAdd:"إضافة مهمة",rdDays:"الأيام",rdEvery:"كل يوم",rdTitle:"المهمة",rdNote:"التفاصيل",rdSaved:"تم حفظ المهام",rdReset:"العودة إلى القائمة الافتراضية",rdHint:"هذه ليست أنشطة للضيوف. لا تظهر في البرنامج أبداً ولا تُحجز.",rdEmpty:"لا توجد مهام لهذا الرقم بعد.",rdDj1:"تحديث موسيقى اليوم",rdDj1n:"إضافة المقطوعات الجديدة ومراجعة طلبات الضيوف",rdDj2:"ترتيب مجلدات الموسيقى",rdDj2n:"الترتيب حسب الفترة: صباحاً، بعد الظهر، مساءً",rdDj3:"فحص الصوت",rdDj3n:"اختبار صوت المسرح قبل عرض المساء",rdDj4:"تشغيل الفقرة الحية",rdDj4n:"برنامج المساء وصوت العرض",rdSm1:"تصوير أنشطة الصباح",rdSm1n:"بعض اللقطات الجيدة عند المسبح وعلى الشاطئ",rdSm2:"تغطية فعالية اليوم",rdSm2n:"لقطات جميلة ومقاطع قصيرة من الفعالية الرئيسية",rdSm3:"تصوير الفندق بشكل عام",rdSm3n:"المسبح، الشاطئ، المطعم، البهو، الحدائق",rdSm4:"إنتاج فيديو اليوم",rdSm4n:"المونتاج ونشر الريل اليومي"}
+};
+Object.keys(V25_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V25_STR[l]); });
+</script>
+
 <script id="explore-v21-digital-guide-script">
 /* ============================================================
    v21 EXPLORE — DIGITAL HOLIDAY GUIDE   (fix round)
@@ -15270,6 +15300,597 @@ Object.keys(V23_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V23
   }
 })();
 </script>
+
+<style id="v24-style">
+/* Appearance control in the drawer — available in every account */
+.v24-appear{margin:0 14px 10px;padding:11px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.v24-appear>label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;
+  font-weight:700;margin-bottom:7px}
+.v24-modes{display:flex;gap:6px}
+.v24-modes button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;
+  border-radius:9px;background:var(--bg);border:1px solid var(--line);color:inherit;font-size:11px}
+.v24-modes button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+/* Guest-feedback card on the entertainer work day */
+.wd24-fb{display:block;width:100%;text-align:start;margin:0 0 8px;padding:12px 14px;border-radius:12px;
+  background:var(--card);border:1px solid var(--line);color:inherit}
+.wd24-fbnums{display:flex;gap:16px;margin:8px 0 10px}
+.wd24-fbnums div{text-align:center}
+.wd24-fbnums b{display:block;font-size:19px;line-height:1.1}
+.wd24-fbnums span{font-size:10.5px;opacity:.62}
+.wd24-fbbtns{display:flex;gap:8px}
+.wd24-fbbtns button{flex:1;padding:9px;border-radius:9px;font-size:12.5px;border:1px solid var(--line);
+  background:var(--bg);color:inherit}
+.wd24-fbbtns button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.wd24-fbnone{font-size:12px;opacity:.7;margin:2px 0 10px}
+[dir="rtl"] .wd24-fb{text-align:right}
+</style>
+
+<script id="v24-js">
+/* ============================================================
+   v24 — organisation round
+   1. Manager menu regrouped: 6 short groups instead of one
+      11-item block, and Tasks reachable directly.
+   2. Feedback first in the team menu + a feedback card on the
+      entertainer's work day.
+   3. A labelled Light / Dark / Auto control in EVERY account,
+      not just an unlabelled moon icon in the drawer footer.
+   4. The new Explore and work-day texts added to the manager's
+      wording editor as proper groups, so they are editable
+      without searching for key names.
+   ============================================================ */
+(function(){
+
+  /* ---------- 1 + 2. menu ---------- */
+  if(typeof navGroupsBase==="function"){
+    var __v23Nav=navGroupsBase;
+    navGroupsBase=function(role){
+      /* --- team: feedback first --- */
+      if(role==="staff"){
+        var g=__v23Nav(role);
+        try{
+          var fb=null;
+          g.forEach(function(grp){
+            grp.items=grp.items.filter(function(it){
+              if(it[0]==="feedback"){ fb=it; return false; }
+              return true;
+            });
+          });
+          if(fb && g.length) g[0].items.unshift(fb);
+          g=g.filter(function(grp){ return grp.items.length; });
+        }catch(e){}
+        return g;
+      }
+      if(role!=="manager") return __v23Nav(role);
+
+      /* --- manager: same screens, arranged so nothing is buried --- */
+      var un=(typeof unreadFor==="function")?unreadFor("manager"):0;
+      var newReq=(S.requests||[]).filter(function(r){return r.status==="new";}).length;
+      var openTasks=(S.tasks||[]).filter(function(x){
+        return ["new","open","accepted","progress","still"].indexOf(x.status)>=0; }).length;
+      function feat(k){ return (typeof featureOn==="function")?featureOn(k):true; }
+      var groups=[
+        {head:t("v24GrpToday"), items:[
+          ["dash","chart",t("dashboard"),0],
+          ["dayplan","clipboard",t("dayPlan"),0],
+          ["command","sparkle",t("v9Command"),0]]},
+        {head:t("v24GrpProgram"), items:[
+          ["program","calendar",t("manage"),0],
+          ["weekplanner","calendar",t("v9WeekPlanner"),0],
+          ["approval","check",t("v9Approval"),0],
+          ["quiz","trophy",t("quizCenter"),0],
+          ["gallery","image",t("galleryTab"),0],
+          ["hotelinfo","building",t("hotelInfoTab"),0]]},
+        {head:t("v24GrpPeople"), items:[
+          ["guests","user",t("guestsTab"),un+newReq],
+          ["team","users",t("teamTab"),0],
+          ["tasks","check",t("tasks"),openTasks]]},
+        {head:t("v24GrpReports"), items:[
+          ["insights","grid",t("v9Insights"),0],
+          ["audit","file",t("v9Audit"),0]]},
+        {head:t("v24GrpTools"), items:[].concat(
+          feat("weather")?[["weather","sun",t("weatherTab"),0]]:[],
+          feat("map")?[["map","map",t("mapTab"),0]]:[],
+          [["qr","qr",t("qrTab"),0]])},
+        {head:t("v9Settings2"), items:[
+          ["settings","settings",t("v9Tab"),0]]}
+      ];
+      return groups.filter(function(g){ return g.items.length; });
+    };
+  }
+
+  /* the manager's Tasks menu entry opens the tasks sub-tab of Team */
+  if(typeof managerView==="function"){
+    var __v23Mgr=managerView;
+    managerView=function(){
+      if(S.tab==="tasks"){
+        S.sub=S.sub||{}; S.sub.team="tasks";
+        var keep=S.tab; S.tab="team";
+        try{ return __v23Mgr.apply(this,arguments); }
+        finally{ S.tab=keep; }
+      }
+      return __v23Mgr.apply(this,arguments);
+    };
+  }
+
+  /* ---------- 2b. feedback card on the entertainer work day ---------- */
+  /* Guest feedback in this app is what the entertainer COLLECTS from guests
+     (staffFeedbackView filters on by_user). The card reports exactly that —
+     it does not pretend to be a rating of the person. */
+  function myFeedback(){
+    var me=(S.session&&S.session.username)||"";
+    return (S.feedback||[]).filter(function(f){ return f.by_user===me; });
+  }
+  function feedbackCard(){
+    var mine=myFeedback();
+    var now=hotelNow();
+    var todayStr=now.toISOString().slice(0,10);
+    var monthStr=todayStr.slice(0,7);
+    var nToday=mine.filter(function(f){return String(f.created_at||"").slice(0,10)===todayStr;}).length;
+    var nMonth=mine.filter(function(f){return String(f.created_at||"").slice(0,7)===monthStr;}).length;
+    var rated=mine.filter(function(f){return +f.rate>0;});
+    var avg=rated.length?(rated.reduce(function(s,f){return s+(+f.rate||0);},0)/rated.length):0;
+    return '<section class="wd23-sec"><div class="wd23-hrow"><div><h2>'+esc(t("wd24FbH"))+'</h2>'
+      +'<p>'+esc(t("wd24FbSub"))+'</p></div></div>'
+      +'<div class="wd24-fb">'
+      +(mine.length
+        ? '<div class="wd24-fbnums">'
+          +'<div><b>'+nToday+'</b><span>'+esc(t("wd24FbToday"))+'</span></div>'
+          +'<div><b>'+nMonth+'</b><span>'+esc(t("wd24FbMonth"))+'</span></div>'
+          +(rated.length?'<div><b>'+avg.toFixed(1)+'</b><span>'+esc(t("wd24FbAvg"))+'</span></div>':'')
+          +'</div>'
+        : '<p class="wd24-fbnone">'+esc(t("wd24FbNone"))+'</p>')
+      +'<div class="wd24-fbbtns">'
+      +'<button type="button" class="primary" id="wd24-addfb">'+esc(t("addFeedback"))+'</button>'
+      +'<button type="button" id="wd24-allfb">'+esc(t("wd24FbAll"))+'</button>'
+      +'</div></div></section>';
+  }
+
+  if(typeof myWorkDayView==="function"){
+    var __v23Day=myWorkDayView;
+    myWorkDayView=function(){
+      var html=__v23Day.apply(this,arguments);
+      try{
+        /* place it directly under the focus card — high, as asked, but after
+           what is happening right now */
+        var mark='<section class="wd23-sec">';
+        var i=html.indexOf(mark);
+        if(i<0) return html;
+        return html.slice(0,i)+feedbackCard()+html.slice(i);
+      }catch(e){ return html; }
+    };
+  }
+
+  /* ---------- 3. Light / Dark / Auto in every account ---------- */
+  function currentMode(){
+    if(typeof v9Mode==="function"){ try{ return v9Mode(); }catch(e){} }
+    return S.theme==="dark"?"dark":"light";
+  }
+  function setMode(m){
+    if(typeof v9SetMode==="function"){ try{ v9SetMode(m); return true; }catch(e){} }
+    if(m==="auto"){ S.themeManual=false; persist();
+      if(typeof applyAutoDark==="function"){ try{ applyAutoDark(); }catch(e){} }
+      render(); return true; }
+    S.themeManual=true;
+    setTheme(m);
+    return true;
+  }
+  function appearanceBlock(){
+    var m=currentMode();
+    var opts=[["light","sun","v9ModeLight"],["dark","moon","v9ModeDark"],["auto","settings","v9ModeAuto"]];
+    return '<div class="v24-appear"><label>'+esc(t("v24Appearance"))+'</label><div class="v24-modes">'
+      +opts.map(function(o){
+        return '<button type="button" data-v24mode="'+o[0]+'" class="'+(m===o[0]?"on":"")+'">'
+          +ic(o[1],17)+'<span>'+esc(t(o[2]))+'</span></button>';
+      }).join("")+'</div></div>';
+  }
+  if(typeof openMenuDrawer==="function"){
+    var __v23Drawer=openMenuDrawer;
+    openMenuDrawer=function(){
+      var r=__v23Drawer.apply(this,arguments);
+      try{
+        var foot=document.querySelector(".drawer .dr-foot");
+        if(foot && !document.querySelector(".v24-appear")){
+          foot.insertAdjacentHTML("beforebegin",appearanceBlock());
+          document.querySelectorAll("[data-v24mode]").forEach(function(b){
+            b.onclick=function(e){
+              e.preventDefault(); e.stopPropagation();
+              setMode(b.getAttribute("data-v24mode"));
+            };
+          });
+        }
+      }catch(e){}
+      return r;
+    };
+  }
+
+  /* ---------- 4. the new screens become editable wording ---------- */
+  try{
+    if(typeof V8_WORD_GROUPS!=="undefined" && Array.isArray(V8_WORD_GROUPS)){
+      var exKeys=Object.keys(DICT.en).filter(function(k){return k.indexOf("ex21")===0;});
+      var wdKeys=Object.keys(DICT.en).filter(function(k){return k.indexOf("wd23")===0||k.indexOf("wd24")===0;});
+      if(exKeys.length) V8_WORD_GROUPS.push(["ccGrpExplore",exKeys]);
+      if(wdKeys.length) V8_WORD_GROUPS.push(["ccGrpWorkday",wdKeys]);
+      /* pre-existing: "welcome" was listed in two groups, so the same text
+         appeared twice in the wording editor. Keep the first occurrence. */
+      var seenKey={};
+      V8_WORD_GROUPS.forEach(function(g){
+        g[1]=g[1].filter(function(k){ if(seenKey[k]) return false; seenKey[k]=1; return true; });
+      });
+    }
+  }catch(e){}
+
+  /* ---------- wiring ---------- */
+  function wire(){
+    var a=document.getElementById("wd24-addfb");
+    if(a) a.onclick=function(e){
+      e.preventDefault(); e.stopPropagation();
+      if(typeof openFeedbackModal==="function") openFeedbackModal();
+      else { S.tab="feedback"; render(); }
+    };
+    var b=document.getElementById("wd24-allfb");
+    if(b) b.onclick=function(e){ e.preventDefault(); e.stopPropagation(); S.tab="feedback"; render(); };
+  }
+  var oldRender=window.render;
+  if(typeof oldRender==="function"){
+    window.render=function(){ var r=oldRender.apply(this,arguments); try{ wire(); }catch(e){} return r; };
+  }
+})();
+</script>
+
+<style id="v25-style">
+.rd-row{display:grid;grid-template-columns:62px 1fr;gap:11px;align-items:start;padding:11px 13px;
+  margin-bottom:8px;border-radius:12px;background:var(--card);border:1px solid var(--line);
+  border-inline-start:4px solid var(--accent)}
+.rd-row time{font-size:12px;font-weight:700}
+.rd-row b{display:block;font-size:14px}
+.rd-row span.rd-note{display:block;font-size:11.5px;opacity:.68;margin-top:2px}
+.rd-hint{font-size:11.5px;opacity:.65;margin:0 0 9px}
+.rd-nums{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px}
+.rd-nums button{padding:8px 13px;border-radius:9px;background:var(--card);border:1px solid var(--line);
+  color:inherit;font-size:13px}
+.rd-nums button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.rd-edit{padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line);margin-bottom:9px}
+.rd-edit input{width:100%;box-sizing:border-box;margin-bottom:7px;padding:9px 10px;border-radius:8px;
+  border:1px solid var(--line);background:var(--bg);color:inherit;font-size:13px}
+.rd-edit .rd-top{display:flex;gap:8px}
+.rd-edit .rd-top input:first-child{flex:0 0 92px}
+.rd-days{display:flex;gap:5px;flex-wrap:wrap;margin:2px 0 8px}
+.rd-days button{width:34px;height:30px;border-radius:7px;background:var(--bg);border:1px solid var(--line);
+  color:inherit;font-size:11px}
+.rd-days button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.rd-del{background:none;border:none;color:var(--danger,#b4453a);font-size:12px;padding:2px 0}
+[dir="rtl"] .rd-row{text-align:right}
+</style>
+
+<script id="v25-js">
+/* ============================================================
+   v25 — duties for the DJ (#3) and social media (#2)
+   They are deliberately excluded from the activity roster
+   (NO_ACTIVITY_NUMBERS), so their work day was empty. They now
+   get their OWN kind of work: a per-role duty list.
+   These are NOT guest activities — they live in settings, never
+   in S.activities, so they can never reach the programme or be
+   booked by a guest.
+   ============================================================ */
+(function(){
+  var DAY_KEYS=[0,1,2,3,4,5,6];
+
+  /* defaults come from t() so they read correctly in all 8 languages;
+     anything the manager types is stored as plain text and used as-is */
+  function defaults(){
+    return {
+      "2":[ {time:"10:30",k:"rdSm1",days:[]},
+            {time:"15:00",k:"rdSm2",days:[]},
+            {time:"17:00",k:"rdSm3",days:[]},
+            {time:"21:30",k:"rdSm4",days:[]} ],
+      "3":[ {time:"11:00",k:"rdDj1",days:[]},
+            {time:"12:00",k:"rdDj2",days:[]},
+            {time:"19:30",k:"rdDj3",days:[]},
+            {time:"20:30",k:"rdDj4",days:[]} ]
+    };
+  }
+  function dutiesFor(num){
+    var st=(S.settings&&S.settings.roleDuties)||null;
+    var key=String(num);
+    if(st&&Array.isArray(st[key])) return st[key];
+    var d=defaults();
+    return d[key]||[];
+  }
+  function dutyTitle(r){ return r.title!=null&&r.title!=="" ? r.title : (r.k?t(r.k):""); }
+  function dutyNote(r){ return r.note!=null&&r.note!=="" ? r.note : (r.k?t(r.k+"n"):""); }
+  function onDay(r,day){ return !r.days||!r.days.length||r.days.indexOf(day)>=0; }
+  window.roleDutiesFor=dutiesFor;          // exposed so it can be tested
+
+  /* ---------- the entertainer's work day ---------- */
+  function dutySection(day,num){
+    var list=dutiesFor(num).filter(function(r){return onDay(r,day);})
+      .sort(function(a,b){return String(a.time||"").localeCompare(String(b.time||""));});
+    var body=list.length
+      ? list.map(function(r){
+          return '<div class="rd-row"><time>'+esc(r.time||"—")+'</time>'
+            +'<span><b>'+esc(dutyTitle(r))+'</b>'
+            +(dutyNote(r)?'<span class="rd-note">'+esc(dutyNote(r))+'</span>':'')+'</span></div>';
+        }).join("")
+      : '<div class="wd23-empty">'+esc(t("rdNone"))+'</div>';
+    return '<section class="wd23-sec"><div class="wd23-hrow"><div><h2>'+esc(t("rdH"))+'</h2>'
+      +'<p>'+esc(t("rdSub"))+'</p></div>'
+      +(list.length?'<span class="wd23-count">'+list.length+'</span>':'')+'</div>'+body+'</section>';
+  }
+  if(typeof myWorkDayView==="function"){
+    var __v24Day=myWorkDayView;
+    myWorkDayView=function(){
+      var html=__v24Day.apply(this,arguments);
+      try{
+        var num=S.session&&S.session.number;
+        if(!num||!dutiesFor(num).length) return html;
+        var day=(typeof S.planDay==="number")?S.planDay:todayIndex();
+        /* duties come first for these two: it IS their work day */
+        var mark='<section class="wd23-sec">';
+        var i=html.indexOf(mark);
+        if(i<0) return html;
+        return html.slice(0,i)+dutySection(day,num)+html.slice(i);
+      }catch(e){ return html; }
+    };
+  }
+
+  /* ---------- manager editor ---------- */
+  var rdPickNum=3, rdDraft=null;
+  function draft(){
+    if(!rdDraft) rdDraft=JSON.parse(JSON.stringify(dutiesFor(rdPickNum)));
+    return rdDraft;
+  }
+  function numbersWithRoles(){
+    var nums={};
+    [2,3].forEach(function(n){ nums[n]=1; });
+    var st=(S.settings&&S.settings.roleDuties)||{};
+    Object.keys(st).forEach(function(k){ nums[k]=1; });
+    (S.users||[]).forEach(function(u){ var n=Number(u.number||0); if(n) nums[n]=1; });
+    return Object.keys(nums).map(Number).sort(function(a,b){return a-b;});
+  }
+  function dayLetters(){
+    var d=t("daysShort");
+    return DAY_KEYS.map(function(i){ return String((d&&d[i])||i).slice(0,2); });
+  }
+  window.roleDutiesView=function(){
+    var rows=draft(), letters=dayLetters();
+    return '<div class="screen fadein" dir="'+(S.lang==="ar"?"rtl":"ltr")+'">'
+      +topBar(t("rdEditor"),t("rdEditorSub"))
+      +'<p class="rd-hint">'+esc(t("rdHint"))+'</p>'
+      +'<div class="rd-nums">'+numbersWithRoles().map(function(n){
+          return '<button type="button" data-rdnum="'+n+'" class="'+(n===rdPickNum?"on":"")+'">#'+n
+            +' · '+esc(roleForNumber(n))+'</button>';
+        }).join("")+'</div>'
+      +(rows.length?rows.map(function(r,i){
+          return '<div class="rd-edit"><div class="rd-top">'
+            +'<input data-rd="time" data-i="'+i+'" value="'+esc(r.time||"")+'" placeholder="10:00">'
+            +'<input data-rd="title" data-i="'+i+'" value="'+esc(dutyTitle(r))+'" placeholder="'+esc(t("rdTitle"))+'">'
+            +'</div>'
+            +'<input data-rd="note" data-i="'+i+'" value="'+esc(dutyNote(r))+'" placeholder="'+esc(t("rdNote"))+'">'
+            +'<div class="rd-days">'+DAY_KEYS.map(function(d){
+                var on=r.days&&r.days.indexOf(d)>=0;
+                return '<button type="button" data-rdday="'+d+'" data-i="'+i+'" class="'+(on?"on":"")+'">'+esc(letters[d])+'</button>';
+              }).join("")+'</div>'
+            +'<div style="font-size:11px;opacity:.6;margin-bottom:6px">'
+              +esc((!r.days||!r.days.length)?t("rdEvery"):t("rdDays"))+'</div>'
+            +'<button type="button" class="rd-del" data-rddel="'+i+'">'+esc(t("delete"))+'</button>'
+            +'</div>';
+        }).join(""):'<div class="wd23-empty">'+esc(t("rdEmpty"))+'</div>')
+      +'<button class="btn" id="rd-add" style="margin:4px 0 10px">＋ '+esc(t("rdAdd"))+'</button>'
+      +'<button class="btn" id="rd-save">'+esc(t("save"))+'</button>'
+      +'<button class="btn ghost" id="rd-reset" style="margin-top:8px">'+esc(t("rdReset"))+'</button>'
+      +'</div>';
+  };
+  function wireEditor(){
+    if(!document.getElementById("rd-save")) return;
+    document.querySelectorAll("[data-rdnum]").forEach(function(b){
+      b.onclick=function(){ rdPickNum=Number(b.getAttribute("data-rdnum")); rdDraft=null; render(); };
+    });
+    document.querySelectorAll("[data-rd]").forEach(function(inp){
+      inp.oninput=function(){
+        var i=Number(inp.getAttribute("data-i")), f=inp.getAttribute("data-rd");
+        var rows=draft(); if(!rows[i]) return;
+        rows[i][f]=inp.value; delete rows[i].k;      // typed text replaces the default wording
+      };
+    });
+    document.querySelectorAll("[data-rdday]").forEach(function(b){
+      b.onclick=function(){
+        var i=Number(b.getAttribute("data-i")), d=Number(b.getAttribute("data-rdday"));
+        var rows=draft(); if(!rows[i]) return;
+        rows[i].days=rows[i].days||[];
+        var at=rows[i].days.indexOf(d);
+        if(at>=0) rows[i].days.splice(at,1); else rows[i].days.push(d);
+        render();
+      };
+    });
+    document.querySelectorAll("[data-rddel]").forEach(function(b){
+      b.onclick=function(){ draft().splice(Number(b.getAttribute("data-rddel")),1); render(); };
+    });
+    var add=document.getElementById("rd-add");
+    if(add) add.onclick=function(){ draft().push({time:"",title:"",note:"",days:[]}); render(); };
+    var save=document.getElementById("rd-save");
+    if(save) save.onclick=async function(){
+      var rows=draft().filter(function(r){ return dutyTitle(r).trim()||r.time; });
+      var st=Object.assign({},(S.settings&&S.settings.roleDuties)||{});
+      st[String(rdPickNum)]=rows;
+      var next=Object.assign({},S.settings,{roleDuties:st});
+      try{ await DB.saveSettings(next); S.settings=next; rdDraft=null; toastOk(t("rdSaved")); render(); }
+      catch(e){ toastErr(t("errSave")); }
+    };
+    var rs=document.getElementById("rd-reset");
+    if(rs) rs.onclick=async function(){
+      var st=Object.assign({},(S.settings&&S.settings.roleDuties)||{});
+      delete st[String(rdPickNum)];
+      var next=Object.assign({},S.settings,{roleDuties:st});
+      try{ await DB.saveSettings(next); S.settings=next; rdDraft=null; toastOk(t("rdSaved")); render(); }
+      catch(e){ toastErr(t("errSave")); }
+    };
+  }
+
+  /* route the new settings page + list it in the settings hub */
+  if(typeof managerView==="function"){
+    var __v24Mgr=managerView;
+    managerView=function(){
+      if(S.tab==="set:duties"){ rdDraft=rdDraft||null; return window.roleDutiesView(); }
+      return __v24Mgr.apply(this,arguments);
+    };
+  }
+  try{
+    if(typeof V9_SETTINGS!=="undefined" && Array.isArray(V9_SETTINGS)){
+      var already=V9_SETTINGS.some(function(g){
+        return g.items.some(function(it){ return it[0]==="set:duties"; }); });
+      if(!already){
+        var ops=V9_SETTINGS.find(function(g){ return g.head==="v9SecOps"; })||V9_SETTINGS[0];
+        ops.items.push(["set:duties","music","rdEditor","rdEditorSub"]);
+      }
+    }
+  }catch(e){}
+
+  var oldRender=window.render;
+  if(typeof oldRender==="function"){
+    window.render=function(){ var r=oldRender.apply(this,arguments); try{ wireEditor(); }catch(e){} return r; };
+  }
+})();
+</script>
+
+<style id="light-theme-v25">
+/* ============================================================
+   v25 — a REAL light theme.
+   The v20 layer wrote a charcoal palette onto :root with
+   !important, so choosing Light previously changed nothing at
+   all. These rules are generated from the v20 and v21 sheets by
+   inverting the LIGHTNESS of every colour they set, so the
+   design language and the champagne accent survive but the app
+   becomes white in light mode.
+   ============================================================ */
+html[data-theme="light"]{color-scheme:light}
+html[data-theme="light"]{--hl-bg:#dcdada!important;--hl-bg-2:#dfdfdf!important;--hl-panel:#d4d2d2!important;--hl-panel-2:#d0cece!important;--hl-panel-3:#cccaca!important;--hl-line:#c6c4c4!important;--hl-line-soft:#cdcbcb!important;--hl-text:#201c13!important;--hl-soft:#57534c!important;--hl-muted:#817e7a!important;--hl-gold:#896438!important;--hl-gold-2:#7b5a2d!important;--hl-danger:#974336!important;--hl-success:#60755b!important;--espresso:#e1e1e1!important;--cacao:#d5d3d3!important;--nav-bg:#dbd9d9!important}
+html[data-theme="light"] .chip,html[data-theme="light"] .pill,html[data-theme="light"] .tchip,html[data-theme="light"] .rstat,html[data-theme="light"] .cc-tag,html[data-theme="light"] .ex-tag{border:1px solid #c2bcb5!important;background:#d6d3cf!important}
+html[data-theme="light"] .chip.ok,html[data-theme="light"] .rstat.off{background:#cdd3ce!important;border-color:#b3beb5!important;color:#495a46!important}
+html[data-theme="light"] .chip.full{background:#d6cdcb!important;border-color:#cab9b5!important;color:#7b3b2b!important}
+html[data-theme="light"] .btn,html[data-theme="light"] .btn:not(.ghost):not(.warn),html[data-theme="light"] .wa-cta,html[data-theme="light"] .v9-hero-btn,html[data-theme="light"] .v9-dashbtns .btn{background:#cbc9c9!important;border:1px solid #bfbdbd!important}
+html[data-theme="light"] .btn:hover,html[data-theme="light"] .btn:active,html[data-theme="light"] .wa-cta:hover{background:#cdc9c4!important;border-color:#bba995!important}
+html[data-theme="light"] .btn.ghost{border:1px solid #c2b9ae!important}
+html[data-theme="light"] .btn.warn{background:#d4c7c4!important;border-color:#c5aba5!important;color:#72392b!important}
+html[data-theme="light"] input,html[data-theme="light"] select,html[data-theme="light"] textarea,html[data-theme="light"] .pickfield{background:#d7d5d5!important;border:1px solid #bfbdbd!important}
+html[data-theme="light"] input::placeholder,html[data-theme="light"] textarea::placeholder{color:#938d86!important}
+html[data-theme="light"] .daytabs button,html[data-theme="light"] .pills button,html[data-theme="light"] .ex-chip,html[data-theme="light"] .daychip,html[data-theme="light"] .role-tabs button,html[data-theme="light"] .lang-row button{background:#d5d3d3!important;border:1px solid #c7c5c5!important}
+html[data-theme="light"] .daytabs button.on,html[data-theme="light"] .pills button.on,html[data-theme="light"] .ex-chip.on,html[data-theme="light"] .daychip.on,html[data-theme="light"] .role-tabs button.on,html[data-theme="light"] .lang-row button.on{background:#d2ceca!important;border-color:#c0ae9a!important}
+html[data-theme="light"] .nav{background:#dcdada!important;border-top:1px solid #cac8c8!important}
+html[data-theme="light"] .nav button{color:#938d86!important}
+html[data-theme="light"] .drawer-bg{background:rgba(0,0,0,0.319)!important}
+html[data-theme="light"] .drawer{background:#dddbdb!important;border-inline-end:1px solid #c8c6c6!important}
+html[data-theme="light"] .dr-head{border-bottom:1px solid #cac8c8!important}
+html[data-theme="light"] .dr-head .mono.sm,html[data-theme="light"] .pf-ava,html[data-theme="light"] .acct-av,html[data-theme="light"] .mb-av,html[data-theme="light"] .rnum{background:#d6d3cf!important;border:1px solid #c6beb4!important}
+html[data-theme="light"] .dr-sec{color:#9b958e!important}
+html[data-theme="light"] .dr-it.on{background:#d6d3cf!important}
+html[data-theme="light"] .dr-foot{border-color:#c8c6c6!important}
+html[data-theme="light"] .dr-out{background:#d7d5d5!important;border-color:#c0bebe!important}
+html[data-theme="light"] .login-wrap{background:radial-gradient(100% 55% at 50% -5%,#d2cfcb 0%,#dbd9d9 52%,#dfdfdf 100%)!important}
+html[data-theme="light"] .brandmark .mono{border:1px solid #c2b9ae!important}
+html[data-theme="light"] .brandmark p{color:#635e56!important}
+html[data-theme="light"] .login-card{background:#d7d5d5!important}
+html[data-theme="light"] .hero,html[data-theme="light"] .tk,html[data-theme="light"] .opcard,html[data-theme="light"] .catcard,html[data-theme="light"] .ex-feat,html[data-theme="light"] .ex-it{border:1px solid #c3c1c1!important;background:#d7d5d5!important}
+html[data-theme="light"] .hero .veil,html[data-theme="light"] .opcard .veil,html[data-theme="light"] .catcard .veil{background:linear-gradient(180deg,rgba(0,0,0,0.066),rgba(0,0,0,0.484))!important}
+html[data-theme="light"] .hero .tag{background:rgba(0,0,0,0.506)!important;border:1px solid #c1b2a3!important}
+html[data-theme="light"] .hero .meta{color:#474138!important}
+html[data-theme="light"] .opc-txt span{color:#474139!important}
+html[data-theme="light"] .crumb{background:#d7d5d5!important;border-color:#c0bebe!important}
+html[data-theme="light"] .card.act .meta{color:#6e6a64!important}
+html[data-theme="light"] .quickrow button{background:#d2d0d0!important;border:1px solid #c7c5c5!important;color:#342f28!important}
+html[data-theme="light"] .ex-sub{color:#716d66!important}
+html[data-theme="light"] .ex-feat::after{background:linear-gradient(180deg,rgba(0,0,0,0.044),rgba(0,0,0,0.495))!important}
+html[data-theme="light"] .ex-it{background:#d5d3d3!important}
+html[data-theme="light"] [data-approle="guest"] .v14-welcome,html[data-theme="light"] [data-approle="guest"] .theme-banner{background:#d8d6d4!important;border:1px solid #cac3bb!important}
+html[data-theme="light"] [data-approle="guest"] .v14-w-cell{background:#d1d1ce!important;border:1px solid #c5c5c2!important}
+html[data-theme="light"] [data-approle="guest"] .hero .tag{background:#d6d3cf!important}
+html[data-theme="light"] [data-approle="staff"] .v15-focus,html[data-theme="light"] [data-approle="staff"] .v15-focus.live,html[data-theme="light"] [data-approle="staff"] .v15-focus.quiet,html[data-theme="light"] [data-approle="staff"] .v15-focus.done{background:#d5d3d3!important;border:1px solid #cbc5bf!important}
+html[data-theme="light"] [data-approle="staff"] .v15-f-when{background:#d3d0cc!important;border:1px solid #c6bfb8!important}
+html[data-theme="light"] [data-approle="manager"] .v15-mnow{background:#d7d5d5!important;border:1px solid #cbc4bc!important}
+html[data-theme="light"] [data-approle="manager"] .v15-mn-cell{background:#d0cece!important;border:1px solid #c3c1c1!important}
+html[data-theme="light"] [data-approle="manager"] .v15-mn-cell.hot{background:#d6d1cb!important;border-color:#c7bbaa!important}
+html[data-theme="light"] [data-approle="manager"] .stat,html[data-theme="light"] .v9-statlink{background:#d5d3d3!important}
+html[data-theme="light"] [data-approle="manager"] .stat span,html[data-theme="light"] .v9-statlink span{color:#7c7872!important}
+html[data-theme="light"] .tc-photo,html[data-theme="light"] .tc-photo.sm{border-color:#bebcbc!important}
+html[data-theme="light"] .notif-card .nt-ic,html[data-theme="light"] .sb-ic{background:#d6d3cf!important;border-color:#c6bfb7!important}
+html[data-theme="light"] .switch{background:#bfbdbd!important}
+html[data-theme="light"] .switch.on{background:#bca892!important}
+html[data-theme="light"] .bub.me{background:#cecac5!important;border:1px solid #c5bcb2!important}
+html[data-theme="light"] .bub.them{background:#d3d1d1!important;border:1px solid #c7c5c5!important}
+html[data-theme="light"] .chatbar{background:#dddbdb!important;border-top:1px solid #c7c5c5!important}
+html[data-theme="light"] .chatbar button{background:#947147!important;color:#e2ded9!important}
+html[data-theme="light"] .bubtool{background:#d0cece!important;border-color:#bfbdbd!important;color:#625d55!important}
+html[data-theme="light"] .rankb,html[data-theme="light"] .rankb.r0,html[data-theme="light"] .rankb.r1,html[data-theme="light"] .rankb.r2{background:#d6d3cf!important;border:1px solid #c5bcb2!important}
+html[data-theme="light"] .wd-banner,html[data-theme="light"] .wd-banner.off,html[data-theme="light"] .wd-banner.entrance,html[data-theme="light"] .wd-banner.makeup,html[data-theme="light"] .wd-banner.dj{background:#d3d1d1!important;border:1px solid #bfbdbd!important}
+html[data-theme="light"]{--ex21-bg:#e8e8e8!important;--ex21-panel:#dfdfdf!important;--ex21-panel2:#d9d7d7!important;--ex21-line:rgba(0,0,0,.09)!important;--ex21-text:#1f1c14!important;--ex21-muted:#646058!important;--ex21-gold:#85622a!important;--ex21-gold2:#a07a46!important}
+html[data-theme="light"] .ex21 .ex-round,html[data-theme="light"] .ex21 .ex-signin{background:rgba(0,0,0,.055)!important}
+html[data-theme="light"] .ex21-hero{background:#dbd9d9!important}
+html[data-theme="light"] .ex21-hero:before,html[data-theme="light"] .ex21-media:before{background:linear-gradient(110deg,#dcdada 25%,#d0cece 42%,#dcdada 60%)!important}
+html[data-theme="light"] .ex21-hero:after{background:linear-gradient(180deg,rgba(0,0,0,0.088) 10%,rgba(0,0,0,0.028) 42%,rgba(0,0,0,0.484) 100%)!important}
+html[data-theme="light"] .ex21-hero h1{color:#1a1a1a!important}
+html[data-theme="light"] .ex21-hero p{color:rgba(0,0,0,.82)!important}
+html[data-theme="light"] .ex21-feature{border:1px solid rgba(133,98,42,.36)!important;background:rgba(0,0,0,0.275)!important;color:#251d0e!important}
+html[data-theme="light"] .ex21-today .ex21-media{background:#dbd9d9!important}
+html[data-theme="light"] .ex21-today .ex21-media:after{background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,0.363))!important}
+html[data-theme="light"] .ex21-timebadge{background:rgba(0,0,0,0.407)!important;color:#1a1a1a!important;border:1px solid rgba(0,0,0,.12)!important}
+html[data-theme="light"] .ex21-desc{color:#444038!important}
+html[data-theme="light"] .ex21-detailbtn{border:1px solid rgba(133,98,42,.32)!important}
+html[data-theme="light"] .ex21-mood{background:#dbd9d9!important;color:#1a1a1a!important}
+html[data-theme="light"] .ex21-mood:after{background:linear-gradient(180deg,rgba(0,0,0,0.066),rgba(0,0,0,0.451))!important}
+html[data-theme="light"] .ex21-mood i{background:rgba(0,0,0,0.286)!important;border:1px solid rgba(0,0,0,.12)!important}
+html[data-theme="light"] .ex21-filter.on{color:#eeeae4!important}
+html[data-theme="light"] .ex21-rec{background:linear-gradient(145deg,#dbd9d9,#e1e1e1)!important}
+html[data-theme="light"] .ex21-rec .ri{border:1px solid rgba(133,98,42,.28)!important}
+html[data-theme="light"] .ex21-map{background:radial-gradient(circle at 28% 22%,rgba(133,98,42,.07),transparent 23%),linear-gradient(145deg,#dcdada,#e6e6e6)!important}
+html[data-theme="light"] .ex21-map:before{background-image:linear-gradient(rgba(0,0,0,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.08) 1px,transparent 1px)!important}
+html[data-theme="light"] .ex21-map:after{color:rgba(0,0,0,.25)!important}
+html[data-theme="light"] .ex21-pin{border:3px solid #e3ded7!important;box-shadow:0 5px 18px rgba(0,0,0,0.193)!important}
+html[data-theme="light"] .ex21-pin span{color:#eee9e3!important}
+html[data-theme="light"] .ex21-actions button.gold{border-color:rgba(133,98,42,.3)!important}
+html[data-theme="light"] .ex21-miss{border:1px solid rgba(133,98,42,.2)!important;background:#dbd9d9!important;color:#1a1a1a!important}
+html[data-theme="light"] .ex21-miss:after{background:linear-gradient(90deg,rgba(0,0,0,0.501),rgba(0,0,0,0.176))!important}
+html[data-theme="light"] .ex21-misscopy h3{color:#1a1a1a!important}
+html[data-theme="light"] .ex21-misscopy p{color:#3a362e!important}
+html[data-theme="light"] .ex21-misscopy button{border:1px solid rgba(133,98,42,.45)!important;background:rgba(0,0,0,0.303)!important}
+html[data-theme="light"] .ex21-empty{border:1px dashed rgba(0,0,0,.12)!important}
+html[data-theme="light"] .ex21-dhero{background:#dbd9d9!important}
+html[data-theme="light"] .ex21-dhero:after{background:linear-gradient(180deg,rgba(0,0,0,0.088),rgba(0,0,0,0.099) 52%,var(--ex21-bg) 100%)!important}
+html[data-theme="light"] .ex21-dback,html[data-theme="light"] .ex21-dfav{background:rgba(0,0,0,0.341)!important;border:1px solid rgba(0,0,0,.13)!important;color:#1a1a1a!important}
+html[data-theme="light"] .ex21-dcontent h1{color:#1a1a1a!important}
+html[data-theme="light"] .ex21-dlead{color:#38342c!important}
+html[data-theme="light"] .ex21-stick{background:linear-gradient(180deg,rgba(0,0,0,0.000),rgba(0,0,0,0.517) 20%,#e8e8e8 45%)!important}
+html[data-theme="light"] .ex21-stick .main{color:#eeeae4!important}
+html[data-theme="light"]{
+  --hl-bg:#FAF8F5!important;      --hl-bg-2:#F3F0EA!important;
+  --hl-panel:#FFFFFF!important;   --hl-panel-2:#FBF9F6!important; --hl-panel-3:#F5F2EC!important;
+  --hl-line:#E3DED6!important;    --hl-line-soft:#EEEAE3!important;
+  --hl-text:#1E1B17!important;    --hl-soft:#55504A!important;    --hl-muted:#847E76!important;
+  --hl-gold:#9A7742!important;    --hl-gold-2:#B08C52!important;
+  --hl-danger:#A8483A!important;  --hl-success:#4F6B4A!important;
+  --ex21-bg:#FFFFFF!important;    --ex21-panel:#FFFFFF!important; --ex21-panel2:#F7F4EF!important;
+  --ex21-line:rgba(0,0,0,.10)!important;
+  --ex21-text:#1B1815!important;  --ex21-muted:#6E6862!important;
+  --ex21-gold:#9A7742!important;  --ex21-gold2:#B08C52!important;
+}
+html[data-theme="light"] body,
+html[data-theme="light"] .app,
+html[data-theme="light"] .screen{background:#FAF8F5!important;color:#1E1B17!important}
+
+/* photos are dimmed for the dark skin; on white they should be full strength */
+html[data-theme="light"] .ex21-place img,
+html[data-theme="light"] .ex21-media img{filter:none!important}
+html[data-theme="light"] .ex21-hero img{opacity:.9!important}
+/* keep white text where it sits on the accent colour or on a photo */
+html[data-theme="light"] .v24-modes button.on,
+html[data-theme="light"] .wd24-fbbtns button.primary,
+html[data-theme="light"] .wd23-filter.on,
+html[data-theme="light"] .wd23-num{color:#fff!important}
+html[data-theme="light"] .ex21-hero-copy,
+html[data-theme="light"] .ex21-hero-copy h1,
+html[data-theme="light"] .ex21-hero-copy p,
+html[data-theme="light"] .ex21-timebadge,
+html[data-theme="light"] .ex21-dback,
+html[data-theme="light"] .ex21-dfav{color:#fff!important}
+</style>
 
 </body>
 </html>
