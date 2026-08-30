@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v26 (visible build badge) + v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v27 (white/black/gold light) + v26 (visible build badge) + v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15908,7 +15908,7 @@ html[data-theme="light"] .v26-build.mini{background:rgba(0,0,0,.35)!important;co
    is answerable in one second.
    ============================================================ */
 (function(){
-  var BUILD="v26";
+  var BUILD="v27";
   window.APP_BUILD=BUILD;
 
   if(typeof openMenuDrawer==="function"){
@@ -15939,6 +15939,102 @@ html[data-theme="light"] .v26-build.mini{background:rgba(0,0,0,.35)!important;co
   if(typeof oldRender==="function"){
     window.render=function(){ var r=oldRender.apply(this,arguments); try{ stamp(); }catch(e){} return r; };
   }
+})();
+</script>
+
+<style id="light-theme-v27">
+/* ============================================================
+   v27 — white / black / gold light theme, and belt-and-braces.
+   The v25 rules were correct (the cascade computes to white),
+   but they depended entirely on html[data-theme="light"] being
+   present. Everything is now ALSO keyed on a class this layer
+   sets itself on every render, so a stale or missing attribute
+   can no longer leave the app dark.
+   Dark mode is untouched: every rule here is scoped.
+   ============================================================ */
+html[data-theme="light"],html.v27-light{
+  --hl-bg:#FFFFFF!important;      --hl-bg-2:#F6F5F2!important;
+  --hl-panel:#FFFFFF!important;   --hl-panel-2:#FAF9F7!important;  --hl-panel-3:#F3F1ED!important;
+  --hl-line:#E4E1DA!important;    --hl-line-soft:#EFEDE8!important;
+  --hl-text:#111111!important;    --hl-soft:#454340!important;     --hl-muted:#78756E!important;
+  --hl-gold:#A87C3F!important;    --hl-gold-2:#C29A56!important;
+  --hl-danger:#A8483A!important;  --hl-success:#4F6B4A!important;
+  --ex21-bg:#FFFFFF!important;    --ex21-panel:#FFFFFF!important;  --ex21-panel2:#F7F5F1!important;
+  --ex21-line:rgba(0,0,0,.11)!important;
+  --ex21-text:#111111!important;  --ex21-muted:#6B6862!important;
+  --ex21-gold:#A87C3F!important;  --ex21-gold2:#C29A56!important;
+  --bg:#FFFFFF!important;         --card:#FFFFFF!important;
+  --ink:#111111!important;        --muted:#78756E!important;       --line:#E4E1DA!important;
+  color-scheme:light;
+}
+html[data-theme="light"] body,html.v27-light body,
+html[data-theme="light"] .app,html.v27-light .app,
+html[data-theme="light"] .screen,html.v27-light .screen{background:#FFFFFF!important;color:#111111!important}
+html[data-theme="light"] .card,html.v27-light .card,
+html[data-theme="light"] .drawer,html.v27-light .drawer{background:#FFFFFF!important;color:#111111!important}
+html[data-theme="light"] .drawer,html.v27-light .drawer{border-inline-end:1px solid #E4E1DA!important}
+/* gold stays gold, just deep enough to read on white */
+html[data-theme="light"] .dr-head h3,html.v27-light .dr-head h3{color:#111111!important}
+/* white text is still correct on top of the accent or a photo */
+html[data-theme="light"] .v24-modes button.on,html.v27-light .v24-modes button.on,
+html[data-theme="light"] .wd24-fbbtns button.primary,html.v27-light .wd24-fbbtns button.primary,
+html[data-theme="light"] .wd23-filter.on,html.v27-light .wd23-filter.on,
+html[data-theme="light"] .rd-nums button.on,html.v27-light .rd-nums button.on,
+html[data-theme="light"] .wd23-num,html.v27-light .wd23-num,
+html[data-theme="light"] .ex21-hero-copy,html.v27-light .ex21-hero-copy,
+html[data-theme="light"] .ex21-hero-copy h1,html.v27-light .ex21-hero-copy h1,
+html[data-theme="light"] .ex21-hero-copy p,html.v27-light .ex21-hero-copy p,
+html[data-theme="light"] .ex21-timebadge,html.v27-light .ex21-timebadge,
+html[data-theme="light"] .ex21-dback,html.v27-light .ex21-dback,
+html[data-theme="light"] .ex21-dfav,html.v27-light .ex21-dfav{color:#FFFFFF!important}
+html[data-theme="light"] .ex21-media img,html.v27-light .ex21-media img,
+html[data-theme="light"] .ex21-place img,html.v27-light .ex21-place img{filter:none!important}
+</style>
+<script id="light-theme-v27-js">
+/* Keep the attribute honest, and say out loud which mode we are in. */
+(function(){
+  var BUILD="v27";
+  window.APP_BUILD=BUILD;
+  function syncTheme(){
+    try{
+      var mode=(S&&S.theme==="dark")?"dark":"light";
+      var el=document.documentElement;
+      if(el.getAttribute("data-theme")!==mode) el.setAttribute("data-theme",mode);
+      el.classList.toggle("v27-light",mode==="light");
+      el.classList.toggle("v27-dark",mode==="dark");
+    }catch(e){}
+  }
+  window.v27SyncTheme=syncTheme;
+  var oldRender=window.render;
+  if(typeof oldRender==="function"){
+    window.render=function(){ try{ syncTheme(); }catch(e){}
+      var r=oldRender.apply(this,arguments); try{ syncTheme(); }catch(e){} return r; };
+  }
+  /* the badge now reports the live mode, so one screenshot answers
+     "is it in light mode but painting dark?" */
+  function label(){
+    var mode=(S&&S.theme==="dark")?"dark":"light";
+    var attr=document.documentElement.getAttribute("data-theme")||"-";
+    return "BUILD "+BUILD+" · "+mode+(attr!==mode?" (attr:"+attr+")":"");
+  }
+  if(typeof openMenuDrawer==="function"){
+    var __v26Drawer=openMenuDrawer;
+    openMenuDrawer=function(){
+      var r=__v26Drawer.apply(this,arguments);
+      try{
+        var b=document.querySelector(".drawer .v26-build");
+        if(b) b.textContent=label();
+      }catch(e){}
+      return r;
+    };
+  }
+  var oldRender2=window.render;
+  window.render=function(){
+    var r=oldRender2.apply(this,arguments);
+    try{ var m=document.querySelector(".v26-build.mini"); if(m) m.textContent=label(); }catch(e){}
+    return r;
+  };
+  try{ syncTheme(); }catch(e){}
 })();
 </script>
 
