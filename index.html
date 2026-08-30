@@ -15522,5 +15522,79 @@ Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24
 })();
 </script>
 
+
+<style id="v25-role-work-light-css">
+/* v25 — true white light theme + role-specific work shifts */
+:root{
+  --bg-light:#FFFFFF;
+}
+html:not([data-theme="dark"]){
+  --bg:#FFFFFF; --card:#FFFFFF; --sand:#F5F7FA; --line:#E5E9F0;
+  --ink:#172033; --muted:#667085; --nav-bg:#FFFFFF;
+}
+html:not([data-theme="dark"]) body{background:#FFFFFF}
+html:not([data-theme="dark"]) .screen{background:#FFFFFF}
+html:not([data-theme="dark"]) .drawer{background:linear-gradient(168deg,#FFFFFF 0%,#F7F9FC 120%)}
+html:not([data-theme="dark"]) .modal{background:#FFFFFF}
+.wd-role-task{cursor:default}
+.wd-role-task .wd23-go{opacity:.35}
+.wd-role-task .wd23-sub{display:block}
+.wd-role-task-badge{display:inline-flex;align-items:center;gap:5px;margin-top:4px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--bronze)}
+</style>
+<script id="v25-role-work-light-js">
+/* v25 — DJ & Social Media receive professional operational work, not sports activities. */
+(function(){
+  const ROLE_WORK={
+    dj:[
+      {time:"10:15 – 11:00",name:"Update music library",desc:"Check new tracks, current hotel playlists and event music; remove weak or duplicate versions.",location:"DJ booth / Music office"},
+      {time:"11:15 – 12:00",name:"Organize music folders",desc:"Arrange folders by event, nationality, mood, BPM and show so every set is fast to access.",location:"DJ booth / Music office"},
+      {time:"15:15 – 16:00",name:"Prepare today's sets",desc:"Prepare playlists, cues and backup tracks for today's pool, stage and party programme.",location:"DJ booth"},
+      {time:"19:00 – 23:00",name:"Play & manage live music",desc:"Open the stage, run live sets, transitions and event music, and keep backup audio ready.",location:"Stage / Event area"}
+    ],
+    social:[
+      {time:"10:15 – 11:00",name:"Film the hotel in general",desc:"Capture clean vertical shots of the hotel, pool, beach, restaurants, atmosphere and details for the content library.",location:"Hotel areas"},
+      {time:"11:15 – 12:00",name:"Capture activity & guest moments",desc:"Film natural, high-quality moments from activities without disturbing the guest experience.",location:"Activity areas"},
+      {time:"15:15 – 16:15",name:"Create the day story",desc:"Film the afternoon, transitions and hotel atmosphere so the whole day can become one coherent Reel or Story sequence.",location:"Hotel areas"},
+      {time:"20:00 – 21:30",name:"Capture event highlights",desc:"Get the strongest shots from the evening event, show, live music, crowd reactions and team energy.",location:"Stage / Event area"},
+      {time:"21:30 – 22:15",name:"Select, edit & prepare content",desc:"Choose the best clips, create a short edit, write the caption or prepare assets for posting.",location:"Social media workstation"}
+    ]
+  };
+  function roleWorkType(num){
+    const role=String(typeof roleForNumber==="function"?roleForNumber(num):"").toLowerCase();
+    if(Number(num)===3 || /\bdj\b/.test(role)) return "dj";
+    if(Number(num)===2 || role.includes("social media") || role.includes("social-media")) return "social";
+    return "";
+  }
+  function roleWorkFor(num,day){
+    if(!num) return [];
+    try{ const info=personDayInfo(Number(num),day); if(info&&info.isOff) return []; }catch(e){}
+    const type=roleWorkType(num);
+    return type?(ROLE_WORK[type]||[]).map((x,i)=>({...x,id:"rolework-"+type+"-"+day+"-"+i,day:day,__roleWork:true,__roleType:type})):[];
+  }
+  window.roleWorkFor=roleWorkFor;
+
+  /* Add role work to the v23 work-day screen after its existing render output. */
+  const previous=myWorkDayView;
+  myWorkDayView=function(){
+    const html=previous.apply(this,arguments);
+    const num=S.session&&S.session.number;
+    const day=(typeof S.planDay==="number")?S.planDay:todayIndex();
+    const work=roleWorkFor(num,day);
+    if(!work.length || typeof html!=="string") return html;
+    const type=roleWorkType(num);
+    const title=type==="dj"?"DJ work plan":"Social Media work plan";
+    const sub=type==="dj"?"Music preparation, organization and live operation":"Daily filming, event coverage and content production";
+    const rows=work.map(a=>{
+      const parts=String(a.time).split(/\s*[–—-]\s*/);
+      return '<div class="wd23-shift wd-role-task"><time>'+esc(parts[0]||"—")+'<span>'+esc(parts[1]||"")+'</span></time>'
+        +'<span><b>'+esc(a.name)+'</b><span class="wd23-sub">'+esc(a.location||"")+'</span>'
+        +'<span class="wd-role-task-badge">'+(type==="dj"?ic("music",11):ic("image",11))+' '+esc(type==="dj"?"DJ duty":"Content duty")+'</span>'
+        +'<span class="wd23-sub">'+esc(a.desc||"")+'</span></span><span class="wd23-go">'+ic("check",15)+'</span></div>';
+    }).join("");
+    const section='<section class="wd23-sec wd-role-work"><div class="wd23-hrow"><div><h2>'+esc(title)+'</h2><p>'+esc(sub)+'</p></div><span class="wd23-count">'+work.length+'</span></div>'+rows+'</section>';
+    return html.replace(/<\/div>\s*$/,section+'</div>');
+  };
+})();
+</script>
 </body>
 </html>
