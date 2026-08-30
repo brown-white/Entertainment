@@ -16866,5 +16866,301 @@ html[data-theme="light"] .v9-hero-btn,html.v27-light .v9-hero-btn{
 })();
 
 </script>
+
+<style id="v31-workday">
+/* ============================================================
+   v31 — one merged panel + light-theme corrections
+   ============================================================ */
+
+/* the merged My day panel */
+.v31-myday .v31-group{ margin-top: 4px; }
+.v31-myday .v31-group + .v31-group{
+  margin-top: 18px; padding-top: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+.v31-lab{
+  display: block; margin-bottom: 9px;
+  font-size: 10px; font-weight: 800; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.v31-row{ align-items: center; }
+.v31-thumb{
+  width: 44px; height: 44px; border-radius: 12px; object-fit: cover;
+  flex: none; margin-inline-start: auto;
+}
+.v31-oprow b{ text-align: end; }
+
+/* ---------- light theme: make sure nothing stays dark ---------- */
+html:not([data-theme="dark"]) .v30-card,
+html:not([data-theme="dark"]) .v30-empty,
+html:not([data-theme="dark"]) .v31-myday{
+  background: var(--card);
+  color: var(--ink);
+}
+html:not([data-theme="dark"]) .v30-nophoto{
+  background: linear-gradient(150deg, rgba(140,105,70,.14), rgba(140,105,70,.05));
+  color: var(--cacao);
+}
+html:not([data-theme="dark"]) .v30-times i{
+  background: rgba(140,105,70,.10); color: var(--ink);
+}
+html:not([data-theme="dark"]) .v30-day{
+  background: var(--card); color: var(--muted);
+}
+html:not([data-theme="dark"]) .v30-day.on{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F7EEE0;
+}
+html:not([data-theme="dark"]) .v30-lock{
+  background: rgba(151,54,43,.12); color: #97362B;
+}
+html:not([data-theme="dark"]) .v30-empty{
+  background: linear-gradient(150deg, rgba(140,105,70,.05), var(--card));
+  border-color: rgba(120,100,80,.22);
+}
+/* the old dark banner from an earlier layer must never come back */
+html:not([data-theme="dark"]) .v15-focus,
+html:not([data-theme="dark"]) .x18-banner.staff{
+  display: none !important;
+}
+.v15-focus{ display: none !important; }
+
+</style>
+<script id="v31-workday-js">
+/* ============================================================
+   v31  —  Entertainer work day, tidied
+
+   1. The black "NOTHING ASSIGNED RIGHT NOW" card is removed
+      for good (the earlier attempt failed because that layer
+      calls its own inner function, not the exported one).
+   2. ONE panel instead of three: orders, role duties and
+      shifts all live inside a single "My day" section.
+   3. Events of the day added to "Today's operation".
+   4. Light theme corrections for the new cards.
+   ============================================================ */
+(function(){
+  "use strict";
+  if (window.__v31) return;
+  window.__v31 = true;
+
+  var E = function(s){ try { return esc(s); } catch(e){ return String(s==null?"":s); } };
+
+  var L = {
+    en:{myDay:"My day",myDaySub:"Your orders, duties and shifts together",
+        orders:"Orders & duties",shifts:"Activities you run",
+        nothing:"Nothing for you today",events:"Events today",noEvents:"No events today"},
+    de:{myDay:"Mein Tag",myDaySub:"Aufträge, Aufgaben und Schichten an einem Ort",
+        orders:"Aufträge & Aufgaben",shifts:"Deine Aktivitäten",
+        nothing:"Heute nichts für dich",events:"Events heute",noEvents:"Heute keine Events"},
+    ru:{myDay:"Мой день",myDaySub:"Поручения, задачи и смены вместе",
+        orders:"Поручения и задачи",shifts:"Ваши активности",
+        nothing:"Сегодня для вас ничего",events:"События сегодня",noEvents:"Сегодня событий нет"},
+    pl:{myDay:"Mój dzień",myDaySub:"Polecenia, zadania i zmiany razem",
+        orders:"Polecenia i zadania",shifts:"Twoje zajęcia",
+        nothing:"Dziś nic dla Ciebie",events:"Wydarzenia dziś",noEvents:"Brak wydarzeń"},
+    cs:{myDay:"Můj den",myDaySub:"Úkoly a směny na jednom místě",
+        orders:"Úkoly",shifts:"Vaše aktivity",
+        nothing:"Dnes pro vás nic",events:"Akce dnes",noEvents:"Dnes žádné akce"},
+    nl:{myDay:"Mijn dag",myDaySub:"Opdrachten, taken en diensten bij elkaar",
+        orders:"Opdrachten & taken",shifts:"Jouw activiteiten",
+        nothing:"Vandaag niets voor jou",events:"Evenementen vandaag",noEvents:"Geen evenementen"},
+    fr:{myDay:"Ma journee",myDaySub:"Consignes, taches et services au meme endroit",
+        orders:"Consignes & taches",shifts:"Vos activites",
+        nothing:"Rien pour vous aujourd'hui",events:"Evenements du jour",noEvents:"Aucun evenement"},
+    ar:{myDay:"يومي",myDaySub:"الأوامر والمهام والفعاليات في مكان واحد",
+        orders:"الأوامر والمهام",shifts:"أنشطتك",
+        nothing:"لا يوجد شيء لك اليوم",events:"فعاليات اليوم",noEvents:"لا توجد فعاليات اليوم"}
+  };
+  function w(k){
+    var l = (typeof S!=="undefined" && S.lang) ? S.lang : "en";
+    return (L[l] && L[l][k]) || L.en[k] || k;
+  }
+  function dayIdx(){ try{ return todayIndex(); }catch(e){ return (new Date().getDay()+6)%7; } }
+  function planDay(){ return (typeof S.planDay==="number") ? S.planDay : dayIdx(); }
+
+  /* ------------------------------------------------------------
+     1. remove the leftover focus card from the DOM
+     ------------------------------------------------------------ */
+  function dropFocusCard(){
+    try{
+      var app = document.getElementById("app") || document.querySelector("#app");
+      if (!app) return;
+      if (!S.session || S.session.role!=="staff") return;
+      app.querySelectorAll(".v15-focus").forEach(function(el){
+        if (el && el.remove) el.remove();
+      });
+    }catch(e){}
+  }
+
+  /* ------------------------------------------------------------
+     2. one merged "My day" panel
+     ------------------------------------------------------------ */
+  /* pull the role-duty rows the earlier layer already rendered */
+  function pullRoleDuties(sectionHtml){
+    var out = [];
+    if (!sectionHtml) return out;
+    var re = /<div class="rd-row"><time>([\s\S]*?)<\/time><span><b>([\s\S]*?)<\/b>([\s\S]*?)<\/span><\/div>/g;
+    var m;
+    while ((m = re.exec(sectionHtml))){
+      var note = (m[3]||"").replace(/<[^>]*>/g,"").trim();
+      out.push({ time: (m[1]||"").replace(/<[^>]*>/g,"").trim(),
+                 title: (m[2]||"").replace(/<[^>]*>/g,"").trim(),
+                 note: note, kind:"duty" });
+    }
+    return out;
+  }
+  /* the orders from the team programme */
+  function pullTeamOrders(day){
+    var me = String((S.session&&S.session.username)||"");
+    var all = (S.settings && S.settings.teamDuties) || {};
+    var list = Array.isArray(all[String(day)]) ? all[String(day)] : [];
+    var out = [];
+    list.filter(function(d){ return !d.who || d.who===me; }).forEach(function(d){
+      var times = (d.times||[]).filter(Boolean);
+      if (!times.length) times = [""];
+      times.forEach(function(tm){
+        out.push({ time: tm, title: d.title||"", note: d.note||"", photo: d.photo||"", kind:"order" });
+      });
+    });
+    return out;
+  }
+  function rowHtml(it){
+    return '<div class="rd-row v31-row">'
+      + '<time>'+E(it.time||"—")+'</time>'
+      + '<span><b>'+E(it.title)+'</b>'
+      + (it.note ? '<span class="rd-note">'+E(it.note)+'</span>' : '')
+      + '</span>'
+      + (it.photo ? '<img class="v31-thumb" src="'+E(it.photo)+'" alt="" loading="lazy">' : '')
+      + '</div>';
+  }
+  function mergedSection(dutySec, shiftSec, day){
+    var items = pullRoleDuties(dutySec).concat(pullTeamOrders(day));
+    items.sort(function(a,b){
+      return String(a.time||"99:99").localeCompare(String(b.time||"99:99"));
+    });
+    /* keep the filter chips and the shift rows from the original section */
+    var filters = "", shiftBody = "", shiftCount = "";
+    if (shiftSec){
+      var fm = shiftSec.match(/<div class="wd23-filters">[\s\S]*?<\/div>/);
+      filters = fm ? fm[0] : "";
+      var cm = shiftSec.match(/<span class="wd23-count">([\s\S]*?)<\/span>/);
+      shiftCount = cm ? cm[1] : "";
+      /* everything after the header row is the body */
+      var hEnd = shiftSec.indexOf("</div>", shiftSec.indexOf('wd23-hrow'));
+      var body = hEnd>0 ? shiftSec.slice(hEnd+6) : "";
+      body = body.replace(/<\/section>\s*$/, "");
+      if (filters) body = body.replace(filters, "");
+      shiftBody = body;
+    }
+    var total = items.length + (Number(shiftCount)||0);
+    var ordersBlock = items.length
+      ? '<div class="v31-group"><span class="v31-lab">'+E(w("orders"))+'</span>'
+        + items.map(rowHtml).join("") + '</div>'
+      : "";
+    var shiftsBlock = (filters || shiftBody)
+      ? '<div class="v31-group"><span class="v31-lab">'+E(w("shifts"))+'</span>'
+        + filters + shiftBody + '</div>'
+      : "";
+    var inner = (ordersBlock + shiftsBlock) || ('<div class="wd23-empty">'+E(w("nothing"))+'</div>');
+    return '<section class="wd23-sec v31-myday">'
+      + '<div class="wd23-hrow"><div><h2>'+E(w("myDay"))+'</h2>'
+      + '<p>'+E(w("myDaySub"))+'</p></div>'
+      + (total?'<span class="wd23-count">'+total+'</span>':'')
+      + '</div>' + inner + '</section>';
+  }
+
+  /* ------------------------------------------------------------
+     3. events of the day, added to Today's operation
+     ------------------------------------------------------------ */
+  function eventsRows(day){
+    var acts = (S.activities||[]).filter(function(a){ return a.day===day; });
+    var evs = acts.filter(function(a){
+      var c = "";
+      try{ c = normCat(a); }catch(e){ c = String(a.category||""); }
+      return c==="mEvents" || c==="eParty";
+    }).sort(function(x,y){ return String(x.time).localeCompare(String(y.time)); });
+    if (!evs.length){
+      return '<div class="wd23-oprow v31-oprow">'
+        + '<span>'+E(w("events"))+'</span><b>'+E(w("noEvents"))+'</b></div>';
+    }
+    return evs.map(function(a){
+      var when = String(a.time||"").split(/\s*[–—-]\s*/)[0] || "";
+      return '<div class="wd23-oprow v31-oprow">'
+        + '<span>'+E(w("events"))+'</span>'
+        + '<b>'+E(when)+' · '+E(a.name)+(a.location? ' · '+E(a.location) : '')+'</b></div>';
+    }).join("");
+  }
+
+  /* ------------------------------------------------------------
+     put it together
+     ------------------------------------------------------------ */
+  function splitSections(html){
+    var marker = '<section class="wd23-sec';
+    var first = html.indexOf(marker);
+    if (first < 0) return null;
+    var head = html.slice(0, first);
+    var parts = html.slice(first).split(marker).filter(function(x){ return x.length; })
+      .map(function(x){ return marker + x; });
+    return { head: head, parts: parts };
+  }
+  if (typeof myWorkDayView === "function"){
+    var _wd = myWorkDayView;
+    window.myWorkDayView = function(){
+      var out = _wd.apply(this, arguments);
+      try{
+        var day = planDay();
+        out = out.replace(/<div class="wd23-focus[\s\S]*?<\/div>\s*(?=<section|<div class="wd23-sec)/, "");
+        var sp = splitSections(out);
+        if (!sp) return out;
+
+        var shifts=null, team=null, operation=null, duties=null, orders=null, rest=[];
+        sp.parts.forEach(function(p){
+          if (p.indexOf('v30-mine')>=0){ orders = p; return; }          /* my old separate panel */
+          if (p.indexOf('rd-row')>=0 || p.indexOf('rd-hint')>=0){ duties = p; return; }
+          if (p.indexOf('wd23-filters')>=0 && !shifts){ shifts = p; return; }
+          if (p.indexOf('wd23-person')>=0 || p.indexOf('wd23-team')>=0){ team = p; return; }
+          if (p.indexOf('wd23-op')>=0){ operation = p; return; }
+          rest.push(p);
+        });
+
+        /* events go into the operation block */
+        if (operation){
+          operation = operation.replace(/(<\/div>\s*<\/section>\s*)$/, eventsRows(day)+'$1');
+          if (operation.indexOf('v31-oprow')<0){
+            operation = operation.replace(/<\/div>\s*<\/section>/, eventsRows(day)+'</div></section>');
+          }
+        }
+
+        var merged = mergedSection(duties, shifts, day);
+        var order = [];
+        if (operation) order.push(operation);      /* the day info stays at the top */
+        order.push(merged);                        /* everything of theirs, in one panel */
+        rest.forEach(function(p){ order.push(p); });   /* daily standards etc. */
+        /* the team list is deliberately left out — manager only */
+        var joined = order.filter(Boolean).join("");
+        if (!joined) return out;
+        /* the screen's closing tag rode on the last original section */
+        if (!/<\/div>\s*$/.test(joined)) joined += '</div>';
+        return sp.head + joined;
+      }catch(e){ return out; }
+    };
+  }
+
+  if (typeof render === "function"){
+    var _r = render;
+    window.render = function(){
+      var out = _r.apply(this, arguments);
+      dropFocusCard();
+      return out;
+    };
+  }
+
+  window.v31Merged = mergedSection;
+  window.v31Events = eventsRows;
+  window.v31Orders = pullTeamOrders;
+  window.v31Duties = pullRoleDuties;
+})();
+
+</script>
 </body>
 </html>
