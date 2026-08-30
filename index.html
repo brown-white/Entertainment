@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14534,6 +14534,21 @@ Object.keys(V21_FILL).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V2
 .ex21-pbody p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
+<script id="v23-i18n">
+/* v23 — texts for the entertainer work day, all 8 languages */
+const V23_STR={
+en:{wd23Kicker:"TEAM DAY GUIDE",wd23Sub:"Everything you need for today",wd23OnNow:"You are on now",wd23UpNext:"Up next",wd23AllDone:"All done for today",wd23Nothing:"Nothing assigned to you today",wd23NothingSub:"The team programme is below",wd23ShiftsH:"My shifts",wd23ShiftsSub:"What you are running today",wd23FiltAll:"All day",wd23FiltEve:"Evening",wd23NoShifts:"No shifts in this part of the day.",wd23TeamH:"Who is on today",wd23TeamSub:"Your team, day off and entrance duty",wd23OnDuty:"On duty",wd23NoTeam:"No team accounts yet.",wd23OpH:"Today's operation",wd23OpSub:"Theme, dress code, practice and the evening",wd23StdH:"Daily standards",wd23StdSub:"The fixed times of the working day",wd23Booked:"booked",wd23NoBookings:"No bookings yet",wd23Open:"Open",wd23WhoH:"Who is running it",wd23GuestsH:"Guests booked",wd23Yours:"You",wd23TeamAct:"Whole team",wd23NotSet:"Not set",wd23Shift:"Shift",wd23Status:"Status",wd23NoStd:"No standards set yet."},
+de:{wd23Kicker:"TAGESÜBERSICHT TEAM",wd23Sub:"Alles, was du heute brauchst",wd23OnNow:"Du bist gerade dran",wd23UpNext:"Als Nächstes",wd23AllDone:"Für heute alles erledigt",wd23Nothing:"Heute ist dir nichts zugeteilt",wd23NothingSub:"Das Teamprogramm steht unten",wd23ShiftsH:"Meine Einsätze",wd23ShiftsSub:"Das leitest du heute",wd23FiltAll:"Ganzer Tag",wd23FiltEve:"Abend",wd23NoShifts:"In diesem Tagesabschnitt hast du keinen Einsatz.",wd23TeamH:"Wer ist heute da",wd23TeamSub:"Dein Team, freier Tag und Eingangsdienst",wd23OnDuty:"Im Dienst",wd23NoTeam:"Noch keine Team-Konten.",wd23OpH:"Heutiger Ablauf",wd23OpSub:"Thema, Kleiderordnung, Training und der Abend",wd23StdH:"Tagesablauf",wd23StdSub:"Die festen Zeiten des Arbeitstages",wd23Booked:"gebucht",wd23NoBookings:"Noch keine Buchungen",wd23Open:"Öffnen",wd23WhoH:"Wer leitet es",wd23GuestsH:"Gebuchte Gäste",wd23Yours:"Du",wd23TeamAct:"Ganzes Team",wd23NotSet:"Nicht festgelegt",wd23Shift:"Einsatz",wd23Status:"Status",wd23NoStd:"Noch kein Tagesablauf hinterlegt."},
+ru:{wd23Kicker:"ПЛАН ДНЯ КОМАНДЫ",wd23Sub:"Всё, что нужно на сегодня",wd23OnNow:"Сейчас ваш выход",wd23UpNext:"Далее",wd23AllDone:"На сегодня всё",wd23Nothing:"На сегодня вам ничего не назначено",wd23NothingSub:"Программа команды — ниже",wd23ShiftsH:"Мои активности",wd23ShiftsSub:"Что вы ведёте сегодня",wd23FiltAll:"Весь день",wd23FiltEve:"Вечер",wd23NoShifts:"В этой части дня у вас нет активностей.",wd23TeamH:"Кто сегодня работает",wd23TeamSub:"Ваша команда, выходные и дежурство на входе",wd23OnDuty:"На смене",wd23NoTeam:"Аккаунтов команды пока нет.",wd23OpH:"Работа дня",wd23OpSub:"Тема, дресс-код, репетиция и вечер",wd23StdH:"Распорядок дня",wd23StdSub:"Фиксированные времена рабочего дня",wd23Booked:"записано",wd23NoBookings:"Записей пока нет",wd23Open:"Открыть",wd23WhoH:"Кто ведёт",wd23GuestsH:"Записанные гости",wd23Yours:"Вы",wd23TeamAct:"Вся команда",wd23NotSet:"Не задано",wd23Shift:"Активность",wd23Status:"Статус",wd23NoStd:"Распорядок пока не задан."},
+pl:{wd23Kicker:"PRZEWODNIK DNIA ZESPOŁU",wd23Sub:"Wszystko, czego dziś potrzebujesz",wd23OnNow:"Teraz Twoja kolej",wd23UpNext:"Następnie",wd23AllDone:"Na dziś to wszystko",wd23Nothing:"Nic Ci dziś nie przydzielono",wd23NothingSub:"Program zespołu jest poniżej",wd23ShiftsH:"Moje zajęcia",wd23ShiftsSub:"To dziś prowadzisz",wd23FiltAll:"Cały dzień",wd23FiltEve:"Wieczór",wd23NoShifts:"W tej części dnia nie masz zajęć.",wd23TeamH:"Kto dziś pracuje",wd23TeamSub:"Twój zespół, dni wolne i dyżur przy wejściu",wd23OnDuty:"Na dyżurze",wd23NoTeam:"Brak kont zespołu.",wd23OpH:"Praca dnia",wd23OpSub:"Motyw, dress code, trening i wieczór",wd23StdH:"Rozkład dnia",wd23StdSub:"Stałe godziny dnia pracy",wd23Booked:"zapisanych",wd23NoBookings:"Brak zapisów",wd23Open:"Otwórz",wd23WhoH:"Kto prowadzi",wd23GuestsH:"Zapisani goście",wd23Yours:"Ty",wd23TeamAct:"Cały zespół",wd23NotSet:"Nie ustawiono",wd23Shift:"Zajęcia",wd23Status:"Status",wd23NoStd:"Nie ustawiono jeszcze rozkładu."},
+cs:{wd23Kicker:"PŘEHLED DNE TÝMU",wd23Sub:"Vše, co dnes potřebujete",wd23OnNow:"Teď jste na řadě",wd23UpNext:"Následuje",wd23AllDone:"Pro dnešek hotovo",wd23Nothing:"Dnes vám nic nebylo přiděleno",wd23NothingSub:"Program týmu je níže",wd23ShiftsH:"Moje aktivity",wd23ShiftsSub:"Tohle dnes vedete",wd23FiltAll:"Celý den",wd23FiltEve:"Večer",wd23NoShifts:"V této části dne nemáte žádnou aktivitu.",wd23TeamH:"Kdo dnes pracuje",wd23TeamSub:"Váš tým, volno a služba u vchodu",wd23OnDuty:"Ve službě",wd23NoTeam:"Zatím žádné týmové účty.",wd23OpH:"Denní provoz",wd23OpSub:"Téma, dress code, trénink a večer",wd23StdH:"Denní rozvrh",wd23StdSub:"Pevné časy pracovního dne",wd23Booked:"přihlášeno",wd23NoBookings:"Zatím žádné rezervace",wd23Open:"Otevřít",wd23WhoH:"Kdo to vede",wd23GuestsH:"Přihlášení hosté",wd23Yours:"Vy",wd23TeamAct:"Celý tým",wd23NotSet:"Nenastaveno",wd23Shift:"Aktivita",wd23Status:"Stav",wd23NoStd:"Rozvrh zatím není nastaven."},
+nl:{wd23Kicker:"DAGOVERZICHT TEAM",wd23Sub:"Alles wat je vandaag nodig hebt",wd23OnNow:"Jij bent nu aan de beurt",wd23UpNext:"Hierna",wd23AllDone:"Voor vandaag klaar",wd23Nothing:"Er is je vandaag niets toegewezen",wd23NothingSub:"Het teamprogramma staat hieronder",wd23ShiftsH:"Mijn activiteiten",wd23ShiftsSub:"Dit leid jij vandaag",wd23FiltAll:"Hele dag",wd23FiltEve:"Avond",wd23NoShifts:"In dit deel van de dag heb je niets.",wd23TeamH:"Wie werkt er vandaag",wd23TeamSub:"Je team, vrije dag en ingangsdienst",wd23OnDuty:"In dienst",wd23NoTeam:"Nog geen teamaccounts.",wd23OpH:"Dagelijkse werking",wd23OpSub:"Thema, dresscode, training en de avond",wd23StdH:"Dagindeling",wd23StdSub:"De vaste tijden van de werkdag",wd23Booked:"geboekt",wd23NoBookings:"Nog geen boekingen",wd23Open:"Openen",wd23WhoH:"Wie leidt het",wd23GuestsH:"Geboekte gasten",wd23Yours:"Jij",wd23TeamAct:"Hele team",wd23NotSet:"Niet ingesteld",wd23Shift:"Activiteit",wd23Status:"Status",wd23NoStd:"Nog geen dagindeling ingesteld."},
+fr:{wd23Kicker:"GUIDE DE LA JOURNÉE",wd23Sub:"Tout ce qu'il vous faut aujourd'hui",wd23OnNow:"C'est à vous maintenant",wd23UpNext:"Ensuite",wd23AllDone:"Terminé pour aujourd'hui",wd23Nothing:"Rien ne vous est attribué aujourd'hui",wd23NothingSub:"Le programme de l'équipe est ci-dessous",wd23ShiftsH:"Mes activités",wd23ShiftsSub:"Ce que vous animez aujourd'hui",wd23FiltAll:"Journée",wd23FiltEve:"Soirée",wd23NoShifts:"Rien pour vous sur cette partie de la journée.",wd23TeamH:"Qui travaille aujourd'hui",wd23TeamSub:"Votre équipe, les repos et le service d'entrée",wd23OnDuty:"En service",wd23NoTeam:"Aucun compte d'équipe pour l'instant.",wd23OpH:"Fonctionnement du jour",wd23OpSub:"Thème, tenue, répétition et la soirée",wd23StdH:"Déroulé de la journée",wd23StdSub:"Les horaires fixes de la journée de travail",wd23Booked:"inscrits",wd23NoBookings:"Aucune réservation",wd23Open:"Ouvrir",wd23WhoH:"Qui l'anime",wd23GuestsH:"Clients inscrits",wd23Yours:"Vous",wd23TeamAct:"Toute l'équipe",wd23NotSet:"Non défini",wd23Shift:"Activité",wd23Status:"Statut",wd23NoStd:"Aucun déroulé défini pour l'instant."},
+ar:{wd23Kicker:"دليل يوم الفريق",wd23Sub:"كل ما تحتاجه اليوم",wd23OnNow:"دورك الآن",wd23UpNext:"التالي",wd23AllDone:"انتهى عملك لليوم",wd23Nothing:"لم يُسنَد إليك شيء اليوم",wd23NothingSub:"برنامج الفريق في الأسفل",wd23ShiftsH:"أنشطتي",wd23ShiftsSub:"ما تقدّمه اليوم",wd23FiltAll:"اليوم كله",wd23FiltEve:"المساء",wd23NoShifts:"لا يوجد لك نشاط في هذا الجزء من اليوم.",wd23TeamH:"من يعمل اليوم",wd23TeamSub:"فريقك والإجازات ومناوبة المدخل",wd23OnDuty:"في الخدمة",wd23NoTeam:"لا توجد حسابات للفريق بعد.",wd23OpH:"تشغيل اليوم",wd23OpSub:"الثيم واللباس والتدريب والمساء",wd23StdH:"الجدول اليومي",wd23StdSub:"الأوقات الثابتة ليوم العمل",wd23Booked:"محجوز",wd23NoBookings:"لا توجد حجوزات بعد",wd23Open:"فتح",wd23WhoH:"من يقدّمه",wd23GuestsH:"الضيوف المحجوزون",wd23Yours:"أنت",wd23TeamAct:"الفريق كامل",wd23NotSet:"غير محدد",wd23Shift:"نشاط",wd23Status:"الحالة",wd23NoStd:"لم يُحدَّد الجدول بعد."}
+};
+Object.keys(V23_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V23_STR[l]); });
+</script>
+
 <script id="explore-v21-digital-guide-script">
 /* ============================================================
    v21 EXPLORE — DIGITAL HOLIDAY GUIDE   (fix round)
@@ -14920,6 +14935,339 @@ Object.keys(V21_FILL).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V2
       };
     });
   };
+})();
+</script>
+
+<style id="workday-v23">
+/* ============================================================
+   v23 — the entertainer's work day, laid out like Explore but
+   plainer and operational. Deliberately uses the app's own
+   tokens (--card, --line, --fg, --accent) instead of the gold
+   Explore palette, so it follows all 15 themes and light/dark.
+   ============================================================ */
+.wd23{padding-bottom:26px}
+.wd23-head{margin:0 0 12px;padding:14px 16px;border-radius:14px;
+  background:var(--card);border:1px solid var(--line)}
+.wd23-kick{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);font-weight:700}
+.wd23-head h1{margin:6px 0 2px;font-size:21px;line-height:1.2}
+.wd23-head p{margin:0;font-size:12px;opacity:.7}
+.wd23-idrow{display:flex;align-items:center;gap:10px;margin-top:11px}
+.wd23-av{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:0 0 44px;position:relative;
+  background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:700}
+.wd23-av img{width:100%;height:100%;object-fit:cover}
+.wd23-num{position:absolute;right:-2px;bottom:-2px;min-width:18px;height:18px;border-radius:9px;
+  background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;
+  justify-content:center;padding:0 4px;border:2px solid var(--card)}
+.wd23-idrow b{display:block;font-size:14px}
+.wd23-idrow .wd23-role{font-size:11px;opacity:.65}
+.wd23-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.wd23-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 9px;border-radius:8px;
+  background:var(--bg);border:1px solid var(--line)}
+.wd23-tag b{font-weight:600}
+.wd23-banner{display:flex;align-items:center;gap:9px;margin:0 0 10px;padding:11px 13px;border-radius:12px;
+  font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--card)}
+.wd23-banner.off{border-inline-start:4px solid #2e9e5b}
+.wd23-banner.entrance{border-inline-start:4px solid #d08a1a}
+.wd23-banner.makeup{border-inline-start:4px solid #7a5cc4}
+.wd23-banner.dj{border-inline-start:4px solid #2b7fc4}
+.wd23-focus{margin:0 0 14px;padding:13px 15px;border-radius:14px;background:var(--card);
+  border:1px solid var(--line);border-inline-start:4px solid var(--accent)}
+.wd23-focus small{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;font-weight:700}
+.wd23-focus b{display:block;font-size:17px;margin:4px 0 2px}
+.wd23-focus p{margin:0;font-size:12px;opacity:.75}
+.wd23-focus.live{border-inline-start-color:#2e9e5b}
+.wd23-sec{margin:0 0 18px}
+.wd23-hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:0 0 9px}
+.wd23-hrow h2{margin:0;font-size:15px}
+.wd23-hrow p{margin:2px 0 0;font-size:11px;opacity:.62}
+.wd23-count{font-size:11px;opacity:.6;white-space:nowrap}
+.wd23-filters{display:flex;gap:7px;overflow-x:auto;margin:0 -16px 10px;padding:0 16px 3px;scrollbar-width:none}
+.wd23-filters::-webkit-scrollbar{display:none}
+.wd23-filter{flex:0 0 auto;font-size:12px;padding:7px 13px;border-radius:9px;background:var(--card);
+  border:1px solid var(--line);color:inherit}
+.wd23-filter.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.wd23-shift{display:grid;grid-template-columns:62px 1fr auto;align-items:center;gap:11px;width:100%;
+  text-align:start;padding:11px 13px;margin-bottom:8px;border-radius:12px;background:var(--card);
+  border:1px solid var(--line);color:inherit}
+.wd23-shift time{font-size:12px;font-weight:700;line-height:1.35}
+.wd23-shift time span{display:block;font-weight:400;opacity:.55}
+.wd23-shift b{display:block;font-size:14px}
+.wd23-shift .wd23-sub{display:block;font-size:11px;opacity:.65;margin-top:2px}
+.wd23-shift .wd23-go{opacity:.4}
+.wd23-shift.live{border-inline-start:4px solid #2e9e5b}
+.wd23-shift.done{opacity:.6}
+.wd23-people{display:flex;flex-wrap:wrap;gap:8px}
+.wd23-person{display:flex;align-items:center;gap:9px;flex:1 1 46%;min-width:150px;padding:9px 11px;
+  border-radius:11px;background:var(--card);border:1px solid var(--line)}
+.wd23-pav{width:32px;height:32px;border-radius:50%;flex:0 0 32px;overflow:hidden;background:var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;position:relative}
+.wd23-pav img{width:100%;height:100%;object-fit:cover}
+.wd23-person b{display:block;font-size:12.5px;line-height:1.2}
+.wd23-pstate{font-size:10.5px;opacity:.7}
+.wd23-person.me{border-color:var(--accent)}
+.wd23-person.off{opacity:.62}
+.wd23-oplist,.wd23-stdlist{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.wd23-oprow,.wd23-stdrow{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;font-size:13px}
+.wd23-oprow+.wd23-oprow,.wd23-stdrow+.wd23-stdrow{border-top:1px solid var(--line)}
+.wd23-oprow span,.wd23-stdrow span{flex:1;opacity:.68;font-size:12px}
+.wd23-oprow b,.wd23-stdrow b{font-weight:600;text-align:end;max-width:56%}
+.wd23-stdrow time{font-size:12px;font-weight:700;flex:0 0 52px}
+.wd23-stdrow .wd23-stdnote{display:block;font-weight:400;opacity:.6;font-size:11px}
+.wd23-empty{padding:16px 14px;border-radius:12px;background:var(--card);border:1px dashed var(--line);
+  font-size:12.5px;opacity:.75;text-align:center}
+/* detail sheet — same shape as the guest one, plainer skin */
+.wd23-detail{position:fixed;inset:0;z-index:240;background:var(--bg);overflow-y:auto;
+  padding:calc(16px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom))}
+.wd23-dtop{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.wd23-dback{width:38px;height:38px;border-radius:50%;flex:0 0 38px;display:flex;align-items:center;
+  justify-content:center;background:var(--card);border:1px solid var(--line);color:inherit}
+.wd23-detail h1{margin:0;font-size:19px;flex:1}
+.wd23-dsec{margin-bottom:14px}
+.wd23-dsec h2{margin:0 0 7px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+[dir="rtl"] .wd23-shift,[dir="rtl"] .wd23-hrow,[dir="rtl"] .wd23-head{text-align:right}
+[dir="rtl"] .wd23-shift .wd23-go svg{transform:scaleX(-1)}
+[dir="rtl"] .wd23-dback svg{transform:scaleX(-1)}
+</style>
+
+<script id="workday-v23-js">
+/* ============================================================
+   v23 — the entertainer's work day rebuilt on the Explore idea.
+   Replaces myWorkDayView as the entertainer's home screen.
+   The original is kept as myWorkDayViewClassic in case it is
+   ever wanted back.
+   ============================================================ */
+(function(){
+  if(typeof myWorkDayView!=="function") return;      // nothing to replace: leave the app alone
+  window.myWorkDayViewClassic = myWorkDayView;
+  var wd23Filter="all";
+
+  function T(k){ return t(k); }
+  function rtl(){ return S.lang==="ar"; }
+  function startMin(a){ var w=intervalOf(a&&a.time); return w?w.s:9999; }
+  function endMin(a){ var w=intervalOf(a&&a.time); return w?w.e:9999; }
+  function nowMin(){ var n=hotelNow(); return n.getHours()*60+n.getMinutes(); }
+  function firstTime(a){ return String((a&&a.time)||"").split(/\s*[–—-]\s*/)[0]||""; }
+  function lastTime(a){ var p=String((a&&a.time)||"").split(/\s*[–—-]\s*/); return p[1]||""; }
+  function bookedCount(a){ try{ return bookingsFor(a.id).length; }catch(e){ return 0; } }
+  function isTeamAct(a){
+    var e=String((a&&a.entertainer)||"").toLowerCase().trim();
+    return e==="team"||e==="all team";
+  }
+  function slotOf(a){
+    var s=startMin(a);
+    if(s>=19*60) return "evening";
+    if(s>=13*60) return "afternoon";
+    return "morning";
+  }
+
+  /* ---------- pieces ---------- */
+  function head(day,num,info){
+    var dp=info.dp, u=S.session;
+    var theme=dp.theme||"", dress=dp.dress||"";
+    return '<div class="wd23-head">'
+      +'<span class="wd23-kick">'+ic("clipboard",12)+' '+esc(T("wd23Kicker"))+'</span>'
+      +'<h1>'+esc(T("myWorkDay"))+'</h1><p>'+esc(T("wd23Sub"))+'</p>'
+      +'<div class="wd23-idrow"><div class="wd23-av">'
+        +(u.photo?'<img src="'+esc(u.photo)+'" alt="">':'<span>'+esc(String(u.name||"?").trim().charAt(0).toUpperCase())+'</span>')
+        +(num?'<span class="wd23-num">'+esc(num)+'</span>':'')+'</div>'
+      +'<div><b>'+esc(u.name||"")+'</b><span class="wd23-role">'+esc(num?roleForNumber(num):"")+'</span></div></div>'
+      +((theme||dress)?'<div class="wd23-tags">'
+        +(theme?'<span class="wd23-tag">'+ic("star",12)+' '+esc(t("restaurantTheme"))+': <b>'+esc(theme)+'</b></span>':'')
+        +(dress?'<span class="wd23-tag">'+ic("users",12)+' '+esc(t("dressCode"))+': <b>'+esc(dress)+'</b></span>':'')
+        +'</div>':'')
+      +'</div>';
+  }
+
+  function banners(info){
+    var out="";
+    if(info.isOff) out+='<div class="wd23-banner off">'+ic("sun",18)+' '+esc(t("youAreOff"))+'</div>';
+    else if(info.isEntrance) out+='<div class="wd23-banner entrance">'+ic("door",18)+' '+esc(t("youHaveEntrance"))
+      +(info.entranceWindow?' · '+esc(info.entranceWindow):'')+'</div>';
+    if(info.makeupForMe) out+='<div class="wd23-banner makeup">'+ic("star",16)+' '+esc(t("makeupPractice"))
+      +': '+esc(typeof makeupText==="function"?makeupText(info.makeupForMe):"")+'</div>';
+    if(info.isDJ&&info.djNote) out+='<div class="wd23-banner dj">'+ic("bell",16)+' '+esc(t("djSchedule"))+': '+esc(info.djNote)+'</div>';
+    return out;
+  }
+
+  function focus(mine,day){
+    if(!isToday(day)) return "";
+    if(!mine.length) return '<div class="wd23-focus"><small>'+esc(T("wd23ShiftsH"))+'</small>'
+      +'<b>'+esc(T("wd23Nothing"))+'</b><p>'+esc(T("wd23NothingSub"))+'</p></div>';
+    var now=nowMin();
+    var live=mine.find(function(a){return startMin(a)<=now&&endMin(a)>now;});
+    if(live) return '<div class="wd23-focus live" data-wd23="'+esc(live.id)+'"><small>'+esc(T("wd23OnNow"))+'</small>'
+      +'<b>'+esc(live.name)+'</b><p>'+esc((live.location||"")+(lastTime(live)?" · "+lastTime(live):""))+'</p></div>';
+    var next=mine.find(function(a){return startMin(a)>now;});
+    if(next){
+      var d=startMin(next)-now;
+      var when=d<60?TXm(d):firstTime(next);
+      return '<div class="wd23-focus" data-wd23="'+esc(next.id)+'"><small>'+esc(T("wd23UpNext"))+'</small>'
+        +'<b>'+esc(next.name)+'</b><p>'+esc(when+(next.location?" · "+next.location:""))+'</p></div>';
+    }
+    return '<div class="wd23-focus"><small>'+esc(T("wd23ShiftsH"))+'</small><b>'+esc(T("wd23AllDone"))+'</b></div>';
+  }
+  function TXm(mins){ return String(t("ex21InMin")).split("{n}").join(mins); }
+
+  function shiftRow(a,day){
+    var cls="";
+    if(isToday(day)){ var st=activityStatus(a); if(st==="live")cls=" live"; else if(st==="done")cls=" done"; }
+    var n=bookedCount(a);
+    var sub=[a.location||"", isTeamAct(a)?T("wd23TeamAct"):"", n?(n+" "+T("wd23Booked")):""].filter(Boolean).join(" · ");
+    return '<button type="button" class="wd23-shift'+cls+'" data-wd23="'+esc(a.id)+'">'
+      +'<time>'+esc(firstTime(a)||"—")+'<span>'+esc(lastTime(a))+'</span></time>'
+      +'<span><b>'+esc(a.name)+'</b><span class="wd23-sub">'+esc(sub)+'</span></span>'
+      +'<span class="wd23-go">'+ic("back",15)+'</span></button>';
+  }
+
+  function filters(){
+    var f=[["all",T("wd23FiltAll")],["morning",t("morningSlot")],["afternoon",t("afternoonSlot")],["evening",T("wd23FiltEve")]];
+    return '<div class="wd23-filters">'+f.map(function(x){
+      return '<button type="button" class="wd23-filter '+(wd23Filter===x[0]?"on":"")+'" data-wd23f="'+x[0]+'">'+esc(x[1])+'</button>';
+    }).join("")+'</div>';
+  }
+
+  function team(day,info,num){
+    var dp=info.dp;
+    var people=(S.users||[]).filter(function(u){
+      return u && u.active!==false && Number(u.number||(u.role==="manager"?1:0))>0;
+    }).sort(function(a,b){return Number(a.number||1)-Number(b.number||1);});
+    if(!people.length) return '<div class="wd23-empty">'+esc(T("wd23NoTeam"))+'</div>';
+    return '<div class="wd23-people">'+people.map(function(u){
+      var n=Number(u.number||(u.role==="manager"?1:0));
+      var off=(dp.off||[]).indexOf(n)>=0, ent=dp.entrance===n, me=n===num;
+      var state=off?t("dayOff"):(ent?t("entranceDuty"):T("wd23OnDuty"));
+      return '<div class="wd23-person'+(me?" me":"")+(off?" off":"")+'">'
+        +'<div class="wd23-pav">'+(u.photo?'<img src="'+esc(u.photo)+'" alt="">':'<span>'+esc(String(u.display_name||u.name||"?").trim().charAt(0).toUpperCase())+'</span>')+'</div>'
+        +'<div><b>'+esc((u.display_name||u.name||"")+(me?" ("+T("wd23Yours")+")":""))+'</b>'
+        +'<span class="wd23-pstate">#'+n+' · '+esc(state)+'</span></div></div>';
+    }).join("")+'</div>';
+  }
+
+  function operation(info){
+    var dp=info.dp, rows=[];
+    function row(icon,label,value){
+      rows.push('<div class="wd23-oprow">'+ic(icon,15)+'<span>'+esc(label)+'</span><b>'+esc(value||T("wd23NotSet"))+'</b></div>');
+    }
+    row("star",t("restaurantTheme"),dp.theme);
+    row("users",t("dressCode"),dp.dress);
+    if(dp.entrance){
+      var p=staffByNumber(dp.entrance);
+      row("door",t("entranceDuty"),(p?(p.display_name||p.name):("#"+dp.entrance))+(dp.entranceTime?" · "+dp.entranceTime:""));
+    }
+    if(dp.practice) row("clock",dp.practiceTitle||t("practiceHead"),dp.practiceTime||t("practiceWindow"));
+    if(dp.eveningShow) row("ticket",t("eveningShowLbl"),dp.eveningShow+(dp.showTime?" · "+dp.showTime:"")+(dp.showLoc?" · "+dp.showLoc:""));
+    if(dp.liveBand) row("music",t("liveBandLbl"),dp.liveBand);
+    return '<div class="wd23-oplist">'+rows.join("")+'</div>';
+  }
+
+  function standards(info){
+    var list=[];
+    try{ list=stdList(info.dp)||[]; }catch(e){ list=[]; }
+    if(!list.length) return '<div class="wd23-empty">'+esc(T("wd23NoStd"))+'</div>';
+    return '<div class="wd23-stdlist">'+list.map(function(r){
+      return '<div class="wd23-stdrow"><time>'+esc(r.time||"")+'</time>'
+        +'<span><b style="display:block;text-align:start;max-width:none">'+esc(r.title||"")+'</b>'
+        +(r.note?'<span class="wd23-stdnote">'+esc(r.note)+'</span>':'')+'</span></div>';
+    }).join("")+'</div>';
+  }
+
+  function sec(title,sub,body,count){
+    return '<section class="wd23-sec"><div class="wd23-hrow"><div><h2>'+esc(title)+'</h2>'
+      +(sub?'<p>'+esc(sub)+'</p>':'')+'</div>'+(count!=null?'<span class="wd23-count">'+esc(count)+'</span>':'')
+      +'</div>'+body+'</section>';
+  }
+
+  /* ---------- the shift detail sheet ---------- */
+  window.wd23OpenShift=function(id){
+    var a=(S.activities||[]).find(function(x){return String(x.id)===String(id);});
+    if(!a) return;
+    var old=document.querySelector('.wd23-detail'); if(old&&old.__wd23close) old.__wd23close();
+    var el=document.createElement('section');
+    el.className='wd23-detail';
+    el.setAttribute('dir',rtl()?'rtl':'ltr');
+    el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
+    var n=bookedCount(a);
+    var who=isTeamAct(a)?T("wd23TeamAct"):(a.entertainer||T("wd23NotSet"));
+    var st=isToday(a.day)?(typeof statusPill==="function"?statusPill(a):""):"";
+    el.innerHTML='<div class="wd23-dtop"><button class="wd23-dback" id="wd23-back" aria-label="'+esc(t("navBack"))+'">'+ic("back",17)+'</button>'
+      +'<h1>'+esc(a.name)+'</h1></div>'
+      +(st?'<div class="wd23-dsec">'+st+'</div>':'')
+      +'<div class="wd23-dsec"><h2>'+esc(t("ex21When"))+' · '+esc(t("ex21Where"))+'</h2><div class="wd23-oplist">'
+        +'<div class="wd23-oprow">'+ic("clock",15)+'<span>'+esc(t("ex21StartEnd"))+'</span><b>'+esc(a.time||"—")+'</b></div>'
+        +'<div class="wd23-oprow">'+ic("pin",15)+'<span>'+esc(t("location"))+'</span><b>'+esc(a.location||T("wd23NotSet"))+'</b></div>'
+      +'</div></div>'
+      +'<div class="wd23-dsec"><h2>'+esc(T("wd23WhoH"))+'</h2><div class="wd23-oplist">'
+        +'<div class="wd23-oprow">'+ic("users",15)+'<span>'+esc(T("wd23Shift"))+'</span><b>'+esc(who)+'</b></div>'
+      +'</div></div>'
+      +'<div class="wd23-dsec"><h2>'+esc(T("wd23GuestsH"))+'</h2><div class="wd23-oplist">'
+        +'<div class="wd23-oprow">'+ic("ticket",15)+'<span>'+esc(t("bookings"))+'</span><b>'
+        +esc(n?(n+" "+T("wd23Booked")):T("wd23NoBookings"))+'</b></div>'
+      +'</div></div>'
+      +(a.desc?'<div class="wd23-dsec"><h2>'+esc(T("wd23Shift"))+'</h2><p style="font-size:13px;opacity:.8;margin:0">'+esc(a.desc)+'</p></div>':'');
+    document.body.appendChild(el);
+    var prev=document.body.style.overflow;
+    document.body.style.overflow='hidden';
+    var closed=false,pushed=false;
+    function onKey(e){ if(e.key==='Escape'||e.key==='Esc'){ e.preventDefault(); close(); } }
+    function onPop(){ pushed=false; close(); }
+    function close(){
+      if(closed) return; closed=true;
+      document.removeEventListener('keydown',onKey);
+      window.removeEventListener('popstate',onPop);
+      if(el.parentNode) el.parentNode.removeChild(el);
+      document.body.style.overflow=prev||'';
+      if(pushed){ pushed=false; try{ history.back(); }catch(e){} }
+    }
+    el.__wd23close=close;
+    document.addEventListener('keydown',onKey);
+    try{ history.pushState({wd23:1},''); pushed=true; window.addEventListener('popstate',onPop); }catch(e){ pushed=false; }
+    el.querySelector('#wd23-back').onclick=close;
+  };
+
+  /* ---------- the screen ---------- */
+  myWorkDayView=function(){
+    var num=S.session.number;
+    var today=todayIndex();
+    var day=(typeof S.planDay==="number")?S.planDay:today;
+    var info=(typeof personDayInfo==="function")?personDayInfo(num,day):{dp:{off:[]},isOff:false,isEntrance:false};
+    var all=(S.activities||[]).filter(function(a){return a.day===day;})
+      .sort(function(x,y){return String(x.time).localeCompare(String(y.time));});
+    var mine=all.filter(function(a){ try{ return canSeeGuests(a); }catch(e){ return false; } });
+    var shown=(wd23Filter==="all")?mine:mine.filter(function(a){return slotOf(a)===wd23Filter;});
+
+    return '<div class="screen fadein wd23" dir="'+(rtl()?'rtl':'ltr')+'">'
+      +topBar(t("myWorkDay"),(num?"#"+num+" · ":"")+(S.session.name||""))
+      +(typeof dayChips==="function"?dayChips():"")
+      +head(day,num,info)
+      +(num?"":'<div class="wd23-banner">'+ic("users",16)+' '+esc(t("noNumber"))+'</div>')
+      +banners(info)
+      +focus(mine,day)
+      +sec(T("wd23ShiftsH"),T("wd23ShiftsSub"),
+           filters()+(shown.length?shown.map(function(a){return shiftRow(a,day);}).join("")
+                                  :'<div class="wd23-empty">'+esc(T("wd23NoShifts"))+'</div>'),
+           mine.length)
+      +sec(T("wd23TeamH"),T("wd23TeamSub"),team(day,info,num))
+      +sec(T("wd23OpH"),T("wd23OpSub"),operation(info))
+      +sec(T("wd23StdH"),T("wd23StdSub"),standards(info))
+      +'</div>';
+  };
+
+  /* wiring rides on the app's own render cycle */
+  function wire(){
+    if(!S.session||S.session.role!=="staff") return;
+    if(!document.querySelector(".wd23")) return;
+    document.querySelectorAll("[data-wd23]").forEach(function(el){
+      el.onclick=function(e){ e.preventDefault(); e.stopPropagation(); window.wd23OpenShift(el.getAttribute("data-wd23")); };
+    });
+    document.querySelectorAll("[data-wd23f]").forEach(function(el){
+      el.onclick=function(){ wd23Filter=el.getAttribute("data-wd23f"); render(); };
+    });
+  }
+  var oldRender=window.render;
+  if(typeof oldRender==="function"){
+    window.render=function(){ var r=oldRender.apply(this,arguments); try{ wire(); }catch(e){} return r; };
+  }
 })();
 </script>
 
