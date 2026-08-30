@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<!-- build: v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1802,131 +1803,6 @@ body::before{content:"";position:fixed;inset:0;background-image:var(--app-bg-ima
   background-size:cover;background-position:center;opacity:var(--login-bg-strength,0);z-index:0;pointer-events:none}
 .login-wrap > *{position:relative;z-index:1}
 html[data-cardborder="off"] .card{border-color:transparent}
-</style>
-
-<style id="guest-v22-digital-concierge">
-/* =========================================================
-   v22 — DIGITAL GUEST CONCIERGE
-   Personal guest experience matching the Explore guide.
-   ========================================================= */
-html[data-approle="guest"]{
-  --g22-bg:#171717;--g22-panel:#202020;--g22-panel2:#252525;--g22-line:rgba(255,255,255,.09);
-  --g22-gold:#c8a878;--g22-gold2:#e2c494;--g22-text:#f3f0ea;--g22-muted:#aaa59d;
-  --g22-soft:#2b2926;--g22-danger:#bd6b5e;--g22-ok:#8aa783;
-}
-html[data-approle="guest"] body,html[data-approle="guest"] .app{background:var(--g22-bg)!important;color:var(--g22-text)}
-html[data-approle="guest"] .screen{background:var(--g22-bg)!important}
-.g22{padding-inline:0!important;padding-bottom:96px!important;overflow-x:hidden}
-.g22-shell{padding:0 18px}
-.g22-top{display:flex;align-items:center;justify-content:space-between;padding:2px 18px 15px;gap:12px}
-.g22-menu,.g22-icon{width:40px;height:40px;border:1px solid var(--g22-line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--g22-gold);background:rgba(255,255,255,.025)}
-.g22-logo{height:32px;max-width:105px;object-fit:contain;filter:brightness(1.08)}
-.g22-brand{font-family:var(--font-display);font-size:22px;letter-spacing:.08em;color:var(--g22-text)}
-.g22-actions{display:flex;gap:8px}
-.g22-eyebrow{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--g22-gold);margin-bottom:7px}
-.g22-welcome{padding:4px 18px 20px}
-.g22-welcome h1{font-family:var(--font-display);font-size:34px;line-height:1.08;font-weight:500;letter-spacing:.01em;color:var(--g22-text)}
-.g22-welcome p{font-size:13px;color:var(--g22-muted);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.g22-dot{width:3px;height:3px;border-radius:50%;background:var(--g22-gold);display:inline-block}
-.g22-livehero{position:relative;height:330px;margin:0 18px 26px;border-radius:24px;overflow:hidden;background:#242424;border:1px solid var(--g22-line)}
-.g22-livehero>img{width:100%;height:100%;object-fit:cover;filter:saturate(.78) brightness(.74)}
-.g22-livehero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.06) 10%,rgba(10,10,10,.2) 45%,rgba(10,10,10,.94) 100%)}
-.g22-hero-top{position:absolute;z-index:2;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center}
-.g22-live{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:rgba(18,18,18,.7);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);padding:7px 10px;border-radius:999px;color:#fff}
-.g22-hero-fav{width:36px;height:36px;border-radius:50%;background:rgba(18,18,18,.7);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);color:#fff;display:flex;align-items:center;justify-content:center}
-.g22-hero-copy{position:absolute;z-index:2;left:18px;right:18px;bottom:18px;color:#fff}
-.g22-hero-copy .g22-k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g22-gold2);margin-bottom:6px}
-.g22-hero-copy h2{font-family:var(--font-display);font-size:30px;line-height:1.08;font-weight:500;color:#fff}
-.g22-hero-copy p{font-size:13px;color:rgba(255,255,255,.75);margin:7px 0 13px;display:flex;gap:12px;flex-wrap:wrap}
-.g22-hero-cta{display:flex;gap:8px}
-.g22-btn{min-height:42px;padding:0 15px;border-radius:12px;background:var(--g22-gold);color:#171717;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center;gap:7px}
-.g22-btn.ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;backdrop-filter:blur(8px)}
-.g22-sec{margin:0 0 28px}
-.g22-sech{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:0 18px;margin-bottom:12px}
-.g22-sech h3{font-family:var(--font-display);font-size:24px;font-weight:500;color:var(--g22-text);line-height:1.1}
-.g22-sech p{font-size:11px;color:var(--g22-muted);margin-top:4px}
-.g22-sech button{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g22-gold);white-space:nowrap}
-.g22-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding:0 18px}
-.g22-action{min-height:112px;border-radius:18px;border:1px solid var(--g22-line);background:linear-gradient(145deg,#242424,#1e1e1e);padding:15px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-.g22-action:before{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:rgba(200,168,120,.08);right:-24px;top:-28px}
-.g22-action .ico{width:34px;height:34px;border-radius:12px;background:rgba(200,168,120,.11);color:var(--g22-gold);display:flex;align-items:center;justify-content:center;border:1px solid rgba(200,168,120,.12)}
-.g22-action b{font-size:14px;font-weight:600;color:var(--g22-text)}
-.g22-action small{font-size:10.5px;color:var(--g22-muted);display:block;margin-top:2px}
-.g22-scroll{display:flex;gap:11px;overflow-x:auto;padding:0 18px 6px;scroll-snap-type:x mandatory;scrollbar-width:none}
-.g22-scroll::-webkit-scrollbar{display:none}
-.g22-plan{flex:0 0 82%;scroll-snap-align:start;border-radius:20px;border:1px solid var(--g22-line);background:var(--g22-panel);overflow:hidden;display:grid;grid-template-columns:105px 1fr;min-height:128px}
-.g22-plan img{width:100%;height:100%;object-fit:cover;filter:saturate(.78) brightness(.78)}
-.g22-plan-body{padding:14px 13px;display:flex;flex-direction:column;justify-content:center;min-width:0}
-.g22-plan-body .time{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--g22-gold)}
-.g22-plan-body b{font-family:var(--font-display);font-size:19px;font-weight:500;margin-top:4px;line-height:1.15;color:var(--g22-text)}
-.g22-plan-body p{font-size:11px;color:var(--g22-muted);margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
-.g22-plan-body .status{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--g22-gold2);margin-top:8px}
-.g22-tonight{flex:0 0 72%;height:230px;border-radius:20px;overflow:hidden;position:relative;border:1px solid var(--g22-line);scroll-snap-align:start;background:#242424}
-.g22-tonight img{width:100%;height:100%;object-fit:cover;filter:saturate(.75) brightness(.68)}
-.g22-tonight:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 22%,rgba(12,12,12,.88) 100%)}
-.g22-tonight-copy{position:absolute;z-index:2;left:15px;right:15px;bottom:15px}
-.g22-tonight-copy span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--g22-gold2)}
-.g22-tonight-copy b{display:block;font-family:var(--font-display);font-size:22px;font-weight:500;color:#fff;margin-top:3px}
-.g22-tonight-copy p{font-size:11px;color:rgba(255,255,255,.72);margin-top:5px}
-.g22-snapshot{margin:0 18px;border:1px solid var(--g22-line);border-radius:20px;background:var(--g22-panel);overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
-.g22-stat{padding:17px 15px;min-height:92px;border-bottom:1px solid var(--g22-line)}
-.g22-stat:nth-child(odd){border-right:1px solid var(--g22-line)}
-.g22-stat:nth-last-child(-n+2){border-bottom:0}
-.g22-stat span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--g22-muted)}
-.g22-stat b{display:block;font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--g22-text);margin-top:6px;line-height:1.15}
-.g22-concierge{margin:0 18px 28px;padding:18px;border-radius:20px;border:1px solid rgba(200,168,120,.22);background:linear-gradient(135deg,#27241f,#1e1e1e);display:flex;align-items:center;gap:14px}
-.g22-concierge .mark{width:48px;height:48px;border-radius:50%;flex:none;background:var(--g22-gold);color:#171717;display:flex;align-items:center;justify-content:center}
-.g22-concierge b{font-family:var(--font-display);font-size:20px;font-weight:500;display:block;color:var(--g22-text)}
-.g22-concierge p{font-size:11px;color:var(--g22-muted);margin-top:2px}
-.g22-concierge .go{margin-left:auto;color:var(--g22-gold);flex:none}
-.g22-empty{margin:0 18px;padding:25px;border:1px dashed var(--g22-line);border-radius:18px;text-align:center;color:var(--g22-muted);font-size:12px}
-/* My Stay */
-.g22-stayhead{padding:3px 18px 18px}
-.g22-stayhead h1{font-family:var(--font-display);font-weight:500;font-size:34px;color:var(--g22-text)}
-.g22-pass{margin:0 18px 26px;border-radius:24px;overflow:hidden;position:relative;background:linear-gradient(135deg,#2b2823,#1d1d1d);border:1px solid rgba(200,168,120,.25);padding:21px}
-.g22-pass:before{content:"";position:absolute;width:180px;height:180px;border:1px solid rgba(200,168,120,.08);border-radius:50%;right:-90px;top:-70px}
-.g22-pass-top{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
-.g22-pass-top .label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--g22-gold)}
-.g22-pass h2{font-family:var(--font-display);font-size:28px;font-weight:500;color:var(--g22-text);margin-top:5px}
-.g22-room{font-family:var(--font-display);font-size:27px;color:var(--g22-gold2);text-align:right;line-height:1}
-.g22-room small{display:block;font-family:var(--font-body);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--g22-muted);margin-bottom:5px}
-.g22-passline{height:1px;background:rgba(255,255,255,.09);margin:18px 0 15px}
-.g22-passgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.g22-passgrid span{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--g22-muted)}
-.g22-passgrid b{display:block;font-size:12px;font-weight:500;color:var(--g22-text);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.g22-itinerary{margin:0 18px;position:relative;padding-left:23px}
-.g22-itinerary:before{content:"";position:absolute;left:6px;top:9px;bottom:9px;width:1px;background:var(--g22-line)}
-.g22-it{position:relative;margin-bottom:12px;border:1px solid var(--g22-line);border-radius:18px;background:var(--g22-panel);overflow:hidden;display:grid;grid-template-columns:88px 1fr;min-height:108px}
-.g22-it:before{content:"";position:absolute;width:9px;height:9px;border-radius:50%;left:-21px;top:20px;background:var(--g22-gold);box-shadow:0 0 0 5px var(--g22-bg)}
-.g22-it img{width:100%;height:100%;object-fit:cover;filter:saturate(.75) brightness(.75)}
-.g22-it-body{padding:12px;min-width:0}
-.g22-it-body .type{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--g22-gold)}
-.g22-it-body b{display:block;font-size:14px;color:var(--g22-text);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.g22-it-body p{font-size:10.5px;color:var(--g22-muted);margin-top:5px}
-.g22-it-tools{display:flex;gap:7px;margin-top:8px;align-items:center}
-.g22-mini{padding:6px 9px;border-radius:9px;border:1px solid var(--g22-line);color:var(--g22-gold);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
-.g22-mini.danger{color:#d39387;border-color:rgba(189,107,94,.3)}
-.g22-request{margin:0 18px 9px;border:1px solid var(--g22-line);border-radius:16px;background:var(--g22-panel);padding:14px;display:flex;gap:11px;align-items:center}
-.g22-request .ri{width:34px;height:34px;border-radius:11px;background:rgba(200,168,120,.1);color:var(--g22-gold);display:flex;align-items:center;justify-content:center;flex:none}
-.g22-request b{font-size:12px;color:var(--g22-text);display:block}
-.g22-request p{font-size:10px;color:var(--g22-muted);margin-top:2px}
-.g22-request .rs{margin-left:auto;font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:var(--g22-gold)}
-.g22-profileactions{padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
-.g22-profileactions button{min-height:45px;border:1px solid var(--g22-line);border-radius:13px;background:var(--g22-panel);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--g22-gold);display:flex;align-items:center;justify-content:center;gap:7px}
-/* Make remaining guest pages consistent with the digital concierge */
-html[data-approle="guest"] .card,html[data-approle="guest"] .tk{background:var(--g22-panel)!important;border:1px solid var(--g22-line)!important;box-shadow:none!important;color:var(--g22-text)}
-html[data-approle="guest"] .top h2,html[data-approle="guest"] .whobar h2,html[data-approle="guest"] .sec>h3{color:var(--g22-text)!important;font-weight:500}
-html[data-approle="guest"] .mini,html[data-approle="guest"] .meta,html[data-approle="guest"] .top p{color:var(--g22-muted)!important}
-html[data-approle="guest"] .iconbtn{background:var(--g22-panel)!important;border:1px solid var(--g22-line)!important;color:var(--g22-gold)!important;box-shadow:none!important}
-html[data-approle="guest"] .btn:not(.warn){background:var(--g22-gold)!important;color:#171717!important;box-shadow:none!important}
-html[data-approle="guest"] .btn.ghost{background:transparent!important;border:1px solid var(--g22-line)!important;color:var(--g22-gold)!important}
-html[data-approle="guest"] .nav{background:rgba(23,23,23,.92)!important;border-top:1px solid var(--g22-line)!important;backdrop-filter:blur(18px);box-shadow:none!important}
-html[data-approle="guest"] .nav button{color:#8f8b85!important}
-html[data-approle="guest"] .nav button.on{color:var(--g22-gold)!important}
-html[data-approle="guest"] .nav:before{background:linear-gradient(90deg,transparent,var(--g22-gold),transparent)!important;opacity:.32!important}
-html[data-approle="guest"] input,html[data-approle="guest"] select,html[data-approle="guest"] textarea{background:#202020!important;color:var(--g22-text)!important;border-color:var(--g22-line)!important}
-@media(max-width:390px){.g22-livehero{height:305px}.g22-welcome h1{font-size:31px}.g22-plan{flex-basis:88%}.g22-tonight{flex-basis:78%}}
-@media(min-width:500px){.g22-grid{grid-template-columns:repeat(3,1fr)}.g22-plan{flex-basis:68%}.g22-tonight{flex-basis:58%}}
 </style>
 </head>
 <body data-build="intelligent-planner-v6">
@@ -6046,7 +5922,7 @@ function exploreView(){
       <div class="ex-feat-cap"><span class="ex-tag">${t("ex_featured")}</span>${feat.cap?`<b>${esc(feat.cap)}</b>`:""}</div>
     </div>`:""}
     ${exploreProgram()}
-    <div class="ex-secrow"><h3 class="ex-sec">${t("ex_moments")}</h3>${isMgr?`<button class="dd-edit" id="ex-addvid" type="button">${ic("plus",13)} ${t("ex_addvid")}</button>`:""}</div>
+    <div class="ex-secrow"><h3 class="ex-sec">${t("ex_moments")}</h3>${isMgr?`<button class="dd-edit" id="ex-addvid-v12" type="button">${ic("plus",13)} ${t("ex_addvid")}</button>`:""}</div>
     ${shown.length?`<div class="ex-grid">${shown.map(card).join("")}</div>`:`<div class="empty"><div class="big">${ic("sparkle",30)}</div>${t("ex_none")}</div>`}
   </div>`;
 }
@@ -12416,7 +12292,7 @@ wireExplore=function(){
     if(el.hasAttribute("data-vid")) return;                 // the hero video wins
     ev.stopPropagation(); openExploreBook(el.dataset.exact);
   });
-  const av=document.getElementById("ex-addvid"); if(av) av.onclick=openVideoLinkModal;
+  const av=document.getElementById("ex-addvid-v12")||document.getElementById("ex-addvid"); if(av) av.onclick=openVideoLinkModal;
 };
 
 </script>
@@ -14243,217 +14119,7 @@ label{
 </style>
 
 
-<style id="design-v18-full-redesign">
-/* ============================================================
-   v18 — FULL EXPERIENCE REDESIGN
-   Not another shadow layer. This changes the visual language,
-   role identity, controls, cards and page composition globally.
-   ============================================================ */
-:root{
-  --v18-radius:22px; --v18-radius-sm:14px; --v18-gap:16px;
-  --v18-guest:#16697A; --v18-guest2:#27A6A1; --v18-guest-accent:#FFB24A;
-  --v18-staff:#4E46C7; --v18-staff2:#786DEB; --v18-staff-accent:#28C7D9;
-  --v18-manager:#13283F; --v18-manager2:#245A73; --v18-manager-accent:#B8D94A;
-  --v18-explore:#EC6F5C; --v18-explore2:#F3A45B; --v18-explore-accent:#1E8D92;
-  --v18-role:var(--v18-guest); --v18-role2:var(--v18-guest2); --v18-accent:var(--v18-guest-accent);
-  --bg:#F4F7F8; --card:#FFFFFF; --ink:#152332; --muted:#6B7784; --line:#E1E8EC;
-  --shadow:0 10px 30px rgba(25,45,60,.07);
-  --font-display:'Jost',sans-serif; --font-body:'Jost',sans-serif;
-  --radius:var(--v18-radius); --btn-radius:16px; --btn-radius-sm:12px;
-}
-[data-theme="dark"]{
-  --bg:#0B131C; --card:#121D27; --ink:#F3F7F9; --muted:#9DAAB4; --line:#253542;
-}
-[data-approle="guest"]{--v18-role:var(--v18-guest);--v18-role2:var(--v18-guest2);--v18-accent:var(--v18-guest-accent)}
-[data-approle="staff"]{--v18-role:var(--v18-staff);--v18-role2:var(--v18-staff2);--v18-accent:var(--v18-staff-accent)}
-[data-approle="manager"]{--v18-role:var(--v18-manager);--v18-role2:var(--v18-manager2);--v18-accent:var(--v18-manager-accent)}
-html[data-v18-view="explore"]{--v18-role:var(--v18-explore);--v18-role2:var(--v18-explore2);--v18-accent:var(--v18-explore-accent)}
-
-body{background:var(--bg);font-family:var(--font-body);letter-spacing:-.005em}
-.app{max-width:620px;background:var(--bg)}
-[data-approle="manager"] .app{max-width:1180px}
-.screen{padding-inline:16px!important;padding-bottom:34px!important}
-h1,h2,h3,.serif{font-family:var(--font-display);font-weight:700;letter-spacing:-.025em}
-
-/* --- top chrome: simple, clear, strongly branded --- */
-.top{margin-bottom:14px!important;align-items:center}
-.top .who h2,.whobar h2{font-family:var(--font-body);font-weight:800;font-size:28px!important;letter-spacing:-.035em}
-.top .who p,.whobar p{font-size:13px!important;color:var(--muted)}
-.iconbtn,.socialtop{
-  width:44px!important;height:44px!important;border-radius:14px!important;background:var(--card)!important;
-  border:1px solid var(--line)!important;box-shadow:none!important;color:var(--v18-role)!important
-}
-.iconbtn:active,.socialtop:active{transform:scale(.94);background:color-mix(in srgb,var(--v18-role) 8%,var(--card))!important}
-.reddot{background:#FF4D5F!important;border-color:var(--card)!important}
-
-/* --- buttons: color is now a core interaction signal --- */
-.btn:not(.ghost):not(.warn),.wa-cta,.v9-hero-btn,.v9-dashbtns .btn{
-  background:linear-gradient(135deg,var(--v18-role),var(--v18-role2))!important;
-  color:#fff!important;border:0!important;box-shadow:none!important;border-radius:16px!important;
-  min-height:50px;font-weight:750;letter-spacing:0
-}
-.btn:not(.ghost):not(.warn)::after{display:none!important}
-.btn.ghost{
-  background:color-mix(in srgb,var(--v18-role) 7%,var(--card))!important;
-  color:var(--v18-role)!important;border:1px solid color-mix(in srgb,var(--v18-role) 18%,var(--line))!important;
-  box-shadow:none!important
-}
-.btn.warn{background:#D94747!important;box-shadow:none!important}
-.btn.sm{min-height:38px;padding:9px 14px!important}
-
-/* --- cards: flatter, clearer, less beige/luxury-template --- */
-.card,.stat,.tk,.daycard,.stdcard,.prcard,.showcard,.profcard,.attn,.attsum,.v15-strip,.v15-mnow{
-  background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:none!important;
-  border-radius:var(--v18-radius)!important
-}
-.card{padding:17px}
-.sec{margin-top:26px!important;margin-bottom:24px!important}
-.sec>h3{font-size:20px!important;font-family:var(--font-body);font-weight:800;margin-bottom:12px!important;padding-bottom:0!important}
-.sec>h3::after{display:none!important}
-.sec>h3 .count{background:color-mix(in srgb,var(--v18-role) 10%,transparent);color:var(--v18-role);padding:4px 8px;border-radius:999px}
-.mini{color:var(--muted)!important}
-.chip,.pill,.tchip,.rstat,.cc-tag{
-  border:0!important;background:color-mix(in srgb,var(--v18-role) 9%,var(--card))!important;color:var(--v18-role)!important;
-  font-weight:700!important;border-radius:999px!important
-}
-
-/* --- forms / tabs / pickers --- */
-input,select,textarea,.pickfield{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:none!important}
-input:focus,select:focus,textarea:focus{border-color:var(--v18-role)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--v18-role) 14%,transparent)!important}
-.daytabs,.pills,.ex-chips{gap:8px!important}
-.daytabs button,.pills button,.ex-chip,.daychip{
-  background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:none!important;border-radius:999px!important;color:var(--muted)!important
-}
-.daytabs button.on,.pills button.on,.ex-chip.on,.daychip.on{
-  background:var(--v18-role)!important;color:#fff!important;border-color:var(--v18-role)!important;box-shadow:none!important
-}
-
-/* --- nav becomes a modern floating dock --- */
-.nav{
-  position:sticky!important;bottom:10px!important;margin:8px 12px calc(8px + env(safe-area-inset-bottom))!important;width:calc(100% - 24px)!important;
-  max-width:none!important;border:1px solid var(--line)!important;border-radius:22px!important;background:color-mix(in srgb,var(--card) 92%,transparent)!important;
-  backdrop-filter:blur(18px);box-shadow:0 12px 34px rgba(19,40,63,.12)!important;padding:8px!important
-}
-.nav::before{display:none!important}
-.nav button{min-height:52px;border-radius:15px!important;gap:2px!important;color:var(--muted)!important;font-weight:650!important}
-.nav button .ic{font-size:20px!important}
-.nav button.on{background:color-mix(in srgb,var(--v18-role) 11%,var(--card))!important;color:var(--v18-role)!important}
-
-/* --- drawer: grouped, compact, colored active item --- */
-.drawer{background:var(--bg)!important;box-shadow:24px 0 70px rgba(9,20,30,.22)!important}
-.dr-head .mono.sm,.pf-ava,.acct-av,.mb-av,.rnum{
-  background:linear-gradient(135deg,var(--v18-role),var(--v18-role2))!important;color:#fff!important;box-shadow:none!important
-}
-.dr-sec{color:var(--v18-role)!important;font-weight:800!important;opacity:1!important}
-.dr-it{border-radius:14px!important}
-.dr-it.on{background:var(--v18-role)!important;color:#fff!important;box-shadow:none!important}
-.dr-ic{color:var(--v18-role)!important}
-
-/* --- activity cards: visual-first across guest/staff/manager --- */
-.card.act{
-  display:grid!important;grid-template-columns:96px minmax(0,1fr) auto!important;gap:14px!important;align-items:center!important;
-  padding:10px!important;overflow:hidden
-}
-.card.act .thumb{width:96px!important;height:96px!important;border-radius:16px!important}
-.card.act .mid h4{font-size:17px!important;font-weight:800!important}
-.card.act .catbadge{color:var(--v18-role)!important;font-weight:800!important}
-.card.act .side{padding-inline-end:4px}
-@media(max-width:410px){.card.act{grid-template-columns:82px minmax(0,1fr)!important}.card.act .thumb{width:82px!important;height:88px!important}.card.act .side{grid-column:2;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important}}
-
-/* ============================================================
-   VISITOR / EXPLORE — editorial discovery, not a login preview
-   ============================================================ */
-html[data-v18-view="explore"] body{background:#FFF8F3}
-[data-theme="dark"] html[data-v18-view="explore"] body{background:#16110F}
-.explore-screen{padding-inline:0!important;overflow:hidden}
-.ex-top{padding:0 16px 12px!important;position:relative;z-index:2}
-.ex-h1{font-size:38px!important;line-height:1!important;padding:4px 18px 0!important;color:#17212A}
-[data-theme="dark"] .ex-h1{color:var(--ink)}
-.ex-sub{padding:6px 18px 16px!important;font-size:15px!important;color:var(--muted)!important}
-.ex-chips{padding:0 18px 14px!important;overflow-x:auto;display:flex;scrollbar-width:none}
-.ex-feat{margin:0 16px 24px!important;border-radius:28px!important;min-height:340px!important;box-shadow:none!important;overflow:hidden!important}
-.ex-feat img{height:340px!important;object-fit:cover!important}
-.ex-feat::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 32%,rgba(12,19,24,.78));pointer-events:none}
-.ex-feat-cap{z-index:2!important;padding:22px!important}
-.ex-feat-cap b{font-size:24px!important;line-height:1.08!important}
-.ex-tag{background:#fff!important;color:var(--v18-explore)!important;border:0!important;font-weight:800!important}
-.ex-sec,.ex-secrow,.ex-program{margin-inline:18px!important}
-.ex-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;padding:0 18px 24px!important}
-.ex-it{border-radius:20px!important;overflow:hidden!important;background:#fff!important;border:0!important;box-shadow:none!important}
-.ex-thumb{aspect-ratio:4/5!important}
-.ex-cap{padding:11px 12px!important;font-weight:700!important}
-.ex-prog-card,.ex-act{border-radius:20px!important;border:0!important;background:#fff!important;box-shadow:none!important}
-
-/* ============================================================
-   GUEST — holiday companion: warmth + next action hierarchy
-   ============================================================ */
-[data-approle="guest"] .screen[data-v18-tab="home"]{background:linear-gradient(180deg,#EAF8F7 0,#F4F7F8 280px)!important;border-radius:0 0 32px 32px}
-[data-approle="guest"] .v14-welcome{
-  background:linear-gradient(135deg,var(--v18-guest),var(--v18-guest2))!important;border-radius:28px!important;box-shadow:none!important;padding:22px!important
-}
-[data-approle="guest"] .v14-w-cell{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.16)!important}
-[data-approle="guest"] .hero{border-radius:28px!important;box-shadow:none!important;margin-top:16px!important}
-[data-approle="guest"] .hero img{height:280px!important}
-[data-approle="guest"] .hero .body h3{font-size:30px!important;font-family:var(--font-body)!important;font-weight:800!important}
-[data-approle="guest"] .hero .tag{background:var(--v18-guest-accent)!important;color:#24303A!important;border:0!important}
-[data-approle="guest"] .quickrow{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
-[data-approle="guest"] .quickrow button{padding:18px!important;border-radius:20px!important;border:1px solid var(--line)!important;box-shadow:none!important;text-align:start!important}
-[data-approle="guest"] .quickrow button span{width:42px;height:42px;border-radius:13px;background:#DDF3F1;color:var(--v18-guest)!important;display:flex!important;align-items:center;justify-content:center;margin-bottom:10px!important}
-
-/* ============================================================
-   ENTERTAINER — live shift console with high-energy identity
-   ============================================================ */
-[data-approle="staff"] .screen[data-v18-tab="workday"]{background:linear-gradient(180deg,#F0EFFF 0,#F4F7F8 300px)!important}
-[data-approle="staff"] .v15-focus{
-  border-radius:28px!important;background:linear-gradient(135deg,var(--v18-staff),var(--v18-staff2))!important;color:#fff!important;box-shadow:none!important;padding:24px!important
-}
-[data-approle="staff"] .v15-focus.live::before{width:6px!important;background:var(--v18-staff-accent)!important}
-[data-approle="staff"] .v15-f-name{font-family:var(--font-body)!important;font-size:28px!important;font-weight:850!important}
-[data-approle="staff"] .v15-f-when{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.15)!important}
-[data-approle="staff"] .v15-focus.quiet,[data-approle="staff"] .v15-focus.done{background:var(--card)!important;color:var(--ink)!important}
-[data-approle="staff"] .daycard{overflow:hidden!important}
-[data-approle="staff"] .dc-cell b{font-size:16px!important}
-[data-approle="staff"] .std-row{padding:14px 16px!important}
-[data-approle="staff"] .std-t{color:var(--v18-staff)!important;font-weight:800!important}
-[data-approle="staff"] .rankb.r0{background:var(--v18-staff-accent)!important;color:#14313B!important}
-
-/* ============================================================
-   MANAGER — dense operations cockpit, responsive wide layout
-   ============================================================ */
-[data-approle="manager"] body{background:#EEF2F5}
-[data-theme="dark"][data-approle="manager"] body{background:#09121A}
-[data-approle="manager"] .screen[data-v18-tab="dash"]{background:linear-gradient(180deg,#E8EFF4 0,#EEF2F5 300px)!important}
-[data-approle="manager"] .v15-mnow{background:var(--v18-manager)!important;color:#fff!important;border:0!important;padding:20px!important;border-radius:26px!important}
-[data-approle="manager"] .v15-mn-cell{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.10)!important;color:#fff!important;box-shadow:none!important}
-[data-approle="manager"] .v15-mn-cell b,[data-approle="manager"] .v15-mn-cell span{color:#fff!important}
-[data-approle="manager"] .v15-mn-cell.hot{background:rgba(184,217,74,.20)!important}
-[data-approle="manager"] .v15-mn-run,[data-approle="manager"] .v15-mn-run b,[data-approle="manager"] .v15-mn-run span{color:#fff!important}
-[data-approle="manager"] .stat-grid,.v9-stats{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:12px!important}
-[data-approle="manager"] .stat,.v9-statlink{padding:18px!important;border-radius:20px!important}
-[data-approle="manager"] .stat::before,.v9-statlink::before{display:none!important}
-[data-approle="manager"] .stat b,.v9-statlink b{color:var(--v18-manager)!important;font-family:var(--font-body)!important;font-weight:850!important}
-[data-theme="dark"][data-approle="manager"] .stat b,[data-theme="dark"] .v9-statlink b{color:var(--v18-manager-accent)!important}
-@media(min-width:760px){
- [data-approle="manager"] .screen[data-v18-tab="dash"] .stat-grid,[data-approle="manager"] .screen[data-v18-tab="dash"] .v9-stats{grid-template-columns:repeat(4,1fr)!important}
- [data-approle="manager"] .screen{padding-inline:24px!important}
- [data-approle="manager"] .opgrid{grid-template-columns:repeat(3,1fr)!important}
- [data-approle="manager"] .catgrid{grid-template-columns:repeat(4,1fr)!important}
-}
-
-/* --- login rebuilt visually to match the product --- */
-.login-wrap{background:linear-gradient(150deg,#0F2738 0%,#17697A 55%,#3CB7B1 100%)!important;padding-inline:20px!important}
-.brandmark .mono{border:0!important;background:rgba(255,255,255,.13)!important;color:#fff!important;box-shadow:none!important;border-radius:24px!important}
-.brandmark h1{font-family:var(--font-body)!important;font-weight:850!important;letter-spacing:-.03em!important}
-.brandmark p{opacity:.8!important}
-.login-card{border-radius:28px!important;box-shadow:none!important;border:1px solid rgba(255,255,255,.2)!important}
-.role-tabs button{border-radius:999px!important;background:rgba(255,255,255,.10)!important}
-.role-tabs button.on{background:#fff!important;color:#173746!important}
-.lang-row button{border-radius:999px!important}
-
-/* motion stays restrained */
-.fadein>*{animation:none!important}.hero img{animation:none!important}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
+<!-- v18 stylesheet removed in the fix round: v20 restyled the same selectors and loads after it, so every rule here was overruled. The v18 SCRIPT is deliberately kept below — v20's CSS depends on the data-v18-view / data-v18-tab attributes it sets. -->
 <script id="design-v18-full-redesign-js">
 (function(){
   if(window.__v18Full) return; window.__v18Full=true;
@@ -14815,177 +14481,447 @@ html[data-v18-view="explore"] body,html[data-v18-view="explore"] .app,html[data-
 @media(min-width:541px){.ex21{border-left:1px solid var(--ex21-line);border-right:1px solid var(--ex21-line)}.ex21-today{flex-basis:330px}}
 @media(prefers-reduced-motion:reduce){.ex21-hero:before,.ex21-media:before{animation:none}.ex21-detail{animation:none}}
 </style>
+<script id="v21-i18n">
+/* v21 fix round — Explore texts in all 8 languages (A1) */
+const V21_STR={
+en:{ex21Kicker:"DIGITAL HOLIDAY GUIDE",ex21Title:"Explore",ex21Sub:"Make the most of your stay",ex21TodayH:"Happening Today",ex21TodaySub:"Things you can do right now",ex21MoodH:"What are you in the mood for?",ex21MoodSub:"Explore by feeling, not by menu",ex21DiscH:"Discover",ex21DiscSub:"Fast filters for your day",ex21RecH:"Recommended for You",ex21RecSub:"Suggestions change with the time of day",ex21PlaceH:"Where It Happens",ex21PlaceSub:"The places at the hotel with something on",ex21MissH:"Don't Miss",ex21MissSub:"Worth making time for",ex21FavH:"My Favourites",ex21FavSub:"Your saved holiday plan",ex21Details:"View Details",ex21Book:"Book Now",ex21Booked:"Already Booked",ex21SigninBook:"Sign in to Book",ex21MyStay:"My Stay",ex21AddFav:"Add to favourites",ex21Saved:"Saved",ex21FavOn:"Added to favourites",ex21FavOff:"Removed from favourites",ex21ExpH:"What You'll Experience",ex21GoodH:"Good to Know",ex21Experience:"Experience",ex21When:"When",ex21Where:"Where",ex21StartEnd:"Starting / finishing time",ex21Area:"Area / location",ex21InMin:"Starts in {n} min",ex21InH:"Starts in {h}h",ex21InHM:"Starts in {h}h {m}m",ex21Tomorrow:"Tomorrow",ex21Later:"Later this week",ex21FForYou:"For You",ex21FRelax:"Relax",ex21FActive:"Active",ex21FNight:"Nightlife",ex21MEnt:"Entertainment",ex21MShow:"Show",ex21MLive:"Live Music",ex21MEvents:"Events",ex21RightNow:"RIGHT NOW",ex21Morning:"GOOD MORNING",ex21Afternoon:"THIS AFTERNOON",ex21Tonight:"TONIGHT",ex21PopularT:"POPULAR TODAY",ex21Pick:"HOTEL PICK",ex21Golden:"Golden hour is getting close",ex21StartActive:"Start your holiday with something active",ex21MakeMost:"Make the most of the day",ex21EveStarts:"Your evening starts here",ex21SeeProg:"See today's program",ex21SeeHappening:"See what's happening",ex21SeeTonight:"Discover tonight's program",ex21RecToday:"Recommended today",ex21AtHotel:"At the hotel",ex21Booking1:"guest booking",ex21BookingN:"guest bookings",ex21NoneFilter:"Nothing is scheduled in this filter yet.",ex21NoPlaces:"Places appear here once activities have a location.",ex21NoFavs:"Save activities and places here so your holiday plan is always easy to find.",ex21DescFall:"Discover what is happening during your stay.",ex21LeadFall:"Discover this experience during your stay and check the live schedule for the latest details.",ex21SeeAt:"See what is happening at {p}.",ex21Hotel:"Hotel",ex21SeeSched:"See schedule"},
+de:{ex21Kicker:"DIGITALER URLAUBSGUIDE",ex21Title:"Entdecken",ex21Sub:"Hol das Beste aus deinem Urlaub heraus",ex21TodayH:"Heute im Programm",ex21TodaySub:"Das kannst du jetzt gleich machen",ex21MoodH:"Worauf hast du Lust?",ex21MoodSub:"Nach Stimmung entdecken statt im Menü suchen",ex21DiscH:"Entdecken",ex21DiscSub:"Schnellfilter für deinen Tag",ex21RecH:"Für dich empfohlen",ex21RecSub:"Die Vorschläge ändern sich mit der Tageszeit",ex21PlaceH:"Wo es stattfindet",ex21PlaceSub:"Die Orte im Hotel, an denen etwas los ist",ex21MissH:"Nicht verpassen",ex21MissSub:"Dafür lohnt sich die Zeit",ex21FavH:"Meine Favoriten",ex21FavSub:"Dein gespeicherter Urlaubsplan",ex21Details:"Details ansehen",ex21Book:"Jetzt buchen",ex21Booked:"Bereits gebucht",ex21SigninBook:"Zum Buchen anmelden",ex21MyStay:"Mein Urlaub",ex21AddFav:"Zu Favoriten",ex21Saved:"Gespeichert",ex21FavOn:"Zu Favoriten hinzugefügt",ex21FavOff:"Aus Favoriten entfernt",ex21ExpH:"Das erwartet dich",ex21GoodH:"Gut zu wissen",ex21Experience:"Erlebnis",ex21When:"Wann",ex21Where:"Wo",ex21StartEnd:"Beginn / Ende",ex21Area:"Bereich / Ort",ex21InMin:"Beginnt in {n} Min",ex21InH:"Beginnt in {h} Std",ex21InHM:"Beginnt in {h} Std {m} Min",ex21Tomorrow:"Morgen",ex21Later:"Später diese Woche",ex21FForYou:"Für dich",ex21FRelax:"Entspannen",ex21FActive:"Aktiv",ex21FNight:"Nachtleben",ex21MEnt:"Unterhaltung",ex21MShow:"Show",ex21MLive:"Live-Musik",ex21MEvents:"Events",ex21RightNow:"JETZT GERADE",ex21Morning:"GUTEN MORGEN",ex21Afternoon:"HEUTE NACHMITTAG",ex21Tonight:"HEUTE ABEND",ex21PopularT:"HEUTE BELIEBT",ex21Pick:"HOTEL-TIPP",ex21Golden:"Die goldene Stunde rückt näher",ex21StartActive:"Starte deinen Urlaub sportlich",ex21MakeMost:"Mach das Beste aus dem Tag",ex21EveStarts:"Hier beginnt dein Abend",ex21SeeProg:"Heutiges Programm ansehen",ex21SeeHappening:"Sieh, was los ist",ex21SeeTonight:"Abendprogramm entdecken",ex21RecToday:"Heute empfohlen",ex21AtHotel:"Im Hotel",ex21Booking1:"Gast gebucht",ex21BookingN:"Gäste gebucht",ex21NoneFilter:"In diesem Filter ist noch nichts geplant.",ex21NoPlaces:"Orte erscheinen hier, sobald Aktivitäten einen Ort haben.",ex21NoFavs:"Speichere hier Aktivitäten und Orte, damit dein Urlaubsplan immer griffbereit ist.",ex21DescFall:"Entdecke, was während deines Aufenthalts passiert.",ex21LeadFall:"Entdecke dieses Erlebnis während deines Aufenthalts — die aktuellen Zeiten findest du im Live-Programm.",ex21SeeAt:"Sieh, was bei {p} los ist.",ex21Hotel:"Hotel",ex21SeeSched:"Zeitplan ansehen"},
+ru:{ex21Kicker:"ЦИФРОВОЙ ГИД ПО ОТДЫХУ",ex21Title:"Обзор",ex21Sub:"Проведите отпуск на все сто",ex21TodayH:"Сегодня в программе",ex21TodaySub:"Это можно сделать прямо сейчас",ex21MoodH:"Чего вам хочется?",ex21MoodSub:"Выбирайте по настроению, а не по меню",ex21DiscH:"Найти",ex21DiscSub:"Быстрые фильтры на день",ex21RecH:"Рекомендуем вам",ex21RecSub:"Подсказки меняются в течение дня",ex21PlaceH:"Где это проходит",ex21PlaceSub:"Места в отеле, где что-то происходит",ex21MissH:"Не пропустите",ex21MissSub:"Ради этого стоит найти время",ex21FavH:"Моё избранное",ex21FavSub:"Ваш сохранённый план отдыха",ex21Details:"Подробнее",ex21Book:"Записаться",ex21Booked:"Вы уже записаны",ex21SigninBook:"Войдите, чтобы записаться",ex21MyStay:"Мой отдых",ex21AddFav:"В избранное",ex21Saved:"Сохранено",ex21FavOn:"Добавлено в избранное",ex21FavOff:"Удалено из избранного",ex21ExpH:"Что вас ждёт",ex21GoodH:"Полезно знать",ex21Experience:"Формат",ex21When:"Когда",ex21Where:"Где",ex21StartEnd:"Начало / окончание",ex21Area:"Зона / место",ex21InMin:"Начало через {n} мин",ex21InH:"Начало через {h} ч",ex21InHM:"Начало через {h} ч {m} мин",ex21Tomorrow:"Завтра",ex21Later:"Позже на неделе",ex21FForYou:"Для вас",ex21FRelax:"Отдых",ex21FActive:"Активно",ex21FNight:"Ночная жизнь",ex21MEnt:"Развлечения",ex21MShow:"Шоу",ex21MLive:"Живая музыка",ex21MEvents:"События",ex21RightNow:"ПРЯМО СЕЙЧАС",ex21Morning:"ДОБРОЕ УТРО",ex21Afternoon:"СЕГОДНЯ ДНЁМ",ex21Tonight:"СЕГОДНЯ ВЕЧЕРОМ",ex21PopularT:"ПОПУЛЯРНО СЕГОДНЯ",ex21Pick:"ВЫБОР ОТЕЛЯ",ex21Golden:"Скоро золотой час",ex21StartActive:"Начните отдых с чего-то активного",ex21MakeMost:"Проведите день с пользой",ex21EveStarts:"Ваш вечер начинается здесь",ex21SeeProg:"Смотреть программу дня",ex21SeeHappening:"Посмотрите, что происходит",ex21SeeTonight:"Открыть вечернюю программу",ex21RecToday:"Рекомендуем сегодня",ex21AtHotel:"В отеле",ex21Booking1:"гость записан",ex21BookingN:"гостей записано",ex21NoneFilter:"В этом фильтре пока ничего нет.",ex21NoPlaces:"Места появятся здесь, когда у активностей будет указано место.",ex21NoFavs:"Сохраняйте сюда активности и места, чтобы план отдыха всегда был под рукой.",ex21DescFall:"Узнайте, что происходит во время вашего отдыха.",ex21LeadFall:"Познакомьтесь с этим форматом во время отдыха — актуальное время смотрите в живой программе.",ex21SeeAt:"Посмотрите, что происходит здесь: {p}.",ex21Hotel:"Отель",ex21SeeSched:"Смотреть расписание"},
+pl:{ex21Kicker:"CYFROWY PRZEWODNIK WAKACYJNY",ex21Title:"Odkrywaj",ex21Sub:"Wykorzystaj swój pobyt najlepiej jak się da",ex21TodayH:"Dziś w programie",ex21TodaySub:"To możesz zrobić już teraz",ex21MoodH:"Na co masz ochotę?",ex21MoodSub:"Wybieraj nastrojem, nie menu",ex21DiscH:"Odkrywaj",ex21DiscSub:"Szybkie filtry na Twój dzień",ex21RecH:"Polecane dla Ciebie",ex21RecSub:"Propozycje zmieniają się w ciągu dnia",ex21PlaceH:"Gdzie się to dzieje",ex21PlaceSub:"Miejsca w hotelu, gdzie coś się dzieje",ex21MissH:"Nie przegap",ex21MissSub:"Warto znaleźć na to czas",ex21FavH:"Moje ulubione",ex21FavSub:"Twój zapisany plan wakacji",ex21Details:"Zobacz szczegóły",ex21Book:"Zarezerwuj",ex21Booked:"Już zarezerwowane",ex21SigninBook:"Zaloguj się, aby zarezerwować",ex21MyStay:"Mój pobyt",ex21AddFav:"Do ulubionych",ex21Saved:"Zapisano",ex21FavOn:"Dodano do ulubionych",ex21FavOff:"Usunięto z ulubionych",ex21ExpH:"Czego możesz się spodziewać",ex21GoodH:"Warto wiedzieć",ex21Experience:"Rodzaj",ex21When:"Kiedy",ex21Where:"Gdzie",ex21StartEnd:"Początek / koniec",ex21Area:"Strefa / miejsce",ex21InMin:"Start za {n} min",ex21InH:"Start za {h} godz",ex21InHM:"Start za {h} godz {m} min",ex21Tomorrow:"Jutro",ex21Later:"Później w tym tygodniu",ex21FForYou:"Dla Ciebie",ex21FRelax:"Relaks",ex21FActive:"Aktywnie",ex21FNight:"Nocne życie",ex21MEnt:"Rozrywka",ex21MShow:"Show",ex21MLive:"Muzyka na żywo",ex21MEvents:"Wydarzenia",ex21RightNow:"WŁAŚNIE TERAZ",ex21Morning:"DZIEŃ DOBRY",ex21Afternoon:"DZIŚ PO POŁUDNIU",ex21Tonight:"DZIŚ WIECZOREM",ex21PopularT:"POPULARNE DZIŚ",ex21Pick:"WYBÓR HOTELU",ex21Golden:"Złota godzina już blisko",ex21StartActive:"Zacznij wakacje aktywnie",ex21MakeMost:"Wykorzystaj ten dzień",ex21EveStarts:"Tu zaczyna się Twój wieczór",ex21SeeProg:"Zobacz dzisiejszy program",ex21SeeHappening:"Zobacz, co się dzieje",ex21SeeTonight:"Odkryj wieczorny program",ex21RecToday:"Polecane dziś",ex21AtHotel:"W hotelu",ex21Booking1:"gość zapisany",ex21BookingN:"gości zapisanych",ex21NoneFilter:"W tym filtrze nic jeszcze nie zaplanowano.",ex21NoPlaces:"Miejsca pojawią się tutaj, gdy aktywności będą miały przypisane miejsce.",ex21NoFavs:"Zapisuj tu aktywności i miejsca, aby Twój plan wakacji był zawsze pod ręką.",ex21DescFall:"Sprawdź, co dzieje się podczas Twojego pobytu.",ex21LeadFall:"Poznaj tę atrakcję podczas pobytu — aktualne godziny znajdziesz w programie na żywo.",ex21SeeAt:"Zobacz, co dzieje się tutaj: {p}.",ex21Hotel:"Hotel",ex21SeeSched:"Zobacz harmonogram"},
+cs:{ex21Kicker:"DIGITÁLNÍ PRŮVODCE DOVOLENOU",ex21Title:"Objevujte",ex21Sub:"Užijte si pobyt naplno",ex21TodayH:"Dnes v programu",ex21TodaySub:"Tohle můžete udělat hned teď",ex21MoodH:"Na co máte chuť?",ex21MoodSub:"Vybírejte podle nálady, ne podle menu",ex21DiscH:"Objevujte",ex21DiscSub:"Rychlé filtry pro váš den",ex21RecH:"Doporučeno pro vás",ex21RecSub:"Tipy se mění během dne",ex21PlaceH:"Kde se to koná",ex21PlaceSub:"Místa v hotelu, kde se něco děje",ex21MissH:"Nenechte si ujít",ex21MissSub:"Na tohle si čas udělejte",ex21FavH:"Moje oblíbené",ex21FavSub:"Váš uložený plán dovolené",ex21Details:"Zobrazit detail",ex21Book:"Rezervovat",ex21Booked:"Již rezervováno",ex21SigninBook:"Přihlaste se k rezervaci",ex21MyStay:"Můj pobyt",ex21AddFav:"Do oblíbených",ex21Saved:"Uloženo",ex21FavOn:"Přidáno do oblíbených",ex21FavOff:"Odebráno z oblíbených",ex21ExpH:"Co vás čeká",ex21GoodH:"Dobré vědět",ex21Experience:"Typ",ex21When:"Kdy",ex21Where:"Kde",ex21StartEnd:"Začátek / konec",ex21Area:"Zóna / místo",ex21InMin:"Začíná za {n} min",ex21InH:"Začíná za {h} h",ex21InHM:"Začíná za {h} h {m} min",ex21Tomorrow:"Zítra",ex21Later:"Později tento týden",ex21FForYou:"Pro vás",ex21FRelax:"Relax",ex21FActive:"Aktivně",ex21FNight:"Noční život",ex21MEnt:"Zábava",ex21MShow:"Show",ex21MLive:"Živá hudba",ex21MEvents:"Akce",ex21RightNow:"PRÁVĚ TEĎ",ex21Morning:"DOBRÉ RÁNO",ex21Afternoon:"DNES ODPOLEDNE",ex21Tonight:"DNES VEČER",ex21PopularT:"DNES OBLÍBENÉ",ex21Pick:"TIP HOTELU",ex21Golden:"Zlatá hodinka se blíží",ex21StartActive:"Začněte dovolenou aktivně",ex21MakeMost:"Využijte den naplno",ex21EveStarts:"Tady začíná váš večer",ex21SeeProg:"Zobrazit dnešní program",ex21SeeHappening:"Podívejte se, co se děje",ex21SeeTonight:"Objevte večerní program",ex21RecToday:"Doporučeno dnes",ex21AtHotel:"V hotelu",ex21Booking1:"host přihlášen",ex21BookingN:"hostů přihlášeno",ex21NoneFilter:"V tomto filtru zatím nic není.",ex21NoPlaces:"Místa se zde objeví, jakmile budou mít aktivity uvedené místo.",ex21NoFavs:"Ukládejte sem aktivity a místa, ať máte plán dovolené vždy po ruce.",ex21DescFall:"Zjistěte, co se během vašeho pobytu děje.",ex21LeadFall:"Objevte tento zážitek během pobytu — aktuální časy najdete v živém programu.",ex21SeeAt:"Podívejte se, co se děje zde: {p}.",ex21Hotel:"Hotel",ex21SeeSched:"Zobrazit rozvrh"},
+nl:{ex21Kicker:"DIGITALE VAKANTIEGIDS",ex21Title:"Ontdekken",ex21Sub:"Haal alles uit je verblijf",ex21TodayH:"Vandaag op het programma",ex21TodaySub:"Dit kun je nu meteen doen",ex21MoodH:"Waar heb je zin in?",ex21MoodSub:"Ontdek op gevoel, niet via een menu",ex21DiscH:"Ontdekken",ex21DiscSub:"Snelle filters voor je dag",ex21RecH:"Aanbevolen voor jou",ex21RecSub:"De tips veranderen met het tijdstip",ex21PlaceH:"Waar het gebeurt",ex21PlaceSub:"De plekken in het hotel waar iets te doen is",ex21MissH:"Niet missen",ex21MissSub:"Hier maak je graag tijd voor",ex21FavH:"Mijn favorieten",ex21FavSub:"Jouw opgeslagen vakantieplan",ex21Details:"Details bekijken",ex21Book:"Nu boeken",ex21Booked:"Al geboekt",ex21SigninBook:"Log in om te boeken",ex21MyStay:"Mijn verblijf",ex21AddFav:"Aan favorieten",ex21Saved:"Opgeslagen",ex21FavOn:"Toegevoegd aan favorieten",ex21FavOff:"Verwijderd uit favorieten",ex21ExpH:"Wat je kunt verwachten",ex21GoodH:"Goed om te weten",ex21Experience:"Soort",ex21When:"Wanneer",ex21Where:"Waar",ex21StartEnd:"Begin / einde",ex21Area:"Zone / locatie",ex21InMin:"Begint over {n} min",ex21InH:"Begint over {h} uur",ex21InHM:"Begint over {h} uur {m} min",ex21Tomorrow:"Morgen",ex21Later:"Later deze week",ex21FForYou:"Voor jou",ex21FRelax:"Ontspannen",ex21FActive:"Actief",ex21FNight:"Nachtleven",ex21MEnt:"Entertainment",ex21MShow:"Show",ex21MLive:"Livemuziek",ex21MEvents:"Evenementen",ex21RightNow:"NU METEEN",ex21Morning:"GOEDEMORGEN",ex21Afternoon:"VANMIDDAG",ex21Tonight:"VANAVOND",ex21PopularT:"VANDAAG POPULAIR",ex21Pick:"HOTELTIP",ex21Golden:"Het gouden uur komt eraan",ex21StartActive:"Begin je vakantie actief",ex21MakeMost:"Haal alles uit deze dag",ex21EveStarts:"Hier begint je avond",ex21SeeProg:"Bekijk het programma van vandaag",ex21SeeHappening:"Kijk wat er te doen is",ex21SeeTonight:"Ontdek het avondprogramma",ex21RecToday:"Vandaag aanbevolen",ex21AtHotel:"In het hotel",ex21Booking1:"gast geboekt",ex21BookingN:"gasten geboekt",ex21NoneFilter:"In dit filter staat nog niets gepland.",ex21NoPlaces:"Locaties verschijnen hier zodra activiteiten een locatie hebben.",ex21NoFavs:"Bewaar hier activiteiten en plekken, zodat je vakantieplan altijd binnen handbereik is.",ex21DescFall:"Ontdek wat er tijdens je verblijf te doen is.",ex21LeadFall:"Ontdek deze activiteit tijdens je verblijf — de actuele tijden vind je in het live programma.",ex21SeeAt:"Kijk wat er hier te doen is: {p}.",ex21Hotel:"Hotel",ex21SeeSched:"Rooster bekijken"},
+fr:{ex21Kicker:"GUIDE DE VACANCES NUMÉRIQUE",ex21Title:"Explorer",ex21Sub:"Profitez pleinement de votre séjour",ex21TodayH:"Au programme aujourd'hui",ex21TodaySub:"Ce que vous pouvez faire tout de suite",ex21MoodH:"De quoi avez-vous envie ?",ex21MoodSub:"Explorez par envie, pas par menu",ex21DiscH:"Découvrir",ex21DiscSub:"Filtres rapides pour votre journée",ex21RecH:"Recommandé pour vous",ex21RecSub:"Les suggestions changent selon l'heure",ex21PlaceH:"Où ça se passe",ex21PlaceSub:"Les lieux de l'hôtel où il se passe quelque chose",ex21MissH:"À ne pas manquer",ex21MissSub:"Cela vaut la peine d'y consacrer du temps",ex21FavH:"Mes favoris",ex21FavSub:"Votre programme de vacances enregistré",ex21Details:"Voir les détails",ex21Book:"Réserver",ex21Booked:"Déjà réservé",ex21SigninBook:"Connectez-vous pour réserver",ex21MyStay:"Mon séjour",ex21AddFav:"Ajouter aux favoris",ex21Saved:"Enregistré",ex21FavOn:"Ajouté aux favoris",ex21FavOff:"Retiré des favoris",ex21ExpH:"Ce qui vous attend",ex21GoodH:"Bon à savoir",ex21Experience:"Type",ex21When:"Quand",ex21Where:"Où",ex21StartEnd:"Début / fin",ex21Area:"Zone / lieu",ex21InMin:"Commence dans {n} min",ex21InH:"Commence dans {h} h",ex21InHM:"Commence dans {h} h {m} min",ex21Tomorrow:"Demain",ex21Later:"Plus tard cette semaine",ex21FForYou:"Pour vous",ex21FRelax:"Détente",ex21FActive:"Actif",ex21FNight:"Vie nocturne",ex21MEnt:"Animation",ex21MShow:"Spectacle",ex21MLive:"Musique live",ex21MEvents:"Événements",ex21RightNow:"EN CE MOMENT",ex21Morning:"BONJOUR",ex21Afternoon:"CET APRÈS-MIDI",ex21Tonight:"CE SOIR",ex21PopularT:"POPULAIRE AUJOURD'HUI",ex21Pick:"COUP DE CŒUR DE L'HÔTEL",ex21Golden:"L'heure dorée approche",ex21StartActive:"Commencez vos vacances en bougeant",ex21MakeMost:"Profitez au maximum de la journée",ex21EveStarts:"Votre soirée commence ici",ex21SeeProg:"Voir le programme du jour",ex21SeeHappening:"Voyez ce qu'il se passe",ex21SeeTonight:"Découvrir le programme du soir",ex21RecToday:"Recommandé aujourd'hui",ex21AtHotel:"À l'hôtel",ex21Booking1:"invité inscrit",ex21BookingN:"invités inscrits",ex21NoneFilter:"Rien de prévu dans ce filtre pour l'instant.",ex21NoPlaces:"Les lieux apparaîtront ici dès que les activités auront un lieu.",ex21NoFavs:"Enregistrez ici les activités et les lieux pour garder votre programme toujours à portée de main.",ex21DescFall:"Découvrez ce qu'il se passe pendant votre séjour.",ex21LeadFall:"Découvrez cette activité pendant votre séjour — les horaires à jour sont dans le programme en direct.",ex21SeeAt:"Voyez ce qu'il se passe ici : {p}.",ex21Hotel:"Hôtel",ex21SeeSched:"Voir le planning"},
+ar:{ex21Kicker:"دليل العطلة الرقمي",ex21Title:"استكشف",ex21Sub:"استمتع بإقامتك إلى أقصى حد",ex21TodayH:"برنامج اليوم",ex21TodaySub:"أشياء يمكنك فعلها الآن",ex21MoodH:"بماذا ترغب؟",ex21MoodSub:"استكشف حسب مزاجك، لا حسب القائمة",ex21DiscH:"اكتشف",ex21DiscSub:"مرشّحات سريعة ليومك",ex21RecH:"مقترح لك",ex21RecSub:"تتغير الاقتراحات حسب وقت اليوم",ex21PlaceH:"أين يحدث ذلك",ex21PlaceSub:"أماكن الفندق التي يجري فيها شيء",ex21MissH:"لا تفوّته",ex21MissSub:"يستحق أن تخصص له وقتاً",ex21FavH:"مفضلاتي",ex21FavSub:"خطة عطلتك المحفوظة",ex21Details:"عرض التفاصيل",ex21Book:"احجز الآن",ex21Booked:"محجوز بالفعل",ex21SigninBook:"سجّل الدخول للحجز",ex21MyStay:"إقامتي",ex21AddFav:"أضف للمفضلة",ex21Saved:"محفوظ",ex21FavOn:"تمت الإضافة للمفضلة",ex21FavOff:"تمت الإزالة من المفضلة",ex21ExpH:"ماذا ستعيش",ex21GoodH:"معلومات مفيدة",ex21Experience:"النوع",ex21When:"متى",ex21Where:"أين",ex21StartEnd:"وقت البدء / الانتهاء",ex21Area:"المنطقة / المكان",ex21InMin:"يبدأ خلال {n} دقيقة",ex21InH:"يبدأ خلال {h} ساعة",ex21InHM:"يبدأ خلال {h} ساعة و{m} دقيقة",ex21Tomorrow:"غداً",ex21Later:"لاحقاً هذا الأسبوع",ex21FForYou:"لك",ex21FRelax:"استرخاء",ex21FActive:"نشاط",ex21FNight:"سهرات",ex21MEnt:"ترفيه",ex21MShow:"عرض",ex21MLive:"موسيقى حية",ex21MEvents:"فعاليات",ex21RightNow:"الآن",ex21Morning:"صباح الخير",ex21Afternoon:"بعد ظهر اليوم",ex21Tonight:"مساء اليوم",ex21PopularT:"الأكثر رواجاً اليوم",ex21Pick:"اختيار الفندق",ex21Golden:"اقتربت الساعة الذهبية",ex21StartActive:"ابدأ عطلتك بنشاط",ex21MakeMost:"استفد من يومك إلى أقصى حد",ex21EveStarts:"مساؤك يبدأ من هنا",ex21SeeProg:"عرض برنامج اليوم",ex21SeeHappening:"شاهد ما يجري",ex21SeeTonight:"اكتشف برنامج المساء",ex21RecToday:"مقترح اليوم",ex21AtHotel:"في الفندق",ex21Booking1:"ضيف محجوز",ex21BookingN:"ضيوف محجوزون",ex21NoneFilter:"لا يوجد شيء مجدول في هذا المرشّح بعد.",ex21NoPlaces:"ستظهر الأماكن هنا عندما تُحدَّد أماكن للأنشطة.",ex21NoFavs:"احفظ هنا الأنشطة والأماكن ليبقى برنامج عطلتك في متناول يدك دائماً.",ex21DescFall:"اكتشف ما يجري خلال إقامتك.",ex21LeadFall:"اكتشف هذه التجربة خلال إقامتك — ستجد الأوقات المحدّثة في البرنامج المباشر.",ex21SeeAt:"شاهد ما يجري في {p}.",ex21Hotel:"الفندق",ex21SeeSched:"عرض الجدول"}
+};
+Object.keys(V21_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V21_STR[l]); });
+
+/* v21 fix round — the 214 texts that existed only in English (B1 + B2) */
+const V21_FILL={
+de:{capabilityProfile:"Qualifikationsprofil für Aktivitäten",iCanDo:"Kann ich",notListed:"Nicht eingeordnet",iCantDo:"Kann ich nicht",entranceAvailability:"Verfügbarkeit Eingangsdienst",entranceCan:"Ich kann Eingangsdienst",entranceCant:"Ich kann keinen Eingangsdienst",noQualifiedGender:"Niemand erfüllt die Regeln für Qualifikation, Geschlecht, Anwesenheit und Zeit",planOne:"Plan 1",planTwo:"Plan 2",planThree:"Plan 3",allocatorSmart:"Faire automatische Verteilung",plannerPlansHint:"Es werden drei gültige Alternativen erzeugt. Wähle die, die dir am besten gefällt, oder erzeuge drei neue.",qualificationChecked:"Kann / kann nicht geprüft",attendanceChecked:"Anwesenheit geprüft",timeChecked:"Zeitkonflikte geprüft",genderChecked:"Geschlechterregeln geprüft",historyChecked:"Wiederholungen geprüft",entrancePlan:"Eingang",entranceUnassigned:"Niemand für den Eingangsdienst verfügbar",newPlans:"3 neue Pläne erzeugen",planApplied:"Aktivitäten und Eingangsplan übernommen",operationEditor:"Tagesablauf bearbeiten",editableHint:"Alles hier unten steuerst du selbst und kannst es jederzeit ändern.",autoEntrance:"Fairen Eingangsdienst wählen",autoEntranceWeek:"Eingangsdienst für die Woche ausgleichen",entranceTime:"Zeit des Eingangsdienstes",entranceGender:"Geschlechterregel Eingang",genderAny:"Egal",genderMale:"Nur männlich",genderFemale:"Nur weiblich",practiceEnabled:"Team-Training an diesem Tag",practiceTimeEdit:"Trainingszeit / Dauer",showNameEdit:"Abendshow / Präsentation",showTimeEdit:"Show-Zeit",showLocationEdit:"Show-Ort",liveBandEdit:"Live-Band / Rahmenprogramm",genderRule:"Geschlecht bei automatischer Zuteilung",genderRuleHint:"Nur nutzen, wenn diese Aktivität nach Geschlecht zugeteilt werden soll.",capabilityRuleHint:"Wenn unter „Kann ich“ Aktivitäten stehen, verwendet die automatische Planung nur diese. „Kann ich nicht“ sperrt eine Aktivität immer.",skillsConfigured:"Aktivitäts-Freigaben eingerichtet",notConfigured:"Nicht eingerichtet — alle Aktivitäten erlaubt",selectAll:"Alle auswählen",canDoHint:"Aktivitäten, die diese Person leiten darf",clearAll:"Alle abwählen",cantDoHint:"Feste Sperren — wird nie automatisch zugeteilt",ccHotelInfo:"Hotel-Informationen",ccHotelInfoSub:"Öffnungszeiten, WLAN und Antworten für Gäste",ccStandards:"Tagesablauf",ccStandardsSub:"Die festen Zeiten des Arbeitstages",ccRules:"Arbeitsregeln",ccRulesSub:"Tun, nicht tun, Auftreten und Konsequenz",ccDayOp:"Tagesbetrieb",ccDayOpSub:"Freier Tag, Eingang, Thema, Kleiderordnung, Show",ccStatSettings:"Einstellungen",ccStatCustom:"Deine Änderungen",ccStatTeam:"Team",ccStatActs:"Aktivitäten",ccWordAll:"Alle Texte",ccWordHint:"Schreibe rechts deine eigenen Worte. Leer bedeutet, dass der Originaltext verwendet wird.",ccEditLang:"Bearbeitungssprache",ccAllLangs:"Diesen Text in allen Sprachen verwenden",ccAppBg:"Hintergrundbild der App",ccLoginBg:"Hintergrundbild des Logins",ccUploadPhoto:"Foto hochladen",ccRemovePhoto:"Foto entfernen",ccStrength:"Bildstärke",ccLivePreview:"Änderungen werden live gezeigt. Gespeichert wird erst, wenn du auf Speichern tippst.",ccRadius:"Eckenrundung",ccDensity:"Abstände",ccDensCompact:"Kompakt",ccDensNormal:"Normal",ccDensSpacious:"Luftig",ccShadow:"Schatten",ccShFlat:"Flach",ccShSoft:"Weich",ccShDeep:"Tief",ccBorders:"Kartenrahmen",ccPvTitle:"Beispielkarte",ccPvText:"So sehen deine Karten, Buttons und Abstände aus.",ccCustomCss:"Erweiterter Stil (CSS)",ccCustomCssHint:"Nur für Fortgeschrittene. Lass das Feld leer, wenn du unsicher bist — ein falscher Wert kann das Aussehen zerstören.",ccDiscard:"Änderungen verwerfen",ccResetDesign:"Design zurücksetzen",ccNotInTeam:"noch kein Konto",ccNoActs:"Bekommt nie Aktivitäten",ccNoActsHint:"Die automatische Planung überspringt diese Trikotnummern — normalerweise der Manager (#1) und der DJ (#3).",ccAddNumber:"Trikotnummer hinzufügen",ccSplit:"Grenze Vormittag / Nachmittag",ccSplitHint:"Eine Aktivität, die vor dieser Zeit beginnt, zählt als Vormittag, danach als Nachmittag.",ccCover:"Titelbild",ccProgHint:"Diese Namen erscheinen überall dort, wo Gäste und Team das Programm lesen.",ccOperations:"Programmbereiche",ccCategories:"Kategorien",ccRepHint:"Das ist der Kopf, der auf jedem offiziellen PDF- und Excel-Bericht gedruckt wird.",ccRepDept:"Abteilung",ccRepHead:"Abteilungsleitung",ccRepClass:"Dokumentenart",ccRepConf:"Einstufung",ccRepVersion:"Dokumentversion",ccRepFooter:"Fußzeile",ccConnection:"Verbindung",ccConnected:"Mit der Datenbank verbunden",ccOffline:"Arbeitet offline",ccRowCounts:"Geladene Datensätze",ccDownload:"Sicherungsdatei herunterladen",ccDownloadSub:"Alles, was du eingerichtet hast, in einer Datei",ccRestore:"Aus einer Datei wiederherstellen",ccRestoreSub:"Wähle eine Sicherungsdatei, um alles zurückzuholen",ccWipeWording:"Alle Textänderungen löschen",ccWipeDesign:"Alle Design-Änderungen löschen",ccFactorySub:"Texte, Design, Regeln und Menüs kehren zum Original zurück",ccFactory:"Alles auf Werkseinstellung zurücksetzen",ccBackupMade:"Sicherungsdatei erstellt",ccRestoreBad:"Diese Datei ist keine gültige Sicherung",ccRestoreQ:"Alle Einstellungen durch diese Datei ersetzen?",ccRestoreOk:"Einstellungen wiederhergestellt",ccFactoryQ:"Wirklich alle Einstellungen auf das Original zurücksetzen?"},
+ru:{capabilityProfile:"Профиль допусков к активностям",iCanDo:"Могу проводить",notListed:"Не распределено",iCantDo:"Не могу проводить",entranceAvailability:"Готовность к дежурству на входе",entranceCan:"Могу дежурить на входе",entranceCant:"Не могу дежурить на входе",noQualifiedGender:"Нет подходящего человека по допуску, полу, посещаемости и времени",planOne:"План 1",planTwo:"План 2",planThree:"План 3",allocatorSmart:"Умное справедливое распределение",plannerPlansHint:"Создаются три допустимых варианта. Выберите подходящий или создайте три новых.",qualificationChecked:"Допуски проверены",attendanceChecked:"Посещаемость проверена",timeChecked:"Конфликты по времени проверены",genderChecked:"Правила по полу проверены",historyChecked:"История повторов проверена",entrancePlan:"Вход",entranceUnassigned:"Нет подходящего человека на вход",newPlans:"Создать 3 новых плана",planApplied:"План активностей и входа применён",operationEditor:"Редактор рабочего дня",editableHint:"Всё, что ниже, настраивает менеджер и может изменить в любой момент.",autoEntrance:"Выбрать дежурного справедливо",autoEntranceWeek:"Выровнять дежурства за неделю",entranceTime:"Время дежурства на входе",entranceGender:"Правило по полу для входа",genderAny:"Любой пол",genderMale:"Только мужчины",genderFemale:"Только женщины",practiceEnabled:"Репетиция команды в этот день",practiceTimeEdit:"Время / длительность репетиции",showNameEdit:"Вечернее шоу / презентация",showTimeEdit:"Время шоу",showLocationEdit:"Место шоу",liveBandEdit:"Живая группа / сопутствующая программа",genderRule:"Пол при автоматическом распределении",genderRuleHint:"Используйте только если эту активность нужно назначать по полу.",capabilityRuleHint:"Если в списке «Могу проводить» есть активности, автоматическое планирование берёт только их. «Не могу проводить» всегда блокирует активность.",skillsConfigured:"Допуски к активностям настроены",notConfigured:"Не настроено — разрешены все активности",selectAll:"Выбрать всё",canDoHint:"Активности, которые этот аниматор может вести",clearAll:"Снять всё",cantDoHint:"Жёсткие запреты — никогда не назначается автоматически",ccHotelInfo:"Информация об отеле",ccHotelInfoSub:"Часы работы, Wi-Fi и ответы для гостей",ccStandards:"Распорядок дня",ccStandardsSub:"Фиксированные времена рабочего дня",ccRules:"Правила работы",ccRulesSub:"Что делать, чего не делать, внешний вид и последствия",ccDayOp:"Работа дня",ccDayOpSub:"Выходной, вход, тема, дресс-код, шоу",ccStatSettings:"Настройки",ccStatCustom:"Ваши изменения",ccStatTeam:"Команда",ccStatActs:"Активности",ccWordAll:"Все тексты",ccWordHint:"Впишите свои слова справа. Пустое поле означает исходный текст.",ccEditLang:"Язык редактирования",ccAllLangs:"Использовать этот текст во всех языках",ccAppBg:"Фоновое фото приложения",ccLoginBg:"Фоновое фото экрана входа",ccUploadPhoto:"Загрузить фото",ccRemovePhoto:"Удалить фото",ccStrength:"Насыщенность фото",ccLivePreview:"Изменения видны сразу. Ничего не сохраняется, пока вы не нажмёте Сохранить.",ccRadius:"Скругление углов",ccDensity:"Отступы",ccDensCompact:"Компактно",ccDensNormal:"Обычно",ccDensSpacious:"Просторно",ccShadow:"Тени",ccShFlat:"Плоские",ccShSoft:"Мягкие",ccShDeep:"Глубокие",ccBorders:"Контуры карточек",ccPvTitle:"Пример карточки",ccPvText:"Так будут выглядеть ваши карточки, кнопки и отступы.",ccCustomCss:"Расширенный стиль (CSS)",ccCustomCssHint:"Только для продвинутых. Оставьте пустым, если не уверены — неверное значение может испортить вид.",ccDiscard:"Отменить изменения",ccResetDesign:"Сбросить оформление",ccNotInTeam:"аккаунта ещё нет",ccNoActs:"Никогда не получает активности",ccNoActsHint:"Автоматическое планирование пропускает эти номера — обычно менеджер (#1) и диджей (#3).",ccAddNumber:"Добавить номер",ccSplit:"Граница утро / день",ccSplitHint:"Активность, начинающаяся до этого времени, считается утренней, после — дневной.",ccCover:"Обложка",ccProgHint:"Эти названия видны везде, где гости и команда читают программу.",ccOperations:"Разделы программы",ccCategories:"Категории",ccRepHint:"Это шапка, которая печатается на каждом официальном отчёте PDF и Excel.",ccRepDept:"Отдел",ccRepHead:"Руководитель отдела",ccRepClass:"Тип документа",ccRepConf:"Гриф",ccRepVersion:"Версия документа",ccRepFooter:"Примечание в подвале",ccConnection:"Соединение",ccConnected:"Подключено к базе данных",ccOffline:"Работа офлайн",ccRowCounts:"Загружено записей",ccDownload:"Скачать файл резервной копии",ccDownloadSub:"Всё, что вы настроили, в одном файле",ccRestore:"Восстановить из файла",ccRestoreSub:"Выберите файл копии, чтобы вернуть всё обратно",ccWipeWording:"Удалить все правки текстов",ccWipeDesign:"Удалить все правки оформления",ccFactorySub:"Тексты, оформление, правила и меню вернутся к оригиналу",ccFactory:"Сбросить всё к заводским настройкам",ccBackupMade:"Файл резервной копии создан",ccRestoreBad:"Этот файл не является корректной копией",ccRestoreQ:"Заменить все настройки этим файлом?",ccRestoreOk:"Настройки восстановлены",ccFactoryQ:"Сбросить все настройки к оригиналу?",vaNotice:"Ваше имя, номер комнаты и телефон используются только для работы развлекательной программы во время отдыха и удаляются после отъезда.",vbRepeats:"повтор(ов) за неделю",vbBackToBack:"дн. подряд",vbPlanHint:"Все получают одинаковое количество активностей. При этом приложение старается не давать одному человеку одну и ту же активность дважды — и никогда два дня подряд.",v9ModeHint:"Так приложение выглядит на всех телефонах, пока человек не изменит это сам.",v9ModeNow:"Показывается сейчас",v9TypoMoved:"Размер текста, шрифт и форма кнопок находятся в Дизайн-студии.",v9Contrast:"Читаемость проверяется автоматически.",ccSecContent:"Содержание и тексты",ccWordingSub:"Измените любой текст в приложении, на всех языках",ccProgramSub:"Переименуйте разделы и категории, смените обложки",ccSecDesign:"Дизайн и оформление",ccDesignSub:"Углы, отступы, тени, фоны, свой стиль",ccSecOps:"Правила работы",ccRolesSub:"Номера, кто никогда не получает активности, граница утро/день",ccSecPeople:"Люди и программа",ccSecReports:"Отчёты и данные",ccReportsSub:"Отдел, руководитель отдела, гриф, версия",ccBackupSub:"Сохраните всё в файл, восстановите или начните заново",ccSecSystem:"Система",ccKick:"ПОЛНЫЙ КОНТРОЛЬ",ccHead:"Всё в этом приложении можно изменить",ccSub:"Тексты, дизайн, правила, программа, отчёты и данные — без кода и без разработчика.",ccSearch:"Поиск настройки…",ccNothing:"По этому запросу ничего не найдено.",ccSaveAll:"Сохранить изменения",ccResetAll:"Сбросить все тексты",ccPreview:"Предпросмотр",v9Kick:"ВСЁ В ОДНОМ МЕСТЕ",v9NoHit:"По этому запросу ничего не найдено.",v9NoData:"Пока недостаточно данных — они появятся в течение недели.",v9Tickets:"Продано билетов",v9Waitlist:"Лист ожидания",v9RateAvg:"Средняя оценка",v9TaskOpen:"Открытые задачи",v9Nations:"Национальности",v9Messages:"Сообщения",v9Answered:"Ответы в викторине",v9TopActs:"Больше всего записей",v9PerDay:"По дням",v9PerCat:"По категориям",v9EmptyActs:"Активности без записей",v9TaskLate:"Просрочено",v9Reviews:"Приглашений на отзыв",v9RateLow:"1–3 звезды",v9Command:"Центр управления операциями",v9WeekPlanner:"Главный планировщик недели",v9Approval:"Публикация и утверждение",v9Audit:"Журнал изменений",vaNever:"никогда",vaPrivacy:"Данные гостей и приватность",vaKeep:"Хранить данные гостя",vaKeepHint:"После этого срока имя, телефон, логин и сообщения гостя удаляются. Записи и оценки остаются в виде чисел, поэтому статистика не пострадает.",vaOff:"Никогда не удалять (не рекомендуется)",vaDays:"дней после отъезда",vaAuto:"Проверять автоматически",vaAutoHint:"Запускается раз в день при открытии приложения.",vaLastRun:"Последняя проверка",vaDue:"Готово к удалению сейчас",vaRetOff:"Выключено — данные гостей хранятся вечно",vaAccounts:"аккаунтов гостей",vaMessages:"сообщений",vaRequests:"запросов",vaNames:"имён в старых записях",vaCleanNow:"Удалить сейчас",vaNothingDue:"Удалять нечего — всё в пределах выбранного срока.",vaWhatGoes:"Что удаляется",vaGoes1:"Имя, телефон, логин и пароль",vaGoes2:"Сообщения чата",vaGoes3:"Заявки на песни и дни рождения",vaWhatStays:"Что остаётся",vaStays1:"Количество записей и заполняемость",vaStays2:"Статистика по национальностям",vaStays3:"Оценки и отзывы",vaCleanQ:"Удалить эти данные гостей?",vaCleaned:"Данные гостей удалены",vaChkDb:"Соединение с базой данных",vaHealthOk:"Работает",vaChkData:"Данные получены",vaChkMgr:"Второй аккаунт менеджера",vaMgrWarn:"Только один аккаунт менеджера — если вас нет, приложением никто не управляет",vaChkBackup:"Резервная копия настроек",vaBackupOk:"Последняя копия",vaBackupWarn:"Копия ещё не создана — скачайте её в разделе резервных копий",vaChkPush:"Push-уведомления",vaPushOff:"Не настроено — уведомления работают только при открытом приложении",vaChkRetention:"Хранение данных гостей",vaHealth:"Сообщения о проблемах",vaHealthChk:"Проверка состояния",vaErrCount:"Записанные проблемы",vaCopyErr:"Скопировать список",vaClearErrs:"Очистить список",vaNoErrors:"Проблем не зафиксировано — это хороший результат.",vaCopied:"Скопировано",vaCleared:"Список очищен",vbMore:"ещё"},
+pl:{capabilityProfile:"Profil uprawnień do zajęć",iCanDo:"Mogę prowadzić",notListed:"Nieprzypisane",iCantDo:"Nie mogę prowadzić",entranceAvailability:"Dostępność do dyżuru przy wejściu",entranceCan:"Mogę mieć dyżur przy wejściu",entranceCant:"Nie mogę mieć dyżuru przy wejściu",noQualifiedGender:"Nikt nie spełnia zasad uprawnień, płci, obecności i czasu",planOne:"Plan 1",planTwo:"Plan 2",planThree:"Plan 3",allocatorSmart:"Inteligentny sprawiedliwy przydział",plannerPlansHint:"Tworzone są trzy poprawne warianty. Wybierz ten, który wolisz, albo wygeneruj trzy nowe.",qualificationChecked:"Sprawdzono uprawnienia",attendanceChecked:"Sprawdzono obecność",timeChecked:"Sprawdzono konflikty czasowe",genderChecked:"Sprawdzono zasady płci",historyChecked:"Sprawdzono historię powtórzeń",entrancePlan:"Wejście",entranceUnassigned:"Brak odpowiedniej osoby na wejście",newPlans:"Wygeneruj 3 nowe plany",planApplied:"Zastosowano plan zajęć i wejścia",operationEditor:"Edytor dnia pracy",editableHint:"Wszystko poniżej ustawia menedżer i można to zmienić w każdej chwili.",autoEntrance:"Wybierz dyżur sprawiedliwie",autoEntranceWeek:"Wyrównaj dyżury na tydzień",entranceTime:"Godzina dyżuru przy wejściu",entranceGender:"Zasada płci dla wejścia",genderAny:"Dowolna płeć",genderMale:"Tylko mężczyźni",genderFemale:"Tylko kobiety",practiceEnabled:"Trening zespołu tego dnia",practiceTimeEdit:"Godzina / czas trwania treningu",showNameEdit:"Wieczorny pokaz / prezentacja",showTimeEdit:"Godzina pokazu",showLocationEdit:"Miejsce pokazu",liveBandEdit:"Zespół na żywo / program towarzyszący",genderRule:"Płeć przy automatycznym przydziale",genderRuleHint:"Używaj tylko wtedy, gdy te zajęcia mają być przydzielane według płci.",capabilityRuleHint:"Jeśli na liście „Mogę prowadzić” są zajęcia, automatyczne planowanie korzysta tylko z nich. „Nie mogę prowadzić” zawsze blokuje zajęcia.",skillsConfigured:"Uprawnienia do zajęć skonfigurowane",notConfigured:"Nieskonfigurowane — wszystkie zajęcia dozwolone",selectAll:"Zaznacz wszystko",canDoHint:"Zajęcia, które ten animator może prowadzić",clearAll:"Odznacz wszystko",cantDoHint:"Twarde ograniczenia — nigdy nie przydzielaj automatycznie",ccHotelInfo:"Informacje o hotelu",ccHotelInfoSub:"Godziny otwarcia, WiFi i odpowiedzi dla gości",ccStandards:"Rozkład dnia",ccStandardsSub:"Stałe godziny dnia pracy",ccRules:"Zasady pracy",ccRulesSub:"Co robić, czego nie, wygląd i konsekwencje",ccDayOp:"Praca dnia",ccDayOpSub:"Dzień wolny, wejście, motyw, dress code, pokaz",ccStatSettings:"Ustawienia",ccStatCustom:"Twoje zmiany",ccStatTeam:"Zespół",ccStatActs:"Zajęcia",ccWordAll:"Wszystkie teksty",ccWordHint:"Wpisz własne słowa po prawej. Puste pole oznacza tekst oryginalny.",ccEditLang:"Język edycji",ccAllLangs:"Użyj tego tekstu we wszystkich językach",ccAppBg:"Zdjęcie tła aplikacji",ccLoginBg:"Zdjęcie tła ekranu logowania",ccUploadPhoto:"Prześlij zdjęcie",ccRemovePhoto:"Usuń zdjęcie",ccStrength:"Siła zdjęcia",ccLivePreview:"Zmiany widać na żywo. Nic nie jest zapisane, dopóki nie naciśniesz Zapisz.",ccRadius:"Zaokrąglenie rogów",ccDensity:"Odstępy",ccDensCompact:"Zwarte",ccDensNormal:"Normalne",ccDensSpacious:"Luźne",ccShadow:"Cienie",ccShFlat:"Płaskie",ccShSoft:"Miękkie",ccShDeep:"Głębokie",ccBorders:"Obramowania kart",ccPvTitle:"Przykładowa karta",ccPvText:"Tak będą wyglądać Twoje karty, przyciski i odstępy.",ccCustomCss:"Styl zaawansowany (CSS)",ccCustomCssHint:"Tylko dla zaawansowanych. Zostaw puste, jeśli nie masz pewności — błędna wartość może zepsuć wygląd.",ccDiscard:"Odrzuć zmiany",ccResetDesign:"Resetuj wygląd",ccNotInTeam:"brak konta",ccNoActs:"Nigdy nie dostaje zajęć",ccNoActsHint:"Automatyczne planowanie pomija te numery koszulek — zwykle menedżer (#1) i DJ (#3).",ccAddNumber:"Dodaj numer koszulki",ccSplit:"Granica rano / popołudnie",ccSplitHint:"Zajęcia zaczynające się przed tą godziną liczą się jako poranne, po niej jako popołudniowe.",ccCover:"Zdjęcie okładki",ccProgHint:"Te nazwy pojawiają się wszędzie tam, gdzie goście i zespół czytają program.",ccOperations:"Części programu",ccCategories:"Kategorie",ccRepHint:"To nagłówek drukowany na każdym oficjalnym raporcie PDF i Excel.",ccRepDept:"Dział",ccRepHead:"Kierownik działu",ccRepClass:"Rodzaj dokumentu",ccRepConf:"Klauzula",ccRepVersion:"Wersja dokumentu",ccRepFooter:"Notka w stopce",ccConnection:"Połączenie",ccConnected:"Połączono z bazą danych",ccOffline:"Praca offline",ccRowCounts:"Wczytane rekordy",ccDownload:"Pobierz plik kopii zapasowej",ccDownloadSub:"Wszystko, co skonfigurowałeś, w jednym pliku",ccRestore:"Przywróć z pliku",ccRestoreSub:"Wybierz plik kopii, aby przywrócić wszystko",ccWipeWording:"Wyczyść wszystkie zmiany tekstów",ccWipeDesign:"Wyczyść wszystkie zmiany wyglądu",ccFactorySub:"Teksty, wygląd, zasady i menu wracają do oryginału",ccFactory:"Przywróć wszystko do ustawień fabrycznych",ccBackupMade:"Utworzono plik kopii zapasowej",ccRestoreBad:"Ten plik nie jest prawidłową kopią zapasową",ccRestoreQ:"Zastąpić wszystkie ustawienia tym plikiem?",ccRestoreOk:"Ustawienia przywrócone",ccFactoryQ:"Przywrócić wszystkie ustawienia do oryginału?",vaNotice:"Twoje imię, numer pokoju i telefon są używane wyłącznie do prowadzenia programu animacyjnego podczas pobytu i są usuwane po Twoim wyjeździe.",vbRepeats:"powtórzeń w tym tygodniu",vbBackToBack:"dni pod rząd",vbPlanHint:"Każdy dostaje tyle samo zajęć. Przy tym aplikacja unika przydzielania tej samej osobie tych samych zajęć dwa razy — i nigdy w dwa dni z rzędu.",v9ModeHint:"Tak aplikacja wygląda na każdym telefonie, dopóki dana osoba tego nie zmieni.",v9ModeNow:"Pokazywane teraz",v9TypoMoved:"Wielkość tekstu, czcionka i kształt przycisków są w Studiu projektowym.",v9Contrast:"Czytelność jest sprawdzana automatycznie.",ccSecContent:"Treść i teksty",ccWordingSub:"Zmień dowolny tekst w aplikacji, w każdym języku",ccProgramSub:"Zmień nazwy części programu i kategorii, wymień zdjęcia okładek",ccSecDesign:"Wygląd i design",ccDesignSub:"Rogi, odstępy, cienie, tła, własny styl",ccSecOps:"Zasady pracy",ccRolesSub:"Numery koszulek, kto nigdy nie dostaje zajęć, granica rano/popołudnie",ccSecPeople:"Ludzie i program",ccSecReports:"Raporty i dane",ccReportsSub:"Dział, kierownik działu, klauzula, wersja",ccBackupSub:"Zapisz wszystko do pliku, przywróć lub zacznij od nowa",ccSecSystem:"System",ccKick:"PEŁNA KONTROLA",ccHead:"Wszystko w tej aplikacji możesz zmienić",ccSub:"Teksty, wygląd, zasady, program, raporty i dane — bez kodu i bez programisty.",ccSearch:"Szukaj ustawienia…",ccNothing:"Nic nie pasuje do tego wyszukiwania.",ccSaveAll:"Zapisz zmiany",ccResetAll:"Zresetuj wszystkie teksty",ccPreview:"Podgląd",v9Kick:"WSZYSTKO W JEDNYM MIEJSCU",v9NoHit:"Nic nie pasuje do tego wyszukiwania.",v9NoData:"Za mało informacji — to wypełni się w ciągu tygodnia.",v9Tickets:"Sprzedane bilety",v9Waitlist:"Lista oczekujących",v9RateAvg:"Średnia ocena",v9TaskOpen:"Otwarte zadania",v9Nations:"Narodowości",v9Messages:"Wiadomości",v9Answered:"Odpowiedzi w quizie",v9TopActs:"Najczęściej rezerwowane",v9PerDay:"Wg dnia",v9PerCat:"Wg kategorii",v9EmptyActs:"Zajęcia bez rezerwacji",v9TaskLate:"Po terminie",v9Reviews:"Zaproszenia do opinii",v9RateLow:"1–3 gwiazdki",v9Command:"Centrum dowodzenia operacjami",v9WeekPlanner:"Główny planer tygodnia",v9Approval:"Publikacja i zatwierdzanie",v9Audit:"Dziennik zmian",vaNever:"nigdy",vaPrivacy:"Dane gości i prywatność",vaKeep:"Przechowuj dane gościa przez",vaKeepHint:"Po tym czasie imię, telefon, login i wiadomości gościa są usuwane. Rezerwacje i oceny zostają jako liczby, więc statystyki się nie zmienią.",vaOff:"Nigdy nie usuwaj (niezalecane)",vaDays:"dni po wyjeździe",vaAuto:"Sprawdzaj automatycznie",vaAutoHint:"Uruchamia się raz dziennie, gdy otwierasz aplikację.",vaLastRun:"Ostatnie sprawdzenie",vaDue:"Gotowe do usunięcia teraz",vaRetOff:"Wyłączone — dane gości są przechowywane bez końca",vaAccounts:"kont gości",vaMessages:"wiadomości",vaRequests:"próśb",vaNames:"imion w starych rezerwacjach",vaCleanNow:"Usuń teraz",vaNothingDue:"Nie ma czego usuwać — wszystko mieści się w wybranym okresie.",vaWhatGoes:"Co jest usuwane",vaGoes1:"Imię, telefon, nazwa użytkownika i hasło",vaGoes2:"Wiadomości czatu",vaGoes3:"Prośby o piosenki i urodziny",vaWhatStays:"Co zostaje",vaStays1:"Liczba rezerwacji i obłożenie",vaStays2:"Statystyki narodowości",vaStays3:"Oceny i opinie",vaCleanQ:"Usunąć te dane gości?",vaCleaned:"Dane gości usunięte",vaChkDb:"Połączenie z bazą danych",vaHealthOk:"Działa",vaChkData:"Dane otrzymane",vaChkMgr:"Drugie konto menedżera",vaMgrWarn:"Tylko jedno konto menedżera — gdy Cię nie ma, nikt nie zarządza aplikacją",vaChkBackup:"Kopia zapasowa ustawień",vaBackupOk:"Ostatnia kopia",vaBackupWarn:"Nie utworzono jeszcze kopii — pobierz ją w sekcji kopii zapasowej",vaChkPush:"Powiadomienia push",vaPushOff:"Nieskonfigurowane — powiadomienia działają tylko przy otwartej aplikacji",vaChkRetention:"Przechowywanie danych gości",vaHealth:"Zgłoszenia problemów",vaHealthChk:"Kontrola stanu",vaErrCount:"Zapisane problemy",vaCopyErr:"Skopiuj listę",vaClearErrs:"Wyczyść listę",vaNoErrors:"Nie zapisano żadnych problemów — to dobry wynik.",vaCopied:"Skopiowano",vaCleared:"Lista wyczyszczona",vbMore:"więcej"},
+cs:{capabilityProfile:"Profil oprávnění k aktivitám",iCanDo:"Umím vést",notListed:"Nezařazeno",iCantDo:"Neumím vést",entranceAvailability:"Dostupnost pro službu u vchodu",entranceCan:"Mohu mít službu u vchodu",entranceCant:"Nemohu mít službu u vchodu",noQualifiedGender:"Nikdo nesplňuje pravidla oprávnění, pohlaví, docházky a času",planOne:"Plán 1",planTwo:"Plán 2",planThree:"Plán 3",allocatorSmart:"Chytré spravedlivé přidělení",plannerPlansHint:"Vytvoří se tři platné varianty. Vyberte tu, která se vám líbí, nebo vygenerujte tři nové.",qualificationChecked:"Oprávnění zkontrolována",attendanceChecked:"Docházka zkontrolována",timeChecked:"Časové konflikty zkontrolovány",genderChecked:"Pravidla pohlaví zkontrolována",historyChecked:"Historie opakování zkontrolována",entrancePlan:"Vchod",entranceUnassigned:"Není vhodná osoba na vchod",newPlans:"Vygenerovat 3 nové plány",planApplied:"Plán aktivit a vchodu použit",operationEditor:"Editor pracovního dne",editableHint:"Vše níže řídí manažer a lze to kdykoli změnit.",autoEntrance:"Vybrat službu spravedlivě",autoEntranceWeek:"Vyrovnat službu na týden",entranceTime:"Čas služby u vchodu",entranceGender:"Pravidlo pohlaví pro vchod",genderAny:"Jakékoli pohlaví",genderMale:"Pouze muži",genderFemale:"Pouze ženy",practiceEnabled:"Týmový trénink v tento den",practiceTimeEdit:"Čas / délka tréninku",showNameEdit:"Večerní show / prezentace",showTimeEdit:"Čas show",showLocationEdit:"Místo show",liveBandEdit:"Živá kapela / doprovodný program",genderRule:"Pohlaví při automatickém přidělení",genderRuleHint:"Použijte jen tehdy, když se má tato aktivita přidělovat podle pohlaví.",capabilityRuleHint:"Pokud jsou v seznamu „Umím vést“ aktivity, automatické plánování používá pouze je. „Neumím vést“ aktivitu vždy zablokuje.",skillsConfigured:"Oprávnění k aktivitám nastavena",notConfigured:"Nenastaveno — všechny aktivity povoleny",selectAll:"Vybrat vše",canDoHint:"Aktivity, které smí tento animátor vést",clearAll:"Zrušit výběr",cantDoHint:"Pevná omezení — nikdy nepřidělovat automaticky",ccHotelInfo:"Informace o hotelu",ccHotelInfoSub:"Otevírací doba, WiFi a odpovědi pro hosty",ccStandards:"Denní rozvrh",ccStandardsSub:"Pevné časy pracovního dne",ccRules:"Pracovní pravidla",ccRulesSub:"Co dělat, co ne, vzhled a důsledky",ccDayOp:"Denní provoz",ccDayOpSub:"Volno, vchod, téma, dress code, show",ccStatSettings:"Nastavení",ccStatCustom:"Vaše změny",ccStatTeam:"Tým",ccStatActs:"Aktivity",ccWordAll:"Všechny texty",ccWordHint:"Vpravo napište vlastní slova. Prázdné pole znamená původní text.",ccEditLang:"Jazyk úprav",ccAllLangs:"Použít tento text ve všech jazycích",ccAppBg:"Fotka pozadí aplikace",ccLoginBg:"Fotka pozadí přihlášení",ccUploadPhoto:"Nahrát fotku",ccRemovePhoto:"Odebrat fotku",ccStrength:"Síla fotky",ccLivePreview:"Změny se zobrazují živě. Nic se neuloží, dokud nestisknete Uložit.",ccRadius:"Zaoblení rohů",ccDensity:"Rozestupy",ccDensCompact:"Kompaktní",ccDensNormal:"Normální",ccDensSpacious:"Vzdušné",ccShadow:"Stíny",ccShFlat:"Ploché",ccShSoft:"Jemné",ccShDeep:"Hluboké",ccBorders:"Obrysy karet",ccPvTitle:"Ukázková karta",ccPvText:"Takto budou vypadat vaše karty, tlačítka a rozestupy.",ccCustomCss:"Pokročilý styl (CSS)",ccCustomCssHint:"Jen pro pokročilé. Nechte prázdné, pokud si nejste jistí — špatná hodnota může rozbít vzhled.",ccDiscard:"Zahodit změny",ccResetDesign:"Obnovit vzhled",ccNotInTeam:"zatím bez účtu",ccNoActs:"Nikdy nedostane aktivity",ccNoActsHint:"Automatické plánování tato čísla dresů přeskakuje — obvykle manažer (#1) a DJ (#3).",ccAddNumber:"Přidat číslo dresu",ccSplit:"Hranice dopoledne / odpoledne",ccSplitHint:"Aktivita, která začíná před tímto časem, se počítá jako dopolední, po něm jako odpolední.",ccCover:"Titulní fotka",ccProgHint:"Tyto názvy se objevují všude, kde hosté a tým čtou program.",ccOperations:"Části programu",ccCategories:"Kategorie",ccRepHint:"Toto je hlavička tištěná na každé oficiální zprávě v PDF i Excelu.",ccRepDept:"Oddělení",ccRepHead:"Vedoucí oddělení",ccRepClass:"Typ dokumentu",ccRepConf:"Klasifikace",ccRepVersion:"Verze dokumentu",ccRepFooter:"Poznámka v zápatí",ccConnection:"Připojení",ccConnected:"Připojeno k databázi",ccOffline:"Práce offline",ccRowCounts:"Načtené záznamy",ccDownload:"Stáhnout záložní soubor",ccDownloadSub:"Vše, co jste nastavili, v jednom souboru",ccRestore:"Obnovit ze souboru",ccRestoreSub:"Vyberte záložní soubor a vše se vrátí zpět",ccWipeWording:"Smazat všechny úpravy textů",ccWipeDesign:"Smazat všechny úpravy vzhledu",ccFactorySub:"Texty, vzhled, pravidla a menu se vrátí do původního stavu",ccFactory:"Obnovit vše do továrního nastavení",ccBackupMade:"Záložní soubor vytvořen",ccRestoreBad:"Tento soubor není platná záloha",ccRestoreQ:"Nahradit všechna nastavení tímto souborem?",ccRestoreOk:"Nastavení obnovena",ccFactoryQ:"Obnovit každé nastavení do původního stavu?",vaNotice:"Vaše jméno, číslo pokoje a telefon slouží pouze k provozu animačního programu během pobytu a po odjezdu se odstraní.",vbRepeats:"opakování tento týden",vbBackToBack:"dnů po sobě",vbPlanHint:"Každý dostane stejný počet aktivit. Přitom se aplikace snaží nedávat jednomu člověku stejnou aktivitu dvakrát — a nikdy dva dny po sobě.",v9ModeHint:"Takto aplikace vypadá na každém telefonu, dokud si to člověk nezmění.",v9ModeNow:"Zobrazuje se nyní",v9TypoMoved:"Velikost písma, font a tvar tlačítek najdete v Design Studiu.",v9Contrast:"Čitelnost se kontroluje automaticky.",ccSecContent:"Obsah a texty",ccWordingSub:"Změňte jakýkoli text v aplikaci, ve všech jazycích",ccProgramSub:"Přejmenujte části programu a kategorie, změňte titulní fotky",ccSecDesign:"Design a vzhled",ccDesignSub:"Rohy, rozestupy, stíny, pozadí, vlastní styl",ccSecOps:"Provozní pravidla",ccRolesSub:"Čísla dresů, kdo nikdy nedostane aktivity, hranice dopoledne/odpoledne",ccSecPeople:"Lidé a program",ccSecReports:"Zprávy a data",ccReportsSub:"Oddělení, vedoucí oddělení, klasifikace, verze",ccBackupSub:"Uložte vše do souboru, obnovte to nebo začněte znovu",ccSecSystem:"Systém",ccKick:"PLNÁ KONTROLA",ccHead:"Vše v této aplikaci si můžete změnit",ccSub:"Texty, vzhled, pravidla, program, zprávy a data — bez kódu a bez vývojáře.",ccSearch:"Hledat nastavení…",ccNothing:"Tomuto hledání nic neodpovídá.",ccSaveAll:"Uložit změny",ccResetAll:"Obnovit všechny texty",ccPreview:"Náhled",v9Kick:"VŠE NA JEDNOM MÍSTĚ",v9NoHit:"Tomuto hledání nic neodpovídá.",v9NoData:"Zatím není dost informací — během týdne se to naplní.",v9Tickets:"Prodané vstupenky",v9Waitlist:"Čekací listina",v9RateAvg:"Průměrné hodnocení",v9TaskOpen:"Otevřené úkoly",v9Nations:"Národnosti",v9Messages:"Zprávy",v9Answered:"Odpovědi v kvízu",v9TopActs:"Nejvíce rezervací",v9PerDay:"Podle dne",v9PerCat:"Podle kategorie",v9EmptyActs:"Aktivity bez rezervace",v9TaskLate:"Po termínu",v9Reviews:"Získané pozvánky k recenzi",v9RateLow:"1–3 hvězdy",v9Command:"Operační velín",v9WeekPlanner:"Hlavní týdenní plánovač",v9Approval:"Zveřejnění a schválení",v9Audit:"Protokol změn",vaNever:"nikdy",vaPrivacy:"Data hostů a soukromí",vaKeep:"Uchovávat údaje hosta",vaKeepHint:"Poté se jméno, telefon, přihlášení a zprávy hosta odstraní. Rezervace a hodnocení zůstávají jako čísla, takže statistiky se nezmění.",vaOff:"Nikdy neodstraňovat (nedoporučeno)",vaDays:"dní po odjezdu",vaAuto:"Kontrolovat automaticky",vaAutoHint:"Spustí se jednou denně při otevření aplikace.",vaLastRun:"Poslední kontrola",vaDue:"Připraveno k odstranění",vaRetOff:"Vypnuto — údaje hostů se uchovávají navždy",vaAccounts:"účtů hostů",vaMessages:"zpráv",vaRequests:"žádostí",vaNames:"jmen ve starých rezervacích",vaCleanNow:"Odstranit nyní",vaNothingDue:"Není co odstranit — vše je v rámci zvoleného období.",vaWhatGoes:"Co se odstraní",vaGoes1:"Jméno, telefon, uživatelské jméno a heslo",vaGoes2:"Zprávy z chatu",vaGoes3:"Přání písniček a narozenin",vaWhatStays:"Co zůstane",vaStays1:"Počty rezervací a obsazenost",vaStays2:"Statistiky národností",vaStays3:"Hodnocení a zpětná vazba",vaCleanQ:"Odstranit tyto údaje hostů?",vaCleaned:"Údaje hostů odstraněny",vaChkDb:"Připojení k databázi",vaHealthOk:"Funguje",vaChkData:"Data přijata",vaChkMgr:"Druhý účet manažera",vaMgrWarn:"Pouze jeden účet manažera — když nejste k dispozici, nikdo aplikaci nespravuje",vaChkBackup:"Záloha nastavení",vaBackupOk:"Poslední záloha",vaBackupWarn:"Zatím žádná záloha — stáhněte si ji v sekci Záloha a obnovení",vaChkPush:"Push oznámení",vaPushOff:"Nenastaveno — oznámení fungují jen při otevřené aplikaci",vaChkRetention:"Uchovávání dat hostů",vaHealth:"Hlášení problémů",vaHealthChk:"Kontrola stavu",vaErrCount:"Zaznamenané problémy",vaCopyErr:"Zkopírovat seznam",vaClearErrs:"Vymazat seznam",vaNoErrors:"Žádné problémy nezaznamenány — to je dobrý výsledek.",vaCopied:"Zkopírováno",vaCleared:"Seznam vymazán",vbMore:"více"},
+nl:{capabilityProfile:"Bevoegdhedenprofiel voor activiteiten",iCanDo:"Kan ik doen",notListed:"Niet ingedeeld",iCantDo:"Kan ik niet doen",entranceAvailability:"Beschikbaarheid ingangsdienst",entranceCan:"Ik kan ingangsdienst doen",entranceCant:"Ik kan geen ingangsdienst doen",noQualifiedGender:"Niemand voldoet aan de regels voor bevoegdheid, geslacht, aanwezigheid en tijd",planOne:"Plan 1",planTwo:"Plan 2",planThree:"Plan 3",allocatorSmart:"Slimme eerlijke verdeling",plannerPlansHint:"Er worden drie geldige alternatieven gemaakt. Kies degene die je het beste vindt of maak drie nieuwe.",qualificationChecked:"Bevoegdheden gecontroleerd",attendanceChecked:"Aanwezigheid gecontroleerd",timeChecked:"Tijdconflicten gecontroleerd",genderChecked:"Geslachtsregels gecontroleerd",historyChecked:"Herhalingen gecontroleerd",entrancePlan:"Ingang",entranceUnassigned:"Geen geschikte persoon voor de ingang",newPlans:"3 nieuwe plannen maken",planApplied:"Plan voor activiteiten en ingang toegepast",operationEditor:"Werkdag bewerken",editableHint:"Alles hieronder bepaalt de manager en kan altijd worden gewijzigd.",autoEntrance:"Eerlijke ingangsdienst kiezen",autoEntranceWeek:"Ingangsdienst voor de week verdelen",entranceTime:"Tijd van de ingangsdienst",entranceGender:"Geslachtsregel voor de ingang",genderAny:"Elk geslacht",genderMale:"Alleen mannen",genderFemale:"Alleen vrouwen",practiceEnabled:"Teamtraining op deze dag",practiceTimeEdit:"Tijd / duur van de training",showNameEdit:"Avondshow / presentatie",showTimeEdit:"Showtijd",showLocationEdit:"Showlocatie",liveBandEdit:"Liveband / bijprogramma",genderRule:"Geslacht bij automatische indeling",genderRuleHint:"Gebruik dit alleen als deze activiteit op geslacht moet worden ingedeeld.",capabilityRuleHint:"Staan er activiteiten bij „Kan ik doen”, dan gebruikt de automatische planning alleen die. „Kan ik niet doen” blokkeert een activiteit altijd.",skillsConfigured:"Activiteitenrechten ingesteld",notConfigured:"Niet ingesteld — alle activiteiten toegestaan",selectAll:"Alles selecteren",canDoHint:"Activiteiten die deze entertainer mag leiden",clearAll:"Alles wissen",cantDoHint:"Harde beperkingen — nooit automatisch indelen",ccHotelInfo:"Hotelinformatie",ccHotelInfoSub:"Openingstijden, wifi en antwoorden voor gasten",ccStandards:"Dagindeling",ccStandardsSub:"De vaste tijden van de werkdag",ccRules:"Werkregels",ccRulesSub:"Wel doen, niet doen, uiterlijk en gevolgen",ccDayOp:"Dagelijkse werking",ccDayOpSub:"Vrije dag, ingang, thema, dresscode, show",ccStatSettings:"Instellingen",ccStatCustom:"Jouw wijzigingen",ccStatTeam:"Team",ccStatActs:"Activiteiten",ccWordAll:"Alle teksten",ccWordHint:"Typ rechts je eigen woorden. Leeg betekent dat de originele tekst wordt gebruikt.",ccEditLang:"Bewerkingstaal",ccAllLangs:"Deze tekst in elke taal gebruiken",ccAppBg:"Achtergrondfoto van de app",ccLoginBg:"Achtergrondfoto van het inlogscherm",ccUploadPhoto:"Foto uploaden",ccRemovePhoto:"Foto verwijderen",ccStrength:"Sterkte van de foto",ccLivePreview:"Wijzigingen zijn direct te zien. Er wordt niets opgeslagen tot je op Opslaan drukt.",ccRadius:"Hoekafronding",ccDensity:"Witruimte",ccDensCompact:"Compact",ccDensNormal:"Normaal",ccDensSpacious:"Ruim",ccShadow:"Schaduwen",ccShFlat:"Vlak",ccShSoft:"Zacht",ccShDeep:"Diep",ccBorders:"Kaartranden",ccPvTitle:"Voorbeeldkaart",ccPvText:"Zo zien je kaarten, knoppen en witruimte eruit.",ccCustomCss:"Geavanceerde stijl (CSS)",ccCustomCssHint:"Alleen voor gevorderd gebruik. Laat leeg als je twijfelt — een verkeerde waarde kan het uiterlijk kapotmaken.",ccDiscard:"Wijzigingen verwerpen",ccResetDesign:"Ontwerp herstellen",ccNotInTeam:"nog geen account",ccNoActs:"Krijgt nooit activiteiten",ccNoActsHint:"De automatische planning slaat deze rugnummers over — meestal de manager (#1) en de DJ (#3).",ccAddNumber:"Rugnummer toevoegen",ccSplit:"Grens ochtend / middag",ccSplitHint:"Een activiteit die voor deze tijd begint telt als ochtend, daarna als middag.",ccCover:"Omslagfoto",ccProgHint:"Deze namen verschijnen overal waar gasten en het team het programma lezen.",ccOperations:"Programmadelen",ccCategories:"Categorieën",ccRepHint:"Dit is de kop die op elk officieel PDF- en Excel-rapport wordt afgedrukt.",ccRepDept:"Afdeling",ccRepHead:"Afdelingshoofd",ccRepClass:"Documentsoort",ccRepConf:"Classificatie",ccRepVersion:"Documentversie",ccRepFooter:"Voettekst",ccConnection:"Verbinding",ccConnected:"Verbonden met de database",ccOffline:"Werkt offline",ccRowCounts:"Geladen records",ccDownload:"Back-upbestand downloaden",ccDownloadSub:"Alles wat je hebt ingesteld, in één bestand",ccRestore:"Herstellen uit een bestand",ccRestoreSub:"Kies een back-upbestand om alles terug te zetten",ccWipeWording:"Alle tekstwijzigingen wissen",ccWipeDesign:"Alle ontwerpwijzigingen wissen",ccFactorySub:"Teksten, ontwerp, regels en menu's gaan terug naar het origineel",ccFactory:"Alles terugzetten naar fabrieksinstellingen",ccBackupMade:"Back-upbestand aangemaakt",ccRestoreBad:"Dat bestand is geen geldige back-up",ccRestoreQ:"Alle instellingen vervangen door dit bestand?",ccRestoreOk:"Instellingen hersteld",ccFactoryQ:"Elke instelling terugzetten naar het origineel?",vaNotice:"Je naam, kamernummer en telefoon worden alleen gebruikt om het animatieprogramma tijdens je verblijf te draaien en worden na je vertrek verwijderd.",vbRepeats:"herhaling(en) deze week",vbBackToBack:"dag(en) achter elkaar",vbPlanHint:"Iedereen krijgt evenveel activiteiten. Daarbinnen probeert de app dezelfde persoon niet twee keer dezelfde activiteit te geven — en nooit op twee dagen achter elkaar.",v9ModeHint:"Zo ziet de app eruit op elke telefoon, tenzij iemand het zelf verandert.",v9ModeNow:"Wordt nu getoond",v9TypoMoved:"Tekstgrootte, lettertype en knopvorm staan in de Design Studio.",v9Contrast:"De leesbaarheid wordt automatisch gecontroleerd.",ccSecContent:"Inhoud & teksten",ccWordingSub:"Wijzig elke tekst in de app, in elke taal",ccProgramSub:"Hernoem programmadelen en categorieën, wissel omslagfoto's",ccSecDesign:"Design & uiterlijk",ccDesignSub:"Hoeken, witruimte, schaduwen, achtergronden, eigen stijl",ccSecOps:"Werkregels",ccRolesSub:"Rugnummers, wie nooit activiteiten krijgt, grens ochtend/middag",ccSecPeople:"Mensen & programma",ccSecReports:"Rapporten & gegevens",ccReportsSub:"Afdeling, afdelingshoofd, classificatie, versie",ccBackupSub:"Sla alles op in een bestand, zet het terug of begin opnieuw",ccSecSystem:"Systeem",ccKick:"VOLLEDIGE CONTROLE",ccHead:"Alles in deze app kun je zelf aanpassen",ccSub:"Teksten, design, regels, programma, rapporten en gegevens — zonder code, zonder ontwikkelaar.",ccSearch:"Zoek een instelling…",ccNothing:"Niets komt overeen met die zoekopdracht.",ccSaveAll:"Wijzigingen opslaan",ccResetAll:"Alle teksten herstellen",ccPreview:"Voorbeeld",v9Kick:"ALLES OP ÉÉN PLEK",v9NoHit:"Niets komt overeen met die zoekopdracht.",v9NoData:"Nog te weinig informatie — dit vult zich in de loop van de week.",v9Tickets:"Verkochte tickets",v9Waitlist:"Wachtlijst",v9RateAvg:"Gemiddelde beoordeling",v9TaskOpen:"Open taken",v9Nations:"Nationaliteiten",v9Messages:"Berichten",v9Answered:"Quizantwoorden",v9TopActs:"Meest geboekt",v9PerDay:"Per dag",v9PerCat:"Per categorie",v9EmptyActs:"Activiteiten zonder boeking",v9TaskLate:"Te laat",v9Reviews:"Verdiende review-uitnodigingen",v9RateLow:"1–3 sterren",v9Command:"Operations Command Center",v9WeekPlanner:"Weekplanner",v9Approval:"Publicatie & goedkeuring",v9Audit:"Wijzigingslogboek",vaNever:"nooit",vaPrivacy:"Gastgegevens & privacy",vaKeep:"Gastgegevens bewaren",vaKeepHint:"Daarna worden naam, telefoon, login en berichten van de gast verwijderd. Boekingen en beoordelingen blijven als cijfers staan, dus je statistieken veranderen niet.",vaOff:"Nooit verwijderen (niet aanbevolen)",vaDays:"dagen na vertrek",vaAuto:"Automatisch controleren",vaAutoHint:"Draait één keer per dag als je de app opent.",vaLastRun:"Laatste controle",vaDue:"Nu klaar om verwijderd te worden",vaRetOff:"Uitgeschakeld — gastgegevens worden voor altijd bewaard",vaAccounts:"gastaccounts",vaMessages:"berichten",vaRequests:"verzoeken",vaNames:"namen in oude boekingen",vaCleanNow:"Nu verwijderen",vaNothingDue:"Niets te verwijderen — alles valt binnen de periode die je hebt gekozen.",vaWhatGoes:"Wat wordt verwijderd",vaGoes1:"Naam, telefoon, gebruikersnaam en wachtwoord",vaGoes2:"Chatberichten",vaGoes3:"Muziek- en verjaardagsverzoeken",vaWhatStays:"Wat blijft",vaStays1:"Aantallen boekingen en bezetting",vaStays2:"Nationaliteitsstatistiek",vaStays3:"Beoordelingen en feedback",vaCleanQ:"Deze gastgegevens verwijderen?",vaCleaned:"Gastgegevens verwijderd",vaChkDb:"Databaseverbinding",vaHealthOk:"Werkt",vaChkData:"Gegevens ontvangen",vaChkMgr:"Tweede manageraccount",vaMgrWarn:"Slechts één manageraccount — als jij er niet bent, kan niemand de app beheren",vaChkBackup:"Back-up van instellingen",vaBackupOk:"Laatste back-up",vaBackupWarn:"Nog geen back-up gemaakt — download er een bij Back-up & herstel",vaChkPush:"Pushmeldingen",vaPushOff:"Niet ingesteld — meldingen werken alleen als de app open is",vaChkRetention:"Bewaren van gastgegevens",vaHealth:"Probleemmeldingen",vaHealthChk:"Statuscontrole",vaErrCount:"Vastgelegde problemen",vaCopyErr:"Lijst kopiëren",vaClearErrs:"Lijst wissen",vaNoErrors:"Geen problemen vastgelegd — dat is het goede resultaat.",vaCopied:"Gekopieerd",vaCleared:"Lijst gewist",vbMore:"meer"},
+fr:{capabilityProfile:"Profil de compétences pour les activités",iCanDo:"Je peux animer",notListed:"Non classé",iCantDo:"Je ne peux pas animer",entranceAvailability:"Disponibilité pour le service d'entrée",entranceCan:"Je peux faire le service d'entrée",entranceCant:"Je ne peux pas faire le service d'entrée",noQualifiedGender:"Personne ne correspond aux règles de compétence, de sexe, de présence et d'horaire",planOne:"Plan 1",planTwo:"Plan 2",planThree:"Plan 3",allocatorSmart:"Répartition équitable intelligente",plannerPlansHint:"Trois alternatives valides sont générées. Choisissez celle que vous préférez ou générez-en trois nouvelles.",qualificationChecked:"Compétences vérifiées",attendanceChecked:"Présence vérifiée",timeChecked:"Conflits d'horaires vérifiés",genderChecked:"Règles de sexe vérifiées",historyChecked:"Historique des répétitions vérifié",entrancePlan:"Entrée",entranceUnassigned:"Aucune personne éligible pour l'entrée",newPlans:"Générer 3 nouveaux plans",planApplied:"Plan des activités et de l'entrée appliqué",operationEditor:"Éditeur de la journée",editableHint:"Tout ce qui suit est géré par le manager et peut être modifié à tout moment.",autoEntrance:"Choisir l'entrée équitablement",autoEntranceWeek:"Équilibrer l'entrée sur la semaine",entranceTime:"Heure du service d'entrée",entranceGender:"Règle de sexe pour l'entrée",genderAny:"Indifférent",genderMale:"Hommes uniquement",genderFemale:"Femmes uniquement",practiceEnabled:"Répétition d'équipe ce jour-là",practiceTimeEdit:"Heure / durée de la répétition",showNameEdit:"Spectacle du soir / présentation",showTimeEdit:"Heure du spectacle",showLocationEdit:"Lieu du spectacle",liveBandEdit:"Groupe live / programme d'accompagnement",genderRule:"Sexe pour l'attribution automatique",genderRuleHint:"À utiliser uniquement si cette activité doit être attribuée selon le sexe.",capabilityRuleHint:"Si « Je peux animer » contient des activités, la planification automatique n'utilise que celles-ci. « Je ne peux pas animer » bloque toujours une activité.",skillsConfigured:"Autorisations d'activités configurées",notConfigured:"Non configuré — toutes les activités sont autorisées",selectAll:"Tout sélectionner",canDoHint:"Activités que cet animateur est habilité à animer",clearAll:"Tout désélectionner",cantDoHint:"Restrictions strictes — jamais attribué automatiquement",ccHotelInfo:"Informations sur l'hôtel",ccHotelInfoSub:"Horaires, WiFi et réponses aux clients",ccStandards:"Déroulé de la journée",ccStandardsSub:"Les horaires fixes de la journée de travail",ccRules:"Règles de travail",ccRulesSub:"À faire, à ne pas faire, tenue et conséquences",ccDayOp:"Fonctionnement quotidien",ccDayOpSub:"Repos, entrée, thème, code vestimentaire, spectacle",ccStatSettings:"Paramètres",ccStatCustom:"Vos modifications",ccStatTeam:"Équipe",ccStatActs:"Activités",ccWordAll:"Tous les textes",ccWordHint:"Saisissez vos propres mots à droite. Un champ vide signifie que le texte d'origine est utilisé.",ccEditLang:"Langue de modification",ccAllLangs:"Utiliser ce texte dans toutes les langues",ccAppBg:"Photo de fond de l'application",ccLoginBg:"Photo de fond de la connexion",ccUploadPhoto:"Téléverser une photo",ccRemovePhoto:"Retirer la photo",ccStrength:"Intensité de la photo",ccLivePreview:"Les changements s'affichent en direct. Rien n'est enregistré tant que vous n'appuyez pas sur Enregistrer.",ccRadius:"Arrondi des angles",ccDensity:"Espacement",ccDensCompact:"Compact",ccDensNormal:"Normal",ccDensSpacious:"Aéré",ccShadow:"Ombres",ccShFlat:"Plates",ccShSoft:"Douces",ccShDeep:"Profondes",ccBorders:"Contours des cartes",ccPvTitle:"Carte d'exemple",ccPvText:"Voici à quoi ressembleront vos cartes, boutons et espacements.",ccCustomCss:"Style avancé (CSS)",ccCustomCssHint:"Réservé aux utilisateurs avertis. Laissez vide en cas de doute — une valeur erronée peut casser l'apparence.",ccDiscard:"Annuler les modifications",ccResetDesign:"Réinitialiser le design",ccNotInTeam:"pas encore de compte",ccNoActs:"Ne reçoit jamais d'activités",ccNoActsHint:"La planification automatique ignore ces numéros de maillot — normalement le manager (#1) et le DJ (#3).",ccAddNumber:"Ajouter un numéro de maillot",ccSplit:"Limite matin / après-midi",ccSplitHint:"Une activité qui commence avant cette heure compte comme le matin, après comme l'après-midi.",ccCover:"Photo de couverture",ccProgHint:"Ces noms apparaissent partout où les clients et l'équipe lisent le programme.",ccOperations:"Parties du programme",ccCategories:"Catégories",ccRepHint:"C'est l'en-tête imprimé sur chaque rapport officiel PDF et Excel.",ccRepDept:"Service",ccRepHead:"Chef de service",ccRepClass:"Type de document",ccRepConf:"Classification",ccRepVersion:"Version du document",ccRepFooter:"Note de bas de page",ccConnection:"Connexion",ccConnected:"Connecté à la base de données",ccOffline:"Fonctionne hors ligne",ccRowCounts:"Enregistrements chargés",ccDownload:"Télécharger le fichier de sauvegarde",ccDownloadSub:"Tout ce que vous avez configuré, dans un seul fichier",ccRestore:"Restaurer depuis un fichier",ccRestoreSub:"Choisissez un fichier de sauvegarde pour tout remettre en place",ccWipeWording:"Effacer toutes les modifications de texte",ccWipeDesign:"Effacer toutes les modifications de design",ccFactorySub:"Textes, design, règles et menus reviennent à l'origine",ccFactory:"Tout réinitialiser aux réglages d'usine",ccBackupMade:"Fichier de sauvegarde créé",ccRestoreBad:"Ce fichier n'est pas une sauvegarde valide",ccRestoreQ:"Remplacer tous les réglages par ce fichier ?",ccRestoreOk:"Réglages restaurés",ccFactoryQ:"Réinitialiser tous les réglages à l'origine ?",vaNotice:"Votre nom, votre chambre et votre téléphone servent uniquement à faire fonctionner le programme d'animation pendant votre séjour et sont supprimés après votre départ.",vbRepeats:"répétition(s) cette semaine",vbBackToBack:"jour(s) d'affilée",vbPlanHint:"Chacun reçoit le même nombre d'activités. Dans ce cadre, l'application évite de confier deux fois la même activité à la même personne — et jamais deux jours de suite.",v9ModeHint:"Voici à quoi ressemble l'application sur chaque téléphone, tant que la personne ne la modifie pas.",v9ModeNow:"Affiché actuellement",v9TypoMoved:"La taille du texte, la police et la forme des boutons se trouvent dans le Design Studio.",v9Contrast:"La lisibilité est vérifiée automatiquement.",ccSecContent:"Contenu et textes",ccWordingSub:"Modifiez n'importe quel texte de l'application, dans toutes les langues",ccProgramSub:"Renommez les parties du programme et les catégories, changez les photos de couverture",ccSecDesign:"Design et apparence",ccDesignSub:"Angles, espacement, ombres, arrière-plans, style personnalisé",ccSecOps:"Règles de fonctionnement",ccRolesSub:"Numéros de maillot, qui ne reçoit jamais d'activités, limite matin/après-midi",ccSecPeople:"Personnes et programme",ccSecReports:"Rapports et données",ccReportsSub:"Service, chef de service, classification, version",ccBackupSub:"Enregistrez tout dans un fichier, restaurez-le ou repartez de zéro",ccSecSystem:"Système",ccKick:"CONTRÔLE TOTAL",ccHead:"Tout dans cette application est modifiable par vous",ccSub:"Textes, design, règles, programme, rapports et données — sans code, sans développeur.",ccSearch:"Rechercher un réglage…",ccNothing:"Aucun résultat pour cette recherche.",ccSaveAll:"Enregistrer les modifications",ccResetAll:"Réinitialiser tous les textes",ccPreview:"Aperçu",v9Kick:"TOUT AU MÊME ENDROIT",v9NoHit:"Aucun résultat pour cette recherche.",v9NoData:"Pas encore assez d'informations — cela se remplit au fil de la semaine.",v9Tickets:"Billets vendus",v9Waitlist:"Liste d'attente",v9RateAvg:"Note moyenne",v9TaskOpen:"Tâches ouvertes",v9Nations:"Nationalités",v9Messages:"Messages",v9Answered:"Réponses au quiz",v9TopActs:"Les plus réservées",v9PerDay:"Par jour",v9PerCat:"Par catégorie",v9EmptyActs:"Activités sans réservation",v9TaskLate:"En retard",v9Reviews:"Invitations à laisser un avis",v9RateLow:"1–3 étoiles",v9Command:"Centre de commande des opérations",v9WeekPlanner:"Planificateur hebdomadaire",v9Approval:"Publication et validation",v9Audit:"Journal des modifications",vaNever:"jamais",vaPrivacy:"Données clients et confidentialité",vaKeep:"Conserver les données du client",vaKeepHint:"Passé ce délai, le nom, le téléphone, l'identifiant et les messages du client sont supprimés. Les réservations et les notes restent sous forme de chiffres, vos statistiques ne changent donc pas.",vaOff:"Ne jamais supprimer (déconseillé)",vaDays:"jours après le départ",vaAuto:"Vérifier automatiquement",vaAutoHint:"S'exécute une fois par jour à l'ouverture de l'application.",vaLastRun:"Dernière vérification",vaDue:"Prêt à être supprimé maintenant",vaRetOff:"Désactivé — les données clients sont conservées indéfiniment",vaAccounts:"comptes clients",vaMessages:"messages",vaRequests:"demandes",vaNames:"noms dans d'anciennes réservations",vaCleanNow:"Supprimer maintenant",vaNothingDue:"Rien à supprimer — tout est dans la période que vous avez choisie.",vaWhatGoes:"Ce qui est supprimé",vaGoes1:"Nom, téléphone, identifiant et mot de passe",vaGoes2:"Messages du chat",vaGoes3:"Demandes de chansons et anniversaires",vaWhatStays:"Ce qui reste",vaStays1:"Nombre de réservations et occupation",vaStays2:"Statistiques de nationalité",vaStays3:"Notes et avis",vaCleanQ:"Supprimer ces données clients ?",vaCleaned:"Données clients supprimées",vaChkDb:"Connexion à la base de données",vaHealthOk:"Fonctionne",vaChkData:"Données reçues",vaChkMgr:"Deuxième compte manager",vaMgrWarn:"Un seul compte manager — si vous êtes absente, personne ne peut gérer l'application",vaChkBackup:"Sauvegarde des réglages",vaBackupOk:"Dernière sauvegarde",vaBackupWarn:"Aucune sauvegarde effectuée — téléchargez-en une depuis Sauvegarde et restauration",vaChkPush:"Notifications push",vaPushOff:"Non configuré — les notifications ne marchent que si l'application est ouverte",vaChkRetention:"Conservation des données clients",vaHealth:"Signalements de problèmes",vaHealthChk:"Contrôle de santé",vaErrCount:"Problèmes enregistrés",vaCopyErr:"Copier la liste",vaClearErrs:"Effacer la liste",vaNoErrors:"Aucun problème enregistré — c'est le bon résultat.",vaCopied:"Copié",vaCleared:"Liste effacée",vbMore:"de plus"},
+ar:{capabilityProfile:"ملف الكفاءات للأنشطة",iCanDo:"أستطيع تقديمه",notListed:"غير مصنّف",iCantDo:"لا أستطيع تقديمه",entranceAvailability:"التوفر لمناوبة المدخل",entranceCan:"أستطيع مناوبة المدخل",entranceCant:"لا أستطيع مناوبة المدخل",noQualifiedGender:"لا يوجد شخص مؤهل يطابق قواعد الكفاءة والجنس والحضور والوقت",planOne:"الخطة 1",planTwo:"الخطة 2",planThree:"الخطة 3",allocatorSmart:"توزيع عادل ذكي",plannerPlansHint:"يتم إنشاء ثلاثة بدائل صالحة. اختر ما يناسبك أو أنشئ ثلاثة جديدة.",qualificationChecked:"تم فحص ما يستطيع / لا يستطيع",attendanceChecked:"تم فحص الحضور",timeChecked:"تم فحص تعارض الأوقات",genderChecked:"تم فحص قواعد الجنس",historyChecked:"تم فحص التكرار",entrancePlan:"المدخل",entranceUnassigned:"لا يوجد شخص مؤهل لمناوبة المدخل",newPlans:"إنشاء 3 خطط جديدة",planApplied:"تم تطبيق خطة الأنشطة والمدخل",operationEditor:"محرّر تشغيل اليوم",editableHint:"كل ما في الأسفل يتحكم به المدير ويمكن تغييره في أي وقت.",autoEntrance:"اختيار عادل لمناوبة المدخل",autoEntranceWeek:"موازنة مناوبة المدخل للأسبوع",entranceTime:"وقت مناوبة المدخل",entranceGender:"قاعدة الجنس للمدخل",genderAny:"أي جنس",genderMale:"ذكور فقط",genderFemale:"إناث فقط",practiceEnabled:"تدريب الفريق في هذا اليوم",practiceTimeEdit:"وقت التدريب / المدة",showNameEdit:"عرض المساء / التقديم",showTimeEdit:"وقت العرض",showLocationEdit:"مكان العرض",liveBandEdit:"الفرقة الحية / البرنامج المصاحب",genderRule:"الجنس في التوزيع التلقائي",genderRuleHint:"استخدمه فقط عندما يجب إسناد هذا النشاط حسب الجنس.",capabilityRuleHint:"إذا كانت قائمة «أستطيع تقديمه» تحتوي على أنشطة، فالتخطيط التلقائي يستخدم تلك فقط. أما «لا أستطيع تقديمه» فتمنع النشاط دائماً.",skillsConfigured:"تم ضبط صلاحيات الأنشطة",notConfigured:"غير مضبوط — كل الأنشطة مسموحة",selectAll:"تحديد الكل",canDoHint:"الأنشطة التي يحق لهذا المنشط تقديمها",clearAll:"إلغاء تحديد الكل",cantDoHint:"قيود ثابتة — لا يتم الإسناد التلقائي أبداً",ccHotelInfo:"معلومات الفندق",ccHotelInfoSub:"أوقات العمل والواي فاي وإجابات الضيوف",ccStandards:"الجدول اليومي",ccStandardsSub:"الأوقات الثابتة ليوم العمل",ccRules:"قواعد العمل",ccRulesSub:"ما يجب وما لا يجب والمظهر والعواقب",ccDayOp:"التشغيل اليومي",ccDayOpSub:"الإجازة والمدخل والثيم وقواعد اللباس والعرض",ccStatSettings:"الإعدادات",ccStatCustom:"تغييراتك",ccStatTeam:"الفريق",ccStatActs:"الأنشطة",ccWordAll:"كل النصوص",ccWordHint:"اكتب كلماتك على اليمين. الحقل الفارغ يعني استخدام النص الأصلي.",ccEditLang:"لغة التحرير",ccAllLangs:"استخدام هذا النص في كل اللغات",ccAppBg:"صورة خلفية التطبيق",ccLoginBg:"صورة خلفية شاشة الدخول",ccUploadPhoto:"رفع صورة",ccRemovePhoto:"إزالة الصورة",ccStrength:"قوة الصورة",ccLivePreview:"تظهر التغييرات مباشرة. لا يُحفظ شيء حتى تضغط حفظ.",ccRadius:"استدارة الزوايا",ccDensity:"التباعد",ccDensCompact:"مضغوط",ccDensNormal:"عادي",ccDensSpacious:"واسع",ccShadow:"الظلال",ccShFlat:"مسطّح",ccShSoft:"ناعم",ccShDeep:"عميق",ccBorders:"إطارات البطاقات",ccPvTitle:"بطاقة نموذجية",ccPvText:"هكذا ستبدو بطاقاتك وأزرارك والمسافات بينها.",ccCustomCss:"نمط متقدم (CSS)",ccCustomCssHint:"للاستخدام المتقدم فقط. اتركه فارغاً إن لم تكن متأكداً — قيمة خاطئة قد تفسد المظهر.",ccDiscard:"تجاهل التغييرات",ccResetDesign:"إعادة ضبط التصميم",ccNotInTeam:"لا يوجد حساب بعد",ccNoActs:"لا يُسنَد إليه أنشطة أبداً",ccNoActsHint:"يتخطى التخطيط التلقائي أرقام القمصان هذه — عادةً المدير (#1) والدي جي (#3).",ccAddNumber:"إضافة رقم قميص",ccSplit:"الفاصل بين الصباح وبعد الظهر",ccSplitHint:"النشاط الذي يبدأ قبل هذا الوقت يُحسب صباحاً، وبعده يُحسب بعد الظهر.",ccCover:"صورة الغلاف",ccProgHint:"تظهر هذه الأسماء في كل مكان يقرأ فيه الضيوف والفريق البرنامج.",ccOperations:"أقسام البرنامج",ccCategories:"الفئات",ccRepHint:"هذا هو الترويسة المطبوعة على كل تقرير رسمي بصيغة PDF أو Excel.",ccRepDept:"القسم",ccRepHead:"رئيس القسم",ccRepClass:"نوع المستند",ccRepConf:"التصنيف",ccRepVersion:"إصدار المستند",ccRepFooter:"ملاحظة التذييل",ccConnection:"الاتصال",ccConnected:"متصل بقاعدة البيانات",ccOffline:"يعمل دون اتصال",ccRowCounts:"السجلات المحمّلة",ccDownload:"تنزيل ملف النسخة الاحتياطية",ccDownloadSub:"كل ما أعددته، في ملف واحد",ccRestore:"الاستعادة من ملف",ccRestoreSub:"اختر ملف نسخة احتياطية لإعادة كل شيء",ccWipeWording:"مسح كل تغييرات النصوص",ccWipeDesign:"مسح كل تغييرات التصميم",ccFactorySub:"تعود النصوص والتصميم والقواعد والقوائم إلى الأصل",ccFactory:"إعادة كل شيء لإعدادات المصنع",ccBackupMade:"تم إنشاء ملف النسخة الاحتياطية",ccRestoreBad:"هذا الملف ليس نسخة احتياطية صالحة",ccRestoreQ:"استبدال كل الإعدادات بهذا الملف؟",ccRestoreOk:"تمت استعادة الإعدادات",ccFactoryQ:"إعادة كل إعداد إلى الأصل؟"}
+};
+Object.keys(V21_FILL).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V21_FILL[l]); });
+</script>
+
+<style id="explore-v21-rtl">
+/* ============================================================
+   v21 fix round — A2: right-to-left for the Explore layer.
+   The app already sets <html dir="rtl"> for Arabic, so the TEXT
+   flowed correctly; what was missing was mirroring the things
+   positioned with left/right and the arrows. Also restyles the
+   places list now that the invented pin map (A6) is gone.
+   ============================================================ */
+[dir="rtl"] .ex21-timebadge{left:auto;right:13px}
+[dir="rtl"] .ex21-dback{left:auto;right:16px}
+[dir="rtl"] .ex21-dfav{right:auto;left:16px}
+[dir="rtl"] .ex21-rec .go svg,[dir="rtl"] .ex21-feature svg{transform:scaleX(-1)}
+[dir="rtl"] .ex21-carousel,[dir="rtl"] .ex21-places,[dir="rtl"] .ex21-moods,[dir="rtl"] .ex21-filterbar{direction:rtl}
+[dir="rtl"] .ex21-place{grid-template-columns:1fr 82px}
+[dir="rtl"] .ex21-place img{order:2}
+[dir="rtl"] .ex21-hrow,[dir="rtl"] .ex21-hero-copy,[dir="rtl"] .ex21-tbody,
+[dir="rtl"] .ex21-pbody,[dir="rtl"] .ex21-dcontent{text-align:right}
+[dir="rtl"] .ex21-frow time{text-align:right}
+[dir="rtl"] .ex21-goodrow b,[dir="rtl"] .ex21-meta{text-align:left}
+[dir="rtl"] .ex21-empty{text-align:right}
+/* the places row is now the whole section, so give it a little more room */
+.ex21-places{padding-bottom:9px}
+.ex21-place{flex:0 0 min(78vw,320px)}
+.ex21-pbody p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+</style>
+
 <script id="explore-v21-digital-guide-script">
+/* ============================================================
+   v21 EXPLORE — DIGITAL HOLIDAY GUIDE   (fix round)
+   A1  every visible word goes through t()  — 8 languages
+   A2  right-to-left handling for Arabic
+   A4  the misleading per-activity "Feedback" line removed
+   A5  returning guests go to sign-in, not the signup wizard
+   A6  the fake pin map replaced by an honest list of places
+   A7  favourites ordered by how many days away they really are
+   A8  no more "Starts in 2h " with a dangling space
+   A9  detail panel: Escape, hardware back, scroll never stays locked
+   A10 the heart on the card behind the panel updates too
+   A11 mood detection uses the activity category, not English words
+   ============================================================ */
 (function(){
   var ex21Filter="for-you", ex21Mood="all";
+
+  /* ---------- text helpers ---------- */
+  function T(k){ return t(k); }
+  function TX(k,map){                       // t() with {placeholders}
+    var s=String(t(k));
+    Object.keys(map||{}).forEach(function(p){ s=s.split("{"+p+"}").join(map[p]); });
+    return s;
+  }
+  function isRTL(){ return S.lang==="ar"; }
+  function dirAttr(){ return ' dir="'+(isRTL()?"rtl":"ltr")+'"'; }   /* A2 */
+
+  /* ---------- data helpers ---------- */
   function acts(){ return (S.activities||[]).slice(); }
   function today(){ return todayIndex(); }
   function dayActs(d){ return acts().filter(function(a){return +a.day===+d;}).sort(function(a,b){return String(a.time||"").localeCompare(String(b.time||""));}); }
   function imageOf(a){ return (a&&a.image) || (typeof IMG!=="undefined"&&IMG.show) || ""; }
   function txt(a){ return String((a&&a.name)||"")+" "+String((a&&a.category)||"")+" "+String((a&&a.desc)||""); }
+
+  /* A11 — the category is structured data and never gets renamed into
+     another language, so it decides the mood. Words are only a fallback. */
+  var CAT_MOOD={ eLive:"live", eShow:"show", eBefore:"show", eAfter:"show", eKidsStage:"show",
+                 eParty:"nightlife", mEvents:"events",
+                 mAdult:"activities", mKids:"activities", mTeen:"activities" };
+  /* multilingual fallback words (en de ru pl cs nl fr ar) */
+  var W_LIVE=/live|music|band|singer|sax|violin|instrument|dj|musik|музык|жив|muzyk|hudb|muziek|musique|موسيق/i;
+  var W_SHOW=/show|stage|cabaret|performance|b[üu]hne|шоу|сцен|pokaz|scen|podium|spectacle|عرض|مسرح/i;
+  var W_NIGHT=/party|night|club|disco|foam|abend|nacht|вечерин|ночн|impreza|noc|feest|avond|f[êe]te|soir|حفل|سهر/i;
+  var W_EVENT=/event|special|cocktail|sunset|festival|theme|veranstaltung|событ|wydarzen|akce|evenement|[ée]v[ée]nement|فعالي/i;
+  var W_ACT=/yoga|aqua|gym|stretch|volley|darts|boccia|fitness|sport|zumba|game|activity|aktivit|спорт|игр|zaj[ęe]|hra|spel|jeu|رياض|نشاط/i;
+  var W_RELAX=/yoga|relax|sunset|spa|chill|entspann|sonnenunterg|расслаб|закат|йог|relaks|zach[óo]d|odpo[čc]|ontspan|zonsonderg|d[ée]tente|coucher|استرخاء|غروب|يوغا/i;
+
   function mood(a){
-    var s=txt(a).toLowerCase();
-    if(/live|music|band|singer|sax|violin|instrument|dj/.test(s)) return "live";
-    if(/show|stage|cabaret|dance show|performance/.test(s)) return "show";
-    if(/party|night|club|disco|foam|after party/.test(s)) return "nightlife";
-    if(/event|special|cocktail|sunset|festival|theme/.test(s)) return "events";
-    if(/yoga|aqua|gym|stretch|volley|darts|boccia|fitness|sport|zumba|game|activity/.test(s)) return "activities";
+    var c=CAT_MOOD[String((a&&a.category)||"")];
+    if(c) return c;
+    var s=txt(a);
+    if(W_LIVE.test(s)) return "live";
+    if(W_SHOW.test(s)) return "show";
+    if(W_NIGHT.test(s)) return "nightlife";
+    if(W_EVENT.test(s)) return "events";
+    if(W_ACT.test(s)) return "activities";
     return "entertainment";
   }
-  function moodLabel(a){ return ({live:"Live Music",show:"Show",nightlife:"Nightlife",events:"Events",activities:"Activities",entertainment:"Entertainment"})[mood(a)]||"Entertainment"; }
+  function moodLabel(a){ return ({live:T("ex21MLive"),show:T("ex21MShow"),nightlife:T("ex21FNight"),
+    events:T("ex21MEvents"),activities:T("activities"),entertainment:T("ex21MEnt")})[mood(a)]||T("ex21MEnt"); }
+  function moodLabelKey(m){ return ({live:T("ex21MLive"),show:T("ex21MShow"),nightlife:T("ex21FNight"),
+    events:T("ex21MEvents"),activities:T("activities"),entertainment:T("ex21MEnt")})[m]||T("ex21MEnt"); }
   function moodIcon(m){ return ({live:"music",show:"star",nightlife:"moon",events:"sparkle",activities:"users",entertainment:"ticket"})[m]||"star"; }
+
   function favHas(a){ return (S.favorites||[]).some(function(id){return String(id)===String(a.id);}); }
   function toggleFav(a){
-    var yes=favHas(a); S.favorites=(S.favorites||[]).filter(function(id){return String(id)!==String(a.id);}); if(!yes)S.favorites.push(a.id); persist();
+    var yes=favHas(a);
+    S.favorites=(S.favorites||[]).filter(function(id){return String(id)!==String(a.id);});
+    if(!yes)S.favorites.push(a.id);
+    persist();
   }
   function minsNow(){ var n=hotelNow(); return n.getHours()*60+n.getMinutes(); }
   function startMin(a){ var w=intervalOf(a&&a.time); return w?w.s:9999; }
+  function daysAhead(a){ return ((+a.day)-today()+7)%7; }          /* A7 */
+
+  /* A8 — the hours-and-minutes line no longer ends in a dangling space */
   function whenText(a){
-    var delta=startMin(a)-minsNow(); if(+a.day!==today())return (t("daysShort")[a.day]||"")+" · "+(a.time||"");
-    if(delta>0&&delta<60)return "Starts in "+delta+" min"; if(delta>=60&&delta<180)return "Starts in "+Math.floor(delta/60)+"h "+(delta%60?delta%60+"m":""); return a.time||"Today";
+    if(+a.day!==today()) return (t("daysShort")[a.day]||"")+" · "+(a.time||"");
+    var delta=startMin(a)-minsNow();
+    if(delta>0&&delta<60) return TX("ex21InMin",{n:delta});
+    if(delta>=60&&delta<180){
+      var h=Math.floor(delta/60), m=delta%60;
+      return m ? TX("ex21InHM",{h:h,m:m}) : TX("ex21InH",{h:h});
+    }
+    return a.time||T("today");
   }
+
   function filteredToday(){
     var list=dayActs(today()), now=minsNow();
-    if(ex21Mood!=="all")list=list.filter(function(a){return mood(a)===ex21Mood;});
-    if(ex21Filter==="today")return list;
-    if(ex21Filter==="nightlife")return list.filter(function(a){return mood(a)==="nightlife"||startMin(a)>=19*60;});
-    if(ex21Filter==="active")return list.filter(function(a){return mood(a)==="activities" && !/yoga|stretch|relax/.test(txt(a).toLowerCase());});
-    if(ex21Filter==="relax")return list.filter(function(a){return /yoga|sunset|cocktail|music|relax|beach/.test(txt(a).toLowerCase());});
-    var upcoming=list.filter(function(a){return startMin(a)>=now-20;}); return upcoming.length?upcoming:list;
+    if(ex21Mood!=="all") list=list.filter(function(a){return mood(a)===ex21Mood;});
+    if(ex21Filter==="today") return list;
+    if(ex21Filter==="nightlife") return list.filter(function(a){return mood(a)==="nightlife"||startMin(a)>=19*60;});
+    if(ex21Filter==="active")   return list.filter(function(a){return mood(a)==="activities" && !W_RELAX.test(txt(a));});
+    if(ex21Filter==="relax")    return list.filter(function(a){return W_RELAX.test(txt(a)) || mood(a)==="live" || mood(a)==="events";});
+    var upcoming=list.filter(function(a){return startMin(a)>=now-20;});
+    return upcoming.length?upcoming:list;
   }
   function bestHero(){
-    var td=dayActs(today()), hi=td.find(function(a){return a.highlight&&imageOf(a);}) || td.find(function(a){return imageOf(a)&&startMin(a)>=minsNow();}) || td.find(function(a){return imageOf(a);});
-    if(hi)return hi; var vh=typeof v12Hero==="function"?v12Hero():null; return vh&&vh.act?vh.act:acts().find(function(a){return imageOf(a);})||null;
+    var td=dayActs(today());
+    var hi=td.find(function(a){return a.highlight&&imageOf(a);})
+        || td.find(function(a){return imageOf(a)&&startMin(a)>=minsNow();})
+        || td.find(function(a){return imageOf(a);});
+    if(hi) return hi;
+    var vh=typeof v12Hero==="function"?v12Hero():null;
+    return (vh&&vh.act) ? vh.act : (acts().find(function(a){return imageOf(a);})||null);
   }
-  function secHead(title,sub,right){return '<div class="ex21-hrow"><div><h2>'+esc(title)+'</h2>'+(sub?'<p>'+esc(sub)+'</p>':'')+'</div>'+(right||'')+'</div>';}
-  function todayCard(a){return '<article class="ex21-today" data-ex21-detail="'+esc(a.id)+'"><div class="ex21-media"><img src="'+esc(imageOf(a))+'" alt="" loading="lazy"><span class="ex21-timebadge">'+esc(a.time||"Today")+'</span></div><div class="ex21-tbody"><h3>'+esc(a.name)+'</h3><div class="ex21-meta"><span>'+ic("pin",11)+' '+esc(a.location||"Hotel")+'</span><span>'+esc(moodLabel(a))+'</span></div><div class="ex21-desc">'+esc(a.desc||"Discover what is happening during your stay.")+'</div><button type="button" class="ex21-detailbtn">View Details</button></div></article>';}
+
+  /* ---------- pieces ---------- */
+  function secHead(title,sub,right){
+    return '<div class="ex21-hrow"><div><h2>'+esc(title)+'</h2>'+(sub?'<p>'+esc(sub)+'</p>':'')+'</div>'+(right||'')+'</div>';
+  }
+  function todayCard(a){
+    return '<article class="ex21-today" data-ex21-detail="'+esc(a.id)+'"><div class="ex21-media">'
+      +'<img src="'+esc(imageOf(a))+'" alt="" loading="lazy"><span class="ex21-timebadge">'+esc(a.time||T("today"))+'</span></div>'
+      +'<div class="ex21-tbody"><h3>'+esc(a.name)+'</h3><div class="ex21-meta">'
+      +'<span>'+ic("pin",11)+' '+esc(a.location||T("ex21Hotel"))+'</span><span>'+esc(moodLabel(a))+'</span></div>'
+      +'<div class="ex21-desc">'+esc(a.desc||T("ex21DescFall"))+'</div>'
+      +'<button type="button" class="ex21-detailbtn">'+esc(T("ex21Details"))+'</button></div></article>';
+  }
   function categoryCards(){
-    var cats=[['entertainment','Entertainment'],['show','Show'],['live','Live Music'],['events','Events'],['activities','Activities'],['nightlife','Nightlife']];
+    var cats=["entertainment","show","live","events","activities","nightlife"];
     var fallback=bestHero();
-    return '<div class="ex21-moods">'+cats.map(function(c){var a=acts().find(function(x){return mood(x)===c[0]&&imageOf(x);})||fallback;return '<button class="ex21-mood" type="button" data-ex21-mood="'+c[0]+'">'+(a?'<img src="'+esc(imageOf(a))+'" alt="" loading="lazy">':'')+'<i>'+ic(moodIcon(c[0]),15)+'</i><span>'+c[1]+'</span></button>';}).join('')+'</div>';
+    return '<div class="ex21-moods">'+cats.map(function(c){
+      var a=acts().find(function(x){return mood(x)===c&&imageOf(x);})||fallback;
+      return '<button class="ex21-mood" type="button" data-ex21-mood="'+c+'">'
+        +(a?'<img src="'+esc(imageOf(a))+'" alt="" loading="lazy">':'')
+        +'<i>'+ic(moodIcon(c),15)+'</i><span>'+esc(moodLabelKey(c))+'</span></button>';
+    }).join('')+'</div>';
   }
   function recs(){
-    var td=dayActs(today()), now=minsNow(), pop=td.slice().sort(function(a,b){return bookingsFor(b.id).length-bookingsFor(a.id).length;})[0];
-    var next=td.find(function(a){return startMin(a)>=now;})||td[0], sunset=td.find(function(a){return /sunset|beach|golden/.test(txt(a).toLowerCase());});
+    var td=dayActs(today()), now=minsNow();
+    var pop=td.slice().sort(function(a,b){return bookingsFor(b.id).length-bookingsFor(a.id).length;})[0];
+    var next=td.find(function(a){return startMin(a)>=now;})||td[0];
+    var sunset=td.find(function(a){return W_RELAX.test(txt(a));});
     var cards=[];
-    if(sunset&&startMin(sunset)>now&&startMin(sunset)-now<=120)cards.push({a:sunset,k:'RIGHT NOW',t:'Golden hour is getting close',p:whenText(sunset),i:'sun',wide:true});
-    if(now<12*60)cards.push({a:next,k:'GOOD MORNING',t:'Start your holiday with something active',p:next?next.name:'See today’s program',i:'sun'});
-    else if(now<18*60)cards.push({a:next,k:'THIS AFTERNOON',t:'Make the most of the day',p:next?whenText(next):'See what’s happening',i:'sparkle'});
-    else cards.push({a:next,k:'TONIGHT',t:'Your evening starts here',p:next?next.name:'Discover tonight’s program',i:'moon'});
-    if(pop)cards.push({a:pop,k:'POPULAR TODAY',t:pop.name,p:bookingsFor(pop.id).length?bookingsFor(pop.id).length+' guest booking'+(bookingsFor(pop.id).length===1?'':'s'):'Recommended today',i:'users'});
-    var hi=td.find(function(a){return a.highlight;}); if(hi&&(!pop||String(hi.id)!==String(pop.id)))cards.push({a:hi,k:'HOTEL PICK',t:hi.name,p:hi.location||'At the hotel',i:'star'});
-    return '<div class="ex21-recgrid">'+cards.slice(0,3).map(function(r){return '<button class="ex21-rec '+(r.wide?'wide':'')+'" type="button" '+(r.a?'data-ex21-detail="'+esc(r.a.id)+'"':'')+'><span class="ri">'+ic(r.i,17)+'</span><small>'+esc(r.k)+'</small><b>'+esc(r.t)+'</b><p>'+esc(r.p||'')+'</p><span class="go">'+ic('back',14)+'</span></button>';}).join('')+'</div>';
+    if(sunset&&startMin(sunset)>now&&startMin(sunset)-now<=120)
+      cards.push({a:sunset,k:T("ex21RightNow"),t:T("ex21Golden"),p:whenText(sunset),i:"sun",wide:true});
+    if(now<12*60)      cards.push({a:next,k:T("ex21Morning"),  t:T("ex21StartActive"),p:next?next.name:T("ex21SeeProg"),i:"sun"});
+    else if(now<18*60) cards.push({a:next,k:T("ex21Afternoon"),t:T("ex21MakeMost"),   p:next?whenText(next):T("ex21SeeHappening"),i:"sparkle"});
+    else               cards.push({a:next,k:T("ex21Tonight"),  t:T("ex21EveStarts"),  p:next?next.name:T("ex21SeeTonight"),i:"moon"});
+    if(pop){
+      var n=bookingsFor(pop.id).length;
+      cards.push({a:pop,k:T("ex21PopularT"),t:pop.name,p:n?(n+" "+(n===1?T("ex21Booking1"):T("ex21BookingN"))):T("ex21RecToday"),i:"users"});
+    }
+    var hi=td.find(function(a){return a.highlight;});
+    if(hi&&(!pop||String(hi.id)!==String(pop.id)))
+      cards.push({a:hi,k:T("ex21Pick"),t:hi.name,p:hi.location||T("ex21AtHotel"),i:"star"});
+    return '<div class="ex21-recgrid">'+cards.slice(0,3).map(function(r){
+      return '<button class="ex21-rec '+(r.wide?'wide':'')+'" type="button" '
+        +(r.a?'data-ex21-detail="'+esc(r.a.id)+'"':'')
+        +'><span class="ri">'+ic(r.i,17)+'</span><small>'+esc(r.k)+'</small><b>'+esc(r.t)+'</b>'
+        +'<p>'+esc(r.p||'')+'</p><span class="go">'+ic('back',14)+'</span></button>';
+    }).join('')+'</div>';
   }
-  function hashLoc(s){var h=0;String(s).split('').forEach(function(ch){h=((h<<5)-h)+ch.charCodeAt(0);h|=0;});return Math.abs(h);}
+
+  /* A6 — the old pin map placed pins by hashing the location NAME, so the
+     positions were invented. Guests read a map as real. Replaced with an
+     honest list of the places that have something on. */
   function places(){
-    var map={}, all=acts(); all.forEach(function(a){var l=String(a.location||'').trim(); if(l&&!map[l])map[l]=a;}); var list=Object.keys(map).slice(0,5).map(function(k){return map[k];});
-    if(!list.length)return '<div class="ex21-empty">'+ic('map',22)+'Locations will appear here when activities have a location.</div>';
-    var pins=list.map(function(a){var h=hashLoc(a.location),x=16+(h%68),y=18+((Math.floor(h/10))%62);return '<button class="ex21-pin" data-ex21-detail="'+esc(a.id)+'" style="left:'+x+'%;top:'+y+'%" aria-label="'+esc(a.location)+'"><span>'+ic('pin',13)+'</span></button>';}).join('');
-    return '<div class="ex21-map">'+pins+'</div><div class="ex21-places">'+list.map(function(a){return '<article class="ex21-place"><img src="'+esc(imageOf(a))+'" alt="" loading="lazy"><div class="ex21-pbody"><small>'+esc(moodLabel(a))+'</small><b>'+esc(a.location)+'</b><p>'+esc(a.desc||('See what is happening at '+a.location+'.'))+'</p><div class="ex21-actions"><button data-ex21-detail="'+esc(a.id)+'">View Details</button><button class="gold" data-ex21-fav="'+esc(a.id)+'">'+(favHas(a)?'Saved':'Add to favourites')+'</button></div></div></article>';}).join('')+'</div>';
+    var map={}, all=acts();
+    all.forEach(function(a){ var l=String(a.location||'').trim(); if(l&&!map[l])map[l]=a; });
+    var list=Object.keys(map).slice(0,6).map(function(k){return map[k];});
+    if(!list.length) return '<div class="ex21-empty">'+ic('map',22)+esc(T("ex21NoPlaces"))+'</div>';
+    return '<div class="ex21-places">'+list.map(function(a){
+      return '<article class="ex21-place"><img src="'+esc(imageOf(a))+'" alt="" loading="lazy">'
+        +'<div class="ex21-pbody"><small>'+esc(moodLabel(a))+'</small><b>'+esc(a.location)+'</b>'
+        +'<p>'+esc(a.desc||TX("ex21SeeAt",{p:a.location}))+'</p>'
+        +'<div class="ex21-actions"><button data-ex21-detail="'+esc(a.id)+'">'+esc(T("ex21Details"))+'</button>'
+        +'<button class="gold" data-ex21-fav="'+esc(a.id)+'">'+esc(favHas(a)?T("ex21Saved"):T("ex21AddFav"))+'</button>'
+        +'</div></div></article>';
+    }).join('')+'</div>';
   }
+
   function dontMiss(){
-    var td=dayActs(today()), now=minsNow(), a=td.find(function(x){return x.highlight&&startMin(x)>=now-30;}) || td.find(function(x){return startMin(x)>=now;}) || td[0]; if(!a)return '';
-    return '<div class="ex21-miss" data-ex21-detail="'+esc(a.id)+'"><img src="'+esc(imageOf(a))+'" alt="" loading="lazy"><div class="ex21-misscopy"><small>Don’t Miss</small><h3>'+esc(a.name)+'</h3><p>'+esc(whenText(a)+(a.location?' · '+a.location:''))+'</p><button type="button">View Details</button></div></div>';
+    var td=dayActs(today()), now=minsNow();
+    var a=td.find(function(x){return x.highlight&&startMin(x)>=now-30;})
+        || td.find(function(x){return startMin(x)>=now;}) || td[0];
+    if(!a) return '';
+    return '<div class="ex21-miss" data-ex21-detail="'+esc(a.id)+'"><img src="'+esc(imageOf(a))+'" alt="" loading="lazy">'
+      +'<div class="ex21-misscopy"><small>'+esc(T("ex21MissH"))+'</small><h3>'+esc(a.name)+'</h3>'
+      +'<p>'+esc(whenText(a)+(a.location?' · '+a.location:''))+'</p>'
+      +'<button type="button">'+esc(T("ex21Details"))+'</button></div></div>';
   }
+
+  /* A7 — "Later" is now ordered by how many days away the day really is,
+     counting forward from today, so a Monday favourite seen on Friday
+     shows as 3 days away instead of being filed under a vague "Later". */
   function favSection(){
-    var fs=acts().filter(favHas); if(!fs.length)return '<div class="ex21-empty">'+ic('heart',22)+'Save activities and places here so your holiday plan is always easy to find.</div>';
-    var tday=today(), tom=(tday+1)%7, groups=[['Today',fs.filter(function(a){return +a.day===tday;})],['Tomorrow',fs.filter(function(a){return +a.day===tom;})],['Later',fs.filter(function(a){return +a.day!==tday&&+a.day!==tom;})]].filter(function(g){return g[1].length;});
-    return '<div class="ex21-favs">'+groups.map(function(g){return '<div class="ex21-fday">'+g[0]+'</div>'+g[1].sort(function(a,b){return String(a.time).localeCompare(String(b.time));}).map(function(a){return '<div class="ex21-frow" data-ex21-detail="'+esc(a.id)+'"><time>'+esc(a.time||'—')+'</time><b>'+esc(a.name)+'</b><button data-ex21-fav="'+esc(a.id)+'" aria-label="remove">'+ic('heart',15)+'</button></div>';}).join('');}).join('')+'</div>';
+    var fs=acts().filter(favHas);
+    if(!fs.length) return '<div class="ex21-empty">'+ic('heart',22)+esc(T("ex21NoFavs"))+'</div>';
+    var groups=[
+      [T("today"),        fs.filter(function(a){return daysAhead(a)===0;})],
+      [T("ex21Tomorrow"), fs.filter(function(a){return daysAhead(a)===1;})],
+      [T("ex21Later"),    fs.filter(function(a){return daysAhead(a)>1;}).sort(function(a,b){return daysAhead(a)-daysAhead(b);})]
+    ].filter(function(g){return g[1].length;});
+    return '<div class="ex21-favs">'+groups.map(function(g){
+      return '<div class="ex21-fday">'+esc(g[0])+'</div>'+g[1].map(function(a){
+        var when=(daysAhead(a)>1?(t("daysShort")[a.day]||"")+" ":"")+(a.time||'—');
+        return '<div class="ex21-frow" data-ex21-detail="'+esc(a.id)+'"><time>'+esc(when)+'</time><b>'+esc(a.name)+'</b>'
+          +'<button data-ex21-fav="'+esc(a.id)+'" aria-label="'+esc(T("ex21FavOff"))+'">'+ic('heart',15)+'</button></div>';
+      }).join('');
+    }).join('')+'</div>';
   }
-  function filterBar(){var f=[['for-you','For You'],['today','Today'],['relax','Relax'],['active','Active'],['nightlife','Nightlife']];return '<div class="ex21-filterbar">'+f.map(function(x){return '<button type="button" class="ex21-filter '+(ex21Filter===x[0]?'on':'')+'" data-ex21-filter="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';}
-  function feedbackText(a){
-    var comments=(S.feedback||[]).filter(function(f){return f.comment&&String(f.comment).toLowerCase().indexOf(String(a.name||'').toLowerCase())>=0;});
-    if(comments.length){var avg=comments.reduce(function(n,f){return n+(+f.rate||0);},0)/comments.length;return avg.toFixed(1)+' / 5 · '+comments.length+' mention'+(comments.length===1?'':'s');}
-    return 'Guest feedback can be shared after the activity';
+
+  function filterBar(){
+    var f=[['for-you',T("ex21FForYou")],['today',T("today")],['relax',T("ex21FRelax")],['active',T("ex21FActive")],['nightlife',T("ex21FNight")]];
+    return '<div class="ex21-filterbar">'+f.map(function(x){
+      return '<button type="button" class="ex21-filter '+(ex21Filter===x[0]?'on':'')+'" data-ex21-filter="'+x[0]+'">'+esc(x[1])+'</button>';
+    }).join('')+'</div>';
   }
+
+  /* A10 — keep every heart in the page in step with the saved list */
+  function syncFavButtons(){
+    document.querySelectorAll('[data-ex21-fav]').forEach(function(b){
+      var a=acts().find(function(x){return String(x.id)===String(b.getAttribute('data-ex21-fav'));});
+      if(!a) return;
+      var on=favHas(a);
+      b.classList.toggle('on',on);
+      if(b.classList.contains('gold')) b.textContent = on?T("ex21Saved"):T("ex21AddFav");
+    });
+    var d=document.querySelector('#ex21-dfav');
+    if(d&&d.dataset.act){
+      var da=acts().find(function(x){return String(x.id)===String(d.dataset.act);});
+      if(da) d.classList.toggle('on',favHas(da));
+    }
+  }
+
+  /* ---------- detail panel ---------- */
   window.ex21OpenDetail=function(id){
-    var a=acts().find(function(x){return String(x.id)===String(id);}); if(!a)return; var old=document.querySelector('.ex21-detail'); if(old)old.remove();
-    var signed=!!(S.session&&S.session.role==='guest'&&S.session.room), mine=typeof myBooking==='function'?myBooking(a.id):null, fav=favHas(a), w=intervalOf(a.time), finish=w?String(Math.floor(w.e/60)%24).padStart(2,'0')+':'+String(w.e%60).padStart(2,'0'):'';
-    var el=document.createElement('section');el.className='ex21-detail';
-    el.innerHTML='<div class="ex21-dhero"><img src="'+esc(imageOf(a))+'" alt=""><button class="ex21-dback" id="ex21-dback">'+ic('back',18)+'</button><button class="ex21-dfav '+(fav?'on':'')+'" id="ex21-dfav">'+ic('heart',18)+'</button></div><div class="ex21-dcontent"><span class="ex21-dcat">'+esc(moodLabel(a))+'</span><h1>'+esc(a.name)+'</h1><div class="ex21-dloc">'+ic('pin',13)+' '+esc(a.location||'Hotel')+'</div><p class="ex21-dlead">'+esc(a.desc||'Discover this experience during your stay and check the live schedule for the latest details.')+'</p><section class="ex21-dsection"><h2>What You’ll Experience</h2><div class="ex21-expgrid"><div class="ex21-exp">'+ic(moodIcon(mood(a)),18)+'<small>Experience</small><b>'+esc(moodLabel(a))+'</b></div><div class="ex21-exp">'+ic('clock',18)+'<small>When</small><b>'+esc(a.time||'See schedule')+'</b></div><div class="ex21-exp">'+ic('pin',18)+'<small>Where</small><b>'+esc(a.location||'Hotel')+'</b></div></div></section><section class="ex21-dsection"><h2>Good to Know</h2><div class="ex21-good"><div class="ex21-goodrow">'+ic('clock',16)+'<span>Starting / finishing time</span><b>'+esc(a.time||'—')+(finish?' → '+esc(finish):'')+'</b></div><div class="ex21-goodrow">'+ic('map',16)+'<span>Area / location</span><b>'+esc(a.location||'Hotel')+'</b></div><div class="ex21-goodrow">'+ic('star',16)+'<span>Feedback</span><b>'+esc(feedbackText(a))+'</b></div></div></section></div><div class="ex21-stick"><button class="side" id="ex21-stickfav" aria-label="Favourite">'+ic('heart',18)+'</button><button class="main" id="ex21-main">'+esc(mine?'Already Booked':(signed?'Book Now':'Sign in to Book'))+'</button></div>';
-    document.body.appendChild(el); document.body.style.overflow='hidden';
-    function close(){el.remove();document.body.style.overflow='';}
+    var a=acts().find(function(x){return String(x.id)===String(id);});
+    if(!a) return;
+    var old=document.querySelector('.ex21-detail'); if(old&&old.__ex21close) old.__ex21close(); else if(old) old.remove();
+
+    var role=(S.session&&S.session.role)||"";
+    var isGuest=(role==="guest"&&!!S.session.room);
+    var mine=typeof myBooking==='function'?myBooking(a.id):null;
+    var fav=favHas(a);
+    var w=intervalOf(a.time);
+    var finish=w?String(Math.floor(w.e/60)%24).padStart(2,'0')+':'+String(w.e%60).padStart(2,'0'):'';
+
+    var el=document.createElement('section');
+    el.className='ex21-detail';
+    el.setAttribute('dir',isRTL()?'rtl':'ltr');           /* A2 */
+    el.setAttribute('role','dialog');
+    el.setAttribute('aria-modal','true');
+
+    /* A4 — the old "Feedback" row guessed which comments belonged to this
+       activity by looking for its name inside the comment text. Guest
+       feedback in this app is not linked to an activity at all, so the row
+       showed either nothing or somebody else's rating (and an activity with
+       an empty name matched every comment in the database). Removed. */
+    var stick = role && !isGuest
+      ? ''                                                  /* staff / manager: no booking bar */
+      : '<div class="ex21-stick"><button class="side" id="ex21-stickfav" aria-label="'+esc(T("ex21AddFav"))+'">'+ic('heart',18)+'</button>'
+        +'<button class="main" id="ex21-main">'+esc(mine?T("ex21Booked"):(isGuest?T("ex21Book"):T("ex21SigninBook")))+'</button></div>';
+
+    el.innerHTML='<div class="ex21-dhero"><img src="'+esc(imageOf(a))+'" alt="">'
+      +'<button class="ex21-dback" id="ex21-dback" aria-label="'+esc(T("navBack"))+'">'+ic('back',18)+'</button>'
+      +'<button class="ex21-dfav '+(fav?'on':'')+'" id="ex21-dfav" data-act="'+esc(a.id)+'" aria-label="'+esc(T("ex21AddFav"))+'">'+ic('heart',18)+'</button></div>'
+      +'<div class="ex21-dcontent"><span class="ex21-dcat">'+esc(moodLabel(a))+'</span><h1>'+esc(a.name)+'</h1>'
+      +'<div class="ex21-dloc">'+ic('pin',13)+' '+esc(a.location||T("ex21Hotel"))+'</div>'
+      +'<p class="ex21-dlead">'+esc(a.desc||T("ex21LeadFall"))+'</p>'
+      +'<section class="ex21-dsection"><h2>'+esc(T("ex21ExpH"))+'</h2><div class="ex21-expgrid">'
+      +'<div class="ex21-exp">'+ic(moodIcon(mood(a)),18)+'<small>'+esc(T("ex21Experience"))+'</small><b>'+esc(moodLabel(a))+'</b></div>'
+      +'<div class="ex21-exp">'+ic('clock',18)+'<small>'+esc(T("ex21When"))+'</small><b>'+esc(a.time||T("ex21SeeSched"))+'</b></div>'
+      +'<div class="ex21-exp">'+ic('pin',18)+'<small>'+esc(T("ex21Where"))+'</small><b>'+esc(a.location||T("ex21Hotel"))+'</b></div>'
+      +'</div></section>'
+      +'<section class="ex21-dsection"><h2>'+esc(T("ex21GoodH"))+'</h2><div class="ex21-good">'
+      +'<div class="ex21-goodrow">'+ic('clock',16)+'<span>'+esc(T("ex21StartEnd"))+'</span><b>'+esc(a.time||'—')+(finish?' → '+esc(finish):'')+'</b></div>'
+      +'<div class="ex21-goodrow">'+ic('map',16)+'<span>'+esc(T("ex21Area"))+'</span><b>'+esc(a.location||T("ex21Hotel"))+'</b></div>'
+      +'</div></section></div>'+stick;
+
+    document.body.appendChild(el);
+    var prevOverflow=document.body.style.overflow;
+    document.body.style.overflow='hidden';
+
+    /* A9 — Escape, the phone's back button and a guaranteed unlock */
+    var closed=false, pushed=false;
+    function onKey(e){ if(e.key==='Escape'||e.key==='Esc'){ e.preventDefault(); close(); } }
+    function onPop(){ pushed=false; close(); }
+    function close(){
+      if(closed) return; closed=true;
+      document.removeEventListener('keydown',onKey);
+      window.removeEventListener('popstate',onPop);
+      if(el.parentNode) el.parentNode.removeChild(el);
+      document.body.style.overflow=prevOverflow||'';
+      if(pushed){ pushed=false; try{ history.back(); }catch(e){} }
+      syncFavButtons();
+    }
+    el.__ex21close=close;
+    document.addEventListener('keydown',onKey);
+    try{ history.pushState({ex21detail:1},''); pushed=true; window.addEventListener('popstate',onPop); }catch(e){ pushed=false; }
+
     el.querySelector('#ex21-dback').onclick=close;
-    function favClick(){toggleFav(a);el.querySelector('#ex21-dfav').classList.toggle('on',favHas(a));toastOk(favHas(a)?'Added to favourites':'Removed from favourites');}
-    el.querySelector('#ex21-dfav').onclick=favClick;el.querySelector('#ex21-stickfav').onclick=favClick;
-    el.querySelector('#ex21-main').onclick=function(){if(mine){toastOk(t('booked'));return;} if(signed){close();openBookModal(a);}else{close();showExplore=false;loginMode='guest';guestMode='new';render();}};
+    function favClick(){
+      toggleFav(a);
+      syncFavButtons();                                     /* A10 */
+      toastOk(favHas(a)?T("ex21FavOn"):T("ex21FavOff"));
+    }
+    el.querySelector('#ex21-dfav').onclick=favClick;
+    var sf=el.querySelector('#ex21-stickfav'); if(sf) sf.onclick=favClick;
+    var mb=el.querySelector('#ex21-main');
+    if(mb) mb.onclick=function(){
+      if(mine){ toastOk(t('booked')); return; }
+      if(isGuest){ close(); openBookModal(a); }
+      /* A5 — a guest who already has an account is sent to the SIGN-IN form.
+         The old code forced guestMode='new', which is the create-account
+         wizard, so a returning guest could never get back in from here. */
+      else { close(); showExplore=false; loginMode='guest'; guestMode='signin'; render(); }
+    };
   };
+
+  /* A3 — this function was called by the v14 welcome card and the v15 work-day
+     focus card but never existed anywhere in the file. Both fell through to
+     the booking modal, which is wrong for an entertainer. It now opens the
+     read-only detail panel for everyone, with the booking bar shown to guests
+     only. */
+  window.openActivity=function(a){
+    if(!a) return;
+    var id=(typeof a==='object')?a.id:a;
+    window.ex21OpenDetail(id);
+  };
+
+  /* ---------- the screen ---------- */
   exploreView=function(){
-    var hero=bestHero(), list=filteredToday(), hname=(S.settings&&S.settings.hotelName)||'',logo=S.settings&&S.settings.logo, feature=dayActs(today()).find(function(a){return a.highlight;})||list[0]||hero;
-    return '<div class="screen fadein ex-screen ex21"><div class="ex-top"><button class="ex-round" id="ex-back" aria-label="back">'+ic('back',18)+'</button>'+(logo?'<img class="ex-logo" src="'+esc(logo)+'" alt="">':(hname?'<b class="ex-brand">'+esc(hname)+'</b>':''))+'<button class="ex-signin" id="ex-signin">'+(S.session&&S.session.role==='guest'?'My Stay':t('signin'))+'</button></div><section class="ex21-hero">'+(hero?'<img src="'+esc(imageOf(hero))+'" alt="">':'')+'<div class="ex21-hero-copy"><span class="ex21-kicker">'+ic('sparkle',12)+' DIGITAL HOLIDAY GUIDE</span><h1>Explore</h1><p>Make the most of your stay</p>'+(feature?'<button class="ex21-feature" data-ex21-detail="'+esc(feature.id)+'">'+ic('star',12)+' <b>'+esc(feature.name)+'</b><span>· '+esc(whenText(feature))+'</span></button>':'')+'</div></section><main class="ex21-wrap"><section class="ex21-sec">'+secHead('Happening Today','Things you can do right now')+(list.length?'<div class="ex21-carousel">'+list.slice(0,10).map(todayCard).join('')+'</div>':'<div class="ex21-empty">'+ic('calendar',22)+'Nothing is scheduled in this filter yet.</div>')+'</section><section class="ex21-sec">'+secHead('What are you in the mood for?','Explore by feeling, not by menu')+categoryCards()+'</section><section class="ex21-sec">'+secHead('Discover','Fast filters for your day')+filterBar()+'</section><section class="ex21-sec">'+secHead('Recommended for You','Suggestions change with the time of day')+recs()+'</section><section class="ex21-sec">'+secHead('Discover Around You','See where things are happening')+places()+'</section>'+(dontMiss()?'<section class="ex21-sec">'+secHead('Don’t Miss','Worth making time for')+dontMiss()+'</section>':'')+'<section class="ex21-sec" id="ex21-favorites">'+secHead('My Favourites','Your saved holiday plan')+favSection()+'</section></main></div>';
+    var hero=bestHero(), list=filteredToday();
+    var hname=(S.settings&&S.settings.hotelName)||'', logo=S.settings&&S.settings.logo;
+    var feature=dayActs(today()).find(function(a){return a.highlight;})||list[0]||hero;
+    var signedGuest=S.session&&S.session.role==='guest';
+    var miss=dontMiss();
+    return '<div class="screen fadein ex-screen ex21"'+dirAttr()+'>'
+      +'<div class="ex-top"><button class="ex-round" id="ex-back" aria-label="'+esc(T("navBack"))+'">'+ic('back',18)+'</button>'
+      +(logo?'<img class="ex-logo" src="'+esc(logo)+'" alt="">':(hname?'<b class="ex-brand">'+esc(hname)+'</b>':''))
+      +'<button class="ex-signin" id="ex-signin">'+esc(signedGuest?T("ex21MyStay"):t('signin'))+'</button></div>'
+      +'<section class="ex21-hero">'+(hero?'<img src="'+esc(imageOf(hero))+'" alt="">':'')
+      +'<div class="ex21-hero-copy"><span class="ex21-kicker">'+ic('sparkle',12)+' '+esc(T("ex21Kicker"))+'</span>'
+      +'<h1>'+esc(T("ex21Title"))+'</h1><p>'+esc(T("ex21Sub"))+'</p>'
+      +(feature?'<button class="ex21-feature" data-ex21-detail="'+esc(feature.id)+'">'+ic('star',12)+' <b>'+esc(feature.name)+'</b><span>· '+esc(whenText(feature))+'</span></button>':'')
+      +'</div></section>'
+      +'<main class="ex21-wrap">'
+      +'<section class="ex21-sec">'+secHead(T("ex21TodayH"),T("ex21TodaySub"))
+        +(list.length?'<div class="ex21-carousel">'+list.slice(0,10).map(todayCard).join('')+'</div>'
+                     :'<div class="ex21-empty">'+ic('calendar',22)+esc(T("ex21NoneFilter"))+'</div>')+'</section>'
+      +'<section class="ex21-sec">'+secHead(T("ex21MoodH"),T("ex21MoodSub"))+categoryCards()+'</section>'
+      +'<section class="ex21-sec">'+secHead(T("ex21DiscH"),T("ex21DiscSub"))+filterBar()+'</section>'
+      +'<section class="ex21-sec">'+secHead(T("ex21RecH"),T("ex21RecSub"))+recs()+'</section>'
+      +'<section class="ex21-sec">'+secHead(T("ex21PlaceH"),T("ex21PlaceSub"))+places()+'</section>'
+      +(miss?'<section class="ex21-sec">'+secHead(T("ex21MissH"),T("ex21MissSub"))+miss+'</section>':'')
+      +'<section class="ex21-sec" id="ex21-favorites">'+secHead(T("ex21FavH"),T("ex21FavSub"))+favSection()+'</section>'
+      +'</main></div>';
   };
+
   wireExplore=function(){
-    var b=document.getElementById('ex-back');if(b)b.onclick=function(){showExplore=false;render();}; var s=document.getElementById('ex-signin');if(s)s.onclick=function(){showExplore=false;render();};
-    document.querySelectorAll('[data-ex21-detail]').forEach(function(el){el.onclick=function(e){if(e.target.closest('[data-ex21-fav]'))return;e.preventDefault();e.stopPropagation();window.ex21OpenDetail(el.getAttribute('data-ex21-detail'));};});
-    document.querySelectorAll('[data-ex21-fav]').forEach(function(el){el.onclick=function(e){e.preventDefault();e.stopPropagation();var a=acts().find(function(x){return String(x.id)===String(el.getAttribute('data-ex21-fav'));});if(a){toggleFav(a);toastOk(favHas(a)?'Added to favourites':'Removed from favourites');render();}};});
-    document.querySelectorAll('[data-ex21-mood]').forEach(function(el){el.onclick=function(){ex21Mood=el.getAttribute('data-ex21-mood');ex21Filter='today';render();setTimeout(function(){var d=document.querySelector('.ex21-filterbar');if(d)d.scrollIntoView({behavior:'smooth',block:'center'});},30);};});
-    document.querySelectorAll('[data-ex21-filter]').forEach(function(el){el.onclick=function(){ex21Filter=el.getAttribute('data-ex21-filter');if(ex21Filter!=='today')ex21Mood='all';render();};});
+    var b=document.getElementById('ex-back');   if(b) b.onclick=function(){showExplore=false;render();};
+    var s=document.getElementById('ex-signin'); if(s) s.onclick=function(){showExplore=false;render();};
+    document.querySelectorAll('[data-ex21-detail]').forEach(function(el){
+      el.onclick=function(e){
+        if(e.target.closest('[data-ex21-fav]')) return;
+        e.preventDefault(); e.stopPropagation();
+        window.ex21OpenDetail(el.getAttribute('data-ex21-detail'));
+      };
+    });
+    document.querySelectorAll('[data-ex21-fav]').forEach(function(el){
+      el.onclick=function(e){
+        e.preventDefault(); e.stopPropagation();
+        var a=acts().find(function(x){return String(x.id)===String(el.getAttribute('data-ex21-fav'));});
+        if(!a) return;
+        toggleFav(a);
+        toastOk(favHas(a)?T("ex21FavOn"):T("ex21FavOff"));
+        render();
+      };
+    });
+    document.querySelectorAll('[data-ex21-mood]').forEach(function(el){
+      el.onclick=function(){
+        ex21Mood=el.getAttribute('data-ex21-mood'); ex21Filter='today'; render();
+        setTimeout(function(){var d=document.querySelector('.ex21-filterbar'); if(d)d.scrollIntoView({behavior:'smooth',block:'center'});},30);
+      };
+    });
+    document.querySelectorAll('[data-ex21-filter]').forEach(function(el){
+      el.onclick=function(){
+        ex21Filter=el.getAttribute('data-ex21-filter');
+        if(ex21Filter!=='today') ex21Mood='all';
+        render();
+      };
+    });
   };
 })();
 </script>
 
-
-<script id="guest-v22-digital-concierge-script">
-(function(){
-  if(typeof guestView!=='function') return;
-  var __guestViewV21=guestView;
-  function g22TimeGreeting(){var h=new Date().getHours();return h<12?'Good morning':h<18?'Good afternoon':'Good evening';}
-  function g22DateLabel(){try{return new Intl.DateTimeFormat(S.lang||'en',{weekday:'long',month:'short',day:'numeric'}).format(new Date())}catch(e){return t('days')[todayIndex()]}}
-  function g22Img(a){return a?imageOf(a):((typeof IMG!=='undefined'&&IMG.show)||'');}
-  function g22When(a){if(!a)return '';return (t('days')[a.day]||'')+' · '+(a.time||'');}
-  function g22Upcoming(){
-    var now=new Date(), di=todayIndex(), mins=now.getHours()*60+now.getMinutes();
-    function st(a){var w=intervalOf(a.time);return w?w.s:9999}
-    var today=S.activities.filter(function(a){return a.day===di&&st(a)>=mins-30}).sort(function(a,b){return st(a)-st(b)});
-    return today[0]||S.activities.filter(function(a){return a.day===di}).sort(function(a,b){return st(a)-st(b)})[0]||S.activities[0]||null;
-  }
-  function g22NightsLeft(g){
-    if(!g||!g.departure)return '—'; var d=new Date(g.departure+'T12:00:00'), n=new Date();
-    return Math.max(0,Math.ceil((d-n)/86400000));
-  }
-  function g22Tonight(){
-    var di=todayIndex(); return S.activities.filter(function(a){if(a.day!==di)return false;var w=intervalOf(a.time);return w&&w.s>=17*60}).sort(function(a,b){var x=intervalOf(a.time),y=intervalOf(b.time);return (x?x.s:0)-(y?y.s:0)}).slice(0,6);
-  }
-  function g22MyPlan(g){
-    var rows=[], di=todayIndex();
-    S.bookings.filter(function(b){return b.room===g.room}).forEach(function(b){var a=S.activities.find(function(x){return x.id===b.activity_id});if(a)rows.push({a:a,type:b.status==='booked'?'Booked':'Waitlist',rank:a.day===di?0:1});});
-    S.activities.filter(function(a){return S.favorites.includes(a.id)}).forEach(function(a){if(!rows.some(function(r){return r.a.id===a.id}))rows.push({a:a,type:'Favourite',rank:a.day===di?0:2});});
-    rows.sort(function(x,y){if(x.rank!==y.rank)return x.rank-y.rank;var xx=intervalOf(x.a.time),yy=intervalOf(y.a.time);return (xx?xx.s:0)-(yy?yy.s:0)});return rows.slice(0,7);
-  }
-  function g22Top(){
-    var logo=S.settings.logo||'', name=S.settings.name||'';
-    return '<div class="g22-top"><button class="g22-menu" id="btn-menu" aria-label="Menu">'+ic('menu',17)+'</button>'+(logo?'<img class="g22-logo" src="'+esc(logo)+'" alt="">':'<div class="g22-brand">'+esc(name||'SAPPHIRE')+'</div>')+'<div class="g22-actions"><button class="g22-icon" data-tab="chat" aria-label="Concierge">'+ic('chat',16)+'</button><button class="g22-icon" id="btn-notes" aria-label="Notifications">'+ic('bell',16)+'</button></div></div>';
-  }
-  function g22Action(tab,icon,title,sub,extra){return '<button class="g22-action" '+(extra||('data-tab="'+tab+'"'))+'><span class="ico">'+ic(icon,17)+'</span><span><b>'+title+'</b><small>'+sub+'</small></span></button>';}
-  function g22Home(){
-    var g=S.session, next=g22Upcoming(), plan=g22MyPlan(g), tonight=g22Tonight(), mine=S.bookings.filter(function(b){return b.room===g.room}), favs=S.favorites.length, orders=myOrders(), nights=g22NightsLeft(g), wm=(S.settings.welcomeMsg||'').trim();
-    var hero=next;
-    var heroHtml=hero?'<section class="g22-livehero"><img src="'+esc(g22Img(hero))+'" alt=""><div class="g22-hero-top"><span class="g22-live">'+(hero.day===todayIndex()?'Happening today':'Recommended')+'</span><button class="g22-hero-fav" data-fav="'+hero.id+'">'+ic(S.favorites.includes(hero.id)?'heartfill':'heart',16)+'</button></div><div class="g22-hero-copy"><div class="g22-k">What’s next</div><h2>'+esc(hero.name)+'</h2><p><span>'+mi('clock')+esc(hero.time)+'</span><span>'+mi('pin')+esc(hero.location||'Hotel')+'</span></p><div class="g22-hero-cta"><button class="g22-btn" data-book="'+hero.id+'">'+(myBooking(hero.id)?'View booking':'Join activity')+'</button><button class="g22-btn ghost" data-v22-explore>Explore more</button></div></div></section>':'<div class="g22-empty">Your holiday guide will show the next experience here.</div>';
-    var planHtml=plan.length?'<div class="g22-scroll">'+plan.map(function(r){var a=r.a;return '<button class="g22-plan" data-v22-act="'+a.id+'"><img src="'+esc(g22Img(a))+'" alt=""><span class="g22-plan-body"><span class="time">'+esc(g22When(a))+'</span><b>'+esc(a.name)+'</b><p><span>'+mi('pin')+esc(a.location||'Hotel')+'</span></p><span class="status">'+esc(r.type)+'</span></span></button>';}).join('')+'</div>':'<div class="g22-empty">Save something in Explore or book an activity and your personal plan will appear here.</div>';
-    var tonightHtml=tonight.length?'<div class="g22-scroll">'+tonight.map(function(a){return '<button class="g22-tonight" data-v22-act="'+a.id+'"><img src="'+esc(g22Img(a))+'" alt=""><span class="g22-tonight-copy"><span>'+esc(a.time)+' · '+esc(a.location||'Hotel')+'</span><b>'+esc(a.name)+'</b><p>'+esc((a.desc||'').slice(0,80))+'</p></span></button>';}).join('')+'</div>':'<div class="g22-empty">Tonight’s programme will appear here.</div>';
-    return '<div class="screen fadein g22">'+g22Top()+'<header class="g22-welcome"><div class="g22-eyebrow">YOUR DIGITAL CONCIERGE</div><h1>'+g22TimeGreeting()+', '+esc(g.name||'Guest')+'.</h1><p><span>'+ic('key',12)+' Room '+esc(g.room)+'</span><i class="g22-dot"></i><span>'+esc(g22DateLabel())+'</span>'+(nights!=='—'?'<i class="g22-dot"></i><span>'+nights+' night'+(nights===1?'':'s')+' left</span>':'')+'</p></header>'+heroHtml+(wm?'<div class="g22-concierge" style="margin-bottom:26px"><span class="mark">'+ic('sparkle',20)+'</span><span><b>Welcome to your stay</b><p>'+esc(wm)+'</p></span></div>':'')+'<section class="g22-sec"><div class="g22-sech"><span><h3>How can we help?</h3><p>Everything for your stay, one tap away.</p></span></div><div class="g22-grid">'+g22Action('', 'sparkle','Explore','Find something to do','data-v22-explore')+g22Action('stay','ticket','My Stay','Bookings & favourites')+g22Action('tickets','calendar','Tickets','Events & experiences')+g22Action('chat','chat','Ask our team','Your concierge chat')+g22Action('weather','sun','Weather','Plan the perfect moment')+g22Action('hotelinfo','building','Hotel guide','Useful stay information')+'</div></section><section class="g22-sec"><div class="g22-sech"><span><h3>Your next moments</h3><p>Bookings and favourites, organised for you.</p></span><button data-tab="stay">My stay</button></div>'+planHtml+'</section><section class="g22-sec"><div class="g22-sech"><span><h3>Tonight at the hotel</h3><p>What’s worth staying up for.</p></span><button data-v22-explore>Discover</button></div>'+tonightHtml+'</section><section class="g22-sec"><div class="g22-sech"><span><h3>Your stay at a glance</h3><p>Only what matters right now.</p></span></div><div class="g22-snapshot"><div class="g22-stat"><span>Room</span><b>'+esc(g.room)+'</b></div><div class="g22-stat"><span>Nights left</span><b>'+esc(String(nights))+'</b></div><div class="g22-stat"><span>Bookings</span><b>'+mine.length+'</b></div><div class="g22-stat"><span>Saved</span><b>'+favs+'</b></div></div></section><button class="g22-concierge" data-tab="chat"><span class="mark">'+ic('chat',20)+'</span><span><b>Your personal concierge</b><p>Questions, recommendations or help during your stay.</p></span><span class="go">'+ic('back',17)+'</span></button><section class="g22-sec"><div class="g22-sech"><span><h3>Make it personal</h3><p>Small requests, handled by the entertainment team.</p></span></div><div class="g22-grid">'+g22Action('', 'music','Request a song','Tell our DJ what you love','id="btn-req-song"')+g22Action('', 'gift','Birthday moment','Let the team know','id="btn-req-bday"')+'</div></section>'+(reviewDue(g)?reviewBlock():'')+'</div>';
-  }
-  function g22Stay(){
-    var g=S.session,mine=S.bookings.filter(function(b){return b.room===g.room}),orders=myOrders(),reqs=myRequestsList(),favActs=S.activities.filter(function(a){return S.favorites.includes(a.id)}),items=[];
-    mine.forEach(function(b){var a=S.activities.find(function(x){return x.id===b.activity_id});if(a)items.push({kind:'Activity',title:a.name,meta:(t('days')[a.day]||'')+' · '+a.time+' · '+(a.location||''),img:g22Img(a),status:b.status,id:b.id,aid:a.id,cancel:'booking'});});
-    orders.forEach(function(o){var tk=S.tickets.find(function(x){return x.id===o.ticket_id});if(tk)items.push({kind:'Ticket',title:tk.name,meta:(t('days')[tk.day]||'')+' · '+tk.time+' · '+(tk.location||''),img:tk.image||((typeof IMG!=='undefined'&&IMG.show)||''),status:o.status,id:o.id,cancel:o.status==='paid'?'':'order'});});
-    favActs.forEach(function(a){if(!items.some(function(x){return x.aid===a.id}))items.push({kind:'Favourite',title:a.name,meta:(t('days')[a.day]||'')+' · '+a.time+' · '+(a.location||''),img:g22Img(a),status:'Saved',aid:a.id});});
-    var itinerary=items.length?'<div class="g22-itinerary">'+items.map(function(x){return '<div class="g22-it">'+(x.img?'<img src="'+esc(x.img)+'" alt="">':'<div></div>')+'<div class="g22-it-body"><span class="type">'+esc(x.kind)+' · '+esc(x.status||'')+'</span><b>'+esc(x.title)+'</b><p>'+esc(x.meta)+'</p><div class="g22-it-tools">'+(x.aid?'<button class="g22-mini" data-v22-act="'+x.aid+'">Details</button>':'')+(x.cancel==='booking'?'<button class="g22-mini danger" data-cancel="'+x.id+'">Cancel</button>':x.cancel==='order'?'<button class="g22-mini danger" data-cancelorder="'+x.id+'">Cancel</button>':'')+'</div></div></div>';}).join('')+'</div>':'<div class="g22-empty">Your bookings, tickets and saved experiences will build your stay itinerary here.</div>';
-    var requests=reqs.length?'<section class="g22-sec"><div class="g22-sech"><span><h3>Your requests</h3><p>Follow what you asked the team for.</p></span></div>'+reqs.map(function(r){return '<div class="g22-request"><span class="ri">'+ic(r.type==='song'?'music':'gift',16)+'</span><span><b>'+esc(r.detail)+'</b><p>'+(r.date?esc(r.date):'Sent to the team')+'</p></span><span class="rs">'+(r.status==='done'?'Done':'In progress')+'</span></div>';}).join('')+'</section>':'';
-    return '<div class="screen fadein g22">'+g22Top()+'<header class="g22-stayhead"><div class="g22-eyebrow">YOUR HOLIDAY WALLET</div><h1>My Stay</h1></header><section class="g22-pass"><div class="g22-pass-top"><span><span class="label">Guest</span><h2>'+esc(g.name)+'</h2></span><span class="g22-room"><small>Room</small>'+esc(g.room)+'</span></div><div class="g22-passline"></div><div class="g22-passgrid"><span>Arrival<b>'+esc(g.arrival||'—')+'</b></span><span>Departure<b>'+esc(g.departure||'—')+'</b></span><span>Nationality<b>'+esc(g.nationality||'—')+'</b></span></div></section><section class="g22-sec"><div class="g22-sech"><span><h3>Your itinerary</h3><p>Bookings, tickets and saved moments together.</p></span><button data-v22-explore>Add more</button></div>'+itinerary+'</section>'+requests+'<div class="g22-profileactions"><button id="btn-chpass">'+ic('key',14)+' Change password</button><button data-tab="chat">'+ic('chat',14)+' Ask our team</button></div>'+(reviewDue(g)?reviewBlock():'')+'</div>';
-  }
-  guestView=function(){
-    if(S.tab==='home')return g22Home();
-    if(S.tab==='stay')return g22Stay();
-    return __guestViewV21();
-  };
-  var __wireCommonV21=wireCommon;
-  wireCommon=function(){
-    __wireCommonV21();
-    document.querySelectorAll('[data-v22-explore]').forEach(function(b){b.onclick=function(){showExplore=true;render();};});
-    document.querySelectorAll('[data-v22-act]').forEach(function(b){b.onclick=function(){var a=S.activities.find(function(x){return x.id===+b.dataset.v22Act});if(!a)return;if(typeof ex21OpenDetail==='function'){showExplore=true;render();setTimeout(function(){try{ex21OpenDetail(a.id)}catch(e){}},0);}else if(typeof openBookModal==='function'){openBookModal(a);}};});
-  };
-})();
-</script>
 </body>
 </html>
