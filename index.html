@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v25 (DJ/social work duties + true white light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -36,10 +36,10 @@
 --lh-tight:1.18; --lh-body:1.5;
 
   --espresso:#0F1B2D; --cacao:#1F3657; --bronze:#C6A15B; --sand:#E9E3D8;
-  --bg-light:#FFFFFF; --bg:var(--bg-light);
+  --bg-light:#F8F7F3; --bg:var(--bg-light);
   --ink-light:#172033; --ink:var(--ink-light);
-  --card:#FFFFFF; --muted:#667085;
-  --ok:#4C7A4C; --warn:#A65A3A; --line:#E6EAF0;
+  --card:#FFFFFF; --muted:#70798A;
+  --ok:#4C7A4C; --warn:#A65A3A; --line:#DDE2E8;
   --font-display:'Cormorant Garamond',serif; --font-body:'Jost',sans-serif;
   --btn-radius:14px; --btn-radius-sm:11px;
   --nav-bg:#FFFFFF; --nav-on:#1F3657;
@@ -1709,16 +1709,6 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .cap-dual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.cap-col{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--card)}.cap-col.can{border-color:color-mix(in srgb,var(--ok) 42%,var(--line));background:color-mix(in srgb,var(--ok) 5%,var(--card))}.cap-col.cant{border-color:color-mix(in srgb,var(--warn) 38%,var(--line));background:color-mix(in srgb,var(--warn) 4%,var(--card))}.cap-col-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.cap-col-h b{font-size:14px}.cap-col.can .cap-col-h b{color:var(--ok)}.cap-col.cant .cap-col-h b{color:var(--warn)}.cap-stack{display:flex;flex-direction:column;gap:6px;max-height:290px;overflow:auto}.cap-item.can.on{border-color:color-mix(in srgb,var(--ok) 55%,var(--line));background:color-mix(in srgb,var(--ok) 10%,var(--card))}.cap-item.cant.on{border-color:color-mix(in srgb,var(--warn) 50%,var(--line));background:color-mix(in srgb,var(--warn) 8%,var(--card))}.entrance-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 2px}.entrance-choice label{display:flex!important;align-items:center;gap:8px!important;text-transform:none!important;letter-spacing:0!important;margin:0!important;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--ink)!important}.entrance-choice input{width:18px!important;height:18px;margin:0!important;accent-color:var(--accent)}
 .plan-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.plan-tab{padding:10px 7px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:700;font-size:12.5px;color:var(--muted)}.plan-tab.on{background:linear-gradient(135deg,var(--brand-900),var(--brand-700));color:#fff;border-color:transparent;box-shadow:0 8px 22px -14px var(--brand-900)}.plan-meta{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 12px}.plan-chip{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-soft);border:1px solid var(--line);color:var(--muted)}.plan-chip.good{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,var(--line))}.plan-chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,var(--line))}.aa-entrance{display:grid;grid-template-columns:82px 1fr minmax(130px,42%);align-items:center;gap:9px;padding:11px 8px;border-bottom:1px solid var(--line)}.aa-entrance .aa-slot{background:color-mix(in srgb,var(--accent) 13%,var(--card));color:var(--brand-700)}.req-gender{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:3px}.ep-cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ep-cap-box{padding:13px;border:1px solid var(--line);border-radius:15px;background:var(--card)}.ep-cap-box b{display:block;font-size:13px;margin-bottom:7px}.ep-cap-box.can b{color:var(--ok)}.ep-cap-box.cant b{color:var(--warn)}.ep-cap-tags{display:flex;flex-wrap:wrap;gap:5px}.ep-cap-tags span{font-size:11px;padding:4px 8px;border-radius:999px;background:var(--surface-soft);border:1px solid var(--line)}
 @media(max-width:520px){.cap-dual,.ep-cap-grid{grid-template-columns:1fr}.aa-entrance{grid-template-columns:72px 1fr}.aa-entrance select{grid-column:1/-1}.plan-tabs{gap:5px}.plan-tab{font-size:11.5px}}
-
-/* ===== v25 TRUE WHITE LIGHT MODE ===== */
-:root:not([data-theme="dark"]), [data-theme="light"]{
-  --bg-light:#FFFFFF !important; --bg:#FFFFFF !important; --card:#FFFFFF !important;
-  --sand:#F5F7FA !important; --ink-light:#172033 !important; --ink:#172033 !important;
-  --muted:#667085 !important; --line:#E6EAF0 !important; --nav-bg:#FFFFFF !important;
-}
-[data-theme="light"] body{background:#FFFFFF !important;}
-[data-theme="light"] .drawer{background:linear-gradient(168deg,#FFFFFF 0%,#F7F9FC 120%) !important;}
-
 </style>
 <style id="luxury-v7">
 :root{--lux-radius:22px;--lux-shadow:0 18px 48px rgba(7,18,34,.08)}
@@ -6387,48 +6377,6 @@ function dayChips(){
   const sel=(typeof S.planDay==="number")?S.planDay:today;
   return `<div class="daychips">${t("daysShort").map((d,i)=>`<button class="daychip ${sel===i?"on":""} ${i===today?"istoday":""}" data-planday="${i}">${d}</button>`).join("")}</div>`;
 }
-/* ===== v25 ROLE-SPECIFIC PROFESSIONAL DUTIES ===== */
-function workRoleForUser(num){
-  const label=String(roleForNumber(num)||"").toLowerCase();
-  if(num===3 || /\bdj\b/.test(label)) return "dj";
-  if(num===2 || label.includes("social media") || label.includes("content") || label.includes("media")) return "social";
-  return "entertainer";
-}
-const ROLE_WORK_DUTIES={
-  dj:[
-    {time:"10:00",title:"Update today's music",note:"Check new tracks, requests and the music needed for today's programme."},
-    {time:"11:30",title:"Arrange music folders",note:"Organize playlists and folders by activity, event, show and party."},
-    {time:"15:30",title:"Prepare live sets",note:"Build and test the afternoon/evening sets, transitions and backups."},
-    {time:"19:00",title:"Stage & sound check",note:"Open the stage music, check levels and prepare microphones / playback."},
-    {time:"20:00",title:"Play live set",note:"Run the live music for the evening programme, show changes and party."}
-  ],
-  social:[
-    {time:"10:00",title:"Film the hotel in general",note:"Capture clean hotel shots: pool, beach, areas, atmosphere and details."},
-    {time:"11:30",title:"Capture activity moments",note:"Get natural guest/team shots from the morning activities and events."},
-    {time:"15:30",title:"Make a nice shot from events",note:"Create strong vertical clips and hero shots from afternoon events."},
-    {time:"17:00",title:"Film the full day story",note:"Collect enough clips to show the complete guest experience from day to night."},
-    {time:"20:00",title:"Evening & show content",note:"Film stage, live music, show, party, reactions and atmosphere."},
-    {time:"22:15",title:"Select & prepare content",note:"Choose the best footage, back it up and prepare clips for editing/posting."}
-  ]
-};
-function roleWorkDuties(num,day){
-  const info=personDayInfo(num,day);
-  if(info.isOff) return [];
-  const role=workRoleForUser(num);
-  return (ROLE_WORK_DUTIES[role]||[]).map((x,i)=>({...x,id:"role-"+role+"-"+day+"-"+i}));
-}
-function roleDutyCard(num,day){
-  const role=workRoleForUser(num), duties=roleWorkDuties(num,day);
-  if(role==="entertainer" || !duties.length) return "";
-  const head=role==="dj"?"DJ Work Plan":"Social Media Work Plan";
-  const sub=role==="dj"?"Music, sound and live-set duties for today":"Content production duties for today";
-  return `<div class="sec role-work-sec"><h3>${ic(role==="dj"?"bell":"image",18)} ${head}</h3>
-    <p class="mini" style="margin:-6px 0 10px">${sub}</p>
-    <div class="card stdcard role-work-card">${duties.map(d=>`<div class="std-row">
-      <span class="std-t">${esc(d.time)}</span><span class="std-x"><b>${esc(d.title)}</b><br><span class="mini">${esc(d.note)}</span></span>
-    </div>`).join("")}</div></div>`;
-}
-
 function myWorkDayView(){
   const num=S.session.number;
   const today=todayIndex();
@@ -6462,8 +6410,7 @@ function myWorkDayView(){
     ${banner}
     ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
     ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
-    ${roleDutyCard(num,day)}
-    ${myActs.length && workRoleForUser(num)==="entertainer"?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
+    ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
       <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
       ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
     ${dayDetailCard(day,num)}
@@ -15577,3 +15524,154 @@ Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24
 
 </body>
 </html>
+
+<!-- ================= v25 REAL FIX: SPECIALIST WORK PLANS + TRUE LIGHT MODE ================= -->
+<style id="v25-real-fix-style">
+/* The hotel-luxury layer above intentionally paints every mode dark. This final override restores a true light mode. */
+html[data-theme="light"]{
+  --hl-bg:#FFFFFF!important;
+  --hl-panel:#FFFFFF!important;
+  --hl-panel-2:#F7F8FA!important;
+  --hl-panel-3:#F2F4F7!important;
+  --hl-line:#E3E7ED!important;
+  --hl-line-soft:#EEF1F4!important;
+  --hl-text:#172033!important;
+  --hl-soft:#667085!important;
+  --hl-muted:#8A94A6!important;
+  --hl-gold:#9C762D!important;
+  --hl-gold-2:#B68C3D!important;
+  --hl-danger:#B84D42!important;
+  --hl-success:#3F7A58!important;
+  --bg:#FFFFFF!important;
+  --card:#FFFFFF!important;
+  --ink:#172033!important;
+  --muted:#667085!important;
+  --line:#E3E7ED!important;
+  --sand:#F2F4F7!important;
+  --bronze:#9C762D!important;
+  --espresso:#172033!important;
+  --cacao:#22324A!important;
+  --nav-bg:#FFFFFF!important;
+  --nav-on:#9C762D!important;
+  color-scheme:light!important;
+  background:#FFFFFF!important;
+  color:#172033!important;
+}
+html[data-theme="light"] body,
+html[data-theme="light"] .app,
+html[data-theme="light"] .screen,
+html[data-theme="light"] .explore-screen{
+  background:#FFFFFF!important;
+  color:#172033!important;
+}
+html[data-theme="light"] .card,
+html[data-theme="light"] .stat,
+html[data-theme="light"] .tk,
+html[data-theme="light"] .daycard,
+html[data-theme="light"] .stdcard,
+html[data-theme="light"] .showcard,
+html[data-theme="light"] .profcard,
+html[data-theme="light"] .notif-card,
+html[data-theme="light"] .teamcount,
+html[data-theme="light"] .team-card,
+html[data-theme="light"] .wd23-head,
+html[data-theme="light"] .wd23-banner,
+html[data-theme="light"] .wd23-focus,
+html[data-theme="light"] .wd23-shift,
+html[data-theme="light"] .wd23-oplist,
+html[data-theme="light"] .wd23-stdlist,
+html[data-theme="light"] .wd23-person,
+html[data-theme="light"] .v25-special-card{
+  background:#FFFFFF!important;
+  border-color:#E3E7ED!important;
+  color:#172033!important;
+}
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] h4,
+html[data-theme="light"] .serif{color:#172033!important}
+html[data-theme="light"] .mini,
+html[data-theme="light"] .hint,
+html[data-theme="light"] .meta,
+html[data-theme="light"] .desc{color:#667085!important}
+html[data-theme="light"] .nav{background:#FFFFFF!important;border-top-color:#E3E7ED!important}
+
+/* specialist operational cards */
+.v25-special-wrap{margin:0 0 18px}
+.v25-special-title{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:0 0 9px}
+.v25-special-title h2{margin:0;font-size:15px}
+.v25-special-title p{margin:2px 0 0;font-size:11px;opacity:.62}
+.v25-special-card{display:grid;grid-template-columns:62px 1fr auto;gap:11px;align-items:center;
+  width:100%;padding:12px 13px;margin-bottom:8px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.v25-special-card time{font-size:12px;font-weight:700;line-height:1.3}
+.v25-special-card time span{display:block;font-size:10.5px;font-weight:400;opacity:.55}
+.v25-special-card b{display:block;font-size:14px}
+.v25-special-card small{display:block;font-size:11px;opacity:.65;margin-top:2px;line-height:1.35}
+.v25-special-card .v25-ico{color:var(--accent);opacity:.9}
+.v25-special-badge{display:inline-flex;align-items:center;gap:6px;margin:0 0 9px;padding:6px 9px;border-radius:9px;
+  background:var(--bg);border:1px solid var(--line);font-size:11px;font-weight:700;color:var(--accent)}
+</style>
+
+<script id="v25-real-fix-js">
+(function(){
+  function roleText(){
+    var n=Number(S.session&&S.session.number||0);
+    var custom=(S.settings&&S.settings.teamRoles)||{};
+    return String(custom[String(n)] || (typeof roleForNumber==='function'?roleForNumber(n):'') || '').toLowerCase();
+  }
+  function specialistKind(){
+    var n=Number(S.session&&S.session.number||0), r=roleText();
+    if(n===3 || /\bdj\b|disc jockey/.test(r)) return 'dj';
+    if(/social\s*media|content|media creator|videographer/.test(r)) return 'social';
+    return '';
+  }
+  function dayName(day){ try{return t('days')[day]||'';}catch(e){return '';} }
+  function specialistTasks(kind,day){
+    var dj=[
+      ['10:00','Music update','Check new tracks, requests and today’s theme; update the working music library.'],
+      ['11:00','Arrange music folders','Clean and organise folders/playlists by pool, activities, sunset, stage, party and nationality.'],
+      ['15:00','Prepare today’s sets','Build the playlists and cue points needed for afternoon and evening operation.'],
+      ['19:00','Stage & sound check','Open the stage setup, test levels and make sure microphones/music sources are ready.'],
+      ['20:00','Play live set','Run live music for the evening programme and adapt the set to the crowd and event.']
+    ];
+    var social=[
+      ['10:00','Hotel general footage','Film clean establishing shots of the hotel, pool, beach, facilities and atmosphere.'],
+      ['11:00','Morning activity shots','Capture strong vertical photos and short clips from the best morning moments.'],
+      ['15:00','Full-day story coverage','Film the day as a story: people, activities, details, food, atmosphere and spontaneous guest moments.'],
+      ['17:00','Event & golden-hour content','Get polished shots from special events, sunset moments and high-energy guest interaction.'],
+      ['20:30','Evening show coverage','Film the show, party or live music and capture a clear opening, action and reaction shot.'],
+      ['22:15','Select & prepare content','Choose the strongest clips/photos, label them and prepare material for reels, stories and posts.']
+    ];
+    return kind==='dj'?dj:social;
+  }
+  function specialistSection(kind,day){
+    var isDJ=kind==='dj';
+    var title=isDJ?'DJ Work Plan':'Social Media Work Plan';
+    var sub=isDJ?'Music, sound and live-set duties for '+dayName(day):'Content and filming duties for '+dayName(day);
+    var tasks=specialistTasks(kind,day);
+    return '<div class="v25-special-wrap">'
+      +'<div class="v25-special-title"><div><h2>'+esc(title)+'</h2><p>'+esc(sub)+'</p></div><span class="v25-special-badge">'+(isDJ?'DJ':'SOCIAL MEDIA')+'</span></div>'
+      +tasks.map(function(x){return '<div class="v25-special-card"><time>'+esc(x[0])+'<span>Duty</span></time><div><b>'+esc(x[1])+'</b><small>'+esc(x[2])+'</small></div><span class="v25-ico">'+ic(isDJ?'music':'image',18)+'</span></div>';}).join('')
+      +'</div>';
+  }
+
+  /* v23 defined the currently active work-day renderer. Wrap that exact renderer after every previous script has loaded. */
+  var activeWorkDay=window.myWorkDayView;
+  if(typeof activeWorkDay==='function'){
+    window.myWorkDayView=function(){
+      var html=activeWorkDay.apply(this,arguments);
+      var kind=specialistKind();
+      if(!kind) return html;
+      var day=(typeof S.planDay==='number')?S.planDay:todayIndex();
+      var block=specialistSection(kind,day);
+      /* Replace the normal assigned-activity section for specialists, instead of appending an invisible/duplicate old section. */
+      var start=html.indexOf('<div class="wd23-sec">');
+      if(start<0) return html.replace('</div>',block+'</div>');
+      var next=html.indexOf('<div class="wd23-sec">',start+1);
+      if(next<0) return html.slice(0,start)+block+html.slice(start);
+      return html.slice(0,start)+block+html.slice(next);
+    };
+  }
+})();
+</script>
