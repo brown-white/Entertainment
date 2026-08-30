@@ -17162,5 +17162,573 @@ html:not([data-theme="dark"]) .x18-banner.staff{
 })();
 
 </script>
+
+<style id="v32-layer">
+/* ============================================================
+   v32 — day tiles inside the guide, and the two manager screens
+   ============================================================ */
+
+/* ---------- the day, as tiles, inside the guide card ---------- */
+.v32-day{ margin-top: 16px; padding-top: 15px; border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+.v32-dh{
+  display: block; margin-bottom: 11px;
+  font-size: 10px; font-weight: 800; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--cacao);
+}
+[data-theme="dark"] .v32-dh{ color: var(--bronze); }
+.v32-grid{
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: color-mix(in srgb, var(--line) 45%, transparent);
+  border-radius: 16px; overflow: hidden;
+}
+.v32-tile{
+  background: var(--card); padding: 13px 14px;
+  display: flex; flex-direction: column; gap: 5px; min-width: 0;
+}
+.v32-tile.wide{ grid-column: 1 / -1; }
+.v32-tl{
+  font-size: 9.5px; font-weight: 800; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--cacao);
+}
+[data-theme="dark"] .v32-tl{ color: var(--bronze); }
+.v32-tv{
+  font-size: 16px; font-weight: 500; line-height: 1.3; color: var(--ink);
+  font-family: var(--font-display); letter-spacing: -.005em;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- shared bits for the manager screens ---------- */
+.v32{ display: block; }
+.v32-head{ margin-bottom: 14px; }
+.v32-head h2{
+  font-family: var(--font-display); font-size: 28px; line-height: 1.1;
+  letter-spacing: -.02em; margin: 0; color: var(--ink);
+}
+.v32-head p{ margin: 5px 0 0; font-size: 12.5px; color: var(--muted); }
+.v32-days{ display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px; scrollbar-width: none; }
+.v32-days::-webkit-scrollbar{ display: none; }
+.v32-day{
+  flex: 1 0 auto; min-width: 52px; padding: 11px 8px; border-radius: 13px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  background: var(--card); color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+.v32-day.on{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F7EEE0; border-color: transparent;
+}
+[data-theme="dark"] .v32-day.on{ background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #201607; }
+.v32-card{
+  background: var(--card); border-radius: 18px; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  box-shadow: 0 1px 2px rgba(20,14,8,.05), 0 10px 26px -18px rgba(20,14,8,.5);
+}
+.v32-empty{
+  padding: 26px; text-align: center; border-radius: 18px; color: var(--muted);
+  background: var(--card); border: 1px dashed color-mix(in srgb, var(--line) 80%, transparent);
+}
+.v32-sec{ margin-top: 22px; }
+
+/* ---------- day plan rows ---------- */
+.v32-row{
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  padding: 15px 16px;
+}
+.v32-row + .v32-row{ border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+.v32-row > span{
+  flex: none; font-size: 10px; font-weight: 800; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted); padding-top: 3px;
+}
+.v32-row > b{
+  flex: 1; min-width: 0; text-align: end;
+  font-family: var(--font-display); font-size: 16.5px; font-weight: 500;
+  line-height: 1.32; color: var(--ink); overflow-wrap: anywhere;
+}
+
+/* ---------- team programme tools ---------- */
+.v32-tools{ display: flex; flex-direction: column; gap: 9px; }
+.v32-tool{
+  display: flex; align-items: center; gap: 13px; width: 100%; text-align: start;
+  padding: 15px 16px; border-radius: 17px; cursor: pointer; color: var(--ink);
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  box-shadow: 0 1px 2px rgba(20,14,8,.05), 0 8px 20px -16px rgba(20,14,8,.55);
+  transition: transform .16s cubic-bezier(.22,.9,.24,1);
+}
+.v32-tool:active{ transform: scale(.99); }
+.v32-ti{
+  width: 40px; height: 40px; border-radius: 13px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--cacao) 12%, transparent); color: var(--cacao);
+}
+[data-theme="dark"] .v32-ti{ background: color-mix(in srgb, var(--bronze) 17%, transparent); color: var(--bronze); }
+.v32-tt{ flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.v32-tt b{ font-size: 15.5px; font-weight: 650; }
+.v32-tt i{ font-style: normal; font-size: 12px; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v32-tb{
+  flex: none; min-width: 26px; height: 26px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; padding: 0 8px;
+  background: rgba(229,161,0,.20); color: #8A6212;
+}
+[data-theme="dark"] .v32-tb{ color: #F0C97A; }
+
+/* ---------- the day's activities with who runs them ---------- */
+.v32-act{
+  display: flex; align-items: center; gap: 12px; padding: 13px 16px;
+  cursor: pointer; transition: background .16s;
+}
+.v32-act + .v32-act{ border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+.v32-act:active{ background: var(--sand); }
+.v32-act time{
+  flex: none; width: 46px; font-family: var(--font-display);
+  font-size: 14.5px; color: var(--ink);
+}
+.v32-act > span{ flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.v32-act b{ font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v32-act i{ font-style: normal; font-size: 11.5px; color: var(--muted); }
+.v32-act em{
+  flex: none; font-style: normal; font-size: 11.5px; font-weight: 700;
+  padding: 5px 11px; border-radius: 999px;
+  background: color-mix(in srgb, var(--cacao) 12%, transparent); color: var(--cacao);
+  max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+[data-theme="dark"] .v32-act em{ background: color-mix(in srgb, var(--bronze) 17%, transparent); color: var(--bronze); }
+.v32-act.none em{ background: rgba(229,161,0,.18); color: #8A6212; }
+[data-theme="dark"] .v32-act.none em{ color: #F0C97A; }
+
+@media (max-width: 380px){
+  .v32-grid{ grid-template-columns: 1fr; }
+  .v32-head h2{ font-size: 24px; }
+  .v32-act em{ max-width: 32%; }
+}
+@supports not (color: color-mix(in srgb, red 50%, blue)){
+  .v32-grid{ background: rgba(120,100,80,.22); }
+  .v32-card, .v32-tool, .v32-day{ border-color: rgba(120,100,80,.22); }
+  .v32-ti, .v32-act em{ background: rgba(140,105,70,.13); }
+}
+
+</style>
+<script id="v32-layer-js">
+/* ============================================================
+   v32
+   1. "Today's operation" moves INSIDE the Team day guide and
+      becomes a grid of tiles (like the dark example), holding
+      every piece of information for the day.
+   2. Manager DAY PLAN keeps only: restaurant theme, events,
+      live music, evening show, dress code.
+   3. Manager TEAM PROGRAMME becomes the working screen:
+      auto-assign, entrance & day off, DJ orders, Social Media
+      orders, attendance, tasks, and the day's activities with
+      the entertainer assigned.
+   ============================================================ */
+(function(){
+  "use strict";
+  if (window.__v32) return;
+  window.__v32 = true;
+
+  var E = function(s){ try { return esc(s); } catch(e){ return String(s==null?"":s); } };
+
+  var L = {
+    en:{theme:"Restaurant theme",dress:"Dress code",entrance:"Entrance duty",dayOff:"Day off",
+        show:"Evening show",band:"Live band",events:"Events",practice:"Practice",
+        none:"Not set",noEvents:"None today",dayGuide:"The day at a glance",
+        tpTitle:"Team programme",tpSub:"Everything you assign to the team",
+        dpTitle:"Day plan",dpSub:"Theme, events, music, show and dress code",
+        autoAssign:"Auto-assign activities",duty:"Entrance & day off",
+        djOrders:"DJ orders",socialOrders:"Social Media orders",
+        attendance:"Attendance",tasks:"Tasks",dayActs:"Activities today",
+        assignTo:"Assign",unassigned:"Nobody yet",open:"Open",
+        orders:"orders",people:"Team"},
+    de:{theme:"Restaurant-Thema",dress:"Dresscode",entrance:"Eingangsdienst",dayOff:"Frei",
+        show:"Abendshow",band:"Live-Band",events:"Events",practice:"Training",
+        none:"Nicht gesetzt",noEvents:"Heute keine",dayGuide:"Der Tag auf einen Blick",
+        tpTitle:"Team-Programm",tpSub:"Alles, was du dem Team zuteilst",
+        dpTitle:"Tagesplan",dpSub:"Thema, Events, Musik, Show und Dresscode",
+        autoAssign:"Aktivitäten verteilen",duty:"Eingang & Frei",
+        djOrders:"DJ-Aufträge",socialOrders:"Social-Media-Aufträge",
+        attendance:"Anwesenheit",tasks:"Aufgaben",dayActs:"Aktivitäten heute",
+        assignTo:"Zuteilen",unassigned:"Noch niemand",open:"Öffnen",
+        orders:"Aufträge",people:"Team"},
+    ru:{theme:"Тема ресторана",dress:"Дресс-код",entrance:"Дежурство на входе",dayOff:"Выходной",
+        show:"Вечернее шоу",band:"Живая музыка",events:"События",practice:"Репетиция",
+        none:"Не задано",noEvents:"Сегодня нет",dayGuide:"День одним взглядом",
+        tpTitle:"Программа команды",tpSub:"Всё, что вы назначаете команде",
+        dpTitle:"План дня",dpSub:"Тема, события, музыка, шоу и дресс-код",
+        autoAssign:"Распределить активности",duty:"Вход и выходные",
+        djOrders:"Поручения диджею",socialOrders:"Поручения соцсетям",
+        attendance:"Посещаемость",tasks:"Задачи",dayActs:"Активности сегодня",
+        assignTo:"Назначить",unassigned:"Пока никто",open:"Открыть",
+        orders:"поручений",people:"Команда"},
+    pl:{theme:"Motyw restauracji",dress:"Ubiór",entrance:"Dyżur przy wejściu",dayOff:"Wolne",
+        show:"Wieczorny pokaz",band:"Zespół na żywo",events:"Wydarzenia",practice:"Trening",
+        none:"Nie ustawiono",noEvents:"Brak",dayGuide:"Dzień w skrócie",
+        tpTitle:"Program zespołu",tpSub:"Wszystko, co przydzielasz zespołowi",
+        dpTitle:"Plan dnia",dpSub:"Motyw, wydarzenia, muzyka, pokaz i ubiór",
+        autoAssign:"Przydziel zajęcia",duty:"Wejście i wolne",
+        djOrders:"Polecenia dla DJ",socialOrders:"Polecenia social media",
+        attendance:"Obecność",tasks:"Zadania",dayActs:"Zajęcia dziś",
+        assignTo:"Przydziel",unassigned:"Nikt",open:"Otwórz",
+        orders:"poleceń",people:"Zespół"},
+    cs:{theme:"Téma restaurace",dress:"Oblečení",entrance:"Služba u vchodu",dayOff:"Volno",
+        show:"Večerní show",band:"Živá hudba",events:"Akce",practice:"Trénink",
+        none:"Nenastaveno",noEvents:"Dnes žádné",dayGuide:"Den v přehledu",
+        tpTitle:"Program týmu",tpSub:"Vše, co přiděluješ týmu",
+        dpTitle:"Plán dne",dpSub:"Téma, akce, hudba, show a oblečení",
+        autoAssign:"Přidělit aktivity",duty:"Vchod a volno",
+        djOrders:"Úkoly pro DJ",socialOrders:"Úkoly social media",
+        attendance:"Docházka",tasks:"Úkoly",dayActs:"Aktivity dnes",
+        assignTo:"Přidělit",unassigned:"Zatím nikdo",open:"Otevřít",
+        orders:"úkolů",people:"Tým"},
+    nl:{theme:"Restaurantthema",dress:"Kledingcode",entrance:"Ingangsdienst",dayOff:"Vrij",
+        show:"Avondshow",band:"Live band",events:"Evenementen",practice:"Training",
+        none:"Niet ingesteld",noEvents:"Geen vandaag",dayGuide:"De dag in één blik",
+        tpTitle:"Teamprogramma",tpSub:"Alles wat je aan het team toewijst",
+        dpTitle:"Dagplan",dpSub:"Thema, evenementen, muziek, show en kledingcode",
+        autoAssign:"Activiteiten verdelen",duty:"Ingang & vrij",
+        djOrders:"DJ-opdrachten",socialOrders:"Social media-opdrachten",
+        attendance:"Aanwezigheid",tasks:"Taken",dayActs:"Activiteiten vandaag",
+        assignTo:"Toewijzen",unassigned:"Nog niemand",open:"Openen",
+        orders:"opdrachten",people:"Team"},
+    fr:{theme:"Theme du restaurant",dress:"Tenue",entrance:"Service entree",dayOff:"Repos",
+        show:"Spectacle du soir",band:"Groupe live",events:"Evenements",practice:"Repetition",
+        none:"Non defini",noEvents:"Aucun",dayGuide:"La journee en un coup d'oeil",
+        tpTitle:"Programme equipe",tpSub:"Tout ce que vous attribuez a l'equipe",
+        dpTitle:"Plan du jour",dpSub:"Theme, evenements, musique, spectacle et tenue",
+        autoAssign:"Attribuer les activites",duty:"Entree et repos",
+        djOrders:"Consignes DJ",socialOrders:"Consignes reseaux sociaux",
+        attendance:"Presence",tasks:"Taches",dayActs:"Activites du jour",
+        assignTo:"Attribuer",unassigned:"Personne",open:"Ouvrir",
+        orders:"consignes",people:"Equipe"},
+    ar:{theme:"ثيم المطعم",dress:"الزي",entrance:"مناوبة المدخل",dayOff:"إجازة",
+        show:"عرض المساء",band:"الفرقة الحية",events:"الفعاليات",practice:"التدريب",
+        none:"غير محدد",noEvents:"لا يوجد اليوم",dayGuide:"اليوم بلمحة",
+        tpTitle:"برنامج الفريق",tpSub:"كل ما تسنده للفريق",
+        dpTitle:"خطة اليوم",dpSub:"الثيم والفعاليات والموسيقى والعرض والزي",
+        autoAssign:"توزيع الأنشطة",duty:"المدخل والإجازات",
+        djOrders:"أوامر الدي جي",socialOrders:"أوامر التواصل الاجتماعي",
+        attendance:"الحضور",tasks:"المهام",dayActs:"أنشطة اليوم",
+        assignTo:"إسناد",unassigned:"لا أحد بعد",open:"فتح",
+        orders:"أوامر",people:"الفريق"}
+  };
+  function w(k){
+    var l = (typeof S!=="undefined" && S.lang) ? S.lang : "en";
+    return (L[l] && L[l][k]) || L.en[k] || k;
+  }
+  function dayIdx(){ try{ return todayIndex(); }catch(e){ return (new Date().getDay()+6)%7; } }
+  function planDay(){ return (typeof S.planDay==="number") ? S.planDay : dayIdx(); }
+  function nameOfNum(n){
+    try{ var p = staffByNumber(n); if (p) return (p.display_name||p.name||("#"+n)); }catch(e){}
+    return n ? ("#"+n) : "";
+  }
+  function dp(day){
+    try{ return dayPlanFor(day) || {}; }catch(e){ return {}; }
+  }
+  function eventsOf(day){
+    return (S.activities||[]).filter(function(a){
+      if (a.day!==day) return false;
+      var c=""; try{ c=normCat(a); }catch(e){ c=String(a.category||""); }
+      return c==="mEvents" || c==="eParty";
+    }).sort(function(x,y){ return String(x.time).localeCompare(String(y.time)); });
+  }
+
+  /* ------------------------------------------------------------
+     1. the day, as tiles, inside the guide card
+     ------------------------------------------------------------ */
+  function tile(label, value, wide){
+    return '<div class="v32-tile'+(wide?' wide':'')+'">'
+      + '<span class="v32-tl">'+E(label)+'</span>'
+      + '<b class="v32-tv">'+E(value || w("none"))+'</b></div>';
+  }
+  function dayTiles(day){
+    var d = dp(day);
+    var offNames = "";
+    try{
+      var st = dayDutyStats(day);
+      offNames = (st.off||[]).map(function(u){
+        return (u.display_name||u.username) + (u.number? " #"+u.number : "");
+      }).join(" · ");
+    }catch(e){
+      offNames = (d.off||[]).map(function(n){ return "#"+n; }).join(" · ");
+    }
+    var evs = eventsOf(day);
+    var evTxt = evs.length
+      ? evs.map(function(a){
+          return String(a.time||"").split(/\s*[–—-]\s*/)[0] + " " + a.name;
+        }).join(" · ")
+      : w("noEvents");
+    var showTxt = d.eveningShow
+      ? d.eveningShow + (d.showTime? " · "+d.showTime : "") + (d.showLoc? " · "+d.showLoc : "")
+      : "";
+    var t = '<div class="v32-grid">';
+    t += tile(w("theme"), d.theme);
+    t += tile(w("dress"), d.dress, true);
+    t += tile(w("entrance"), d.entrance ? nameOfNum(d.entrance) : "");
+    t += tile(w("dayOff"), offNames);
+    t += tile(w("events"), evTxt, true);
+    t += tile(w("show"), showTxt, true);
+    if (d.liveBand) t += tile(w("band"), d.liveBand, true);
+    if (d.practice) t += tile(w("practice"), (d.practiceTitle||"")+(d.practiceTime? " · "+d.practiceTime : ""), true);
+    t += '</div>';
+    return t;
+  }
+
+  /* fold it into the guide card, drop the duplicate chips and the old section */
+  if (typeof myWorkDayView === "function"){
+    var _wd = myWorkDayView;
+    window.myWorkDayView = function(){
+      var out = _wd.apply(this, arguments);
+      try{
+        var day = planDay();
+        /* the two chips repeat what the tiles now show */
+        out = out.replace(/<div class="wd23-tags">[\s\S]*?<\/div>\s*(?=<\/div>)/, "");
+        /* put the tiles inside the guide card, before its closing tag */
+        var hi = out.indexOf('<div class="wd23-head">');
+        if (hi >= 0){
+          var end = out.indexOf('</div>', out.lastIndexOf('wd23-idrow'));
+          /* find the real end of the head block by counting from its start */
+          var depth = 0, i = hi, close = -1;
+          while (i < out.length){
+            if (out.startsWith("<div", i)) depth++;
+            else if (out.startsWith("</div>", i)){ depth--; if (depth===0){ close = i; break; } }
+            i++;
+          }
+          if (close > 0){
+            out = out.slice(0, close)
+                + '<div class="v32-day"><span class="v32-dh">'+E(w("dayGuide"))+'</span>'
+                + dayTiles(day) + '</div>'
+                + out.slice(close);
+          }
+        }
+        /* remove the standalone operation section — it lives in the card now */
+        out = out.replace(/<section class="wd23-sec"(?:(?!<section class="wd23-sec")[\s\S])*?wd23-op[\s\S]*?<\/section>/, "");
+        return out;
+      }catch(e){ return out; }
+    };
+  }
+
+  /* ------------------------------------------------------------
+     2. Day plan — only theme, events, music, show, dress
+     ------------------------------------------------------------ */
+  function dayPlanBody(day){
+    var d = dp(day);
+    var evs = eventsOf(day);
+    var rows = "";
+    rows += '<div class="v32-row"><span>'+E(w("theme"))+'</span><b>'+E(d.theme||w("none"))+'</b></div>';
+    rows += evs.length
+      ? evs.map(function(a){
+          return '<div class="v32-row"><span>'+E(w("events"))+'</span><b>'
+            + E(String(a.time||"").split(/\s*[–—-]\s*/)[0]+' · '+a.name+(a.location? ' · '+a.location:''))
+            + '</b></div>'; }).join("")
+      : '<div class="v32-row"><span>'+E(w("events"))+'</span><b>'+E(w("noEvents"))+'</b></div>';
+    rows += '<div class="v32-row"><span>'+E(w("band"))+'</span><b>'+E(d.liveBand||w("none"))+'</b></div>';
+    rows += '<div class="v32-row"><span>'+E(w("show"))+'</span><b>'
+      + E(d.eveningShow ? (d.eveningShow+(d.showTime? " · "+d.showTime:"")+(d.showLoc? " · "+d.showLoc:"")) : w("none"))
+      + '</b></div>';
+    rows += '<div class="v32-row"><span>'+E(w("dress"))+'</span><b>'+E(d.dress||w("none"))+'</b></div>';
+    return '<div class="v32">'
+      + '<div class="v32-head"><h2>'+E(w("dpTitle"))+'</h2><p>'+E(w("dpSub"))+'</p></div>'
+      + v32DayChips(day, "v32dpday")
+      + '<div class="v32-card">'+rows+'</div></div>';
+  }
+  function v32DayChips(day, attr){
+    var names = (function(){ try{ return t("daysShort"); }catch(e){ return ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]; } })();
+    return '<div class="v32-days">'
+      + [0,1,2,3,4,5,6].map(function(i){
+          return '<button type="button" class="v32-day'+(i===day?' on':'')+'" data-'+attr+'="'+i+'">'
+            + E(names[i]||'')+'</button>'; }).join('')
+      + '</div>';
+  }
+
+  /* ------------------------------------------------------------
+     3. Team programme — the working screen
+     ------------------------------------------------------------ */
+  function teamOrdersCount(day, num){
+    var all = (S.settings && S.settings.teamDuties) || {};
+    var list = Array.isArray(all[String(day)]) ? all[String(day)] : [];
+    var u = null;
+    try{ u = staffByNumber(num); }catch(e){}
+    if (!u) return 0;
+    return list.filter(function(x){ return x.who===u.username; }).length;
+  }
+  function actRow(a){
+    var who = String(a.entertainer||"");
+    var u = (S.users||[]).filter(function(x){ return x.username===who; })[0];
+    var label = u ? (u.display_name||u.username) + (u.number? " #"+u.number : "") : w("unassigned");
+    return '<div class="v32-act'+(who?'':' none')+'" data-v32act="'+E(a.id)+'">'
+      + '<time>'+E(String(a.time||"").split(/\s*[–—-]\s*/)[0])+'</time>'
+      + '<span><b>'+E(a.name)+'</b>'
+      + (a.location? '<i>'+E(a.location)+'</i>' : '')+'</span>'
+      + '<em>'+E(label)+'</em></div>';
+  }
+  function teamProgBody(day){
+    var d = dp(day);
+    var offNames = "";
+    try{
+      var st = dayDutyStats(day);
+      offNames = (st.off||[]).map(function(u){ return (u.display_name||u.username)+(u.number?" #"+u.number:""); }).join(" · ");
+    }catch(e){}
+    var acts = (S.activities||[]).filter(function(a){
+      if (a.day!==day) return false;
+      var c=""; try{ c=normCat(a); }catch(e){ c=String(a.category||""); }
+      return c==="mAdult";
+    }).sort(function(x,y){ return String(x.time).localeCompare(String(y.time)); });
+    var unassigned = acts.filter(function(a){ return !String(a.entertainer||"").trim(); }).length;
+
+    function card(icon, title, sub, action, badge){
+      return '<button type="button" class="v32-tool" '+action+'>'
+        + '<span class="v32-ti">'+ic(icon,18)+'</span>'
+        + '<span class="v32-tt"><b>'+E(title)+'</b><i>'+E(sub)+'</i></span>'
+        + (badge?'<span class="v32-tb">'+E(badge)+'</span>':'')
+        + '</button>';
+    }
+    var out = '<div class="v32">'
+      + '<div class="v32-head"><h2>'+E(w("tpTitle"))+'</h2><p>'+E(w("tpSub"))+'</p></div>'
+      + v32DayChips(day, "v32tpday");
+
+    out += '<div class="v32-tools">'
+      + card("users", w("autoAssign"),
+             unassigned ? (unassigned+" · "+w("dayActs")) : w("dayActs"),
+             'data-v32auto="'+day+'"', unassigned? String(unassigned):"")
+      + card("door", w("duty"),
+             (d.entrance? nameOfNum(d.entrance) : w("none")) + (offNames? " · "+offNames : ""),
+             'data-v32duty="'+day+'"', "")
+      + card("music", w("djOrders"), w("orders"), 'data-v32orders="dj"', String(teamOrdersCount(day,3)||""))
+      + card("sparkle", w("socialOrders"), w("orders"), 'data-v32orders="social"', String(teamOrdersCount(day,2)||""))
+      + card("check", w("attendance"), w("people"), 'data-v32go="team|monthatt"', "")
+      + card("clipboard", w("tasks"), w("people"), 'data-v32go="team|tasks"', "")
+      + '</div>';
+
+    out += '<div class="v32-sec"><span class="v32-dh">'+E(w("dayActs"))+'</span>'
+      + (acts.length ? '<div class="v32-card">'+acts.map(actRow).join("")+'</div>'
+                     : '<div class="v32-empty">'+E(w("noEvents"))+'</div>')
+      + '</div>';
+    return out + '</div>';
+  }
+
+  /* ------------------------------------------------------------
+     placing the two manager screens
+     ------------------------------------------------------------ */
+  function hostOf(screen){
+    var kids = screen.children || [];
+    var idx = -1;
+    for (var i=0;i<kids.length && i<6;i++){
+      var cls = " " + String(kids[i].className||"") + " ";
+      if (/\s(ex-top|top)\s/.test(cls) || /\s(who|whobar)\s/.test(cls)
+       || (/\sex-hero\s/.test(cls) && /\sflat\s/.test(cls))
+       || /\swd23-head\s/.test(cls) || /\sex21-hero\s/.test(cls)) idx = i;
+    }
+    return idx>=0 ? kids[idx] : null;
+  }
+  function swapBody(html, marker){
+    try{
+      var app = document.getElementById("app") || document.querySelector("#app");
+      if (!app) return;
+      var screen = app.querySelector(".screen") || app;
+      if (screen.querySelector("."+marker)) return;
+      var host = hostOf(screen);
+      var kids = (screen.children||[]).slice();
+      var start = host ? kids.indexOf(host)+1 : 0;
+      for (var i=kids.length-1;i>=start;i--){ if (kids[i] && kids[i].remove) kids[i].remove(); }
+      if (host && host.insertAdjacentHTML) host.insertAdjacentHTML("afterend", html);
+      else if (screen.insertAdjacentHTML) screen.insertAdjacentHTML("beforeend", html);
+    }catch(e){}
+  }
+  function place(){
+    try{
+      if (typeof S==="undefined" || !S.session || S.session.role!=="manager") return;
+      var day = planDay();
+      if (S.tab==="dayplan")  swapBody(dayPlanBody(day), "v32");
+      if (S.tab==="teamprog") swapBody(teamProgBody(day), "v32");
+    }catch(e){}
+  }
+  function wire(){
+    try{
+      document.querySelectorAll("[data-v32dpday]").forEach(function(b){
+        b.onclick = function(){ S.planDay = +b.dataset.v32dpday; render(); };
+      });
+      document.querySelectorAll("[data-v32tpday]").forEach(function(b){
+        b.onclick = function(){ S.planDay = +b.dataset.v32tpday; S.v30Day = +b.dataset.v32tpday; render(); };
+      });
+      document.querySelectorAll("[data-v32auto]").forEach(function(b){
+        b.onclick = function(){
+          if (typeof openAutoAssignModal==="function") openAutoAssignModal(+b.dataset.v32auto);
+        };
+      });
+      document.querySelectorAll("[data-v32duty]").forEach(function(b){
+        b.onclick = function(){
+          if (typeof openDutyModal==="function") openDutyModal(+b.dataset.v32duty);
+        };
+      });
+      document.querySelectorAll("[data-v32orders]").forEach(function(b){
+        b.onclick = function(){
+          S.v30Day = planDay();
+          S.v32Role = b.dataset.v32orders;
+          S.tab = "teamorders"; render();
+        };
+      });
+      document.querySelectorAll("[data-v32go]").forEach(function(b){
+        b.onclick = function(){
+          var p = String(b.dataset.v32go).split("|");
+          S.tab = p[0]; if (p[1]) S.sub[p[0]] = p[1];
+          render();
+        };
+      });
+      document.querySelectorAll("[data-v32act]").forEach(function(b){
+        b.onclick = function(){
+          var a = (S.activities||[]).filter(function(x){ return String(x.id)===String(b.dataset.v32act); })[0];
+          if (a && typeof openActModal==="function") openActModal(a);
+          else if (a && typeof openActivityEditor==="function") openActivityEditor(a);
+          else { S.tab="program"; render(); }
+        };
+      });
+    }catch(e){}
+  }
+
+  /* the orders screen keeps using the programme editor from v30 */
+  if (typeof managerView === "function"){
+    var _mv = managerView;
+    window.managerView = function(){
+      try{
+        if (S.tab==="teamorders"){
+          var keep = S.tab; S.tab = "dayplan";
+          var shell = _mv.apply(this, arguments);
+          S.tab = keep;
+          return shell;
+        }
+      }catch(e){}
+      return _mv.apply(this, arguments);
+    };
+  }
+  if (typeof render === "function"){
+    var _r = render;
+    window.render = function(){
+      var out = _r.apply(this, arguments);
+      place(); wire();
+      /* the orders screen: reuse the v30 programme, filtered to one role */
+      try{
+        if (S.session && S.session.role==="manager" && S.tab==="teamorders" && typeof v30Program==="function"){
+          var app = document.getElementById("app");
+          var screen = app && (app.querySelector(".screen")||app);
+          if (screen && !screen.querySelector(".v30")){
+            var host = hostOf(screen);
+            var kids = (screen.children||[]).slice();
+            var start = host ? kids.indexOf(host)+1 : 0;
+            for (var i=kids.length-1;i>=start;i--){ if (kids[i] && kids[i].remove) kids[i].remove(); }
+            if (host && host.insertAdjacentHTML) host.insertAdjacentHTML("afterend", v30Program());
+          }
+        }
+      }catch(e){}
+      return out;
+    };
+  }
+
+  window.v32DayTiles = dayTiles;
+  window.v32DayPlan  = dayPlanBody;
+  window.v32TeamProg = teamProgBody;
+})();
+
+</script>
 </body>
 </html>
