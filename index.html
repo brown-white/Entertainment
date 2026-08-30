@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v27 (white/black/gold light) + v26 (visible build badge) + v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v28 (light surfaces rebuilt) + v27 (white/black/gold light) + v26 (visible build badge) + v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15752,145 +15752,7 @@ Object.keys(V25_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V25
 })();
 </script>
 
-<style id="light-theme-v25">
-/* ============================================================
-   v25 — a REAL light theme.
-   The v20 layer wrote a charcoal palette onto :root with
-   !important, so choosing Light previously changed nothing at
-   all. These rules are generated from the v20 and v21 sheets by
-   inverting the LIGHTNESS of every colour they set, so the
-   design language and the champagne accent survive but the app
-   becomes white in light mode.
-   ============================================================ */
-html[data-theme="light"]{color-scheme:light}
-html[data-theme="light"]{--hl-bg:#dcdada!important;--hl-bg-2:#dfdfdf!important;--hl-panel:#d4d2d2!important;--hl-panel-2:#d0cece!important;--hl-panel-3:#cccaca!important;--hl-line:#c6c4c4!important;--hl-line-soft:#cdcbcb!important;--hl-text:#201c13!important;--hl-soft:#57534c!important;--hl-muted:#817e7a!important;--hl-gold:#896438!important;--hl-gold-2:#7b5a2d!important;--hl-danger:#974336!important;--hl-success:#60755b!important;--espresso:#e1e1e1!important;--cacao:#d5d3d3!important;--nav-bg:#dbd9d9!important}
-html[data-theme="light"] .chip,html[data-theme="light"] .pill,html[data-theme="light"] .tchip,html[data-theme="light"] .rstat,html[data-theme="light"] .cc-tag,html[data-theme="light"] .ex-tag{border:1px solid #c2bcb5!important;background:#d6d3cf!important}
-html[data-theme="light"] .chip.ok,html[data-theme="light"] .rstat.off{background:#cdd3ce!important;border-color:#b3beb5!important;color:#495a46!important}
-html[data-theme="light"] .chip.full{background:#d6cdcb!important;border-color:#cab9b5!important;color:#7b3b2b!important}
-html[data-theme="light"] .btn,html[data-theme="light"] .btn:not(.ghost):not(.warn),html[data-theme="light"] .wa-cta,html[data-theme="light"] .v9-hero-btn,html[data-theme="light"] .v9-dashbtns .btn{background:#cbc9c9!important;border:1px solid #bfbdbd!important}
-html[data-theme="light"] .btn:hover,html[data-theme="light"] .btn:active,html[data-theme="light"] .wa-cta:hover{background:#cdc9c4!important;border-color:#bba995!important}
-html[data-theme="light"] .btn.ghost{border:1px solid #c2b9ae!important}
-html[data-theme="light"] .btn.warn{background:#d4c7c4!important;border-color:#c5aba5!important;color:#72392b!important}
-html[data-theme="light"] input,html[data-theme="light"] select,html[data-theme="light"] textarea,html[data-theme="light"] .pickfield{background:#d7d5d5!important;border:1px solid #bfbdbd!important}
-html[data-theme="light"] input::placeholder,html[data-theme="light"] textarea::placeholder{color:#938d86!important}
-html[data-theme="light"] .daytabs button,html[data-theme="light"] .pills button,html[data-theme="light"] .ex-chip,html[data-theme="light"] .daychip,html[data-theme="light"] .role-tabs button,html[data-theme="light"] .lang-row button{background:#d5d3d3!important;border:1px solid #c7c5c5!important}
-html[data-theme="light"] .daytabs button.on,html[data-theme="light"] .pills button.on,html[data-theme="light"] .ex-chip.on,html[data-theme="light"] .daychip.on,html[data-theme="light"] .role-tabs button.on,html[data-theme="light"] .lang-row button.on{background:#d2ceca!important;border-color:#c0ae9a!important}
-html[data-theme="light"] .nav{background:#dcdada!important;border-top:1px solid #cac8c8!important}
-html[data-theme="light"] .nav button{color:#938d86!important}
-html[data-theme="light"] .drawer-bg{background:rgba(0,0,0,0.319)!important}
-html[data-theme="light"] .drawer{background:#dddbdb!important;border-inline-end:1px solid #c8c6c6!important}
-html[data-theme="light"] .dr-head{border-bottom:1px solid #cac8c8!important}
-html[data-theme="light"] .dr-head .mono.sm,html[data-theme="light"] .pf-ava,html[data-theme="light"] .acct-av,html[data-theme="light"] .mb-av,html[data-theme="light"] .rnum{background:#d6d3cf!important;border:1px solid #c6beb4!important}
-html[data-theme="light"] .dr-sec{color:#9b958e!important}
-html[data-theme="light"] .dr-it.on{background:#d6d3cf!important}
-html[data-theme="light"] .dr-foot{border-color:#c8c6c6!important}
-html[data-theme="light"] .dr-out{background:#d7d5d5!important;border-color:#c0bebe!important}
-html[data-theme="light"] .login-wrap{background:radial-gradient(100% 55% at 50% -5%,#d2cfcb 0%,#dbd9d9 52%,#dfdfdf 100%)!important}
-html[data-theme="light"] .brandmark .mono{border:1px solid #c2b9ae!important}
-html[data-theme="light"] .brandmark p{color:#635e56!important}
-html[data-theme="light"] .login-card{background:#d7d5d5!important}
-html[data-theme="light"] .hero,html[data-theme="light"] .tk,html[data-theme="light"] .opcard,html[data-theme="light"] .catcard,html[data-theme="light"] .ex-feat,html[data-theme="light"] .ex-it{border:1px solid #c3c1c1!important;background:#d7d5d5!important}
-html[data-theme="light"] .hero .veil,html[data-theme="light"] .opcard .veil,html[data-theme="light"] .catcard .veil{background:linear-gradient(180deg,rgba(0,0,0,0.066),rgba(0,0,0,0.484))!important}
-html[data-theme="light"] .hero .tag{background:rgba(0,0,0,0.506)!important;border:1px solid #c1b2a3!important}
-html[data-theme="light"] .hero .meta{color:#474138!important}
-html[data-theme="light"] .opc-txt span{color:#474139!important}
-html[data-theme="light"] .crumb{background:#d7d5d5!important;border-color:#c0bebe!important}
-html[data-theme="light"] .card.act .meta{color:#6e6a64!important}
-html[data-theme="light"] .quickrow button{background:#d2d0d0!important;border:1px solid #c7c5c5!important;color:#342f28!important}
-html[data-theme="light"] .ex-sub{color:#716d66!important}
-html[data-theme="light"] .ex-feat::after{background:linear-gradient(180deg,rgba(0,0,0,0.044),rgba(0,0,0,0.495))!important}
-html[data-theme="light"] .ex-it{background:#d5d3d3!important}
-html[data-theme="light"] [data-approle="guest"] .v14-welcome,html[data-theme="light"] [data-approle="guest"] .theme-banner{background:#d8d6d4!important;border:1px solid #cac3bb!important}
-html[data-theme="light"] [data-approle="guest"] .v14-w-cell{background:#d1d1ce!important;border:1px solid #c5c5c2!important}
-html[data-theme="light"] [data-approle="guest"] .hero .tag{background:#d6d3cf!important}
-html[data-theme="light"] [data-approle="staff"] .v15-focus,html[data-theme="light"] [data-approle="staff"] .v15-focus.live,html[data-theme="light"] [data-approle="staff"] .v15-focus.quiet,html[data-theme="light"] [data-approle="staff"] .v15-focus.done{background:#d5d3d3!important;border:1px solid #cbc5bf!important}
-html[data-theme="light"] [data-approle="staff"] .v15-f-when{background:#d3d0cc!important;border:1px solid #c6bfb8!important}
-html[data-theme="light"] [data-approle="manager"] .v15-mnow{background:#d7d5d5!important;border:1px solid #cbc4bc!important}
-html[data-theme="light"] [data-approle="manager"] .v15-mn-cell{background:#d0cece!important;border:1px solid #c3c1c1!important}
-html[data-theme="light"] [data-approle="manager"] .v15-mn-cell.hot{background:#d6d1cb!important;border-color:#c7bbaa!important}
-html[data-theme="light"] [data-approle="manager"] .stat,html[data-theme="light"] .v9-statlink{background:#d5d3d3!important}
-html[data-theme="light"] [data-approle="manager"] .stat span,html[data-theme="light"] .v9-statlink span{color:#7c7872!important}
-html[data-theme="light"] .tc-photo,html[data-theme="light"] .tc-photo.sm{border-color:#bebcbc!important}
-html[data-theme="light"] .notif-card .nt-ic,html[data-theme="light"] .sb-ic{background:#d6d3cf!important;border-color:#c6bfb7!important}
-html[data-theme="light"] .switch{background:#bfbdbd!important}
-html[data-theme="light"] .switch.on{background:#bca892!important}
-html[data-theme="light"] .bub.me{background:#cecac5!important;border:1px solid #c5bcb2!important}
-html[data-theme="light"] .bub.them{background:#d3d1d1!important;border:1px solid #c7c5c5!important}
-html[data-theme="light"] .chatbar{background:#dddbdb!important;border-top:1px solid #c7c5c5!important}
-html[data-theme="light"] .chatbar button{background:#947147!important;color:#e2ded9!important}
-html[data-theme="light"] .bubtool{background:#d0cece!important;border-color:#bfbdbd!important;color:#625d55!important}
-html[data-theme="light"] .rankb,html[data-theme="light"] .rankb.r0,html[data-theme="light"] .rankb.r1,html[data-theme="light"] .rankb.r2{background:#d6d3cf!important;border:1px solid #c5bcb2!important}
-html[data-theme="light"] .wd-banner,html[data-theme="light"] .wd-banner.off,html[data-theme="light"] .wd-banner.entrance,html[data-theme="light"] .wd-banner.makeup,html[data-theme="light"] .wd-banner.dj{background:#d3d1d1!important;border:1px solid #bfbdbd!important}
-html[data-theme="light"]{--ex21-bg:#e8e8e8!important;--ex21-panel:#dfdfdf!important;--ex21-panel2:#d9d7d7!important;--ex21-line:rgba(0,0,0,.09)!important;--ex21-text:#1f1c14!important;--ex21-muted:#646058!important;--ex21-gold:#85622a!important;--ex21-gold2:#a07a46!important}
-html[data-theme="light"] .ex21 .ex-round,html[data-theme="light"] .ex21 .ex-signin{background:rgba(0,0,0,.055)!important}
-html[data-theme="light"] .ex21-hero{background:#dbd9d9!important}
-html[data-theme="light"] .ex21-hero:before,html[data-theme="light"] .ex21-media:before{background:linear-gradient(110deg,#dcdada 25%,#d0cece 42%,#dcdada 60%)!important}
-html[data-theme="light"] .ex21-hero:after{background:linear-gradient(180deg,rgba(0,0,0,0.088) 10%,rgba(0,0,0,0.028) 42%,rgba(0,0,0,0.484) 100%)!important}
-html[data-theme="light"] .ex21-hero h1{color:#1a1a1a!important}
-html[data-theme="light"] .ex21-hero p{color:rgba(0,0,0,.82)!important}
-html[data-theme="light"] .ex21-feature{border:1px solid rgba(133,98,42,.36)!important;background:rgba(0,0,0,0.275)!important;color:#251d0e!important}
-html[data-theme="light"] .ex21-today .ex21-media{background:#dbd9d9!important}
-html[data-theme="light"] .ex21-today .ex21-media:after{background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,0.363))!important}
-html[data-theme="light"] .ex21-timebadge{background:rgba(0,0,0,0.407)!important;color:#1a1a1a!important;border:1px solid rgba(0,0,0,.12)!important}
-html[data-theme="light"] .ex21-desc{color:#444038!important}
-html[data-theme="light"] .ex21-detailbtn{border:1px solid rgba(133,98,42,.32)!important}
-html[data-theme="light"] .ex21-mood{background:#dbd9d9!important;color:#1a1a1a!important}
-html[data-theme="light"] .ex21-mood:after{background:linear-gradient(180deg,rgba(0,0,0,0.066),rgba(0,0,0,0.451))!important}
-html[data-theme="light"] .ex21-mood i{background:rgba(0,0,0,0.286)!important;border:1px solid rgba(0,0,0,.12)!important}
-html[data-theme="light"] .ex21-filter.on{color:#eeeae4!important}
-html[data-theme="light"] .ex21-rec{background:linear-gradient(145deg,#dbd9d9,#e1e1e1)!important}
-html[data-theme="light"] .ex21-rec .ri{border:1px solid rgba(133,98,42,.28)!important}
-html[data-theme="light"] .ex21-map{background:radial-gradient(circle at 28% 22%,rgba(133,98,42,.07),transparent 23%),linear-gradient(145deg,#dcdada,#e6e6e6)!important}
-html[data-theme="light"] .ex21-map:before{background-image:linear-gradient(rgba(0,0,0,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.08) 1px,transparent 1px)!important}
-html[data-theme="light"] .ex21-map:after{color:rgba(0,0,0,.25)!important}
-html[data-theme="light"] .ex21-pin{border:3px solid #e3ded7!important;box-shadow:0 5px 18px rgba(0,0,0,0.193)!important}
-html[data-theme="light"] .ex21-pin span{color:#eee9e3!important}
-html[data-theme="light"] .ex21-actions button.gold{border-color:rgba(133,98,42,.3)!important}
-html[data-theme="light"] .ex21-miss{border:1px solid rgba(133,98,42,.2)!important;background:#dbd9d9!important;color:#1a1a1a!important}
-html[data-theme="light"] .ex21-miss:after{background:linear-gradient(90deg,rgba(0,0,0,0.501),rgba(0,0,0,0.176))!important}
-html[data-theme="light"] .ex21-misscopy h3{color:#1a1a1a!important}
-html[data-theme="light"] .ex21-misscopy p{color:#3a362e!important}
-html[data-theme="light"] .ex21-misscopy button{border:1px solid rgba(133,98,42,.45)!important;background:rgba(0,0,0,0.303)!important}
-html[data-theme="light"] .ex21-empty{border:1px dashed rgba(0,0,0,.12)!important}
-html[data-theme="light"] .ex21-dhero{background:#dbd9d9!important}
-html[data-theme="light"] .ex21-dhero:after{background:linear-gradient(180deg,rgba(0,0,0,0.088),rgba(0,0,0,0.099) 52%,var(--ex21-bg) 100%)!important}
-html[data-theme="light"] .ex21-dback,html[data-theme="light"] .ex21-dfav{background:rgba(0,0,0,0.341)!important;border:1px solid rgba(0,0,0,.13)!important;color:#1a1a1a!important}
-html[data-theme="light"] .ex21-dcontent h1{color:#1a1a1a!important}
-html[data-theme="light"] .ex21-dlead{color:#38342c!important}
-html[data-theme="light"] .ex21-stick{background:linear-gradient(180deg,rgba(0,0,0,0.000),rgba(0,0,0,0.517) 20%,#e8e8e8 45%)!important}
-html[data-theme="light"] .ex21-stick .main{color:#eeeae4!important}
-html[data-theme="light"]{
-  --hl-bg:#FAF8F5!important;      --hl-bg-2:#F3F0EA!important;
-  --hl-panel:#FFFFFF!important;   --hl-panel-2:#FBF9F6!important; --hl-panel-3:#F5F2EC!important;
-  --hl-line:#E3DED6!important;    --hl-line-soft:#EEEAE3!important;
-  --hl-text:#1E1B17!important;    --hl-soft:#55504A!important;    --hl-muted:#847E76!important;
-  --hl-gold:#9A7742!important;    --hl-gold-2:#B08C52!important;
-  --hl-danger:#A8483A!important;  --hl-success:#4F6B4A!important;
-  --ex21-bg:#FFFFFF!important;    --ex21-panel:#FFFFFF!important; --ex21-panel2:#F7F4EF!important;
-  --ex21-line:rgba(0,0,0,.10)!important;
-  --ex21-text:#1B1815!important;  --ex21-muted:#6E6862!important;
-  --ex21-gold:#9A7742!important;  --ex21-gold2:#B08C52!important;
-}
-html[data-theme="light"] body,
-html[data-theme="light"] .app,
-html[data-theme="light"] .screen{background:#FAF8F5!important;color:#1E1B17!important}
-
-/* photos are dimmed for the dark skin; on white they should be full strength */
-html[data-theme="light"] .ex21-place img,
-html[data-theme="light"] .ex21-media img{filter:none!important}
-html[data-theme="light"] .ex21-hero img{opacity:.9!important}
-/* keep white text where it sits on the accent colour or on a photo */
-html[data-theme="light"] .v24-modes button.on,
-html[data-theme="light"] .wd24-fbbtns button.primary,
-html[data-theme="light"] .wd23-filter.on,
-html[data-theme="light"] .wd23-num{color:#fff!important}
-html[data-theme="light"] .ex21-hero-copy,
-html[data-theme="light"] .ex21-hero-copy h1,
-html[data-theme="light"] .ex21-hero-copy p,
-html[data-theme="light"] .ex21-timebadge,
-html[data-theme="light"] .ex21-dback,
-html[data-theme="light"] .ex21-dfav{color:#fff!important}
-</style>
+<!-- light-theme-v25 removed in v28: the generated lightness-inversion produced 43 mid-grey surfaces (and white text on some of them). Replaced by the targeted rules in light-theme-v28. -->
 
 <style id="v26-build-badge">
 .v26-build{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:7px;font-size:10.5px;
@@ -15908,7 +15770,7 @@ html[data-theme="light"] .v26-build.mini{background:rgba(0,0,0,.35)!important;co
    is answerable in one second.
    ============================================================ */
 (function(){
-  var BUILD="v27";
+  var BUILD="v28";
   window.APP_BUILD=BUILD;
 
   if(typeof openMenuDrawer==="function"){
@@ -15941,6 +15803,89 @@ html[data-theme="light"] .v26-build.mini{background:rgba(0,0,0,.35)!important;co
   }
 })();
 </script>
+
+<style id="light-theme-v28">
+/* generated: dark surfaces -> white, light text -> black, gold kept. */
+html[data-theme="light"] .chip,html.v27-light .chip,html[data-theme="light"] .pill,html.v27-light .pill,html[data-theme="light"] .tchip,html.v27-light .tchip,html[data-theme="light"] .rstat,html.v27-light .rstat,html[data-theme="light"] .cc-tag,html.v27-light .cc-tag,html[data-theme="light"] .ex-tag,html.v27-light .ex-tag{border:1px solid #E4E1DA!important;background:#F7F5F2!important}
+html[data-theme="light"] .chip.ok,html.v27-light .chip.ok,html[data-theme="light"] .rstat.off,html.v27-light .rstat.off{background:#F7F5F2!important;border-color:#E4E1DA!important;color:#111111!important}
+html[data-theme="light"] .chip.full,html.v27-light .chip.full{background:#F7F5F2!important;border-color:#E4E1DA!important;color:#111111!important}
+html[data-theme="light"] .btn,html.v27-light .btn,html[data-theme="light"] .btn:not(.ghost):not(.warn),html.v27-light .btn:not(.ghost):not(.warn),html[data-theme="light"] .wa-cta,html.v27-light .wa-cta,html[data-theme="light"] .v9-hero-btn,html.v27-light .v9-hero-btn,html[data-theme="light"] .v9-dashbtns .btn,html.v27-light .v9-dashbtns .btn{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .btn:hover,html.v27-light .btn:hover,html[data-theme="light"] .btn:active,html.v27-light .btn:active,html[data-theme="light"] .wa-cta:hover,html.v27-light .wa-cta:hover{background:#F7F5F2!important;border-color:#E4E1DA!important}
+html[data-theme="light"] .btn.ghost,html.v27-light .btn.ghost{border:1px solid #E4E1DA!important}
+html[data-theme="light"] .btn.warn,html.v27-light .btn.warn{background:#F7F5F2!important;border-color:#E4E1DA!important;color:#111111!important}
+html[data-theme="light"] input,html.v27-light input,html[data-theme="light"] select,html.v27-light select,html[data-theme="light"] textarea,html.v27-light textarea,html[data-theme="light"] .pickfield,html.v27-light .pickfield{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] input::placeholder,html.v27-light input::placeholder,html[data-theme="light"] textarea::placeholder,html.v27-light textarea::placeholder{color:#454340!important}
+html[data-theme="light"] .daytabs button,html.v27-light .daytabs button,html[data-theme="light"] .pills button,html.v27-light .pills button,html[data-theme="light"] .ex-chip,html.v27-light .ex-chip,html[data-theme="light"] .daychip,html.v27-light .daychip,html[data-theme="light"] .role-tabs button,html.v27-light .role-tabs button,html[data-theme="light"] .lang-row button,html.v27-light .lang-row button{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .daytabs button.on,html.v27-light .daytabs button.on,html[data-theme="light"] .pills button.on,html.v27-light .pills button.on,html[data-theme="light"] .ex-chip.on,html.v27-light .ex-chip.on,html[data-theme="light"] .daychip.on,html.v27-light .daychip.on,html[data-theme="light"] .role-tabs button.on,html.v27-light .role-tabs button.on,html[data-theme="light"] .lang-row button.on,html.v27-light .lang-row button.on{background:#F7F5F2!important;border-color:#E4E1DA!important}
+html[data-theme="light"] .nav,html.v27-light .nav{background:#FFFFFF!important;border-top:1px solid #E4E1DA!important}
+html[data-theme="light"] .nav button,html.v27-light .nav button{color:#454340!important}
+html[data-theme="light"] .drawer,html.v27-light .drawer{background:#FFFFFF!important;border-inline-end:1px solid #E4E1DA!important}
+html[data-theme="light"] .dr-head,html.v27-light .dr-head{border-bottom:1px solid #E4E1DA!important}
+html[data-theme="light"] .dr-head .mono.sm,html.v27-light .dr-head .mono.sm,html[data-theme="light"] .pf-ava,html.v27-light .pf-ava,html[data-theme="light"] .acct-av,html.v27-light .acct-av,html[data-theme="light"] .mb-av,html.v27-light .mb-av,html[data-theme="light"] .rnum,html.v27-light .rnum{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .dr-sec,html.v27-light .dr-sec{color:#454340!important}
+html[data-theme="light"] .dr-it.on,html.v27-light .dr-it.on{background:#F7F5F2!important}
+html[data-theme="light"] .dr-foot,html.v27-light .dr-foot{border-color:#E4E1DA!important}
+html[data-theme="light"] .dr-out,html.v27-light .dr-out{background:#F7F5F2!important;border-color:#E4E1DA!important}
+html[data-theme="light"] .login-wrap,html.v27-light .login-wrap{background:radial-gradient(100% 55% at 50% -5%,#F7F5F2 0%,#FFFFFF 52%,#FFFFFF 100%)!important}
+html[data-theme="light"] .brandmark .mono,html.v27-light .brandmark .mono{border:1px solid #E4E1DA!important}
+html[data-theme="light"] .brandmark p,html.v27-light .brandmark p{color:#111111!important}
+html[data-theme="light"] .login-card,html.v27-light .login-card{background:#F7F5F2!important}
+html[data-theme="light"] .hero,html.v27-light .hero,html[data-theme="light"] .tk,html.v27-light .tk,html[data-theme="light"] .opcard,html.v27-light .opcard,html[data-theme="light"] .catcard,html.v27-light .catcard,html[data-theme="light"] .ex-feat,html.v27-light .ex-feat,html[data-theme="light"] .ex-it,html.v27-light .ex-it{border:1px solid #E4E1DA!important;background:#F7F5F2!important}
+html[data-theme="light"] .hero .tag,html.v27-light .hero .tag{border:1px solid #E4E1DA!important}
+html[data-theme="light"] .hero .meta,html.v27-light .hero .meta{color:#111111!important}
+html[data-theme="light"] .opc-txt span,html.v27-light .opc-txt span{color:#111111!important}
+html[data-theme="light"] .crumb,html.v27-light .crumb{background:#F7F5F2!important;border-color:#E4E1DA!important}
+html[data-theme="light"] .card.act .meta,html.v27-light .card.act .meta{color:#111111!important}
+html[data-theme="light"] .quickrow button,html.v27-light .quickrow button{background:#F7F5F2!important;border:1px solid #E4E1DA!important;color:#111111!important}
+html[data-theme="light"] .ex-sub,html.v27-light .ex-sub{color:#454340!important}
+html[data-theme="light"] .ex-it,html.v27-light .ex-it{background:#F7F5F2!important}
+html[data-theme="light"] [data-approle="guest"] .v14-welcome,html.v27-light [data-approle="guest"] .v14-welcome,html[data-theme="light"] [data-approle="guest"] .theme-banner,html.v27-light [data-approle="guest"] .theme-banner{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] [data-approle="guest"] .v14-w-cell,html.v27-light [data-approle="guest"] .v14-w-cell{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] [data-approle="guest"] .hero .tag,html.v27-light [data-approle="guest"] .hero .tag{background:#F7F5F2!important}
+html[data-theme="light"] [data-approle="staff"] .v15-focus,html.v27-light [data-approle="staff"] .v15-focus,html[data-theme="light"] [data-approle="staff"] .v15-focus.live,html.v27-light [data-approle="staff"] .v15-focus.live,html[data-theme="light"] [data-approle="staff"] .v15-focus.quiet,html.v27-light [data-approle="staff"] .v15-focus.quiet,html[data-theme="light"] [data-approle="staff"] .v15-focus.done,html.v27-light [data-approle="staff"] .v15-focus.done{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] [data-approle="staff"] .v15-f-when,html.v27-light [data-approle="staff"] .v15-f-when{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] [data-approle="manager"] .v15-mnow,html.v27-light [data-approle="manager"] .v15-mnow{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] [data-approle="manager"] .v15-mn-cell,html.v27-light [data-approle="manager"] .v15-mn-cell{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] [data-approle="manager"] .v15-mn-cell.hot,html.v27-light [data-approle="manager"] .v15-mn-cell.hot{background:#F7F5F2!important;border-color:#E4E1DA!important}
+html[data-theme="light"] [data-approle="manager"] .stat,html.v27-light [data-approle="manager"] .stat,html[data-theme="light"] .v9-statlink,html.v27-light .v9-statlink{background:#F7F5F2!important}
+html[data-theme="light"] [data-approle="manager"] .stat span,html.v27-light [data-approle="manager"] .stat span,html[data-theme="light"] .v9-statlink span,html.v27-light .v9-statlink span{color:#454340!important}
+html[data-theme="light"] .tc-photo,html.v27-light .tc-photo,html[data-theme="light"] .tc-photo.sm,html.v27-light .tc-photo.sm{border-color:#E4E1DA!important}
+html[data-theme="light"] .notif-card .nt-ic,html.v27-light .notif-card .nt-ic,html[data-theme="light"] .sb-ic,html.v27-light .sb-ic{background:#F7F5F2!important;border-color:#E4E1DA!important}
+html[data-theme="light"] .switch,html.v27-light .switch{background:#F1EEE9!important}
+html[data-theme="light"] .switch.on,html.v27-light .switch.on{background:#E9E5DF!important}
+html[data-theme="light"] .bub.me,html.v27-light .bub.me{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .bub.them,html.v27-light .bub.them{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .chatbar,html.v27-light .chatbar{background:#FFFFFF!important;border-top:1px solid #E4E1DA!important}
+html[data-theme="light"] .chatbar button,html.v27-light .chatbar button{background:#A87C3F!important}
+html[data-theme="light"] .bubtool,html.v27-light .bubtool{background:#F7F5F2!important;border-color:#E4E1DA!important;color:#111111!important}
+html[data-theme="light"] .rankb,html.v27-light .rankb,html[data-theme="light"] .rankb.r0,html.v27-light .rankb.r0,html[data-theme="light"] .rankb.r1,html.v27-light .rankb.r1,html[data-theme="light"] .rankb.r2,html.v27-light .rankb.r2{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .wd-banner,html.v27-light .wd-banner,html[data-theme="light"] .wd-banner.off,html.v27-light .wd-banner.off,html[data-theme="light"] .wd-banner.entrance,html.v27-light .wd-banner.entrance,html[data-theme="light"] .wd-banner.makeup,html.v27-light .wd-banner.makeup,html[data-theme="light"] .wd-banner.dj,html.v27-light .wd-banner.dj{background:#F7F5F2!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .ex21 .ex-round,html.v27-light .ex21 .ex-round,html[data-theme="light"] .ex21 .ex-signin,html.v27-light .ex21 .ex-signin{background:rgba(0,0,0,0.050)!important}
+html[data-theme="light"] .ex21-hero,html.v27-light .ex21-hero{background:#FFFFFF!important}
+html[data-theme="light"] .ex21-hero:before,html.v27-light .ex21-hero:before,html[data-theme="light"] .ex21-media:before,html.v27-light .ex21-media:before{background:linear-gradient(110deg,#FFFFFF 25%,#F7F5F2 42%,#FFFFFF 60%)!important}
+html[data-theme="light"] .ex21-hero h1,html.v27-light .ex21-hero h1{color:#111111!important}
+html[data-theme="light"] .ex21-hero p,html.v27-light .ex21-hero p{color:rgba(0,0,0,0.160)!important}
+html[data-theme="light"] .ex21-feature,html.v27-light .ex21-feature{color:#A87C3F!important}
+html[data-theme="light"] .ex21-today .ex21-media,html.v27-light .ex21-today .ex21-media{background:#FFFFFF!important}
+html[data-theme="light"] .ex21-timebadge,html.v27-light .ex21-timebadge{color:#111111!important;border:1px solid rgba(0,0,0,0.144)!important}
+html[data-theme="light"] .ex21-desc,html.v27-light .ex21-desc{color:#111111!important}
+html[data-theme="light"] .ex21-mood,html.v27-light .ex21-mood{background:#FFFFFF!important;color:#111111!important}
+html[data-theme="light"] .ex21-mood i,html.v27-light .ex21-mood i{border:1px solid rgba(0,0,0,0.144)!important}
+html[data-theme="light"] .ex21-rec,html.v27-light .ex21-rec{background:linear-gradient(145deg,#FFFFFF,#FFFFFF)!important}
+html[data-theme="light"] .ex21-map,html.v27-light .ex21-map{background:radial-gradient(circle at 28% 22%,rgba(213,178,122,.07),transparent 23%),linear-gradient(145deg,#FFFFFF,#FFFFFF)!important}
+html[data-theme="light"] .ex21-map:before,html.v27-light .ex21-map:before{background-image:linear-gradient(rgba(0,0,0,0.050) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.050) 1px,transparent 1px)!important}
+html[data-theme="light"] .ex21-map:after,html.v27-light .ex21-map:after{color:rgba(0,0,0,0.160)!important}
+html[data-theme="light"] .ex21-pin,html.v27-light .ex21-pin{border:3px solid #E4E1DA!important;box-shadow:0 5px 18px rgba(0,0,0,0.140)!important}
+html[data-theme="light"] .ex21-miss,html.v27-light .ex21-miss{background:#FFFFFF!important;color:#111111!important}
+html[data-theme="light"] .ex21-misscopy h3,html.v27-light .ex21-misscopy h3{color:#111111!important}
+html[data-theme="light"] .ex21-misscopy p,html.v27-light .ex21-misscopy p{color:#111111!important}
+html[data-theme="light"] .ex21-empty,html.v27-light .ex21-empty{border:1px dashed rgba(0,0,0,0.144)!important}
+html[data-theme="light"] .ex21-dhero,html.v27-light .ex21-dhero{background:#FFFFFF!important}
+html[data-theme="light"] .ex21-dback,html.v27-light .ex21-dback,html[data-theme="light"] .ex21-dfav,html.v27-light .ex21-dfav{border:1px solid rgba(0,0,0,0.156)!important;color:#111111!important}
+html[data-theme="light"] .ex21-dcontent h1,html.v27-light .ex21-dcontent h1{color:#111111!important}
+html[data-theme="light"] .ex21-dlead,html.v27-light .ex21-dlead{color:#111111!important}
+html[data-theme="light"] .ex21-stick,html.v27-light .ex21-stick{background:linear-gradient(180deg,rgba(23,23,23,0),rgba(23,23,23,.94) 20%,#FFFFFF 45%)!important}
+</style>
 
 <style id="light-theme-v27">
 /* ============================================================
@@ -16037,6 +15982,35 @@ html[data-theme="light"] .ex21-place img,html.v27-light .ex21-place img{filter:n
   try{ syncTheme(); }catch(e){}
 })();
 </script>
+
+<style id="light-theme-v28-fix">
+/* ============================================================
+   v28 fixes — caught by the contrast check, not by eye.
+   Three components kept white or gold TEXT while the generated
+   rules turned their background near-white. Each gets the light
+   treatment that suits what it is.
+   ============================================================ */
+/* the primary button was dark-with-white-text in the dark skin.
+   On white it becomes gold-with-white-text — still the accent. */
+html[data-theme="light"] .btn,html.v27-light .btn,
+html[data-theme="light"] .btn:hover,html.v27-light .btn:hover,
+html[data-theme="light"] .btn:focus,html.v27-light .btn:focus,
+html[data-theme="light"] .btn:active,html.v27-light .btn:active{
+  background:linear-gradient(135deg,#A87C3F,#C29A56)!important;color:#FFFFFF!important;border-color:#A87C3F!important}
+html[data-theme="light"] .btn:active,html.v27-light .btn:active{
+  background:linear-gradient(135deg,#966D37,#A87C3F)!important}
+html[data-theme="light"] .btn.ghost,html.v27-light .btn.ghost{
+  background:transparent!important;color:#A87C3F!important;border:1px solid #E4E1DA!important}
+/* operation cards: white card, black text */
+html[data-theme="light"] .opcard,html.v27-light .opcard{background:#FFFFFF!important;color:#111111!important;
+  border:1px solid #E4E1DA!important}
+html[data-theme="light"] .opcard b,html.v27-light .opcard b,
+html[data-theme="light"] .opcard p,html.v27-light .opcard p,
+html[data-theme="light"] .opcard h3,html.v27-light .opcard h3,
+html[data-theme="light"] .opcard small,html.v27-light .opcard small{color:#111111!important}
+/* badges sit on the accent, so give them the accent to sit on */
+html[data-theme="light"] .badge,html.v27-light .badge{background:#A87C3F!important;color:#FFFFFF!important}
+</style>
 
 </body>
 </html>
