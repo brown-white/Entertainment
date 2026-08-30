@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14549,21 +14549,6 @@ ar:{wd23Kicker:"دليل يوم الفريق",wd23Sub:"كل ما تحتاجه ا
 Object.keys(V23_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V23_STR[l]); });
 </script>
 
-<script id="v24-i18n">
-/* v24 — texts for the organisation round, all 8 languages */
-const V24_STR={
-en:{v24Appearance:"Appearance",v24GrpToday:"Today",v24GrpProgram:"Programme",v24GrpPeople:"People & tasks",v24GrpReports:"Insights & reports",v24GrpTools:"Tools",wd24FbH:"Guest feedback",wd24FbSub:"What you collected from guests",wd24FbToday:"Today",wd24FbMonth:"This month",wd24FbAvg:"Average",wd24FbNone:"You haven't collected any guest feedback yet.",wd24FbAll:"See all",ccGrpExplore:"Explore screen (guests)",ccGrpWorkday:"Work day screen (team)",v24Overdue:"overdue"},
-de:{v24Appearance:"Darstellung",v24GrpToday:"Heute",v24GrpProgram:"Programm",v24GrpPeople:"Personen & Aufgaben",v24GrpReports:"Auswertung & Berichte",v24GrpTools:"Werkzeuge",wd24FbH:"Gästefeedback",wd24FbSub:"Was du von Gästen gesammelt hast",wd24FbToday:"Heute",wd24FbMonth:"Diesen Monat",wd24FbAvg:"Durchschnitt",wd24FbNone:"Du hast noch kein Gästefeedback gesammelt.",wd24FbAll:"Alle ansehen",ccGrpExplore:"Entdecken-Seite (Gäste)",ccGrpWorkday:"Arbeitstag-Seite (Team)",v24Overdue:"überfällig"},
-ru:{v24Appearance:"Оформление",v24GrpToday:"Сегодня",v24GrpProgram:"Программа",v24GrpPeople:"Люди и задачи",v24GrpReports:"Аналитика и отчёты",v24GrpTools:"Инструменты",wd24FbH:"Отзывы гостей",wd24FbSub:"Что вы собрали у гостей",wd24FbToday:"Сегодня",wd24FbMonth:"В этом месяце",wd24FbAvg:"Средняя",wd24FbNone:"Вы ещё не собрали ни одного отзыва.",wd24FbAll:"Смотреть все",ccGrpExplore:"Экран «Обзор» (гости)",ccGrpWorkday:"Экран рабочего дня (команда)",v24Overdue:"просрочено"},
-pl:{v24Appearance:"Wygląd",v24GrpToday:"Dziś",v24GrpProgram:"Program",v24GrpPeople:"Ludzie i zadania",v24GrpReports:"Analizy i raporty",v24GrpTools:"Narzędzia",wd24FbH:"Opinie gości",wd24FbSub:"Co zebrałeś od gości",wd24FbToday:"Dziś",wd24FbMonth:"W tym miesiącu",wd24FbAvg:"Średnia",wd24FbNone:"Nie zebrałeś jeszcze żadnych opinii.",wd24FbAll:"Zobacz wszystkie",ccGrpExplore:"Ekran Odkrywaj (goście)",ccGrpWorkday:"Ekran dnia pracy (zespół)",v24Overdue:"po terminie"},
-cs:{v24Appearance:"Vzhled",v24GrpToday:"Dnes",v24GrpProgram:"Program",v24GrpPeople:"Lidé a úkoly",v24GrpReports:"Analýzy a zprávy",v24GrpTools:"Nástroje",wd24FbH:"Zpětná vazba hostů",wd24FbSub:"Co jste od hostů sesbírali",wd24FbToday:"Dnes",wd24FbMonth:"Tento měsíc",wd24FbAvg:"Průměr",wd24FbNone:"Zatím jste nesesbírali žádnou zpětnou vazbu.",wd24FbAll:"Zobrazit vše",ccGrpExplore:"Obrazovka Objevujte (hosté)",ccGrpWorkday:"Obrazovka pracovního dne (tým)",v24Overdue:"po termínu"},
-nl:{v24Appearance:"Weergave",v24GrpToday:"Vandaag",v24GrpProgram:"Programma",v24GrpPeople:"Mensen & taken",v24GrpReports:"Analyses & rapporten",v24GrpTools:"Hulpmiddelen",wd24FbH:"Gastfeedback",wd24FbSub:"Wat je bij gasten hebt opgehaald",wd24FbToday:"Vandaag",wd24FbMonth:"Deze maand",wd24FbAvg:"Gemiddeld",wd24FbNone:"Je hebt nog geen gastfeedback verzameld.",wd24FbAll:"Alles bekijken",ccGrpExplore:"Ontdekken-scherm (gasten)",ccGrpWorkday:"Werkdag-scherm (team)",v24Overdue:"te laat"},
-fr:{v24Appearance:"Apparence",v24GrpToday:"Aujourd'hui",v24GrpProgram:"Programme",v24GrpPeople:"Personnes et tâches",v24GrpReports:"Analyses et rapports",v24GrpTools:"Outils",wd24FbH:"Avis des clients",wd24FbSub:"Ce que vous avez recueilli auprès des clients",wd24FbToday:"Aujourd'hui",wd24FbMonth:"Ce mois-ci",wd24FbAvg:"Moyenne",wd24FbNone:"Vous n'avez pas encore recueilli d'avis.",wd24FbAll:"Voir tout",ccGrpExplore:"Écran Explorer (clients)",ccGrpWorkday:"Écran journée de travail (équipe)",v24Overdue:"en retard"},
-ar:{v24Appearance:"المظهر",v24GrpToday:"اليوم",v24GrpProgram:"البرنامج",v24GrpPeople:"الأشخاص والمهام",v24GrpReports:"التحليلات والتقارير",v24GrpTools:"الأدوات",wd24FbH:"آراء الضيوف",wd24FbSub:"ما جمعته من الضيوف",wd24FbToday:"اليوم",wd24FbMonth:"هذا الشهر",wd24FbAvg:"المتوسط",wd24FbNone:"لم تجمع أي رأي من الضيوف بعد.",wd24FbAll:"عرض الكل",ccGrpExplore:"شاشة استكشف (الضيوف)",ccGrpWorkday:"شاشة يوم العمل (الفريق)",v24Overdue:"متأخرة"}
-};
-Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24_STR[l]); });
-</script>
-
 <script id="explore-v21-digital-guide-script">
 /* ============================================================
    v21 EXPLORE — DIGITAL HOLIDAY GUIDE   (fix round)
@@ -15056,7 +15041,6 @@ Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24
   if(typeof myWorkDayView!=="function") return;      // nothing to replace: leave the app alone
   window.myWorkDayViewClassic = myWorkDayView;
   var wd23Filter="all";
-  var wd23Synthetic=[];
 
   function T(k){ return t(k); }
   function rtl(){ return S.lang==="ar"; }
@@ -15196,7 +15180,7 @@ Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24
 
   /* ---------- the shift detail sheet ---------- */
   window.wd23OpenShift=function(id){
-    var a=(S.activities||[]).concat(wd23Synthetic||[]).find(function(x){return String(x.id)===String(id);});
+    var a=(S.activities||[]).find(function(x){return String(x.id)===String(id);});
     if(!a) return;
     var old=document.querySelector('.wd23-detail'); if(old&&old.__wd23close) old.__wd23close();
     var el=document.createElement('section');
@@ -15249,41 +15233,7 @@ Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24
     var info=(typeof personDayInfo==="function")?personDayInfo(num,day):{dp:{off:[]},isOff:false,isEntrance:false};
     var all=(S.activities||[]).filter(function(a){return a.day===day;})
       .sort(function(x,y){return String(x.time).localeCompare(String(y.time));});
-
-    /* v25 specialist duties: DJ and Social Media receive operational work items
-       instead of normal sport/activity assignments. Role-name detection is used
-       so manager-edited role labels still work. */
-    var roleLabel=String(num?roleForNumber(num):"").toLowerCase();
-    var isDJRole=roleLabel.indexOf("dj")>=0;
-    var isSocialRole=roleLabel.indexOf("social")>=0 || roleLabel.indexOf("media")>=0;
-    function specialistDuties(){
-      var u=S.session||{};
-      if(info.isOff) return [];
-      var owner=u.username||u.name||"";
-      if(isDJRole){
-        return [
-          {id:"v25-dj-1-"+day,day:day,name:"Update today's music",time:"09:30 – 10:00",location:"DJ Booth",entertainer:owner,desc:"Refresh today's music selection and add any new requested tracks."},
-          {id:"v25-dj-2-"+day,day:day,name:"Arrange music folders & playlists",time:"10:00 – 10:30",location:"DJ Booth",entertainer:owner,desc:"Organize folders by event, mood, nationality and time of day."},
-          {id:"v25-dj-3-"+day,day:day,name:"Prepare today's sets",time:"15:00 – 15:30",location:"DJ Booth",entertainer:owner,desc:"Prepare pool, activity, sunset and evening playlists for today's programme."},
-          {id:"v25-dj-4-"+day,day:day,name:"Stage & sound check",time:"19:30 – 20:00",location:"Stage / DJ Booth",entertainer:owner,desc:"Check sound levels, microphones, cues and backup music before the evening programme."},
-          {id:"v25-dj-5-"+day,day:day,name:"Play live set",time:"20:00 – 22:30",location:"Stage / Venue",entertainer:owner,desc:"Run the live evening music according to the programme and guest atmosphere."}
-        ];
-      }
-      if(isSocialRole){
-        return [
-          {id:"v25-sm-1-"+day,day:day,name:"Film the hotel in general",time:"09:30 – 10:15",location:"Hotel",entertainer:owner,desc:"Capture fresh hotel footage: pool, beach, areas, details, atmosphere and guest-ready spaces."},
-          {id:"v25-sm-2-"+day,day:day,name:"Capture morning activity shots",time:"10:15 – 12:00",location:"Activity Areas",entertainer:owner,desc:"Get strong vertical clips and photos from the morning programme, team and guest moments."},
-          {id:"v25-sm-3-"+day,day:day,name:"Create full-day video coverage",time:"15:00 – 17:00",location:"Hotel",entertainer:owner,desc:"Film enough connected footage to tell the story of the full hotel day, not only one activity."},
-          {id:"v25-sm-4-"+day,day:day,name:"Film event & golden-hour content",time:"17:00 – 19:00",location:"Event / Hotel Areas",entertainer:owner,desc:"Capture attractive event, atmosphere, people and golden-hour shots for social media."},
-          {id:"v25-sm-5-"+day,day:day,name:"Film evening show & nightlife",time:"20:00 – 22:00",location:"Stage / Venue",entertainer:owner,desc:"Capture the show, crowd reactions, performers, lighting and nightlife atmosphere."},
-          {id:"v25-sm-6-"+day,day:day,name:"Select & prepare today's content",time:"22:00 – 22:30",location:"Social Media",entertainer:owner,desc:"Select the best clips, organize files and prepare the strongest material for editing/posting."}
-        ];
-      }
-      return null;
-    }
-    var specialist=specialistDuties();
-    var mine=specialist!==null ? specialist : all.filter(function(a){ try{ return canSeeGuests(a); }catch(e){ return false; } });
-    wd23Synthetic = specialist!==null ? specialist.slice() : [];
+    var mine=all.filter(function(a){ try{ return canSeeGuests(a); }catch(e){ return false; } });
     var shown=(wd23Filter==="all")?mine:mine.filter(function(a){return slotOf(a)===wd23Filter;});
 
     return '<div class="screen fadein wd23" dir="'+(rtl()?'rtl':'ltr')+'">'
@@ -15321,299 +15271,5 @@ Object.keys(V24_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V24
 })();
 </script>
 
-<style id="v24-style">
-/* Appearance control in the drawer — available in every account */
-.v24-appear{margin:0 14px 10px;padding:11px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
-.v24-appear>label{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;
-  font-weight:700;margin-bottom:7px}
-.v24-modes{display:flex;gap:6px}
-.v24-modes button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;
-  border-radius:9px;background:var(--bg);border:1px solid var(--line);color:inherit;font-size:11px}
-.v24-modes button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-/* Guest-feedback card on the entertainer work day */
-.wd24-fb{display:block;width:100%;text-align:start;margin:0 0 8px;padding:12px 14px;border-radius:12px;
-  background:var(--card);border:1px solid var(--line);color:inherit}
-.wd24-fbnums{display:flex;gap:16px;margin:8px 0 10px}
-.wd24-fbnums div{text-align:center}
-.wd24-fbnums b{display:block;font-size:19px;line-height:1.1}
-.wd24-fbnums span{font-size:10.5px;opacity:.62}
-.wd24-fbbtns{display:flex;gap:8px}
-.wd24-fbbtns button{flex:1;padding:9px;border-radius:9px;font-size:12.5px;border:1px solid var(--line);
-  background:var(--bg);color:inherit}
-.wd24-fbbtns button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-.wd24-fbnone{font-size:12px;opacity:.7;margin:2px 0 10px}
-[dir="rtl"] .wd24-fb{text-align:right}
-</style>
-
-<script id="v24-js">
-/* ============================================================
-   v24 — organisation round
-   1. Manager menu regrouped: 6 short groups instead of one
-      11-item block, and Tasks reachable directly.
-   2. Feedback first in the team menu + a feedback card on the
-      entertainer's work day.
-   3. A labelled Light / Dark / Auto control in EVERY account,
-      not just an unlabelled moon icon in the drawer footer.
-   4. The new Explore and work-day texts added to the manager's
-      wording editor as proper groups, so they are editable
-      without searching for key names.
-   ============================================================ */
-(function(){
-
-  /* ---------- 1 + 2. menu ---------- */
-  if(typeof navGroupsBase==="function"){
-    var __v23Nav=navGroupsBase;
-    navGroupsBase=function(role){
-      /* --- team: feedback first --- */
-      if(role==="staff"){
-        var g=__v23Nav(role);
-        try{
-          var fb=null;
-          g.forEach(function(grp){
-            grp.items=grp.items.filter(function(it){
-              if(it[0]==="feedback"){ fb=it; return false; }
-              return true;
-            });
-          });
-          if(fb && g.length) g[0].items.unshift(fb);
-          g=g.filter(function(grp){ return grp.items.length; });
-        }catch(e){}
-        return g;
-      }
-      if(role!=="manager") return __v23Nav(role);
-
-      /* --- manager: same screens, arranged so nothing is buried --- */
-      var un=(typeof unreadFor==="function")?unreadFor("manager"):0;
-      var newReq=(S.requests||[]).filter(function(r){return r.status==="new";}).length;
-      var openTasks=(S.tasks||[]).filter(function(x){
-        return ["new","open","accepted","progress","still"].indexOf(x.status)>=0; }).length;
-      function feat(k){ return (typeof featureOn==="function")?featureOn(k):true; }
-      var groups=[
-        {head:t("v24GrpToday"), items:[
-          ["dash","chart",t("dashboard"),0],
-          ["dayplan","clipboard",t("dayPlan"),0],
-          ["command","sparkle",t("v9Command"),0]]},
-        {head:t("v24GrpProgram"), items:[
-          ["program","calendar",t("manage"),0],
-          ["weekplanner","calendar",t("v9WeekPlanner"),0],
-          ["approval","check",t("v9Approval"),0],
-          ["quiz","trophy",t("quizCenter"),0],
-          ["gallery","image",t("galleryTab"),0],
-          ["hotelinfo","building",t("hotelInfoTab"),0]]},
-        {head:t("v24GrpPeople"), items:[
-          ["guests","user",t("guestsTab"),un+newReq],
-          ["team","users",t("teamTab"),0],
-          ["tasks","check",t("tasks"),openTasks]]},
-        {head:t("v24GrpReports"), items:[
-          ["insights","grid",t("v9Insights"),0],
-          ["audit","file",t("v9Audit"),0]]},
-        {head:t("v24GrpTools"), items:[].concat(
-          feat("weather")?[["weather","sun",t("weatherTab"),0]]:[],
-          feat("map")?[["map","map",t("mapTab"),0]]:[],
-          [["qr","qr",t("qrTab"),0]])},
-        {head:t("v9Settings2"), items:[
-          ["settings","settings",t("v9Tab"),0]]}
-      ];
-      return groups.filter(function(g){ return g.items.length; });
-    };
-  }
-
-  /* the manager's Tasks menu entry opens the tasks sub-tab of Team */
-  if(typeof managerView==="function"){
-    var __v23Mgr=managerView;
-    managerView=function(){
-      if(S.tab==="tasks"){
-        S.sub=S.sub||{}; S.sub.team="tasks";
-        var keep=S.tab; S.tab="team";
-        try{ return __v23Mgr.apply(this,arguments); }
-        finally{ S.tab=keep; }
-      }
-      return __v23Mgr.apply(this,arguments);
-    };
-  }
-
-  /* ---------- 2b. feedback card on the entertainer work day ---------- */
-  /* Guest feedback in this app is what the entertainer COLLECTS from guests
-     (staffFeedbackView filters on by_user). The card reports exactly that —
-     it does not pretend to be a rating of the person. */
-  function myFeedback(){
-    var me=(S.session&&S.session.username)||"";
-    return (S.feedback||[]).filter(function(f){ return f.by_user===me; });
-  }
-  function feedbackCard(){
-    var mine=myFeedback();
-    var now=hotelNow();
-    var todayStr=now.toISOString().slice(0,10);
-    var monthStr=todayStr.slice(0,7);
-    var nToday=mine.filter(function(f){return String(f.created_at||"").slice(0,10)===todayStr;}).length;
-    var nMonth=mine.filter(function(f){return String(f.created_at||"").slice(0,7)===monthStr;}).length;
-    var rated=mine.filter(function(f){return +f.rate>0;});
-    var avg=rated.length?(rated.reduce(function(s,f){return s+(+f.rate||0);},0)/rated.length):0;
-    return '<section class="wd23-sec"><div class="wd23-hrow"><div><h2>'+esc(t("wd24FbH"))+'</h2>'
-      +'<p>'+esc(t("wd24FbSub"))+'</p></div></div>'
-      +'<div class="wd24-fb">'
-      +(mine.length
-        ? '<div class="wd24-fbnums">'
-          +'<div><b>'+nToday+'</b><span>'+esc(t("wd24FbToday"))+'</span></div>'
-          +'<div><b>'+nMonth+'</b><span>'+esc(t("wd24FbMonth"))+'</span></div>'
-          +(rated.length?'<div><b>'+avg.toFixed(1)+'</b><span>'+esc(t("wd24FbAvg"))+'</span></div>':'')
-          +'</div>'
-        : '<p class="wd24-fbnone">'+esc(t("wd24FbNone"))+'</p>')
-      +'<div class="wd24-fbbtns">'
-      +'<button type="button" class="primary" id="wd24-addfb">'+esc(t("addFeedback"))+'</button>'
-      +'<button type="button" id="wd24-allfb">'+esc(t("wd24FbAll"))+'</button>'
-      +'</div></div></section>';
-  }
-
-  if(typeof myWorkDayView==="function"){
-    var __v23Day=myWorkDayView;
-    myWorkDayView=function(){
-      var html=__v23Day.apply(this,arguments);
-      try{
-        /* place it directly under the focus card — high, as asked, but after
-           what is happening right now */
-        var mark='<section class="wd23-sec">';
-        var i=html.indexOf(mark);
-        if(i<0) return html;
-        return html.slice(0,i)+feedbackCard()+html.slice(i);
-      }catch(e){ return html; }
-    };
-  }
-
-  /* ---------- 3. Light / Dark / Auto in every account ---------- */
-  function currentMode(){
-    if(typeof v9Mode==="function"){ try{ return v9Mode(); }catch(e){} }
-    return S.theme==="dark"?"dark":"light";
-  }
-  function setMode(m){
-    if(typeof v9SetMode==="function"){ try{ v9SetMode(m); return true; }catch(e){} }
-    if(m==="auto"){ S.themeManual=false; persist();
-      if(typeof applyAutoDark==="function"){ try{ applyAutoDark(); }catch(e){} }
-      render(); return true; }
-    S.themeManual=true;
-    setTheme(m);
-    return true;
-  }
-  function appearanceBlock(){
-    var m=currentMode();
-    var opts=[["light","sun","v9ModeLight"],["dark","moon","v9ModeDark"],["auto","settings","v9ModeAuto"]];
-    return '<div class="v24-appear"><label>'+esc(t("v24Appearance"))+'</label><div class="v24-modes">'
-      +opts.map(function(o){
-        return '<button type="button" data-v24mode="'+o[0]+'" class="'+(m===o[0]?"on":"")+'">'
-          +ic(o[1],17)+'<span>'+esc(t(o[2]))+'</span></button>';
-      }).join("")+'</div></div>';
-  }
-  if(typeof openMenuDrawer==="function"){
-    var __v23Drawer=openMenuDrawer;
-    openMenuDrawer=function(){
-      var r=__v23Drawer.apply(this,arguments);
-      try{
-        var foot=document.querySelector(".drawer .dr-foot");
-        if(foot && !document.querySelector(".v24-appear")){
-          foot.insertAdjacentHTML("beforebegin",appearanceBlock());
-          document.querySelectorAll("[data-v24mode]").forEach(function(b){
-            b.onclick=function(e){
-              e.preventDefault(); e.stopPropagation();
-              setMode(b.getAttribute("data-v24mode"));
-            };
-          });
-        }
-      }catch(e){}
-      return r;
-    };
-  }
-
-  /* ---------- 4. the new screens become editable wording ---------- */
-  try{
-    if(typeof V8_WORD_GROUPS!=="undefined" && Array.isArray(V8_WORD_GROUPS)){
-      var exKeys=Object.keys(DICT.en).filter(function(k){return k.indexOf("ex21")===0;});
-      var wdKeys=Object.keys(DICT.en).filter(function(k){return k.indexOf("wd23")===0||k.indexOf("wd24")===0;});
-      if(exKeys.length) V8_WORD_GROUPS.push(["ccGrpExplore",exKeys]);
-      if(wdKeys.length) V8_WORD_GROUPS.push(["ccGrpWorkday",wdKeys]);
-      /* pre-existing: "welcome" was listed in two groups, so the same text
-         appeared twice in the wording editor. Keep the first occurrence. */
-      var seenKey={};
-      V8_WORD_GROUPS.forEach(function(g){
-        g[1]=g[1].filter(function(k){ if(seenKey[k]) return false; seenKey[k]=1; return true; });
-      });
-    }
-  }catch(e){}
-
-  /* ---------- wiring ---------- */
-  function wire(){
-    var a=document.getElementById("wd24-addfb");
-    if(a) a.onclick=function(e){
-      e.preventDefault(); e.stopPropagation();
-      if(typeof openFeedbackModal==="function") openFeedbackModal();
-      else { S.tab="feedback"; render(); }
-    };
-    var b=document.getElementById("wd24-allfb");
-    if(b) b.onclick=function(e){ e.preventDefault(); e.stopPropagation(); S.tab="feedback"; render(); };
-  }
-  var oldRender=window.render;
-  if(typeof oldRender==="function"){
-    window.render=function(){ var r=oldRender.apply(this,arguments); try{ wire(); }catch(e){} return r; };
-  }
-})();
-</script>
-
-
-<style id="v25-true-light-final">
-html[data-theme="light"]{
-  --hl-bg:#FFFFFF!important;
-  --hl-panel:#FFFFFF!important;
-  --hl-panel-2:#FAFAFA!important;
-  --hl-panel-3:#F5F5F5!important;
-  --hl-line:#E6E6E6!important;
-  --hl-line-soft:#EFEFEF!important;
-  --hl-text:#151515!important;
-  --hl-soft:#656565!important;
-  --hl-muted:#8A8A8A!important;
-  --hl-gold:#A97A45!important;
-  --hl-gold-2:#B58A58!important;
-  --bg:#FFFFFF!important;
-  --card:#FFFFFF!important;
-  --ink:#151515!important;
-  --muted:#656565!important;
-  --line:#E6E6E6!important;
-  --sand:#F5F5F5!important;
-  --bronze:#A97A45!important;
-  --espresso:#151515!important;
-  --cacao:#2A2A2A!important;
-  --nav-bg:#FFFFFF!important;
-  --nav-on:#A97A45!important;
-  color-scheme:light!important;
-  background:#FFFFFF!important;
-  color:#151515!important;
-}
-html[data-theme="light"] body,
-html[data-theme="light"] .app,
-html[data-theme="light"] .screen,
-html[data-theme="light"] .explore-screen{background:#FFFFFF!important;color:#151515!important}
-html[data-theme="light"] .card,
-html[data-theme="light"] .stat,
-html[data-theme="light"] .tk,
-html[data-theme="light"] .daycard,
-html[data-theme="light"] .stdcard,
-html[data-theme="light"] .showcard,
-html[data-theme="light"] .profcard,
-html[data-theme="light"] .notif-card,
-html[data-theme="light"] .teamcount,
-html[data-theme="light"] .team-card,
-html[data-theme="light"] .cred,
-html[data-theme="light"] .photo-pick,
-html[data-theme="light"] .login-card,
-html[data-theme="light"] .wd23-oplist,
-html[data-theme="light"] .wd23-stdlist,
-html[data-theme="light"] .wd23-shift,
-html[data-theme="light"] .wd23-focus,
-html[data-theme="light"] .wd23-person,
-html[data-theme="light"] .v24-appear{background:#FFFFFF!important;border-color:#E6E6E6!important;color:#151515!important}
-html[data-theme="light"] h1,html[data-theme="light"] h2,html[data-theme="light"] h3,html[data-theme="light"] h4,html[data-theme="light"] .serif{color:#151515!important}
-html[data-theme="light"] .mini,html[data-theme="light"] .hint,html[data-theme="light"] .meta,html[data-theme="light"] .desc,html[data-theme="light"] .top .who p,html[data-theme="light"] .whobar p{color:#656565!important}
-html[data-theme="light"] .nav{background:#FFFFFF!important;border-color:#E6E6E6!important}
-html[data-theme="light"] .v24-modes button{background:#F7F7F7!important;border-color:#E6E6E6!important;color:#151515!important}
-html[data-theme="light"] .v24-modes button.on{background:#151515!important;border-color:#151515!important;color:#FFFFFF!important}
-</style>
 </body>
 </html>
