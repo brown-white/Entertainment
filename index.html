@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v26 (visible build badge) + v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15891,6 +15891,56 @@ html[data-theme="light"] .ex21-timebadge,
 html[data-theme="light"] .ex21-dback,
 html[data-theme="light"] .ex21-dfav{color:#fff!important}
 </style>
+
+<style id="v26-build-badge">
+.v26-build{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:7px;font-size:10.5px;
+  letter-spacing:.06em;font-weight:700;background:var(--accent);color:#fff;opacity:.92}
+.v26-build.mini{position:fixed;left:10px;bottom:8px;z-index:300;font-size:9.5px;padding:2px 7px;
+  background:rgba(0,0,0,.45);color:#fff;opacity:.55;pointer-events:none}
+html[data-theme="light"] .v26-build.mini{background:rgba(0,0,0,.35)!important;color:#fff!important}
+</style>
+<script id="v26-build-badge-js">
+/* ============================================================
+   v26 — show the build number on screen.
+   A whole round was spent looking at screenshots of an older
+   file. The version is now visible in the drawer and in the
+   corner of the login screen, so "which version am I running"
+   is answerable in one second.
+   ============================================================ */
+(function(){
+  var BUILD="v26";
+  window.APP_BUILD=BUILD;
+
+  if(typeof openMenuDrawer==="function"){
+    var __v25Drawer=openMenuDrawer;
+    openMenuDrawer=function(){
+      var r=__v25Drawer.apply(this,arguments);
+      try{
+        var pill=document.querySelector(".drawer .workspace-role");
+        if(pill && !document.querySelector(".drawer .v26-build")){
+          pill.insertAdjacentHTML("afterend",
+            '<span class="v26-build">BUILD '+BUILD+'</span>');
+        }
+      }catch(e){}
+      return r;
+    };
+  }
+  /* a faint corner label before anyone signs in */
+  function stamp(){
+    try{
+      if(S.session) { var old=document.querySelector(".v26-build.mini"); if(old) old.remove(); return; }
+      if(document.querySelector(".v26-build.mini")) return;
+      var el=document.createElement("span");
+      el.className="v26-build mini"; el.textContent="BUILD "+BUILD;
+      document.body.appendChild(el);
+    }catch(e){}
+  }
+  var oldRender=window.render;
+  if(typeof oldRender==="function"){
+    window.render=function(){ var r=oldRender.apply(this,arguments); try{ stamp(); }catch(e){} return r; };
+  }
+})();
+</script>
 
 </body>
 </html>
