@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- build: v28 (light surfaces rebuilt) + v27 (white/black/gold light) + v26 (visible build badge) + v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
+<!-- build: v29 (events for DJ + social, white tiles) + v28 (light surfaces rebuilt) + v27 (white/black/gold light) + v26 (visible build badge) + v25 (role duties, real light theme) + v24 (menus, feedback, light mode) + v23 (staff work day rebuilt) + v22 fix round (A1-A12, B1, B2, C1, C3) -->
 <title>Hotel Entertainment Operations — Intelligent Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14579,6 +14579,21 @@ ar:{rdH:"مهامي",rdSub:"مهام دورك لهذا اليوم",rdNone:"لا 
 Object.keys(V25_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V25_STR[l]); });
 </script>
 
+<script id="v29-i18n">
+/* v29 — events-only role texts */
+const V29_STR={
+en:{eoTitle:"Events & shows only",eoHint:"These shirt numbers never get normal activities, but they DO get events, shows and live music — the DJ plays them and social media films them.",eoBadge:"Events, shows & live music",eoNone:"Nobody is set to events only.",eoAdd:"Add shirt number"},
+de:{eoTitle:"Nur Events & Shows",eoHint:"Diese Trikotnummern bekommen nie normale Aktivitäten, aber sehr wohl Events, Shows und Live-Musik — der DJ spielt sie, Social Media filmt sie.",eoBadge:"Events, Shows & Live-Musik",eoNone:"Niemand ist auf „nur Events“ gesetzt.",eoAdd:"Trikotnummer hinzufügen"},
+ru:{eoTitle:"Только события и шоу",eoHint:"Эти номера никогда не получают обычные активности, но получают события, шоу и живую музыку — диджей их играет, SMM снимает.",eoBadge:"События, шоу и живая музыка",eoNone:"Никто не назначен только на события.",eoAdd:"Добавить номер"},
+pl:{eoTitle:"Tylko wydarzenia i pokazy",eoHint:"Te numery nigdy nie dostają zwykłych zajęć, ale dostają wydarzenia, pokazy i muzykę na żywo — DJ je gra, social media je filmuje.",eoBadge:"Wydarzenia, pokazy i muzyka na żywo",eoNone:"Nikt nie jest ustawiony tylko na wydarzenia.",eoAdd:"Dodaj numer koszulki"},
+cs:{eoTitle:"Pouze akce a show",eoHint:"Tato čísla dresů nikdy nedostanou běžné aktivity, ale dostanou akce, show a živou hudbu — DJ je hraje, social media je natáčí.",eoBadge:"Akce, show a živá hudba",eoNone:"Nikdo není nastaven pouze na akce.",eoAdd:"Přidat číslo dresu"},
+nl:{eoTitle:"Alleen evenementen & shows",eoHint:"Deze rugnummers krijgen nooit gewone activiteiten, maar wel evenementen, shows en livemuziek — de DJ draait ze, social media filmt ze.",eoBadge:"Evenementen, shows & livemuziek",eoNone:"Niemand staat op alleen evenementen.",eoAdd:"Rugnummer toevoegen"},
+fr:{eoTitle:"Événements et spectacles uniquement",eoHint:"Ces numéros de maillot ne reçoivent jamais d'activités normales, mais bien les événements, spectacles et musique live — le DJ les joue, les réseaux sociaux les filment.",eoBadge:"Événements, spectacles et musique live",eoNone:"Personne n'est réglé sur événements uniquement.",eoAdd:"Ajouter un numéro de maillot"},
+ar:{eoTitle:"الفعاليات والعروض فقط",eoHint:"هذه الأرقام لا تحصل أبداً على الأنشطة العادية، لكنها تحصل على الفعاليات والعروض والموسيقى الحية — الدي جي يشغّلها ومسؤول التواصل يصوّرها.",eoBadge:"الفعاليات والعروض والموسيقى الحية",eoNone:"لم يُحدَّد أحد للفعاليات فقط.",eoAdd:"إضافة رقم قميص"}
+};
+Object.keys(V29_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V29_STR[l]); });
+</script>
+
 <script id="explore-v21-digital-guide-script">
 /* ============================================================
    v21 EXPLORE — DIGITAL HOLIDAY GUIDE   (fix round)
@@ -15770,7 +15785,7 @@ html[data-theme="light"] .v26-build.mini{background:rgba(0,0,0,.35)!important;co
    is answerable in one second.
    ============================================================ */
 (function(){
-  var BUILD="v28";
+  var BUILD="v29";
   window.APP_BUILD=BUILD;
 
   if(typeof openMenuDrawer==="function"){
@@ -16011,6 +16026,158 @@ html[data-theme="light"] .opcard small,html.v27-light .opcard small{color:#11111
 /* badges sit on the accent, so give them the accent to sit on */
 html[data-theme="light"] .badge,html.v27-light .badge{background:#A87C3F!important;color:#FFFFFF!important}
 </style>
+
+<style id="light-theme-v29">
+/* The manager dashboard tiles and the right-now strip were the last dark
+   patches in light mode. They are surfaces, so they get pure white and
+   black text rather than the near-white the generator chose. */
+html[data-theme="light"] .stat,html.v27-light .stat,
+html[data-theme="light"] .v9-statlink,html.v27-light .v9-statlink,
+html[data-theme="light"] .v15-mnow,html.v27-light .v15-mnow,
+html[data-theme="light"] .v15-mn-cell,html.v27-light .v15-mn-cell,
+html[data-theme="light"] .lux-kpi,html.v27-light .lux-kpi,
+html[data-theme="light"] [data-approle="manager"] .stat,html.v27-light [data-approle="manager"] .stat,
+html[data-theme="light"] [data-approle="manager"] .v9-statlink,html.v27-light [data-approle="manager"] .v9-statlink,
+html[data-theme="light"] [data-approle="manager"] .v15-mnow,html.v27-light [data-approle="manager"] .v15-mnow,
+html[data-theme="light"] [data-approle="manager"] .v15-mn-cell,html.v27-light [data-approle="manager"] .v15-mn-cell{
+  background:#FFFFFF!important;color:#111111!important;border:1px solid #E4E1DA!important}
+html[data-theme="light"] .stat b,html.v27-light .stat b,
+html[data-theme="light"] .v9-statlink b,html.v27-light .v9-statlink b,
+html[data-theme="light"] .v15-mn-cell b,html.v27-light .v15-mn-cell b{color:#111111!important}
+html[data-theme="light"] .stat span,html.v27-light .stat span,
+html[data-theme="light"] .v9-statlink span,html.v27-light .v9-statlink span,
+html[data-theme="light"] .v15-mn-cell span,html.v27-light .v15-mn-cell span{color:#5C5952!important}
+.eo-badge{display:inline-block;margin-inline-start:6px;padding:2px 7px;border-radius:6px;font-size:10px;
+  font-weight:700;background:var(--accent);color:#fff;letter-spacing:.04em}
+.eo-box{margin:14px 0;padding:12px 13px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.eo-box h3{margin:0 0 4px;font-size:14px}
+.eo-box p{margin:0 0 9px;font-size:11.5px;opacity:.7}
+.eo-nums{display:flex;gap:7px;flex-wrap:wrap}
+.eo-nums button{padding:7px 12px;border-radius:9px;background:var(--bg);border:1px solid var(--line);
+  color:inherit;font-size:13px}
+.eo-nums button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+/* the Control Center hero was a dark banner with white text; on white it
+   needs the gold banner treatment so the white text still works. */
+html[data-theme="light"] .v9-hero,html.v27-light .v9-hero{
+  background:linear-gradient(135deg,#A87C3F,#C29A56)!important;color:#FFFFFF!important;border-color:#A87C3F!important}
+html[data-theme="light"] .v9-hero h2,html.v27-light .v9-hero h2,
+html[data-theme="light"] .v9-hero p,html.v27-light .v9-hero p,
+html[data-theme="light"] .v9-hero span,html.v27-light .v9-hero span{color:#FFFFFF!important}
+html[data-theme="light"] .v9-hero-btn,html.v27-light .v9-hero-btn{
+  background:#FFFFFF!important;color:#A87C3F!important;border:1px solid #FFFFFF!important}
+</style>
+
+<script id="v29-js">
+/* ============================================================
+   v29 — the DJ and social media take EVENTS, SHOWS and LIVE
+   MUSIC, but never normal activities.
+   Reason: those are the things the DJ plays and social media
+   films. Normal daytime activities (aqua gym, darts) still skip
+   them, which is what NO_ACTIVITY_NUMBERS was always for.
+   Implemented at eligibleStaffForActivity — the one place that
+   already receives the activity — so nothing else changes.
+   ============================================================ */
+(function(){
+  var EVENT_CATS=["mEvents","eParty","eLive","eShow","eBefore","eAfter","eKidsStage"];
+  var DEFAULT_EVENT_ONLY=[2,3];              // social media, DJ
+
+  function eventOnlyNums(){
+    var v=(S.settings&&S.settings.eventOnly);
+    return Array.isArray(v)?v.map(Number).filter(function(n){return n>0;}):DEFAULT_EVENT_ONLY.slice();
+  }
+  window.eventOnlyNums=eventOnlyNums;
+
+  function catOf(a){
+    try{ return (typeof normCat==="function")?normCat(a):String((a&&a.category)||""); }
+    catch(e){ return String((a&&a.category)||""); }
+  }
+  function isEventLike(a){ return EVENT_CATS.indexOf(catOf(a))>=0; }
+  window.isEventActivity=isEventLike;
+
+  /* the same day-off / attendance / capability / gender filters the normal
+     pool uses, applied to the events-only people */
+  function eventOnlyPool(day,a){
+    var dp=(typeof dayPlanFor==="function")?dayPlanFor(day):{off:[]};
+    var nums=eventOnlyNums();
+    return (S.users||[]).filter(function(u){
+      if(u.role!=="staff"||!u.number||u.active===false) return false;
+      if(nums.indexOf(+u.number)<0) return false;
+      if((dp.off||[]).indexOf(+u.number)>=0) return false;
+      if(typeof attendanceUnavailable==="function"&&attendanceUnavailable(u,day)) return false;
+      if(typeof canRunActivity==="function"&&!canRunActivity(u,a)) return false;
+      if(typeof genderEligibleForActivity==="function"&&!genderEligibleForActivity(u,a)) return false;
+      return true;
+    }).sort(function(x,y){return (x.number||99)-(y.number||99);});
+  }
+
+  if(typeof eligibleStaffForActivity==="function"){
+    var __base=eligibleStaffForActivity;
+    eligibleStaffForActivity=function(day,a){
+      var pool=__base(day,a)||[];
+      var nums=eventOnlyNums();
+      if(isEventLike(a)){
+        /* add them in, without duplicating anyone already there */
+        var have={};
+        pool.forEach(function(u){ have[String(u.username||"").toLowerCase()]=1; });
+        eventOnlyPool(day,a).forEach(function(u){
+          if(!have[String(u.username||"").toLowerCase()]) pool.push(u);
+        });
+        return pool;
+      }
+      /* a normal activity: they never take one */
+      return pool.filter(function(u){ return nums.indexOf(+u.number)<0; });
+    };
+  }
+
+  /* ---------- manager control, on the Role duties page ---------- */
+  function eoBox(){
+    var nums=eventOnlyNums();
+    var all={};
+    [1,2,3].forEach(function(n){ all[n]=1; });
+    nums.forEach(function(n){ all[n]=1; });
+    (S.users||[]).forEach(function(u){ var n=Number(u.number||0); if(n) all[n]=1; });
+    var list=Object.keys(all).map(Number).sort(function(a,b){return a-b;});
+    return '<div class="eo-box"><h3>'+esc(t("eoTitle"))+'</h3><p>'+esc(t("eoHint"))+'</p>'
+      +'<div class="eo-nums">'+list.map(function(n){
+        return '<button type="button" data-eonum="'+n+'" class="'+(nums.indexOf(n)>=0?"on":"")+'">#'+n
+          +' · '+esc(roleForNumber(n))+'</button>';
+      }).join("")+'</div>'
+      +(nums.length?'':'<p style="margin:8px 0 0">'+esc(t("eoNone"))+'</p>')
+      +'</div>';
+  }
+  if(typeof roleDutiesView==="function"){
+    var __rd=roleDutiesView;
+    window.roleDutiesView=roleDutiesView=function(){
+      var html=__rd.apply(this,arguments);
+      try{
+        var mark='<div class="rd-nums">';
+        var i=html.indexOf(mark);
+        if(i<0) return html;
+        return html.slice(0,i)+eoBox()+html.slice(i);
+      }catch(e){ return html; }
+    };
+  }
+  function wire(){
+    var btns=document.querySelectorAll("[data-eonum]");
+    if(!btns.length) return;
+    btns.forEach(function(b){
+      b.onclick=async function(){
+        var n=Number(b.getAttribute("data-eonum"));
+        var cur=eventOnlyNums();
+        var at=cur.indexOf(n);
+        if(at>=0) cur.splice(at,1); else cur.push(n);
+        var next=Object.assign({},S.settings,{eventOnly:cur.sort(function(a,b){return a-b;})});
+        try{ await DB.saveSettings(next); S.settings=next; toastOk(t("saved")); render(); }
+        catch(e){ toastErr(t("errSave")); }
+      };
+    });
+  }
+  var oldRender=window.render;
+  if(typeof oldRender==="function"){
+    window.render=function(){ var r=oldRender.apply(this,arguments); try{ wire(); }catch(e){} return r; };
+  }
+})();
+</script>
 
 </body>
 </html>
