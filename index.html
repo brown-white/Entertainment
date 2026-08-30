@@ -16179,5 +16179,692 @@ html[data-theme="light"] .v9-hero-btn,html.v27-light .v9-hero-btn{
 })();
 </script>
 
+
+<style id="v30-team-programme">
+/* ============================================================
+   v19  —  Team programme styling
+   Cards look like the guest programme, but for duties.
+   ============================================================ */
+.v30{ display: block; }
+
+/* ---------- header ---------- */
+.v30-head{ display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.v30-head h2{
+  font-family: var(--font-display); font-size: 28px; line-height: 1.08;
+  letter-spacing: -.02em; margin: 0; color: var(--ink);
+}
+.v30-head p{ margin: 5px 0 0; font-size: 12.5px; color: var(--muted); }
+.v30-lock{
+  flex: none; font-size: 9.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  padding: 6px 11px; border-radius: 999px;
+  background: rgba(151,54,43,.13); color: #97362B;
+}
+[data-theme="dark"] .v30-lock{ background: rgba(151,54,43,.25); color: #F0A79C; }
+
+/* ---------- day picker ---------- */
+.v30-days{ display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.v30-days::-webkit-scrollbar{ display: none; }
+.v30-day{
+  position: relative; flex: 1 0 auto; min-width: 54px; padding: 11px 8px;
+  border-radius: 14px; cursor: pointer; font-size: 12.5px; font-weight: 700;
+  background: var(--card); color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  transition: transform .16s cubic-bezier(.22,.9,.24,1);
+}
+.v30-day:active{ transform: scale(.95); }
+.v30-day.on{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao));
+  color: #F7EEE0; border-color: transparent;
+  box-shadow: 0 8px 18px -10px rgba(20,14,8,.9);
+}
+[data-theme="dark"] .v30-day.on{ background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #201607; }
+.v30-day i{
+  position: absolute; top: 4px; inset-inline-end: 5px;
+  font-style: normal; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--cacao) 20%, transparent); color: var(--cacao);
+}
+.v30-day.on i{ background: rgba(255,255,255,.28); color: inherit; }
+
+/* ---------- actions ---------- */
+.v30-actions{ display: flex; gap: 9px; margin: 14px 0 16px; }
+.v30-add, .v30-copy{
+  flex: 1; padding: 13px; border-radius: 999px; cursor: pointer;
+  font-size: 13.5px; font-weight: 650; border: 0;
+}
+.v30-add{
+  background: linear-gradient(135deg, var(--espresso), var(--cacao)); color: #F7EEE0;
+  box-shadow: 0 10px 24px -12px rgba(20,14,8,.9);
+}
+[data-theme="dark"] .v30-add{ background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #201607; }
+.v30-copy{
+  background: transparent; color: var(--ink);
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+/* ---------- the duty card ---------- */
+.v30-list{ display: flex; flex-direction: column; gap: 12px; }
+.v30-card{
+  display: grid; grid-template-columns: 96px 1fr;
+  border-radius: 20px; overflow: hidden;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  box-shadow: 0 1px 2px rgba(20,14,8,.05), 0 12px 28px -16px rgba(20,14,8,.5);
+  transition: transform .18s cubic-bezier(.22,.9,.24,1);
+}
+.v30-card.edit{ cursor: pointer; }
+.v30-card.edit:active{ transform: scale(.992); }
+.v30-photo{
+  width: 96px; height: 100%; min-height: 116px; object-fit: cover; display: block;
+}
+.v30-nophoto{
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 30px;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--cacao) 18%, var(--card)), var(--card));
+  color: var(--cacao);
+}
+[data-theme="dark"] .v30-nophoto{ color: var(--bronze); }
+.v30-body{ padding: 13px 15px; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.v30-slot{
+  align-self: flex-start;
+  font-size: 9px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 999px;
+  background: color-mix(in srgb, var(--cacao) 12%, transparent); color: var(--cacao);
+}
+[data-theme="dark"] .v30-slot{ background: color-mix(in srgb, var(--bronze) 18%, transparent); color: var(--bronze); }
+.v30-slot.s-morning{ background: rgba(229,161,0,.16); color: #8A6212; }
+.v30-slot.s-afternoon{ background: rgba(62,110,155,.14); color: #2E5A87; }
+.v30-slot.s-evening{ background: rgba(90,60,140,.15); color: #543B80; }
+[data-theme="dark"] .v30-slot.s-morning{ color: #F0C97A; }
+[data-theme="dark"] .v30-slot.s-afternoon{ color: #9AC9E6; }
+[data-theme="dark"] .v30-slot.s-evening{ color: #C9AEDD; }
+.v30-title{
+  font-family: var(--font-display); font-size: 18.5px; line-height: 1.16;
+  color: var(--ink); margin-top: 1px;
+}
+.v30-note{ font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.v30-times{ display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+.v30-times i{
+  font-style: normal; font-family: var(--font-display); font-size: 13px;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--sand); color: var(--ink);
+}
+.v30-who{
+  display: flex; align-items: center; gap: 7px; margin-top: 5px;
+  font-size: 12px; font-weight: 650; color: var(--muted);
+}
+.v30-who img{ width: 22px; height: 22px; border-radius: 50%; object-fit: cover; flex: none; }
+.v30-dot{
+  width: 22px; height: 22px; border-radius: 50%; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800;
+  background: color-mix(in srgb, var(--cacao) 16%, transparent); color: var(--cacao);
+}
+[data-theme="dark"] .v30-dot{ background: color-mix(in srgb, var(--bronze) 20%, transparent); color: var(--bronze); }
+
+/* ---------- empty ---------- */
+.v30-empty{
+  padding: 30px 20px; text-align: center; border-radius: 20px;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--cacao) 6%, var(--card)), var(--card));
+  border: 1px dashed color-mix(in srgb, var(--line) 80%, transparent);
+  color: var(--muted); font-size: 14px;
+}
+
+/* ---------- what the entertainer sees ---------- */
+.v30.mine{ margin-bottom: 20px; }
+.v30-mhead{ display: flex; align-items: baseline; gap: 10px; margin-bottom: 11px; }
+.v30-mhead h3{
+  font-family: var(--font-display); font-size: 21px; margin: 0; color: var(--ink);
+}
+.v30-mhead p{ flex: 1; margin: 0; font-size: 12px; color: var(--muted); }
+.v30-n{
+  font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--cacao) 13%, transparent); color: var(--cacao);
+}
+[data-theme="dark"] .v30-n{ background: color-mix(in srgb, var(--bronze) 18%, transparent); color: var(--bronze); }
+
+/* ---------- the editor ---------- */
+.v30-presets{ display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.v30-preset{
+  padding: 8px 13px; border-radius: 999px; cursor: pointer;
+  font-size: 12px; font-weight: 650;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: var(--card); color: var(--ink);
+}
+.v30-preset.r-dj{ background: rgba(90,60,140,.12); border-color: transparent; }
+.v30-preset.r-social{ background: rgba(62,110,155,.12); border-color: transparent; }
+.v30-timerow{ display: flex; gap: 8px; margin-bottom: 8px; }
+.v30-timerow input{ flex: 1; margin: 0; }
+.v30-timerow .btn{ flex: none; margin: 0; }
+.v30-photorow{ display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+.v30-pv{
+  width: 60px; height: 60px; border-radius: 14px; flex: none; overflow: hidden;
+  background: var(--sand); border: 1px dashed color-mix(in srgb, var(--line) 80%, transparent);
+}
+.v30-pv img{ width: 100%; height: 100%; object-fit: cover; }
+.v30-copylist{ display: flex; flex-direction: column; gap: 2px; margin: 10px 0; }
+.v30-copyit{
+  display: flex; align-items: center; gap: 10px; padding: 11px 4px;
+  text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--ink);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+.v30-copyit input{ width: auto; margin: 0; }
+
+@media (max-width: 380px){
+  .v30-card{ grid-template-columns: 78px 1fr; }
+  .v30-photo{ width: 78px; }
+  .v30-head h2{ font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .v30-day, .v30-card{ transition: none; }
+}
+
+</style>
+<script id="v30-team-programme-js">
+/* ============================================================
+   v30  —  Entertainer work day + Team programme
+
+   1. "Who is on today" removed from the entertainer screen
+      (who is on duty / off / on entrance is manager-only)
+   2. "Today's operation" moved to the TOP, above the shifts
+   3. Only ONE shifts panel — the one with the
+      All day / Morning / Afternoon / Evening filters
+   4. "My duties" — the orders assigned from the new programme
+   5. Manager: a weekly TEAM PROGRAMME, team-only, with photos
+      and several times per duty, for the DJ, Social Media and
+      anyone else.
+
+   Nothing existing is rewritten: myWorkDayView is wrapped and
+   its output rearranged, so if anything fails the original
+   screen is returned untouched.
+   ============================================================ */
+(function(){
+  "use strict";
+  if (window.__v30) return;
+  window.__v30 = true;
+
+  var E = function(s){ try { return esc(s); } catch(e){ return String(s==null?"":s); } };
+
+  /* ------------------------------------------------------------
+     words
+     ------------------------------------------------------------ */
+  var L = {
+    en:{tab:"Team programme",sub:"Orders for the team — guests never see this",
+        add:"Add order",edit:"Edit order",title:"What to do",note:"Details",
+        times:"Times",addTime:"Add another time",who:"Who does it",anyone:"Anyone",
+        slot:"Part of day",morning:"Morning",afternoon:"Afternoon",evening:"Evening",allDay:"All day",
+        photo:"Photo",save:"Save",del:"Delete",close:"Close",none:"No orders for this day yet",
+        presets:"Quick add",myDuties:"My orders",myDutiesSub:"What you have to do today",
+        noDuties:"No orders for you today",copyDay:"Copy to another day",copied:"Copied",
+        teamOnly:"Team only",remove:"Remove"},
+    de:{tab:"Team-Programm",sub:"Aufträge für das Team — Gäste sehen das nie",
+        add:"Auftrag hinzufügen",edit:"Auftrag bearbeiten",title:"Was zu tun ist",note:"Details",
+        times:"Zeiten",addTime:"Weitere Zeit",who:"Wer macht es",anyone:"Egal wer",
+        slot:"Tageszeit",morning:"Vormittag",afternoon:"Nachmittag",evening:"Abend",allDay:"Ganzer Tag",
+        photo:"Foto",save:"Speichern",del:"Löschen",close:"Schließen",none:"Noch keine Aufträge",
+        presets:"Schnell hinzufügen",myDuties:"Meine Aufträge",myDutiesSub:"Was du heute zu tun hast",
+        noDuties:"Heute keine Aufträge",copyDay:"Auf anderen Tag kopieren",copied:"Kopiert",
+        teamOnly:"Nur Team",remove:"Entfernen"},
+    ru:{tab:"Программа команды",sub:"Поручения для команды — гости этого не видят",
+        add:"Добавить поручение",edit:"Изменить",title:"Что сделать",note:"Детали",
+        times:"Время",addTime:"Ещё время",who:"Кто делает",anyone:"Любой",
+        slot:"Часть дня",morning:"Утро",afternoon:"День",evening:"Вечер",allDay:"Весь день",
+        photo:"Фото",save:"Сохранить",del:"Удалить",close:"Закрыть",none:"Поручений пока нет",
+        presets:"Быстро добавить",myDuties:"Мои поручения",myDutiesSub:"Что нужно сделать сегодня",
+        noDuties:"Сегодня поручений нет",copyDay:"Копировать на другой день",copied:"Скопировано",
+        teamOnly:"Только команда",remove:"Убрать"},
+    pl:{tab:"Program zespołu",sub:"Polecenia dla zespołu — goście tego nie widzą",
+        add:"Dodaj polecenie",edit:"Edytuj",title:"Co zrobić",note:"Szczegóły",
+        times:"Godziny",addTime:"Dodaj godzinę",who:"Kto wykonuje",anyone:"Ktokolwiek",
+        slot:"Pora dnia",morning:"Rano",afternoon:"Popołudnie",evening:"Wieczór",allDay:"Cały dzień",
+        photo:"Zdjęcie",save:"Zapisz",del:"Usuń",close:"Zamknij",none:"Brak poleceń",
+        presets:"Szybkie dodanie",myDuties:"Moje polecenia",myDutiesSub:"Co masz dziś zrobić",
+        noDuties:"Brak poleceń na dziś",copyDay:"Kopiuj na inny dzień",copied:"Skopiowano",
+        teamOnly:"Tylko zespół",remove:"Usuń"},
+    cs:{tab:"Program týmu",sub:"Úkoly pro tým — hosté to nevidí",
+        add:"Přidat úkol",edit:"Upravit",title:"Co udělat",note:"Podrobnosti",
+        times:"Časy",addTime:"Další čas",who:"Kdo to dělá",anyone:"Kdokoli",
+        slot:"Část dne",morning:"Dopoledne",afternoon:"Odpoledne",evening:"Večer",allDay:"Celý den",
+        photo:"Fotka",save:"Uložit",del:"Smazat",close:"Zavřít",none:"Zatím žádné úkoly",
+        presets:"Rychlé přidání",myDuties:"Moje úkoly",myDutiesSub:"Co máte dnes udělat",
+        noDuties:"Dnes žádné úkoly",copyDay:"Kopírovat na jiný den",copied:"Zkopírováno",
+        teamOnly:"Jen tým",remove:"Odebrat"},
+    nl:{tab:"Teamprogramma",sub:"Opdrachten voor het team — gasten zien dit nooit",
+        add:"Opdracht toevoegen",edit:"Bewerken",title:"Wat te doen",note:"Details",
+        times:"Tijden",addTime:"Nog een tijd",who:"Wie doet het",anyone:"Iedereen",
+        slot:"Deel van de dag",morning:"Ochtend",afternoon:"Middag",evening:"Avond",allDay:"Hele dag",
+        photo:"Foto",save:"Opslaan",del:"Verwijderen",close:"Sluiten",none:"Nog geen opdrachten",
+        presets:"Snel toevoegen",myDuties:"Mijn opdrachten",myDutiesSub:"Wat je vandaag moet doen",
+        noDuties:"Vandaag geen opdrachten",copyDay:"Kopieer naar andere dag",copied:"Gekopieerd",
+        teamOnly:"Alleen team",remove:"Verwijderen"},
+    fr:{tab:"Programme equipe",sub:"Consignes pour l'equipe — jamais visible par les clients",
+        add:"Ajouter une consigne",edit:"Modifier",title:"A faire",note:"Details",
+        times:"Horaires",addTime:"Ajouter un horaire",who:"Qui le fait",anyone:"N'importe qui",
+        slot:"Moment",morning:"Matin",afternoon:"Apres-midi",evening:"Soir",allDay:"Journee",
+        photo:"Photo",save:"Enregistrer",del:"Supprimer",close:"Fermer",none:"Aucune consigne",
+        presets:"Ajout rapide",myDuties:"Mes consignes",myDutiesSub:"Ce que vous devez faire",
+        noDuties:"Aucune consigne aujourd'hui",copyDay:"Copier vers un autre jour",copied:"Copie",
+        teamOnly:"Equipe seulement",remove:"Retirer"},
+    ar:{tab:"برنامج الفريق",sub:"أوامر الفريق — لا يراها الضيوف أبداً",
+        add:"إضافة أمر",edit:"تعديل",title:"المطلوب",note:"التفاصيل",
+        times:"الأوقات",addTime:"إضافة وقت آخر",who:"من ينفذها",anyone:"أي شخص",
+        slot:"وقت اليوم",morning:"الصباح",afternoon:"بعد الظهر",evening:"المساء",allDay:"طوال اليوم",
+        photo:"صورة",save:"حفظ",del:"حذف",close:"إغلاق",none:"لا توجد أوامر بعد",
+        presets:"إضافة سريعة",myDuties:"أوامري",myDutiesSub:"ما عليك فعله اليوم",
+        noDuties:"لا توجد أوامر اليوم",copyDay:"نسخ إلى يوم آخر",copied:"تم النسخ",
+        teamOnly:"للفريق فقط",remove:"إزالة"}
+  };
+  function w(k){
+    var l = (typeof S!=="undefined" && S.lang) ? S.lang : "en";
+    return (L[l] && L[l][k]) || L.en[k] || k;
+  }
+
+  /* the ready-made orders she asked for */
+  var PRESETS = [
+    { role:"dj",     slot:"evening",   title:{en:"Music for the show",   de:"Musik für die Show",  ar:"موسيقى العرض"} },
+    { role:"dj",     slot:"evening",   title:{en:"Sound check",          de:"Soundcheck",          ar:"فحص الصوت"} },
+    { role:"dj",     slot:"evening",   title:{en:"Evening set-up",       de:"Abend-Aufbau",        ar:"تجهيز المساء"} },
+    { role:"dj",     slot:"afternoon", title:{en:"Event set-up",         de:"Event-Aufbau",        ar:"تجهيز الفعالية"} },
+    { role:"social", slot:"morning",   title:{en:"Shots of the morning activities", de:"Fotos der Vormittagsaktivitäten", ar:"صور أنشطة الصباح"} },
+    { role:"social", slot:"afternoon", title:{en:"Cover the event of the day",      de:"Event des Tages begleiten",      ar:"تغطية فعالية اليوم"} },
+    { role:"social", slot:"evening",   title:{en:"Evening show content",            de:"Content der Abendshow",          ar:"محتوى عرض المساء"} }
+  ];
+  function presetTitle(p){
+    var l = (typeof S!=="undefined" && S.lang) ? S.lang : "en";
+    return p.title[l] || p.title.en;
+  }
+
+  /* ------------------------------------------------------------
+     data — kept in settings, so no database change
+     ------------------------------------------------------------ */
+  function allDuties(){
+    var d = (S.settings && S.settings.teamDuties) || {};
+    return (d && typeof d === "object") ? d : {};
+  }
+  function dutiesFor(day){
+    var l = allDuties()[String(day)];
+    return Array.isArray(l) ? l : [];
+  }
+  function sortDuties(list){
+    var o = {morning:0, afternoon:1, evening:2, any:3};
+    return list.slice().sort(function(a,b){
+      var oa = o[a.slot]===undefined?3:o[a.slot], ob = o[b.slot]===undefined?3:o[b.slot];
+      if (oa!==ob) return oa-ob;
+      return String((a.times&&a.times[0])||"99:99").localeCompare(String((b.times&&b.times[0])||"99:99"));
+    });
+  }
+  async function saveDuties(next){
+    try{ await DB.saveSettings(Object.assign({}, S.settings, {teamDuties: next})); return true; }
+    catch(e){ try{ toastErr(t("errSave")); }catch(_){} return false; }
+  }
+  function members(){
+    return (S.users||[])
+      .filter(function(u){ return (u.role==="staff"||u.role==="manager") && u.active!==false; })
+      .sort(function(a,b){ return (a.number||99)-(b.number||99); });
+  }
+  function whoName(un){
+    if (!un) return w("anyone");
+    var u = (S.users||[]).filter(function(x){ return x.username===un; })[0];
+    return u ? (u.display_name||u.username) : un;
+  }
+  function whoPhoto(un){
+    var u = (S.users||[]).filter(function(x){ return x.username===un; })[0];
+    return (u && u.photo) ? u.photo : "";
+  }
+  function dayIdx(){ try{ return todayIndex(); }catch(e){ return (new Date().getDay()+6)%7; } }
+  function shortDays(){ try{ return t("daysShort"); }catch(e){ return ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]; } }
+  function longDays(){ try{ return t("days"); }catch(e){ return shortDays(); } }
+
+  /* ------------------------------------------------------------
+     one order card
+     ------------------------------------------------------------ */
+  function dutyCard(d, canEdit){
+    var times = (d.times||[]).filter(Boolean);
+    var slotLbl = (d.slot && d.slot!=="any") ? w(d.slot) : w("allDay");
+    var ph = whoPhoto(d.who);
+    return '<div class="v30-card'+(canEdit?' edit':'')+'"'+(canEdit?' data-v30edit="'+E(d.id)+'"':'')+'>'
+      + (d.photo ? '<img class="v30-photo" src="'+E(d.photo)+'" alt="" loading="lazy">'
+                 : '<span class="v30-photo v30-nophoto">'+E(String(d.title||"?").trim().charAt(0).toUpperCase())+'</span>')
+      + '<div class="v30-body">'
+        + '<span class="v30-slot s-'+E(d.slot||"any")+'">'+E(slotLbl)+'</span>'
+        + '<b class="v30-title">'+E(d.title||"")+'</b>'
+        + (d.note ? '<span class="v30-note">'+E(d.note)+'</span>' : '')
+        + (times.length ? '<span class="v30-times">'+times.map(function(x){ return '<i>'+E(x)+'</i>'; }).join('')+'</span>' : '')
+        + '<span class="v30-who">'
+          + (ph ? '<img src="'+E(ph)+'" alt="">'
+                : '<span class="v30-dot">'+E(String(whoName(d.who)).charAt(0))+'</span>')
+          + E(whoName(d.who)) + '</span>'
+      + '</div></div>';
+  }
+
+  /* ------------------------------------------------------------
+     manager: the weekly team programme
+     ------------------------------------------------------------ */
+  function programView(){
+    var day = (typeof S.v30Day==="number") ? S.v30Day : dayIdx();
+    var list = sortDuties(dutiesFor(day));
+    var names = shortDays();
+    return '<div class="v30">'
+      + '<div class="v30-head"><div><h2>'+E(w("tab"))+'</h2><p>'+E(w("sub"))+'</p></div>'
+        + '<span class="v30-lock">'+E(w("teamOnly"))+'</span></div>'
+      + '<div class="v30-days">'
+        + [0,1,2,3,4,5,6].map(function(i){
+            var n = dutiesFor(i).length;
+            return '<button type="button" class="v30-day'+(i===day?' on':'')+'" data-v30day="'+i+'">'
+              + E(names[i]||'') + (n?'<i>'+n+'</i>':'') + '</button>';
+          }).join('')
+      + '</div>'
+      + '<div class="v30-actions">'
+        + '<button type="button" class="v30-add" data-v30add="1">+ '+E(w("add"))+'</button>'
+        + '<button type="button" class="v30-copy" data-v30copy="1">'+E(w("copyDay"))+'</button>'
+      + '</div>'
+      + (list.length ? '<div class="v30-list">'+list.map(function(d){ return dutyCard(d,true); }).join('')+'</div>'
+                     : '<div class="v30-empty">'+E(w("none"))+'</div>')
+      + '</div>';
+  }
+
+  function openDuty(id){
+    var day = (typeof S.v30Day==="number") ? S.v30Day : dayIdx();
+    var list = dutiesFor(day);
+    var found = id ? list.filter(function(x){ return String(x.id)===String(id); })[0] : null;
+    var rec = found ? JSON.parse(JSON.stringify(found))
+                    : { id:"d"+Date.now()+Math.floor(Math.random()*999), title:"", note:"",
+                        photo:"", times:[""], who:"", slot:"morning" };
+    if (!rec.times || !rec.times.length) rec.times = [""];
+    var ppl = members();
+
+    var wrap = baseModal(
+      '<h3>'+E(found ? w("edit") : w("add"))+'</h3>'
+      + (!found ? '<label>'+E(w("presets"))+'</label><div class="v30-presets">'
+          + PRESETS.map(function(p,i){
+              return '<button type="button" class="v30-preset r-'+p.role+'" data-v30preset="'+i+'">'
+                + E(presetTitle(p))+'</button>'; }).join('')
+          + '</div>' : '')
+      + '<label>'+E(w("title"))+'</label><input id="v30-t" value="'+E(rec.title)+'">'
+      + '<label>'+E(w("note"))+'</label><textarea id="v30-n" rows="2">'+E(rec.note)+'</textarea>'
+      + '<label>'+E(w("slot"))+'</label><select id="v30-s">'
+        + ['morning','afternoon','evening','any'].map(function(k){
+            return '<option value="'+k+'"'+(rec.slot===k?' selected':'')+'>'
+              + E(k==="any"? w("allDay") : w(k))+'</option>'; }).join('')
+      + '</select>'
+      + '<label>'+E(w("times"))+'</label><div id="v30-times"></div>'
+      + '<button type="button" class="btn sm ghost" id="v30-addtime">+ '+E(w("addTime"))+'</button>'
+      + '<label>'+E(w("who"))+'</label><select id="v30-w"><option value="">'+E(w("anyone"))+'</option>'
+        + ppl.map(function(u){
+            return '<option value="'+E(u.username)+'"'+(rec.who===u.username?' selected':'')+'>'
+              + E(u.display_name||u.username)+(u.number?' #'+u.number:'')+'</option>'; }).join('')
+      + '</select>'
+      + '<label>'+E(w("photo"))+'</label>'
+      + '<div class="v30-photorow"><div id="v30-pv" class="v30-pv"></div>'
+        + '<button type="button" class="btn sm ghost" id="v30-pick">'+E(w("photo"))+'</button>'
+        + '<button type="button" class="btn sm ghost" id="v30-prm">'+E(w("remove"))+'</button></div>'
+      + '<button class="btn" id="v30-save">'+E(w("save"))+'</button>'
+      + (found ? '<button class="btn warn" id="v30-del">'+E(w("del"))+'</button>' : '')
+      + '<button class="btn ghost" id="v30-x">'+E(w("close"))+'</button>');
+
+    function drawTimes(){
+      var box = wrap.querySelector("#v30-times"); if (!box) return;
+      box.innerHTML = rec.times.map(function(v,i){
+        return '<div class="v30-timerow"><input class="v30-time" type="time" value="'+E(v)+'">'
+          + '<button type="button" class="btn sm ghost" data-v30rmt="'+i+'">×</button></div>';
+      }).join('');
+      box.querySelectorAll("[data-v30rmt]").forEach(function(b){
+        b.onclick = function(){
+          rec.times.splice(+b.dataset.v30rmt,1);
+          if (!rec.times.length) rec.times=[""];
+          drawTimes();
+        };
+      });
+      box.querySelectorAll(".v30-time").forEach(function(inp,i){
+        inp.onchange = function(){ rec.times[i]=inp.value; };
+      });
+    }
+    function drawPhoto(){
+      var pv = wrap.querySelector("#v30-pv"); if (!pv) return;
+      pv.innerHTML = rec.photo ? '<img src="'+E(rec.photo)+'" alt="">' : '';
+    }
+    drawTimes(); drawPhoto();
+
+    wrap.querySelectorAll("[data-v30preset]").forEach(function(b){
+      b.onclick = function(){
+        var p = PRESETS[+b.dataset.v30preset]; if (!p) return;
+        var ti = wrap.querySelector("#v30-t"); if (ti) ti.value = presetTitle(p);
+        var se = wrap.querySelector("#v30-s"); if (se) se.value = p.slot;
+        rec.slot = p.slot;
+        var num = (p.role==="dj") ? 3 : 2;
+        var u = (S.users||[]).filter(function(x){ return Number(x.number)===num; })[0];
+        var we = wrap.querySelector("#v30-w");
+        if (u && we){ we.value = u.username; rec.who = u.username; }
+      };
+    });
+    var at = wrap.querySelector("#v30-addtime");
+    if (at) at.onclick = function(){ rec.times.push(""); drawTimes(); };
+    var pk = wrap.querySelector("#v30-pick");
+    if (pk) pk.onclick = function(){
+      if (typeof pickOneImage === "function") pickOneImage(function(url){ rec.photo=url; drawPhoto(); });
+    };
+    var pr = wrap.querySelector("#v30-prm");
+    if (pr) pr.onclick = function(){ rec.photo=""; drawPhoto(); };
+    wrap.querySelector("#v30-x").onclick = function(){ wrap.remove(); };
+
+    wrap.querySelector("#v30-save").onclick = async function(){
+      var ti = wrap.querySelector("#v30-t");
+      rec.title = ti ? ti.value.trim() : "";
+      if (!rec.title){ try{ toastWarn(t("fieldRequired")); }catch(e){} return; }
+      var nn = wrap.querySelector("#v30-n"); rec.note = nn ? nn.value.trim() : "";
+      var ss = wrap.querySelector("#v30-s"); rec.slot = ss ? ss.value : "morning";
+      var ww = wrap.querySelector("#v30-w"); rec.who = ww ? ww.value : "";
+      wrap.querySelectorAll(".v30-time").forEach(function(inp,i){ rec.times[i]=inp.value; });
+      rec.times = (rec.times||[]).filter(Boolean);
+      var all = JSON.parse(JSON.stringify(allDuties()));
+      var arr = Array.isArray(all[String(day)]) ? all[String(day)] : [];
+      var at2 = arr.map(function(x){ return String(x.id); }).indexOf(String(rec.id));
+      if (at2>=0) arr[at2]=rec; else arr.push(rec);
+      all[String(day)] = arr;
+      if (await saveDuties(all)){ wrap.remove(); try{ toastOk(t("saved")); }catch(e){} render(); }
+    };
+    var dl = wrap.querySelector("#v30-del");
+    if (dl) dl.onclick = async function(){
+      var all = JSON.parse(JSON.stringify(allDuties()));
+      all[String(day)] = (all[String(day)]||[]).filter(function(x){ return String(x.id)!==String(rec.id); });
+      if (await saveDuties(all)){ wrap.remove(); try{ toastOk(t("deleted")); }catch(e){} render(); }
+    };
+  }
+
+  function openCopy(){
+    var from = (typeof S.v30Day==="number") ? S.v30Day : dayIdx();
+    var names = longDays();
+    var wrap = baseModal(
+      '<h3>'+E(w("copyDay"))+'</h3><p class="mini">'+E(names[from]||'')+'</p>'
+      + '<div class="v30-copylist">'
+        + [0,1,2,3,4,5,6].filter(function(i){ return i!==from; }).map(function(i){
+            return '<label class="v30-copyit"><input type="checkbox" class="v30-cd" value="'+i+'"> '
+              + E(names[i]||'')+'</label>'; }).join('')
+      + '</div>'
+      + '<button class="btn" id="v30-cgo">'+E(w("save"))+'</button>'
+      + '<button class="btn ghost" id="v30-cx">'+E(w("close"))+'</button>');
+    wrap.querySelector("#v30-cx").onclick = function(){ wrap.remove(); };
+    wrap.querySelector("#v30-cgo").onclick = async function(){
+      var picked=[];
+      wrap.querySelectorAll(".v30-cd").forEach(function(c){ if (c.checked) picked.push(+c.value); });
+      if (!picked.length){ wrap.remove(); return; }
+      var all = JSON.parse(JSON.stringify(allDuties()));
+      var src = all[String(from)] || [];
+      picked.forEach(function(dn){
+        all[String(dn)] = src.map(function(d){
+          return Object.assign({}, d, {id:"d"+Date.now()+Math.floor(Math.random()*99999)});
+        });
+      });
+      if (await saveDuties(all)){ wrap.remove(); try{ toastOk(w("copied")); }catch(e){} render(); }
+    };
+  }
+
+  /* ------------------------------------------------------------
+     entertainer: their own orders
+     ------------------------------------------------------------ */
+  function myDutiesHtml(day){
+    if (!S.session || S.session.role!=="staff") return "";
+    var me = String(S.session.username||"");
+    var d = (typeof day==="number") ? day : dayIdx();
+    var mine = sortDuties(dutiesFor(d).filter(function(x){ return !x.who || x.who===me; }));
+    var body = mine.length
+      ? '<div class="v30-list">'+mine.map(function(x){ return dutyCard(x,false); }).join('')+'</div>'
+      : '<div class="v30-empty">'+E(w("noDuties"))+'</div>';
+    return '<section class="wd23-sec v30-mine">'
+      + '<div class="wd23-hrow"><div><h2>'+E(w("myDuties"))+'</h2>'
+      + '<p>'+E(w("myDutiesSub"))+'</p></div>'
+      + (mine.length?'<span class="wd23-count">'+mine.length+'</span>':'')
+      + '</div>'+body+'</section>';
+  }
+
+  /* ------------------------------------------------------------
+     rearrange the entertainer work day
+     ------------------------------------------------------------ */
+  function splitSections(html){
+    var marker = '<section class="wd23-sec"';
+    var first = html.indexOf(marker);
+    if (first < 0) return null;
+    var head = html.slice(0, first);
+    var rest = html.slice(first);
+    var parts = rest.split(marker).filter(function(x){ return x.length; })
+      .map(function(x){ return marker + x; });
+    /* the closing wrapper of the screen rides on the last section */
+    return { head: head, parts: parts };
+  }
+  function titleOf(sectionHtml){
+    var m = sectionHtml.match(/<h2>([\s\S]*?)<\/h2>/);
+    return m ? m[1].replace(/<[^>]*>/g,"").trim() : "";
+  }
+  if (typeof myWorkDayView === "function"){
+    var _wd = myWorkDayView;
+    window.myWorkDayView = function(){
+      var out = _wd.apply(this, arguments);
+      try{
+        var day = (typeof S.planDay === "number") ? S.planDay : dayIdx();
+        /* 3. drop the duplicate shifts panel (the small focus block) */
+        out = out.replace(/<div class="wd23-focus[\s\S]*?<\/div>\s*(?=<section|<div class="wd23-sec)/, "");
+        var sp = splitSections(out);
+        if (!sp) return out;
+        var shifts=null, team=null, operation=null, rest=[];
+        sp.parts.forEach(function(p, i){
+          if (i===0 && p.indexOf('wd23-filters')>=0){ shifts = p; return; }
+          if (p.indexOf('wd23-filters')>=0 && !shifts){ shifts = p; return; }
+          if (p.indexOf('wd23-team')>=0 || p.indexOf('wd23-person')>=0){ team = p; return; }
+          if (p.indexOf('wd23-op')>=0){ operation = p; return; }
+          rest.push(p);
+        });
+        /* 1. "Who is on today" is manager-only — leave it out entirely */
+        /* 2. "Today's operation" goes first, then my orders, then the shifts */
+        var order = [];
+        if (operation) order.push(operation);
+        order.push(myDutiesHtml(day));
+        if (shifts) order.push(shifts);
+        rest.forEach(function(p){ order.push(p); });
+        if (!order.filter(Boolean).length) return out;
+        return sp.head + order.filter(Boolean).join("");
+      }catch(e){ return out; }
+    };
+  }
+
+  /* my own v15 focus card is a third "nothing assigned" panel — switch it off for staff */
+  if (typeof v15Focus === "function"){
+    window.v15Focus = function(){ return ""; };
+  }
+
+  /* ------------------------------------------------------------
+     the manager screen and menu
+     ------------------------------------------------------------ */
+  function hostOf(screen){
+    var kids = screen.children || [];
+    var idx = -1;
+    for (var i=0;i<kids.length && i<6;i++){
+      var cls = " " + String(kids[i].className||"") + " ";
+      if (/\s(ex-top|top)\s/.test(cls) || /\s(who|whobar)\s/.test(cls)
+       || (/\sex-hero\s/.test(cls) && /\sflat\s/.test(cls))
+       || /\swd23-head\s/.test(cls) || /\sex21-hero\s/.test(cls)) idx = i;
+    }
+    return idx>=0 ? kids[idx] : null;
+  }
+  function place(){
+    try{
+      if (typeof S==="undefined" || !S.session) return;
+      if (S.session.role!=="manager" || S.tab!=="teamprog") return;
+      var app = document.getElementById("app") || document.querySelector("#app");
+      if (!app) return;
+      var screen = app.querySelector(".screen") || app;
+      if (screen.querySelector(".v30")) return;
+      var host = hostOf(screen);
+      var kids = (screen.children||[]).slice();
+      var start = host ? kids.indexOf(host)+1 : 0;
+      for (var i=kids.length-1;i>=start;i--){ if (kids[i] && kids[i].remove) kids[i].remove(); }
+      var html = programView();
+      if (host && host.insertAdjacentHTML) host.insertAdjacentHTML("afterend", html);
+      else if (screen.insertAdjacentHTML) screen.insertAdjacentHTML("beforeend", html);
+    }catch(e){}
+  }
+  function wire(){
+    try{
+      document.querySelectorAll("[data-v30day]").forEach(function(b){
+        b.onclick = function(){ S.v30Day = +b.dataset.v30day; render(); };
+      });
+      document.querySelectorAll("[data-v30add]").forEach(function(b){ b.onclick = function(){ openDuty(null); }; });
+      document.querySelectorAll("[data-v30edit]").forEach(function(b){ b.onclick = function(){ openDuty(b.dataset.v30edit); }; });
+      document.querySelectorAll("[data-v30copy]").forEach(function(b){ b.onclick = function(){ openCopy(); }; });
+    }catch(e){}
+  }
+  if (typeof navGroups === "function"){
+    var _nav = navGroups;
+    window.navGroups = function(role){
+      var groups = _nav.apply(this, arguments);
+      try{
+        if (role!=="manager") return groups;
+        if (JSON.stringify(groups).indexOf('"teamprog"') >= 0) return groups;
+        var copy = groups.map(function(g){ return {head:g.head, items:g.items.slice()}; });
+        var placed = false;
+        copy.forEach(function(g){
+          if (placed) return;
+          for (var i=0;i<g.items.length;i++){
+            if (g.items[i][0]==="dayplan"){
+              g.items.splice(i+1,0,["teamprog","clipboard",w("tab"),0]); placed=true; return;
+            }
+          }
+        });
+        if (!placed && copy.length) copy[0].items.push(["teamprog","clipboard",w("tab"),0]);
+        return copy;
+      }catch(e){ return groups; }
+    };
+  }
+  if (typeof managerView === "function"){
+    var _mv = managerView;
+    window.managerView = function(){
+      try{
+        if (S.tab==="teamprog"){
+          var keep = S.tab; S.tab = "dayplan";
+          var shell = _mv.apply(this, arguments);
+          S.tab = keep;
+          return shell;
+        }
+      }catch(e){}
+      return _mv.apply(this, arguments);
+    };
+  }
+  if (typeof render === "function"){
+    var _r = render;
+    window.render = function(){
+      var out = _r.apply(this, arguments);
+      place(); wire();
+      return out;
+    };
+  }
+
+  window.v30Program  = programView;
+  window.v30MyDuties = myDutiesHtml;
+  window.v30Duties   = dutiesFor;
+  window.v30Presets  = PRESETS;
+  window.v30Open     = openDuty;
+})();
+
+</script>
 </body>
 </html>
