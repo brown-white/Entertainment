@@ -2088,82 +2088,10 @@ html[data-cardborder="off"] .card{border-color:transparent}
   gap: 8px;
 }
 .sec{ margin-top: 22px; }
-
-/* ---------- 8. the accent colour actually shows ---------- */
-.v14-accent{ color: var(--cacao); }
-[data-theme="dark"] .v14-accent{ color: var(--bronze); }
 .sec > h3 svg{ color: var(--cacao); opacity: .9; }
 [data-theme="dark"] .sec > h3 svg{ color: var(--bronze); }
-
-/* ---------- 9. guest welcome hero ---------- */
-.v14-welcome{
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  position: relative;
-  border-radius: 22px;
-  padding: 20px 20px 18px;
-  margin-bottom: 16px;
-  overflow: hidden;
-  background: linear-gradient(140deg, var(--espresso) 0%, var(--cacao) 100%);
-  color: #F7EEE0;
-  box-shadow: var(--v14-lift-2);
-}
-[data-theme="dark"] .v14-welcome{
-  background: linear-gradient(140deg, var(--card) 0%, var(--sand) 120%);
-  color: var(--ink);
-  box-shadow: var(--v14-lift-2), var(--v14-ring);
-}
-.v14-welcome::after{
-  content:"";
-  position: absolute; inset: -40% -30% auto auto;
-  width: 240px; height: 240px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 68%);
-  pointer-events: none;
-}
-.v14-w-hi{ font-size: 12.5px; opacity: .82; letter-spacing: .04em; text-transform: uppercase; font-weight: 700; }
-.v14-w-name{ font-family: var(--font-display); font-size: 27px; line-height: 1.12; margin: 4px 0 2px; }
-.v14-w-sub{ font-size: 14px; opacity: .86; }
-.v14-w-row{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 14px; }
-.v14-w-row:has(> :last-child:nth-child(2)){ grid-template-columns: repeat(2, 1fr); }
-.v14-w-cell{
-  min-width: 0;
-  background: rgba(255,255,255,.14);
-  border-radius: 14px; padding: 10px 12px;
-  backdrop-filter: blur(6px);
-}
-[data-theme="dark"] .v14-w-cell{ background: rgba(255,255,255,.06); }
-.v14-w-cell b{ display: block; font-family: var(--font-display); font-size: 19px; line-height: 1.15; }
-.v14-w-cell span{ display: block; font-size: 11px; opacity: .8; margin-top: 2px; }
-.v14-w-next{
-  display: flex; align-items: center; gap: 10px;
-  margin-top: 13px; padding: 11px 13px;
-  background: rgba(255,255,255,.16); border-radius: 14px;
-  width: 100%; text-align: start; border: 0; color: inherit; cursor: pointer;
-}
-[data-theme="dark"] .v14-w-next{ background: rgba(255,255,255,.07); }
-.v14-w-next:active{ transform: scale(.99); }
 .v14-w-next .t{ flex: 1; min-width: 0; }
-.v14-w-next b{ display: block; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.v14-w-next span{ font-size: 11.5px; opacity: .82; }
-.v14-w-dot{
-  flex: none; width: 9px; height: 9px; border-radius: 50%;
-  background: #7ED9A0; box-shadow: 0 0 0 4px rgba(126,217,160,.22);
-}
 .v14-w-dot.soon{ background: #F3C969; box-shadow: 0 0 0 4px rgba(243,201,105,.22); }
-
-/* ---------- 10. entertainer work-day timeline ---------- */
-.v14-tl{ position: relative; padding-inline-start: 22px; margin-top: 4px; }
-.v14-tl::before{
-  content:""; position: absolute; inset-inline-start: 6px; top: 6px; bottom: 6px;
-  width: 2px; background: linear-gradient(180deg, var(--line), transparent);
-}
-.v14-tl-item{ position: relative; padding: 9px 0; }
-.v14-tl-item::before{
-  content:""; position: absolute; inset-inline-start: -20px; top: 16px;
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--card); border: 2px solid var(--line);
-}
 .v14-tl-item.now::before{
   background: #3E9B5F; border-color: #3E9B5F;
   box-shadow: 0 0 0 5px rgba(62,155,95,.18);
@@ -2410,21 +2338,6 @@ input:focus, select:focus, textarea:focus{
   background: linear-gradient(135deg, var(--bronze), #D9B47F); color: #221708;
 }
 .daytabs > button:active{ transform: scale(.95); }
-
-/* ---------- 6. manager dashboard ---------- */
-.v15-mnow{
-  padding: 16px;
-  background: linear-gradient(150deg,
-      color-mix(in srgb, var(--cacao) 10%, var(--card)) 0%, var(--card) 65%);
-  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
-}
-.v15-mn-cell{
-  background: var(--card);
-  box-shadow: 0 1px 2px rgba(16,12,8,.05), 0 6px 16px -12px rgba(16,12,8,.5);
-  border: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
-  padding: 12px 4px;
-}
-.v15-mn-cell b{ font-size: 23px; }
 .v15-mn-cell.hot{
   background: linear-gradient(150deg, rgba(229,161,0,.22), rgba(229,161,0,.10));
   border-color: transparent;
@@ -2580,9 +2493,6 @@ input:focus, select:focus, textarea:focus{
 }
 /* a warm tinted surface for anything that leads a screen */
 .v9-hero, .attn, .attsum, .wnow, .v15-mnow, .v14-welcome{
-  background: linear-gradient(152deg, var(--x-tint) 0%, var(--card) 68%);
-}
-[data-theme="dark"] .v14-welcome, [data-theme="dark"] .v15-focus{
   background: linear-gradient(152deg, var(--x-tint) 0%, var(--card) 68%);
 }
 
@@ -3397,7 +3307,6 @@ html[data-v18-view="explore"] body,html[data-v18-view="explore"] .app,html[data-
 [data-approle="guest"] .theme-banner{
   background:#2A2928!important;border:1px solid #443D35!important;border-radius:1px!important;color:var(--hl-text)!important;box-shadow:none!important
 }
-[data-approle="guest"] .v14-w-cell{background:#30302F!important;border:1px solid #3C3C3B!important;border-radius:1px!important}
 [data-approle="guest"] .hero{border-radius:1px!important;margin-top:12px!important}
 [data-approle="guest"] .hero img{height:230px!important}
 [data-approle="guest"] .hero .tag{background:#302D29!important;color:var(--hl-gold)!important}
@@ -3411,14 +3320,10 @@ html[data-v18-view="explore"] body,html[data-v18-view="explore"] .app,html[data-
   background:#2B2B2B!important;color:var(--hl-text)!important;border:1px solid #403A34!important;border-radius:1px!important;box-shadow:none!important
 }
 [data-approle="staff"] .v15-focus.live::before{width:2px!important;background:var(--hl-gold)!important}
-[data-approle="staff"] .v15-f-name{font-size:23px!important;font-weight:300!important}
-[data-approle="staff"] .v15-f-when{background:#32302D!important;border:1px solid #474039!important;border-radius:1px!important;color:var(--hl-gold)!important}
 [data-approle="staff"] .std-t{color:var(--hl-gold)!important;font-weight:400!important}
 
 /* MANAGER — dark operations cockpit */
 [data-approle="manager"] body,[data-approle="manager"] .screen[data-v18-tab="dash"]{background:var(--hl-bg)!important}
-[data-approle="manager"] .v15-mnow{background:#292929!important;border:1px solid #433C34!important;border-radius:1px!important;color:var(--hl-text)!important}
-[data-approle="manager"] .v15-mn-cell{background:#303030!important;border:1px solid #3D3D3D!important;border-radius:1px!important;color:var(--hl-text)!important}
 [data-approle="manager"] .v15-mn-cell.hot{background:#342F29!important;border-color:#554938!important}
 [data-approle="manager"] .stat,.v9-statlink{background:#2B2B2B!important;border-radius:1px!important}
 [data-approle="manager"] .stat b,.v9-statlink b{color:var(--hl-text)!important}
@@ -4089,7 +3994,6 @@ html:not([data-theme="dark"]) .v15-focus,
 html:not([data-theme="dark"]) .x18-banner.staff{
   display: none !important;
 }
-.v15-focus{ display: none !important; }
 /* ===== v32-layer ===== */
 /* ============================================================
    v32 — day tiles inside the guide, and the two manager screens
@@ -4235,6 +4139,17 @@ html:not([data-theme="dark"]) .x18-banner.staff{
   .v32-card, .v32-tool, .v32-day{ border-color: rgba(120,100,80,.22); }
   .v32-ti, .v32-act em{ background: rgba(140,105,70,.13); }
 }
+/* ===== v37 ===== */
+/* ===== v37 — labels and blocks for the two manager screens ===== */
+.v37-lab{
+  display:block; margin:0 0 9px;
+  font-size:10.5px; font-weight:800; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--cacao);
+}
+[data-theme="dark"] .v37-lab{ color:var(--bronze); }
+.v37-block{ margin-bottom:22px; }
+.v37-block > .screen{ animation:none; }
+
 </style>
 
 
@@ -5735,7 +5650,7 @@ function ic(name,size=20){ return `<svg class="ic-s" width="${size}" height="${s
 function mi(name){ return `<span class="mi">${ic(name,13)}</span>`; }
 function brandIc(name){ return `<svg class="ic-s" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">${BRAND[name]||""}</svg>`; }
 function rankBadge(i){ return `<span class="rankb r${i<3?i:"x"}">${i+1}</span>`; }
-function genPass(){ const A="abcdefghjkmnpqrstuvwxyz23456789"; let x=""; for(let i=0;i<6;i++) x+=A[Math.floor(Math.random()*A.length)]; return x; }
+
 function taskTypeLabel(ty){return {come:t("ttCome"),leave:t("ttLeave"),activity:t("ttActivity"),feedback:t("ttFeedback"),collect:t("ttCollect")}[ty]||ty;}
 function canSeeGuests(a){
   if(!S.session) return false;
@@ -6074,17 +5989,7 @@ function startGuestSession(acc){
   S.tab="home"; persist(); render();
   askNotifPermission();
 }
-function openCredentialsModal(acc){
-  const wrap=baseModal(`
-    <h3>${ic("key",22)} ${t("yourLogin")}</h3>
-    <div class="cred">
-      <div><span>${t("user")}</span><b>${esc(acc.username||acc.room)}</b></div>
-      <div><span>${t("pass")}</span><b>${esc(acc.password||"")}</b></div>
-    </div>
-    <p class="mini" style="margin-top:10px">${t("saveThese")}</p>
-    <button class="btn" id="cr-x">${t("close")}</button>`);
-  wrap.querySelector("#cr-x").onclick=()=>wrap.remove();
-}
+
 /* ---------------- shared pieces ---------------- */
 function socialTopIcons(){
   const st=S.settings;
@@ -6417,9 +6322,7 @@ function browseView(title){
     ${acts.length?acts.map(a=>activityCard(a,S.session.role==="guest"?{}:{staff:true,showBook:false,showFav:false})).join(""):`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
   </div>`;
 }
-function weeklyView(title){
-  return `<div class="screen fadein">${topBar(title,t("days")[S.day])}${dayTabs()}${weeklyTimeline()}</div>`;
-}
+
 /* ================= CHAT TRANSLATION =================
    Guests write in their language, the team reads in theirs. Uses a free
    public translation service (no key needed, so it works for guests too).
@@ -7111,19 +7014,7 @@ function noActivityNums(){
   return Array.isArray(v) ? v.map(Number) : NO_ACTIVITY_NUMBERS;
 }
 /* Superseded by the capability-aware version further down. Kept for reference. */
-function assignableStaffLegacy(day){
-  const dp=dayPlanFor(day);
-  // Connect to attendance: for today, anyone marked absent (A) or off (O) gets no activity.
-  const today=(day===todayIndex()) ? hotelDateStr() : null;
-  const awayToday=u=> !!today && (S.staffAtt||[]).some(x=>
-    x.username===u.username && String(x.date).slice(0,10)===today && (x.status==="A"||x.status==="O"));
-  return (S.users||[])
-    .filter(u=>u.role==="staff" && u.number && u.active!==false
-      && !noActivityNums().includes(u.number)
-      && !dp.off.includes(u.number)
-      && !awayToday(u))
-    .sort((a,b)=>(a.number||99)-(b.number||99));
-}
+
 /* Morning / afternoon boundary — manager-editable in Control Center */
 function slotSplitMin(){
   const raw=String((S.settings&&S.settings.slotSplit)||"13:00");
@@ -7237,21 +7128,7 @@ function bumpLoad(load,u){
 }
 /* Picks whoever has the FEWEST activities; if several are equal, the one who
    has waited longest. That keeps everybody within one of each other. */
-function pickFairest(pool, load, usedThisSlot){
-  const score=u=>loadOf(load,u)*1e6 + (load.last[loadKey(u)]||0);
-  let best=null, bestScore=Infinity;
-  pool.forEach(u=>{
-    if(usedThisSlot.has(u.username)) return;
-    const sc=score(u);
-    if(sc<bestScore){ bestScore=sc; best=u; }
-  });
-  if(best) return best;
-  pool.forEach(u=>{                            // more activities than people
-    const sc=score(u);
-    if(sc<bestScore){ bestScore=sc; best=u; }
-  });
-  return best;
-}
+
 /* One day. Pass a shared `load` so a whole week stays balanced across days. */
 function autoAssignDay(day, opts, sharedLoad){
   const o=opts||{}, out=[], load=sharedLoad||baseLoad(o), plannedSame={}, assigned={};
@@ -7560,17 +7437,7 @@ function weatherView(){
   </div>`;
 }
 /* small strip for the home screens */
-function weatherStrip(){
-  const w=S.weather;
-  if(!w || w.error || !w.cur) return "";
-  const c=w.cur;
-  return `<button class="wstrip" data-gotab="weather">
-    <span class="ws-ic">${ic(wmoIcon(c.weather_code),22)}</span>
-    <span class="ws-t">${Math.round(c.temperature_2m)}°</span>
-    <span class="ws-x">${esc(wmoLabel(c.weather_code))}</span>
-    <span class="ws-go">${ic("back",15)}</span>
-  </button>`;
-}
+
 /* ================= PAGE DESIGNER (blocks) =================
    The manager builds pages from blocks, like a simple website builder.
    Every block carries its own style, so no code is ever needed. */
@@ -12865,7 +12732,7 @@ function v9Card(title,icon,body){
 function v9Empty(){ return `<p class="mini">${esc(t("v9NoData"))}</p>`; }
 
 function v9Booked(){ return (S.bookings||[]).filter(b=>b.status==="booked"); }
-function v9PeopleOn(b){ return v9Num(+b.people||0)||(v9Num(+b.adults||0)+v9Num(+b.children||0)); }
+
 function v9StaffList(){ return (S.users||[]).filter(u=>u.role==="staff"); }
 function v9ActsOf(u){
   const a=String(u.username||"").toLowerCase(), b=String(u.display_name||"").toLowerCase();
@@ -13707,9 +13574,7 @@ function v11Score(fields, q){
   for(const f of fields){ const s=v11Match(f,q); if(s>best) best=s; }
   return best;
 }
-function v11Row(icon, title, sub, tab, sub2){
-  return {icon, title:String(title||""), sub:String(sub||""), tab, sub2:sub2||null};
-}
+
 /* Everything the manager can search. Each result knows where it lives. */
 function v11Sources(q){
   const groups=[];
@@ -17034,6 +16899,357 @@ Object.keys(V29_STR).forEach(function(l){ if(DICT[l]) Object.assign(DICT[l], V29
   window.v32DayPlan  = dayPlanBody;
   window.v32TeamProg = teamProgBody;
 })();
+;/* ===== v37 ===== */
+/* ============================================================
+   v37  —  Manager: Day plan vs Team programme, clearly split
+
+   DAY PLAN        : the day's information + who is on today.
+                     Nothing to edit, nothing else.
+   TEAM PROGRAMME  : the four things she assigns —
+                     assign activities, team feedback,
+                     entrance duties, tasks & orders.
+   ============================================================ */
+(function(){
+  "use strict";
+  if (window.__v37) return;
+  window.__v37 = true;
+
+  var E = function(s){ try { return esc(s); } catch(e){ return String(s==null?"":s); } };
+
+  var L = {
+    en:{dpTitle:"Day plan",dpSub:"The day's information and who is on",
+        dayInfo:"Day information",teamInfo:"Team today",
+        theme:"Restaurant theme",dress:"Dress code",events:"Events",
+        band:"Live music",show:"Evening show",none:"Not set",noEvents:"None today",
+        working:"Working",dayOff:"Day off",entrance:"Entrance duty",nobody:"Nobody",
+        tpTitle:"Team programme",tpSub:"What you assign to the team",
+        assignActs:"Assign activities",assignActsSub:"Share the day's activities out",
+        feedback:"Team feedback",feedbackSub:"What guests said about the team",
+        entranceDuty:"Entrance duties",entranceDutySub:"Entrance and day off",
+        tasksOrders:"Tasks & orders",tasksOrdersSub:"Jobs, DJ and Social Media orders",
+        unassigned:"still free",dayActs:"Activities today",nobodyYet:"Nobody yet",
+        open:"Open",avg:"average"},
+    de:{dpTitle:"Tagesplan",dpSub:"Die Infos des Tages und wer im Dienst ist",
+        dayInfo:"Tagesinformationen",teamInfo:"Team heute",
+        theme:"Restaurant-Thema",dress:"Dresscode",events:"Events",
+        band:"Live-Musik",show:"Abendshow",none:"Nicht gesetzt",noEvents:"Heute keine",
+        working:"Im Dienst",dayOff:"Frei",entrance:"Eingangsdienst",nobody:"Niemand",
+        tpTitle:"Team-Programm",tpSub:"Was du dem Team zuteilst",
+        assignActs:"Aktivitäten verteilen",assignActsSub:"Den Tag aufteilen",
+        feedback:"Team-Bewertungen",feedbackSub:"Was Gäste über das Team sagen",
+        entranceDuty:"Eingangsdienste",entranceDutySub:"Eingang und freie Tage",
+        tasksOrders:"Aufgaben & Aufträge",tasksOrdersSub:"Jobs, DJ- und Social-Media-Aufträge",
+        unassigned:"noch frei",dayActs:"Aktivitäten heute",nobodyYet:"Noch niemand",
+        open:"Öffnen",avg:"Durchschnitt"},
+    ru:{dpTitle:"План дня",dpSub:"Информация дня и кто работает",
+        dayInfo:"Информация дня",teamInfo:"Команда сегодня",
+        theme:"Тема ресторана",dress:"Дресс-код",events:"События",
+        band:"Живая музыка",show:"Вечернее шоу",none:"Не задано",noEvents:"Сегодня нет",
+        working:"На смене",dayOff:"Выходной",entrance:"Дежурство на входе",nobody:"Никого",
+        tpTitle:"Программа команды",tpSub:"Что вы назначаете команде",
+        assignActs:"Распределить активности",assignActsSub:"Разделить день",
+        feedback:"Отзывы о команде",feedbackSub:"Что гости говорят о команде",
+        entranceDuty:"Дежурства на входе",entranceDutySub:"Вход и выходные",
+        tasksOrders:"Задачи и поручения",tasksOrdersSub:"Задачи, диджей и соцсети",
+        unassigned:"свободно",dayActs:"Активности сегодня",nobodyYet:"Пока никто",
+        open:"Открыть",avg:"средняя"},
+    pl:{dpTitle:"Plan dnia",dpSub:"Informacje dnia i kto pracuje",
+        dayInfo:"Informacje dnia",teamInfo:"Zespół dziś",
+        theme:"Motyw restauracji",dress:"Ubiór",events:"Wydarzenia",
+        band:"Muzyka na żywo",show:"Wieczorny pokaz",none:"Nie ustawiono",noEvents:"Brak",
+        working:"Pracuje",dayOff:"Wolne",entrance:"Dyżur przy wejściu",nobody:"Nikt",
+        tpTitle:"Program zespołu",tpSub:"Co przydzielasz zespołowi",
+        assignActs:"Przydziel zajęcia",assignActsSub:"Rozdziel dzień",
+        feedback:"Opinie o zespole",feedbackSub:"Co goście mówią o zespole",
+        entranceDuty:"Dyżury przy wejściu",entranceDutySub:"Wejście i dni wolne",
+        tasksOrders:"Zadania i polecenia",tasksOrdersSub:"Zadania, DJ i social media",
+        unassigned:"wolne",dayActs:"Zajęcia dziś",nobodyYet:"Nikt",
+        open:"Otwórz",avg:"średnia"},
+    cs:{dpTitle:"Plán dne",dpSub:"Informace dne a kdo je ve službě",
+        dayInfo:"Informace dne",teamInfo:"Tým dnes",
+        theme:"Téma restaurace",dress:"Oblečení",events:"Akce",
+        band:"Živá hudba",show:"Večerní show",none:"Nenastaveno",noEvents:"Dnes žádné",
+        working:"Ve službě",dayOff:"Volno",entrance:"Služba u vchodu",nobody:"Nikdo",
+        tpTitle:"Program týmu",tpSub:"Co přiděluješ týmu",
+        assignActs:"Přidělit aktivity",assignActsSub:"Rozdělit den",
+        feedback:"Hodnocení týmu",feedbackSub:"Co hosté říkají o týmu",
+        entranceDuty:"Služby u vchodu",entranceDutySub:"Vchod a volna",
+        tasksOrders:"Úkoly a příkazy",tasksOrdersSub:"Úkoly, DJ a sociální sítě",
+        unassigned:"volné",dayActs:"Aktivity dnes",nobodyYet:"Zatím nikdo",
+        open:"Otevřít",avg:"průměr"},
+    nl:{dpTitle:"Dagplan",dpSub:"De informatie van de dag en wie werkt",
+        dayInfo:"Daginformatie",teamInfo:"Team vandaag",
+        theme:"Restaurantthema",dress:"Kledingcode",events:"Evenementen",
+        band:"Live muziek",show:"Avondshow",none:"Niet ingesteld",noEvents:"Geen vandaag",
+        working:"Aan het werk",dayOff:"Vrij",entrance:"Ingangsdienst",nobody:"Niemand",
+        tpTitle:"Teamprogramma",tpSub:"Wat je aan het team toewijst",
+        assignActs:"Activiteiten verdelen",assignActsSub:"Verdeel de dag",
+        feedback:"Teambeoordelingen",feedbackSub:"Wat gasten over het team zeggen",
+        entranceDuty:"Ingangsdiensten",entranceDutySub:"Ingang en vrije dagen",
+        tasksOrders:"Taken & opdrachten",tasksOrdersSub:"Klussen, DJ en social media",
+        unassigned:"nog vrij",dayActs:"Activiteiten vandaag",nobodyYet:"Nog niemand",
+        open:"Openen",avg:"gemiddeld"},
+    fr:{dpTitle:"Plan du jour",dpSub:"Les infos du jour et qui travaille",
+        dayInfo:"Informations du jour",teamInfo:"Equipe aujourd'hui",
+        theme:"Theme du restaurant",dress:"Tenue",events:"Evenements",
+        band:"Musique live",show:"Spectacle du soir",none:"Non defini",noEvents:"Aucun",
+        working:"En service",dayOff:"Repos",entrance:"Service entree",nobody:"Personne",
+        tpTitle:"Programme equipe",tpSub:"Ce que vous attribuez a l'equipe",
+        assignActs:"Attribuer les activites",assignActsSub:"Repartir la journee",
+        feedback:"Avis sur l'equipe",feedbackSub:"Ce que les clients disent",
+        entranceDuty:"Services d'entree",entranceDutySub:"Entree et repos",
+        tasksOrders:"Taches & consignes",tasksOrdersSub:"Taches, DJ et reseaux sociaux",
+        unassigned:"libres",dayActs:"Activites du jour",nobodyYet:"Personne",
+        open:"Ouvrir",avg:"moyenne"},
+    ar:{dpTitle:"خطة اليوم",dpSub:"معلومات اليوم ومن يعمل",
+        dayInfo:"معلومات اليوم",teamInfo:"الفريق اليوم",
+        theme:"ثيم المطعم",dress:"الزي",events:"الفعاليات",
+        band:"موسيقى حية",show:"عرض المساء",none:"غير محدد",noEvents:"لا يوجد اليوم",
+        working:"في الخدمة",dayOff:"إجازة",entrance:"مناوبة المدخل",nobody:"لا أحد",
+        tpTitle:"برنامج الفريق",tpSub:"ما تسنده للفريق",
+        assignActs:"توزيع الأنشطة",assignActsSub:"قسّم اليوم",
+        feedback:"تقييمات الفريق",feedbackSub:"ما يقوله الضيوف عن الفريق",
+        entranceDuty:"مناوبات المدخل",entranceDutySub:"المدخل والإجازات",
+        tasksOrders:"المهام والأوامر",tasksOrdersSub:"المهام وأوامر الدي جي والتواصل",
+        unassigned:"متاح",dayActs:"أنشطة اليوم",nobodyYet:"لا أحد بعد",
+        open:"فتح",avg:"المعدل"}
+  };
+  function w(k){
+    var l = (typeof S!=="undefined" && S.lang) ? S.lang : "en";
+    return (L[l] && L[l][k]) || L.en[k] || k;
+  }
+  function dayIdx(){ try{ return todayIndex(); }catch(e){ return (new Date().getDay()+6)%7; } }
+  function planDay(){ return (typeof S.planDay==="number") ? S.planDay : dayIdx(); }
+  function dp(day){ try{ return dayPlanFor(day)||{}; }catch(e){ return {}; } }
+  function nameOfNum(n){
+    try{ var p=staffByNumber(n); if(p) return (p.display_name||p.name||("#"+n)); }catch(e){}
+    return n ? ("#"+n) : "";
+  }
+  function eventsOf(day){
+    return (S.activities||[]).filter(function(a){
+      if (a.day!==day) return false;
+      var c=""; try{ c=normCat(a); }catch(e){ c=String(a.category||""); }
+      return c==="mEvents" || c==="eParty";
+    }).sort(function(x,y){ return String(x.time).localeCompare(String(y.time)); });
+  }
+  function dayChips(day, attr){
+    var names=(function(){ try{ return t("daysShort"); }catch(e){ return ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]; } })();
+    return '<div class="v32-days">'
+      + [0,1,2,3,4,5,6].map(function(i){
+          return '<button type="button" class="v32-day'+(i===day?' on':'')+'" data-'+attr+'="'+i+'">'
+            + E(names[i]||'')+'</button>'; }).join('')
+      + '</div>';
+  }
+
+  /* ------------------------------------------------------------
+     DAY PLAN — day information + who is on. Nothing else.
+     ------------------------------------------------------------ */
+  function dayPlanBody(day){
+    var d = dp(day);
+    var evs = eventsOf(day);
+
+    var info = '';
+    info += '<div class="v32-row"><span>'+E(w("theme"))+'</span><b>'+E(d.theme||w("none"))+'</b></div>';
+    info += evs.length
+      ? evs.map(function(a){
+          return '<div class="v32-row"><span>'+E(w("events"))+'</span><b>'
+            + E(String(a.time||"").split(/\s*[–—-]\s*/)[0]+' · '+a.name+(a.location?' · '+a.location:''))
+            + '</b></div>'; }).join("")
+      : '<div class="v32-row"><span>'+E(w("events"))+'</span><b>'+E(w("noEvents"))+'</b></div>';
+    info += '<div class="v32-row"><span>'+E(w("band"))+'</span><b>'+E(d.liveBand||w("none"))+'</b></div>';
+    info += '<div class="v32-row"><span>'+E(w("show"))+'</span><b>'
+      + E(d.eveningShow ? (d.eveningShow+(d.showTime?' · '+d.showTime:'')+(d.showLoc?' · '+d.showLoc:'')) : w("none"))
+      + '</b></div>';
+    info += '<div class="v32-row"><span>'+E(w("dress"))+'</span><b>'+E(d.dress||w("none"))+'</b></div>';
+
+    /* who is on today */
+    var on=[], off=[];
+    try{
+      var st = dayDutyStats(day);
+      on  = (st.working||st.on||[]).slice();
+      off = (st.off||[]).slice();
+    }catch(e){}
+    if (!on.length){
+      try{ on = assignableStaff(day).slice(); }catch(e){ on = []; }
+    }
+    var label = function(u){ return (u.display_name||u.username||'') + (u.number? ' #'+u.number : ''); };
+    var team = '';
+    team += '<div class="v32-row"><span>'+E(w("entrance"))+'</span><b>'
+          + E(d.entrance ? nameOfNum(d.entrance) : w("nobody"))+'</b></div>';
+    team += '<div class="v32-row"><span>'+E(w("dayOff"))+'</span><b>'
+          + E(off.length ? off.map(label).join(' · ') : w("nobody"))+'</b></div>';
+    team += '<div class="v32-row"><span>'+E(w("working"))+'</span><b>'
+          + E(on.length ? on.map(label).join(' · ') : w("nobody"))+'</b></div>';
+
+    return '<div class="v32 v37">'
+      + '<div class="v32-head"><h2>'+E(w("dpTitle"))+'</h2><p>'+E(w("dpSub"))+'</p></div>'
+      + dayChips(day, "v32dpday")
+      + '<span class="v37-lab">'+E(w("dayInfo"))+'</span>'
+      + '<div class="v32-card">'+info+'</div>'
+      + '<span class="v37-lab" style="margin-top:20px">'+E(w("teamInfo"))+'</span>'
+      + '<div class="v32-card">'+team+'</div>'
+      + '</div>';
+  }
+
+  /* ------------------------------------------------------------
+     TEAM PROGRAMME — the four things she assigns
+     ------------------------------------------------------------ */
+  function teamOrdersCount(day){
+    var all=(S.settings&&S.settings.teamDuties)||{};
+    var l=Array.isArray(all[String(day)])?all[String(day)]:[];
+    return l.length;
+  }
+  function feedbackSummary(){
+    var fb=(S.feedback||[]).filter(function(f){ return f.by_user; });
+    if(!fb.length) return {n:0, avg:null};
+    var sum=fb.reduce(function(a,f){ return a+(+f.rate||0); },0);
+    return {n:fb.length, avg:(sum/fb.length).toFixed(1)};
+  }
+  function actRow(a){
+    var who=String(a.entertainer||"");
+    var u=(S.users||[]).filter(function(x){ return x.username===who; })[0];
+    var lab=u ? (u.display_name||u.username)+(u.number?' #'+u.number:'') : w("nobodyYet");
+    return '<div class="v32-act'+(who?'':' none')+'" data-v37act="'+E(a.id)+'">'
+      + '<time>'+E(String(a.time||"").split(/\s*[–—-]\s*/)[0])+'</time>'
+      + '<span><b>'+E(a.name)+'</b>'+(a.location?'<i>'+E(a.location)+'</i>':'')+'</span>'
+      + '<em>'+E(lab)+'</em></div>';
+  }
+  function teamProgBody(day){
+    var d = dp(day);
+    var acts=(S.activities||[]).filter(function(a){
+      if(a.day!==day) return false;
+      var c=""; try{ c=normCat(a); }catch(e){ c=String(a.category||""); }
+      return c==="mAdult";
+    }).sort(function(x,y){ return String(x.time).localeCompare(String(y.time)); });
+    var free = acts.filter(function(a){ return !String(a.entertainer||"").trim(); }).length;
+    var openTasks = (S.tasks||[]).filter(function(t2){ return t2.status!=="done" && t2.status!=="verified"; }).length;
+    var fb = feedbackSummary();
+    var offTxt = "";
+    try{
+      var st=dayDutyStats(day);
+      offTxt=(st.off||[]).map(function(u){ return (u.display_name||u.username)+(u.number?' #'+u.number:''); }).join(' · ');
+    }catch(e){}
+
+    function tool(icon, title, sub, action, badge){
+      return '<button type="button" class="v32-tool" '+action+'>'
+        + '<span class="v32-ti">'+ic(icon,18)+'</span>'
+        + '<span class="v32-tt"><b>'+E(title)+'</b><i>'+E(sub)+'</i></span>'
+        + (badge?'<span class="v32-tb">'+E(badge)+'</span>':'')
+        + '</button>';
+    }
+    var out='<div class="v32 v37">'
+      + '<div class="v32-head"><h2>'+E(w("tpTitle"))+'</h2><p>'+E(w("tpSub"))+'</p></div>'
+      + dayChips(day, "v32tpday")
+      + '<div class="v32-tools">'
+        + tool("users", w("assignActs"),
+               free ? (free+' '+w("unassigned")) : w("assignActsSub"),
+               'data-v37auto="'+day+'"', free?String(free):"")
+        + tool("star", w("feedback"),
+               fb.avg ? (fb.avg+' ★ · '+fb.n+' '+w("avg")) : w("feedbackSub"),
+               'data-v37go="team|feedback"', "")
+        + tool("door", w("entranceDuty"),
+               (d.entrance? nameOfNum(d.entrance) : w("nobody")) + (offTxt? ' · '+offTxt : ''),
+               'data-v37duty="'+day+'"', "")
+        + tool("clipboard", w("tasksOrders"), w("tasksOrdersSub"),
+               'data-v37orders="1"', String((openTasks + teamOrdersCount(day)) || ""))
+      + '</div>';
+
+    out += '<div class="v32-sec"><span class="v32-dh">'+E(w("dayActs"))+'</span>'
+      + (acts.length ? '<div class="v32-card">'+acts.map(actRow).join("")+'</div>'
+                     : '<div class="v32-empty">'+E(w("noEvents"))+'</div>')
+      + '</div>';
+    return out+'</div>';
+  }
+
+  /* ------------------------------------------------------------
+     tasks & orders in one screen
+     ------------------------------------------------------------ */
+  function tasksAndOrders(day){
+    var tasksHtml = "";
+    try{ tasksHtml = tasksInner ? tasksInner() : ""; }catch(e){ tasksHtml = ""; }
+    var orders = "";
+    try{ orders = v30Program ? v30Program() : ""; }catch(e){ orders = ""; }
+    return '<div class="v32 v37">'
+      + '<div class="v32-head"><h2>'+E(w("tasksOrders"))+'</h2><p>'+E(w("tasksOrdersSub"))+'</p></div>'
+      + (tasksHtml ? '<div class="v37-block">'+tasksHtml+'</div>' : '')
+      + (orders ? '<div class="v37-block">'+orders+'</div>' : '')
+      + '</div>';
+  }
+
+  /* ------------------------------------------------------------
+     placement
+     ------------------------------------------------------------ */
+  function hostOf(screen){
+    var kids=screen.children||[];
+    var idx=-1;
+    for(var i=0;i<kids.length&&i<6;i++){
+      var cls=" "+String(kids[i].className||"")+" ";
+      if(/\s(ex-top|top)\s/.test(cls) || /\s(who|whobar)\s/.test(cls)
+       || (/\sex-hero\s/.test(cls)&&/\sflat\s/.test(cls))
+       || /\swd23-head\s/.test(cls) || /\sex21-hero\s/.test(cls)) idx=i;
+    }
+    return idx>=0?kids[idx]:null;
+  }
+  function swap(html){
+    try{
+      var app=document.getElementById("app")||document.querySelector("#app");
+      if(!app||!html) return;
+      var screen=app.querySelector(".screen")||app;
+      if(screen.querySelector(".v37")) return;
+      var host=hostOf(screen);
+      var kids=(screen.children||[]).slice();
+      var start=host?kids.indexOf(host)+1:0;
+      for(var i=kids.length-1;i>=start;i--){ if(kids[i]&&kids[i].remove) kids[i].remove(); }
+      if(host&&host.insertAdjacentHTML) host.insertAdjacentHTML("afterend", html);
+      else if(screen.insertAdjacentHTML) screen.insertAdjacentHTML("beforeend", html);
+    }catch(e){}
+  }
+  function place(){
+    try{
+      if(typeof S==="undefined"||!S.session||S.session.role!=="manager") return;
+      var day=planDay();
+      if(S.tab==="dayplan")    swap(dayPlanBody(day));
+      if(S.tab==="teamprog")   swap(teamProgBody(day));
+      if(S.tab==="teamorders") swap(tasksAndOrders(day));
+    }catch(e){}
+  }
+  function wire(){
+    try{
+      document.querySelectorAll("[data-v37auto]").forEach(function(b){
+        b.onclick=function(){ if(typeof openAutoAssignModal==="function") openAutoAssignModal(+b.dataset.v37auto); };
+      });
+      document.querySelectorAll("[data-v37duty]").forEach(function(b){
+        b.onclick=function(){ if(typeof openDutyModal==="function") openDutyModal(+b.dataset.v37duty); };
+      });
+      document.querySelectorAll("[data-v37orders]").forEach(function(b){
+        b.onclick=function(){ S.v30Day=planDay(); S.tab="teamorders"; render(); };
+      });
+      document.querySelectorAll("[data-v37go]").forEach(function(b){
+        var p=String(b.dataset.v37go).split("|");
+        b.onclick=function(){ S.tab=p[0]; if(p[1]) S.sub[p[0]]=p[1]; render(); };
+      });
+      document.querySelectorAll("[data-v37act]").forEach(function(b){
+        b.onclick=function(){
+          var a=(S.activities||[]).filter(function(x){ return String(x.id)===String(b.dataset.v37act); })[0];
+          if(a&&typeof openActModal==="function") openActModal(a);
+          else { S.tab="program"; render(); }
+        };
+      });
+    }catch(e){}
+  }
+  if (typeof render === "function"){
+    var _r = render;
+    window.render = function(){
+      var out=_r.apply(this, arguments);
+      place(); wire();
+      return out;
+    };
+  }
+  window.v37DayPlan = dayPlanBody;
+  window.v37TeamProg = teamProgBody;
+  window.v37TasksOrders = tasksAndOrders;
+})();
+
 </script>
 
 
