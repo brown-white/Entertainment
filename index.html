@@ -2722,7 +2722,6 @@ function ic(name,size=20){ return `<svg class="ic-s" width="${size}" height="${s
 function mi(name){ return `<span class="mi">${ic(name,13)}</span>`; }
 function brandIc(name){ return `<svg class="ic-s" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">${BRAND[name]||""}</svg>`; }
 function rankBadge(i){ return `<span class="rankb r${i<3?i:"x"}">${i+1}</span>`; }
-function genPass(){ const A="abcdefghjkmnpqrstuvwxyz23456789"; let x=""; for(let i=0;i<6;i++) x+=A[Math.floor(Math.random()*A.length)]; return x; }
 function taskTypeLabel(ty){return {come:t("ttCome"),leave:t("ttLeave"),activity:t("ttActivity"),feedback:t("ttFeedback"),collect:t("ttCollect")}[ty]||ty;}
 function canSeeGuests(a){
   if(!S.session) return false;
@@ -2733,14 +2732,6 @@ function canSeeGuests(a){
   if(e==="team"||e==="all team") return true;
   const u=(S.session.username||"").toLowerCase(), d=(S.session.name||"").toLowerCase();
   return (u&&e.includes(u))||(d&&e.includes(d));
-}
-function staffStats(username){
-  const mine=S.tasks.filter(x=>x.assigned_to===username);
-  const done=mine.filter(x=>x.status==="done"&&!x.was_still).length;
-  const late=mine.filter(x=>x.status==="done"&&x.was_still).length;
-  const cant=mine.filter(x=>x.status==="cant").length;
-  const open=mine.filter(x=>["open","accepted","still"].includes(x.status)).length;
-  return {done,late,cant,open,points:done*10+late*6};
 }
 function guestDaysHere(acc){
   if(!acc || !acc.created_at) return null;
@@ -2772,6 +2763,14 @@ function teamMemberList(){
     if(nm && !seen.has(nm.toLowerCase())){ seen.add(nm.toLowerCase()); out.push({name:nm,photo:""}); }
   });
   return out;
+}
+function staffStats(username){
+  const mine=S.tasks.filter(x=>x.assigned_to===username);
+  const done=mine.filter(x=>x.status==="done"&&!x.was_still).length;
+  const late=mine.filter(x=>x.status==="done"&&x.was_still).length;
+  const cant=mine.filter(x=>x.status==="cant").length;
+  const open=mine.filter(x=>["open","accepted","still"].includes(x.status)).length;
+  return {done,late,cant,open,points:done*10+late*6};
 }
 function rankingRows(){
   return S.users.filter(u=>u.role==="staff")
@@ -3056,17 +3055,6 @@ function startGuestSession(acc){
   S.tab="home"; persist(); render();
   askNotifPermission();
 }
-function openCredentialsModal(acc){
-  const wrap=baseModal(`
-    <h3>${ic("key",22)} ${t("yourLogin")}</h3>
-    <div class="cred">
-      <div><span>${t("user")}</span><b>${esc(acc.username||acc.room)}</b></div>
-      <div><span>${t("pass")}</span><b>${esc(acc.password||"")}</b></div>
-    </div>
-    <p class="mini" style="margin-top:10px">${t("saveThese")}</p>
-    <button class="btn" id="cr-x">${t("close")}</button>`);
-  wrap.querySelector("#cr-x").onclick=()=>wrap.remove();
-}
 /* ---------------- shared pieces ---------------- */
 function socialTopIcons(){
   const st=S.settings;
@@ -3323,24 +3311,6 @@ function listByCat(acts,opts){
       ${acts.filter(a=>a.category===c).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a,opts)).join("")}
     </div>`).join("");
 }
-function weeklyTimeline(){
-  const acts=S.activities.filter(a=>a.day===S.day).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
-  return acts.length?`<div class="wk">${acts.map(a=>{
-    const tp=String(a.time).split(/\s*[–—-]\s*/);
-    return `
-    <div class="wk-item">
-      <div class="wk-time">${esc(tp[0])}${tp[1]?`<span class="wk-end">– ${esc(tp[1])}</span>`:""}</div>
-      <div class="wk-rail"><div class="wk-dot"></div><div class="wk-line"></div></div>
-      <div class="wk-info">
-        <img src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
-        <div style="min-width:0">
-          <h4>${esc(a.name)}</h4>
-          <p>${mi("pin")}${esc(a.location)}</p>
-        </div>
-      </div>
-    </div>`;}).join("")}</div>`
-  :`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`;
-}
 function operationCard(op){
   const acts=S.activities.filter(a=>a.day===S.day && actOp(a)===op.id);
   const img=opImage(op.id);
@@ -3400,9 +3370,6 @@ function browseView(title){
     ${dayTabs()}
     ${acts.length?acts.map(a=>activityCard(a,S.session.role==="guest"?{}:{staff:true,showBook:false,showFav:false})).join(""):`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
   </div>`;
-}
-function weeklyView(title){
-  return `<div class="screen fadein">${topBar(title,t("days")[S.day])}${dayTabs()}${weeklyTimeline()}</div>`;
 }
 /* ================= CHAT TRANSLATION =================
    Guests write in their language, the team reads in theirs. Uses a free
@@ -3585,10 +3552,15 @@ function socialPageView(){
   </div>`;
 }
 function teamInfoView(){
-  const list=[...S.profiles].sort((a,b)=>{
-    const am=/manager/i.test(a.position||"")?0:1, bm=/manager/i.test(b.position||"")?0:1;
-    return am-bm || a.id-b.id;
-  });
+  /* one single team list — the real accounts the manager edits, so what she
+     changes on a person is exactly what guests see. */
+  const list=(S.users||[])
+    .filter(u=>(u.role==="staff"||u.role==="manager") && u.active!==false)
+    .map(u=>({...u, name:u.display_name||u.username}))
+    .sort((a,b)=>{
+      const am=/manager/i.test(a.position||"")?0:1, bm=/manager/i.test(b.position||"")?0:1;
+      return am-bm || (a.number||99)-(b.number||99) || a.id-b.id;
+    });
   const entCount=list.filter(p=>!/manager/i.test(p.position||"")).length;
   return `<div class="screen fadein">
     ${topBar(t("teamPage"),S.settings.name)}
@@ -4486,7 +4458,6 @@ function canRunActivity(u, act){
   if(!can.length) return true;                     // nothing ticked = available for anything
   return can.includes(k);
 }
-function isSkillMatch(u, act){ return canRunActivity(u, act); }
 /* is this person available on that weekday? */
 function availableOn(u, day, dateStr_){
   if(!u || u.role==="guest") return false;
@@ -4514,50 +4485,7 @@ function timeToMin(hhmm){
   const m=String(hhmm||"").match(/(\d{1,2}):(\d{2})/);
   return m ? (+m[1])*60+(+m[2]) : null;
 }
-function clashesWith(username, act, day, planned){
-  const s1=timeToMin(act.time), e1=timeToMin(act.end_time)||((s1||0)+60);
-  if(s1==null) return false;
-  const name=String(username||"").toLowerCase();
-  const mine=(S.activities||[]).filter(a=>a.day===day && a.id!==act.id &&
-    String(a.entertainer||"").toLowerCase().split(/[,;]/).map(x=>x.trim()).includes(name));
-  (planned||[]).forEach(p=>{ if(p.username===username && p.act.id!==act.id) mine.push(p.act); });
-  return mine.some(a=>{
-    const s2=timeToMin(a.time), e2=timeToMin(a.end_time)||((s2||0)+60);
-    return s2!=null && s1 < e2 && s2 < e1;
-  });
-}
 /* Suggest one person per unassigned activity on a given weekday. */
-function suggestAssignments(day, dateStr_){
-  const team=(S.users||[]).filter(u=>u.role==="staff"||u.role==="manager");
-  const acts=(S.activities||[]).filter(a=>a.day===day && !String(a.entertainer||"").trim())
-    .sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  const planned=[], extra={};
-  const out=acts.map(act=>{
-    const skill=actKey(act.name);
-    const pool=team.filter(u=>availableOn(u,day,dateStr_))
-      .filter(u=>canRunActivity(u,act))
-      .filter(u=>!clashesWith(u.username,act,day,planned));
-    if(!pool.length){
-      const why = !team.filter(u=>availableOn(u,day,dateStr_)).length ? "nobodyWorking"
-        : (!team.filter(u=>availableOn(u,day,dateStr_)).filter(u=>canRunActivity(u,act)).length ? "noSkill" : "allBusy");
-      return {act, skill, user:null, reason:why};
-    }
-    /* fewest activities first; entrance duty last; then a stable order */
-    pool.sort((a,b)=>{
-      const d=assignedCount(a.username,day,extra)-assignedCount(b.username,day,extra);
-      if(d) return d;
-      const e=(onEntranceDuty(a,day)?1:0)-(onEntranceDuty(b,day)?1:0);
-      if(e) return e;
-      return String(a.display_name||a.username).localeCompare(String(b.display_name||b.username));
-    });
-    const pick=pool[0];
-    planned.push({username:pick.username, act});
-    extra[pick.username]=(extra[pick.username]||0)+1;
-    return {act, skill, user:pick, reason:null,
-      alternatives:pool.slice(1,4).map(u=>u.username)};
-  });
-  return out;
-}
 /* ================= LIVE LOCATION (opt-in) =================
    Nothing is ever sent unless the person switches sharing on themselves.
    Switching off deletes their row immediately. */
@@ -4747,17 +4675,6 @@ function weatherView(){
   </div>`;
 }
 /* small strip for the home screens */
-function weatherStrip(){
-  const w=S.weather;
-  if(!w || w.error || !w.cur) return "";
-  const c=w.cur;
-  return `<button class="wstrip" data-gotab="weather">
-    <span class="ws-ic">${ic(wmoIcon(c.weather_code),22)}</span>
-    <span class="ws-t">${Math.round(c.temperature_2m)}°</span>
-    <span class="ws-x">${esc(wmoLabel(c.weather_code))}</span>
-    <span class="ws-go">${ic("back",15)}</span>
-  </button>`;
-}
 /* ================= PAGE DESIGNER (blocks) =================
    The manager builds pages from blocks, like a simple website builder.
    Every block carries its own style, so no code is ever needed. */
@@ -6137,13 +6054,14 @@ function managerView(){
     return settingsHubView();
   }
   if(S.tab==="team"){
-    const sub=S.sub.team;
+    let sub=S.sub.team;
+    if(["tasks","profiles"].includes(sub)) sub=S.sub.team="accounts";  // moved to Assignments
     if(sub==="chat" && S.chatRoom) return chatThreadScreen();
-    const inner = sub==="tasks" ? tasksInner() : sub==="requests" ? teamRequestsInner() : sub==="monthatt" ? monthAttInner() : sub==="attendance" ? attendanceInner()
-      : sub==="profiles" ? profilesInner() : sub==="chat" ? staffChatInbox() : accountsInner();
+    const inner = sub==="requests" ? teamRequestsInner() : sub==="monthatt" ? monthAttInner() : sub==="attendance" ? attendanceInner()
+      : sub==="chat" ? staffChatInbox() : accountsInner();
     return `<div class="screen fadein">
       ${topBar(t("teamTab"),S.session.name)}
-      ${subTabs("team",[["accounts",t("teamAccounts")],["chat",t("teamChat")],["requests",t("teamRequests")],["profiles",t("profiles")],["tasks",t("tasks")],["monthatt",t("monthAtt")],["attendance",t("attendance")]])}
+      ${subTabs("team",[["accounts",t("teamAccounts")],["chat",t("teamChat")],["requests",t("teamRequests")],["monthatt",t("monthAtt")],["attendance",t("attendance")]])}
       ${inner}
     </div>`;
   }
@@ -6166,7 +6084,6 @@ function dutyBar(day){
       ${dayIsCustom(day)?`<span class="db-tag">${t("customDay")}</span>`:""}
     </div>
     <button class="btn sm" data-dutyedit="${day}">${ic("pen",14)} ${t("editDuty")}</button>
-    <button class="btn sm ghost" data-autoassign="${day}" style="margin-top:8px">${ic("users",14)} ${t("autoAssign")}</button>
   </div>`;
 }
 function managerDayPlanView(){
@@ -6352,20 +6269,6 @@ function accountsInner(){
           ${u.id===S.session.userId||lastManager?"":`<button class="btn sm warn" data-deluser="${u.id}">${ic("close",14)}</button>`}
         </div></div>`;}).join("")}
     </div>`;
-}
-function profilesInner(){
-  return `<button class="btn" id="btn-addprofile" style="margin:0 0 14px">＋ ${t("addProfile")}</button>`
-    + (S.profiles.length?S.profiles.map(p=>`<div class="card team-card">
-        <div class="tc-photo sm">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<div class="tc-mono serif">${esc((p.name||"?").trim().charAt(0).toUpperCase())}</div>`}</div>
-        <div class="tc-body">
-          <h4 class="serif">${esc(p.name)}</h4>
-          <p class="tc-pos">${esc(p.position||"")}</p>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;flex:none">
-          <button class="btn sm ghost" data-pedit="${p.id}">${ic("pen",15)}</button>
-          <button class="btn sm warn" data-pdel="${p.id}">${ic("close",14)}</button>
-        </div>
-      </div>`).join(""):`<div class="empty"><div class="big">${ic("users",30)}</div>${t("none")}</div>`);
 }
 function openProfileModal(p){
   const isNew=!p; p=p||{name:"",position:"",photo:"",nationality:"",languages:"",skills:"",instagram:""};
@@ -7712,7 +7615,6 @@ function wireCommon(){
   const navF=$("#btn-navfwd");  if(navF) navF.onclick=navForward;
   const qzSend=$("#qz-send"); if(qzSend) qzSend.onclick=submitQuizAnswer;
   document.querySelectorAll("[data-dutyedit]").forEach(b=>b.onclick=()=>openDutyModal(+b.dataset.dutyedit));
-  document.querySelectorAll("[data-autoassign]").forEach(b=>b.onclick=()=>openAutoAssignModal(+b.dataset.autoassign));
   const qrP=$("#qr-print"); if(qrP) qrP.onclick=openQrPrint;
   document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>{ S.tab=b.dataset.gotab; render(); });
   const crmQ=$("#crm-q"); if(crmQ) crmQ.oninput=e=>{ S.crmQuery=e.target.value; render(); };
