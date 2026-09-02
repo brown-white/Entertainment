@@ -1532,6 +1532,9 @@ html{font-size:calc(16px * var(--fscale,1))}
 .att-only-tag{opacity:.7;font-size:10px}
 .att-name.tapname{cursor:pointer}
 .att-name.tapname b{text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.dc-cell.wide{grid-column:1 / -1}
+.dc-cell.wide b.ev-line{display:block;font-size:14px;margin-top:2px}
+.dc-cell.wide b.ev-line i{opacity:.6;font-style:normal;font-weight:400}
 </style>
 </head>
 <body>
@@ -6529,34 +6532,16 @@ function entertainerName(raw){
   }).filter(Boolean).join(", ");
 }
 function dayTimeline(day){
-  const dp=dayPlanFor(day);
+  /* Only the activity rota — the events, the band and the show live in the
+     day information panel above, so nothing is said twice. */
   const acts=(S.activities||[]).filter(a=>a.day===day)
+    .filter(a=>{ const sl=activitySlot(a); return sl==="morning" || sl==="afternoon"; })
     .slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
   const slots=[
     {k:"morning",   from:0,    to:12*60},
-    {k:"afternoon", from:12*60,to:17*60},
-    {k:"evening",   from:17*60,to:24*60+59}
+    {k:"afternoon", from:12*60,to:24*60+59}
   ];
-  /* The live band and the evening show are usually already IN the programme.
-     Only add them here if the programme does not cover them already. */
-  const extras=[];
-  const covered=(name, time)=>{
-    const k=actKey(name);
-    return acts.some(a=>{
-      if(k && actKey(a.name)===k) return true;                       // same thing by name
-      const at=timeToMin(a.time), xt=timeToMin(time);
-      return at!=null && xt!=null && at===xt;                        // or same starting time
-    });
-  };
-  if(dp.liveBand){
-    const lbTime=(String(dp.liveBand).match(/\d{1,2}:\d{2}/)||["20:00"])[0];
-    const lbName=String(dp.liveBand).replace(/\d{1,2}:\d{2}\s*[–—-]?\s*\d{0,2}:?\d{0,2}/g,"").trim();
-    if(!covered(lbName||dp.liveBand, lbTime))
-      extras.push({time:lbTime, name:lbName||t("liveBandLbl"), location:"", _tag:"live"});
-  }
-  if(dp.eveningShow && !covered(dp.eveningShow, dp.showTime||"21:00"))
-    extras.push({time:dp.showTime||"21:00", name:dp.eveningShow, location:dp.showLoc||"", _tag:"show"});
-  const all=acts.concat(extras).sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
+  const all=acts;
   return slots.map(sl=>{
     const rows=all.filter(x=>{ const m=timeToMin(x.time); return m!=null && m>=sl.from && m<sl.to; });
     return `<div class="tl-block">
@@ -6586,6 +6571,13 @@ function dayPlanInfoCard(day){
         <div class="dc-cell"><span>${t("liveBandLbl")}</span><b>${esc(dp.liveBand||"—")}</b></div>
         <div class="dc-cell"><span>${t("dayOff")}</span><b>${personTags(dp.off)||"—"}</b></div>
         <div class="dc-cell"><span>${t("entranceDuty")}</span><b>${personTag(dp.entrance)||"—"}</b></div>
+        <div class="dc-cell wide"><span>${t("eventsToday")}</span>
+          ${(()=>{
+            const evs=(S.activities||[]).filter(a=>a.day===day && activitySlot(a)==="event")
+              .slice().sort((x,y)=>(timeToMin(x.time)||0)-(timeToMin(y.time)||0));
+            if(!evs.length) return `<b>—</b>`;
+            return evs.map(e=>`<b class="ev-line">${esc(String(e.time||"").split(/\s*[–—-]\s*/)[0])} · ${esc(e.name)}${e.location?` <i class="mini">${esc(e.location)}</i>`:""}</b>`).join("");
+          })()}</div>
         <div class="dc-cell"><span>${t("practiceHead")}</span>
           <b>${dp.practice?t("practiceDays"):(dp.makeup?t("makeupPractice"):"—")}</b>
           ${dp.practice?`<i class="mini">${esc(t("practiceWindow"))}</i>`
