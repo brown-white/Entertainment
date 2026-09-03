@@ -1491,6 +1491,30 @@ html{font-size:calc(16px * var(--fscale,1))}
 .ar-it:not(:last-child){border-bottom:1px solid var(--line)}
 .ar-nm{flex:1;min-width:0;font-weight:600;font-size:15px}
 .ar-acts{flex:none;display:flex;gap:6px}
+.arrange-b{margin:0 0 12px}
+/* ===== professional feedback ===== */
+.fb-form-row{display:flex;align-items:center;gap:8px;padding:9px 2px}
+.fb-form-row:not(:last-child){border-bottom:1px solid var(--line)}
+.fb-nm{flex:1;min-width:0;font-size:14px;font-weight:600}
+.fb-stars{flex:none;display:flex;gap:2px;align-items:center}
+.fb-st{width:25px;height:25px;border:0;background:none;padding:0;cursor:pointer;
+  color:var(--line);font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.fb-st.on{color:var(--bronze)}
+.fb-clear{flex:none;border:0;background:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}
+.fb-dept{display:flex;align-items:center;gap:10px;width:100%;text-align:start;border:0;background:none;
+  padding:11px 2px;cursor:pointer;color:inherit;font:inherit}
+.fb-dept:not(:last-child){border-bottom:1px solid var(--line)}
+.fb-bar{flex:none;width:74px;height:7px;border-radius:999px;background:var(--sand);overflow:hidden}
+.fb-bar i{display:block;height:100%;border-radius:999px;background:var(--bronze)}
+.fb-dept.low .fb-bar i{background:#C0603F}
+.fb-val{flex:none;width:36px;text-align:end;font-weight:700;font-size:15px}
+.fb-line{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 2px;cursor:pointer}
+.fb-line:not(:last-child){border-bottom:1px solid var(--line)}
+.fb-chev{flex:none;opacity:.38;transform:rotate(180deg)}
+.bd-sec-head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;margin:16px 0 6px}
+.fb-sql{font-size:11px;background:var(--sand);border-radius:8px;padding:8px 10px;
+  white-space:pre-wrap;word-break:break-word;margin:6px 0 2px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .bk-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 2px}
 .bk-line:not(:last-child){border-bottom:1px solid var(--line)}
 .dc-cell i{display:block;font-style:normal;opacity:.65;margin-top:2px}
@@ -1626,6 +1650,125 @@ const S = {
   rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[], feedback:[], aiChat:[], profiles:[],
   buses:[], quizzes:[], quizReplies:[], staffAtt:[], attMonth:null, photos:[], staffReqs:[], weather:null, weatherBusy:false, crmQuery:"", drawerOpen:null, pb:null, assignDay:null, openDay:{}, chatSel:null, exportMonth:null, exportDay:"", exportSlot:"", settings:{...DEFAULT_SETTINGS}, loadError:false
 };
+Object.assign(DICT.en, {
+  arrangeAnyHint:"Move the parts of this page up or down, or hide the ones you never use. Saved for everyone.",
+  secTitles:"Section titles",
+  secTitlesHint:"The grey headings above each group of menu items.",
+  renameGroup:"Rename section",
+  fbNew:"New feedback",
+  fbEdit:"Edit feedback",
+  fbGuestName:"Guest name",
+  fbOverall:"Overall",
+  fbDepartments:"Departments rated",
+  fbAnalytics:"Feedback analytics",
+  fbByDept:"Rating by department",
+  fbNotRated:"Not rated",
+  fbDetails:"Feedback details",
+  fbResponses:"ratings",
+  fbExport:"Export feedback",
+  fbTapHint:"Tap a department or a feedback to open the details.",
+  fbFormHint:"Tap the stars for each department. Leave a department empty if the guest did not rate it.",
+  fbNoDept:"No department was rated yet.",
+  fbNeedRoom:"Please write the room number",
+  fbDeptSheet:"Feedback by department",
+  fbOldDb:"Saved. Your database does not have the new columns yet, so the department ratings were written into the comment. Run the SQL below in Supabase once and everything moves into its own columns.",
+  fbSqlNote:"Run this once in Supabase (SQL editor):",
+  hideSection:"Hidden",
+  showSection:"Shown",
+  d_ent_general:"Entertainment in general",
+  d_music_day:"Music daytime",
+  d_music_night:"Music at night",
+  d_day_acts:"Daytime activities",
+  d_day_events:"Daytime events",
+  d_equipment:"Activities materials & equipment",
+  d_ent_team:"Entertainment team members",
+  d_food:"Food",
+  d_drinks:"Drinks",
+  d_room:"Room",
+  d_housekeeping:"Housekeeping",
+  d_pool_beach:"Pool & Beach",
+  d_alacarte:"A la carte restaurant",
+  d_behaviour:"Team behaviour",
+  d_reception:"Reception"
+});
+/* ===== GUEST FEEDBACK BY DEPARTMENT =====
+   One feedback holds up to 15 department scores (1-5). They live in the
+   `depts` column as JSON. If that column is missing (older database) they are
+   packed into the comment instead, so nothing is ever lost. */
+const FB_DEPT_KEYS=["ent_general","music_day","music_night","day_acts","day_events",
+  "equipment","ent_team","food","drinks","room","housekeeping","pool_beach",
+  "alacarte","behaviour","reception"];
+const FB_SQL="alter table feedback add column if not exists depts text;\n"
+  +"alter table feedback add column if not exists guest_name text;";
+const FB_MARK="\n#ratings ";
+function fbDeptLabel(k){ return t("d_"+k); }
+function fbDepts(f){
+  if(!f) return {};
+  let d=f.depts;
+  if(typeof d==="string" && d.trim()){ try{ d=JSON.parse(d); }catch(e){ d=null; } }
+  if(d && typeof d==="object") return d;
+  const c=String(f.comment||""); const i=c.indexOf(FB_MARK);
+  if(i<0) return {};
+  const out={};
+  c.slice(i+FB_MARK.length).split(";").forEach(part=>{
+    const bits=part.split(":"); const v=+bits[1];
+    if(bits[0] && v>0) out[bits[0].trim()]=v;
+  });
+  return out;
+}
+function fbComment(f){ return String((f&&f.comment)||"").split(FB_MARK)[0].trim(); }
+function fbPackComment(f){
+  const d=fbDepts(f);
+  const line=FB_DEPT_KEYS.filter(k=>+d[k]>0).map(k=>k+":"+d[k]).join(";");
+  const base=fbComment(f);
+  return line ? (base+FB_MARK+line) : base;
+}
+function fbOverall(f){
+  const v=Object.values(fbDepts(f)).map(Number).filter(n=>n>0);
+  if(v.length) return Math.round(v.reduce((a,b)=>a+b,0)/v.length*10)/10;
+  return +((f&&f.rate)||0);
+}
+function fbStars(n){
+  n=+n||0;
+  return `<span class="fb-stars">${[1,2,3,4,5].map(i=>
+    `<span class="fb-st ${i<=n?"on":""}">${i<=n?"\u2605":"\u2606"}</span>`).join("")}</span>`;
+}
+function fbDeptStats(list){
+  const acc={};
+  (list||[]).forEach(f=>{
+    const d=fbDepts(f);
+    FB_DEPT_KEYS.forEach(k=>{ const v=+d[k]; if(v>0){ acc[k]=acc[k]||{n:0,s:0}; acc[k].n++; acc[k].s+=v; } });
+  });
+  return FB_DEPT_KEYS.filter(k=>acc[k]).map(k=>({k,n:acc[k].n,avg:acc[k].s/acc[k].n}));
+}
+function fbAvgAll(list){
+  const v=(list||[]).map(fbOverall).filter(n=>n>0);
+  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0;
+}
+function fbDeptListCard(list){
+  const st=fbDeptStats(list).sort((a,b)=>b.avg-a.avg);
+  if(!st.length) return `<div class="empty"><div class="big">${ic("star",30)}</div>${t("fbNoDept")}</div>`;
+  return `<div class="card">${st.map(d=>`<button class="fb-dept ${d.avg<3.5?"low":""}" data-fbdept="${esc(d.k)}">
+    <span class="fb-nm">${esc(fbDeptLabel(d.k))}<br><span class="mini">${d.n} ${t("fbResponses")}</span></span>
+    <span class="fb-bar"><i style="width:${Math.round(d.avg/5*100)}%"></i></span>
+    <span class="fb-val">${d.avg.toFixed(1)}</span></button>`).join("")}</div>`;
+}
+function fbCanEdit(f){
+  if(!S.session) return false;
+  return S.session.role==="manager" || String(f.by_user||"")===String(S.session.username||"");
+}
+function fbRowHtml(f){
+  const d=fbDepts(f), n=FB_DEPT_KEYS.filter(k=>+d[k]>0).length;
+  const who=[f.guest_name?esc(f.guest_name):"", f.nationality?esc(f.nationality):""].filter(Boolean).join(" \u00b7 ");
+  return `<div class="fb-line" data-fbopen="${esc(String(f.id))}">
+    <span style="min-width:0"><b>${t("room")} ${esc(f.room)}</b>${who?` \u00b7 ${who}`:""}
+      <br><span class="mini">${"\u2605".repeat(Math.round(fbOverall(f)))}${"\u2606".repeat(Math.max(0,5-Math.round(fbOverall(f))))}
+        ${fbOverall(f)?` ${fbOverall(f).toFixed(1)}`:""}${n?` \u00b7 ${n} ${t("fbDepartments").toLowerCase()}`:""}</span>
+      ${fbComment(f)?`<br><span class="mini">${esc(fbComment(f))}</span>`:""}
+      <br><span class="mini">${mi("user")}${esc(f.by_user||"")} \u00b7 ${fmtTime(f.created_at)}</span></span>
+    <span class="fb-chev">${ic("back",16)}</span>
+  </div>`;
+}
 const t = k => (DICT[S.lang] && DICT[S.lang][k]) ?? DICT.en[k] ?? k;
 const NATIONS=["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Barbadian","Belarusian","Belgian","Belizean","Beninese","Bhutanese","Bolivian","Bosnian","Botswanan","Brazilian","British","Bruneian","Bulgarian","Burkinabe","Burmese","Burundian","Cambodian","Cameroonian","Canadian","Cape Verdean","Central African","Chadian","Chilean","Chinese","Colombian","Comoran","Congolese","Costa Rican","Croatian","Cuban","Cypriot","Czech","Danish","Djiboutian","Dominican","Dutch","East Timorese","Ecuadorean","Egyptian","Emirati","Equatorial Guinean","Eritrean","Estonian","Ethiopian","Fijian","Filipino","Finnish","French","Gabonese","Gambian","Georgian","German","Ghanaian","Greek","Grenadian","Guatemalan","Guinean","Guyanese","Haitian","Honduran","Hungarian","Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Ivorian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Kosovar","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Liberian","Libyan","Liechtensteiner","Lithuanian","Luxembourgish","Macedonian","Malagasy","Malawian","Malaysian","Maldivian","Malian","Maltese","Mauritanian","Mauritian","Mexican","Moldovan","Monacan","Mongolian","Montenegrin","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Nigerien","North Korean","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Papua New Guinean","Paraguayan","Peruvian","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Salvadoran","Samoan","Saudi","Senegalese","Serbian","Seychellois","Sierra Leonean","Singaporean","Slovak","Slovenian","Somali","South African","South Korean","South Sudanese","Spanish","Sri Lankan","Sudanese","Surinamese","Swazi","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Togolese","Trinidadian","Tunisian","Turkish","Turkmen","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean","Other"];
 
@@ -2448,12 +2591,36 @@ const DB = {
     S.tasks=S.tasks.map(x=>x.id===id?{...x,...patch}:x);
   },
   async addFeedback(f){
-    if(REMOTE){ const r=await sb("feedback",{method:"POST",body:JSON.stringify(f)}); S.feedback.unshift(__row(r,f)); }
+    if(REMOTE){
+      try{
+        const r=await sb("feedback",{method:"POST",body:JSON.stringify(f)});
+        S.feedback.unshift(__row(r,f));
+      }catch(e){
+        // older database without the depts / guest_name columns: keep the ratings in the comment
+        const base={room:f.room,nationality:f.nationality||"",rate:f.rate,by_user:f.by_user||"",comment:fbPackComment(f)};
+        const r=await sb("feedback",{method:"POST",body:JSON.stringify(base)});
+        S.feedback.unshift(__row(r,base));
+        S.fbOldDb=true;
+      }
+    }
     else { f.id=Date.now(); f.created_at=new Date().toISOString(); S.feedback.unshift(f); }
+  },
+  async updateFeedback(id,patch){
+    const cur=(S.feedback||[]).find(x=>String(x.id)===String(id))||{};
+    if(REMOTE){
+      try{ await sb("feedback?id=eq."+id,{method:"PATCH",body:JSON.stringify(patch)}); }
+      catch(e){
+        const merged={...cur,...patch};
+        const base={room:merged.room,nationality:merged.nationality||"",rate:merged.rate,comment:fbPackComment(merged)};
+        await sb("feedback?id=eq."+id,{method:"PATCH",body:JSON.stringify(base)});
+        patch=base; S.fbOldDb=true;
+      }
+    }
+    S.feedback=S.feedback.map(x=>String(x.id)===String(id)?{...x,...patch}:x);
   },
   async deleteFeedback(id){
     if(REMOTE) await sb("feedback?id=eq."+id,{method:"DELETE"});
-    S.feedback=S.feedback.filter(x=>x.id!==id);
+    S.feedback=S.feedback.filter(x=>String(x.id)!==String(id));
   },
   async saveProfile(pr){
     if(REMOTE){
@@ -3170,17 +3337,17 @@ function navGroupsBase(role){
   if(role==="guest"){
     const un=unreadFor("guest");
     return [
-      {head:t("secProgram"), items:[
+      {key:"secProgram", head:t("secProgram"), items:[
         ["home","home",menuLabel("menuHome",t("home")),0],
         ["program","calendar",menuLabel("menuProgram",t("program")),0],
         ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[]),
         ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
         ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
         ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
-      {head:t("secBookings"), items:[
+      {key:"secBookings", head:t("secBookings"), items:[
         ["stay","user",menuLabel("menuStay",t("myStay")),0],
         ...(featureOn("tickets")?[["tickets","ticket",menuLabel("menuTickets",t("tickets")),0]]:[])]},
-      {head:t("secConnect"), items:[
+      {key:"secConnect", head:t("secConnect"), items:[
         ["chat","chat",menuLabel("menuChat",t("chat")),un],
         ["teaminfo","users",t("teamPage"),0],
         ["social","star",t("socialPage"),0]]}
@@ -3191,18 +3358,18 @@ function navGroupsBase(role){
     const un=S.messages.filter(m=>m.room===myRoom&&m.sender==="team"&&!m.read_by_guest).length;
     const taskN=S.tasks.filter(x=>["open","accepted","still"].includes(x.status)&&(!x.assigned_to||x.assigned_to===S.session.username)).length;
     return [
-      {head:t("secTeamwork"), items:[
+      {key:"secTeamwork", head:t("secTeamwork"), items:[
         ["workday","clipboard",t("myWorkDay"),0],
         ["mypage","user",t("myAttendance"),0],
         ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
         ...(featureOn("bus")?[["bus","bus",t("busTimes"),0]]:[]),
         ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
         ["tasks","check",t("tasks"),taskN]]},
-      {head:t("secProgram"), items:[
+      {key:"secProgram", head:t("secProgram"), items:[
         ["today","calendar",t("todayProgram"),0],
         ["week","calendar",t("program"),0],
         ["bookings","ticket",t("bookings"),0]]},
-      {head:t("secConnect"), items:[
+      {key:"secConnect", head:t("secConnect"), items:[
         ["chat","chat",t("chatManager"),un],
         ["feedback","star",t("feedback"),0],
         ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
@@ -3212,7 +3379,7 @@ function navGroupsBase(role){
   const un=unreadFor("manager");
   const newReq=S.requests.filter(r=>r.status==="new").length;
   return [
-    {head:t("secManage"), items:[
+    {key:"secManage", head:t("secManage"), items:[
       ["dash","grid",t("dashboard"),0],
       ["program","calendar",t("manage"),0],
       ["dayplan","clipboard",t("dayPlan"),0],
@@ -3222,10 +3389,10 @@ function navGroupsBase(role){
       ["hotelinfo","pin",t("hotelInfoTab"),0],
       ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
       ["qr","sparkle",t("qrTab"),0]]},
-    {head:t("secGuests"), items:[
+    {key:"secGuests", head:t("secGuests"), items:[
       ["guests","chat",t("guestsTab"),unreadGuests()+newReq],
       ["team","users",t("teamTab"),unreadTeam()+teamReqCount()]]},
-    {head:t("secSettings"), items:[
+    {key:"secSettings", head:t("secSettings"), items:[
       ["settings","palette",t("settingsHub"),0]]}
   ];
 }
@@ -3241,12 +3408,14 @@ function applyMenuConf(role, groups){
   const conf=menuConf(role);
   const hidden=conf.hidden||[], names=conf.names||{}, order=conf.order||[];
   // rename + hide
-  let out=groups.map(g=>({head:g.head, items:g.items
+  const gnames=conf.gnames||{};
+  let out=groups.map(g=>({key:g.key, head:(g.key&&gnames[g.key])||g.head, items:g.items
     .filter(it=>!hidden.includes(it[0]))
     .map(it=>[it[0], it[1], names[it[0]]||it[2], it[3]])}));
   // the manager's own pages go into the first section
   const extra=customPages(role).map(p=>[ "cp:"+p.id, p.icon||"pin", p.title, 0 ]);
   if(extra.length && out.length) out[0]={...out[0], items:out[0].items.concat(extra)};
+  // a section whose title she blanked out simply loses its heading
   // custom order inside each section
   if(order.length){
     out=out.map(g=>({...g, items:g.items.slice().sort((a,b)=>{
@@ -3411,6 +3580,12 @@ function dayTabs(){
     `<button data-day="${i}" class="${S.day===i?"on":""}">${d}</button>`).join("")}</div>`;
 }
 function subTabs(group,items){
+  if(PAGE_SECTIONS[group]){
+    const ord=pageOrder(group);
+    items=items.filter(it=>ord.includes(it[0]))
+               .sort((a,b)=>ord.indexOf(a[0])-ord.indexOf(b[0]));
+    if(!items.some(it=>it[0]===S.sub[group]) && items.length) S.sub[group]=items[0][0];
+  }
   return `<div class="pills">${items.map(([id,lb])=>
     `<button data-sub="${group}:${id}" class="${S.sub[group]===id?"on":""}">${lb}</button>`).join("")}</div>`;
 }
@@ -5354,6 +5529,17 @@ function builderView(){
         `<option value="${esc(it[0])}" ${conf.start===it[0]?"selected":""}>${esc(names[it[0]]||it[2])}</option>`).join("")}
     </select>
     <p class="mini" style="margin:-4px 0 12px">${t("startPageHint")}</p>
+    <div class="bd-sec-head">${t("secTitles")}</div>
+    <p class="mini" style="margin:-2px 0 8px">${t("secTitlesHint")}</p>
+    <div class="card bd-list">
+      ${base.filter(g=>g.key).map(g=>`<div class="bd-it">
+        <span class="bd-ic">${ic("grid",17)}</span>
+        <span class="bd-nm">${esc((conf.gnames||{})[g.key]||g.head)}${(conf.gnames||{})[g.key]?` <i>${esc(g.head)}</i>`:""}</span>
+        <span class="bd-acts">
+          <button class="bd-b" data-bdgname="${esc(g.key)}" aria-label="${t("renameGroup")}">${ic("pen",14)}</button>
+        </span></div>`).join("")}
+    </div>
+    <div class="bd-sec-head">${t("menu")}</div>
     <div class="card bd-list">
       ${sorted.map((it,i)=>{
         const id=it[0], off=hidden.includes(id);
@@ -5415,6 +5601,25 @@ function openRenameModal(id){
     const v=wrap.querySelector("#rn-v").value.trim();
     if(v) names[id]=v; else delete names[id];
     wrap.remove(); saveMenuConf(role,{names});
+  };
+}
+/* Rename a whole menu section — the grey heading above a group of items. */
+function openGroupRenameModal(gkey){
+  const role=builderRole(), conf=menuConf(role);
+  const g=navGroupsBase(role).find(x=>x.key===gkey);
+  const cur=(conf.gnames||{})[gkey]||"";
+  const wrap=baseModal(`
+    <h3>${ic("pen",20)} ${t("renameGroup")}</h3>
+    <p class="mini">${esc(g?g.head:gkey)}</p>
+    <input id="gn-v" value="${esc(cur)}" placeholder="${esc(g?g.head:"")}">
+    <button class="btn" id="gn-go">${t("save")}</button>
+    <button class="btn ghost" id="gn-x">${t("close")}</button>`);
+  wrap.querySelector("#gn-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#gn-go").onclick=()=>{
+    const gnames={...(conf.gnames||{})};
+    const v=wrap.querySelector("#gn-v").value.trim();
+    if(v) gnames[gkey]=v; else delete gnames[gkey];
+    wrap.remove(); saveMenuConf(role,{gnames});
   };
 }
 function openCustomPageModal(pgId){
@@ -6301,12 +6506,10 @@ function staffFeedbackView(){
   const mine=S.feedback.filter(f=>f.by_user===S.session.username);
   return `<div class="screen fadein">
     ${topBar(t("feedback"),S.session.name)}
-    <button class="btn" id="btn-addfb" style="margin:0 0 14px">＋ ${t("addFeedback")}</button>
-    ${mine.length?`<div class="card">${mine.map(f=>`<div class="booking-line">
-      <span style="min-width:0"><b>${t("room")} ${esc(f.room)}</b>${f.nationality?` · ${esc(f.nationality)}`:""}
-        <br><span class="mini">${"★".repeat(+f.rate||0)}${"☆".repeat(Math.max(0,5-(+f.rate||0)))}${f.comment?` — ${esc(f.comment)}`:""}</span></span>
-      <span class="mini" style="flex:none">${fmtTime(f.created_at)}</span>
-    </div>`).join("")}</div>`:""}
+    <button class="btn" id="btn-addfb" style="margin:0 0 14px">\uFF0B ${t("fbNew")}</button>
+    ${mine.length?`<p class="mini" style="margin:-4px 0 8px">${t("fbTapHint")}</p>
+      <div class="card">${mine.map(fbRowHtml).join("")}</div>`
+      :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("noMyFeedback")}</div>`}
   </div>`;
 }
 function chatThreadScreen(){
@@ -6426,6 +6629,7 @@ function managerView(){
     const inner = S.sub.program==="tickets" ? managerTicketsInner() : managerActsInner();
     return `<div class="screen fadein">
       ${topBar(t("manage"),S.session.name)}
+      ${arrangeBtn("program")}
       ${subTabs("program",[["acts",t("activities")],["tickets",t("tickets")]])}
       ${inner}
     </div>`;
@@ -6440,9 +6644,12 @@ function managerView(){
     else if(sub==="chat") inner=chatInboxInner();
     else if(sub==="feedback") inner=feedbackInner();
     else inner=requestsInner();
+    const gTabs=[["crm",t("guestCrm")],["rooms",t("rooms")],["bookings",t("bookings")],
+                 ["chat",t("guestChatTab")],["requests",t("requests")],["feedback",t("feedback")]];
     return `<div class="screen fadein">
       ${topBar(t("guestsTab"),S.session.name)}
-      ${subTabs("guests",[["crm",t("guestCrm")],["rooms",t("rooms")],["bookings",t("bookings")],["chat",t("guestChatTab")],["requests",t("requests")],["feedback",t("feedback")]])}
+      ${arrangeBtn("guests")}
+      ${subTabs("guests",gTabs)}
       ${inner}
     </div>`;
   }
@@ -6479,6 +6686,7 @@ function managerView(){
       : sub==="chat" ? staffChatInbox() : accountsInner();
     return `<div class="screen fadein">
       ${topBar(t("teamTab"),S.session.name)}
+      ${arrangeBtn("team")}
       ${subTabs("team",[["accounts",t("teamAccounts")],["chat",t("teamChatTab")],["requests",t("teamRequests")],["monthatt",t("monthAtt")],["attendance",t("attendance")]])}
       ${inner}
     </div>`;
@@ -6506,10 +6714,54 @@ function dutyBar(day){
 }
 /* ---- Day Plan sections she can reorder herself, no code ---- */
 const DAYPLAN_SECTIONS=["info","times","team","standards"];
-function dayPlanOrder(){
-  const saved=(S.settings && S.settings.dayPlanOrder) || [];
-  const kept=saved.filter(k=>DAYPLAN_SECTIONS.includes(k));
-  return kept.concat(DAYPLAN_SECTIONS.filter(k=>!kept.includes(k)));
+/* ---- Arrange this page: every manager page she can rearrange herself ----
+   Pages built from cards list their sections; pages built from pills list
+   their sub-tabs. The same button and the same modal handle both. */
+const PAGE_SECTIONS={
+  dayplan: ["info","times","team","standards"],
+  dash:    ["attention","export","stats","feedback","nations","activities","trends"],
+  guests:  ["crm","rooms","bookings","chat","requests","feedback"],
+  team:    ["accounts","chat","requests","monthatt","attendance"],
+  program: ["acts","tickets"],
+  settings:["set:theme","set:brand","builder","set:features","set:notif","set:links",
+            "bus","set:location","export","set:advanced"]
+};
+const SECTION_LABELS={
+  dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
+  dash:    {attention:"attentionHead",export:"exportData",stats:"overview",feedback:"fbAnalytics",
+            nations:"natStats",activities:"activities",trends:"trendsHead"},
+  guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
+            requests:"requests",feedback:"feedback"},
+  team:    {accounts:"teamAccounts",chat:"teamChatTab",requests:"teamRequests",
+            monthatt:"monthAtt",attendance:"attendance"},
+  program: {acts:"activities",tickets:"tickets"},
+  settings:{"set:theme":"setTheme","set:brand":"setBrand","builder":"setMenus",
+            "set:features":"setFeatures","set:notif":"setNotif","set:links":"setLinksT",
+            "bus":"busItem","set:location":"setLocation","export":"setData","set:advanced":"setAdvanced"}
+};
+function sectionLabel(pageKey,k){ const m=SECTION_LABELS[pageKey]||{}; return m[k]?t(m[k]):k; }
+function pageHidden(pageKey){
+  const all=(S.settings && S.settings.pageHidden) || {};
+  return (all[pageKey]||[]).slice();
+}
+function pageOrder(pageKey,withHidden){
+  const def=PAGE_SECTIONS[pageKey]||[];
+  const all=(S.settings && S.settings.pageOrder) || {};
+  let saved=all[pageKey];
+  if(!saved && pageKey==="dayplan") saved=(S.settings && S.settings.dayPlanOrder);  // the older name
+  const kept=(saved||[]).filter(k=>def.includes(k));
+  let out=kept.concat(def.filter(k=>!kept.includes(k)));
+  if(!withHidden){ const h=pageHidden(pageKey); out=out.filter(k=>!h.includes(k)); }
+  return out.length?out:def.slice();
+}
+function dayPlanOrder(){ return pageOrder("dayplan"); }
+function arrangeBtn(pageKey){
+  if(!S.session || S.session.role!=="manager") return "";
+  if(!PAGE_SECTIONS[pageKey]) return "";
+  return `<button class="btn sm ghost arrange-b" data-arrange="${pageKey}">${ic("grid",14)} ${t("arrangeSections")}</button>`;
+}
+function renderParts(pageKey,parts){
+  return pageOrder(pageKey).map(k=>parts[k]?parts[k]():"").join("");
 }
 /* Everything that happens today, split into morning / afternoon / evening. */
 /* Turn whatever is written in the entertainer field into a real name. */
@@ -6663,59 +6915,74 @@ function managerDayPlanView(){
     ${topBar(t("dayPlan"),(t("days")[dp.day]||dp.name)+" · "+dp.theme)}
     ${dayChips()}
     ${dutyBar(day)}
-    <button class="btn sm ghost" id="dp-arrange" style="margin-top:10px">${ic("grid",14)} ${t("arrangeSections")}</button>
-    ${dayPlanOrder().map(k=>parts[k]?parts[k]():"").join("")}
+    ${arrangeBtn("dayplan")}
+    ${renderParts("dayplan",parts)}
   </div>`;
 }
 /* Move the sections of this page around — no code, just up and down. */
-function openArrangeModal(){
-  let order=dayPlanOrder();
-  const label=k=>({info:t("dayInfoSec"),times:t("wholeDay"),team:t("teamAccounts"),standards:t("standardsHead")}[k]||k);
+function openArrangeModal(pageKey){
+  pageKey=pageKey||"dayplan";
+  if(!PAGE_SECTIONS[pageKey]) return;
+  let order=pageOrder(pageKey,true);
+  let hidden=pageHidden(pageKey);
   const wrap=baseModal(`
     <h3>${ic("grid",20)} ${t("arrangeSections")}</h3>
-    <p class="mini">${t("arrangeHint")}</p>
+    <p class="mini">${t("arrangeAnyHint")}</p>
     <div id="ar-box"></div>
     <button class="btn" id="ar-go">${t("save")}</button>
     <button class="btn ghost" id="ar-reset">${t("resetDefault")}</button>
     <button class="btn ghost" id="ar-x">${t("cancelBtn")}</button>`);
   const box=wrap.querySelector("#ar-box");
   const paint=()=>{
-    box.innerHTML=order.map((k,i)=>`<div class="ar-it">
-      <span class="ar-nm">${esc(label(k))}</span>
+    box.innerHTML=order.map((k,i)=>{
+      const off=hidden.includes(k);
+      return `<div class="ar-it" style="${off?"opacity:.45":""}">
+      <span class="ar-nm">${esc(sectionLabel(pageKey,k))}</span>
       <span class="ar-acts">
         <button class="bd-b" data-arup="${i}" ${i===0?"disabled":""}>${ic("back",14)}</button>
         <button class="bd-b down" data-ardown="${i}" ${i===order.length-1?"disabled":""}>${ic("back",14)}</button>
-      </span></div>`).join("");
+        <button class="bd-b ${off?"":"on"}" data-arhide="${esc(k)}" aria-label="${off?t("showSection"):t("hideSection")}">${ic(off?"belloff":"bell",14)}</button>
+      </span></div>`;}).join("");
     box.querySelectorAll("[data-arup]").forEach(b=>b.onclick=()=>{
       const i=+b.dataset.arup; [order[i-1],order[i]]=[order[i],order[i-1]]; paint();
     });
     box.querySelectorAll("[data-ardown]").forEach(b=>b.onclick=()=>{
       const i=+b.dataset.ardown; [order[i+1],order[i]]=[order[i],order[i+1]]; paint();
     });
+    box.querySelectorAll("[data-arhide]").forEach(b=>b.onclick=()=>{
+      const k=b.dataset.arhide, i=hidden.indexOf(k);
+      if(i>=0) hidden.splice(i,1);
+      else if(order.length-hidden.length>1) hidden.push(k);   // never hide the last one
+      paint();
+    });
   };
   paint();
+  const save=async (ord,hid)=>{
+    const po={...((S.settings&&S.settings.pageOrder)||{})}; po[pageKey]=ord;
+    const ph={...((S.settings&&S.settings.pageHidden)||{})}; ph[pageKey]=hid;
+    const next={...S.settings, pageOrder:po, pageHidden:ph};
+    if(pageKey==="dayplan") next.dayPlanOrder=ord;             // keep the old field in step
+    try{ await DB.saveSettings(next); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
   wrap.querySelector("#ar-x").onclick=()=>wrap.remove();
-  wrap.querySelector("#ar-reset").onclick=async ()=>{
-    await DB.saveSettings({...S.settings, dayPlanOrder:DAYPLAN_SECTIONS.slice()});
-    wrap.remove(); toastOk(t("saved")); render();
-  };
-  wrap.querySelector("#ar-go").onclick=async ()=>{
-    await DB.saveSettings({...S.settings, dayPlanOrder:order});
-    wrap.remove(); toastOk(t("saved")); render();
-  };
+  wrap.querySelector("#ar-reset").onclick=()=>save(PAGE_SECTIONS[pageKey].slice(),[]);
+  wrap.querySelector("#ar-go").onclick=()=>save(order,hidden);
 }
 function feedbackInner(){
-  const avg=S.feedback.length?(S.feedback.reduce((n,f)=>n+(+f.rate||0),0)/S.feedback.length).toFixed(1):"—";
-  return `<div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${avg} ★</b><span>${t("avgRate")}</span></div>
-      <div class="stat"><b>${S.feedback.length}</b><span>${t("feedback")}</span></div>
-    </div>`
-  + dayGroups("fb", S.feedback, "created_at", f=>`<div class="booking-line">
-      <span style="min-width:0"><b>${t("room")} ${esc(f.room)}</b>${f.nationality?` · ${esc(f.nationality)}`:""}
-        <br><span class="mini">${"★".repeat(+f.rate||0)}${"☆".repeat(Math.max(0,5-(+f.rate||0)))}${f.comment?` — ${esc(f.comment)}`:""}</span>
-        <br><span class="mini">${mi("user")}${esc(f.by_user||"")} · ${fmtTime(f.created_at)}</span></span>
-      <button class="btn sm warn" data-fbdel="${f.id}" style="flex:none">${ic("close",14)}</button>
-    </div>`, "feedback");
+  const list=S.feedback||[];
+  const avg=fbAvgAll(list);
+  return `<div class="row2" style="margin-bottom:12px">
+      <button class="btn" id="btn-addfb">\uFF0B ${t("fbNew")}</button>
+      <button class="btn ghost" id="btn-fbexport">${ic("download",15)} ${t("fbExport")}</button>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${avg?avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
+      <div class="stat"><b>${list.length}</b><span>${t("feedback")}</span></div>
+    </div>
+    <div class="sec"><h3>${ic("star",18)} ${t("fbByDept")}</h3>${fbDeptListCard(list)}</div>
+    <p class="mini" style="margin:-2px 0 8px">${t("fbTapHint")}</p>`
+  + dayGroups("fb", list, "created_at", fbRowHtml, "feedback");
 }
 function dashView(){
   if(S.sub.dash==="rooms") S.sub.dash="overview";   // rooms live under Guests now
@@ -6731,28 +6998,46 @@ function dashView(){
   S.orders.forEach(o=>{ if(o.nationality){ (natMap[o.nationality]=natMap[o.nationality]||new Set()).add(o.room); } });
   const nats=Object.entries(natMap).map(([n,s])=>[n,s.size]).sort((x,y)=>y[1]-x[1]);
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
-  return `<div class="screen fadein">
-    ${topBar(t("dashboard"),S.session.name)}
-        ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
-    ${attentionCard()}
-    <button class="btn ghost" id="btn-exportdata" style="margin:0 0 16px">${ic("download",16)} ${t("exportData")}</button>
-    <div class="stat-grid">
+  const parts={
+    attention: ()=>attentionCard(),
+    export:    ()=>`<button class="btn ghost" id="btn-exportdata" style="margin:0 0 16px">${ic("download",16)} ${t("exportData")}</button>`,
+    stats:     ()=>`<div class="stat-grid">
       <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
       <div class="stat"><b>${occ}%</b><span>${t("occupancy")}</span></div>
       <div class="stat"><b>${tSold}</b><span>${t("tickets")}</span></div>
       <div class="stat"><b>${wait}</b><span>${t("waitlisted")}</span></div>
       <div class="stat"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div>
       <div class="stat"><b>${people}</b><span>${t("totalPeople")}</span></div>
-    </div>
-    ${nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
+    </div>`,
+    feedback:  ()=>feedbackAnalyticsCard(),
+    nations:   ()=>nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
-    </div></div>`:""}
-    <div class="sec"><h3>${ic("star",18)} ${t("activities")}</h3>
+    </div></div>`:"",
+    activities:()=>`<div class="sec"><h3>${ic("star",18)} ${t("activities")}</h3>
       ${top.length?top.map(x=>`<div class="card booking-line" style="padding:12px 14px">
         <span><b>${esc(x.a.name)}</b> · ${t("daysShort")[x.a.day]} ${x.a.time}</span>
         <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">${ic("grid",30)}</div>${t("none")}</div>`}
+    </div>`,
+    trends:    ()=>trendsCard()
+  };
+  return `<div class="screen fadein">
+    ${topBar(t("dashboard"),S.session.name)}
+        ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
+    ${arrangeBtn("dash")}
+    ${renderParts("dash",parts)}
+  </div>`;
+}
+/* The feedback picture at a glance — tap a department to read the ratings behind it. */
+function feedbackAnalyticsCard(){
+  const list=S.feedback||[];
+  const avg=fbAvgAll(list);
+  return `<div class="sec"><h3>${ic("star",18)} ${t("fbAnalytics")}</h3>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${avg?avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
+      <div class="stat"><b>${list.length}</b><span>${t("feedback")}</span></div>
     </div>
-    ${trendsCard()}
+    ${fbDeptListCard(list)}
+    ${fbDeptStats(list).length?`<p class="mini" style="margin-top:6px">${t("fbTapHint")}</p>`:""}
   </div>`;
 }
 function managerActsInner(){
@@ -7091,8 +7376,19 @@ function buildDataset(kind){
     headers:[t("room"),t("name"),"Ticket","Qty","Status",t("handTo"),"Date"],
     rows:S.orders.map(o=>[o.room,o.guest_name,tkName(o.ticket_id),o.qty,o.status,o.collect_from||"",fmtDate(o.created_at)])};
   if(kind==="feedback") return {title:t("expFeedback"),
-    headers:[t("room"),t("nationality"),t("rate"),t("comment"),t("user"),"Date"],
-    rows:S.feedback.map(f=>[f.room,f.nationality||"",f.rate,f.comment||"",f.by_user||"",fmtDate(f.created_at)])};
+    headers:[t("room"),t("fbGuestName"),t("nationality"),t("fbOverall")]
+      .concat(FB_DEPT_KEYS.map(fbDeptLabel))
+      .concat([t("comment"),t("user"),"Date"]),
+    rows:S.feedback.map(f=>{ const d=fbDepts(f);
+      return [f.room,f.guest_name||"",f.nationality||"",fbOverall(f)||""]
+        .concat(FB_DEPT_KEYS.map(k=>+d[k]>0?+d[k]:""))
+        .concat([fbComment(f),f.by_user||"",fmtDate(f.created_at)]); })};
+  if(kind==="fbdepts"){
+    const st=fbDeptStats(S.feedback).sort((a,b)=>b.avg-a.avg);
+    return {title:t("fbDeptSheet"),
+      headers:[t("fbByDept"),t("avgRate"),t("fbResponses")],
+      rows:st.map(d=>[fbDeptLabel(d.k), d.avg.toFixed(2), d.n])};
+  }
   if(kind==="program") return {title:t("manage")+exportFilterNote(),
     headers:[t("day"),t("time"),t("actName"),t("category"),t("location"),t("entertainer"),t("capacity"),t("makeHighlight")],
     rows:exportActivities().slice().sort((x,y)=>(x.day-y.day)||String(x.time).localeCompare(String(y.time)))
@@ -7159,8 +7455,8 @@ function buildDataset(kind){
   }
   return null;
 }
-const EXPORT_KINDS=["todayplan","dayplan","monthatt","teamsummary","program","guests","bookings","requests","chat","tickets","feedback","users"];
-function exportKindLabel(k){ return {todayplan:t("todayPlanExp"),monthatt:t("attExport"),teamsummary:t("teamSummary"),program:t("manage"),dayplan:t("dayPlan"),guests:t("expGuests"),bookings:t("expBookings"),requests:t("expRequests"),chat:t("expChat"),tickets:t("expTickets"),feedback:t("expFeedback"),users:t("expUsers")}[k]; }
+const EXPORT_KINDS=["todayplan","dayplan","monthatt","teamsummary","program","guests","bookings","requests","chat","tickets","feedback","fbdepts","users"];
+function exportKindLabel(k){ return {todayplan:t("todayPlanExp"),monthatt:t("attExport"),teamsummary:t("teamSummary"),program:t("manage"),dayplan:t("dayPlan"),guests:t("expGuests"),bookings:t("expBookings"),requests:t("expRequests"),chat:t("expChat"),tickets:t("expTickets"),feedback:t("expFeedback"),fbdepts:t("fbDeptSheet"),users:t("expUsers")}[k]; }
 async function loadXLSX(){
   if(window.XLSX) return true;
   return new Promise(res=>{const sc=document.createElement("script");
@@ -7386,15 +7682,20 @@ function settingsHubView(){
   return `<div class="screen fadein">
     ${topBar(t("settingsHub"),S.session.name)}
     <p class="mini" style="margin:-4px 0 16px">${t("settingsSub")}</p>
-    ${SETTINGS_GROUPS.map(g=>`
+    ${arrangeBtn("settings")}
+    ${SETTINGS_GROUPS.map(g=>{
+      const ord=pageOrder("settings");
+      const items=g.items.filter(it=>ord.includes(it[0])).sort((a,b)=>ord.indexOf(a[0])-ord.indexOf(b[0]));
+      if(!items.length) return "";
+      return `
       <div class="set-sec">${t(g.head)}</div>
       <div class="card set-list">
-        ${g.items.map(([id,icn,lb,sub])=>`<button class="set-it" data-hub="${id}">
+        ${items.map(([id,icn,lb,sub])=>`<button class="set-it" data-hub="${id}">
           <span class="set-ic">${ic(icn,19)}</span>
           <span class="set-mid"><b>${esc(t(lb))}</b>${sub&&sub!==lb?`<span class="mini">${esc(t(sub))}</span>`:""}</span>
           <span class="set-go">${ic("back",16)}</span>
         </button>`).join("")}
-      </div>`).join("")}
+      </div>`;}).join("")}
   </div>`;
 }
 function setThemeView(){
@@ -7678,27 +7979,137 @@ function openTaskAddModal(){
     wrap.remove(); toast(t("saved")); render();
   };
 }
-function openFeedbackModal(){
+/* The full feedback sheet: who the guest is and a 1-5 score per department.
+   Nothing is compulsory except the room number, so a guest who only wants to
+   rate the food can still be recorded. */
+function openFeedbackModal(id){
+  const ex = id!=null ? (S.feedback||[]).find(f=>String(f.id)===String(id)) : null;
+  const vals = ex ? {...fbDepts(ex)} : {};
   const wrap=baseModal(`
-    <h3>${ic("star",18)} ${t("addFeedback")}</h3>
-    <label>${t("room")}</label><input id="fb-room" inputmode="numeric">
+    <h3>${ic("star",18)} ${ex?t("fbEdit"):t("fbNew")}</h3>
+    <label>${t("fbGuestName")}</label><input id="fb-name" value="${esc(ex&&ex.guest_name||"")}">
+    <label>${t("room")}</label><input id="fb-room" inputmode="numeric" value="${esc(ex&&ex.room||"")}">
     <label>${t("nationality")}</label>
-    <input id="fb-nat" list="fbnatlist"><datalist id="fbnatlist">${NATIONS.map(n=>`<option value="${n}">`).join("")}</datalist>
-    <label>${t("rate")}</label>
-    <select id="fb-rate">${[5,4,3,2,1].map(r=>`<option value="${r}">${"★".repeat(r)}${"☆".repeat(5-r)}</option>`).join("")}</select>
-    <label>${t("comment")}</label><textarea id="fb-com" rows="2"></textarea>
+    <input id="fb-nat" list="fbnatlist" value="${esc(ex&&ex.nationality||"")}"><datalist id="fbnatlist">${NATIONS.map(n=>`<option value="${n}">`).join("")}</datalist>
+    <label style="margin-top:12px">${t("fbByDept")}</label>
+    <p class="mini" style="margin:-4px 0 6px">${t("fbFormHint")}</p>
+    <div class="card" id="fb-depts" style="padding:4px 14px"></div>
+    <label style="margin-top:12px">${t("comment")}</label><textarea id="fb-com" rows="2">${esc(ex?fbComment(ex):"")}</textarea>
     <button class="btn" id="fb-go">${t("save")}</button>
     <button class="btn ghost" id="fb-x">${t("close")}</button>`);
+  const box=wrap.querySelector("#fb-depts");
+  const paint=()=>{
+    box.innerHTML=FB_DEPT_KEYS.map(k=>`<div class="fb-form-row">
+      <span class="fb-nm">${esc(fbDeptLabel(k))}</span>
+      <span class="fb-stars">${[1,2,3,4,5].map(i=>
+        `<button class="fb-st ${i<=(+vals[k]||0)?"on":""}" data-fbset="${k}|${i}" aria-label="${i}">${i<=(+vals[k]||0)?"\u2605":"\u2606"}</button>`).join("")}</span>
+      <button class="fb-clear" data-fbclr="${k}" aria-label="${t("fbNotRated")}" ${vals[k]?"":'style="visibility:hidden"'}>\u00d7</button>
+    </div>`).join("");
+    box.querySelectorAll("[data-fbset]").forEach(b=>b.onclick=()=>{
+      const [k,v]=b.dataset.fbset.split("|"); vals[k]=+v; paint();
+    });
+    box.querySelectorAll("[data-fbclr]").forEach(b=>b.onclick=()=>{ delete vals[b.dataset.fbclr]; paint(); });
+  };
+  paint();
   wrap.querySelector("#fb-x").onclick=()=>wrap.remove();
   wrap.querySelector("#fb-go").onclick=async ()=>{
     const room=wrap.querySelector("#fb-room").value.trim();
-    if(!room) return;
-    await DB.addFeedback({room,nationality:wrap.querySelector("#fb-nat").value.trim(),
-      rate:+wrap.querySelector("#fb-rate").value||5,
-      comment:wrap.querySelector("#fb-com").value.trim(),
-      by_user:S.session.username||""});
-    wrap.remove(); toast(t("saved")); render();
+    if(!room){ toastErr(t("fbNeedRoom")); return; }
+    const dep={}; FB_DEPT_KEYS.forEach(k=>{ if(+vals[k]>0) dep[k]=+vals[k]; });
+    const scores=Object.values(dep);
+    const rate = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : (ex?+ex.rate||5:5);
+    const payload={
+      room, guest_name:wrap.querySelector("#fb-name").value.trim(),
+      nationality:wrap.querySelector("#fb-nat").value.trim(),
+      rate, depts:JSON.stringify(dep),
+      comment:wrap.querySelector("#fb-com").value.trim()
+    };
+    try{
+      if(ex) await DB.updateFeedback(ex.id,payload);
+      else await DB.addFeedback({...payload, by_user:(S.session&&S.session.username)||""});
+      wrap.remove();
+      if(S.fbOldDb){ S.fbOldDb=false; openFbSqlNote(); } else toastOk(t("saved"));
+      render();
+    }catch(e){ toastErr(t("errSave")); }
   };
+}
+/* Shown once if her database is still missing the two new columns. */
+function openFbSqlNote(){
+  const wrap=baseModal(`
+    <h3>${ic("grid",20)} ${t("fbSqlNote")}</h3>
+    <p class="mini">${t("fbOldDb")}</p>
+    <div class="fb-sql">${esc(FB_SQL)}</div>
+    <button class="btn" id="fq-x">${t("close")}</button>`);
+  wrap.querySelector("#fq-x").onclick=()=>wrap.remove();
+}
+/* One feedback, opened up: every department it scored, then edit or delete. */
+function openFeedbackDetail(id){
+  const f=(S.feedback||[]).find(x=>String(x.id)===String(id));
+  if(!f) return;
+  const d=fbDepts(f);
+  const rated=FB_DEPT_KEYS.filter(k=>+d[k]>0);
+  const wrap=baseModal(`
+    <h3>${ic("star",20)} ${t("fbDetails")}</h3>
+    <p class="mini">${t("room")} ${esc(f.room)}${f.guest_name?" \u00b7 "+esc(f.guest_name):""}${f.nationality?" \u00b7 "+esc(f.nationality):""}</p>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${fbOverall(f)?fbOverall(f).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("fbOverall")}</span></div>
+      <div class="stat"><b>${rated.length}</b><span>${t("fbDepartments")}</span></div>
+    </div>
+    ${rated.length?`<div class="card" style="padding:4px 14px">${rated.map(k=>`<div class="fb-form-row">
+      <span class="fb-nm">${esc(fbDeptLabel(k))}</span>${fbStars(d[k])}</div>`).join("")}</div>`
+      :`<p class="mini">${t("fbNoDept")}</p>`}
+    ${fbComment(f)?`<p style="margin-top:10px">${esc(fbComment(f))}</p>`:""}
+    <p class="mini">${mi("user")}${esc(f.by_user||"")} \u00b7 ${fmtTime(f.created_at)}</p>
+    ${fbCanEdit(f)?`<button class="btn" id="fd-edit">${ic("pen",16)} ${t("fbEdit")}</button>
+    <button class="btn ghost warn" id="fd-del">${ic("trash",16)} ${t("delete")}</button>`:""}
+    <button class="btn ghost" id="fd-x">${t("close")}</button>`);
+  wrap.querySelector("#fd-x").onclick=()=>wrap.remove();
+  const ed=wrap.querySelector("#fd-edit");
+  if(ed) ed.onclick=()=>{ wrap.remove(); openFeedbackModal(f.id); };
+  const del=wrap.querySelector("#fd-del");
+  if(del) del.onclick=async ()=>{
+    if(!await confirmAction({question:t("confirmTitle"),note:t("cannotUndo"),danger:true})) return;
+    try{ await DB.deleteFeedback(f.id); wrap.remove(); toastOk(t("deleted")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+}
+/* One department, opened up: every rating behind the average. */
+function openDeptDetail(key){
+  const all=S.feedback||[];
+  const list=all.filter(f=>+fbDepts(f)[key]>0)
+    .sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
+  const st=fbDeptStats(all).find(x=>x.k===key)||{avg:0,n:0};
+  const wrap=baseModal(`
+    <h3>${ic("star",20)} ${esc(fbDeptLabel(key))}</h3>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${st.avg?st.avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
+      <div class="stat"><b>${st.n}</b><span>${t("fbResponses")}</span></div>
+    </div>
+    ${list.length?`<div class="card">${list.map(f=>`<div class="fb-line" data-fbjump="${esc(String(f.id))}">
+      <span style="min-width:0"><b>${t("room")} ${esc(f.room)}</b>${f.guest_name?" \u00b7 "+esc(f.guest_name):""}
+        <br><span class="mini">${fmtTime(f.created_at)}${fbComment(f)?" \u00b7 "+esc(fbComment(f)):""}</span></span>
+      ${fbStars(fbDepts(f)[key])}</div>`).join("")}</div>`
+      :`<p class="mini">${t("fbNoDept")}</p>`}
+    <button class="btn ghost" id="dd-x">${t("close")}</button>`);
+  wrap.querySelector("#dd-x").onclick=()=>wrap.remove();
+  wrap.querySelectorAll("[data-fbjump]").forEach(b=>b.onclick=()=>{
+    const fid=b.dataset.fbjump; wrap.remove(); openFeedbackDetail(fid);
+  });
+}
+/* Excel or PDF, straight from the feedback page: the sheet plus a department summary. */
+function openFeedbackExport(){
+  const wrap=baseModal(`
+    <h3>${ic("download",20)} ${t("fbExport")}</h3>
+    <p class="mini">${t("expFeedback")} \u00b7 ${t("fbDeptSheet")}</p>
+    <button class="btn" id="fe-xlsx">${ic("download",16)} ${t("exportExcel")}</button>
+    <button class="btn ghost" id="fe-pdf">${ic("download",16)} ${t("exportPdf")}</button>
+    <button class="btn ghost" id="fe-x">${t("close")}</button>`);
+  const sets=()=>[buildDataset("feedback"), buildDataset("fbdepts")].filter(Boolean);
+  wrap.querySelector("#fe-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#fe-xlsx").onclick=async ()=>{
+    await exportExcelSets(sets(),"guest-feedback-"+todayISO()); toast(t("saved"));
+  };
+  wrap.querySelector("#fe-pdf").onclick=()=>{ exportPdfSets(sets(), t("expFeedback")); wrap.remove(); };
 }
 function openNotesModal(){
   const role=S.session?S.session.role:"guest";
@@ -8213,10 +8624,10 @@ function wireCommon(){
   document.querySelectorAll("[data-tcant]").forEach(b=>b.onclick=async ()=>{
     await DB.updateTask(+b.dataset.tcant,{status:"cant"}); render();
   });
-  document.querySelectorAll("[data-fbdel]").forEach(b=>b.onclick=async ()=>{
-    await DB.deleteFeedback(+b.dataset.fbdel); toast(t("deleted")); render();
-  });
-  const fb=$("#btn-addfb"); if(fb) fb.onclick=openFeedbackModal;
+  document.querySelectorAll("[data-fbopen]").forEach(b=>b.onclick=()=>openFeedbackDetail(b.dataset.fbopen));
+  document.querySelectorAll("[data-fbdept]").forEach(b=>b.onclick=()=>openDeptDetail(b.dataset.fbdept));
+  const fbx=$("#btn-fbexport"); if(fbx) fbx.onclick=openFeedbackExport;
+  const fb=$("#btn-addfb"); if(fb) fb.onclick=()=>openFeedbackModal();
   const cp=$("#btn-chpass"); if(cp) cp.onclick=openChangePassModal;
   const ap=$("#btn-addprofile"); if(ap) ap.onclick=()=>openProfileModal(null);
   document.querySelectorAll("[data-pedit]").forEach(b=>b.onclick=()=>{
@@ -8317,7 +8728,7 @@ function wireCommon(){
   document.querySelectorAll("[data-asub]").forEach(b=>b.onclick=()=>{ S.sub.assign=b.dataset.asub; render(); });
   document.querySelectorAll("[data-aday]").forEach(b=>b.onclick=()=>{ S.assignDay=+b.dataset.aday; render(); });
   const aAuto=$("#asg-auto"); if(aAuto) aAuto.onclick=()=>openAutoAssignModal(assignDay());
-  const dpAr=$("#dp-arrange"); if(dpAr) dpAr.onclick=openArrangeModal;
+  document.querySelectorAll("[data-arrange]").forEach(b=>b.onclick=()=>openArrangeModal(b.dataset.arrange));
   const ctSel=$("#ct-select"); if(ctSel) ctSel.onclick=()=>{ S.chatSel=[]; render(); };
   const ctCancel=$("#ct-cancel"); if(ctCancel) ctCancel.onclick=()=>{ S.chatSel=null; render(); };
   const ctAll=$("#ct-all"); if(ctAll) ctAll.onclick=()=>{
@@ -8394,6 +8805,7 @@ function wireCommon(){
   document.querySelectorAll("[data-bddown]").forEach(b=>b.onclick=()=>moveMenuItem(b.dataset.bddown,1));
   document.querySelectorAll("[data-bdname]").forEach(b=>b.onclick=()=>openRenameModal(b.dataset.bdname));
   document.querySelectorAll("[data-bdhide]").forEach(b=>b.onclick=()=>toggleMenuItem(b.dataset.bdhide));
+  document.querySelectorAll("[data-bdgname]").forEach(b=>b.onclick=()=>openGroupRenameModal(b.dataset.bdgname));
   document.querySelectorAll("[data-bdedit]").forEach(b=>b.onclick=()=>pbOpen(builderRole(), b.dataset.bdedit));
   document.querySelectorAll("[data-bddel]").forEach(b=>b.onclick=()=>openCustomPageModal(b.dataset.bddel));
   const bdAdd=$("#bd-add"); if(bdAdd) bdAdd.onclick=()=>pbOpen(builderRole(), null);
