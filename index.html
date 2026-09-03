@@ -1506,7 +1506,18 @@ html{font-size:calc(16px * var(--fscale,1))}
 .fb-dept:not(:last-child){border-bottom:1px solid var(--line)}
 .fb-bar{flex:none;width:74px;height:7px;border-radius:999px;background:var(--sand);overflow:hidden}
 .fb-bar i{display:block;height:100%;border-radius:999px;background:var(--bronze)}
-.fb-dept.low .fb-bar i{background:#C0603F}
+.fb-bar i{background:#C9A227}
+.fb-dept.low .fb-bar i{background:#C0392B}
+.fb-dept.mid .fb-bar i{background:#E08A2E}
+.fb-dept.top .fb-bar i{background:#C9A227}
+.fb-sline{letter-spacing:1px}
+.fb-sline.low{color:#C0392B}
+.fb-sline.mid{color:#E08A2E}
+.fb-sline.top{color:#C9A227}
+.fb-sg{color:var(--line)}
+.fb-stars.low .fb-st.on{color:#C0392B}
+.fb-stars.mid .fb-st.on{color:#E08A2E}
+.fb-stars.top .fb-st.on{color:#C9A227}
 .fb-val{flex:none;width:36px;text-align:end;font-weight:700;font-size:15px}
 .fb-line{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 2px;cursor:pointer}
 .fb-line:not(:last-child){border-bottom:1px solid var(--line)}
@@ -1667,6 +1678,10 @@ Object.assign(DICT.en, {
   fbResponses:"ratings",
   fbExport:"Export feedback",
   fbTapHint:"Tap a department or a feedback to open the details.",
+  fbTapOne:"Tap a feedback to open the details.",
+  fbCollectedBy:"Collected by",
+  allMonths:"All months",
+  fbFilterHead:"What to export",
   fbFormHint:"Tap the stars for each department. Leave a department empty if the guest did not rate it.",
   fbNoDept:"No department was rated yet.",
   fbNeedRoom:"Please write the room number",
@@ -1702,6 +1717,17 @@ const FB_SQL="alter table feedback add column if not exists depts text;\n"
   +"alter table feedback add column if not exists guest_name text;";
 const FB_MARK="\n#ratings ";
 function fbDeptLabel(k){ return t("d_"+k); }
+/* Feedback stores the login name (a shirt number). Everywhere it is SHOWN we
+   want the person's real display name instead. */
+function teamName(username){
+  const un=String(username||"").trim();
+  if(!un) return "";
+  const u=(S.users||[]).find(x=>String(x.username)===un)
+       || (S.profiles||[]).find(x=>String(x.username)===un);
+  return (u && (u.display_name||u.name)) || un;
+}
+/* 1-3 red, 4 orange, 5 gold — the same scale in the app and in the export. */
+function fbTone(n){ n=+n||0; return n<=0?"none":n<3.5?"low":n<4.5?"mid":"top"; }
 function fbDepts(f){
   if(!f) return {};
   let d=f.depts;
@@ -1730,8 +1756,13 @@ function fbOverall(f){
 }
 function fbStars(n){
   n=+n||0;
-  return `<span class="fb-stars">${[1,2,3,4,5].map(i=>
+  return `<span class="fb-stars ${fbTone(n)}">${[1,2,3,4,5].map(i=>
     `<span class="fb-st ${i<=n?"on":""}">${i<=n?"\u2605":"\u2606"}</span>`).join("")}</span>`;
+}
+/* Compact coloured stars for a list row. */
+function fbStarLine(n){
+  const r=Math.round(+n||0);
+  return `<span class="fb-sline ${fbTone(r)}">${"\u2605".repeat(r)}<span class="fb-sg">${"\u2606".repeat(Math.max(0,5-r))}</span></span>`;
 }
 function fbDeptStats(list){
   const acc={};
@@ -1748,7 +1779,7 @@ function fbAvgAll(list){
 function fbDeptListCard(list){
   const st=fbDeptStats(list).sort((a,b)=>b.avg-a.avg);
   if(!st.length) return `<div class="empty"><div class="big">${ic("star",30)}</div>${t("fbNoDept")}</div>`;
-  return `<div class="card">${st.map(d=>`<button class="fb-dept ${d.avg<3.5?"low":""}" data-fbdept="${esc(d.k)}">
+  return `<div class="card">${st.map(d=>`<button class="fb-dept ${fbTone(d.avg)}" data-fbdept="${esc(d.k)}">
     <span class="fb-nm">${esc(fbDeptLabel(d.k))}<br><span class="mini">${d.n} ${t("fbResponses")}</span></span>
     <span class="fb-bar"><i style="width:${Math.round(d.avg/5*100)}%"></i></span>
     <span class="fb-val">${d.avg.toFixed(1)}</span></button>`).join("")}</div>`;
@@ -1762,10 +1793,9 @@ function fbRowHtml(f){
   const who=[f.guest_name?esc(f.guest_name):"", f.nationality?esc(f.nationality):""].filter(Boolean).join(" \u00b7 ");
   return `<div class="fb-line" data-fbopen="${esc(String(f.id))}">
     <span style="min-width:0"><b>${t("room")} ${esc(f.room)}</b>${who?` \u00b7 ${who}`:""}
-      <br><span class="mini">${"\u2605".repeat(Math.round(fbOverall(f)))}${"\u2606".repeat(Math.max(0,5-Math.round(fbOverall(f))))}
-        ${fbOverall(f)?` ${fbOverall(f).toFixed(1)}`:""}${n?` \u00b7 ${n} ${t("fbDepartments").toLowerCase()}`:""}</span>
+      <br><span class="mini">${fbStarLine(fbOverall(f))}${fbOverall(f)?` ${fbOverall(f).toFixed(1)}`:""}${n?` \u00b7 ${n} ${t("fbDepartments").toLowerCase()}`:""}</span>
       ${fbComment(f)?`<br><span class="mini">${esc(fbComment(f))}</span>`:""}
-      <br><span class="mini">${mi("user")}${esc(f.by_user||"")} \u00b7 ${fmtTime(f.created_at)}</span></span>
+      <br><span class="mini">${mi("user")}${esc(teamName(f.by_user))} \u00b7 ${fmtTime(f.created_at)}</span></span>
     <span class="fb-chev">${ic("back",16)}</span>
   </div>`;
 }
@@ -6980,8 +7010,7 @@ function feedbackInner(){
       <div class="stat"><b>${avg?avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${list.length}</b><span>${t("feedback")}</span></div>
     </div>
-    <div class="sec"><h3>${ic("star",18)} ${t("fbByDept")}</h3>${fbDeptListCard(list)}</div>
-    <p class="mini" style="margin:-2px 0 8px">${t("fbTapHint")}</p>`
+    <p class="mini" style="margin:-2px 0 8px">${t("fbTapOne")}</p>`
   + dayGroups("fb", list, "created_at", fbRowHtml, "feedback");
 }
 function dashView(){
@@ -7375,17 +7404,25 @@ function buildDataset(kind){
   if(kind==="tickets") return {title:t("expTickets"),
     headers:[t("room"),t("name"),"Ticket","Qty","Status",t("handTo"),"Date"],
     rows:S.orders.map(o=>[o.room,o.guest_name,tkName(o.ticket_id),o.qty,o.status,o.collect_from||"",fmtDate(o.created_at)])};
-  if(kind==="feedback") return {title:t("expFeedback"),
-    headers:[t("room"),t("fbGuestName"),t("nationality"),t("fbOverall")]
-      .concat(FB_DEPT_KEYS.map(fbDeptLabel))
-      .concat([t("comment"),t("user"),"Date"]),
-    rows:S.feedback.map(f=>{ const d=fbDepts(f);
-      return [f.room,f.guest_name||"",f.nationality||"",fbOverall(f)||""]
-        .concat(FB_DEPT_KEYS.map(k=>+d[k]>0?+d[k]:""))
-        .concat([fbComment(f),f.by_user||"",fmtDate(f.created_at)]); })};
+  if(kind==="feedback"){
+    const list=exportFeedbackList();
+    return {title:t("expFeedback")+fbFilterNote(),
+      landscape:true,
+      stars:{from:3, to:3+FB_DEPT_KEYS.length},          // Overall + every department
+      notes:list.map(f=>fbComment(f)),                    // printed full width under the row
+      noteLabel:t("comment"),
+      headers:[t("room"),t("fbGuestName"),t("nationality"),t("fbOverall")]
+        .concat(FB_DEPT_KEYS.map(fbDeptLabel))
+        .concat([t("fbCollectedBy"),"Date"]),
+      rows:list.map(f=>{ const d=fbDepts(f);
+        return [f.room,f.guest_name||"",f.nationality||"",fbOverall(f)||""]
+          .concat(FB_DEPT_KEYS.map(k=>+d[k]>0?+d[k]:""))
+          .concat([teamName(f.by_user),fmtDate(f.created_at)]); })};
+  }
   if(kind==="fbdepts"){
-    const st=fbDeptStats(S.feedback).sort((a,b)=>b.avg-a.avg);
-    return {title:t("fbDeptSheet"),
+    const st=fbDeptStats(exportFeedbackList()).sort((a,b)=>b.avg-a.avg);
+    return {title:t("fbDeptSheet")+fbFilterNote(),
+      stars:{from:1, to:1},
       headers:[t("fbByDept"),t("avgRate"),t("fbResponses")],
       rows:st.map(d=>[fbDeptLabel(d.k), d.avg.toFixed(2), d.n])};
   }
@@ -7472,14 +7509,19 @@ async function exportExcelSets(sets,fname){
   if(ok){
     const wb=XLSX.utils.book_new();
     sets.forEach(ds=>{
-      const ws=XLSX.utils.aoa_to_sheet([ds.headers,...ds.rows]);
+      const headers=ds.notes ? ds.headers.concat([ds.noteLabel||"Note"]) : ds.headers;
+      const rows=ds.notes ? ds.rows.map((r,i)=>r.concat([ds.notes[i]||""])) : ds.rows;
+      const ws=XLSX.utils.aoa_to_sheet([headers,...rows]);
       const name=(ds.title||"Sheet").replace(/[\\/?*\[\]:]/g,"").slice(0,28)||"Sheet";
       XLSX.utils.book_append_sheet(wb,ws,name);
     });
     XLSX.writeFile(wb,fname+".xlsx");
   } else {
     const lines=[];
-    sets.forEach(ds=>{ lines.push([ds.title]); lines.push(ds.headers); ds.rows.forEach(r=>lines.push(r)); lines.push([]); });
+    sets.forEach(ds=>{
+      const headers=ds.notes ? ds.headers.concat([ds.noteLabel||"Note"]) : ds.headers;
+      const rows=ds.notes ? ds.rows.map((r,i)=>r.concat([ds.notes[i]||""])) : ds.rows;
+      lines.push([ds.title]); lines.push(headers); rows.forEach(r=>lines.push(r)); lines.push([]); });
     const csv=lines.map(r=>r.map(c=>'"'+String(c==null?"":c).replace(/"/g,'""')+'"').join(";")).join("\n");
     downloadBlob(fname+".csv",new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));
   }
@@ -7494,12 +7536,40 @@ function exportPdfSets(sets,titleText){
     +".sub{color:#8A7358;font-size:12px;margin-bottom:6px}@media print{h2{page-break-after:avoid}}"
     +"table.sig{margin-top:26px;page-break-inside:avoid}"
     +"table.sig th{text-align:center;font-size:11px;letter-spacing:.04em;text-transform:uppercase}"
-    +"td.sigbox{height:74px;border:1px solid #E4D3BC}";
+    +"td.sigbox{height:74px;border:1px solid #E4D3BC}"
+    +"table.rated{font-size:10px}table.rated th{font-size:9px;padding:5px 3px;line-height:1.25}"
+    +"table.rated td{padding:4px 3px}"
+    +"td.st{text-align:center;white-space:nowrap;font-size:11px;letter-spacing:0}"
+    +".sg{color:#DDD1BE}.nr{color:#CFC3B0}"
+    +".sx{display:block;font-size:9px;color:#8A7358;letter-spacing:0}"
+    +"tr.note td{background:#FBF7F0;color:#4A3826;font-size:11px;border-top:0;line-height:1.5}"
+    +"tr.note b{color:#8A7358;font-weight:600}"
+    +"tr.main td{border-bottom:0}"
+    +(sets.some(d=>d.landscape)?"@page{size:A4 landscape;margin:12mm}":"");
+  const starCell=(v,exact)=>{
+    const n=Math.round(+v||0);
+    if(!n) return '<span class=nr>\u2014</span>';
+    const col = n<=3 ? "#C0392B" : n===4 ? "#E08A2E" : "#C9A227";
+    return '<span style="color:'+col+'">'+"\u2605".repeat(n)+'</span>'
+      +'<span class=sg>'+"\u2606".repeat(5-n)+'</span>'
+      +(exact!=null?'<span class=sx>'+esc2(exact)+'</span>':'');
+  };
   let html="<h1>"+esc2(titleText)+"</h1><div class=sub>"+esc2(new Date().toLocaleString())+"</div>";
   sets.forEach(ds=>{
-    html+="<h2>"+esc2(ds.title)+"</h2><table><thead><tr>"
+    html+="<h2>"+esc2(ds.title)+"</h2><table"+(ds.stars?" class=rated":"")+"><thead><tr>"
       +ds.headers.map(h=>"<th>"+esc2(h)+"</th>").join("")+"</tr></thead><tbody>";
-    html+=ds.rows.map(r=>"<tr>"+r.map(c=>"<td>"+esc2(c)+"</td>").join("")+"</tr>").join("");
+    html+=ds.rows.map((r,ri)=>{
+      const hasNote=ds.notes && ds.notes[ri];
+      let out="<tr"+(hasNote?" class=main":"")+">"+r.map((c,ci)=>{
+        const isStar=ds.stars && ci>=ds.stars.from && ci<=ds.stars.to;
+        if(!isStar) return "<td>"+esc2(c)+"</td>";
+        const exact = ds.exact ? ds.exact[ri] : (ci===ds.stars.from && String(c).includes(".") ? c : null);
+        return "<td class=st>"+starCell(c, exact)+"</td>";
+      }).join("")+"</tr>";
+      if(hasNote) out+="<tr class=note><td colspan="+ds.headers.length+"><b>"
+        +esc2(ds.noteLabel||"")+":</b> "+esc2(ds.notes[ri])+"</td></tr>";
+      return out;
+    }).join("");
     if(!ds.rows.length) html+="<tr><td colspan="+ds.headers.length+" style=\"color:#999\">—</td></tr>";
     html+="</tbody></table>";
     if(ds.signatures){
@@ -7536,6 +7606,35 @@ function exportActivities(){
     .filter(a=>d==null || a.day===d)
     .filter(a=>inExportSlot(a.time));
 }
+/* Feedback the manager asked for: a month, a weekday and a part of the day.
+   All three are optional and stack. */
+function exportFeedbackList(){
+  const mk=S.fbMonth||"", d=expDay(), slot=expSlot();
+  const list=(S.feedback||[]).filter(f=>{
+    const ts=f.created_at?new Date(f.created_at):null;
+    if(!ts || isNaN(ts.getTime())) return !mk && d==null && !slot;
+    if(mk && localMonthKey(ts)!==mk) return false;
+    if(d!=null && (ts.getDay()+6)%7 !== d) return false;
+    if(slot){
+      const h=ts.getHours();
+      if(slot==="morning"   && !(h<12)) return false;
+      if(slot==="afternoon" && !(h>=12 && h<17)) return false;
+      if(slot==="evening"   && !(h>=17)) return false;
+    }
+    return true;
+  });
+  return list.sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
+}
+function localMonthKey(dt){
+  return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0");
+}
+function fbFilterNote(){
+  const bits=[];
+  if(S.fbMonth) bits.push(monthLabel(S.fbMonth));
+  const d=expDay(); if(d!=null) bits.push(t("days")[d]||"");
+  const sl=expSlot(); if(sl) bits.push(t(sl+"Part"));
+  return bits.length ? " \u00b7 "+bits.join(" \u00b7 ") : "";
+}
 function exportFilterNote(){
   const bits=[];
   const d=expDay(); if(d!=null) bits.push(t("days")[d]||"");
@@ -7559,6 +7658,8 @@ function exportTitle(sets){
 }
 function openExportModal(){
   let picked=new Set(["guests"]);
+  S.fbMonth="";                       // the month picker here belongs to attendance
+
   const wrap=baseModal(`
     <h3>${ic("download",20)} ${t("exportData")}</h3>
     <p class="mini" style="margin-bottom:10px">${t("exportWhat")}</p>
@@ -8059,7 +8160,7 @@ function openFeedbackDetail(id){
       <span class="fb-nm">${esc(fbDeptLabel(k))}</span>${fbStars(d[k])}</div>`).join("")}</div>`
       :`<p class="mini">${t("fbNoDept")}</p>`}
     ${fbComment(f)?`<p style="margin-top:10px">${esc(fbComment(f))}</p>`:""}
-    <p class="mini">${mi("user")}${esc(f.by_user||"")} \u00b7 ${fmtTime(f.created_at)}</p>
+    <p class="mini">${mi("user")}${t("fbCollectedBy")}: ${esc(teamName(f.by_user))} \u00b7 ${fmtTime(f.created_at)}</p>
     ${fbCanEdit(f)?`<button class="btn" id="fd-edit">${ic("pen",16)} ${t("fbEdit")}</button>
     <button class="btn ghost warn" id="fd-del">${ic("trash",16)} ${t("delete")}</button>`:""}
     <button class="btn ghost" id="fd-x">${t("close")}</button>`);
@@ -8100,16 +8201,47 @@ function openDeptDetail(key){
 function openFeedbackExport(){
   const wrap=baseModal(`
     <h3>${ic("download",20)} ${t("fbExport")}</h3>
-    <p class="mini">${t("expFeedback")} \u00b7 ${t("fbDeptSheet")}</p>
-    <button class="btn" id="fe-xlsx">${ic("download",16)} ${t("exportExcel")}</button>
-    <button class="btn ghost" id="fe-pdf">${ic("download",16)} ${t("exportPdf")}</button>
+    <p class="mini">${t("fbFilterHead")}</p>
+    <label>${t("whichMonth")}</label>
+    <select id="fe-month">
+      <option value="">${t("allMonths")}</option>
+      ${exportMonthOptions().map(([mk,lb])=>`<option value="${mk}" ${mk===S.fbMonth?"selected":""}>${esc(lb)}</option>`).join("")}
+    </select>
+    <div class="row2" style="margin-top:12px">
+      <div><label>${t("whichDay")}</label>
+        <select id="fe-day">
+          <option value="">${t("allDays")}</option>
+          ${t("days").map((d,i)=>`<option value="${i}" ${String(S.exportDay)===String(i)?"selected":""}>${esc(d)}</option>`).join("")}
+        </select></div>
+      <div><label>${t("whichTime")}</label>
+        <select id="fe-slot">
+          <option value="">${t("allDayLong")}</option>
+          ${["morning","afternoon","evening"].map(k=>`<option value="${k}" ${S.exportSlot===k?"selected":""}>${t(k+"Part")}</option>`).join("")}
+        </select></div>
+    </div>
+    <p class="mini" id="fe-note" style="margin-top:8px"></p>
+    <button class="btn" id="fe-pdf">${ic("download",16)} ${t("exportPdf")}</button>
+    <button class="btn ghost" id="fe-xlsx">${ic("download",16)} ${t("exportExcel")}</button>
     <button class="btn ghost" id="fe-x">${t("close")}</button>`);
-  const sets=()=>[buildDataset("feedback"), buildDataset("fbdepts")].filter(Boolean);
+  const mSel=wrap.querySelector("#fe-month"), dSel=wrap.querySelector("#fe-day"), sSel=wrap.querySelector("#fe-slot");
+  const note=wrap.querySelector("#fe-note");
+  const apply=()=>{
+    if(mSel) S.fbMonth=mSel.value;
+    if(dSel) S.exportDay=dSel.value;
+    if(sSel) S.exportSlot=sSel.value;
+    const n=exportFeedbackList().length;
+    if(note) note.textContent = (S.fbMonth||S.exportDay!==""||S.exportSlot)
+      ? t("filterNote")+fbFilterNote().replace(/^ \u00b7 /," ")+" \u2014 "+n+" "+t("feedback")
+      : t("noFilterNote")+" "+n+" "+t("feedback");
+  };
+  [mSel,dSel,sSel].forEach(el=>{ if(el) el.onchange=apply; });
+  apply();
+  const sets=()=>{ apply(); return [buildDataset("feedback"), buildDataset("fbdepts")].filter(Boolean); };
   wrap.querySelector("#fe-x").onclick=()=>wrap.remove();
   wrap.querySelector("#fe-xlsx").onclick=async ()=>{
     await exportExcelSets(sets(),"guest-feedback-"+todayISO()); toast(t("saved"));
   };
-  wrap.querySelector("#fe-pdf").onclick=()=>{ exportPdfSets(sets(), t("expFeedback")); wrap.remove(); };
+  wrap.querySelector("#fe-pdf").onclick=()=>{ exportPdfSets(sets(), t("expFeedback")+fbFilterNote()); wrap.remove(); };
 }
 function openNotesModal(){
   const role=S.session?S.session.role:"guest";
