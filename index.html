@@ -1524,6 +1524,11 @@ html{font-size:calc(16px * var(--fscale,1))}
 .fb-chev{flex:none;opacity:.38;transform:rotate(180deg)}
 .bd-sec-head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   font-weight:700;margin:16px 0 6px}
+.fb-rooms{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.fb-rooms::-webkit-scrollbar{display:none}
+.fb-rchip{flex:none;border:1px solid var(--line);background:var(--card);color:inherit;
+  border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.fb-rchip:active{background:var(--sand)}
 .fb-sql{font-size:11px;background:var(--sand);border-radius:8px;padding:8px 10px;
   white-space:pre-wrap;word-break:break-word;margin:6px 0 2px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .bk-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 2px}
@@ -1682,6 +1687,8 @@ Object.assign(DICT.en, {
   fbCollectedBy:"Collected by",
   allMonths:"All months",
   fbFilterHead:"What to export",
+  fbRoomHint:"Type the room number — if the guest has an account their name and nationality fill in by themselves.",
+  fbFoundGuest:"Guest found",
   fbFormHint:"Tap the stars for each department. Leave a department empty if the guest did not rate it.",
   fbNoDept:"No department was rated yet.",
   fbNeedRoom:"Please write the room number",
@@ -2829,6 +2836,24 @@ function myOrders(){ const g=S.session; if(!g||g.role!=="guest") return [];
 function myRequestsList(){ const g=S.session; if(!g||g.role!=="guest") return [];
   return S.requests.filter(r=>r.room===g.room); }
 function accountName(room){ const a=S.accounts.find(x=>x.room===room); return a?a.name:room; }
+/* The registered guest behind a room number, matched loosely so 0102 finds 102. */
+function guestForRoom(room){
+  const r=String(room||"").trim();
+  if(!r) return null;
+  const list=S.accounts||[];
+  return list.find(a=>String(a.room||"")===r)
+      || list.find(a=>String(a.username||"")===r)
+      || list.find(a=>String(a.room||"").replace(/^0+/,"")===r.replace(/^0+/,"") && r.replace(/^0+/,""))
+      || null;
+}
+/* Every room the app knows about — the registered guests first, then any
+   empty room from the room list, so she can pick instead of typing. */
+function knownRooms(){
+  const out=[];
+  (S.accounts||[]).forEach(a=>{ const r=String(a.room||"").trim(); if(r&&!out.includes(r)) out.push(r); });
+  (S.rooms||[]).forEach(x=>{ const r=String(x.room||"").trim(); if(r&&!out.includes(r)) out.push(r); });
+  return out.sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
+}
 function unreadFor(role){
   if(role==="guest"){ const g=S.session; return S.messages.filter(m=>m.room===g.room&&m.sender==="team"&&!m.read_by_guest).length; }
   return unreadGuests()+unreadTeam();
@@ -8086,12 +8111,19 @@ function openTaskAddModal(){
 function openFeedbackModal(id){
   const ex = id!=null ? (S.feedback||[]).find(f=>String(f.id)===String(id)) : null;
   const vals = ex ? {...fbDepts(ex)} : {};
+  const rooms=knownRooms();
   const wrap=baseModal(`
     <h3>${ic("star",18)} ${ex?t("fbEdit"):t("fbNew")}</h3>
-    <label>${t("fbGuestName")}</label><input id="fb-name" value="${esc(ex&&ex.guest_name||"")}">
-    <label>${t("room")}</label><input id="fb-room" inputmode="numeric" value="${esc(ex&&ex.room||"")}">
+    <label>${t("room")}</label>
+    <input id="fb-room" inputmode="numeric" list="fbroomlist" autocomplete="off" value="${esc(ex&&ex.room||"")}">
+    <datalist id="fbroomlist">${rooms.map(r=>`<option value="${esc(r)}">`).join("")}</datalist>
+    ${rooms.length?`<div class="fb-rooms" id="fb-roomchips">${rooms.slice(0,40).map(r=>
+      `<button class="fb-rchip" data-fbroom="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:""}
+    <p class="mini" id="fb-found" style="margin:6px 0 0">${t("fbRoomHint")}</p>
+    <label style="margin-top:12px">${t("fbGuestName")}</label><input id="fb-name" value="${esc(ex&&ex.guest_name||"")}">
     <label>${t("nationality")}</label>
-    <input id="fb-nat" list="fbnatlist" value="${esc(ex&&ex.nationality||"")}"><datalist id="fbnatlist">${NATIONS.map(n=>`<option value="${n}">`).join("")}</datalist>
+    ${nationField("fb-natsel","fb-nattxt", ex&&ex.nationality||"")}
+    <p class="mini" style="margin:4px 0 0">${t("natOtherHint")}</p>
     <label style="margin-top:12px">${t("fbByDept")}</label>
     <p class="mini" style="margin:-4px 0 6px">${t("fbFormHint")}</p>
     <div class="card" id="fb-depts" style="padding:4px 14px"></div>
@@ -8112,6 +8144,38 @@ function openFeedbackModal(id){
     box.querySelectorAll("[data-fbclr]").forEach(b=>b.onclick=()=>{ delete vals[b.dataset.fbclr]; paint(); });
   };
   paint();
+  wireNatPicker(wrap,"fb-natsel","fb-nattxt");
+  /* Look the room up as she types: a registered guest fills in their own name
+     and nationality, but anything she typed herself is left alone. */
+  const roomIn=wrap.querySelector("#fb-room");
+  const nameIn=wrap.querySelector("#fb-name");
+  const natSel=wrap.querySelector("#fb-natsel");
+  const natTxt=wrap.querySelector("#fb-nattxt");
+  const found=wrap.querySelector("#fb-found");
+  let nameTouched=!!(ex&&ex.guest_name), natTouched=!!(ex&&ex.nationality);
+  if(nameIn) nameIn.oninput=()=>{ nameTouched=true; };
+  if(natSel) natSel.addEventListener("change",()=>{ natTouched=true; });
+  if(natTxt) natTxt.oninput=()=>{ natTouched=true; };
+  const setNat=v=>{
+    if(!natSel) return;
+    const known=NATIONS.includes(v);
+    natSel.value = v ? (known?v:"Other") : "";
+    if(natTxt){ natTxt.value = (v && !known) ? v : ""; natTxt.style.display = natSel.value==="Other" ? "" : "none"; }
+  };
+  const lookup=()=>{
+    const g=guestForRoom(roomIn?roomIn.value:"");
+    if(!found) return;
+    if(!roomIn || !roomIn.value.trim()){ found.textContent=t("fbRoomHint"); return; }
+    if(!g){ found.textContent=t("noGuestAccount"); return; }
+    found.textContent=t("fbFoundGuest")+": "+(g.name||g.room)+(g.nationality?" \u00b7 "+g.nationality:"");
+    if(!nameTouched && nameIn) nameIn.value=g.name||"";
+    if(!natTouched) setNat(g.nationality||"");
+  };
+  if(roomIn){ roomIn.oninput=lookup; roomIn.onchange=lookup; }
+  wrap.querySelectorAll("[data-fbroom]").forEach(b=>b.onclick=()=>{
+    if(roomIn){ roomIn.value=b.dataset.fbroom; lookup(); }
+  });
+  lookup();
   wrap.querySelector("#fb-x").onclick=()=>wrap.remove();
   wrap.querySelector("#fb-go").onclick=async ()=>{
     const room=wrap.querySelector("#fb-room").value.trim();
@@ -8121,7 +8185,7 @@ function openFeedbackModal(id){
     const rate = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : (ex?+ex.rate||5:5);
     const payload={
       room, guest_name:wrap.querySelector("#fb-name").value.trim(),
-      nationality:wrap.querySelector("#fb-nat").value.trim(),
+      nationality:readNatField(wrap,"fb-natsel","fb-nattxt"),
       rate, depts:JSON.stringify(dep),
       comment:wrap.querySelector("#fb-com").value.trim()
     };
