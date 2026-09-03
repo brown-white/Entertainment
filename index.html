@@ -1535,6 +1535,8 @@ html{font-size:calc(16px * var(--fscale,1))}
 .dc-cell.wide{grid-column:1 / -1}
 .dc-cell.wide b.ev-line{display:block;font-size:14px;margin-top:2px}
 .dc-cell.wide b.ev-line i{opacity:.6;font-style:normal;font-weight:400}
+.tl-row.mine{background:rgba(185,138,92,.10);border-inline-start:3px solid var(--bronze)}
+[data-theme="dark"] .tl-row.mine{background:rgba(217,180,127,.12)}
 </style>
 </head>
 <body>
@@ -6241,7 +6243,9 @@ function myWorkDayView(){
     return `<div class="screen fadein">
       ${topBar(t("myWorkDay"),S.session.name)}
       <div class="empty"><div class="big">${ic("users",30)}</div>${t("noNumber")}</div>
-      ${dayDetailCard(day,null)}
+      ${dayPlanInfoCard(day)}
+      ${dayPlanTimes(day)}
+      ${dayPlanStandards(day)}
     </div>`;
   }
   const info=personDayInfo(num,day);
@@ -6269,58 +6273,13 @@ function myWorkDayView(){
     ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
       <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
       ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
-    ${dayDetailCard(day,num)}
+    ${dayPlanInfoCard(day)}
+    ${dayPlanTimes(day)}
+    ${dayPlanStandards(day)}
   </div>`;
 }
 /* full day detail: theme, dress, timings, show — used by staff + manager */
 /* The day's special events (day events + parties) pulled from the real programme */
-function eventsCard(day){
-  const evs=S.activities.filter(a=>{
-    const c=normCat(a);
-    return a.day===day && (c==="mEvents" || c==="eParty");
-  }).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
-  if(!evs.length) return `<div class="card"><p class="mini" style="padding:4px 2px">${t("noEventsToday")}</p></div>`;
-  return `<div class="card evcard">${evs.map(a=>`
-    <div class="ev-row">
-      <span class="ev-time">${esc(String(a.time||"").split(/\s*[–—-]\s*/)[0])}</span>
-      <span class="ev-mid"><b>${statusDot(a)}${esc(a.name)}</b>
-        ${a.location?`<span class="mini">${esc(a.location)}</span>`:""}</span>
-    </div>`).join("")}</div>`;
-}function dayDetailCard(day,num){
-  const dp=dayPlanFor(day);
-  const info=num?personDayInfo(num,day):null;
-  const stdRows=DAILY_STANDARDS.map(r=>{
-    const title=t(r.k);
-    let note=r.nk?t(r.nk):"";
-    // the "finish morning" note only applies on practice days; otherwise hide it
-    if(r.morning){ note = dp.practice ? t("practiceInline") : ""; }
-    return `<div class="std-row"><span class="std-t">${esc(r.time)}</span>
-      <span class="std-x"><b>${esc(title)}</b>${note?`<span class="mini"> · ${esc(note)}</span>`:""}</span></div>`;
-  }).join("");
-  return `<div class="sec"><h3>${ic("calendar",18)} ${esc(t("days")[dp.day]||dp.name)}</h3>
-    <div class="card daycard">
-      <div class="dc-grid">
-        <div class="dc-cell"><span>${t("restaurantTheme")}</span><b>${esc(dp.theme)}</b></div>
-        <div class="dc-cell"><span>${t("dressCode")}</span><b>${esc(dp.dress)}</b></div>
-        <div class="dc-cell"><span>${t("dayOff")}</span><b>${personTags(dp.off)}</b></div>
-      </div>
-      ${dp.practice||dp.makeup?`<div class="dc-flag">${ic("clock",15)} ${
-        dp.practice ? t("practiceHead")+" · "+esc(t("practiceWindow"))+" · "+t("practiceDays") : ""
-      }${dp.practice&&dp.makeup?" · ":""}${
-        dp.makeup ? t("makeupPractice")+": "+esc(makeupText(dp.makeup)) : ""
-      }</div>`:""}
-    </div>
-    <h3 style="margin-top:18px">${ic("sparkle",17)} ${t("eventsToday")}</h3>
-    ${eventsCard(day)}
-    <h3 style="margin-top:18px">${ic("star",17)} ${t("eveningShowLbl")}</h3>
-    <div class="card showcard">
-      <div class="sc-row"><span class="mini">${t("eveningShowLbl")}</span><b class="serif">${esc(dp.eveningShow)}</b><span class="mini">${esc(dp.showTime)} · ${esc(dp.showLoc)}</span></div>
-      ${dp.liveBand?`<div class="sc-row"><span class="mini">${t("liveBandLbl")}</span><span>${esc(dp.liveBand)}</span></div>`:""}
-    </div>
-    <h3 style="margin-top:18px">${ic("clock",17)} ${t("dailyStandards")}</h3>
-    <div class="card stdcard">${stdRows}</div>
-  </div>`;
-}
 function staffFeedbackView(){
   const mine=S.feedback.filter(f=>f.by_user===S.session.username);
   return `<div class="screen fadein">
@@ -6531,6 +6490,14 @@ function entertainerName(raw){
     return hit ? (hit.display_name||hit.username) : p;
   }).filter(Boolean).join(", ");
 }
+/* is this the logged-in entertainer's own activity? */
+function isMineAct(a){
+  if(!S.session || S.session.role!=="staff") return false;
+  const me=String(S.session.name||"").toLowerCase();
+  const un=String(S.session.username||"").toLowerCase();
+  return String(a && a.entertainer||"").toLowerCase().split(/\s*[,;\/]\s*/)
+    .map(x=>x.trim()).some(x=>x && (x===me || x===un || entertainerName(x).toLowerCase()===me));
+}
 function dayTimeline(day){
   /* Only the activity rota — the events, the band and the show live in the
      day information panel above, so nothing is said twice. */
@@ -6546,7 +6513,7 @@ function dayTimeline(day){
     const rows=all.filter(x=>{ const m=timeToMin(x.time); return m!=null && m>=sl.from && m<sl.to; });
     return `<div class="tl-block">
       <div class="tl-head"><span class="tl-dot ${sl.k}"></span>${t(sl.k+"Part")}<span class="tl-n">${rows.length}</span></div>
-      ${rows.length?rows.map(x=>`<div class="tl-row ${x._tag?("is-"+x._tag):""}">
+      ${rows.length?rows.map(x=>`<div class="tl-row ${x._tag?("is-"+x._tag):""}${isMineAct(x)?" mine":""}">
           <span class="tl-t">${esc(x.time||"")}</span>
           <span class="tl-x"><b>${esc(x.name)}</b>${x.location?`<span class="mini">${esc(x.location)}</span>`:""}
             ${entertainerName(x.entertainer)?`<span class="mini who">${esc(entertainerName(x.entertainer))}</span>`:""}</span>
