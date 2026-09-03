@@ -1689,6 +1689,15 @@ Object.assign(DICT.en, {
   fbFilterHead:"What to export",
   fbRoomHint:"Type the room number — if the guest has an account their name and nationality fill in by themselves.",
   fbFoundGuest:"Guest found",
+  fbExactDate:"One exact date (optional)",
+  fbExactHint:"Leave this empty to take the whole month.",
+  fbReport:"Guest Feedback Report",
+  fbPrepared:"Prepared",
+  fbCollected:"Feedback collected",
+  fbHighest:"Highest rated",
+  fbLowest:"Needs attention",
+  fbWholeStay:"All feedback",
+  fbNothing:"No feedback matches this selection.",
   fbFormHint:"Tap the stars for each department. Leave a department empty if the guest did not rate it.",
   fbNoDept:"No department was rated yet.",
   fbNeedRoom:"Please write the room number",
@@ -7634,10 +7643,11 @@ function exportActivities(){
 /* Feedback the manager asked for: a month, a weekday and a part of the day.
    All three are optional and stack. */
 function exportFeedbackList(){
-  const mk=S.fbMonth||"", d=expDay(), slot=expSlot();
+  const mk=S.fbMonth||"", day=S.fbDate||"", d=expDay(), slot=expSlot();
   const list=(S.feedback||[]).filter(f=>{
     const ts=f.created_at?new Date(f.created_at):null;
-    if(!ts || isNaN(ts.getTime())) return !mk && d==null && !slot;
+    if(!ts || isNaN(ts.getTime())) return !mk && !day && d==null && !slot;
+    if(day) return localDateKey(ts)===day && slotOk(ts,slot);   // one exact date wins over everything
     if(mk && localMonthKey(ts)!==mk) return false;
     if(d!=null && (ts.getDay()+6)%7 !== d) return false;
     if(slot){
@@ -7653,11 +7663,37 @@ function exportFeedbackList(){
 function localMonthKey(dt){
   return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0");
 }
-function fbFilterNote(){
+function localDateKey(dt){
+  return localMonthKey(dt)+"-"+String(dt.getDate()).padStart(2,"0");
+}
+function slotOk(ts,slot){
+  if(!slot) return true;
+  const h=ts.getHours();
+  if(slot==="morning")   return h<12;
+  if(slot==="afternoon") return h>=12 && h<17;
+  if(slot==="evening")   return h>=17;
+  return true;
+}
+/* Reads back as "Wednesday 3 September 2026" so the report says what it covers. */
+function niceDate(key){
+  const bits=String(key||"").split("-");
+  if(bits.length!==3) return key||"";
+  const dt=new Date(+bits[0], +bits[1]-1, +bits[2]);
+  if(isNaN(dt.getTime())) return key;
+  return (t("days")[(dt.getDay()+6)%7]||"")+" "+dt.getDate()+" "+(t("months")[dt.getMonth()]||"")+" "+dt.getFullYear();
+}
+function fbFilterBits(){
   const bits=[];
-  if(S.fbMonth) bits.push(monthLabel(S.fbMonth));
-  const d=expDay(); if(d!=null) bits.push(t("days")[d]||"");
+  if(S.fbDate) bits.push(niceDate(S.fbDate));
+  else {
+    if(S.fbMonth) bits.push(monthLabel(S.fbMonth));
+    const d=expDay(); if(d!=null) bits.push(t("days")[d]||"");
+  }
   const sl=expSlot(); if(sl) bits.push(t(sl+"Part"));
+  return bits.filter(Boolean);
+}
+function fbFilterNote(){
+  const bits=fbFilterBits();
   return bits.length ? " \u00b7 "+bits.join(" \u00b7 ") : "";
 }
 function exportFilterNote(){
@@ -7683,7 +7719,7 @@ function exportTitle(sets){
 }
 function openExportModal(){
   let picked=new Set(["guests"]);
-  S.fbMonth="";                       // the month picker here belongs to attendance
+  S.fbMonth=""; S.fbDate="";          // the month picker here belongs to attendance
 
   const wrap=baseModal(`
     <h3>${ic("download",20)} ${t("exportData")}</h3>
@@ -8262,6 +8298,112 @@ function openDeptDetail(key){
   });
 }
 /* Excel or PDF, straight from the feedback page: the sheet plus a department summary. */
+/* ===== THE GUEST FEEDBACK REPORT =====
+   Its own printed document rather than a generic table: a proper letterhead,
+   a summary band, colour-coded stars, and only the departments that were
+   actually rated in this selection — so no walls of empty dashes. */
+function exportFeedbackReport(){
+  const list=exportFeedbackList();
+  const E2=x=>String(x==null?"":x).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const hotel=(S.settings&&(S.settings.hotelName||S.settings.name))||"";
+  const bits=fbFilterBits();
+  const cover=bits.length?bits.join(" \u00b7 "):t("fbWholeStay");
+  const stat=fbDeptStats(list).sort((a,b)=>b.avg-a.avg);
+  const shown=FB_DEPT_KEYS.filter(k=>stat.some(d=>d.k===k));   // only what was rated
+  const avg=fbAvgAll(list);
+  const best=stat[0], worst=stat.length>1?stat[stat.length-1]:null;
+
+  const tone=n=>{ n=+n||0; return n<3.5?"#B0392B":n<4.5?"#D08526":"#B98A5C"; };
+  const stars=(v,exact)=>{
+    const n=Math.round(+v||0);
+    if(!n) return '<span class=nr>\u00b7</span>';
+    return '<span class=s style="color:'+tone(v)+'">'+"\u2605".repeat(n)
+      +'<span class=sg>'+"\u2606".repeat(5-n)+'</span></span>'
+      +(exact?'<em>'+E2(exact)+'</em>':'');
+  };
+  const tile=(lb,val,sub)=>'<div class=tile><span class=tl>'+E2(lb)+'</span>'
+    +'<b>'+val+'</b>'+(sub?'<span class=ts>'+E2(sub)+'</span>':'')+'</div>';
+
+  const css=""
+   +"@page{size:A4 landscape;margin:11mm}"
+   +"*{box-sizing:border-box}"
+   +"body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#2B1F16;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}"
+   +".head{padding:0 0 14px;border-bottom:2px solid #B98A5C;margin-bottom:16px}"
+   +".hotel{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:#B98A5C;font-weight:700}"
+   +"h1{font-family:Georgia,'Times New Roman',serif;font-size:27px;font-weight:400;margin:5px 0 3px;letter-spacing:.01em}"
+   +".cover{font-size:13px;color:#6B4A32;font-weight:600}"
+   +".meta{font-size:10px;color:#9C8A74;margin-top:5px}"
+   +".band{display:flex;gap:9px;margin-bottom:16px}"
+   +".tile{flex:1;background:#FBF7F0;border:1px solid #EADFCC;border-radius:9px;padding:10px 13px}"
+   +".tile .tl{display:block;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#9C8A74;font-weight:700}"
+   +".tile b{display:block;font-family:Georgia,serif;font-size:20px;font-weight:400;margin-top:3px;line-height:1.15}"
+   +".tile .ts{display:block;font-size:10px;color:#6B4A32;margin-top:2px}"
+   +"table{border-collapse:collapse;width:100%;font-size:9.5px}"
+   +"thead{display:table-header-group}"
+   +"th{background:#F2E7D6;color:#5A4029;text-align:left;padding:6px 5px;border:1px solid #E4D3BC;"
+     +"font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;line-height:1.25;vertical-align:bottom}"
+   +"td{padding:6px 5px;border-left:1px solid #F0E6D6;border-right:1px solid #F0E6D6;vertical-align:middle}"
+   +"tr.r{page-break-inside:avoid}"
+   +"tr.r td{border-top:1px solid #E4D3BC}"
+   +"tr.r.alt td{background:#FDFBF7}"
+   +"td.st{text-align:center;white-space:nowrap;letter-spacing:.3px;font-size:10px}"
+   +"td.st .s em{display:block;font-style:normal;font-size:8px;color:#9C8A74;letter-spacing:0;margin-top:1px}"
+   +".sg{color:#E2D6C2}.nr{color:#D9CDBA}"
+   +"td.room{font-weight:700;font-size:11px}"
+   +"tr.c{page-break-inside:avoid}"
+   +"tr.c td{background:#FBF7F0;border-top:0;color:#4A3826;font-size:10px;line-height:1.55;padding:2px 9px 9px}"
+   +"tr.c b{color:#B98A5C;font-weight:700;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase}"
+   +".foot{margin-top:18px;padding-top:9px;border-top:1px solid #EADFCC;font-size:9px;color:#9C8A74;display:flex;justify-content:space-between}"
+   +".none{padding:34px;text-align:center;color:#9C8A74;font-size:13px;background:#FBF7F0;border-radius:10px}";
+
+  let html='<div class=head>'
+    +(hotel?'<div class=hotel>'+E2(hotel)+'</div>':'')
+    +'<h1>'+E2(t("fbReport"))+'</h1>'
+    +'<div class=cover>'+E2(cover)+'</div>'
+    +'<div class=meta>'+E2(t("fbPrepared"))+" "+E2(new Date().toLocaleString())
+      +(S.session&&S.session.name?" \u00b7 "+E2(S.session.name):"")+'</div>'
+    +'</div>';
+
+  html+='<div class=band>'
+    + tile(t("fbCollected"), String(list.length))
+    + tile(t("avgRate"), avg?stars(avg, avg.toFixed(1)):'<span class=nr>\u2014</span>')
+    + tile(t("fbHighest"), best?stars(best.avg, best.avg.toFixed(2)):'<span class=nr>\u2014</span>', best?fbDeptLabel(best.k):"")
+    + tile(t("fbLowest"), worst?stars(worst.avg, worst.avg.toFixed(2)):'<span class=nr>\u2014</span>', worst?fbDeptLabel(worst.k):"")
+    +'</div>';
+
+  if(!list.length){
+    html+='<div class=none>'+E2(t("fbNothing"))+'</div>';
+  } else {
+    const heads=[t("room"),t("fbGuestName"),t("nationality"),t("fbOverall")]
+      .concat(shown.map(fbDeptLabel))
+      .concat([t("fbCollectedBy"),t("day")]);
+    html+='<table><thead><tr>'+heads.map(h=>'<th>'+E2(h)+'</th>').join("")+'</tr></thead><tbody>';
+    html+=list.map((f,i)=>{
+      const d=fbDepts(f), ov=fbOverall(f), note=fbComment(f);
+      let row='<tr class="r'+(i%2?" alt":"")+'">'
+        +'<td class=room>'+E2(f.room)+'</td>'
+        +'<td>'+E2(f.guest_name||"")+'</td>'
+        +'<td>'+E2(f.nationality||"")+'</td>'
+        +'<td class=st>'+stars(ov, ov?ov.toFixed(1):"")+'</td>'
+        + shown.map(k=>'<td class=st>'+stars(d[k])+'</td>').join("")
+        +'<td>'+E2(teamName(f.by_user))+'</td>'
+        +'<td>'+E2(fmtDate(f.created_at))+'</td></tr>';
+      if(note) row+='<tr class=c><td colspan="'+heads.length+'"><b>'+E2(t("comment"))+'</b><br>'+E2(note)+'</td></tr>';
+      return row;
+    }).join("");
+    html+='</tbody></table>';
+  }
+
+  html+='<div class=foot><span>'+E2(hotel||t("fbReport"))+'</span>'
+    +'<span>'+E2(cover)+' \u00b7 '+list.length+' '+E2(t("feedback"))+'</span></div>';
+
+  const w=window.open("","_blank");
+  if(!w){ toast(t("aiErr")); return; }
+  w.document.write("<html><head><title>"+E2(t("fbReport"))+"</title><meta charset=utf-8>"
+    +"<style>"+css+"</style></head><body>"+html
+    +"<scr"+"ipt>setTimeout(function(){window.print();},400);<\/scr"+"ipt></body></html>");
+  w.document.close();
+}
 function openFeedbackExport(){
   const wrap=baseModal(`
     <h3>${ic("download",20)} ${t("fbExport")}</h3>
@@ -8271,6 +8413,9 @@ function openFeedbackExport(){
       <option value="">${t("allMonths")}</option>
       ${exportMonthOptions().map(([mk,lb])=>`<option value="${mk}" ${mk===S.fbMonth?"selected":""}>${esc(lb)}</option>`).join("")}
     </select>
+    <label style="margin-top:12px">${t("fbExactDate")}</label>
+    <input type="date" id="fe-date" value="${esc(S.fbDate||"")}">
+    <p class="mini" style="margin:4px 0 0">${t("fbExactHint")}</p>
     <div class="row2" style="margin-top:12px">
       <div><label>${t("whichDay")}</label>
         <select id="fe-day">
@@ -8287,25 +8432,33 @@ function openFeedbackExport(){
     <button class="btn" id="fe-pdf">${ic("download",16)} ${t("exportPdf")}</button>
     <button class="btn ghost" id="fe-xlsx">${ic("download",16)} ${t("exportExcel")}</button>
     <button class="btn ghost" id="fe-x">${t("close")}</button>`);
-  const mSel=wrap.querySelector("#fe-month"), dSel=wrap.querySelector("#fe-day"), sSel=wrap.querySelector("#fe-slot");
+  const mSel=wrap.querySelector("#fe-month"), dSel=wrap.querySelector("#fe-day");
+  const sSel=wrap.querySelector("#fe-slot"), xDate=wrap.querySelector("#fe-date");
   const note=wrap.querySelector("#fe-note");
   const apply=()=>{
+    if(xDate) S.fbDate=xDate.value;
     if(mSel) S.fbMonth=mSel.value;
     if(dSel) S.exportDay=dSel.value;
     if(sSel) S.exportSlot=sSel.value;
+    // an exact date makes the month and the weekday meaningless — grey them out
+    const exact=!!S.fbDate;
+    if(mSel) mSel.disabled=exact;
+    if(dSel) dSel.disabled=exact;
     const n=exportFeedbackList().length;
-    if(note) note.textContent = (S.fbMonth||S.exportDay!==""||S.exportSlot)
-      ? t("filterNote")+fbFilterNote().replace(/^ \u00b7 /," ")+" \u2014 "+n+" "+t("feedback")
+    const bits=fbFilterBits();
+    if(note) note.textContent = bits.length
+      ? t("filterNote")+" "+bits.join(" \u00b7 ")+" \u2014 "+n+" "+t("feedback")
       : t("noFilterNote")+" "+n+" "+t("feedback");
   };
-  [mSel,dSel,sSel].forEach(el=>{ if(el) el.onchange=apply; });
+  [mSel,dSel,sSel,xDate].forEach(el=>{ if(el){ el.onchange=apply; el.oninput=apply; } });
   apply();
-  const sets=()=>{ apply(); return [buildDataset("feedback"), buildDataset("fbdepts")].filter(Boolean); };
   wrap.querySelector("#fe-x").onclick=()=>wrap.remove();
   wrap.querySelector("#fe-xlsx").onclick=async ()=>{
-    await exportExcelSets(sets(),"guest-feedback-"+todayISO()); toast(t("saved"));
+    apply();
+    await exportExcelSets([buildDataset("feedback")].filter(Boolean),"guest-feedback-"+todayISO());
+    toast(t("saved"));
   };
-  wrap.querySelector("#fe-pdf").onclick=()=>{ exportPdfSets(sets(), t("expFeedback")+fbFilterNote()); wrap.remove(); };
+  wrap.querySelector("#fe-pdf").onclick=()=>{ apply(); exportFeedbackReport(); wrap.remove(); };
 }
 function openNotesModal(){
   const role=S.session?S.session.role:"guest";
