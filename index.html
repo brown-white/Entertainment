@@ -1604,58 +1604,15 @@ html{font-size:calc(16px * var(--fscale,1))}
   border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center}
 .bubwrap.picked .pick-dot{background:var(--bronze);border-color:var(--bronze);color:#fff}
 
-/* ========================================================================
-   AMARA EXPERIENCE SYSTEM — COMPLETE UI REBUILD v1
-   Role-specific product shells based on the approved AMARA reference.
-   Existing data, settings and operational engine remain intact.
-   ======================================================================== */
-:root{
-  --amara-ivory:#f7f1e7; --amara-paper:#fffaf2; --amara-ink:#161512;
-  --amara-gold:#c89a52; --amara-gold2:#e6bc76; --amara-line:#e5dac9;
-  --amara-navy:#061923; --amara-navy2:#0a2430; --amara-panel:#0d2a36;
-  --amara-text:#f5f1e8; --amara-muted:#9fb0b4; --amara-danger:#ef806e;
-  --amara-green:#6dcc98; --amara-orange:#f0af4e;
-  --amara-display:'Cormorant Garamond',serif; --amara-ui:'Jost',sans-serif;
-}
-html,body{background:#ece7df}
-body{font-family:var(--amara-ui);letter-spacing:-.01em}
-.app{max-width:430px;min-height:100dvh;background:var(--amara-ivory);box-shadow:0 0 60px rgba(0,0,0,.10);overflow:hidden}
-[data-approle="staff"] .app,[data-approle="manager"] .app{background:linear-gradient(180deg,#061923,#05151e 72%,#04131b)}
-.screen{padding:calc(18px + env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom))!important;min-height:100dvh}
-[data-approle="guest"] .screen{background:var(--amara-ivory);color:var(--amara-ink)}
-[data-approle="staff"] .screen,[data-approle="manager"] .screen{background:transparent;color:var(--amara-text)}
-[data-approle="staff"]{--bg:var(--amara-navy);--card:var(--amara-panel);--ink:var(--amara-text);--muted:var(--amara-muted);--line:rgba(255,255,255,.10);--sand:rgba(255,255,255,.07);--bronze:var(--amara-gold2);--cacao:var(--amara-gold2);--espresso:#08202b;--nav-bg:#071b25;--nav-on:var(--amara-gold2)}
-[data-approle="manager"]{--bg:var(--amara-navy);--card:var(--amara-panel);--ink:var(--amara-text);--muted:var(--amara-muted);--line:rgba(255,255,255,.10);--sand:rgba(255,255,255,.07);--bronze:var(--amara-gold2);--cacao:var(--amara-gold2);--espresso:#08202b;--nav-bg:#071b25;--nav-on:var(--amara-gold2)}
-[data-approle="guest"]{--bg:var(--amara-ivory);--card:var(--amara-paper);--ink:var(--amara-ink);--muted:#7f7569;--line:var(--amara-line);--sand:#efe5d6;--bronze:var(--amara-gold);--cacao:#9f7337;--espresso:#171713;--nav-bg:#fffaf2;--nav-on:#a97735}
-h1,h2,h3,.serif{font-family:var(--amara-display)}
-.card{border-radius:14px;box-shadow:none;border:1px solid var(--line);background:var(--card)}
-.sec{margin-bottom:22px}.sec>h3{font-family:var(--amara-ui);font-size:14px!important;font-weight:600;letter-spacing:.01em;padding:0!important;margin:0 0 10px}.sec>h3:after{display:none!important}
-.btn{border-radius:10px!important;min-height:44px;font-size:13px;box-shadow:none!important;background:var(--amara-ink)!important;color:#fff!important;margin-top:12px}
-[data-approle="staff"] .btn:not(.ghost):not(.warn),[data-approle="manager"] .btn:not(.ghost):not(.warn){background:linear-gradient(135deg,var(--amara-gold2),#d99f4d)!important;color:#14212a!important}
-.btn.ghost{background:transparent!important;color:var(--ink)!important;border:1px solid var(--line)!important}.btn.warn{background:#ce6656!important}
-.iconbtn{box-shadow:none;border:1px solid var(--line);background:var(--card);border-radius:50%;width:38px;height:38px}
-[data-approle="staff"] .iconbtn,[data-approle="manager"] .iconbtn{background:rgba(255,255,255,.04)}
-.whobar{margin:7px 0 17px}.whobar h2{font-family:var(--amara-display);font-size:28px;font-weight:600}.whobar p{font-size:12px}
-.amara-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px;gap:10px}.amara-brand-mini{font-family:var(--amara-display);letter-spacing:.24em;font-size:13px;font-weight:600}.amara-top-actions{display:flex;gap:8px}.amara-round{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--card);position:relative}.amara-round .reddot{top:0;right:0}.amara-page-title{font-family:var(--amara-display);font-size:29px;line-height:1.03;font-weight:600}.amara-page-sub{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.03em}
-.amara-bottom{position:fixed;z-index:70;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,100%);display:grid;grid-template-columns:repeat(5,1fr);padding:7px 6px calc(7px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(255,250,242,.96);backdrop-filter:blur(18px)}
-[data-approle="staff"] .amara-bottom,[data-approle="manager"] .amara-bottom{background:rgba(5,21,30,.96)}
-.amara-bottom button{min-width:0;padding:5px 1px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:9px;line-height:1.1;position:relative}.amara-bottom .bi{height:23px;display:flex;align-items:center;justify-content:center}.amara-bottom button.on{color:var(--bronze)}.amara-bottom button.on:before{content:"";position:absolute;top:-7px;width:24px;height:2px;background:var(--bronze);border-radius:10px}
-/* Login rebuilt as a luxury arrival screen */
-.login-wrap{max-width:430px;margin:0 auto;min-height:100dvh;padding:calc(58px + env(safe-area-inset-top)) 22px calc(30px + env(safe-area-inset-bottom))!important;justify-content:flex-start;color:#171713;background:radial-gradient(120% 65% at 50% 0%,rgba(225,199,157,.38),transparent 63%),linear-gradient(180deg,#fbf7f0,#efe6d8)!important}
-.brandmark{margin:23px 0 24px}.brandmark .mono{width:66px;height:66px;border:1px solid #bc8b48!important;color:#9b6f34!important;box-shadow:none!important;background:transparent!important;font-size:30px}.brandmark h1{color:#151410!important;font-family:var(--amara-display);font-size:38px;letter-spacing:.20em!important;margin-left:.2em}.brandmark p{color:#7d6e5c!important;font-size:10px!important;letter-spacing:.25em!important;margin-top:7px}.login-card{background:rgba(255,255,255,.72)!important;backdrop-filter:blur(18px);border:1px solid rgba(157,126,88,.18);box-shadow:0 22px 60px -40px rgba(51,38,22,.42)!important;border-radius:22px!important;padding:18px}.role-tabs{background:rgba(255,255,255,.52);padding:4px;border:1px solid rgba(157,126,88,.14);border-radius:13px;gap:3px}.role-tabs button{color:#776b5d!important;background:transparent!important;border-radius:9px!important;padding:10px 6px}.role-tabs button.on{background:#181713!important;color:#fff!important}.login-card label{color:#776b5d}.login-card input,.pickfield{background:#fffdf9!important;border-color:#e5d8c6!important}.login-card .btn{background:#181713!important}.lang-row button{border-color:#d5c3a8!important;color:#79694f!important}.lang-row button.on{background:#181713!important;color:#fff!important;border-color:#181713!important}.staff-link{color:#7b6b56!important}
-/* Guest home */
-.g-home{padding-top:0!important}.g-hero-shell{position:relative;margin:calc(-18px - env(safe-area-inset-top)) -16px 18px;height:380px;overflow:hidden;background:#1b1b17}.g-hero-shell>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.g-hero-shell:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,14,11,.12) 0%,rgba(15,14,11,.02) 31%,rgba(14,13,10,.72) 100%)}.g-hero-top{position:absolute;z-index:2;top:calc(18px + env(safe-area-inset-top));left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;color:#fff}.g-weather{display:flex;align-items:center;gap:6px;font-size:12px;text-shadow:0 1px 6px rgba(0,0,0,.4)}.g-hero-greet{position:absolute;z-index:2;left:20px;right:20px;top:91px;color:#fff}.g-hero-greet .eyebrow{font-size:11px;opacity:.8}.g-hero-greet h1{font-family:var(--amara-display);font-size:31px;line-height:1.02}.g-hero-greet p{font-size:12px;margin-top:5px;opacity:.9}.g-highlight{position:absolute;z-index:2;left:18px;right:18px;bottom:18px;padding:15px 50px 15px 15px;color:#fff;background:linear-gradient(90deg,rgba(9,10,8,.73),rgba(9,10,8,.42));border:1px solid rgba(255,255,255,.16);border-radius:12px;backdrop-filter:blur(8px)}.g-highlight small{display:block;font-size:9px;letter-spacing:.16em;margin-bottom:1px}.g-highlight h2{font-size:28px;line-height:1}.g-highlight .meta{font-size:11px;margin-top:7px;display:flex;gap:12px}.g-highlight .go{position:absolute;right:12px;bottom:13px;width:38px;height:38px;border-radius:50%;background:#e6bc76;color:#19150f;display:flex;align-items:center;justify-content:center}.g-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}.g-quick button{padding:11px 4px;background:var(--amara-paper);border:1px solid var(--amara-line);border-radius:11px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:5px}.g-quick .qic{color:#9f7337;height:22px;display:flex;align-items:center}.g-section-head{display:flex;justify-content:space-between;align-items:center;margin:17px 0 10px}.g-section-head b{font-family:var(--amara-ui);font-size:14px}.g-section-head button{font-size:10px;color:#8b7b65}.g-now-card{display:flex;gap:10px;background:var(--amara-paper);border:1px solid var(--amara-line);border-radius:12px;padding:9px;align-items:center;margin-bottom:9px}.g-now-card img{width:76px;height:58px;border-radius:9px;object-fit:cover}.g-now-card .nx{flex:1;min-width:0}.g-now-card h4{font-size:13px;line-height:1.15}.g-now-card p{font-size:10px;color:#7f7569;margin-top:2px}.g-now-card .join{padding:7px 11px;border-radius:8px;background:#171713;color:#fff;font-size:10px}.g-now-card .remind{padding:7px 10px;border-radius:8px;background:#d8c5aa;color:#4f3a20;font-size:10px}
-/* Program / list screen */
-.amara-date-tabs{display:flex;gap:7px;overflow:auto;scrollbar-width:none;margin:12px 0 12px}.amara-date-tabs::-webkit-scrollbar{display:none}.amara-date-tabs button{flex:none;padding:9px 12px;border-radius:9px;background:var(--card);border:1px solid var(--line);font-size:10px;color:var(--muted)}.amara-date-tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}[data-approle="staff"] .amara-date-tabs button.on,[data-approle="manager"] .amara-date-tabs button.on{background:var(--amara-gold2);color:#13202a;border-color:transparent}.amara-filters{display:flex;gap:6px;overflow:auto;scrollbar-width:none;margin-bottom:12px}.amara-filters button{flex:none;padding:7px 10px;border-radius:8px;background:transparent;border:1px solid var(--line);font-size:10px;color:var(--muted)}.amara-filters button.on{background:var(--ink);color:var(--bg)}
-.amara-act{display:grid;grid-template-columns:68px minmax(0,1fr) 30px;gap:10px;align-items:center;padding:8px;margin-bottom:8px;border:1px solid var(--line);border-radius:11px;background:var(--card)}.amara-act img{width:68px;height:58px;border-radius:8px;object-fit:cover}.amara-act h4{font-family:var(--amara-ui);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.amara-act p{font-size:9.5px;color:var(--muted);line-height:1.45}.amara-act .act-heart{font-size:18px;color:var(--muted)}.amara-act .act-heart.on{color:#d76152}.amara-act.staffrow{grid-template-columns:48px minmax(0,1fr) auto}.amara-act.staffrow img{width:48px;height:48px}.amara-act .status-mini{font-size:9px;padding:5px 7px;border-radius:7px;background:rgba(109,204,152,.12);color:var(--amara-green)}
-/* Entertainer */
-.staff-welcome{display:flex;justify-content:space-between;align-items:flex-start;margin:8px 0 14px}.staff-welcome h1{font-size:30px;line-height:.95}.staff-welcome h1 span{display:block}.staff-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;border:1px solid rgba(230,188,118,.65);display:flex;align-items:center;justify-content:center;background:var(--amara-panel);font-family:var(--amara-display);font-size:20px}.staff-avatar img{width:100%;height:100%;object-fit:cover}.staff-seg{display:grid;grid-template-columns:repeat(3,1fr);padding:3px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);margin-bottom:16px}.staff-seg button{padding:8px 4px;border-radius:7px;color:var(--amara-muted);font-size:10px}.staff-seg button.on{background:linear-gradient(135deg,#d9a353,#edc37c);color:#12202a}.timeline{position:relative;margin:0 0 19px 9px;padding-left:24px}.timeline:before{content:"";position:absolute;left:5px;top:15px;bottom:18px;width:1px;background:rgba(230,188,118,.5)}.tlx{position:relative;display:grid;grid-template-columns:50px minmax(0,1fr) 54px;gap:8px;align-items:center;min-height:73px;padding:10px 0}.tlx:before{content:"";position:absolute;left:-24px;top:24px;width:9px;height:9px;border-radius:50%;background:#071c26;border:2px solid #e6bc76;box-shadow:0 0 0 3px #071c26}.tlx.now{margin-left:-7px;padding:12px 9px 12px 7px;border-radius:11px;background:linear-gradient(90deg,rgba(230,188,118,.12),rgba(255,255,255,.03));border:1px solid rgba(230,188,118,.18)}.tlx.now:before{left:-18px;background:#e6bc76}.tlx-time{font-size:10px;color:#d4dfe0}.tlx-main h4{font-size:13px}.tlx-main p{font-size:9px;color:var(--amara-muted);line-height:1.35}.tlx img{width:54px;height:48px;border-radius:8px;object-fit:cover}.tlx-label{font-size:8px;color:#e6bc76;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}.tlx-action{grid-column:2/4;margin-top:-2px;display:flex;gap:6px}.tlx-action button{padding:7px 11px;background:#e6bc76;color:#11202a;border-radius:7px;font-size:9px}.dark-panel{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px;margin-bottom:12px}.dark-panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.dark-panel-title b{font-size:13px}.dark-panel-title button{font-size:9px;color:var(--amara-muted)}.staff-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.staff-stat{padding:13px 11px;border-radius:10px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07)}.staff-stat b{font-family:var(--amara-display);font-size:26px;display:block}.staff-stat span{font-size:9px;color:var(--amara-muted)}
-/* Manager */
-.mgr-head{display:flex;justify-content:space-between;align-items:flex-start;margin:7px 0 17px}.mgr-head h1{font-size:30px;line-height:.98}.mgr-head .date{font-size:10px;color:var(--amara-muted);text-align:right;margin-top:5px}.mgr-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}.mgr-stat{padding:13px 11px;min-height:72px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:linear-gradient(145deg,#0b2a37,#0a232f)}.mgr-stat b{font-family:var(--amara-display);font-size:26px;display:block;line-height:1}.mgr-stat span{font-size:9px;color:var(--amara-muted)}.mgr-stat.rating b{color:#eac073}.mgr-stat.attn{background:linear-gradient(145deg,rgba(151,67,61,.25),rgba(11,38,49,.85));border-color:rgba(239,128,110,.22)}.mgr-stat.attn b{color:var(--amara-danger)}.live-list{border-radius:12px;border:1px solid rgba(255,255,255,.08);overflow:hidden;background:rgba(255,255,255,.025)}.live-row{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.06)}.live-row:last-child{border-bottom:0}.live-dot{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:#061923;background:var(--amara-green)}.live-dot.soon{background:var(--amara-orange)}.live-row h4{font-size:11px}.live-row p{font-size:8.5px;color:var(--amara-muted);margin-top:1px}.live-status{font-size:8.5px;color:var(--amara-green);white-space:nowrap}.live-status.soon{color:var(--amara-orange)}
-/* Existing screens inherit the new product language */
-.stat-grid{gap:8px}.stat{padding:13px;border-radius:11px;background:var(--card);border:1px solid var(--line);box-shadow:none}.stat b{font-size:27px}.stat span{font-size:9px;letter-spacing:0;text-transform:none}.pills{gap:6px}.pills button,.daytabs button{box-shadow:none;border:1px solid var(--line);border-radius:8px!important;font-size:10px;padding:8px 11px}.pills button.on,.daytabs button.on{background:var(--ink);color:var(--bg)}[data-approle="staff"] .pills button.on,[data-approle="manager"] .pills button.on,[data-approle="staff"] .daytabs button.on,[data-approle="manager"] .daytabs button.on{background:var(--amara-gold2);color:#11202a}.drawer{width:min(325px,86vw);background:var(--amara-paper)!important}.dr-it.on{background:#171713!important;color:#fff!important}.dr-head .mono.sm{background:transparent!important;border:1px solid #b78a4e;color:#a16e31!important;box-shadow:none!important}[data-approle="staff"] .drawer,[data-approle="manager"] .drawer{background:#071b25!important}.modal{border-radius:22px 22px 0 0;background:var(--bg)}
-@media(min-width:431px){.amara-bottom{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
-
+/* ===== ROLE EXPERIENCE REDESIGN v8 ===== */
+[data-approle="staff"] .screen,[data-approle="manager"] .screen{background:radial-gradient(120% 60% at 80% 0,rgba(128,72,42,.28),transparent 55%),linear-gradient(180deg,#17120f,#100d0b);color:#f5eadc;min-height:100dvh}
+[data-approle="staff"] .card,[data-approle="manager"] .card,[data-approle="staff"] .stat,[data-approle="manager"] .stat{background:linear-gradient(145deg,#241c18,#1d1714)!important;border:1px solid rgba(218,180,132,.13);color:#f5eadc}
+[data-approle="staff"] .mini,[data-approle="manager"] .mini,[data-approle="staff"] .meta,[data-approle="manager"] .meta{color:#bba997}
+.role-hero{border-radius:26px;padding:20px;margin:4px 0 18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#321f17,#17120f);box-shadow:0 24px 55px -32px #000}.role-hero .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:#d9b47f;font-weight:700}.role-hero h1{font-size:32px;line-height:1.02;margin-top:4px;color:#fff}.role-hero p{font-size:13px;color:#c8b8a8;margin-top:4px}.role-avatar{position:absolute;right:18px;top:18px;width:58px;height:58px;border-radius:50%;overflow:hidden;border:2px solid #d9b47f;background:#3e2a1e;display:flex;align-items:center;justify-content:center;font:600 24px var(--font-display);color:#fff}.role-avatar img{width:100%;height:100%;object-fit:cover}.role-date{display:flex;gap:6px;margin-top:18px;overflow-x:auto}.role-date span{min-width:42px;padding:7px 5px;border-radius:12px;text-align:center;font-size:10px;color:#a99684;border:1px solid rgba(255,255,255,.07)}.role-date span b{display:block;font-size:14px;color:#e9dccd}.role-date span.on{background:#ead7bd;color:#5c402d}.role-date span.on b{color:#3e2a1e}
+.role-tabs3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px}.role-tabs3 button{padding:10px 7px;border-radius:999px;background:#251d18;color:#c5b3a2;border:1px solid rgba(255,255,255,.07);font-size:12px}.role-tabs3 button.on{background:#f3e5d3;color:#3e2a1e;font-weight:700}.role-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 20px}.role-kpi{background:#211a16;border:1px solid rgba(217,180,127,.12);border-radius:17px;padding:12px 7px;text-align:center}.role-kpi b{display:block;font:600 22px var(--font-display);color:#f4e8d8}.role-kpi span{font-size:9px;color:#aa9888;text-transform:uppercase}
+.mgr-kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 20px}.mgr-kpi{padding:15px;border-radius:18px;background:#211a16;border:1px solid rgba(217,180,127,.13)}.mgr-kpi b{display:block;font:600 28px var(--font-display);color:#fff}.mgr-kpi span{font-size:11px;color:#b8a593}.mgr-kpi .kic{color:#d9b47f}.mgr-link{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:15px;background:#211a16;border:1px solid rgba(217,180,127,.1);margin-bottom:8px;text-align:left;color:#f2e5d6}.mgr-link .mi2{width:34px;height:34px;border-radius:11px;background:#30251e;color:#d9b47f;display:flex;align-items:center;justify-content:center}.mgr-link small{display:block;color:#a99583;font-size:10.5px}.mgr-link .go{margin-left:auto}
+.guest-welcome{position:relative;border-radius:27px;overflow:hidden;margin-bottom:14px;min-height:210px;background:#3f6677}.guest-welcome>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.guest-welcome:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,25,31,.08),rgba(31,24,17,.65))}.gw-txt{position:absolute;z-index:2;left:18px;top:18px;color:#fff}.gw-txt h1{font-size:28px}.guest-highlight{position:absolute;z-index:3;left:14px;right:14px;bottom:12px;padding:12px 14px;border-radius:17px;background:rgba(42,28,20,.72);backdrop-filter:blur(12px);color:#fff;display:flex;align-items:center;gap:10px}.guest-highlight .gh-mid{flex:1;min-width:0}.guest-highlight small{display:block;color:#e3c39e;font-size:9px;text-transform:uppercase}.guest-highlight b{display:block;font:600 20px var(--font-display)}.guest-highlight span{font-size:11px}.guest-highlight button{background:#f7f0e7;color:#4a3323;padding:8px 10px;border-radius:999px;font-size:10px}.guest-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 20px}.guest-cat{padding:11px 4px;border-radius:18px;background:#fff;box-shadow:var(--shadow);text-align:center;color:#4a3425;font-size:10px}.gcic{width:39px;height:39px;border-radius:50%;margin:0 auto 5px;background:#3e2a1e;color:#f1d7b5;display:flex;align-items:center;justify-content:center}
+@media(max-width:390px){.role-kpis{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -4046,6 +4003,8 @@ function guestView(){
     const wm=(S.settings.welcomeMsg||"").trim();
     return `<div class="screen fadein">
       ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
+      <div class="guest-welcome"><img src="${esc((hl&&hl.image)||IMG.show)}" alt=""><div class="gw-txt"><h1>${t("welcome")}, ${esc(g.name)}</h1><p>${t("todayProgram")} · ${t("days")[todayIdx]}</p></div>${hl?`<div class="guest-highlight" data-open="${hl.id}"><div class="gh-mid"><small>${t("highlight")}</small><b>${esc(hl.name)}</b><span>${esc(hl.time)} · ${esc(hl.location||"")}</span></div><button>${t("open")||"View"}</button></div>`:""}</div>
+      <div class="guest-cats"><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("calendar",19)}</span>${t("activities")}</button><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("sparkle",19)}</span>Events</button><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("star",19)}</span>Show</button><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("music",19)}</span>Party</button></div>
       ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
       ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
       ${heroCard(hl)}
@@ -6794,7 +6753,8 @@ function myWorkDayView(){
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
   return `<div class="screen fadein">
-    ${topBar(t("myWorkDay"),"#"+num+" · "+S.session.name)}
+    <div class="role-hero"><span class="eyebrow">${t("myWorkDay")}</span><h1>${t("welcome")}, ${esc(S.session.name)}</h1><p>#${num} · ${esc(roleForNumber(num))}</p><div class="role-avatar">${S.session.photo?`<img src="${esc(S.session.photo)}" alt="">`:esc(String(S.session.name||"?").charAt(0))}</div><div class="role-date">${[0,1,2,3,4,5,6].map(i=>`<span class="${i===day?"on":""}">${t("daysShort")[i]}<b>${i+1}</b></span>`).join("")}</div></div>
+    <div class="role-tabs3"><button class="on">${t("myWorkDay")}</button><button data-role-tab="teaminfo">${t("team")}</button><button data-role-tab="chat">${t("chatManager")}</button></div>
     ${dayChips()}
     ${photoBlock}
     ${banner}
@@ -6803,6 +6763,7 @@ function myWorkDayView(){
     ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
       <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
       ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
+    <div class="role-kpis"><div class="role-kpi"><b>${myActs.length}</b><span>${t("activities")}</span></div><div class="role-kpi"><b>${(S.tasks||[]).filter(x=>x.assigned_to===S.session.username).length}</b><span>${t("tasks")}</span></div><div class="role-kpi"><b>${(S.feedback||[]).length?((S.feedback.reduce((n,f)=>n+(+f.rate||0),0)/S.feedback.length).toFixed(1)):"—"}</b><span>${t("feedback")}</span></div><div class="role-kpi"><b>#${num}</b><span>${t("team")}</span></div></div>
     ${dayPlanInfoCard(day)}
     ${workdayFeedbackCard()}
     ${dayPlanTimes(day)}
@@ -7354,11 +7315,17 @@ function dashView(){
     </div>`,
     trends:    ()=>trendsCard()
   };
+  const today=todayIndex(), todayActs=S.activities.filter(a=>a.day===today);
+  const activeStaff=(S.users||[]).filter(u=>u.role==="staff"&&u.active!==false&&!hasLeft(u));
+  const avgFb=S.feedback.length?(S.feedback.reduce((n,f)=>n+(+f.rate||0),0)/S.feedback.length).toFixed(1):"—";
+  const openReq=S.requests.filter(r=>r.status==="new").length;
   return `<div class="screen fadein">
-    ${topBar(t("dashboard"),S.session.name)}
-        ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
-    ${arrangeBtn("dash")}
-    ${renderParts("dash",parts)}
+    <div class="role-hero"><span class="eyebrow">${t("dashboard")}</span><h1>${t("welcome")}, ${esc(S.session.name||t("manager"))}</h1><p>${t("todayProgram")} · ${t("days")[today]}</p><div class="role-avatar">${ic("grid",24)}</div></div>
+    ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
+    <div class="mgr-kpis"><div class="mgr-kpi"><span class="kic">${ic("calendar",18)}</span><b>${todayActs.length}</b><span>${t("activities")} ${t("today")}</span></div><div class="mgr-kpi"><span class="kic">${ic("users",18)}</span><b>${activeStaff.length}</b><span>${t("team")}</span></div><div class="mgr-kpi"><span class="kic">${ic("users",18)}</span><b>${people}</b><span>${t("totalPeople")}</span></div><div class="mgr-kpi"><span class="kic">${ic("star",18)}</span><b>${avgFb}</b><span>${t("feedback")}</span></div></div>
+    <div class="sec"><h3>${t("today")} · ${t("dashboard")}</h3><button class="mgr-link" data-mgrtab="program"><span class="mi2">${ic("calendar",17)}</span><span><b>${t("manage")}</b><small>${todayActs.length} ${t("activities")}</small></span><span class="go">›</span></button><button class="mgr-link" data-mgrtab="team"><span class="mi2">${ic("users",17)}</span><span><b>${t("teamTab")}</b><small>${activeStaff.length} ${t("totalEntertainers")}</small></span><span class="go">›</span></button><button class="mgr-link" data-mgrtab="guests"><span class="mi2">${ic("chat",17)}</span><span><b>${t("guestsTab")}</b><small>${openReq} ${t("requests")}</small></span><span class="go">›</span></button><button class="mgr-link" data-mgrtab="settings"><span class="mi2">${ic("palette",17)}</span><span><b>${t("settingsHub")}</b><small>${t("settingsSub")}</small></span><span class="go">›</span></button></div>
+    <div class="role-kpis"><div class="role-kpi"><b>${totalB}</b><span>${t("bookings")}</span></div><div class="role-kpi"><b>${tSold}</b><span>${t("tickets")}</span></div><div class="role-kpi"><b>${wait}</b><span>${t("waitlisted")}</span></div><div class="role-kpi"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div></div>
+    ${attentionCard()}${feedbackAnalyticsCard()}${nats.length?parts.nations():""}${parts.activities()}${trendsCard()}
   </div>`;
 }
 /* The feedback picture at a glance — tap a department to read the ratings behind it. */
@@ -9792,6 +9759,10 @@ function openLangModal(){
 }
 /* ---------------- wiring ---------------- */
 function wireCommon(){
+  document.querySelectorAll("[data-gtab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.gtab;render();});
+  document.querySelectorAll("[data-role-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.roleTab;render();});
+  document.querySelectorAll("[data-mgrtab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.mgrtab;render();});
+
   document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;S.chatRoom=null;S.op=null;S.cat=null;S.planDay=undefined;render();});
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>{S.op=b.dataset.op;S.cat=null;render();});
   document.querySelectorAll("[data-planday]").forEach(b=>b.onclick=()=>{S.planDay=+b.dataset.planday;render();});
@@ -10263,176 +10234,6 @@ function wireCommon(){
     }
   }
 }
-
-
-/* ========================================================================
-   AMARA EXPERIENCE SYSTEM — VIEW LAYER REBUILD
-   The operational/data layer above is preserved. These views replace the old
-   page composition so the product matches the approved AMARA guest/staff/
-   manager reference instead of merely reskinning it.
-   ======================================================================== */
-function amaraTop(title,sub){
-  const role=S.session?S.session.role:"guest";
-  return `<div class="amara-top"><div><div class="amara-brand-mini">${esc((S.settings.name||"AMARA").toUpperCase())}</div>${title?`<div class="amara-page-title">${esc(title)}</div>`:""}${sub?`<div class="amara-page-sub">${esc(sub)}</div>`:""}</div><div class="amara-top-actions"><button class="amara-round" id="btn-notes">${ic("bell",17)}${unseenNotes(role)?'<span class="reddot"></span>':''}</button></div></div>`;
-}
-function amaraBottom(role,active){
-  let its=[];
-  if(role==="guest") its=[
-    ["home","home",t("home")],["program","calendar",t("program")],["favorites","heart",t("favorites")],["chat","chat",t("chat")],["profile","user",t("profile")]
-  ];
-  else if(role==="staff") its=[
-    ["workday","home",t("today")],["week","calendar",t("program")],["teaminfo","users",t("teamPage")],["chat","chat",t("messages")||t("chat")],["mypage","user",t("profile")]
-  ];
-  else its=[
-    ["dash","home",t("overview")],["program","calendar",t("program")],["team","users",t("teamTab")],["reports","grid",t("reports")||"Reports"],["__more","menu",t("more")||"More"]
-  ];
-  return `<nav class="amara-bottom">${its.map(([id,ii,lb])=>id==="__more"?`<button id="btn-menu" class="${active===id?'on':''}"><span class="bi">${ic(ii,18)}</span><span>${esc(lb)}</span></button>`:`<button data-tab="${id}" class="${active===id?'on':''}"><span class="bi">${ic(ii,18)}</span><span>${esc(lb)}</span></button>`).join("")}</nav>`;
-}
-function topBar(title,sub){ return amaraTop(title,sub); }
-function amaraDateTabs(){
-  const today=todayIndex();
-  return `<div class="amara-date-tabs">${t("daysShort").map((d,i)=>`<button data-day="${i}" class="${S.day===i?'on':''}">${i===today?t("today"):d}<br><span>${esc(t("days")[i]||"")}</span></button>`).join("")}</div>`;
-}
-function amaraActCard(a,opts={}){
-  const fav=S.favorites.includes(a.id), role=S.session&&S.session.role;
-  const staff=role!=="guest";
-  const extra=staff?`<span class="status-mini">${bookingsFor(a.id).length} ${t("guests")}</span>`:`<button class="act-heart ${fav?'on':''}" data-fav="${a.id}">${ic("heart",17)}</button>`;
-  return `<div class="amara-act ${staff?'staffrow':''}" ${role==="guest"?`data-open="${a.id}"`:''}>
-    <img src="${esc(a.image||IMG.show)}" alt="" data-pvsingle="${esc(a.image||IMG.show)}">
-    <div><h4>${esc(a.name)}</h4><p>${esc(a.time||"")}<br>${esc(a.location||"")}${a.entertainer?` · ${esc(entertainerName(a.entertainer))}`:""}</p></div>${extra}</div>`;
-}
-function amaraGuestHome(){
-  const g=S.session, day=todayIndex();
-  const todays=S.activities.filter(a=>a.day===day).slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  const hl=todays.find(a=>a.highlight)||todays[0];
-  const live=todays.filter(a=>activityStatus(a)==="live");
-  const next=todays.filter(a=>activityStatus(a)==="todo").slice(0,2);
-  const bg=hl?(hl.image||IMG.show):IMG.show;
-  return `<div class="screen fadein g-home">
-    <section class="g-hero-shell"><img src="${esc(bg)}" alt=""><div class="g-hero-top"><div class="g-weather">${ic("sun",16)} <span>28°C · Sunny</span></div><button class="amara-round" id="btn-notes">${ic("bell",17)}${unseenNotes("guest")?'<span class="reddot"></span>':''}</button></div>
-      <div class="g-hero-greet"><div class="eyebrow">${esc(t("days")[day]||"")}</div><h1>Good afternoon,<br>${esc(g.name)}</h1><p>Let’s make today amazing!</p></div>
-      ${hl?`<div class="g-highlight" data-open="${hl.id}"><small>${esc(t("today").toUpperCase())}</small><h2>${esc(hl.name)}</h2><div class="meta"><span>${mi("clock")}${esc(hl.time)}</span><span>${mi("pin")}${esc(hl.location)}</span></div><span class="go">${ic("back",18)}</span></div>`:""}
-    </section>
-    <div class="g-quick">
-      <button data-tab="program" data-amara-filter="activities"><span class="qic">${ic("activity",19)}</span>${t("activities")}</button>
-      <button data-tab="program" data-amara-filter="events"><span class="qic">${ic("calendar",19)}</span>${t("events")}</button>
-      <button data-tab="program" data-amara-filter="shows"><span class="qic">${ic("star",19)}</span>${t("shows")}</button>
-      <button data-tab="program" data-amara-filter="parties"><span class="qic">${ic("music",19)}</span>${t("parties")}</button>
-    </div>
-    <div class="g-section-head"><b>Happening Now</b><button data-tab="program">See all</button></div>
-    ${(live.length?live:todays.slice(0,1)).map(a=>`<div class="g-now-card" data-open="${a.id}"><img src="${esc(a.image||IMG.show)}"><div class="nx"><h4>${esc(a.name)}</h4><p>${esc(a.time)}<br>${esc(a.location)}</p></div><button class="join" data-book="${a.id}">${myBooking(a.id)?t("booked"):"Join"}</button></div>`).join("")}
-    <div class="g-section-head"><b>Up Next</b><button data-tab="program">See all</button></div>
-    ${next.map(a=>`<div class="g-now-card" data-open="${a.id}"><img src="${esc(a.image||IMG.show)}"><div class="nx"><h4>${esc(a.name)}</h4><p>${esc(a.time)}<br>${esc(a.location)}</p></div><button class="remind">Remind</button></div>`).join("")||`<div class="mini">${t("noneToday")}</div>`}
-    ${amaraBottom("guest","home")}
-  </div>`;
-}
-function amaraGuestProgram(){
-  const filter=window.__amaraGuestFilter||"all";
-  const acts=S.activities.filter(a=>a.day===S.day).filter(a=>{
-    const c=normCat(a); if(filter==="all") return true;
-    if(filter==="activities") return c==="mAdult";
-    if(filter==="events") return c==="mEvents";
-    if(filter==="shows") return c==="eShow";
-    if(filter==="parties") return c==="eParty";
-    return true;
-  }).sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  const fs=[["all","All"],["activities",t("activities")],["events",t("events")],["shows",t("shows")],["parties",t("parties")]];
-  return `<div class="screen fadein">${amaraTop("Today's Program","")}${amaraDateTabs()}<div class="amara-filters">${fs.map(([id,lb])=>`<button data-amara-filter="${id}" class="${filter===id?'on':''}">${esc(lb)}</button>`).join("")}</div>${acts.map(a=>amaraActCard(a)).join("")||`<div class="empty">${t("noneToday")}</div>`}${amaraBottom("guest","program")}</div>`;
-}
-function amaraGuestFavorites(){
-  const acts=S.activities.filter(a=>S.favorites.includes(a.id));
-  return `<div class="screen fadein">${amaraTop(t("favorites"),`${acts.length} ${t("activities")}`)}${acts.map(a=>amaraActCard(a)).join("")||`<div class="empty"><div class="big">${ic("heart",28)}</div>${t("noFavs")}</div>`}${amaraBottom("guest","favorites")}</div>`;
-}
-function amaraGuestProfile(){
-  const g=S.session; const acc=(S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room));
-  const mine=S.bookings.filter(b=>String(b.room)===String(g.room));
-  return `<div class="screen fadein">${amaraTop(t("profile"),`${t("room")} ${esc(g.room)}`)}
-    <div class="card profcard"><div class="pf-ava">${ic("user",24)}</div><div><h4>${esc(g.name)}</h4><p class="mini">${esc(g.nationality||"")}</p><p class="mini">${esc(g.arrival||"")} → ${esc(g.departure||"")}</p></div></div>
-    ${stayCard(acc)}
-    <div class="staff-stats" style="margin:14px 0"><div class="staff-stat"><b>${mine.length}</b><span>${t("myBookings")}</span></div><div class="staff-stat"><b>${S.favorites.length}</b><span>${t("favorites")}</span></div></div>
-    <button class="btn ghost" id="btn-chpass">${ic("key",15)} ${t("changePass")}</button>
-    ${amaraBottom("guest","profile")}</div>`;
-}
-function guestView(){
-  if(String(S.tab||"").startsWith("cp:")) return customPageView(S.tab.slice(3));
-  if(String(S.tab||"").startsWith("emp:")) return employeeView(S.tab.slice(4));
-  if(S.tab==="home"||!S.tab) return amaraGuestHome();
-  if(S.tab==="program") return amaraGuestProgram();
-  if(S.tab==="favorites") return amaraGuestFavorites();
-  if(S.tab==="profile"||S.tab==="stay") return amaraGuestProfile();
-  if(S.tab==="chat") return `<div class="screen fadein">${amaraTop(t("chat"),accountName(S.session.room))}${threadView(S.session.room,"guest")}${amaraBottom("guest","chat")}</div>`;
-  if(S.tab==="tickets") return guestTicketsView()+amaraBottom("guest","program");
-  if(S.tab==="social") return socialPageView(); if(S.tab==="teaminfo") return teamInfoView();
-  if(S.tab==="weather") return weatherView(); if(S.tab==="quiz") return quizView(); if(S.tab==="gallery") return galleryView(); if(S.tab==="hotelinfo") return hotelInfoView();
-  return amaraGuestHome();
-}
-function browseView(title){
-  if(S.session&&S.session.role==="guest") return amaraGuestProgram();
-  const acts=S.activities.filter(a=>a.day===S.day).slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  return `<div class="screen fadein">${amaraTop(title,t("days")[S.day])}${amaraDateTabs()}${acts.map(a=>amaraActCard(a)).join("")||`<div class="empty">${t("noneToday")}</div>`}${amaraBottom(S.session.role,S.session.role==="staff"?"week":"program")}</div>`;
-}
-function amaraStaffWorkday(){
-  const num=S.session.number, day=(typeof S.planDay==="number")?S.planDay:todayIndex();
-  const info=num?personDayInfo(num,day):null;
-  const acts=S.activities.filter(a=>a.day===day && (num?canSeeGuests(a):true)).slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  const current=acts.find(a=>isToday(day)&&activityStatus(a)==="live");
-  return `<div class="screen fadein">${amaraTop("","")}
-    <div class="staff-welcome"><div><div class="amara-page-sub">${esc(t("days")[day])}</div><h1>Good morning,<span>${esc(S.session.name)} ☀</span></h1></div><div class="staff-avatar">${S.session.photo?`<img src="${esc(S.session.photo)}">`:esc(String(S.session.name||"?").charAt(0))}</div></div>
-    <div class="staff-seg"><button class="on">Today</button><button data-tab="week">My Week</button><button data-tab="teaminfo">Team</button></div>
-    ${info&&info.isOff?`<div class="wd-banner off">${ic("sun",18)} ${t("youAreOff")}</div>`:""}
-    <div class="timeline">${acts.map(a=>{const isNow=current&&current.id===a.id; return `<div class="tlx ${isNow?'now':''}"><div class="tlx-time">${esc(String(a.time||"").split(/\s*[–—-]\s*/)[0])}</div><div class="tlx-main">${isNow?'<div class="tlx-label">NOW</div>':''}<h4>${esc(a.name)}</h4><p>${esc(a.location||"")}${a.entertainer?`<br>${esc(entertainerName(a.entertainer))}`:""}</p></div><img src="${esc(a.image||IMG.show)}">${isNow?`<div class="tlx-action"><button data-att="${a.id}">End Activity</button></div>`:""}</div>`}).join("")||`<div class="mini">${t("noneToday")}</div>`}</div>
-    ${workdayFeedbackCard()}
-    ${amaraBottom("staff","workday")}</div>`;
-}
-function amaraStaffProfile(){
-  const st=staffStats(S.session.username); const fb=(S.feedback||[]).filter(f=>String(f.by_user||"")===String(S.session.username)); const avg=fb.length?(fb.reduce((n,f)=>n+(+f.rate||0),0)/fb.length).toFixed(1):"—";
-  return `<div class="screen fadein">${amaraTop("My Stats","This Week")}<div class="staff-stats"><div class="staff-stat"><b>${st.activities||st.acts||0}</b><span>Activities</span></div><div class="staff-stat"><b>${st.guests||st.participants||0}</b><span>Participants</span></div><div class="staff-stat"><b>${avg}</b><span>Guest Rating</span></div><div class="staff-stat"><b>${st.onTime!=null?st.onTime+"%":"100%"}</b><span>On Time</span></div></div><div class="dark-panel" style="margin-top:16px"><div class="dark-panel-title"><b>My Activities</b><button data-tab="workday">See all</button></div>${S.activities.filter(a=>a.day===todayIndex()&&canSeeGuests(a)).slice(0,5).map(a=>amaraActCard(a)).join("")}</div>${amaraBottom("staff","mypage")}</div>`;
-}
-function myWorkDayView(){ return amaraStaffWorkday(); }
-function myPageView(){ return amaraStaffProfile(); }
-function staffView(){
-  if(!S.tab) S.tab="workday";
-  if(S.tab==="workday"||S.tab==="today") return amaraStaffWorkday();
-  if(S.tab==="mypage") return amaraStaffProfile();
-  if(S.tab==="week") return browseView(t("program"));
-  if(S.tab==="teaminfo") return `<div class="screen fadein">${amaraTop(t("teamPage"),S.settings.name)}${teamInfoView().replace(/^<div class="screen fadein">[\s\S]*?whobar">[\s\S]*?<\/div>/,'').replace(/<\/div>\s*$/,'')}${amaraBottom("staff","teaminfo")}</div>`;
-  if(S.tab==="chat") return `<div class="screen fadein">${amaraTop(t("chatManager"),S.session.name)}${threadView("staff:"+S.session.username,"guest")}${amaraBottom("staff","chat")}</div>`;
-  if(S.tab==="tasks") return `<div class="screen fadein">${amaraTop(t("tasks"),S.session.name)}${S.tasks.filter(x=>!x.assigned_to||x.assigned_to===S.session.username).map(x=>taskLine(x,false)).join("")}${amaraBottom("staff","workday")}</div>`;
-  if(S.tab==="feedback") return staffFeedbackView(); if(S.tab==="gallery") return galleryView(); if(S.tab==="quiz") return quizView(); if(S.tab==="bus") return busView(); if(S.tab==="weather") return weatherView();
-  return amaraStaffWorkday();
-}
-function amaraManagerDash(){
-  const day=todayIndex(); const todays=S.activities.filter(a=>a.day===day).slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  const participants=todays.reduce((n,a)=>n+bookingsFor(a.id).filter(b=>b.status==="booked").reduce((m,b)=>m+(+b.adults||1)+(+b.children||0),0),0);
-  const fb=S.feedback||[]; const avg=fb.length?(fb.reduce((n,f)=>n+(+f.rate||0),0)/fb.length).toFixed(1):"—";
-  const attention=(S.requests||[]).filter(r=>r.status==="new").length+(S.tasks||[]).filter(taskIsOverdue).length;
-  return `<div class="screen fadein">${amaraTop("","")}<div class="mgr-head"><div><div class="amara-page-sub">OPERATIONS</div><h1>Good afternoon,<br>Manager</h1></div><div class="date">${esc(t("days")[day])}<br>${new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div></div>
-    <div class="mgr-stats"><div class="mgr-stat"><b>${todays.length}</b><span>Activities Today</span></div><div class="mgr-stat"><b>${participants}</b><span>Participants</span></div><div class="mgr-stat rating"><b>${avg}</b><span>Guest Rating</span></div><div class="mgr-stat attn"><b>${attention}</b><span>Need Attention</span></div></div>
-    <div class="dark-panel-title"><b>Live Operations</b><button data-tab="program">See all</button></div><div class="live-list">${todays.map(a=>{const st=activityStatus(a);const soon=st==="todo";return `<div class="live-row" data-open="${a.id}"><span class="live-dot ${soon?'soon':''}">${st==="done"?'✓':soon?'•':'✓'}</span><div><h4>${esc(a.name)}</h4><p>${esc(a.location||"")}${a.entertainer?` · ${esc(entertainerName(a.entertainer))}`:""}</p></div><span class="live-status ${soon?'soon':''}">${st==="live"?'Live now':st==="done"?'Done':'On schedule'}</span></div>`}).join("")||`<div class="live-row"><div></div><div><p>${t("noneToday")}</p></div></div>`}</div>${amaraBottom("manager","dash")}</div>`;
-}
-function amaraManagerReports(){
-  const fb=S.feedback||[]; const avg=fb.length?(fb.reduce((n,f)=>n+(+f.rate||0),0)/fb.length).toFixed(1):"—"; const done=S.tasks.filter(x=>taskStatus(x)==="verified"||taskStatus(x)==="completed").length;
-  return `<div class="screen fadein">${amaraTop("Reports","Quality, performance and guest satisfaction")}<div class="mgr-stats"><div class="mgr-stat rating"><b>${avg}</b><span>Guest Rating</span></div><div class="mgr-stat"><b>${S.bookings.length}</b><span>Total Bookings</span></div><div class="mgr-stat"><b>${done}</b><span>Tasks Completed</span></div><div class="mgr-stat"><b>${S.feedback.length}</b><span>Feedback</span></div></div>${feedbackAnalyticsCard()}${trendsCard()}${amaraBottom("manager","reports")}</div>`;
-}
-function dashView(){ return amaraManagerDash(); }
-function managerView(){
-  if(!S.tab||S.tab==="dash") return amaraManagerDash();
-  if(S.tab==="reports") return amaraManagerReports();
-  if(S.tab==="program"){ const inner=S.sub.program==="tickets"?managerTicketsInner():managerActsInner(); return `<div class="screen fadein">${amaraTop(t("manage"),"Programme & Events")}${subTabs("program",[["acts",t("activities")],["tickets",t("tickets")]])}${inner}${amaraBottom("manager","program")}</div>`; }
-  if(S.tab==="team"){ let sub=S.sub.team;if(["tasks","profiles"].includes(sub)) sub=S.sub.team="accounts";if(sub==="chat"&&S.chatRoom) return chatThreadScreen();const inner=sub==="requests"?teamRequestsInner():sub==="monthatt"?monthAttInner():sub==="attendance"?attendanceInner():sub==="chat"?staffChatInbox():accountsInner();return `<div class="screen fadein">${amaraTop(t("teamTab"),"Team operations")}${subTabs("team",[["accounts",t("teamAccounts")],["chat",t("teamChatTab")],["requests",t("teamRequests")],["monthatt",t("monthAtt")],["attendance",t("attendance")]])}${inner}${amaraBottom("manager","team")}</div>`;}
-  if(S.tab==="guests"){const sub=S.sub.guests;if(sub==="chat"&&S.chatRoom)return chatThreadScreen();const inner=sub==="rooms"?roomsInner():sub==="crm"?guestCrmInner():sub==="bookings"?bookingsInner():sub==="chat"?chatInboxInner():sub==="feedback"?feedbackInner():requestsInner();return `<div class="screen fadein">${amaraTop(t("guestsTab"),"Guest experience")}${subTabs("guests",[["crm",t("guestCrm")],["rooms",t("rooms")],["bookings",t("bookings")],["chat",t("guestChatTab")],["requests",t("requests")],["feedback",t("feedback")]])}${inner}${amaraBottom("manager","__more")}</div>`;}
-  if(String(S.tab||"").startsWith("g360:")) return guest360View(S.tab.slice(5)); if(String(S.tab||"").startsWith("emp:")) return employeeView(S.tab.slice(4)); if(String(S.tab||"").startsWith("cp:")) return customPageView(S.tab.slice(3));
-  if(S.tab==="dayplan")return managerDayPlanView();if(S.tab==="req")return requirementsView();if(S.tab==="assign")return assignView();if(S.tab==="builder")return builderView();if(S.tab==="pagedesign")return pageDesignView();if(S.tab==="settings")return settingsHubView();if(String(S.tab||"").startsWith("set:")){const k=S.tab.slice(4);return k==="theme"?setThemeView():k==="brand"?setBrandView():k==="features"?setFeaturesView():k==="location"?setLocationView():k==="links"?setLinksView():k==="advanced"?setAdvancedView():k==="notif"?setNotifView():settingsHubView();}
-  if(S.tab==="bus")return busView();if(S.tab==="quiz")return quizCenterView();if(S.tab==="gallery")return galleryView();if(S.tab==="hotelinfo")return hotelInfoView();if(S.tab==="qr")return qrView();if(S.tab==="weather")return weatherView();if(S.tab==="ai")return aiView();
-  return amaraManagerDash();
-}
-/* Extend existing common wiring for the rebuilt programme filters. */
-function amaraWire(){
-  document.querySelectorAll('[data-amara-filter]').forEach(b=>b.onclick=e=>{e.stopPropagation();window.__amaraGuestFilter=b.dataset.amaraFilter;S.tab='program';S.op=null;S.cat=null;render();});
-}
-const __amaraRenderBase=render;
-render=function(){ __amaraRenderBase(); if(S.session) amaraWire(); };
-
 
 /* ---------------- boot ---------------- */
 function safeToRender(){
