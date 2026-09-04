@@ -1524,6 +1524,22 @@ html{font-size:calc(16px * var(--fscale,1))}
 .fb-chev{flex:none;opacity:.38;transform:rotate(180deg)}
 .bd-sec-head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   font-weight:700;margin:16px 0 6px}
+.rq-it{display:flex;align-items:center;gap:10px;padding:12px 0;cursor:pointer}
+.rq-it:not(:last-child){border-bottom:1px solid var(--line)}
+.rq-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.rq-go{flex:none;opacity:.38;transform:rotate(180deg)}
+.rq-kind{flex:none;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;background:var(--sand);color:var(--muted)}
+.rq-kind.event{background:#EFE7DA;color:#6B4A32}
+.rq-kind.activity{background:#E7EFE4;color:#4A6B36}
+.rq-kind.party{background:#EDE5F0;color:#5C3F6B}
+.rq-row{display:flex;gap:6px;align-items:center;padding:6px 0}
+.rq-row:not(:last-child){border-bottom:1px solid var(--line)}
+.rq-row input,.rq-row select{margin:0;font-size:14px;padding:8px 9px}
+.rq-need{flex:1 1 auto;min-width:0}
+.rq-qty{flex:0 0 54px;text-align:center}
+.rq-dep{flex:0 0 34%;min-width:0}
+.rq-acts{flex:none;display:flex;gap:4px}
 .fb-rooms{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .fb-rooms::-webkit-scrollbar{display:none}
 .fb-rchip{flex:none;border:1px solid var(--line);background:var(--card);color:inherit;
@@ -1729,6 +1745,49 @@ Object.assign(DICT.en, {
   fbPerfectSub:"Nothing to follow up with these guests.",
   fbNoReview:"No guest raised anything. Every rating was a full five.",
   fbLegend2:"Green: nothing to follow up \u00b7 Orange: something to improve \u00b7 Red: needs attention first. A high overall score does not mean there is nothing to fix.",
+  reqKind:"Kind",
+  reqDate:"Date",
+  reqResetLists:"Back to the standard lists",
+  reqTab:"Requirements",
+  reqHead:"Requirement sheets",
+  reqSub:"What we need, how much, and which department provides it. Send it the day before.",
+  reqEvent:"Event requirements",
+  reqActivity:"Activity requirements",
+  reqParty:"Party requirements",
+  reqKindEvent:"Event",
+  reqKindActivity:"Activity",
+  reqKindParty:"Party",
+  reqNew:"New requirement sheet",
+  reqEdit:"Edit requirement sheet",
+  reqName:"Name",
+  reqLocation:"Location",
+  reqResponsible:"Responsible",
+  reqNote:"Special request / note",
+  reqNeed:"Need",
+  reqQty:"Qty",
+  reqDept:"Department",
+  reqStatus:"Status",
+  reqAddLine:"Add a line",
+  reqStandard:"Load the standard list",
+  reqDepts:"Departments",
+  reqDeptsHint:"The departments that can be asked to provide something.",
+  reqTemplates:"Standard lists",
+  reqTemplatesHint:"What gets loaded into a new sheet. One list per kind.",
+  reqAddDept:"Add a department",
+  reqLastDept:"Keep at least one department.",
+  reqNone:"No requirement sheet yet.",
+  reqNoLines:"No lines yet. Add one, or load the standard list.",
+  reqExportOne:"Export this sheet",
+  reqExportDay:"Export the day pack",
+  reqBlank:"Print a blank form",
+  reqDayPack:"Requirement sheets",
+  reqPickDate:"Which date",
+  reqAllDates:"All dates",
+  reqNothingOn:"Nothing planned for that date.",
+  reqLines:"lines",
+  reqDelete:"Delete this sheet",
+  reqSignature:"Signature",
+  reqReceived:"Received by",
   fbHighRooms:"Happy rooms",
   fbLowRooms:"Unhappy rooms",
   fbHighSub:"4.5 stars and above",
@@ -3574,6 +3633,7 @@ function navGroupsBase(role){
       ["dash","grid",t("dashboard"),0],
       ["program","calendar",t("manage"),0],
       ["dayplan","clipboard",t("dayPlan"),0],
+      ["req","clipboard",t("reqTab"),0],
       ["assign","check",t("assignCenter"),0],
       ["quiz","sparkle",t("quizCenter"),0],
       ["gallery","sparkle",t("galleryTab"),0],
@@ -6840,6 +6900,7 @@ function bookingsInner(){
 /* ---------------- manager (full access — manager role only) ---------------- */
 function managerView(){
   if(S.tab==="dash") return dashView();
+  if(S.tab==="req") return requirementsView();
   if(S.tab==="program"){
     const inner = S.sub.program==="tickets" ? managerTicketsInner() : managerActsInner();
     return `<div class="screen fadein">
@@ -8534,6 +8595,413 @@ function openTextPrompt(title, value, done){
     wrap.remove(); done(v);
   };
 }
+/* ===== REQUIREMENT SHEETS =====
+   One sheet per event, activity or party: what is needed, how much of it, and
+   which department provides it. Sent to hotel management the day before.
+   Everything lives in settings so there is no new database table to create. */
+const REQ_KINDS=["event","activity","party"];
+const REQ_DEPTS_DEFAULT=["Entertainment","F&B","Housekeeping","Engineering","Security","Reception"];
+const REQ_TEMPLATES_DEFAULT={
+  event:[
+    {need:"Tables", qty:"5",  dept:"F&B"},
+    {need:"Chairs", qty:"30", dept:"F&B"},
+    {need:"Decoration", qty:"\u2014", dept:"Housekeeping"},
+    {need:"Sound system", qty:"1", dept:"Entertainment"},
+    {need:"Lighting", qty:"4", dept:"Engineering"}],
+  activity:[
+    {need:"Mats", qty:"10", dept:"Entertainment"},
+    {need:"Speaker", qty:"1", dept:"Entertainment"},
+    {need:"Water", qty:"10", dept:"F&B"}],
+  party:[
+    {need:"DJ setup", qty:"1", dept:"Entertainment"},
+    {need:"Lights", qty:"6", dept:"Engineering"},
+    {need:"Bar setup", qty:"1", dept:"F&B"},
+    {need:"Decoration", qty:"\u2014", dept:"Housekeeping"},
+    {need:"Security", qty:"2", dept:"Security"}]
+};
+function reqKindLabel(k){
+  return k==="activity" ? t("reqKindActivity") : k==="party" ? t("reqKindParty") : t("reqKindEvent");
+}
+function reqSheetTitle(k){
+  return k==="activity" ? t("reqActivity") : k==="party" ? t("reqParty") : t("reqEvent");
+}
+function reqDepts(){
+  const c=S.settings && S.settings.reqDepts;
+  return (Array.isArray(c) && c.length) ? c.slice() : REQ_DEPTS_DEFAULT.slice();
+}
+function reqTemplate(kind){
+  const c=S.settings && S.settings.reqTemplates;
+  const v=c && c[kind];
+  return (Array.isArray(v) ? v : (REQ_TEMPLATES_DEFAULT[kind]||[]))
+    .map(r=>({need:r.need||"", qty:r.qty||"", dept:r.dept||""}));
+}
+function reqSheets(){
+  const c=S.settings && S.settings.reqSheets;
+  return Array.isArray(c) ? c.filter(x=>x && x.id) : [];
+}
+function reqSheet(id){ return reqSheets().find(x=>String(x.id)===String(id)) || null; }
+async function reqSave(list){
+  await DB.saveSettings({...S.settings, reqSheets:list});
+}
+function reqSorted(){
+  return reqSheets().slice().sort((a,b)=>
+    String(a.date||"9999").localeCompare(String(b.date||"9999"))
+    || String(a.time||"").localeCompare(String(b.time||"")));
+}
+function reqForDate(day){
+  const all=reqSorted();
+  return day ? all.filter(x=>String(x.date||"")===day) : all;
+}
+function reqDone(sh){ return (sh.rows||[]).filter(r=>r.done).length; }
+
+/* ---- the page ---- */
+function requirementsView(){
+  const day=S.reqDate||"";
+  const list=reqForDate(day);
+  return `<div class="screen fadein">
+    ${topBar(t("reqTab"),S.session.name)}
+    <p class="mini" style="margin:-4px 0 12px">${t("reqSub")}</p>
+    <div class="row2" style="margin-bottom:10px">
+      <button class="btn" id="rq-new">\uFF0B ${t("reqNew")}</button>
+      <button class="btn ghost" id="rq-pack">${ic("download",15)} ${t("reqExportDay")}</button>
+    </div>
+    <div class="row2" style="margin-bottom:14px">
+      <button class="btn ghost sm" id="rq-depts">${ic("grid",14)} ${t("reqDepts")}</button>
+      <button class="btn ghost sm" id="rq-tpl">${ic("pen",14)} ${t("reqTemplates")}</button>
+    </div>
+    <label>${t("reqPickDate")}</label>
+    <input type="date" id="rq-date" value="${esc(day)}" style="margin-bottom:14px">
+    ${list.length ? `<div class="card" style="padding:2px 14px">${list.map(sh=>`
+      <div class="rq-it" data-rqopen="${esc(String(sh.id))}">
+        <span class="rq-kind ${esc(sh.kind)}">${esc(reqKindLabel(sh.kind))}</span>
+        <span class="rq-mid"><b>${esc(sh.title||reqSheetTitle(sh.kind))}</b>
+          <span class="mini">${[sh.date?niceDate(sh.date):"", sh.time, sh.location].filter(Boolean).map(esc).join(" \u00b7 ")}</span>
+          <span class="mini">${(sh.rows||[]).length} ${t("reqLines")} \u00b7 ${reqDone(sh)}/${(sh.rows||[]).length} ${t("reqStatus").toLowerCase()}</span></span>
+        <span class="rq-go">${ic("back",16)}</span>
+      </div>`).join("")}</div>`
+      : `<div class="empty"><div class="big">${ic("clipboard",30)}</div>${day?t("reqNothingOn"):t("reqNone")}</div>`}
+  </div>`;
+}
+
+/* ---- the sheet editor ---- */
+function openReqEditor(id){
+  const ex=id?reqSheet(id):null;
+  let sh = ex ? JSON.parse(JSON.stringify(ex)) : {
+    id:"rq"+Date.now(), kind:"event", title:"", date:todayISO(), time:"", location:"",
+    responsible:"", note:"", rows:reqTemplate("event")
+  };
+  sh.rows=Array.isArray(sh.rows)?sh.rows:[];
+  const wrap=baseModal(`
+    <h3>${ic("clipboard",20)} ${ex?t("reqEdit"):t("reqNew")}</h3>
+    <label>${t("reqKind")}</label>
+    <div class="pills" id="rq-kinds" style="margin-bottom:10px">
+      ${REQ_KINDS.map(k=>`<button class="pill ${sh.kind===k?"on":""}" data-rqkind="${k}">${esc(reqKindLabel(k))}</button>`).join("")}
+    </div>
+    <label>${t("reqName")}</label><input id="rq-title" value="${esc(sh.title||"")}">
+    <div class="row2" style="margin-top:10px">
+      <div><label>${t("reqDate")}</label><input type="date" id="rq-d" value="${esc(sh.date||"")}"></div>
+      <div><label>${t("time")}</label><input id="rq-t" value="${esc(sh.time||"")}" placeholder="21:00"></div>
+    </div>
+    <label style="margin-top:10px">${t("reqLocation")}</label><input id="rq-loc" value="${esc(sh.location||"")}">
+    <label style="margin-top:14px">${t("reqNeed")}</label>
+    <div id="rq-rows"></div>
+    <div class="row2" style="margin-top:8px">
+      <button class="btn ghost sm" id="rq-add">\uFF0B ${t("reqAddLine")}</button>
+      <button class="btn ghost sm" id="rq-std">${t("reqStandard")}</button>
+    </div>
+    <label style="margin-top:14px">${t("reqNote")}</label><textarea id="rq-note" rows="2">${esc(sh.note||"")}</textarea>
+    <label>${t("reqResponsible")}</label><input id="rq-resp" value="${esc(sh.responsible||"")}">
+    <button class="btn" id="rq-go" style="margin-top:14px">${t("save")}</button>
+    <button class="btn ghost" id="rq-pdf">${ic("download",16)} ${t("reqExportOne")}</button>
+    ${ex?`<button class="btn ghost warn" id="rq-del">${ic("trash",16)} ${t("reqDelete")}</button>`:""}
+    <button class="btn ghost" id="rq-x">${t("cancelBtn")}</button>`);
+
+  const box=wrap.querySelector("#rq-rows");
+  const paintRows=()=>{
+    const depts=reqDepts();
+    box.innerHTML = sh.rows.length ? sh.rows.map((r,i)=>`<div class="rq-row">
+      <input class="rq-need" data-rqneed="${i}" value="${esc(r.need||"")}" placeholder="${esc(t("reqNeed"))}">
+      <input class="rq-qty" data-rqqty="${i}" value="${esc(r.qty||"")}" placeholder="${esc(t("reqQty"))}">
+      <select class="rq-dep" data-rqdept="${i}">
+        <option value="">\u2014</option>
+        ${depts.map(d=>`<option value="${esc(d)}" ${String(r.dept||"")===d?"selected":""}>${esc(d)}</option>`).join("")}
+        ${r.dept && !depts.includes(r.dept) ? `<option value="${esc(r.dept)}" selected>${esc(r.dept)}</option>` : ""}
+      </select>
+      <span class="rq-acts">
+        <button class="bd-b" data-rqup="${i}" ${i===0?"disabled":""}>${ic("back",13)}</button>
+        <button class="bd-b down" data-rqdown="${i}" ${i===sh.rows.length-1?"disabled":""}>${ic("back",13)}</button>
+        <button class="bd-b warn" data-rqdel="${i}">${ic("trash",13)}</button>
+      </span></div>`).join("")
+      : `<p class="mini">${t("reqNoLines")}</p>`;
+    box.querySelectorAll("[data-rqneed]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqneed].need=el.value; });
+    box.querySelectorAll("[data-rqqty]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqqty].qty=el.value; });
+    box.querySelectorAll("[data-rqdept]").forEach(el=>el.onchange=()=>{ sh.rows[+el.dataset.rqdept].dept=el.value; });
+    box.querySelectorAll("[data-rqup]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.rqup; [sh.rows[i-1],sh.rows[i]]=[sh.rows[i],sh.rows[i-1]]; paintRows(); });
+    box.querySelectorAll("[data-rqdown]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.rqdown; [sh.rows[i+1],sh.rows[i]]=[sh.rows[i],sh.rows[i+1]]; paintRows(); });
+    box.querySelectorAll("[data-rqdel]").forEach(b=>b.onclick=()=>{
+      sh.rows.splice(+b.dataset.rqdel,1); paintRows(); });
+  };
+  paintRows();
+
+  wrap.querySelectorAll("[data-rqkind]").forEach(b=>b.onclick=()=>{
+    sh.kind=b.dataset.rqkind;
+    wrap.querySelectorAll("[data-rqkind]").forEach(x=>x.classList.toggle("on", x.dataset.rqkind===sh.kind));
+  });
+  wrap.querySelector("#rq-add").onclick=()=>{ sh.rows.push({need:"",qty:"",dept:""}); paintRows(); };
+  wrap.querySelector("#rq-std").onclick=()=>{ sh.rows=sh.rows.concat(reqTemplate(sh.kind)); paintRows(); };
+
+  const collect=()=>{
+    sh.title=wrap.querySelector("#rq-title").value.trim();
+    sh.date=wrap.querySelector("#rq-d").value;
+    sh.time=wrap.querySelector("#rq-t").value.trim();
+    sh.location=wrap.querySelector("#rq-loc").value.trim();
+    sh.note=wrap.querySelector("#rq-note").value.trim();
+    sh.responsible=wrap.querySelector("#rq-resp").value.trim();
+    sh.rows=sh.rows.filter(r=>(r.need||"").trim() || (r.qty||"").trim());
+    return sh;
+  };
+  wrap.querySelector("#rq-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#rq-pdf").onclick=()=>{ exportRequirements([collect()]); };
+  wrap.querySelector("#rq-go").onclick=async ()=>{
+    const next=collect();
+    const list=reqSheets().filter(x=>String(x.id)!==String(next.id));
+    list.push(next);
+    try{ await reqSave(list); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+  const del=wrap.querySelector("#rq-del");
+  if(del) del.onclick=async ()=>{
+    if(!await confirmAction({question:sh.title||reqSheetTitle(sh.kind),note:t("cannotUndo"),danger:true})) return;
+    try{ await reqSave(reqSheets().filter(x=>String(x.id)!==String(sh.id)));
+      wrap.remove(); toastOk(t("deleted")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+}
+
+/* ---- the department list ---- */
+function openReqDeptEditor(){
+  let list=reqDepts();
+  const wrap=baseModal(`
+    <h3>${ic("grid",20)} ${t("reqDepts")}</h3>
+    <p class="mini">${t("reqDeptsHint")}</p>
+    <div id="rd-box"></div>
+    <button class="btn ghost" id="rd-add">\uFF0B ${t("reqAddDept")}</button>
+    <button class="btn" id="rd-go">${t("save")}</button>
+    <button class="btn ghost" id="rd-reset">${t("reqResetLists")}</button>
+    <button class="btn ghost" id="rd-x">${t("cancelBtn")}</button>`);
+  const box=wrap.querySelector("#rd-box");
+  const paint=()=>{
+    box.innerHTML=list.map((d,i)=>`<div class="ar-it">
+      <span class="ar-nm">${esc(d)}</span>
+      <span class="ar-acts">
+        <button class="bd-b" data-rdup="${i}" ${i===0?"disabled":""}>${ic("back",14)}</button>
+        <button class="bd-b down" data-rddown="${i}" ${i===list.length-1?"disabled":""}>${ic("back",14)}</button>
+        <button class="bd-b" data-rdname="${i}">${ic("pen",14)}</button>
+        <button class="bd-b warn" data-rddel="${i}">${ic("trash",14)}</button>
+      </span></div>`).join("");
+    box.querySelectorAll("[data-rdup]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.rdup; [list[i-1],list[i]]=[list[i],list[i-1]]; paint(); });
+    box.querySelectorAll("[data-rddown]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.rddown; [list[i+1],list[i]]=[list[i],list[i+1]]; paint(); });
+    box.querySelectorAll("[data-rdname]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.rdname;
+      openTextPrompt(t("reqDept"), list[i], v=>{ if(v){ list[i]=v; paint(); } });
+    });
+    box.querySelectorAll("[data-rddel]").forEach(b=>b.onclick=()=>{
+      if(list.length<=1){ toastErr(t("reqLastDept")); return; }
+      list.splice(+b.dataset.rddel,1); paint(); });
+  };
+  paint();
+  wrap.querySelector("#rd-add").onclick=()=>openTextPrompt(t("reqDept"),"",v=>{
+    if(v && !list.includes(v)){ list.push(v); paint(); } });
+  wrap.querySelector("#rd-x").onclick=()=>wrap.remove();
+  const save=async v=>{
+    try{ await DB.saveSettings({...S.settings, reqDepts:v}); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+  wrap.querySelector("#rd-reset").onclick=()=>save(REQ_DEPTS_DEFAULT.slice());
+  wrap.querySelector("#rd-go").onclick=()=>save(list);
+}
+
+/* ---- the standard lists ---- */
+function openReqTemplateEditor(){
+  let kind="event";
+  let data={}; REQ_KINDS.forEach(k=>{ data[k]=reqTemplate(k); });
+  const wrap=baseModal(`
+    <h3>${ic("pen",20)} ${t("reqTemplates")}</h3>
+    <p class="mini">${t("reqTemplatesHint")}</p>
+    <div class="pills" id="rt-kinds" style="margin-bottom:10px">
+      ${REQ_KINDS.map(k=>`<button class="pill ${k==="event"?"on":""}" data-rtkind="${k}">${esc(reqKindLabel(k))}</button>`).join("")}
+    </div>
+    <div id="rt-box"></div>
+    <button class="btn ghost" id="rt-add">\uFF0B ${t("reqAddLine")}</button>
+    <button class="btn" id="rt-go">${t("save")}</button>
+    <button class="btn ghost" id="rt-reset">${t("reqResetLists")}</button>
+    <button class="btn ghost" id="rt-x">${t("cancelBtn")}</button>`);
+  const box=wrap.querySelector("#rt-box");
+  const paint=()=>{
+    const depts=reqDepts(), rows=data[kind];
+    box.innerHTML = rows.length ? rows.map((r,i)=>`<div class="rq-row">
+      <input class="rq-need" data-rtneed="${i}" value="${esc(r.need||"")}" placeholder="${esc(t("reqNeed"))}">
+      <input class="rq-qty" data-rtqty="${i}" value="${esc(r.qty||"")}" placeholder="${esc(t("reqQty"))}">
+      <select class="rq-dep" data-rtdept="${i}">
+        <option value="">\u2014</option>
+        ${depts.map(d=>`<option value="${esc(d)}" ${String(r.dept||"")===d?"selected":""}>${esc(d)}</option>`).join("")}
+        ${r.dept && !depts.includes(r.dept) ? `<option value="${esc(r.dept)}" selected>${esc(r.dept)}</option>` : ""}
+      </select>
+      <span class="rq-acts"><button class="bd-b warn" data-rtdel="${i}">${ic("trash",13)}</button></span>
+    </div>`).join("") : `<p class="mini">${t("reqNoLines")}</p>`;
+    box.querySelectorAll("[data-rtneed]").forEach(el=>el.oninput=()=>{ data[kind][+el.dataset.rtneed].need=el.value; });
+    box.querySelectorAll("[data-rtqty]").forEach(el=>el.oninput=()=>{ data[kind][+el.dataset.rtqty].qty=el.value; });
+    box.querySelectorAll("[data-rtdept]").forEach(el=>el.onchange=()=>{ data[kind][+el.dataset.rtdept].dept=el.value; });
+    box.querySelectorAll("[data-rtdel]").forEach(b=>b.onclick=()=>{ data[kind].splice(+b.dataset.rtdel,1); paint(); });
+  };
+  paint();
+  wrap.querySelectorAll("[data-rtkind]").forEach(b=>b.onclick=()=>{
+    kind=b.dataset.rtkind;
+    wrap.querySelectorAll("[data-rtkind]").forEach(x=>x.classList.toggle("on", x.dataset.rtkind===kind));
+    paint();
+  });
+  wrap.querySelector("#rt-add").onclick=()=>{ data[kind].push({need:"",qty:"",dept:""}); paint(); };
+  wrap.querySelector("#rt-x").onclick=()=>wrap.remove();
+  const save=async v=>{
+    try{ await DB.saveSettings({...S.settings, reqTemplates:v}); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+  wrap.querySelector("#rt-reset").onclick=()=>save(JSON.parse(JSON.stringify(REQ_TEMPLATES_DEFAULT)));
+  wrap.querySelector("#rt-go").onclick=()=>{
+    REQ_KINDS.forEach(k=>{ data[k]=data[k].filter(r=>(r.need||"").trim()||(r.qty||"").trim()); });
+    save(data);
+  };
+}
+
+/* ---- the day pack ---- */
+function openReqPack(){
+  const day=S.reqDate||todayISO();
+  const wrap=baseModal(`
+    <h3>${ic("download",20)} ${t("reqExportDay")}</h3>
+    <label>${t("reqPickDate")}</label>
+    <input type="date" id="rp-d" value="${esc(day)}">
+    <p class="mini" id="rp-n" style="margin-top:8px"></p>
+    <button class="btn" id="rp-pdf">${ic("download",16)} ${t("exportPdf")}</button>
+    <button class="btn ghost" id="rp-xls">${ic("download",16)} ${t("exportExcel")}</button>
+    <button class="btn ghost" id="rp-blank">${t("reqBlank")}</button>
+    <button class="btn ghost" id="rp-x">${t("close")}</button>`);
+  const dIn=wrap.querySelector("#rp-d"), note=wrap.querySelector("#rp-n");
+  const pick=()=>reqForDate(dIn?dIn.value:"");
+  const sync=()=>{ if(note) note.textContent=pick().length+" "+t("reqDayPack").toLowerCase(); };
+  if(dIn){ dIn.onchange=sync; dIn.oninput=sync; }
+  sync();
+  wrap.querySelector("#rp-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#rp-pdf").onclick=()=>{
+    const list=pick();
+    if(!list.length){ toastErr(t("reqNothingOn")); return; }
+    exportRequirements(list, dIn?dIn.value:""); wrap.remove();
+  };
+  wrap.querySelector("#rp-xls").onclick=async ()=>{
+    const list=pick();
+    if(!list.length){ toastErr(t("reqNothingOn")); return; }
+    await exportExcelSets(list.map(reqDataset), "requirements-"+(dIn?dIn.value:todayISO()));
+    toast(t("saved"));
+  };
+  wrap.querySelector("#rp-blank").onclick=()=>{
+    exportRequirements(REQ_KINDS.map(k=>({
+      id:"blank-"+k, kind:k, title:"", date:"", time:"", location:"", responsible:"", note:"",
+      rows:reqTemplate(k)
+    })), "", true);
+    wrap.remove();
+  };
+}
+/* A one-page management sheet per event: hotel header, the table, a note box
+   and signature lines. Almost no colour, because it gets printed and signed. */
+function exportRequirements(sheets, day, blank){
+  const E2=x=>String(x==null?"":x).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const hotel=(S.settings&&(S.settings.hotelName||S.settings.name))||"";
+  const line=v=>v ? E2(v) : '<span class=bl></span>';
+  const css=""
+   +"@page{size:A4 portrait;margin:14mm}"
+   +"*{box-sizing:border-box}"
+   +"body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1F1A15;margin:0;"
+     +"-webkit-print-color-adjust:exact;print-color-adjust:exact}"
+   +".sheet{page-break-after:always}"
+   +".sheet:last-child{page-break-after:auto}"
+   +".head{border-bottom:1.5px solid #2B1F16;padding-bottom:9px;margin-bottom:14px}"
+   +".hotel{font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:#6B5C4A;font-weight:700}"
+   +"h1{font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:400;margin:5px 0 0}"
+   +".when{font-size:9px;color:#8A7C6A;margin-top:4px}"
+   +".facts{display:flex;flex-wrap:wrap;gap:0 26px;margin-bottom:14px}"
+   +".f{font-size:11px;padding:5px 0;min-width:150px}"
+   +".f i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;"
+     +"color:#8A7C6A;font-weight:700;margin-bottom:2px}"
+   +".bl{display:inline-block;min-width:120px;border-bottom:1px solid #B9AE9E;height:12px}"
+   +"table{border-collapse:collapse;width:100%;font-size:11px;margin-bottom:12px}"
+   +"th{background:#F4F1EB;text-align:left;padding:7px 9px;border:1px solid #C9BEAE;font-size:8.5px;"
+     +"letter-spacing:.12em;text-transform:uppercase;color:#4A3F33}"
+   +"td{padding:8px 9px;border:1px solid #D8CFC1;vertical-align:middle}"
+   +"td.qty{width:56px;text-align:center;font-weight:700}"
+   +"td.dep{width:130px}"
+   +"td.box{width:52px;text-align:center}"
+   +".ck{display:inline-block;width:12px;height:12px;border:1.2px solid #6B5C4A}"
+   +".notebox{border:1px solid #D8CFC1;border-radius:3px;padding:8px 10px;min-height:56px;margin-bottom:14px}"
+   +".notebox i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;"
+     +"color:#8A7C6A;font-weight:700;margin-bottom:4px}"
+   +".notebox p{margin:0;font-size:10.5px;line-height:1.5}"
+   +".sign{display:flex;gap:26px;margin-top:20px}"
+   +".sign div{flex:1;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#8A7C6A;font-weight:700}"
+   +".sign span{display:block;border-bottom:1px solid #B9AE9E;height:26px;margin-bottom:4px}"
+   +".foot{margin-top:16px;padding-top:8px;border-top:1px solid #E0D8CB;font-size:8.5px;color:#9C9081;"
+     +"display:flex;justify-content:space-between}";
+
+  const one=sh=>{
+    const rows=(sh.rows||[]);
+    const pad=Math.max(0, (blank?10:rows.length+2)-rows.length);   // room to write more by hand
+    return '<div class=sheet><div class=head>'
+      +(hotel?'<div class=hotel>'+E2(hotel)+'</div>':'')
+      +'<h1>'+E2(reqSheetTitle(sh.kind))+'</h1>'
+      +'<div class=when>'+E2(t("fbPrepared"))+' '+E2(new Date().toLocaleString())
+        +(S.session&&S.session.name?' \u00b7 '+E2(S.session.name):'')+'</div>'
+      +'</div>'
+      +'<div class=facts>'
+        +'<div class=f><i>'+E2(reqKindLabel(sh.kind))+'</i>'+line(sh.title)+'</div>'
+        +'<div class=f><i>'+E2(t("reqDate"))+'</i>'+line(sh.date?niceDate(sh.date):"")+'</div>'
+        +'<div class=f><i>'+E2(t("time"))+'</i>'+line(sh.time)+'</div>'
+        +'<div class=f><i>'+E2(t("reqLocation"))+'</i>'+line(sh.location)+'</div>'
+      +'</div>'
+      +'<table><thead><tr>'
+        +'<th>'+E2(t("reqNeed"))+'</th><th>'+E2(t("reqQty"))+'</th>'
+        +'<th>'+E2(t("reqDept"))+'</th><th>'+E2(t("reqStatus"))+'</th></tr></thead><tbody>'
+      + rows.map(r=>'<tr><td>'+E2(r.need||"")+'</td><td class=qty>'+E2(r.qty||"")+'</td>'
+          +'<td class=dep>'+E2(r.dept||"")+'</td><td class=box><span class=ck></span></td></tr>').join("")
+      + Array.from({length:pad}).map(()=>'<tr><td>&nbsp;</td><td class=qty></td>'
+          +'<td class=dep></td><td class=box><span class=ck></span></td></tr>').join("")
+      +'</tbody></table>'
+      +'<div class=notebox><i>'+E2(t("reqNote"))+'</i><p>'+E2(sh.note||"")+'</p></div>'
+      +'<div class=sign>'
+        +'<div><span></span>'+E2(t("reqResponsible"))+(sh.responsible?' \u00b7 '+E2(sh.responsible):'')+'</div>'
+        +'<div><span></span>'+E2(t("reqReceived"))+'</div>'
+        +'<div><span></span>'+E2(t("reqSignature"))+'</div>'
+      +'</div>'
+      +'<div class=foot><span>'+E2(hotel||t("reqTab"))+'</span><span>'
+        +E2(sh.date?niceDate(sh.date):(day?niceDate(day):t("reqTab")))+'</span></div>'
+      +'</div>';
+  };
+
+  const w=window.open("","_blank");
+  if(!w){ toast(t("aiErr")); return; }
+  w.document.write("<html><head><title>"+E2(t("reqTab"))+"</title><meta charset=utf-8>"
+    +"<style>"+css+"</style></head><body>"+sheets.map(one).join("")
+    +"<scr"+"ipt>setTimeout(function(){window.print();},400);<\/scr"+"ipt></body></html>");
+  w.document.close();
+}
+function reqDataset(sh){
+  return {
+    title:(sh.title||reqSheetTitle(sh.kind))+(sh.date?" \u00b7 "+niceDate(sh.date):""),
+    headers:[t("reqNeed"),t("reqQty"),t("reqDept"),t("reqStatus")],
+    rows:(sh.rows||[]).map(r=>[r.need||"", r.qty||"", r.dept||"", r.done?"OK":""])
+  };
+}
 /* ===== THE GUEST FEEDBACK REPORT =====
    Its own printed document rather than a generic table: a proper letterhead,
    a summary band, colour-coded stars, and only the departments that were
@@ -9295,6 +9763,13 @@ function wireCommon(){
   document.querySelectorAll("[data-fbdept]").forEach(b=>b.onclick=()=>openDeptDetail(b.dataset.fbdept));
   const fbx=$("#btn-fbexport"); if(fbx) fbx.onclick=openFeedbackExport;
   const fbd=$("#btn-fbdepts"); if(fbd) fbd.onclick=openDeptEditor;
+  const rqN=$("#rq-new");    if(rqN) rqN.onclick=()=>openReqEditor();
+  const rqP=$("#rq-pack");   if(rqP) rqP.onclick=openReqPack;
+  const rqD=$("#rq-depts");  if(rqD) rqD.onclick=openReqDeptEditor;
+  const rqT=$("#rq-tpl");    if(rqT) rqT.onclick=openReqTemplateEditor;
+  const rqDate=$("#rq-date");
+  if(rqDate) rqDate.onchange=()=>{ S.reqDate=rqDate.value; render(); };
+  document.querySelectorAll("[data-rqopen]").forEach(b=>b.onclick=()=>openReqEditor(b.dataset.rqopen));
   const fbs=$("#btn-fbseeall"); if(fbs) fbs.onclick=()=>{ S.tab="feedback"; render(); };
   const fb=$("#btn-addfb"); if(fb) fb.onclick=()=>openFeedbackModal();
   const cp=$("#btn-chpass"); if(cp) cp.onclick=openChangePassModal;
