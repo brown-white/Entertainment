@@ -1707,6 +1707,10 @@ Object.assign(DICT.en, {
   fbLastDept:"Keep at least one department.",
   fbResetDepts:"Back to the standard 15",
   fbStrong:"All departments strong",
+  fbWholeHotel:"Whole hotel",
+  fbAllEqual:"Every department scored the same",
+  fbPerfect:"Perfect across the board",
+  fbTied:"{n} departments tied at the top",
   fbNoneWeak:"Nothing below 4.5",
   fbFiveShare:"Five-star feedback",
   fbDeptsRated:"Departments rated",
@@ -1838,12 +1842,18 @@ function fbSummary(list){
   const overall=fbAvgAll(list);
   const scores=list.map(fbOverall).filter(n=>n>0);
   const five=scores.filter(n=>n>=4.75).length;
-  const best=stat[0]||null;
+  const top=stat[0]||null;
   const tail=stat[stat.length-1]||null;
-  const weak=(tail && tail.avg<4.5 && best && tail.avg<best.avg) ? tail : null;
+  // naming one winner is only honest when it actually won
+  const tiedTop=top ? stat.filter(d=>Math.abs(d.avg-top.avg)<0.005) : [];
+  const allSame=stat.length>1 && tiedTop.length===stat.length;
+  const best=(top && !allSame && tiedTop.length===1) ? top : null;
+  const weak=(tail && top && tail.avg<4.5 && tail.avg<top.avg) ? tail : null;
   return {
-    stat, overall, best, weak,
-    lowest: (tail && best && tail.k!==best.k) ? tail : null,
+    stat, overall, best, weak, top, tiedTop, allSame,
+    topAvg: top ? top.avg : 0,
+    perfect: !!(top && stat.length && Math.abs(top.avg-5)<0.005 && (!tail || Math.abs(tail.avg-5)<0.005)),
+    lowest: (tail && top && tail.k!==top.k && tail.avg<top.avg) ? tail : null,
     count: list.length,
     rated: stat.length,
     five,
@@ -7189,7 +7199,10 @@ function feedbackAnalyticsCard(){
           <span class="fb-nm">${t("fbLowest")}<br><span class="mini">${esc(fbDeptLabel(sum.weak.k))}</span></span>
           <span class="fb-bar"><i style="width:${Math.round(sum.weak.avg/5*100)}%"></i></span>
           <span class="fb-val">${sum.weak.avg.toFixed(1)}</span></button>`
-      : (sum.rated?`<p class="mini" style="margin:0 0 10px">${ic("star",13)} ${t("fbStrong")} \u00b7 ${t("fbNoneWeak")}</p>`:"")}
+      : (sum.rated?`<p class="mini" style="margin:0 0 10px">${ic("star",13)} ${
+          sum.perfect ? t("fbPerfect")
+          : sum.allSame ? t("fbAllEqual")
+          : t("fbStrong")+" \u00b7 "+t("fbNoneWeak")}</p>`:"")}
     ${fbDeptListCard(list)}
     ${sum.rated?`<p class="mini" style="margin-top:6px">${t("fbTapHint")}</p>`:""}
   </div>`;
@@ -8537,8 +8550,13 @@ function exportFeedbackReport(){
     + tile(t("avgRate"), avg?stars(avg, avg.toFixed(1)):'<span class=nr>\u2014</span>')
     + tile(t("fbFiveShare"), sum.count?('<span class=pct>'+sum.fivePct+'%</span>'):'<span class=nr>\u2014</span>',
         sum.count?(sum.five+" / "+sum.count):"")
-    + tile(t("fbHighest"), sum.best?stars(sum.best.avg, sum.best.avg.toFixed(2)):'<span class=nr>\u2014</span>',
-        sum.best?fbDeptLabel(sum.best.k):"")
+    + (sum.allSame
+        ? tile(t("fbWholeHotel"), stars(sum.topAvg, sum.topAvg.toFixed(2)),
+            sum.perfect ? t("fbPerfect") : t("fbAllEqual"))
+        : tile(t("fbHighest"),
+            sum.top ? stars(sum.top.avg, sum.top.avg.toFixed(2)) : '<span class=nr>\u2014</span>',
+            sum.best ? fbDeptLabel(sum.best.k)
+              : (sum.tiedTop.length>1 ? t("fbTied").replace("{n}", sum.tiedTop.length) : "")))
     + (sum.weak
         ? '<div class="tile warn"><span class=tl>'+E2(t("fbLowest"))+'</span><b>'
             +stars(sum.weak.avg, sum.weak.avg.toFixed(2))+'</b><span class=ts>'+E2(fbDeptLabel(sum.weak.k))+'</span></div>'
