@@ -1698,6 +1698,22 @@ Object.assign(DICT.en, {
   fbLowest:"Needs attention",
   fbWholeStay:"All feedback",
   fbNothing:"No feedback matches this selection.",
+  rename:"Rename",
+  fbDeptsEdit:"Departments",
+  fbDeptsHint:"These are the things guests rate. Rename them, move them, add your own or remove the ones you never use.",
+  fbAddDept:"Add a department",
+  fbDeptName:"Department name",
+  fbDeptGone:"Removed. Ratings already collected for it stay in the database, they are just no longer shown.",
+  fbLastDept:"Keep at least one department.",
+  fbResetDepts:"Back to the standard 15",
+  fbStrong:"All departments strong",
+  fbNoneWeak:"Nothing below 4.5",
+  fbFiveShare:"Five-star feedback",
+  fbDeptsRated:"Departments rated",
+  fbLowestRated:"Lowest rated",
+  fbMyFeedback:"Guest feedback",
+  fbMySub:"Collect a rating while you are with the guest.",
+  fbSeeAll:"See all my feedback",
   fbFormHint:"Tap the stars for each department. Leave a department empty if the guest did not rate it.",
   fbNoDept:"No department was rated yet.",
   fbNeedRoom:"Please write the room number",
@@ -1729,10 +1745,31 @@ Object.assign(DICT.en, {
 const FB_DEPT_KEYS=["ent_general","music_day","music_night","day_acts","day_events",
   "equipment","ent_team","food","drinks","room","housekeeping","pool_beach",
   "alacarte","behaviour","reception"];
+/* The manager can rename, reorder, add and remove departments. Her list lives in
+   S.settings.fbDepts as [{key,name}]; without one we use the standard fifteen.
+   Keys never change once created, so ratings already collected stay attached. */
+function fbDeptConf(){
+  const c=S.settings && S.settings.fbDepts;
+  return (Array.isArray(c) && c.length) ? c.filter(d=>d && d.key) : null;
+}
+function fbDeptKeys(){
+  const c=fbDeptConf();
+  return c ? c.map(d=>String(d.key)) : FB_DEPT_KEYS.slice();
+}
+function fbDeptRows(){
+  const c=fbDeptConf();
+  return c ? c.map(d=>({key:String(d.key), name:d.name||""}))
+           : FB_DEPT_KEYS.map(k=>({key:k, name:""}));
+}
 const FB_SQL="alter table feedback add column if not exists depts text;\n"
   +"alter table feedback add column if not exists guest_name text;";
 const FB_MARK="\n#ratings ";
-function fbDeptLabel(k){ return t("d_"+k); }
+function fbDeptLabel(k){
+  const c=fbDeptConf(), f=c && c.find(d=>String(d.key)===String(k));
+  if(f && f.name) return f.name;
+  const std=t("d_"+k);
+  return std==="d_"+k ? String(k) : std;
+}
 /* Feedback stores the login name (a shirt number). Everywhere it is SHOWN we
    want the person's real display name instead. */
 function teamName(username){
@@ -1761,7 +1798,7 @@ function fbDepts(f){
 function fbComment(f){ return String((f&&f.comment)||"").split(FB_MARK)[0].trim(); }
 function fbPackComment(f){
   const d=fbDepts(f);
-  const line=FB_DEPT_KEYS.filter(k=>+d[k]>0).map(k=>k+":"+d[k]).join(";");
+  const line=Object.keys(d).filter(k=>+d[k]>0).map(k=>k+":"+d[k]).join(";");
   const base=fbComment(f);
   return line ? (base+FB_MARK+line) : base;
 }
@@ -1784,13 +1821,34 @@ function fbDeptStats(list){
   const acc={};
   (list||[]).forEach(f=>{
     const d=fbDepts(f);
-    FB_DEPT_KEYS.forEach(k=>{ const v=+d[k]; if(v>0){ acc[k]=acc[k]||{n:0,s:0}; acc[k].n++; acc[k].s+=v; } });
+    fbDeptKeys().forEach(k=>{ const v=+d[k]; if(v>0){ acc[k]=acc[k]||{n:0,s:0}; acc[k].n++; acc[k].s+=v; } });
   });
-  return FB_DEPT_KEYS.filter(k=>acc[k]).map(k=>({k,n:acc[k].n,avg:acc[k].s/acc[k].n}));
+  return fbDeptKeys().filter(k=>acc[k]).map(k=>({k,n:acc[k].n,avg:acc[k].s/acc[k].n}));
 }
 function fbAvgAll(list){
   const v=(list||[]).map(fbOverall).filter(n=>n>0);
   return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0;
+}
+/* One place decides what the numbers mean, so the app and the printed report
+   never disagree. A department is only "needs attention" if it is genuinely
+   weak — below 4.5 AND below the best one. Five out of five is never a problem. */
+function fbSummary(list){
+  list=list||[];
+  const stat=fbDeptStats(list).sort((a,b)=>(b.avg-a.avg)||String(a.k).localeCompare(String(b.k)));
+  const overall=fbAvgAll(list);
+  const scores=list.map(fbOverall).filter(n=>n>0);
+  const five=scores.filter(n=>n>=4.75).length;
+  const best=stat[0]||null;
+  const tail=stat[stat.length-1]||null;
+  const weak=(tail && tail.avg<4.5 && best && tail.avg<best.avg) ? tail : null;
+  return {
+    stat, overall, best, weak,
+    lowest: (tail && best && tail.k!==best.k) ? tail : null,
+    count: list.length,
+    rated: stat.length,
+    five,
+    fivePct: scores.length ? Math.round(five/scores.length*100) : 0
+  };
 }
 function fbDeptListCard(list){
   const st=fbDeptStats(list).sort((a,b)=>b.avg-a.avg);
@@ -1805,7 +1863,7 @@ function fbCanEdit(f){
   return S.session.role==="manager" || String(f.by_user||"")===String(S.session.username||"");
 }
 function fbRowHtml(f){
-  const d=fbDepts(f), n=FB_DEPT_KEYS.filter(k=>+d[k]>0).length;
+  const d=fbDepts(f), n=fbDeptKeys().filter(k=>+d[k]>0).length;
   const who=[f.guest_name?esc(f.guest_name):"", f.nationality?esc(f.nationality):""].filter(Boolean).join(" \u00b7 ");
   return `<div class="fb-line" data-fbopen="${esc(String(f.id))}">
     <span style="min-width:0"><b>${t("room")} ${esc(f.room)}</b>${who?` \u00b7 ${who}`:""}
@@ -3435,7 +3493,6 @@ function navGroupsBase(role){
         ["bookings","ticket",t("bookings"),0]]},
       {key:"secConnect", head:t("secConnect"), items:[
         ["chat","chat",t("chatManager"),un],
-        ["feedback","star",t("feedback"),0],
         ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
         ["teaminfo","users",t("teamPage"),0]]}
     ];
@@ -6560,8 +6617,32 @@ function myWorkDayView(){
       <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
       ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
     ${dayPlanInfoCard(day)}
+    ${workdayFeedbackCard()}
     ${dayPlanTimes(day)}
     ${dayPlanStandards(day)}
+  </div>`;
+}
+/* Collecting guest feedback is a daily job, so it sits inside the work day
+   rather than behind a menu item they would have to go looking for. */
+function workdayFeedbackCard(){
+  const me=(S.session&&S.session.username)||"";
+  const mine=(S.feedback||[]).filter(f=>String(f.by_user||"")===String(me))
+    .sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
+  const today=mine.filter(f=>{
+    const ts=f.created_at?new Date(f.created_at):null;
+    return ts && !isNaN(ts.getTime()) && localDateKey(ts)===localDateKey(new Date());
+  });
+  const recent=mine.slice(0,3);
+  return `<div class="sec"><h3>${ic("star",18)} ${t("fbMyFeedback")}</h3>
+    <p class="mini" style="margin:-6px 0 10px">${t("fbMySub")}</p>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${today.length}</b><span>${t("today")}</span></div>
+      <div class="stat"><b>${mine.length}</b><span>${t("feedback")}</span></div>
+    </div>
+    <button class="btn" id="btn-addfb" style="margin:0 0 10px">\uFF0B ${t("fbNew")}</button>
+    ${recent.length?`<div class="card">${recent.map(fbRowHtml).join("")}</div>
+      ${mine.length>recent.length?`<button class="btn ghost sm" id="btn-fbseeall" style="margin-top:8px">${t("fbSeeAll")}</button>`:""}`
+      :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("noMyFeedback")}</div>`}
   </div>`;
 }
 /* full day detail: theme, dress, timings, show — used by staff + manager */
@@ -7040,6 +7121,8 @@ function feedbackInner(){
       <button class="btn" id="btn-addfb">\uFF0B ${t("fbNew")}</button>
       <button class="btn ghost" id="btn-fbexport">${ic("download",15)} ${t("fbExport")}</button>
     </div>
+    ${S.session && S.session.role==="manager"
+      ? `<button class="btn ghost sm" id="btn-fbdepts" style="margin:0 0 12px">${ic("grid",14)} ${t("fbDeptsEdit")}</button>` : ""}
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${avg?avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${list.length}</b><span>${t("feedback")}</span></div>
@@ -7093,14 +7176,22 @@ function dashView(){
 /* The feedback picture at a glance — tap a department to read the ratings behind it. */
 function feedbackAnalyticsCard(){
   const list=S.feedback||[];
-  const avg=fbAvgAll(list);
+  const sum=fbSummary(list);
   return `<div class="sec"><h3>${ic("star",18)} ${t("fbAnalytics")}</h3>
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${avg?avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
-      <div class="stat"><b>${list.length}</b><span>${t("feedback")}</span></div>
+      <div class="stat"><b>${sum.overall?sum.overall.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
+      <div class="stat"><b>${sum.count}</b><span>${t("feedback")}</span></div>
+      <div class="stat"><b>${sum.count?sum.fivePct+"%":"\u2014"}</b><span>${t("fbFiveShare")}</span></div>
+      <div class="stat"><b>${sum.rated}</b><span>${t("fbDeptsRated")}</span></div>
     </div>
+    ${sum.weak
+      ? `<button class="fb-dept low" data-fbdept="${esc(sum.weak.k)}" style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px">
+          <span class="fb-nm">${t("fbLowest")}<br><span class="mini">${esc(fbDeptLabel(sum.weak.k))}</span></span>
+          <span class="fb-bar"><i style="width:${Math.round(sum.weak.avg/5*100)}%"></i></span>
+          <span class="fb-val">${sum.weak.avg.toFixed(1)}</span></button>`
+      : (sum.rated?`<p class="mini" style="margin:0 0 10px">${ic("star",13)} ${t("fbStrong")} \u00b7 ${t("fbNoneWeak")}</p>`:"")}
     ${fbDeptListCard(list)}
-    ${fbDeptStats(list).length?`<p class="mini" style="margin-top:6px">${t("fbTapHint")}</p>`:""}
+    ${sum.rated?`<p class="mini" style="margin-top:6px">${t("fbTapHint")}</p>`:""}
   </div>`;
 }
 function managerActsInner(){
@@ -7442,15 +7533,15 @@ function buildDataset(kind){
     const list=exportFeedbackList();
     return {title:t("expFeedback")+fbFilterNote(),
       landscape:true,
-      stars:{from:3, to:3+FB_DEPT_KEYS.length},          // Overall + every department
+      stars:{from:3, to:3+fbDeptKeys().length},          // Overall + every department
       notes:list.map(f=>fbComment(f)),                    // printed full width under the row
       noteLabel:t("comment"),
       headers:[t("room"),t("fbGuestName"),t("nationality"),t("fbOverall")]
-        .concat(FB_DEPT_KEYS.map(fbDeptLabel))
+        .concat(fbDeptKeys().map(fbDeptLabel))
         .concat([t("fbCollectedBy"),"Date"]),
       rows:list.map(f=>{ const d=fbDepts(f);
         return [f.room,f.guest_name||"",f.nationality||"",fbOverall(f)||""]
-          .concat(FB_DEPT_KEYS.map(k=>+d[k]>0?+d[k]:""))
+          .concat(fbDeptKeys().map(k=>+d[k]>0?+d[k]:""))
           .concat([teamName(f.by_user),fmtDate(f.created_at)]); })};
   }
   if(kind==="fbdepts"){
@@ -7643,20 +7734,13 @@ function exportActivities(){
 /* Feedback the manager asked for: a month, a weekday and a part of the day.
    All three are optional and stack. */
 function exportFeedbackList(){
-  const mk=S.fbMonth||"", day=S.fbDate||"", d=expDay(), slot=expSlot();
+  const mk=S.fbMonth||"", day=S.fbDate||"", slot=expSlot();
   const list=(S.feedback||[]).filter(f=>{
     const ts=f.created_at?new Date(f.created_at):null;
-    if(!ts || isNaN(ts.getTime())) return !mk && !day && d==null && !slot;
-    if(day) return localDateKey(ts)===day && slotOk(ts,slot);   // one exact date wins over everything
+    if(!ts || isNaN(ts.getTime())) return !mk && !day && !slot;
+    if(day) return localDateKey(ts)===day && slotOk(ts,slot);   // one exact date wins over the month
     if(mk && localMonthKey(ts)!==mk) return false;
-    if(d!=null && (ts.getDay()+6)%7 !== d) return false;
-    if(slot){
-      const h=ts.getHours();
-      if(slot==="morning"   && !(h<12)) return false;
-      if(slot==="afternoon" && !(h>=12 && h<17)) return false;
-      if(slot==="evening"   && !(h>=17)) return false;
-    }
-    return true;
+    return slotOk(ts,slot);
   });
   return list.sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
 }
@@ -7675,6 +7759,13 @@ function slotOk(ts,slot){
   return true;
 }
 /* Reads back as "Wednesday 3 September 2026" so the report says what it covers. */
+/* 03/09 · 22:29 — short enough for a narrow column, still unambiguous. */
+function shortStamp(iso){
+  const dt=iso?new Date(iso):null;
+  if(!dt || isNaN(dt.getTime())) return "";
+  const p=n=>String(n).padStart(2,"0");
+  return p(dt.getDate())+"/"+p(dt.getMonth()+1)+" \u00b7 "+p(dt.getHours())+":"+p(dt.getMinutes());
+}
 function niceDate(key){
   const bits=String(key||"").split("-");
   if(bits.length!==3) return key||"";
@@ -7685,10 +7776,7 @@ function niceDate(key){
 function fbFilterBits(){
   const bits=[];
   if(S.fbDate) bits.push(niceDate(S.fbDate));
-  else {
-    if(S.fbMonth) bits.push(monthLabel(S.fbMonth));
-    const d=expDay(); if(d!=null) bits.push(t("days")[d]||"");
-  }
+  else if(S.fbMonth) bits.push(monthLabel(S.fbMonth));
   const sl=expSlot(); if(sl) bits.push(t(sl+"Part"));
   return bits.filter(Boolean);
 }
@@ -8168,7 +8256,7 @@ function openFeedbackModal(id){
     <button class="btn ghost" id="fb-x">${t("close")}</button>`);
   const box=wrap.querySelector("#fb-depts");
   const paint=()=>{
-    box.innerHTML=FB_DEPT_KEYS.map(k=>`<div class="fb-form-row">
+    box.innerHTML=fbDeptKeys().map(k=>`<div class="fb-form-row">
       <span class="fb-nm">${esc(fbDeptLabel(k))}</span>
       <span class="fb-stars">${[1,2,3,4,5].map(i=>
         `<button class="fb-st ${i<=(+vals[k]||0)?"on":""}" data-fbset="${k}|${i}" aria-label="${i}">${i<=(+vals[k]||0)?"\u2605":"\u2606"}</button>`).join("")}</span>
@@ -8216,7 +8304,7 @@ function openFeedbackModal(id){
   wrap.querySelector("#fb-go").onclick=async ()=>{
     const room=wrap.querySelector("#fb-room").value.trim();
     if(!room){ toastErr(t("fbNeedRoom")); return; }
-    const dep={}; FB_DEPT_KEYS.forEach(k=>{ if(+vals[k]>0) dep[k]=+vals[k]; });
+    const dep={}; fbDeptKeys().forEach(k=>{ if(+vals[k]>0) dep[k]=+vals[k]; });
     const scores=Object.values(dep);
     const rate = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : (ex?+ex.rate||5:5);
     const payload={
@@ -8248,7 +8336,7 @@ function openFeedbackDetail(id){
   const f=(S.feedback||[]).find(x=>String(x.id)===String(id));
   if(!f) return;
   const d=fbDepts(f);
-  const rated=FB_DEPT_KEYS.filter(k=>+d[k]>0);
+  const rated=fbDeptKeys().filter(k=>+d[k]>0);
   const wrap=baseModal(`
     <h3>${ic("star",20)} ${t("fbDetails")}</h3>
     <p class="mini">${t("room")} ${esc(f.room)}${f.guest_name?" \u00b7 "+esc(f.guest_name):""}${f.nationality?" \u00b7 "+esc(f.nationality):""}</p>
@@ -8298,6 +8386,81 @@ function openDeptDetail(key){
   });
 }
 /* Excel or PDF, straight from the feedback page: the sheet plus a department summary. */
+/* The manager decides what guests get asked about. Keys are never reused or
+   rewritten, so renaming a department keeps every rating it already has. */
+function openDeptEditor(){
+  let rows=fbDeptRows();
+  const wrap=baseModal(`
+    <h3>${ic("grid",20)} ${t("fbDeptsEdit")}</h3>
+    <p class="mini">${t("fbDeptsHint")}</p>
+    <div id="de-box"></div>
+    <button class="btn ghost" id="de-add">\uFF0B ${t("fbAddDept")}</button>
+    <button class="btn" id="de-go">${t("save")}</button>
+    <button class="btn ghost" id="de-reset">${t("fbResetDepts")}</button>
+    <button class="btn ghost" id="de-x">${t("cancelBtn")}</button>`);
+  const box=wrap.querySelector("#de-box");
+  const label=r=>r.name || (t("d_"+r.key)==="d_"+r.key ? r.key : t("d_"+r.key));
+  const paint=()=>{
+    box.innerHTML=rows.map((r,i)=>`<div class="ar-it">
+      <span class="ar-nm">${esc(label(r))}</span>
+      <span class="ar-acts">
+        <button class="bd-b" data-deup="${i}" ${i===0?"disabled":""}>${ic("back",14)}</button>
+        <button class="bd-b down" data-dedown="${i}" ${i===rows.length-1?"disabled":""}>${ic("back",14)}</button>
+        <button class="bd-b" data-dename="${i}" aria-label="${t("rename")}">${ic("pen",14)}</button>
+        <button class="bd-b warn" data-dedel="${i}" aria-label="${t("delete")}">${ic("trash",14)}</button>
+      </span></div>`).join("");
+    box.querySelectorAll("[data-deup]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.deup; [rows[i-1],rows[i]]=[rows[i],rows[i-1]]; paint(); });
+    box.querySelectorAll("[data-dedown]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.dedown; [rows[i+1],rows[i]]=[rows[i],rows[i+1]]; paint(); });
+    box.querySelectorAll("[data-dename]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.dename;
+      openTextPrompt(t("fbDeptName"), label(rows[i]), v=>{ if(v){ rows[i]={...rows[i], name:v}; paint(); } });
+    });
+    box.querySelectorAll("[data-dedel]").forEach(b=>b.onclick=async ()=>{
+      const i=+b.dataset.dedel;
+      if(rows.length<=1){ toastErr(t("fbLastDept")); return; }
+      if(!await confirmAction({question:label(rows[i]),note:t("fbDeptGone"),danger:true})) return;
+      rows.splice(i,1); paint();
+    });
+  };
+  paint();
+  wrap.querySelector("#de-add").onclick=()=>openTextPrompt(t("fbDeptName"),"",v=>{
+    if(!v) return;
+    rows.push({key:fbNewDeptKeyFrom(rows,v), name:v}); paint();
+  });
+  wrap.querySelector("#de-x").onclick=()=>wrap.remove();
+  const save=async list=>{
+    try{
+      await DB.saveSettings({...S.settings, fbDepts:list});
+      wrap.remove(); toastOk(t("saved")); render();
+    }catch(e){ toastErr(t("errSave")); }
+  };
+  wrap.querySelector("#de-reset").onclick=()=>save(FB_DEPT_KEYS.map(k=>({key:k,name:""})));
+  wrap.querySelector("#de-go").onclick=()=>save(rows);
+}
+/* A key that is unique inside the list being edited, not just the saved one. */
+function fbNewDeptKeyFrom(rows,name){
+  const slug=String(name||"").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,20);
+  const base="x_"+(slug||"dept");
+  const taken=rows.map(r=>String(r.key)).concat(FB_DEPT_KEYS);
+  let k=base, i=2;
+  while(taken.includes(k)) k=base+"_"+(i++);
+  return k;
+}
+/* A one-field prompt — used for renaming and adding departments. */
+function openTextPrompt(title, value, done){
+  const wrap=baseModal(`
+    <h3>${ic("pen",20)} ${esc(title)}</h3>
+    <input id="tp-v" value="${esc(value||"")}" autocapitalize="words">
+    <button class="btn" id="tp-go">${t("save")}</button>
+    <button class="btn ghost" id="tp-x">${t("cancelBtn")}</button>`);
+  wrap.querySelector("#tp-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#tp-go").onclick=()=>{
+    const v=wrap.querySelector("#tp-v").value.trim();
+    wrap.remove(); done(v);
+  };
+}
 /* ===== THE GUEST FEEDBACK REPORT =====
    Its own printed document rather than a generic table: a proper letterhead,
    a summary band, colour-coded stars, and only the departments that were
@@ -8308,10 +8471,10 @@ function exportFeedbackReport(){
   const hotel=(S.settings&&(S.settings.hotelName||S.settings.name))||"";
   const bits=fbFilterBits();
   const cover=bits.length?bits.join(" \u00b7 "):t("fbWholeStay");
-  const stat=fbDeptStats(list).sort((a,b)=>b.avg-a.avg);
-  const shown=FB_DEPT_KEYS.filter(k=>stat.some(d=>d.k===k));   // only what was rated
-  const avg=fbAvgAll(list);
-  const best=stat[0], worst=stat.length>1?stat[stat.length-1]:null;
+  const sum=fbSummary(list);
+  const stat=sum.stat;
+  const shown=fbDeptKeys().filter(k=>stat.some(d=>d.k===k));   // only what was rated
+  const avg=sum.overall;
 
   const tone=n=>{ n=+n||0; return n<3.5?"#B0392B":n<4.5?"#D08526":"#B98A5C"; };
   const stars=(v,exact)=>{
@@ -8338,6 +8501,10 @@ function exportFeedbackReport(){
    +".tile .tl{display:block;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#9C8A74;font-weight:700}"
    +".tile b{display:block;font-family:Georgia,serif;font-size:20px;font-weight:400;margin-top:3px;line-height:1.15}"
    +".tile .ts{display:block;font-size:10px;color:#6B4A32;margin-top:2px}"
+   +".tile.warn{background:#FBF0EC;border-color:#E8CFC5}"
+   +".tile.warn .tl{color:#B0392B}"
+   +".pct{font-family:Georgia,serif}"
+   +".okmark{color:#7C9A6B;font-size:22px;line-height:1}"
    +"table{border-collapse:collapse;width:100%;font-size:9.5px}"
    +"thead{display:table-header-group}"
    +"th{background:#F2E7D6;color:#5A4029;text-align:left;padding:6px 5px;border:1px solid #E4D3BC;"
@@ -8350,6 +8517,7 @@ function exportFeedbackReport(){
    +"td.st .s em{display:block;font-style:normal;font-size:8px;color:#9C8A74;letter-spacing:0;margin-top:1px}"
    +".sg{color:#E2D6C2}.nr{color:#D9CDBA}"
    +"td.room{font-weight:700;font-size:11px}"
+   +"td.dt{white-space:nowrap;font-size:9px;color:#6B4A32}"
    +"tr.c{page-break-inside:avoid}"
    +"tr.c td{background:#FBF7F0;border-top:0;color:#4A3826;font-size:10px;line-height:1.55;padding:2px 9px 9px}"
    +"tr.c b{color:#B98A5C;font-weight:700;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase}"
@@ -8365,10 +8533,17 @@ function exportFeedbackReport(){
     +'</div>';
 
   html+='<div class=band>'
-    + tile(t("fbCollected"), String(list.length))
+    + tile(t("fbCollected"), String(sum.count), sum.rated+" "+t("fbDeptsRated").toLowerCase())
     + tile(t("avgRate"), avg?stars(avg, avg.toFixed(1)):'<span class=nr>\u2014</span>')
-    + tile(t("fbHighest"), best?stars(best.avg, best.avg.toFixed(2)):'<span class=nr>\u2014</span>', best?fbDeptLabel(best.k):"")
-    + tile(t("fbLowest"), worst?stars(worst.avg, worst.avg.toFixed(2)):'<span class=nr>\u2014</span>', worst?fbDeptLabel(worst.k):"")
+    + tile(t("fbFiveShare"), sum.count?('<span class=pct>'+sum.fivePct+'%</span>'):'<span class=nr>\u2014</span>',
+        sum.count?(sum.five+" / "+sum.count):"")
+    + tile(t("fbHighest"), sum.best?stars(sum.best.avg, sum.best.avg.toFixed(2)):'<span class=nr>\u2014</span>',
+        sum.best?fbDeptLabel(sum.best.k):"")
+    + (sum.weak
+        ? '<div class="tile warn"><span class=tl>'+E2(t("fbLowest"))+'</span><b>'
+            +stars(sum.weak.avg, sum.weak.avg.toFixed(2))+'</b><span class=ts>'+E2(fbDeptLabel(sum.weak.k))+'</span></div>'
+        : tile(t("fbStrong"), sum.rated?'<span class=okmark>\u2713</span>':'<span class=nr>\u2014</span>',
+            sum.rated?t("fbNoneWeak"):""))
     +'</div>';
 
   if(!list.length){
@@ -8387,7 +8562,7 @@ function exportFeedbackReport(){
         +'<td class=st>'+stars(ov, ov?ov.toFixed(1):"")+'</td>'
         + shown.map(k=>'<td class=st>'+stars(d[k])+'</td>').join("")
         +'<td>'+E2(teamName(f.by_user))+'</td>'
-        +'<td>'+E2(fmtDate(f.created_at))+'</td></tr>';
+        +'<td class=dt>'+E2(shortStamp(f.created_at))+'</td></tr>';
       if(note) row+='<tr class=c><td colspan="'+heads.length+'"><b>'+E2(t("comment"))+'</b><br>'+E2(note)+'</td></tr>';
       return row;
     }).join("");
@@ -8416,41 +8591,31 @@ function openFeedbackExport(){
     <label style="margin-top:12px">${t("fbExactDate")}</label>
     <input type="date" id="fe-date" value="${esc(S.fbDate||"")}">
     <p class="mini" style="margin:4px 0 0">${t("fbExactHint")}</p>
-    <div class="row2" style="margin-top:12px">
-      <div><label>${t("whichDay")}</label>
-        <select id="fe-day">
-          <option value="">${t("allDays")}</option>
-          ${t("days").map((d,i)=>`<option value="${i}" ${String(S.exportDay)===String(i)?"selected":""}>${esc(d)}</option>`).join("")}
-        </select></div>
-      <div><label>${t("whichTime")}</label>
-        <select id="fe-slot">
-          <option value="">${t("allDayLong")}</option>
-          ${["morning","afternoon","evening"].map(k=>`<option value="${k}" ${S.exportSlot===k?"selected":""}>${t(k+"Part")}</option>`).join("")}
-        </select></div>
-    </div>
+    <label style="margin-top:12px">${t("whichTime")}</label>
+    <select id="fe-slot">
+      <option value="">${t("allDayLong")}</option>
+      ${["morning","afternoon","evening"].map(k=>`<option value="${k}" ${S.exportSlot===k?"selected":""}>${t(k+"Part")}</option>`).join("")}
+    </select>
     <p class="mini" id="fe-note" style="margin-top:8px"></p>
     <button class="btn" id="fe-pdf">${ic("download",16)} ${t("exportPdf")}</button>
     <button class="btn ghost" id="fe-xlsx">${ic("download",16)} ${t("exportExcel")}</button>
     <button class="btn ghost" id="fe-x">${t("close")}</button>`);
-  const mSel=wrap.querySelector("#fe-month"), dSel=wrap.querySelector("#fe-day");
+  const mSel=wrap.querySelector("#fe-month");
   const sSel=wrap.querySelector("#fe-slot"), xDate=wrap.querySelector("#fe-date");
   const note=wrap.querySelector("#fe-note");
   const apply=()=>{
     if(xDate) S.fbDate=xDate.value;
     if(mSel) S.fbMonth=mSel.value;
-    if(dSel) S.exportDay=dSel.value;
     if(sSel) S.exportSlot=sSel.value;
-    // an exact date makes the month and the weekday meaningless — grey them out
-    const exact=!!S.fbDate;
-    if(mSel) mSel.disabled=exact;
-    if(dSel) dSel.disabled=exact;
+    // an exact date makes the month meaningless — grey it out
+    if(mSel) mSel.disabled=!!S.fbDate;
     const n=exportFeedbackList().length;
     const bits=fbFilterBits();
     if(note) note.textContent = bits.length
       ? t("filterNote")+" "+bits.join(" \u00b7 ")+" \u2014 "+n+" "+t("feedback")
       : t("noFilterNote")+" "+n+" "+t("feedback");
   };
-  [mSel,dSel,sSel,xDate].forEach(el=>{ if(el){ el.onchange=apply; el.oninput=apply; } });
+  [mSel,sSel,xDate].forEach(el=>{ if(el){ el.onchange=apply; el.oninput=apply; } });
   apply();
   wrap.querySelector("#fe-x").onclick=()=>wrap.remove();
   wrap.querySelector("#fe-xlsx").onclick=async ()=>{
@@ -8976,6 +9141,8 @@ function wireCommon(){
   document.querySelectorAll("[data-fbopen]").forEach(b=>b.onclick=()=>openFeedbackDetail(b.dataset.fbopen));
   document.querySelectorAll("[data-fbdept]").forEach(b=>b.onclick=()=>openDeptDetail(b.dataset.fbdept));
   const fbx=$("#btn-fbexport"); if(fbx) fbx.onclick=openFeedbackExport;
+  const fbd=$("#btn-fbdepts"); if(fbd) fbd.onclick=openDeptEditor;
+  const fbs=$("#btn-fbseeall"); if(fbs) fbs.onclick=()=>{ S.tab="feedback"; render(); };
   const fb=$("#btn-addfb"); if(fb) fb.onclick=()=>openFeedbackModal();
   const cp=$("#btn-chpass"); if(cp) cp.onclick=openChangePassModal;
   const ap=$("#btn-addprofile"); if(ap) ap.onclick=()=>openProfileModal(null);
