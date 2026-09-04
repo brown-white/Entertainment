@@ -1603,16 +1603,6 @@ html{font-size:calc(16px * var(--fscale,1))}
 .pick-dot{position:absolute;top:6px;inset-inline-start:6px;width:20px;height:20px;border-radius:50%;
   border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center}
 .bubwrap.picked .pick-dot{background:var(--bronze);border-color:var(--bronze);color:#fff}
-
-/* ===== ROLE EXPERIENCE REDESIGN v8 ===== */
-[data-approle="staff"] .screen,[data-approle="manager"] .screen{background:radial-gradient(120% 60% at 80% 0,rgba(128,72,42,.28),transparent 55%),linear-gradient(180deg,#17120f,#100d0b);color:#f5eadc;min-height:100dvh}
-[data-approle="staff"] .card,[data-approle="manager"] .card,[data-approle="staff"] .stat,[data-approle="manager"] .stat{background:linear-gradient(145deg,#241c18,#1d1714)!important;border:1px solid rgba(218,180,132,.13);color:#f5eadc}
-[data-approle="staff"] .mini,[data-approle="manager"] .mini,[data-approle="staff"] .meta,[data-approle="manager"] .meta{color:#bba997}
-.role-hero{border-radius:26px;padding:20px;margin:4px 0 18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#321f17,#17120f);box-shadow:0 24px 55px -32px #000}.role-hero .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:#d9b47f;font-weight:700}.role-hero h1{font-size:32px;line-height:1.02;margin-top:4px;color:#fff}.role-hero p{font-size:13px;color:#c8b8a8;margin-top:4px}.role-avatar{position:absolute;right:18px;top:18px;width:58px;height:58px;border-radius:50%;overflow:hidden;border:2px solid #d9b47f;background:#3e2a1e;display:flex;align-items:center;justify-content:center;font:600 24px var(--font-display);color:#fff}.role-avatar img{width:100%;height:100%;object-fit:cover}.role-date{display:flex;gap:6px;margin-top:18px;overflow-x:auto}.role-date span{min-width:42px;padding:7px 5px;border-radius:12px;text-align:center;font-size:10px;color:#a99684;border:1px solid rgba(255,255,255,.07)}.role-date span b{display:block;font-size:14px;color:#e9dccd}.role-date span.on{background:#ead7bd;color:#5c402d}.role-date span.on b{color:#3e2a1e}
-.role-tabs3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px}.role-tabs3 button{padding:10px 7px;border-radius:999px;background:#251d18;color:#c5b3a2;border:1px solid rgba(255,255,255,.07);font-size:12px}.role-tabs3 button.on{background:#f3e5d3;color:#3e2a1e;font-weight:700}.role-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 20px}.role-kpi{background:#211a16;border:1px solid rgba(217,180,127,.12);border-radius:17px;padding:12px 7px;text-align:center}.role-kpi b{display:block;font:600 22px var(--font-display);color:#f4e8d8}.role-kpi span{font-size:9px;color:#aa9888;text-transform:uppercase}
-.mgr-kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 20px}.mgr-kpi{padding:15px;border-radius:18px;background:#211a16;border:1px solid rgba(217,180,127,.13)}.mgr-kpi b{display:block;font:600 28px var(--font-display);color:#fff}.mgr-kpi span{font-size:11px;color:#b8a593}.mgr-kpi .kic{color:#d9b47f}.mgr-link{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:15px;background:#211a16;border:1px solid rgba(217,180,127,.1);margin-bottom:8px;text-align:left;color:#f2e5d6}.mgr-link .mi2{width:34px;height:34px;border-radius:11px;background:#30251e;color:#d9b47f;display:flex;align-items:center;justify-content:center}.mgr-link small{display:block;color:#a99583;font-size:10.5px}.mgr-link .go{margin-left:auto}
-.guest-welcome{position:relative;border-radius:27px;overflow:hidden;margin-bottom:14px;min-height:210px;background:#3f6677}.guest-welcome>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.guest-welcome:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,25,31,.08),rgba(31,24,17,.65))}.gw-txt{position:absolute;z-index:2;left:18px;top:18px;color:#fff}.gw-txt h1{font-size:28px}.guest-highlight{position:absolute;z-index:3;left:14px;right:14px;bottom:12px;padding:12px 14px;border-radius:17px;background:rgba(42,28,20,.72);backdrop-filter:blur(12px);color:#fff;display:flex;align-items:center;gap:10px}.guest-highlight .gh-mid{flex:1;min-width:0}.guest-highlight small{display:block;color:#e3c39e;font-size:9px;text-transform:uppercase}.guest-highlight b{display:block;font:600 20px var(--font-display)}.guest-highlight span{font-size:11px}.guest-highlight button{background:#f7f0e7;color:#4a3323;padding:8px 10px;border-radius:999px;font-size:10px}.guest-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 20px}.guest-cat{padding:11px 4px;border-radius:18px;background:#fff;box-shadow:var(--shadow);text-align:center;color:#4a3425;font-size:10px}.gcic{width:39px;height:39px;border-radius:50%;margin:0 auto 5px;background:#3e2a1e;color:#f1d7b5;display:flex;align-items:center;justify-content:center}
-@media(max-width:390px){.role-kpis{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -4003,8 +3993,6 @@ function guestView(){
     const wm=(S.settings.welcomeMsg||"").trim();
     return `<div class="screen fadein">
       ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
-      <div class="guest-welcome"><img src="${esc((hl&&hl.image)||IMG.show)}" alt=""><div class="gw-txt"><h1>${t("welcome")}, ${esc(g.name)}</h1><p>${t("todayProgram")} · ${t("days")[todayIdx]}</p></div>${hl?`<div class="guest-highlight" data-open="${hl.id}"><div class="gh-mid"><small>${t("highlight")}</small><b>${esc(hl.name)}</b><span>${esc(hl.time)} · ${esc(hl.location||"")}</span></div><button>${t("open")||"View"}</button></div>`:""}</div>
-      <div class="guest-cats"><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("calendar",19)}</span>${t("activities")}</button><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("sparkle",19)}</span>Events</button><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("star",19)}</span>Show</button><button class="guest-cat" data-gtab="program"><span class="gcic">${ic("music",19)}</span>Party</button></div>
       ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
       ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
       ${heroCard(hl)}
@@ -6753,8 +6741,7 @@ function myWorkDayView(){
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
   return `<div class="screen fadein">
-    <div class="role-hero"><span class="eyebrow">${t("myWorkDay")}</span><h1>${t("welcome")}, ${esc(S.session.name)}</h1><p>#${num} · ${esc(roleForNumber(num))}</p><div class="role-avatar">${S.session.photo?`<img src="${esc(S.session.photo)}" alt="">`:esc(String(S.session.name||"?").charAt(0))}</div><div class="role-date">${[0,1,2,3,4,5,6].map(i=>`<span class="${i===day?"on":""}">${t("daysShort")[i]}<b>${i+1}</b></span>`).join("")}</div></div>
-    <div class="role-tabs3"><button class="on">${t("myWorkDay")}</button><button data-role-tab="teaminfo">${t("team")}</button><button data-role-tab="chat">${t("chatManager")}</button></div>
+    ${topBar(t("myWorkDay"),"#"+num+" · "+S.session.name)}
     ${dayChips()}
     ${photoBlock}
     ${banner}
@@ -6763,7 +6750,6 @@ function myWorkDayView(){
     ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
       <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
       ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
-    <div class="role-kpis"><div class="role-kpi"><b>${myActs.length}</b><span>${t("activities")}</span></div><div class="role-kpi"><b>${(S.tasks||[]).filter(x=>x.assigned_to===S.session.username).length}</b><span>${t("tasks")}</span></div><div class="role-kpi"><b>${(S.feedback||[]).length?((S.feedback.reduce((n,f)=>n+(+f.rate||0),0)/S.feedback.length).toFixed(1)):"—"}</b><span>${t("feedback")}</span></div><div class="role-kpi"><b>#${num}</b><span>${t("team")}</span></div></div>
     ${dayPlanInfoCard(day)}
     ${workdayFeedbackCard()}
     ${dayPlanTimes(day)}
@@ -7315,17 +7301,11 @@ function dashView(){
     </div>`,
     trends:    ()=>trendsCard()
   };
-  const today=todayIndex(), todayActs=S.activities.filter(a=>a.day===today);
-  const activeStaff=(S.users||[]).filter(u=>u.role==="staff"&&u.active!==false&&!hasLeft(u));
-  const avgFb=S.feedback.length?(S.feedback.reduce((n,f)=>n+(+f.rate||0),0)/S.feedback.length).toFixed(1):"—";
-  const openReq=S.requests.filter(r=>r.status==="new").length;
   return `<div class="screen fadein">
-    <div class="role-hero"><span class="eyebrow">${t("dashboard")}</span><h1>${t("welcome")}, ${esc(S.session.name||t("manager"))}</h1><p>${t("todayProgram")} · ${t("days")[today]}</p><div class="role-avatar">${ic("grid",24)}</div></div>
-    ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
-    <div class="mgr-kpis"><div class="mgr-kpi"><span class="kic">${ic("calendar",18)}</span><b>${todayActs.length}</b><span>${t("activities")} ${t("today")}</span></div><div class="mgr-kpi"><span class="kic">${ic("users",18)}</span><b>${activeStaff.length}</b><span>${t("team")}</span></div><div class="mgr-kpi"><span class="kic">${ic("users",18)}</span><b>${people}</b><span>${t("totalPeople")}</span></div><div class="mgr-kpi"><span class="kic">${ic("star",18)}</span><b>${avgFb}</b><span>${t("feedback")}</span></div></div>
-    <div class="sec"><h3>${t("today")} · ${t("dashboard")}</h3><button class="mgr-link" data-mgrtab="program"><span class="mi2">${ic("calendar",17)}</span><span><b>${t("manage")}</b><small>${todayActs.length} ${t("activities")}</small></span><span class="go">›</span></button><button class="mgr-link" data-mgrtab="team"><span class="mi2">${ic("users",17)}</span><span><b>${t("teamTab")}</b><small>${activeStaff.length} ${t("totalEntertainers")}</small></span><span class="go">›</span></button><button class="mgr-link" data-mgrtab="guests"><span class="mi2">${ic("chat",17)}</span><span><b>${t("guestsTab")}</b><small>${openReq} ${t("requests")}</small></span><span class="go">›</span></button><button class="mgr-link" data-mgrtab="settings"><span class="mi2">${ic("palette",17)}</span><span><b>${t("settingsHub")}</b><small>${t("settingsSub")}</small></span><span class="go">›</span></button></div>
-    <div class="role-kpis"><div class="role-kpi"><b>${totalB}</b><span>${t("bookings")}</span></div><div class="role-kpi"><b>${tSold}</b><span>${t("tickets")}</span></div><div class="role-kpi"><b>${wait}</b><span>${t("waitlisted")}</span></div><div class="role-kpi"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div></div>
-    ${attentionCard()}${feedbackAnalyticsCard()}${nats.length?parts.nations():""}${parts.activities()}${trendsCard()}
+    ${topBar(t("dashboard"),S.session.name)}
+        ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
+    ${arrangeBtn("dash")}
+    ${renderParts("dash",parts)}
   </div>`;
 }
 /* The feedback picture at a glance — tap a department to read the ratings behind it. */
@@ -9759,10 +9739,6 @@ function openLangModal(){
 }
 /* ---------------- wiring ---------------- */
 function wireCommon(){
-  document.querySelectorAll("[data-gtab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.gtab;render();});
-  document.querySelectorAll("[data-role-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.roleTab;render();});
-  document.querySelectorAll("[data-mgrtab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.mgrtab;render();});
-
   document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;S.chatRoom=null;S.op=null;S.cat=null;S.planDay=undefined;render();});
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>{S.op=b.dataset.op;S.cat=null;render();});
   document.querySelectorAll("[data-planday]").forEach(b=>b.onclick=()=>{S.planDay=+b.dataset.planday;render();});
