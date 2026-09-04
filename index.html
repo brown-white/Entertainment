@@ -8545,8 +8545,6 @@ function exportFeedbackReport(){
   const bits=fbFilterBits();
   const cover=bits.length?bits.join(" \u00b7 "):t("fbWholeStay");
   const sum=fbSummary(list);
-  const stat=sum.stat;
-  const shown=fbDeptKeys().filter(k=>stat.some(d=>d.k===k));   // only what was rated
   const avg=sum.overall;
 
   const tone=n=>{ n=+n||0; return n<3.5?"#B0392B":n<4.5?"#D08526":"#B98A5C"; };
@@ -8582,13 +8580,6 @@ function exportFeedbackReport(){
    +"h2.sub{font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:400;"
      +"margin:20px 0 2px;color:#5A4029;letter-spacing:.01em}"
    +".subnote{font-size:10px;color:#9C8A74;margin:0 0 8px}"
-   +"table.below td{padding:8px 9px;border-top:1px solid #E4D3BC;background:#FDFBF7}"
-   +"table.below td.dept{font-weight:700;font-size:11px;width:38%}"
-   +"table.below td.cnt,table.below td.gap{font-size:9.5px;color:#6B4A32;white-space:nowrap}"
-   +"table.below td.gap{text-align:right;font-weight:700}"
-   +".allgood{margin:20px 0 0;padding:14px 16px;background:#F4F7F1;border:1px solid #D9E4D2;border-radius:9px}"
-   +".allgood b{display:block;font-family:Georgia,serif;font-size:15px;font-weight:400;color:#4A5F3E}"
-   +".allgood span{display:block;font-size:10.5px;color:#6B7A61;margin-top:2px}"
    +".legend{margin:10px 0 0;font-size:9px;color:#9C8A74}"
    +"tr.r.low td{background:#FBF0EC}tr.c.low td{background:#F9EDE8}"
    +"tr.r.low td:first-child{box-shadow:inset 3px 0 0 #B0392B}"
@@ -8673,24 +8664,6 @@ function exportFeedbackReport(){
     + '<div class="tile '+(sum.toReview?"attn":"")+'"><span class=tl>'+E2(t("fbToReview"))+'</span>'
       +'<b>'+sum.toReview+'</b><span class=ts>'+E2(t("fbToReviewSub"))+'</span></div>'
     +'</div>';
-
-  /* Every department a guest scored under five gets named, weakest first.
-     When nothing fell short the hotel is simply reported as good all round. */
-  if(sum.rated){
-    if(sum.below.length){
-      html+='<h2 class=sub>'+E2(t("fbBelowFive"))+'</h2>'
-        +'<p class=subnote>'+E2(t("fbBelowHead"))+'</p>'
-        +'<table class="rated below"><tbody>'
-        + sum.below.map(d=>'<tr class="r '+(d.avg<3.5?"low":"mid")+'">'
-            +'<td class=dept>'+E2(fbDeptLabel(d.k))+'</td>'
-            +'<td class=st>'+stars(d.avg, d.avg.toFixed(2), true)+'</td>'
-            +'<td class=cnt>'+d.n+' '+E2(t("fbRatings"))+'</td>'
-            +'<td class=gap>\u2212'+(5-d.avg).toFixed(2)+' '+E2(t("fbShortOf"))+'</td></tr>').join("")
-        +'</tbody></table>';
-    } else {
-      html+='<div class=allgood><b>'+E2(t("fbHotelGeneral"))+'</b><span>'+E2(t("fbBelowNone"))+'</span></div>';
-    }
-  }
 
   /* The guests who raised something come first, worst first, each with exactly
      what they marked down. The guests who gave straight fives are listed after,
@@ -10116,4 +10089,3 @@ function startRealtime(){
 </script>
 </body>
 </html>
-
