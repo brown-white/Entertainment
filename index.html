@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Entertainment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
 /* ================= DESIGN SYSTEM TOKENS ================= */
@@ -1492,6 +1492,87 @@ html{font-size:calc(16px * var(--fscale,1))}
 .ar-nm{flex:1;min-width:0;font-weight:600;font-size:15px}
 .ar-acts{flex:none;display:flex;gap:6px}
 .arrange-b{margin:0 0 12px}
+
+/* ===== AUREA STYLE PASS =====
+   Softer surfaces, quieter rules, one accent. Written against the theme
+   variables, so it lifts every palette rather than only the new one. */
+:root{
+  --shadow-1:0 1px 2px rgba(16,24,32,.04), 0 6px 18px rgba(16,24,32,.05);
+  --shadow-2:0 2px 6px rgba(16,24,32,.06), 0 18px 40px rgba(16,24,32,.09);
+}
+.card{box-shadow:var(--shadow-1)}
+.stat{box-shadow:var(--shadow-1)}
+
+/* the small spaced capitals that sit above every number */
+.eyebrow,.stat span,.dc-cell>span{
+  font-family:var(--font-body);font-size:10.5px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stat b{letter-spacing:-.01em}
+.stat.accent b{color:var(--bronze)}
+.stat.warn b{color:#C86F5A}
+.stat.good b{color:#829287}
+
+/* status chip: a dot and a word, the way live operations read */
+.schip{display:inline-flex;align-items:center;gap:6px;flex:none;
+  padding:5px 11px;border-radius:999px;font-size:11.5px;font-weight:600;
+  background:var(--sand);color:var(--muted);white-space:nowrap}
+.schip i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.schip.live{background:rgba(130,146,135,.18);color:#5F7A67}
+.schip.warn{background:rgba(200,111,90,.15);color:#B4573F}
+.schip.gold{background:rgba(201,169,110,.20);color:#8C6F38}
+
+/* the existing highlight card, deepened so the title always reads */
+.hero .veil{background:linear-gradient(180deg,rgba(16,24,32,0) 24%,rgba(16,24,32,.55) 62%,rgba(16,24,32,.88) 100%)}
+.hero .body h3{letter-spacing:-.01em}
+.hero .tag{letter-spacing:.12em;text-transform:uppercase}
+
+/* buttons and pills get a little depth, ghosts stay quiet */
+.btn{box-shadow:var(--shadow-1)}
+.btn.ghost,.btn.sm{box-shadow:none}
+.btn.ghost{background:transparent}
+.pills{gap:7px}
+.pill.on{box-shadow:var(--shadow-2)}
+
+/* ---- swipeable highlights ---- */
+.hero-wrap{margin-bottom:22px}
+.hero-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+.hero-rail::-webkit-scrollbar{display:none}
+.hero-rail>.hero{flex:0 0 88%;scroll-snap-align:center;margin-bottom:0}
+.hero-dots{display:flex;justify-content:center;gap:7px;margin-top:11px}
+.hero-dots i{width:6px;height:6px;border-radius:50%;background:var(--line);
+  transition:width .2s ease,background .2s ease;cursor:pointer}
+.hero-dots i.on{width:20px;border-radius:999px;background:var(--bronze)}
+
+/* ---- the entertainer's day as a line ---- */
+.tlx{position:relative;padding-inline-start:26px}
+.tlx::before{content:"";position:absolute;inset-block:10px;inset-inline-start:7px;
+  width:2px;background:var(--line);border-radius:2px}
+.tlx-row{position:relative;margin-bottom:10px}
+.tlx-mark{position:absolute;inset-inline-start:-26px;top:14px;width:16px;height:16px;border-radius:50%;
+  background:var(--card);border:2px solid var(--line);display:flex;align-items:center;
+  justify-content:center;color:var(--card)}
+.tlx-row.done .tlx-mark{background:var(--bronze);border-color:var(--bronze);color:var(--card)}
+.tlx-row.live .tlx-mark{background:var(--espresso);border-color:var(--espresso);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--bronze) 32%,transparent)}
+.tlx-body{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow-1);
+  padding:13px 15px;display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.tlx-row.done .tlx-body{opacity:.62}
+.tlx-row.star .tlx-body{box-shadow:var(--shadow-2);border:1px solid var(--bronze)}
+.tlx-now{color:var(--bronze)}
+.tlx-body>b{font-size:16px;line-height:1.2}
+.tlx-go{margin-top:9px;align-self:flex-start}
+
+/* ---- tonight, and whether we are ready ---- */
+.tn{padding:15px 16px}
+.tn-head{display:flex;align-items:center;gap:10px;cursor:pointer}
+.tn-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.tn-mid>b{font-family:var(--font-display);font-size:20px;line-height:1.15}
+.tn-go{flex:none;opacity:.38;transform:rotate(180deg)}
+.tn-chips{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0 0}
+.tn-bar{height:7px;border-radius:999px;background:var(--sand);overflow:hidden;margin:11px 0 5px}
+.tn-bar i{display:block;height:100%;border-radius:999px;background:var(--bronze)}
+
 /* ===== professional feedback ===== */
 .fb-form-row{display:flex;align-items:center;gap:8px;padding:9px 2px}
 .fb-form-row:not(:last-child){border-bottom:1px solid var(--line)}
@@ -1642,6 +1723,7 @@ const DEFAULT_SETTINGS = {
   features:{quiz:true,tickets:true,gallery:true,bus:true,hotelinfo:true,weather:true}
 };
 const FONTS={
+  aurea:["'DM Serif Display',serif","'Inter',sans-serif"],
   elegant:["'Cormorant Garamond',serif","'Jost',sans-serif"],
   royal:["'Playfair Display',serif","'Jost',sans-serif"],
   modern:["'Jost',sans-serif","'Jost',sans-serif"],
@@ -1745,6 +1827,25 @@ Object.assign(DICT.en, {
   fbPerfectSub:"Nothing to follow up with these guests.",
   fbNoReview:"No guest raised anything. Every rating was a full five.",
   fbLegend2:"Green: nothing to follow up \u00b7 Orange: something to improve \u00b7 Red: needs attention first. A high overall score does not mean there is nothing to fix.",
+  liveOps:"Live operations",
+  startActivity:"Start activity",
+  yourDay:"Your day",
+  nowLbl:"Now",
+  tonightLbl:"Tonight",
+  readyTeam:"Team",
+  readySetup:"Setup",
+  readyNothing:"No requirement sheet yet",
+  readyMake:"Make a requirement sheet",
+  registered:"registered",
+  nothingTonight:"Nothing on tonight.",
+  liveNow:"Live",
+  liveSoon:"Starts in {n} min",
+  liveNoStaff:"No staff",
+  liveAssigned:"Assigned",
+  liveDone:"Done",
+  liveNothing:"Nothing running right now.",
+  opsToday:"Activities today",
+  opsPeople:"Participants",
   reqKind:"Kind",
   reqFromProgram:"Pick it from the programme",
   reqFromProgramOwn:"Type it myself",
@@ -2915,6 +3016,11 @@ function shade(hex,p){
 
 /* ============ COLOUR PALETTES (each works in light AND dark) ============ */
 const PALETTES = {
+  /* Midnight navy, champagne gold, warm ivory. A palette carries an optional
+     font and button shape so one tap sets the whole look. */
+  aurea: { label:"Aurea Resort", font:"aurea", btn:"pill",
+    light:{ primary:"#101820", accent:"#C9A96E", bg:"#F7F3EC", text:"#101820", card:"#FFFFFF", sand:"#EFE8DC", line:"#E2D8C8" },
+    dark: { primary:"#C9A96E", accent:"#C9A96E", bg:"#0B1016", text:"#F1EBE1", card:"#151C24", sand:"#1D2731", line:"#2A3540" } },
   brownWhite: { label:"Brown & White",
     light:{ primary:"#3E2A1E", accent:"#B98A5C", bg:"#F7F2EA", text:"#2B1F16", card:"#FFFFFF", sand:"#EFE6D8", line:"#E2D6C4" },
     dark: { primary:"#D9B47F", accent:"#C9A26B", bg:"#17110C", text:"#F2E7D8", card:"#221913", sand:"#2C211A", line:"#3A2C22" } }
@@ -2949,9 +3055,10 @@ function applySettings(){
   const st=S.settings, root=document.documentElement.style;
   applyAutoDark();
   if(applyPalette()){
-    const f0=FONTS[st.fontStyle]||FONTS.elegant;
+    const pack=PALETTES[st.palette]||{};
+    const f0=FONTS[st.fontStyle]||FONTS[pack.font]||FONTS.elegant;
     root.setProperty("--font-display",f0[0]); root.setProperty("--font-body",f0[1]);
-    const br0=BTN_R[st.buttonStyle]||BTN_R.rounded;
+    const br0=BTN_R[st.buttonStyle]||BTN_R[pack.btn]||BTN_R.rounded;
     root.setProperty("--btn-radius",br0[0]); root.setProperty("--btn-radius-sm",br0[1]);
     document.title=st.name||"Entertainment";
     return;
@@ -2975,9 +3082,12 @@ function applySettings(){
 const FONT_SCALES={small:.92,normal:1,large:1.12,xl:1.25};
 /* Try a theme before committing to it. Cancel puts everything back. */
 function openThemePreview(key){
-  const before=S.settings.palette;
+  const before=S.settings.palette, beforeFont=S.settings.fontStyle, beforeBtn=S.settings.buttonStyle;
   const trying=(key==="custom")?"":key;
-  S.settings.palette=trying; applySettings();
+  S.settings.palette=trying;
+  const pack=PALETTES[trying];
+  if(pack && pack.font){ S.settings.fontStyle=pack.font; S.settings.buttonStyle=pack.btn||S.settings.buttonStyle; }
+  applySettings();
   const name=PALETTES[trying]?PALETTES[trying].label:t("themeCustom");
   const wrap=baseModal(`
     <h3>${ic("palette",20)} ${esc(name)}</h3>
@@ -2989,7 +3099,10 @@ function openThemePreview(key){
     </div>
     <button class="btn" id="tp-use">${t("applyTheme")}</button>
     <button class="btn ghost" id="tp-x">${t("cancelBtn")}</button>`);
-  const revert=()=>{ S.settings.palette=before; applySettings(); };
+  const revert=()=>{
+    S.settings.palette=before; S.settings.fontStyle=beforeFont; S.settings.buttonStyle=beforeBtn;
+    applySettings();
+  };
   wrap.querySelector("#tp-x").onclick=()=>{ revert(); wrap.remove(); render(); };
   wrap.onclick=e=>{ if(e.target===wrap){ revert(); wrap.remove(); render(); } };
   wrap.querySelector("#tp-use").onclick=async ()=>{
@@ -3786,6 +3899,18 @@ function heroCard(a){
     </div>
   </div>`;
 }
+/* Today's highlights, swiped sideways. One card behaves exactly as before, so
+   a day with a single highlight looks the way it always did. */
+function heroCarousel(list){
+  list=(list||[]).filter(Boolean).slice(0,5);
+  if(!list.length) return "";
+  if(list.length===1) return heroCard(list[0]);
+  return `<div class="hero-wrap">
+    <div class="hero-rail" id="hero-rail">${list.map(a=>heroCard(a)).join("")}</div>
+    <div class="hero-dots" id="hero-dots">${list.map((a,i)=>
+      `<i class="${i===0?"on":""}" data-herodot="${i}"></i>`).join("")}</div>
+  </div>`;
+}
 function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={}){
   const unlimited=!(+a.capacity);
   const taken=seatsTaken(a.id), left=Math.max(0,a.capacity-taken), full=!unlimited&&left<=0;
@@ -3995,7 +4120,7 @@ function guestView(){
       ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
       ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
       ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
-      ${heroCard(hl)}
+      ${heroCarousel([hl].concat(todays.filter(a=>a!==hl && a.highlight)))}
       <div class="quickrow">
         <button id="btn-req-song"><span>${ic("music",22)}</span>${t("songRequest")}</button>
         <button id="btn-req-bday"><span>${ic("gift",22)}</span>${t("birthdayRequest")}</button>
@@ -6751,9 +6876,37 @@ function myWorkDayView(){
       <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
       ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
     ${dayPlanInfoCard(day)}
+    ${workdayTimeline(day, myActs)}
     ${workdayFeedbackCard()}
     ${dayPlanTimes(day)}
     ${dayPlanStandards(day)}
+  </div>`;
+}
+/* The entertainer's own day as a vertical line: what is done, what is running
+   now, what is still to come. The live one carries the action. */
+function workdayTimeline(day, acts){
+  acts=(acts||[]).slice();
+  if(!acts.length) return "";
+  const live = isToday(day) ? acts.find(a=>activityStatus(a)==="live") : null;
+  const next = isToday(day) ? acts.find(a=>activityStatus(a)==="todo") : null;
+  const star = live || (isToday(day)?next:null);
+  return `<div class="sec"><h3>${ic("clock",18)} ${t("yourDay")}</h3>
+    <div class="tlx">${acts.map(a=>{
+      const st=isToday(day)?activityStatus(a):"todo";
+      const isStar = star && a.id===star.id;
+      const start=String(a.time||"").split(/\s*[\u2013\u2014-]\s*/)[0].trim();
+      const booked=seatsTaken(a.id);
+      return `<div class="tlx-row ${st}${isStar?" star":""}">
+        <span class="tlx-mark">${st==="done"?ic("check",13):(st==="live"?"":"")}</span>
+        <div class="tlx-body" data-actopen="${esc(String(a.id))}">
+          ${isStar&&st==="live"?`<span class="eyebrow tlx-now">${t("nowLbl")}</span>`:""}
+          <b>${esc(a.name)}</b>
+          <span class="mini">${esc(String(a.time||""))}${a.location?" \u00b7 "+esc(a.location):""}</span>
+          ${booked?`<span class="mini">${booked} ${t("registered")}</span>`:""}
+          ${isStar?`<button class="btn sm tlx-go" data-startact="${esc(String(a.id))}">${t("startActivity")}</button>`:""}
+        </div>
+      </div>`;
+    }).join("")}</div>
   </div>`;
 }
 /* Collecting guest feedback is a daily job, so it sits inside the work day
@@ -6999,7 +7152,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
    their sub-tabs. The same button and the same modal handle both. */
 const PAGE_SECTIONS={
   dayplan: ["info","times","team","standards"],
-  dash:    ["attention","export","stats","feedback","nations","activities","trends"],
+  dash:    ["attention","tonight","live","export","stats","feedback","nations","activities","trends"],
   guests:  ["crm","rooms","bookings","chat","requests","feedback"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
@@ -7008,7 +7161,7 @@ const PAGE_SECTIONS={
 };
 const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
-  dash:    {attention:"attentionHead",export:"exportData",stats:"overview",feedback:"fbAnalytics",
+  dash:    {attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
             requests:"requests",feedback:"feedback"},
@@ -7281,10 +7434,12 @@ function dashView(){
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   const parts={
     attention: ()=>attentionCard(),
+    tonight:   ()=>tonightCard(),
+    live:      ()=>liveOpsCard(),
     export:    ()=>`<button class="btn ghost" id="btn-exportdata" style="margin:0 0 16px">${ic("download",16)} ${t("exportData")}</button>`,
     stats:     ()=>`<div class="stat-grid">
       <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
-      <div class="stat"><b>${occ}%</b><span>${t("occupancy")}</span></div>
+      <div class="stat accent"><b>${occ}%</b><span>${t("occupancy")}</span></div>
       <div class="stat"><b>${tSold}</b><span>${t("tickets")}</span></div>
       <div class="stat"><b>${wait}</b><span>${t("waitlisted")}</span></div>
       <div class="stat"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div>
@@ -7308,6 +7463,88 @@ function dashView(){
     ${renderParts("dash",parts)}
   </div>`;
 }
+/* Tonight's show or party, and whether the hotel is actually ready for it.
+   The readiness comes straight from its requirement sheet. */
+function tonightAct(day){
+  const d=(typeof day==="number")?day:todayIndex();
+  const evening=(S.activities||[]).filter(a=>a && a.day===d && ["eShow","eParty"].includes(normCat(a)));
+  if(!evening.length) return null;
+  return evening.sort((x,y)=>(timeToMin(reqStartTime(y))||0)-(timeToMin(reqStartTime(x))||0))[0];
+}
+function reqSheetForAct(a){
+  if(!a) return null;
+  const all=reqSheets();
+  return all.find(sh=>String(sh.actId||"")===String(a.id))
+      || all.find(sh=>String(sh.title||"").toLowerCase()===String(a.name||"").toLowerCase())
+      || null;
+}
+function tonightCard(){
+  const a=tonightAct();
+  if(!a) return "";
+  const sh=reqSheetForAct(a);
+  const rows=(sh && sh.rows) || [];
+  const done=rows.filter(r=>r.done).length;
+  const pct=rows.length?Math.round(done/rows.length*100):0;
+  const who=String(a.entertainer||"").trim();
+  const byDept={};
+  rows.forEach(r=>{ const k=r.dept||"\u2014"; byDept[k]=byDept[k]||{n:0,d:0}; byDept[k].n++; if(r.done) byDept[k].d++; });
+  const chips=Object.keys(byDept).slice(0,3).map(k=>{
+    const v=byDept[k], full=v.d===v.n;
+    return `<span class="schip ${full?"live":"warn"}"><i></i>${esc(k)} ${full?"\u2713":v.d+"/"+v.n}</span>`;
+  }).join("");
+  return `<div class="sec"><h3>${ic("sparkle",18)} ${t("tonightLbl")}</h3>
+    <div class="card tn">
+      <div class="tn-head" data-actopen="${esc(String(a.id))}">
+        <span class="tn-mid"><b>${esc(a.name)}</b>
+          <span class="mini">${esc(String(a.time||""))}${a.location?" \u00b7 "+esc(a.location):""}</span></span>
+        <span class="tn-go">${ic("back",16)}</span>
+      </div>
+      <div class="tn-chips">
+        <span class="schip ${who?"live":"warn"}"><i></i>${t("readyTeam")} ${who?esc(who):"\u2014"}</span>
+        ${chips}
+      </div>
+      ${rows.length?`<div class="tn-bar"><i style="width:${pct}%"></i></div>
+        <span class="mini">${t("readySetup")} ${pct}% \u00b7 ${done}/${rows.length}</span>`
+        :`<button class="btn sm ghost" id="tn-make">${ic("clipboard",14)} ${t("readyMake")}</button>`}
+    </div>
+  </div>`;
+}
+/* What is running right now, what starts next, and whether anyone is on it.
+   The manager's first question every afternoon. */
+function liveOpsCard(){
+  const day=todayIndex();
+  const now=(()=>{ const d=new Date(); return d.getHours()*60+d.getMinutes(); })();
+  const list=(S.activities||[]).filter(a=>a && a.day===day)
+    .map(a=>{
+      const w=actWindow(a);
+      const s0=w?w.s0:(timeToMin(String(a.time||"").split(/\s*[\u2013\u2014-]\s*/)[0])||0);
+      const s1=(w && (w.e0!=null?w.e0:w.s1)) ?? (s0+45);   // actWindow calls the end e0
+      return {a, s0, s1};
+    })
+    .filter(x=>x.s1>=now-30)                       // still running, or still to come
+    .sort((x,y)=>x.s0-y.s0)
+    .slice(0,5);
+  if(!list.length) return "";
+  const staffOf=a=>String(a.entertainer||"").trim();   // the field the assign centre writes
+  const row=x=>{
+    const a=x.a, who=staffOf(a), booked=seatsTaken(a.id);
+    const live = x.s0<=now && now<=x.s1;
+    const mins = Math.round(x.s0-now);
+    const chip = live ? `<span class="schip live"><i></i>${t("liveNow")}</span>`
+      : !who   ? `<span class="schip warn"><i></i>${t("liveNoStaff")}</span>`
+      : mins<=60 ? `<span class="schip gold"><i></i>${t("liveSoon").replace("{n}",Math.max(0,mins))}</span>`
+      : `<span class="schip"><i></i>${t("liveAssigned")}</span>`;
+    return `<div class="booking-line" data-actopen="${esc(String(a.id))}" style="cursor:pointer">
+      <span style="min-width:0"><b>${esc(a.name)}</b>
+        <br><span class="mini">${esc(String(a.time||""))}${a.location?" \u00b7 "+esc(a.location):""}${
+          booked?" \u00b7 "+booked+" "+t("guests"):""}${who?" \u00b7 "+esc(who):""}</span></span>
+      ${chip}
+    </div>`;
+  };
+  return `<div class="sec"><h3>${ic("clock",18)} ${t("liveOps")}</h3>
+    <div class="card">${list.map(row).join("")}</div>
+  </div>`;
+}
 /* The feedback picture at a glance — tap a department to read the ratings behind it. */
 function feedbackAnalyticsCard(){
   const list=S.feedback||[];
@@ -7316,8 +7553,8 @@ function feedbackAnalyticsCard(){
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${sum.overall?sum.overall.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${sum.count}</b><span>${t("feedback")}</span></div>
-      <div class="stat"><b>${sum.allFive}</b><span>${t("fbAllFiveN")}</span></div>
-      <div class="stat"><b>${sum.toReview}</b><span>${t("fbToReview")}</span></div>
+      <div class="stat good"><b>${sum.allFive}</b><span>${t("fbAllFiveN")}</span></div>
+      <div class="stat ${sum.toReview?"warn":""}"><b>${sum.toReview}</b><span>${t("fbToReview")}</span></div>
     </div>
     ${sum.weak
       ? `<button class="fb-dept low" data-fbdept="${esc(sum.weak.k)}" style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px">
@@ -8760,6 +8997,7 @@ function openReqEditor(id){
         ${r.dept && !depts.includes(r.dept) ? `<option value="${esc(r.dept)}" selected>${esc(r.dept)}</option>` : ""}
       </select>
       <span class="rq-acts">
+        <button class="bd-b ${r.done?"on":""}" data-rqtick="${i}" aria-label="${t("reqStatus")}">${ic("check",13)}</button>
         <button class="bd-b" data-rqup="${i}" ${i===0?"disabled":""}>${ic("back",13)}</button>
         <button class="bd-b down" data-rqdown="${i}" ${i===sh.rows.length-1?"disabled":""}>${ic("back",13)}</button>
         <button class="bd-b warn" data-rqdel="${i}">${ic("trash",13)}</button>
@@ -8768,6 +9006,8 @@ function openReqEditor(id){
     box.querySelectorAll("[data-rqneed]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqneed].need=el.value; });
     box.querySelectorAll("[data-rqqty]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqqty].qty=el.value; });
     box.querySelectorAll("[data-rqdept]").forEach(el=>el.onchange=()=>{ sh.rows[+el.dataset.rqdept].dept=el.value; });
+    box.querySelectorAll("[data-rqtick]").forEach(b=>b.onclick=()=>{
+      const r=sh.rows[+b.dataset.rqtick]; r.done=!r.done; paintRows(); });
     box.querySelectorAll("[data-rqup]").forEach(b=>b.onclick=()=>{
       const i=+b.dataset.rqup; [sh.rows[i-1],sh.rows[i]]=[sh.rows[i],sh.rows[i-1]]; paintRows(); });
     box.querySelectorAll("[data-rqdown]").forEach(b=>b.onclick=()=>{
@@ -8817,7 +9057,8 @@ function openReqEditor(id){
     sh.location=wrap.querySelector("#rq-loc").value.trim();
     sh.note=wrap.querySelector("#rq-note").value.trim();
     sh.responsible=wrap.querySelector("#rq-resp").value.trim();
-    sh.rows=sh.rows.filter(r=>(r.need||"").trim() || (r.qty||"").trim());
+    sh.rows=sh.rows.filter(r=>(r.need||"").trim() || (r.qty||"").trim())
+      .map(r=>({need:r.need||"", qty:r.qty||"", dept:r.dept||"", done:!!r.done}));
     if(pick && !pick.value) sh.actId="";
     return sh;
   };
@@ -9822,6 +10063,35 @@ function wireCommon(){
   document.querySelectorAll("[data-fbdept]").forEach(b=>b.onclick=()=>openDeptDetail(b.dataset.fbdept));
   const fbx=$("#btn-fbexport"); if(fbx) fbx.onclick=openFeedbackExport;
   const fbd=$("#btn-fbdepts"); if(fbd) fbd.onclick=openDeptEditor;
+  const rail=$("#hero-rail"), dots=$("#hero-dots");
+  if(rail && dots){
+    const marks=dots.querySelectorAll("i");
+    const sync=()=>{
+      const w=rail.scrollWidth/Math.max(1,marks.length);
+      const i=Math.min(marks.length-1, Math.round(rail.scrollLeft/Math.max(1,w)));
+      marks.forEach((m,j)=>m.classList.toggle("on", j===i));
+    };
+    rail.onscroll=sync;
+    marks.forEach((m,j)=>m.onclick=()=>{
+      rail.scrollTo({left:(rail.scrollWidth/marks.length)*j, behavior:"smooth"});
+    });
+  }
+  /* One tap on an activity does whatever that person can actually do with it:
+     the manager edits it, an entertainer opens the guest list, a guest books. */
+  const openAct=id=>{
+    const a=S.activities.find(x=>String(x.id)===String(id));
+    if(!a || !S.session) return;
+    if(S.session.role==="manager") return openEditModal(a);
+    if(S.session.role==="staff") return canSeeGuests(a) ? openAttendanceModal(a) : openEditModal(a);
+    if(!myBooking(a.id)) openBookModal(a);
+  };
+  document.querySelectorAll("[data-actopen]").forEach(el=>el.onclick=()=>openAct(el.dataset.actopen));
+  document.querySelectorAll("[data-startact]").forEach(b=>b.onclick=ev=>{
+    if(ev && ev.stopPropagation) ev.stopPropagation();
+    openAct(b.dataset.startact);
+  });
+  const tnMake=$("#tn-make");
+  if(tnMake) tnMake.onclick=()=>{ S.tab="req"; render(); setTimeout(()=>openReqEditor(),0); };
   const rqN=$("#rq-new");    if(rqN) rqN.onclick=()=>openReqEditor();
   const rqP=$("#rq-pack");   if(rqP) rqP.onclick=openReqPack;
   const rqD=$("#rq-depts");  if(rqD) rqD.onclick=openReqDeptEditor;
