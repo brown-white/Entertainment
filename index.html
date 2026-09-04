@@ -1716,6 +1716,19 @@ Object.assign(DICT.en, {
   fbDeptsRated:"Departments rated",
   fbLowestRated:"Lowest rated",
   fbHotelGeneral:"The hotel in general \u2014 rated good all round",
+  fbAllFiveN:"All five stars",
+  fbToReview:"To review",
+  fbAllFiveSub:"Nothing to follow up",
+  fbToReviewSub:"Something to improve",
+  fbStatusNone:"No attention",
+  fbStatusAttn:"Attention",
+  fbStatusPriority:"Priority attention",
+  fbReviewHead:"Guests with feedback to review",
+  fbReviewSub:"Worst first. Every point a guest raised, even from guests who were otherwise delighted.",
+  fbPerfectHead:"All five stars",
+  fbPerfectSub:"Nothing to follow up with these guests.",
+  fbNoReview:"No guest raised anything. Every rating was a full five.",
+  fbLegend2:"Green: nothing to follow up \u00b7 Orange: something to improve \u00b7 Red: needs attention first. A high overall score does not mean there is nothing to fix.",
   fbHighRooms:"Happy rooms",
   fbLowRooms:"Unhappy rooms",
   fbHighSub:"4.5 stars and above",
@@ -1848,6 +1861,27 @@ function fbAvgAll(list){
   const v=(list||[]).map(fbOverall).filter(n=>n>0);
   return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0;
 }
+/* A guest's overall score can be 4.9 and still hide something worth fixing, so
+   status is decided by what they marked down, not by the average alone.
+     none     - every department they rated got five
+     attn     - anything under five
+     priority - a really low mark (2 or less), two or more threes,
+                or an overall that has genuinely dropped below 4.5 */
+function fbStatus(f){
+  const d=fbDepts(f);
+  const vals=fbDeptKeys().map(k=>+d[k]).filter(n=>n>0);
+  if(!vals.length) return fbComment(f) ? "attn" : "none";
+  const under=vals.filter(n=>n<5);
+  if(!under.length) return "none";
+  const veryLow=vals.filter(n=>n<=2).length;
+  const low=vals.filter(n=>n<=3).length;
+  // a really low mark, several threes, or a three on an already sagging stay
+  if(veryLow>0 || low>=2 || (low>0 && fbOverall(f)<4.5)) return "priority";
+  return "attn";
+}
+function fbStatusLabel(st){
+  return st==="priority" ? t("fbStatusPriority") : st==="attn" ? t("fbStatusAttn") : t("fbStatusNone");
+}
 /* One place decides what the numbers mean, so the app and the printed report
    never disagree. A department is only "needs attention" if it is genuinely
    weak — below 4.5 AND below the best one. Five out of five is never a problem. */
@@ -1857,7 +1891,12 @@ function fbSummary(list){
   const overall=fbAvgAll(list);
   const scores=list.map(fbOverall).filter(n=>n>0);
   const five=scores.filter(n=>n>=4.75).length;
-  // Two plain buckets, so "how many rooms were happy" has one answer.
+  // Calling a 4.9 guest "unhappy" was misleading. What management needs to know
+  // is who left something to follow up, not who was cross.
+  const status=list.map(fbStatus);
+  const allFive=status.filter(x=>x==="none").length;
+  const toReview=status.filter(x=>x!=="none").length;
+  const priority=status.filter(x=>x==="priority").length;
   const high=scores.filter(n=>n>=4.5).length;
   const low=scores.filter(n=>n<4.5).length;
   const top=stat[0]||null;
@@ -1871,6 +1910,7 @@ function fbSummary(list){
   const weak=below[0]||null;
   return {
     stat, overall, best, weak, below, top, tiedTop, allSame, high, low,
+    allFive, toReview, priority,
     topAvg: top ? top.avg : 0,
     perfect: !!(top && stat.length && Math.abs(top.avg-5)<0.005 && (!tail || Math.abs(tail.avg-5)<0.005)),
     lowest: (tail && top && tail.k!==top.k && tail.avg<top.avg) ? tail : null,
@@ -7211,8 +7251,8 @@ function feedbackAnalyticsCard(){
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${sum.overall?sum.overall.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${sum.count}</b><span>${t("feedback")}</span></div>
-      <div class="stat"><b>${sum.count?sum.fivePct+"%":"\u2014"}</b><span>${t("fbFiveShare")}</span></div>
-      <div class="stat"><b>${sum.rated}</b><span>${t("fbDeptsRated")}</span></div>
+      <div class="stat"><b>${sum.allFive}</b><span>${t("fbAllFiveN")}</span></div>
+      <div class="stat"><b>${sum.toReview}</b><span>${t("fbToReview")}</span></div>
     </div>
     ${sum.weak
       ? `<button class="fb-dept low" data-fbdept="${esc(sum.weak.k)}" style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px">
@@ -8561,6 +8601,31 @@ function exportFeedbackReport(){
    +"tr.r.mid td.room{color:#A9631A}"
    +".tile.good{background:#F5F8F2;border-color:#DCE7D4}"
    +".tile.good .tl{color:#4A6B36}.tile.good b{color:#3F5C2F}"
+   +".tile.attn{background:#FDF6EE;border-color:#EDDCC6}"
+   +".tile.attn .tl{color:#A9631A}.tile.attn b{color:#8A4E12}"
+   +".g{border:1px solid #EADFCC;border-radius:9px;padding:10px 12px;margin-bottom:8px;"
+     +"page-break-inside:avoid;border-left-width:4px}"
+   +".g.priority{border-left-color:#B0392B;background:#FCF4F2}"
+   +".g.attn{border-left-color:#D08526;background:#FDF9F3}"
+   +".g.none{border-left-color:#6E9155;background:#F7FAF5}"
+   +".ghead{display:flex;align-items:center;gap:9px}"
+   +".gr{font-family:Georgia,serif;font-size:16px;font-weight:400;color:#2B1F16}"
+   +".gov{font-size:11px;letter-spacing:.3px}"
+   +".gov .s em{display:inline;font-style:normal;font-size:10px;color:#6B4A32;margin-left:3px}"
+   +".gs{margin-left:auto;font-size:8px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;"
+     +"display:inline-flex;align-items:center;gap:5px}"
+   +".gs i{width:7px;height:7px;border-radius:50%;display:inline-block}"
+   +".gs.priority{color:#B0392B}.gs.priority i{background:#B0392B}"
+   +".gs.attn{color:#A9631A}.gs.attn i{background:#D08526}"
+   +".gs.none{color:#4A6B36}.gs.none i{background:#6E9155}"
+   +".gmeta{font-size:8.5px;color:#9C8A74;margin-top:2px}"
+   +".gchips{margin-top:6px}"
+   +".cleanbox{border:1px solid #DCE7D4;border-radius:9px;background:#F7FAF5;padding:2px 12px}"
+   +".g5{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:7px 0;page-break-inside:avoid}"
+   +".g5+.g5{border-top:1px solid #E4EEDE}"
+   +".g5 .gmeta{margin:0}"
+   +".tick{color:#6E9155;font-weight:700;font-size:12px}"
+   +".g5 p.note{flex:1 0 100%;margin:2px 0 0}"
    +"table.rooms{font-size:10px}"
    +"table.rooms td{padding:7px 6px}"
    +"td.by{font-size:9px;color:#6B4A32}"
@@ -8603,17 +8668,10 @@ function exportFeedbackReport(){
   html+='<div class=band>'
     + tile(t("fbCollected"), String(sum.count), sum.rated+" "+t("fbDeptsRated").toLowerCase())
     + tile(t("avgRate"), avg?stars(avg, avg.toFixed(1)):'<span class=nr>\u2014</span>')
-    + '<div class="tile good"><span class=tl>'+E2(t("fbHighRooms"))+'</span>'
-      +'<b>'+sum.high+'</b><span class=ts>'+E2(t("fbHighSub"))+'</span></div>'
-    + '<div class="tile '+(sum.low?"warn":"")+'"><span class=tl>'+E2(t("fbLowRooms"))+'</span>'
-      +'<b>'+sum.low+'</b><span class=ts>'+E2(t("fbLowSub"))+'</span></div>'
-    + (sum.allSame
-        ? tile(t("fbWholeHotel"), stars(sum.topAvg, sum.topAvg.toFixed(2)),
-            sum.perfect ? t("fbPerfect") : t("fbAllEqual"))
-        : tile(t("fbHighest"),
-            sum.top ? stars(sum.top.avg, sum.top.avg.toFixed(2)) : '<span class=nr>\u2014</span>',
-            sum.best ? fbDeptLabel(sum.best.k)
-              : (sum.tiedTop.length>1 ? t("fbTied").replace("{n}", sum.tiedTop.length) : "")))
+    + '<div class="tile good"><span class=tl>'+E2(t("fbAllFiveN"))+'</span>'
+      +'<b>'+sum.allFive+'</b><span class=ts>'+E2(t("fbAllFiveSub"))+'</span></div>'
+    + '<div class="tile '+(sum.toReview?"attn":"")+'"><span class=tl>'+E2(t("fbToReview"))+'</span>'
+      +'<b>'+sum.toReview+'</b><span class=ts>'+E2(t("fbToReviewSub"))+'</span></div>'
     +'</div>';
 
   /* Every department a guest scored under five gets named, weakest first.
@@ -8634,42 +8692,61 @@ function exportFeedbackReport(){
     }
   }
 
-  /* Room by room. Six columns instead of twenty-one: a guest who was happy
-     with everything needs one line, and only what they marked down is spelled
-     out underneath. */
+  /* The guests who raised something come first, worst first, each with exactly
+     what they marked down. The guests who gave straight fives are listed after,
+     one line each — they need no follow-up. */
   if(!list.length){
     html+='<div class=none>'+E2(t("fbNothing"))+'</div>';
   } else {
-    const heads=[t("room"),t("fbGuestName"),t("nationality"),t("fbOverall"),t("fbCollectedBy"),t("day")];
-    html+='<h2 class=sub>'+E2(t("fbGuestList"))+'</h2>'
-      +'<p class=subnote>'+E2(t("fbGuestHead"))+'</p>'
-      +'<table class=rooms><thead><tr>'+heads.map(h=>'<th>'+E2(h)+'</th>').join("")+'</tr></thead><tbody>';
-    html+=list.map(f=>{
-      const d=fbDepts(f), ov=fbOverall(f), note=fbComment(f);
-      const mark = ov>=4.5 ? " good" : " low";                 // happy room or not
-      const down = shown.filter(k=>+d[k]>0 && +d[k]<5)
-        .sort((a,b)=>d[a]-d[b])
+    const rank={priority:0, attn:1, none:2};
+    const marked=f=>{
+      const d=fbDepts(f);
+      return fbDeptKeys().filter(k=>+d[k]>0 && +d[k]<5).sort((a,b)=>d[a]-d[b])
         .map(k=>'<span class="chip '+(d[k]<=3?"c3":"c4")+'">'+E2(fbDeptLabel(k))
           +' <b>'+"\u2605".repeat(+d[k])+'</b></span>').join("");
-      const rated=shown.filter(k=>+d[k]>0).length;
-      let row='<tr class="r'+mark+'">'
-        +'<td class=room>'+E2(f.room)+'</td>'
-        +'<td>'+E2(f.guest_name||"")+'</td>'
-        +'<td>'+E2(f.nationality||"")+'</td>'
-        +'<td class=st>'+stars(ov, ov?ov.toFixed(1):"")+'</td>'
-        +'<td class=by>'+E2(teamName(f.by_user))+'</td>'
-        +'<td class=dt>'+E2(shortStamp(f.created_at))+'</td></tr>';
-      if(down || note || rated){
-        row+='<tr class="c'+mark+'"><td colspan="'+heads.length+'">'
-          +(down ? '<span class=dl>'+E2(t("fbMarkedDown"))+'</span>'+down
-                 : (rated ? '<span class="chip ok">'+E2(t("fbAllFive"))+'</span>' : ''))
-          +(note ? '<p class=note>'+E2(note)+'</p>' : '')
-          +'</td></tr>';
-      }
-      return row;
-    }).join("");
-    html+='</tbody></table>';
-    html+='<p class=legend>'+E2(t("fbLegend"))+'</p>';
+    };
+    const meta=f=>[f.guest_name, f.nationality, teamName(f.by_user), shortStamp(f.created_at)]
+      .filter(Boolean).map(E2).join(" \u00b7 ");
+    const sorted=list.slice().sort((a,b)=>
+      (rank[fbStatus(a)]-rank[fbStatus(b)]) || (fbOverall(a)-fbOverall(b)));
+    const review=sorted.filter(f=>fbStatus(f)!=="none");
+    const clean=sorted.filter(f=>fbStatus(f)==="none");
+
+    html+='<h2 class=sub>'+E2(t("fbReviewHead"))+'</h2>'
+      +'<p class=subnote>'+E2(review.length?t("fbReviewSub"):t("fbNoReview"))+'</p>';
+    if(review.length){
+      html+=review.map(f=>{
+        const st=fbStatus(f), ov=fbOverall(f), note=fbComment(f), chips=marked(f);
+        return '<div class="g '+st+'">'
+          +'<div class=ghead>'
+            +'<span class=gr>'+E2(f.room)+'</span>'
+            +'<span class=gov>'+stars(ov, ov?ov.toFixed(1):"")+'</span>'
+            +'<span class="gs '+st+'"><i></i>'+E2(fbStatusLabel(st))+'</span>'
+          +'</div>'
+          +'<div class=gmeta>'+meta(f)+'</div>'
+          +(chips?'<div class=gchips>'+chips+'</div>':'')
+          +(note?'<p class=note>'+E2(note)+'</p>':'')
+          +'</div>';
+      }).join("");
+    }
+
+    if(clean.length){
+      html+='<h2 class=sub>'+E2(t("fbPerfectHead"))+'</h2>'
+        +'<p class=subnote>'+E2(t("fbPerfectSub"))+'</p>'
+        +'<div class=cleanbox>'
+        + clean.map(f=>{
+            const note=fbComment(f);
+            return '<div class=g5>'
+              +'<span class=gr>'+E2(f.room)+'</span>'
+              +'<span class=gov>'+stars(fbOverall(f), fbOverall(f)?fbOverall(f).toFixed(1):"")+'</span>'
+              +'<span class=tick>\u2713</span>'
+              +'<span class=gmeta>'+meta(f)+'</span>'
+              +(note?'<p class=note>'+E2(note)+'</p>':'')
+              +'</div>';
+          }).join("")
+        +'</div>';
+    }
+    html+='<p class=legend>'+E2(t("fbLegend2"))+'</p>';
   }
 
   html+='<div class=foot><span>'+E2(hotel||t("fbReport"))+'</span>'
