@@ -1604,6 +1604,56 @@ html{font-size:calc(16px * var(--fscale,1))}
   border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center}
 .bubwrap.picked .pick-dot{background:var(--bronze);border-color:var(--bronze);color:#fff}
 </style>
+<style>
+/* ===== AMARA REFERENCE REDESIGN — 2026-09-04 ===== */
+:root{
+  --am-ivory:#f6f0e7;--am-paper:#fffaf2;--am-ink:#171713;--am-gold:#c59a5f;--am-gold2:#e2bb7a;
+  --am-night:#07151b;--am-night2:#0b2028;--am-panel:#102a33;--am-line:rgba(197,154,95,.28);
+  --font-display:'Cormorant Garamond',serif;--font-body:'Jost',sans-serif;
+}
+body{letter-spacing:-.01em;background:#e8e0d4}
+.app{max-width:430px;background:var(--bg);box-shadow:0 0 70px rgba(26,20,13,.10)}
+.screen{padding-inline:16px!important}
+h1,h2,h3,.serif{letter-spacing:-.025em}.top .who h2,.whobar h2{font-size:29px;font-weight:500}
+.card{border:1px solid rgba(80,55,30,.06);box-shadow:0 8px 24px -18px rgba(28,18,10,.28)}
+.sec>h3{font-family:var(--font-body);font-size:15px;font-weight:600;letter-spacing:-.015em}.sec>h3:after{display:none}
+.btn{border-radius:11px}.iconbtn{box-shadow:none;border:1px solid var(--line);background:rgba(255,255,255,.55)}
+.nav{position:fixed;background:rgba(255,250,242,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(55,38,23,.10);padding-top:7px}.nav:before{display:none}.nav button .ic{font-size:20px}.nav button.on{color:#a77b3f}.nav button.on:after{content:"";position:absolute;top:-8px;width:24px;height:2px;border-radius:2px;background:var(--am-gold)}
+.hero{border-radius:16px}.hero img{height:245px}.hero .veil{background:linear-gradient(180deg,rgba(8,10,10,.02) 10%,rgba(8,10,10,.82) 86%)}.hero .body{padding:18px}.hero .body h3{font-size:31px;font-weight:500}.hero .tag{background:transparent;color:#fff;border:0;padding:0;border-radius:0;letter-spacing:.16em;backdrop-filter:none}
+.quickrow{gap:8px}.quickrow button{padding:13px 6px;border-radius:12px;box-shadow:none;border:1px solid var(--line);font-size:12px;background:rgba(255,255,255,.7)}
+.act{padding:8px!important;gap:11px}.act .thumb{width:72px;height:72px;border-radius:10px}.act .mid h4{font-size:15px}.act .meta{font-size:11.5px}.chip{font-size:10px}
+.daytabs button,.pills button{box-shadow:none;border:1px solid var(--line);border-radius:9px;padding:8px 13px}.daytabs button.on,.pills button.on{background:#101a1d;color:#fff;border-color:#101a1d}
+.stat-grid{gap:8px}.stat{padding:13px;border:1px solid rgba(255,255,255,.07);box-shadow:none}.stat b{font-family:var(--font-body);font-size:25px;font-weight:500}.stat span{text-transform:none;letter-spacing:0;font-size:11px}
+/* Guest = warm editorial resort */
+html[data-approle="guest"]{--bg:#f6f0e7;--card:#fffaf2;--ink:#181714;--muted:#756c60;--line:#e7dccd;--sand:#eee3d3;--nav-bg:#fffaf2;--nav-on:#a77b3f;--espresso:#1b2424;--cacao:#7e6545;--bronze:#bd9258}
+html[data-approle="guest"] body{background:linear-gradient(180deg,#eee5d8,#f8f3eb)}
+html[data-approle="guest"] .screen{background:radial-gradient(120% 45% at 50% -10%,#fffaf3 0%,#f6f0e7 62%)}
+html[data-approle="guest"] .top{margin-bottom:12px}
+html[data-approle="guest"] .top .who h2{font-family:var(--font-display);font-size:31px;line-height:.98}
+html[data-approle="guest"] .hero{box-shadow:0 15px 36px -22px rgba(33,23,14,.5)}
+html[data-approle="guest"] .card{background:rgba(255,250,242,.92)}
+/* Staff + manager = deep teal-black operational cockpit */
+html[data-approle="staff"],html[data-approle="manager"]{--bg:#07171d;--card:#0d222a;--ink:#f5f0e8;--muted:#9da9a8;--line:#1d3a43;--sand:#132d35;--nav-bg:#081a21;--nav-on:#e1b06d;--espresso:#07171d;--cacao:#183a43;--bronze:#d2a05f;--ok:#63b985;--warn:#ef8c63}
+html[data-approle="staff"] body,html[data-approle="manager"] body{background:#041015}
+html[data-approle="staff"] .screen,html[data-approle="manager"] .screen{background:radial-gradient(100% 35% at 50% -10%,#12313b 0%,#07171d 65%)}
+html[data-approle="staff"] .card,html[data-approle="manager"] .card{background:linear-gradient(145deg,rgba(16,43,52,.96),rgba(9,29,36,.98));border-color:rgba(210,160,95,.12);box-shadow:0 14px 32px -24px #000}
+html[data-approle="staff"] .top .who h2,html[data-approle="manager"] .top .who h2{font-family:var(--font-display);font-weight:500;color:#fff}
+html[data-approle="staff"] .iconbtn,html[data-approle="manager"] .iconbtn{background:#0c252d;border-color:#1d3a43}
+html[data-approle="staff"] .nav,html[data-approle="manager"] .nav{background:rgba(5,20,26,.95);border-color:#17323b}
+html[data-approle="staff"] .daytabs button,html[data-approle="staff"] .pills button,html[data-approle="manager"] .daytabs button,html[data-approle="manager"] .pills button{background:#0d252d;border-color:#1d3a43;color:#aeb8b7}
+html[data-approle="staff"] .daytabs button.on,html[data-approle="staff"] .pills button.on,html[data-approle="manager"] .daytabs button.on,html[data-approle="manager"] .pills button.on{background:linear-gradient(135deg,#d0a05f,#e7bd7f);color:#0b1719;border-color:transparent}
+html[data-approle="staff"] .btn:not(.ghost):not(.warn),html[data-approle="manager"] .btn:not(.ghost):not(.warn){background:linear-gradient(135deg,#d0a05f,#e7bd7f);color:#101515;box-shadow:none}
+html[data-approle="staff"] .btn.ghost,html[data-approle="manager"] .btn.ghost{color:#d9b477;border-color:#31505a}
+html[data-approle="staff"] .wk-time{color:#d7ad70}.wk-dot{background:#d7ad70}.wk-line{background:#31505a}
+html[data-approle="manager"] .stat:first-child,html[data-approle="manager"] .stat:nth-child(2){background:linear-gradient(145deg,#0e2d38,#0b222a)}
+html[data-approle="manager"] .stat b{color:#fff}
+html[data-approle="manager"] .stat:nth-child(3) b{color:#e5b56f}html[data-approle="manager"] .stat:nth-child(4) b{color:#f18c6d}
+/* Login follows the editorial AMARA cover */
+.login-wrap{background:radial-gradient(110% 65% at 50% 0%,#f9f0e2 0%,#e8d8c2 46%,#30271e 140%);color:#1a1713}.brandmark .mono{border-color:#a9824c;color:#a9824c;background:rgba(255,255,255,.22)}.brandmark h1{color:#17130f;letter-spacing:.22em;font-size:32px}.brandmark p{color:#695d4e;letter-spacing:.18em}.role-tabs button{color:#4f4437;background:rgba(255,255,255,.38);border:1px solid rgba(120,93,59,.14)}.role-tabs button.on{background:#151b1b;color:#fff}.staff-link{color:#4d4236}.staff-link span{border-color:#8d7658}.login-card{background:rgba(255,252,246,.92);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.65)}
+/* Desktop preview remains centered like a phone rather than stretching */
+@media(min-width:700px){.app{margin:24px auto;min-height:calc(100dvh - 48px);border-radius:28px;overflow:hidden}.nav{max-width:430px;bottom:24px;border-radius:0 0 28px 28px}.chatbar{max-width:430px}}
+
+</style>
 </head>
 <body>
 <div class="app" id="app"><div class="skel-wrap">
