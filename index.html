@@ -1604,56 +1604,6 @@ html{font-size:calc(16px * var(--fscale,1))}
   border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center}
 .bubwrap.picked .pick-dot{background:var(--bronze);border-color:var(--bronze);color:#fff}
 </style>
-<style>
-/* ===== AMARA REFERENCE REDESIGN — 2026-09-04 ===== */
-:root{
-  --am-ivory:#f6f0e7;--am-paper:#fffaf2;--am-ink:#171713;--am-gold:#c59a5f;--am-gold2:#e2bb7a;
-  --am-night:#07151b;--am-night2:#0b2028;--am-panel:#102a33;--am-line:rgba(197,154,95,.28);
-  --font-display:'Cormorant Garamond',serif;--font-body:'Jost',sans-serif;
-}
-body{letter-spacing:-.01em;background:#e8e0d4}
-.app{max-width:430px;background:var(--bg);box-shadow:0 0 70px rgba(26,20,13,.10)}
-.screen{padding-inline:16px!important}
-h1,h2,h3,.serif{letter-spacing:-.025em}.top .who h2,.whobar h2{font-size:29px;font-weight:500}
-.card{border:1px solid rgba(80,55,30,.06);box-shadow:0 8px 24px -18px rgba(28,18,10,.28)}
-.sec>h3{font-family:var(--font-body);font-size:15px;font-weight:600;letter-spacing:-.015em}.sec>h3:after{display:none}
-.btn{border-radius:11px}.iconbtn{box-shadow:none;border:1px solid var(--line);background:rgba(255,255,255,.55)}
-.nav{position:fixed;background:rgba(255,250,242,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(55,38,23,.10);padding-top:7px}.nav:before{display:none}.nav button .ic{font-size:20px}.nav button.on{color:#a77b3f}.nav button.on:after{content:"";position:absolute;top:-8px;width:24px;height:2px;border-radius:2px;background:var(--am-gold)}
-.hero{border-radius:16px}.hero img{height:245px}.hero .veil{background:linear-gradient(180deg,rgba(8,10,10,.02) 10%,rgba(8,10,10,.82) 86%)}.hero .body{padding:18px}.hero .body h3{font-size:31px;font-weight:500}.hero .tag{background:transparent;color:#fff;border:0;padding:0;border-radius:0;letter-spacing:.16em;backdrop-filter:none}
-.quickrow{gap:8px}.quickrow button{padding:13px 6px;border-radius:12px;box-shadow:none;border:1px solid var(--line);font-size:12px;background:rgba(255,255,255,.7)}
-.act{padding:8px!important;gap:11px}.act .thumb{width:72px;height:72px;border-radius:10px}.act .mid h4{font-size:15px}.act .meta{font-size:11.5px}.chip{font-size:10px}
-.daytabs button,.pills button{box-shadow:none;border:1px solid var(--line);border-radius:9px;padding:8px 13px}.daytabs button.on,.pills button.on{background:#101a1d;color:#fff;border-color:#101a1d}
-.stat-grid{gap:8px}.stat{padding:13px;border:1px solid rgba(255,255,255,.07);box-shadow:none}.stat b{font-family:var(--font-body);font-size:25px;font-weight:500}.stat span{text-transform:none;letter-spacing:0;font-size:11px}
-/* Guest = warm editorial resort */
-html[data-approle="guest"]{--bg:#f6f0e7;--card:#fffaf2;--ink:#181714;--muted:#756c60;--line:#e7dccd;--sand:#eee3d3;--nav-bg:#fffaf2;--nav-on:#a77b3f;--espresso:#1b2424;--cacao:#7e6545;--bronze:#bd9258}
-html[data-approle="guest"] body{background:linear-gradient(180deg,#eee5d8,#f8f3eb)}
-html[data-approle="guest"] .screen{background:radial-gradient(120% 45% at 50% -10%,#fffaf3 0%,#f6f0e7 62%)}
-html[data-approle="guest"] .top{margin-bottom:12px}
-html[data-approle="guest"] .top .who h2{font-family:var(--font-display);font-size:31px;line-height:.98}
-html[data-approle="guest"] .hero{box-shadow:0 15px 36px -22px rgba(33,23,14,.5)}
-html[data-approle="guest"] .card{background:rgba(255,250,242,.92)}
-/* Staff + manager = deep teal-black operational cockpit */
-html[data-approle="staff"],html[data-approle="manager"]{--bg:#07171d;--card:#0d222a;--ink:#f5f0e8;--muted:#9da9a8;--line:#1d3a43;--sand:#132d35;--nav-bg:#081a21;--nav-on:#e1b06d;--espresso:#07171d;--cacao:#183a43;--bronze:#d2a05f;--ok:#63b985;--warn:#ef8c63}
-html[data-approle="staff"] body,html[data-approle="manager"] body{background:#041015}
-html[data-approle="staff"] .screen,html[data-approle="manager"] .screen{background:radial-gradient(100% 35% at 50% -10%,#12313b 0%,#07171d 65%)}
-html[data-approle="staff"] .card,html[data-approle="manager"] .card{background:linear-gradient(145deg,rgba(16,43,52,.96),rgba(9,29,36,.98));border-color:rgba(210,160,95,.12);box-shadow:0 14px 32px -24px #000}
-html[data-approle="staff"] .top .who h2,html[data-approle="manager"] .top .who h2{font-family:var(--font-display);font-weight:500;color:#fff}
-html[data-approle="staff"] .iconbtn,html[data-approle="manager"] .iconbtn{background:#0c252d;border-color:#1d3a43}
-html[data-approle="staff"] .nav,html[data-approle="manager"] .nav{background:rgba(5,20,26,.95);border-color:#17323b}
-html[data-approle="staff"] .daytabs button,html[data-approle="staff"] .pills button,html[data-approle="manager"] .daytabs button,html[data-approle="manager"] .pills button{background:#0d252d;border-color:#1d3a43;color:#aeb8b7}
-html[data-approle="staff"] .daytabs button.on,html[data-approle="staff"] .pills button.on,html[data-approle="manager"] .daytabs button.on,html[data-approle="manager"] .pills button.on{background:linear-gradient(135deg,#d0a05f,#e7bd7f);color:#0b1719;border-color:transparent}
-html[data-approle="staff"] .btn:not(.ghost):not(.warn),html[data-approle="manager"] .btn:not(.ghost):not(.warn){background:linear-gradient(135deg,#d0a05f,#e7bd7f);color:#101515;box-shadow:none}
-html[data-approle="staff"] .btn.ghost,html[data-approle="manager"] .btn.ghost{color:#d9b477;border-color:#31505a}
-html[data-approle="staff"] .wk-time{color:#d7ad70}.wk-dot{background:#d7ad70}.wk-line{background:#31505a}
-html[data-approle="manager"] .stat:first-child,html[data-approle="manager"] .stat:nth-child(2){background:linear-gradient(145deg,#0e2d38,#0b222a)}
-html[data-approle="manager"] .stat b{color:#fff}
-html[data-approle="manager"] .stat:nth-child(3) b{color:#e5b56f}html[data-approle="manager"] .stat:nth-child(4) b{color:#f18c6d}
-/* Login follows the editorial AMARA cover */
-.login-wrap{background:radial-gradient(110% 65% at 50% 0%,#f9f0e2 0%,#e8d8c2 46%,#30271e 140%);color:#1a1713}.brandmark .mono{border-color:#a9824c;color:#a9824c;background:rgba(255,255,255,.22)}.brandmark h1{color:#17130f;letter-spacing:.22em;font-size:32px}.brandmark p{color:#695d4e;letter-spacing:.18em}.role-tabs button{color:#4f4437;background:rgba(255,255,255,.38);border:1px solid rgba(120,93,59,.14)}.role-tabs button.on{background:#151b1b;color:#fff}.staff-link{color:#4d4236}.staff-link span{border-color:#8d7658}.login-card{background:rgba(255,252,246,.92);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.65)}
-/* Desktop preview remains centered like a phone rather than stretching */
-@media(min-width:700px){.app{margin:24px auto;min-height:calc(100dvh - 48px);border-radius:28px;overflow:hidden}.nav{max-width:430px;bottom:24px;border-radius:0 0 28px 28px}.chatbar{max-width:430px}}
-
-</style>
 </head>
 <body>
 <div class="app" id="app"><div class="skel-wrap">
@@ -10671,5 +10621,151 @@ function startRealtime(){
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) alarmTick(); });
 })();
 </script>
+<style id="amara-complete-ux-2026">
+/* ==========================================================
+   AMARA COMPLETE EXPERIENCE — 2026
+   Role-aware product UI layered over the existing data engine.
+   Guest = warm editorial luxury. Staff/Manager = dark operations.
+   ========================================================== */
+:root{
+  --amara-gold:#d7aa63;--amara-gold2:#f0c978;--amara-cream:#f7f2ea;--amara-paper:#fffaf2;
+  --amara-ink:#171511;--amara-muted:#837b70;--amara-teal:#071b22;--amara-teal2:#0d2831;
+  --amara-panel:#102a33;--amara-line:rgba(255,255,255,.10);--amara-red:#dc6d63;--amara-green:#62bd8a;
+  --amara-r:18px;--amara-r2:24px;--amara-shadow:0 18px 50px -28px rgba(27,20,12,.38);
+}
+html[data-approle="guest"]{--bg:#f6f0e7;--card:#fffaf3;--ink:#181511;--muted:#82796e;--line:#e7ded1;--sand:#eee4d6;--nav-bg:rgba(255,250,243,.96);--nav-on:#a97a3a;--bronze:#b9894c;--espresso:#1c1712;--cacao:#72583d}
+html[data-approle="staff"],html[data-approle="manager"]{--bg:#06191f;--card:#0d252d;--ink:#f3eee6;--muted:#9aafb3;--line:#183740;--sand:#102c35;--nav-bg:rgba(7,27,34,.97);--nav-on:#e7ba72;--bronze:#d7aa63;--espresso:#071b22;--cacao:#c18e4e;--ok:#62bd8a;--warn:#dc6d63;--shadow:0 18px 45px -26px rgba(0,0,0,.8)}
+body{background:var(--bg);letter-spacing:-.005em}.app{max-width:620px;background:var(--bg);min-height:100dvh}.screen{padding:calc(18px + env(safe-area-inset-top)) 18px calc(102px + env(safe-area-inset-bottom))!important}
+.serif,h1,h2,h3{font-family:'Cormorant Garamond',serif}.mini{line-height:1.35}.card{border:1px solid var(--line);box-shadow:none;background:var(--card)}
+html[data-approle="guest"] .card{box-shadow:0 8px 32px -24px rgba(59,42,20,.35)}
+.sec{margin-bottom:24px}.sec>h3{font-size:17px;font-family:'Jost',sans-serif;font-weight:600;letter-spacing:-.01em}.sec>h3:after{display:none}
+.btn{min-height:44px;border-radius:13px;font-weight:600;box-shadow:none!important}.btn:not(.ghost):not(.warn){background:linear-gradient(135deg,#b9823d,#e2b667);color:#17120c}.btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+input,select,textarea{background:var(--card);border-color:var(--line);color:var(--ink);border-radius:13px}
+/* refined top bar */
+.top{margin:0 0 12px;align-items:center}.top .toprow-l{gap:7px}.top .navbtn,.top .socialrow{display:none}.iconbtn{width:40px;height:40px;border-radius:50%;background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--ink)}.whobar{margin:0 0 18px}.whobar h2{font-family:'Cormorant Garamond',serif;font-size:31px;font-weight:600}.whobar p{font-size:12px;letter-spacing:.03em}
+/* permanent role navigation */
+.amara-nav{position:fixed;z-index:55;left:50%;bottom:0;transform:translateX(-50%);width:min(620px,100%);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 7px calc(9px + env(safe-area-inset-bottom));background:var(--nav-bg);border-top:1px solid var(--line);backdrop-filter:blur(18px)}
+.amara-nav button{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:5px 2px;color:var(--muted);font-size:9.5px}.amara-nav button .ni{height:21px;display:flex;align-items:center}.amara-nav button.on{color:var(--nav-on)}
+/* Login rebuilt as editorial hotel welcome */
+.login-wrap{min-height:100dvh;padding:calc(34px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom))!important;justify-content:flex-start;background:linear-gradient(180deg,rgba(10,18,19,.16),rgba(8,20,23,.76)),url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80') center/cover fixed!important}
+.brandmark{padding-top:5vh}.brandmark .mono{width:66px;height:66px;border:1px solid rgba(239,202,139,.7);background:rgba(4,15,18,.35);backdrop-filter:blur(10px)}.brandmark h1{font-size:38px;letter-spacing:.18em;text-transform:uppercase}.brandmark p{font-size:10px;letter-spacing:.24em;margin-top:7px}.login-kicker{text-align:center;color:#eadbc5;font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin:17px 0 6px}.login-card{margin-top:15px;background:rgba(255,251,245,.97);color:#1a1713;border:1px solid rgba(255,255,255,.5);box-shadow:0 35px 80px -35px rgba(0,0,0,.75);padding:20px}.login-card label{color:#806f5c}.login-card input,.login-card select{background:#fff;border-color:#eadfce;color:#1a1713}.role-tabs{background:rgba(4,15,18,.38);padding:5px;border-radius:15px;backdrop-filter:blur(12px)}.role-tabs button{background:transparent!important;border-radius:11px;color:#eee0cf}.role-tabs button.on{background:#f6ead8!important;color:#21180f!important}.staff-link{color:#f2dfc4}.lang-row{gap:5px}.lang-row button{font-size:11px;padding:6px 10px;background:rgba(4,15,18,.25)}
+/* Guest home */
+.guest-welcome{position:relative;height:285px;margin:-18px -18px 18px;border-radius:0 0 27px 27px;overflow:hidden;background:#25444d}.guest-welcome img{width:100%;height:100%;object-fit:cover}.guest-welcome:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,20,22,.08),rgba(8,18,18,.15) 35%,rgba(10,18,18,.78))}.guest-welcome .gw-copy{position:absolute;z-index:2;left:19px;right:19px;bottom:19px;color:#fff}.gw-over{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:44px}.gw-copy h1{font-size:34px;line-height:.94}.gw-copy p{font-size:13px;color:#eadfce;margin-top:5px}.today-hero{position:relative;min-height:165px;border-radius:20px;overflow:hidden;margin:0 0 18px;color:#fff;background:#2c3633}.today-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.today-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,15,13,.82),rgba(13,15,13,.2))}.today-hero .th-copy{position:relative;z-index:2;padding:19px;max-width:74%}.th-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.15em}.th-copy h2{font-size:31px;line-height:1;margin:5px 0 9px}.th-meta{font-size:12px;display:grid;gap:3px}.guest-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 22px}.guest-cats button{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 5px 9px;font-size:10px;color:var(--ink)}.guest-cats .ci{display:flex;justify-content:center;margin-bottom:5px;color:#b38343}.guest-row{display:flex;gap:11px;align-items:center;padding:9px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-bottom:9px}.guest-row img{width:74px;height:62px;border-radius:11px;object-fit:cover}.guest-row .gr-main{flex:1;min-width:0}.guest-row h4{font-family:'Jost',sans-serif;font-size:14px}.guest-row .mini{font-size:11px}.guest-row .btn{width:auto;min-height:34px;padding:7px 12px;font-size:11px;margin:0}
+/* Activity/program cards */
+.act{padding:9px;min-height:88px;border-radius:16px}.act .thumb{width:84px;height:76px;border-radius:12px}.act .mid h4{font-size:15px;font-family:'Jost',sans-serif}.act .meta{font-size:11px}.catbadge{font-size:9px;letter-spacing:.08em}.chip{font-size:9px}.daytabs,.pills{gap:6px}.daytabs button,.pills button{box-shadow:none;border:1px solid var(--line);background:var(--card);font-size:12px;padding:8px 12px}.daytabs button.on,.pills button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+html[data-approle="staff"] .daytabs button.on,html[data-approle="staff"] .pills button.on,html[data-approle="manager"] .daytabs button.on,html[data-approle="manager"] .pills button.on{background:linear-gradient(135deg,#c78e47,#e5b96e);color:#152127;border:0}
+/* Staff / manager headers */
+.ops-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}.ops-head .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--bronze)}.ops-head h1{font-size:31px;line-height:1}.ops-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;border:2px solid #c99b5a;background:#173740;display:grid;place-items:center;font-family:'Cormorant Garamond',serif;font-size:19px}.ops-avatar img{width:100%;height:100%;object-fit:cover}
+.ops-tabs{display:grid;grid-template-columns:repeat(3,1fr);background:#0b252e;border:1px solid var(--line);border-radius:13px;padding:4px;margin-bottom:15px}.ops-tabs button{padding:8px 4px;border-radius:9px;color:var(--muted);font-size:11px}.ops-tabs button.on{background:#17343c;color:#f5d59f;box-shadow:inset 0 -1px #d3a35d}
+/* Staff timeline */
+.staff-now{border:1px solid #2e4c54;border-radius:17px;background:linear-gradient(145deg,#0c2831,#102f38);padding:14px;margin-bottom:15px}.sn-label{font-size:10px;letter-spacing:.12em;color:#e4bd7e;text-transform:uppercase}.sn-body{display:flex;gap:11px;align-items:center;margin-top:6px}.sn-body img{width:72px;height:57px;border-radius:10px;object-fit:cover}.sn-main{flex:1}.sn-main h3{font-family:'Jost',sans-serif;font-size:16px}.sn-main p{font-size:11px;color:var(--muted)}.staff-timeline{position:relative;padding-left:24px;margin:4px 0 22px}.staff-timeline:before{content:"";position:absolute;left:7px;top:7px;bottom:10px;width:1px;background:#b68950}.stl-item{position:relative;display:grid;grid-template-columns:52px 1fr 54px;gap:8px;align-items:center;min-height:68px}.stl-item:before{content:"";position:absolute;left:-21px;width:9px;height:9px;border:2px solid #d4a55d;border-radius:50%;background:#0a2027}.stl-time{font-size:11px;color:#d8d2ca}.stl-main b{font-size:13px}.stl-main span{display:block;color:var(--muted);font-size:10px}.stl-item img{width:54px;height:47px;object-fit:cover;border-radius:9px}
+/* Manager dashboard */
+.mgr-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}.mgr-metric{background:linear-gradient(145deg,#0e2d36,#102831);border:1px solid #1e414a;border-radius:13px;padding:12px}.mgr-metric b{display:block;font-size:25px;font-family:'Jost',sans-serif;font-weight:500;color:#fff;line-height:1}.mgr-metric span{font-size:10px;color:#aebec1}.mgr-metric.attn{border-color:#684346;background:linear-gradient(145deg,#30282a,#242326)}.mgr-metric.attn b,.mgr-metric.attn span{color:#ed8377}.live-op{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.live-op:last-child{border-bottom:0}.lo-dot{width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:#1f7556;color:#fff;font-size:9px}.lo-dot.warn{background:#d39332}.lo-main{flex:1;min-width:0}.lo-main b{font-size:12px}.lo-main span{display:block;font-size:10px;color:var(--muted)}.lo-side{font-size:10px;color:#9ab0b4;text-align:right}
+.stat-grid{gap:9px}.stat{background:linear-gradient(145deg,#0e2d36,#102831);border:1px solid #1e414a}.stat b{font-family:'Jost',sans-serif;font-size:28px}.stat span{font-size:10px;letter-spacing:0;text-transform:none}
+/* all manager operational pages */
+html[data-approle="manager"] .booking-line{border-color:var(--line)}html[data-approle="manager"] .setup{background:#2b271b;border-color:#51472d;color:#e7cf96}
+/* drawer */
+.drawer{background:#071b22!important}.dr-head .mono.sm{background:linear-gradient(135deg,#c58b45,#e6bd77)!important;color:#122027!important}.dr-it.on{background:#16343d!important;color:#f5d39c!important;box-shadow:none}.dr-sec{color:#8ca1a6}.dr-foot{border-color:#17343c}
+/* desktop/tablet */
+@media(min-width:760px){body{background:#e8e2d8}html[data-approle="staff"] body,html[data-approle="manager"] body{background:#031116}.app{box-shadow:0 0 70px -35px rgba(0,0,0,.55)}}
+</style>
+<script id="amara-complete-ux-script">
+/* ================= AMARA COMPLETE EXPERIENCE OVERRIDES ================= */
+function amaraNav(){
+  if(!S.session) return "";
+  const r=S.session.role;
+  const items=r==="guest"
+    ? [["home","home","Home"],["program","calendar","Program"],["me","heart","Favorites"],["chat","chat","Messages"],["me","user","Profile"]]
+    : r==="staff"
+    ? [["workday","home","Today"],["week","calendar","Program"],["teaminfo","users","Team"],["chat","chat","Messages"],["mypage","user","Profile"]]
+    : [["dash","home","Overview"],["program","calendar","Program"],["team","users","Team"],["guests","chart","Guests"],["settings","more","More"]];
+  return `<nav class="amara-nav">${items.map(([id,ico,lb])=>`<button data-tab="${id}" class="${S.tab===id || (r==='guest'&&id==='me'&&S.tab==='me')?'on':''}"><span class="ni">${ic(ico,19)}</span><span>${lb}</span></button>`).join("")}</nav>`;
+}
+function render(){
+  const app=$("#app");
+  document.documentElement.setAttribute("data-approle", S.session?S.session.role:"none");
+  if(S.loadError){ app.innerHTML=errorView(); const r=$("#btn-retry"); if(r) r.onclick=()=>location.reload(); return; }
+  if(!S.session){ app.innerHTML=loginView(); wireLogin(); return; }
+  const r=S.session.role;
+  app.innerHTML=(r==="guest"?guestView():r==="staff"?staffView():managerView())+amaraNav();
+  navRecord(); wireCommon();
+}
+function topBar(title,sub){
+  const role=S.session?S.session.role:"guest";
+  return `<div class="top"><div class="toprow toprow-l"><button class="iconbtn" id="btn-menu" aria-label="${t("menu")}">${ic("menu",20)}</button></div><div class="toprow"><button class="iconbtn" id="btn-notes" aria-label="notifications">${ic("bell",18)}${unseenNotes(role)?'<span class="reddot"></span>':''}</button></div></div><div class="who whobar"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>`;
+}
+function amaraGreeting(){const h=new Date().getHours();return h<12?"Good morning":h<18?"Good afternoon":"Good evening";}
+function amaraImg(a){return esc((a&&a.image)||IMG.show)}
+function amaraGuestRow(a,action){ if(!a)return""; return `<div class="guest-row" data-open="${a.id}"><img src="${amaraImg(a)}" alt=""><div class="gr-main"><h4>${esc(a.name)}</h4><div class="mini">${mi("clock")}${esc(a.time)}<br>${mi("pin")}${esc(a.location||"")}</div></div>${action||""}</div>`; }
+function loginView(){
+  const st=S.settings; const brand=`<div class="brandmark"><div class="mono serif${st.logo?' haslogo':''}">${st.logo?`<img src="${esc(st.logo)}" alt="">`:esc((st.name||'A').trim().charAt(0).toUpperCase())}</div><h1>${esc(st.name||'AMARA')}</h1><p>${esc(st.subtitle||'HOTEL & RESORT')}</p></div><div class="login-kicker">Good people · Great moments · Every day</div><div class="lang-row">${LANGS.map(([l,label])=>`<button data-lang="${l}" class="${S.lang===l?'on':''}">${label}</button>`).join('')}</div>`;
+  if(loginMode==='guest'){
+    const rem=`<label class="remrow"><input type="checkbox" id="cb-rem" ${rememberMe?'checked':''}> ${t('rememberMe')}</label>`;
+    const dots=`<div class="wz-dots">${[0,1,2,3,4,5,6].map(i=>`<span class="wz-dot ${wiz.step===i?'on':wiz.step>i?'done':''}"></span>`).join('')}</div>`;
+    let s='';
+    if(wiz.step===0)s=`<label>${t('room')}</label><button class="pickfield" id="wz-pick">${wiz.room?`<b>${esc(wiz.room)}</b>`:t('chooseRoom')}<span class="pf-ch">${ic('back',16)}</span></button>`;
+    else if(wiz.step===1)s=`<label>${t('nationality')}</label><button class="pickfield" id="wz-pick">${wiz.nat?`<b>${esc(wiz.nat)}</b>`:t('chooseNat')}<span class="pf-ch">${ic('back',16)}</span></button>`;
+    else if(wiz.step===2)s=`<label>${t('name')}</label><input id="wz-in" value="${esc(wiz.name)}">`;
+    else if(wiz.step===3)s=`<label>${t('phone')}</label><input id="wz-in" inputmode="tel" value="${esc(wiz.phone)}">`;
+    else if(wiz.step===4)s=`<label>${t('arrival')}</label><input id="wz-in" type="date" value="${esc(wiz.arr)}">`;
+    else if(wiz.step===5)s=`<label>${t('departure')}</label><input id="wz-in" type="date" value="${esc(wiz.dep)}" min="${esc(wiz.arr)}">`;
+    else s=`<label>${t('user')}</label><input id="wz-user" autocapitalize="none" value="${esc(wiz.username||wiz.room)}"><label>${t('pass')}</label><input id="wz-pass" type="password" value="${esc(wiz.password)}">${rem}`;
+    const wizard=`${dots}${s}${wiz.step<6?`<button class="btn" id="wz-next">${t('nextStep')}</button>`:`<button class="btn" id="wz-create">${t('createAccount')}</button>`}${wiz.step>0?`<button class="wz-back" id="wz-back">${ic('back',14)} ${t('backStep')}</button>`:''}`;
+    const fields=guestMode==='new'?wizard:`<label>${t('user')} · ${t('room')}</label><input id="f-room" value="${esc(wiz.room)}"><label>${t('pass')}</label><input id="f-gpass" type="password">${rem}`;
+    return `<div class="login-wrap fadein">${brand}<div class="role-tabs"><button data-gmode="signin" class="${guestMode==='signin'?'on':''}">${t('signin')}</button><button data-gmode="new" class="${guestMode==='new'?'on':''}">${t('firstVisit')}</button></div><div class="login-card">${fields}<button class="btn" id="btn-login">${t('signin')}</button><div class="err" id="login-err"></div></div><button class="staff-link" id="btn-teamlink"><span>Entertainer & Manager Login</span></button></div>`;
+  }
+  return `<div class="login-wrap fadein">${brand}<div class="role-tabs">${['staff','manager'].map(r=>`<button data-role="${r}" class="${loginRole===r?'on':''}">${t(r)}</button>`).join('')}</div><div class="login-card"><label>${t('user')}</label><input id="f-user" autocapitalize="none"><label>${t('pass')}</label><input id="f-pass" type="password"><button class="btn" id="btn-login">${t('signin')}</button><div class="err" id="login-err"></div></div><button class="staff-link" id="btn-guestlink"><span>${t('backToGuest')}</span></button></div>`;
+}
+function guestView(){
+  if(String(S.tab||'').startsWith('cp:')) return customPageView(S.tab.slice(3));
+  if(String(S.tab||'').startsWith('emp:')) return employeeView(S.tab.slice(4));
+  if(S.tab==='weather')return weatherView(); if(S.tab==='quiz')return quizView(); if(S.tab==='gallery')return galleryView(); if(S.tab==='hotelinfo')return hotelInfoView();
+  const g=S.session, today=todayIndex();
+  if(!S.tab)S.tab='home';
+  if(S.tab==='home'){
+    const acts=(S.activities||[]).filter(a=>a.day===today).slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
+    const hl=acts.find(a=>a.highlight)||acts.find(a=>activityStatus(a)==='live')||acts[0];
+    const live=acts.find(a=>activityStatus(a)==='live'); const next=acts.find(a=>activityStatus(a)==='todo'&&a!==live);
+    const bg=hl?amaraImg(hl):amaraImg({});
+    return `<div class="screen fadein"><div class="guest-welcome"><img src="${bg}" alt=""><div class="gw-copy"><div class="gw-over"><span>☀ 28°C · Sunny</span><span>${ic('bell',18)}</span></div><h1>${amaraGreeting()},<br>${esc(g.name)}</h1><p>Let’s make today amazing.</p></div></div>
+      ${hl?`<div class="today-hero" data-open="${hl.id}"><img src="${amaraImg(hl)}"><div class="th-copy"><span class="th-kicker">Today</span><h2>${esc(hl.name)}</h2><div class="th-meta"><span>${mi('clock')}${esc(hl.time)}</span><span>${mi('pin')}${esc(hl.location||'')}</span></div></div></div>`:''}
+      <div class="guest-cats"><button data-tab="program"><span class="ci">${ic('activity',20)}</span>Activities</button><button data-tab="program"><span class="ci">${ic('calendar',20)}</span>Events</button><button data-tab="program"><span class="ci">${ic('sparkle',20)}</span>Shows</button><button data-tab="program"><span class="ci">${ic('music',20)}</span>Parties</button></div>
+      <div class="sec"><h3>Happening Now</h3>${live?amaraGuestRow(live,`<button class="btn sm" data-book="${live.id}">Join</button>`):`<div class="card" style="padding:14px"><span class="mini">Nothing is live right now. Check what’s next.</span></div>`}</div>
+      <div class="sec"><h3>Up Next</h3>${next?amaraGuestRow(next,`<button class="btn sm ghost" data-open="${next.id}">Details</button>`):''}</div>
+      ${reviewDue(g)?reviewBlock():''}</div>`;
+  }
+  if(S.tab==='program')return browseView("Today's Program");
+  if(S.tab==='social')return socialPageView(); if(S.tab==='teaminfo')return teamInfoView(); if(S.tab==='tickets')return guestTicketsView();
+  if(S.tab==='chat')return `<div class="screen fadein">${topBar(t('chat'),accountName(g.room))}${threadView(g.room,'guest')}</div>`;
+  /* reuse the mature account/bookings screen for Profile/Favorites */
+  const old=S.tab; S.tab='me';
+  const mine=S.bookings.filter(b=>b.room===g.room), favActs=S.activities.filter(a=>S.favorites.includes(a.id));
+  return `<div class="screen fadein">${topBar('Your Stay',g.name)}<div class="card profcard"><div class="pf-ava">${ic('user',26)}</div><div><h4>${esc(g.name)}</h4><p class="mini">${t('room')} ${esc(g.room)}${g.nationality?' · '+esc(g.nationality):''}</p><p class="mini">${esc(g.arrival||'')} → ${esc(g.departure||'')}</p></div></div><div class="sec"><h3>${t('favorites')} <span class="count">${favActs.length}</span></h3>${favActs.length?favActs.map(a=>activityCard(a)).join(''):`<div class="empty">${t('noFavs')}</div>`}</div><div class="sec"><h3>${t('myBookings')} <span class="count">${mine.length}</span></h3>${mine.length?mine.map(b=>{const a=S.activities.find(x=>x.id===b.activity_id);return a?activityCard(a):''}).join(''):`<div class="empty">${t('noBookings')}</div>`}</div><button class="btn ghost" id="btn-chpass">${ic('key',15)} ${t('changePass')}</button></div>`;
+}
+function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={}){
+  const unlimited=!(+a.capacity),taken=seatsTaken(a.id),left=Math.max(0,a.capacity-taken),full=!unlimited&&left<=0,mine=myBooking(a.id),fav=S.favorites.includes(a.id);
+  let side='';
+  if(manager) side=`<button class="btn sm ghost" data-edit="${a.id}">${ic('pen',14)}</button>`;
+  else if(staff) side=`${canSeeGuests(a)?`<button class="btn sm ghost" data-att="${a.id}">${ic('check',14)}</button>`:''}<span class="pill">${bookingsFor(a.id).length}</span>`;
+  else if(showBook) side=mine?`<span class="chip ok">${t('booked')}</span>`:full?`<span class="chip full">${t('full')}</span>`:`<button class="btn sm" data-book="${a.id}">${t('book')}</button>`;
+  return `<div class="card act" ${manager||staff?'':`data-open="${a.id}"`}><img class="thumb" src="${amaraImg(a)}" alt="" data-pvsingle="${amaraImg(a)}"><div class="mid"><span class="catbadge">${catLabel(a.category)}</span><h4>${esc(a.name)}</h4><div class="meta"><span>${mi('clock')}${esc(a.time)}</span><span>${mi('pin')}${esc(a.location||'')}</span></div></div><div class="side">${showFav&&!manager&&!staff?`<button class="fav" data-fav="${a.id}">${ic('heart',18)}</button>`:''}${side}</div></div>`;
+}
+function myWorkDayView(){
+  const num=S.session.number,today=todayIndex(),day=typeof S.planDay==='number'?S.planDay:today,info=num?personDayInfo(num,day):{};
+  const all=(S.activities||[]).filter(a=>a.day===day).slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
+  const mine=all.filter(a=>canSeeGuests(a)); const current=mine.find(a=>activityStatus(a)==='live')||mine.find(a=>activityStatus(a)==='todo')||mine[0];
+  const avatar=S.session.photo?`<img src="${esc(S.session.photo)}">`:esc((S.session.name||'?').charAt(0));
+  return `<div class="screen fadein"><div class="ops-head"><div><span class="eyebrow">Your day · your team · your impact</span><h1>${amaraGreeting()},<br>${esc(S.session.name)}</h1><span class="mini">${esc(t('days')[day]||'')}</span></div><div class="ops-avatar">${avatar}</div></div><div class="ops-tabs"><button class="on">Today</button><button data-tab="week">My Week</button><button data-tab="teaminfo">Team</button></div>${dayChips()}
+    ${info.isOff?`<div class="wd-banner off">${ic('sun',20)} ${t('youAreOff')}</div>`:''}
+    ${current?`<div class="staff-now"><span class="sn-label">${activityStatus(current)==='live'?'Now':'Next'}</span><div class="sn-body"><div class="sn-main"><h3>${esc(current.name)}</h3><p>${ic('clock',11)} ${esc(current.time)}<br>${ic('pin',11)} ${esc(current.location||'')} · ${bookingsFor(current.id).length} guests</p></div><img src="${amaraImg(current)}"></div>${activityStatus(current)==='live'?`<button class="btn sm" data-att="${current.id}" style="margin-top:10px">Open Activity</button>`:''}</div>`:''}
+    <div class="staff-timeline">${all.map(a=>`<div class="stl-item"><span class="stl-time">${esc(String(a.time||'').split(/[–—-]/)[0].trim())}</span><span class="stl-main"><b>${esc(a.name)}</b><span>${esc(a.location||'')}${isMineAct(a)?' · You':''}</span></span><img src="${amaraImg(a)}"></div>`).join('')}</div>
+    ${workdayFeedbackCard()}${dayPlanInfoCard(day)}${dayPlanStandards(day)}</div>`;
+}
+function dashView(){
+  if(S.sub.dash==='rooms')S.sub.dash='overview'; const d=todayIndex(); const todayActs=(S.activities||[]).filter(a=>a.day===d); const total=todayActs.length; const participants=todayActs.reduce((n,a)=>n+bookingsFor(a.id).length,0); const fb=S.feedback||[]; const rating=fb.length?(fb.reduce((n,f)=>n+(+f.rate||0),0)/fb.length).toFixed(1):'—'; const attn=fb.filter(f=>+f.rate<5 || String(f.comment||'').trim()).length; const avatar=S.session.photo?`<img src="${esc(S.session.photo)}">`:esc((S.session.name||'M').charAt(0));
+  return `<div class="screen fadein"><div class="ops-head"><div><span class="eyebrow">Full control · real time · better experiences</span><h1>${amaraGreeting()},<br>${esc(S.session.name)}</h1><span class="mini">${esc(t('days')[d]||'')}</span></div><div class="ops-avatar">${avatar}</div></div><div class="mgr-grid"><div class="mgr-metric"><b>${total}</b><span>Activities Today</span></div><div class="mgr-metric"><b>${participants}</b><span>Participants</span></div><div class="mgr-metric"><b>${rating}</b><span>Guest Rating</span></div><div class="mgr-metric attn"><b>${attn}</b><span>Need Attention</span></div></div><div class="sec"><h3>Live Operations</h3><div class="card">${todayActs.slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0)).map(a=>{const st=activityStatus(a),warn=st==='todo'&&(()=>{const w=actWindow(a);return w&&w.s0-timeToMin(new Date().toTimeString().slice(0,5))<20})(),n=bookingsFor(a.id).length;return `<div class="live-op"><span class="lo-dot ${warn?'warn':''}">${st==='done'?'✓':st==='live'?'●':'•'}</span><span class="lo-main"><b>${esc(a.name)}</b><span>${esc(a.location||'')} · ${esc(entertainerName(a.entertainer)||'All Team')}</span></span><span class="lo-side">${st==='live'?n+' guests':warn?'Starting soon':st==='done'?'Done':esc(a.time)}</span></div>`}).join('')||'<div class="empty">No operations today</div>'}</div></div>${attentionCard()}${feedbackAnalyticsCard()}<button class="btn ghost" id="btn-exportdata">${ic('download',15)} ${t('exportData')}</button></div>`;
+}
+</script>
+
 </body>
 </html>
