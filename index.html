@@ -331,6 +331,7 @@ h3 .ic-s,h4 .ic-s{color:var(--bronze);vertical-align:-3px}
 .dr-it.on .dr-ic{color:inherit;opacity:.9}
 .dr-it .badge{margin-inline-start:auto}
 .dr-foot{display:flex;gap:10px;align-items:center;padding-top:16px;border-top:1px solid var(--line)}
+.dr-build{margin-top:10px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);opacity:.7;text-align:center}
 .dr-out{margin-inline-start:auto;display:inline-flex;gap:8px;align-items:center;font-size:14px;
   color:var(--muted);padding:10px 15px;border:1px solid var(--line);border-radius:var(--r-pill);background:var(--card)}
 /* luxury login */
@@ -3859,6 +3860,7 @@ function openMenuDrawer(){
       <button class="iconbtn ${notifSoundOn()?"on-notif":""}" id="dr-notif" aria-label="${t("notifSound")}">${ic(notifSoundOn()?"bell":"belloff",19)}</button>
       <button class="dr-out" id="dr-out">${ic("power",16)} ${t("logout")}</button>
     </div>
+    <div class="dr-build">${esc(APP_BUILD)}</div>
   </div>`;
   document.body.appendChild(wrap);
   requestAnimationFrame(()=>wrap.classList.add("open"));
@@ -10518,6 +10520,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
+const APP_BUILD = "2026.09.04-aurea";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
