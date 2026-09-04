@@ -1746,6 +1746,10 @@ Object.assign(DICT.en, {
   fbNoReview:"No guest raised anything. Every rating was a full five.",
   fbLegend2:"Green: nothing to follow up \u00b7 Orange: something to improve \u00b7 Red: needs attention first. A high overall score does not mean there is nothing to fix.",
   reqKind:"Kind",
+  reqFromProgram:"Pick it from the programme",
+  reqFromProgramOwn:"Type it myself",
+  reqFromProgramHint:"Choosing one fills in the name, the day, the time and the place. Anything you add to the programme shows up here.",
+  reqNoProgram:"Nothing of this kind in the programme yet.",
   reqDate:"Date",
   reqResetLists:"Back to the standard lists",
   reqTab:"Requirements",
@@ -8619,6 +8623,31 @@ const REQ_TEMPLATES_DEFAULT={
     {need:"Decoration", qty:"\u2014", dept:"Housekeeping"},
     {need:"Security", qty:"2", dept:"Security"}]
 };
+/* Event sheets pick from the day events, activity sheets from the daytime
+   activities, party sheets from the parties and the shows. */
+function reqCatsFor(kind){
+  return kind==="activity" ? ["mAdult"]
+       : kind==="party"    ? ["eParty","eShow"]
+       : ["mEvents"];
+}
+function reqStartTime(a){
+  return String(a && a.time || "").split(/\s*[\u2013\u2014-]\s*/)[0].trim();
+}
+function reqProgramList(kind){
+  const cats=reqCatsFor(kind);
+  return (S.activities||[]).filter(a=>a && a.name && cats.includes(normCat(a)))
+    .slice().sort((x,y)=>((x.day||0)-(y.day||0)) || ((timeToMin(reqStartTime(x))||0)-(timeToMin(reqStartTime(y))||0)));
+}
+/* An activity repeats every week, a sheet is for one date: take the next time
+   that weekday comes round, counting from the date already on the sheet. */
+function nextDateForDay(dayIdx, fromISO){
+  const base = fromISO ? new Date(fromISO+"T12:00:00") : new Date();
+  if(isNaN(base.getTime())) return todayISO();
+  const add=(((+dayIdx||0)-((base.getDay()+6)%7))+7)%7;
+  const d=new Date(base.getTime()); d.setDate(d.getDate()+add);
+  const p2=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
+}
 function reqKindLabel(k){
   return k==="activity" ? t("reqKindActivity") : k==="party" ? t("reqKindParty") : t("reqKindEvent");
 }
@@ -8687,7 +8716,7 @@ function requirementsView(){
 function openReqEditor(id){
   const ex=id?reqSheet(id):null;
   let sh = ex ? JSON.parse(JSON.stringify(ex)) : {
-    id:"rq"+Date.now(), kind:"event", title:"", date:todayISO(), time:"", location:"",
+    id:"rq"+Date.now(), kind:"event", actId:"", title:"", date:todayISO(), time:"", location:"",
     responsible:"", note:"", rows:reqTemplate("event")
   };
   sh.rows=Array.isArray(sh.rows)?sh.rows:[];
@@ -8697,7 +8726,10 @@ function openReqEditor(id){
     <div class="pills" id="rq-kinds" style="margin-bottom:10px">
       ${REQ_KINDS.map(k=>`<button class="pill ${sh.kind===k?"on":""}" data-rqkind="${k}">${esc(reqKindLabel(k))}</button>`).join("")}
     </div>
-    <label>${t("reqName")}</label><input id="rq-title" value="${esc(sh.title||"")}">
+    <label>${t("reqFromProgram")}</label>
+    <select id="rq-pick"></select>
+    <p class="mini" style="margin:4px 0 0">${t("reqFromProgramHint")}</p>
+    <label style="margin-top:12px">${t("reqName")}</label><input id="rq-title" value="${esc(sh.title||"")}">
     <div class="row2" style="margin-top:10px">
       <div><label>${t("reqDate")}</label><input type="date" id="rq-d" value="${esc(sh.date||"")}"></div>
       <div><label>${t("time")}</label><input id="rq-t" value="${esc(sh.time||"")}" placeholder="21:00"></div>
@@ -8745,9 +8777,35 @@ function openReqEditor(id){
   };
   paintRows();
 
+  const pick=wrap.querySelector("#rq-pick");
+  const paintPick=()=>{
+    if(!pick) return;
+    const list=reqProgramList(sh.kind);
+    pick.innerHTML=`<option value="">${esc(t("reqFromProgramOwn"))}</option>`
+      + list.map(a=>{
+          const bits=[(t("daysShort")[a.day]||""), reqStartTime(a), a.name, a.location].filter(Boolean);
+          return `<option value="${esc(String(a.id))}" ${String(sh.actId||"")===String(a.id)?"selected":""}>${esc(bits.join(" \u00b7 "))}</option>`;
+        }).join("")
+      + (list.length?"":`<option value="" disabled>${esc(t("reqNoProgram"))}</option>`);
+    pick.onchange=()=>{
+      const a=(S.activities||[]).find(x=>String(x.id)===String(pick.value));
+      sh.actId = a ? a.id : "";
+      if(!a) return;
+      const tt=wrap.querySelector("#rq-title"), dd=wrap.querySelector("#rq-d");
+      const tm=wrap.querySelector("#rq-t"),     lc=wrap.querySelector("#rq-loc");
+      if(tt) tt.value=a.name||"";
+      if(tm) tm.value=reqStartTime(a);
+      if(lc) lc.value=a.location||"";
+      if(dd) dd.value=nextDateForDay(a.day, dd.value||todayISO());
+    };
+  };
+  paintPick();
+
   wrap.querySelectorAll("[data-rqkind]").forEach(b=>b.onclick=()=>{
     sh.kind=b.dataset.rqkind;
+    sh.actId="";                                  // a different kind means a different list
     wrap.querySelectorAll("[data-rqkind]").forEach(x=>x.classList.toggle("on", x.dataset.rqkind===sh.kind));
+    paintPick();
   });
   wrap.querySelector("#rq-add").onclick=()=>{ sh.rows.push({need:"",qty:"",dept:""}); paintRows(); };
   wrap.querySelector("#rq-std").onclick=()=>{ sh.rows=sh.rows.concat(reqTemplate(sh.kind)); paintRows(); };
@@ -8760,6 +8818,7 @@ function openReqEditor(id){
     sh.note=wrap.querySelector("#rq-note").value.trim();
     sh.responsible=wrap.querySelector("#rq-resp").value.trim();
     sh.rows=sh.rows.filter(r=>(r.need||"").trim() || (r.qty||"").trim());
+    if(pick && !pick.value) sh.actId="";
     return sh;
   };
   wrap.querySelector("#rq-x").onclick=()=>wrap.remove();
