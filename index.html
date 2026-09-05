@@ -197,6 +197,16 @@ img{display:block;max-width:100%}
 .nav button.on{color:var(--nav-on)}
 .nav .ndot{position:absolute;top:2px;inset-inline-end:16%;width:9px;height:9px;border-radius:50%;background:#C4553B}
 
+/* ===== REORGANIZED PRIMARY NAV — mirrors the new app architecture ===== */
+.app-primary-nav{position:fixed;bottom:0;inset-inline:0;max-width:540px;margin:0 auto;background:var(--nav-bg);border-top:1px solid var(--line);display:flex;padding:8px 4px calc(10px + env(safe-area-inset-bottom));z-index:var(--z-nav);box-shadow:0 -12px 30px -24px rgba(38,24,14,.35)}
+.app-primary-nav button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 1px;color:var(--muted);font-size:10px;font-weight:600;position:relative}
+.app-primary-nav button .ic{display:flex;line-height:1}
+.app-primary-nav button .lb{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-primary-nav button.on{color:var(--nav-on)}
+.app-primary-nav .ndot{position:absolute;top:2px;inset-inline-end:16%;width:9px;height:9px;border-radius:50%;background:#C4553B}
+.app-primary-nav::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 5%,var(--bronze) 50%,transparent 95%);opacity:.55}
+body[data-approle="guest"] .screen,body[data-approle="staff"] .screen,body[data-approle="manager"] .screen{padding-bottom:104px}
+
 /* ---------- modal / toast ---------- */
 .modal-bg{position:fixed;inset:0;background:rgba(30,18,10,.55);z-index:var(--z-drawer);display:flex;align-items:flex-end;justify-content:center}
 .modal{background:var(--bg);width:100%;max-width:540px;border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));max-height:88dvh;overflow-y:auto;animation:up .25s ease}
@@ -1606,178 +1616,6 @@ html{font-size:calc(16px * var(--fscale,1))}
 .fb-chev{flex:none;opacity:.38;transform:rotate(180deg)}
 .bd-sec-head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   font-weight:700;margin:16px 0 6px}
-/* ===== hero header ===== */
-.hero{position:relative;margin:calc(-1 * (var(--topgap,18px) + env(safe-area-inset-top))) -18px 18px;overflow:hidden;
-  border-radius:0 0 30px 30px;color:#fff;isolation:isolate;
-  box-shadow:0 18px 40px -26px rgba(16,10,6,.6)}
-.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.06)}
-.hero-bg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(168deg,rgba(20,14,9,.52) 0%,rgba(20,14,9,.74) 48%,rgba(20,14,9,.92) 100%)}
-.hero-in{position:relative;padding:calc(14px + env(safe-area-inset-top)) 18px 24px}
-.hero .top.hero-bar{margin-bottom:22px}
-.hero .iconbtn{background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(6px);
-  border-color:rgba(255,255,255,.2)}
-.hero .iconbtn svg{stroke:#fff}
-.hero .iconbtn[disabled]{opacity:.35}
-.hero-say{display:flex;align-items:flex-end;gap:14px}
-.hero-words{flex:1;min-width:0}
-.hero-hi{display:block;font-size:13px;font-weight:500;color:rgba(255,255,255,.82);letter-spacing:.01em}
-.hero-words h1{font-family:var(--font-display);font-size:31px;line-height:1.08;font-weight:500;
-  margin:2px 0 0;letter-spacing:-.01em;color:#fff}
-.hero-sub{font-size:12.5px;color:rgba(255,255,255,.72);margin:6px 0 0}
-.hero-quote{font-size:12px;color:rgba(255,255,255,.66);margin:7px 0 0;font-style:italic}
-.hero-av{flex:none;width:74px;height:74px;border-radius:50%;overflow:hidden;display:grid;place-items:center;
-  border:2.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
-.hero-av img{width:100%;height:100%;object-fit:cover}
-.hero-av b{font-family:var(--font-display);font-size:27px;color:#fff}
-.hero-chip{flex:none;display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;
-  background:rgba(255,255,255,.16);backdrop-filter:blur(6px);font-size:14px;font-weight:600}
-.hero-chip svg{stroke:#fff}
-.hero-chip small{display:block;font-size:10px;font-weight:500;opacity:.8}
-.hero-live{flex:none;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
-  background:#B0392B;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.hero-live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulseDot 1.6s infinite}
-@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.25}}
-
-/* ===== today's highlight ===== */
-.hl{position:relative;border-radius:20px;overflow:hidden;margin-bottom:18px;min-height:186px;
-  display:flex;align-items:flex-end;color:#fff;box-shadow:0 14px 30px -20px rgba(16,10,6,.7)}
-.hl-bg{position:absolute;inset:0;background-size:cover;background-position:center}
-.hl-bg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(18,12,8,.9) 0%,rgba(18,12,8,.25) 62%,rgba(18,12,8,.1) 100%)}
-.hl-in{position:relative;padding:16px;width:100%;display:flex;align-items:flex-end;gap:12px}
-.hl-txt{flex:1;min-width:0}
-.hl-lbl{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(255,255,255,.78);font-weight:700}
-.hl-name{display:block;font-family:var(--font-display);font-size:23px;font-weight:500;margin:3px 0 2px}
-.hl-when{display:block;font-size:12px;color:rgba(255,255,255,.8)}
-.hl-btn{flex:none;border:0;background:rgba(255,255,255,.92);color:#2B1F16;border-radius:999px;
-  padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-
-/* ===== round category buttons ===== */
-.catrow{display:flex;gap:10px;margin-bottom:20px}
-.catrow button{flex:1;min-width:0;border:0;background:none;padding:0;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--ink);font-family:inherit}
-.catrow .cb{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;
-  background:var(--sand);border:1px solid var(--line);transition:transform .16s ease}
-.catrow button:active .cb{transform:scale(.93)}
-.catrow .cb svg{stroke:var(--bronze)}
-.catrow span{font-size:11.5px;font-weight:600;text-align:center;line-height:1.2}
-
-/* ===== list rows with a thumbnail ===== */
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
-.sec-head h3{margin:0}
-.sec-head button{border:0;background:none;color:var(--bronze);font-size:12.5px;font-weight:600;
-  cursor:pointer;font-family:inherit;padding:0}
-.thumbrow{display:flex;align-items:center;gap:12px;padding:11px 0;cursor:pointer;width:100%;
-  border:0;background:none;text-align:start;color:inherit;font-family:inherit}
-.thumbrow:not(:last-child){border-bottom:1px solid var(--line)}
-.th-img{flex:none;width:52px;height:52px;border-radius:14px;overflow:hidden;background:var(--sand)}
-.th-img img{width:100%;height:100%;object-fit:cover}
-.th-time{flex:none;width:46px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
-.th-mid{flex:1;min-width:0}
-.th-mid b{display:block;font-size:14.5px;font-weight:600;line-height:1.25}
-.th-mid span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
-.th-go{flex:none;opacity:.35;transform:rotate(180deg)}
-.th-tick{flex:none;width:24px;height:24px;border-radius:50%;border:1.6px solid var(--line);
-  display:grid;place-items:center;background:none;cursor:pointer;padding:0}
-.th-tick.on{background:#6E9155;border-color:#6E9155}
-.th-tick.on svg{stroke:#fff}
-
-/* ===== stat tiles ===== */
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
-.tiles .ti{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 8px;
-  text-align:center}
-.tiles .ti b{display:block;font-family:var(--font-display);font-size:19px;font-weight:500}
-.tiles .ti span{display:block;font-size:10px;color:var(--muted);margin-top:2px;line-height:1.2}
-.bigtiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.bigtiles .bt{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 15px;
-  display:flex;align-items:center;gap:11px}
-.bigtiles .bt .bi{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
-  background:var(--sand)}
-.bigtiles .bt .bi svg{stroke:var(--bronze)}
-.bigtiles .bt b{display:block;font-family:var(--font-display);font-size:23px;font-weight:500;line-height:1}
-.bigtiles .bt span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.2}
-
-/* ===== the overview list ===== */
-.ovlist{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 15px;margin-bottom:18px}
-.ovrow{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:14px 0;
-  cursor:pointer;text-align:start;color:inherit;font-family:inherit}
-.ovrow:not(:last-child){border-bottom:1px solid var(--line)}
-.ovrow .oi{flex:none;width:22px;display:grid;place-items:center}
-.ovrow .oi svg{stroke:var(--bronze)}
-.ovrow .om{flex:1;min-width:0}
-.ovrow .om b{display:block;font-size:14.5px;font-weight:600}
-.ovrow .om span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
-.ovrow .ob{flex:none;min-width:22px;height:22px;border-radius:999px;background:var(--bronze);color:#fff;
-  font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 6px}
-.ovrow .og{flex:none;opacity:.35;transform:rotate(180deg)}
-
-/* ===== bottom tab bar ===== */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:var(--z-sticky,60);display:flex;
-  padding:8px 6px calc(8px + env(safe-area-inset-bottom));gap:2px;
-  background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);
-  border-top:1px solid var(--line)}
-.tabbar .tb{flex:1;min-width:0;border:0;background:none;padding:6px 2px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-family:inherit}
-.tabbar .tb span{font-size:9.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.tabbar .tb svg{stroke:var(--muted)}
-.tabbar .tb.on{color:var(--bronze)}
-.tabbar .tb.on svg{stroke:var(--bronze)}
-.tabbar .tb.on span{font-weight:700}
-.screen{padding-bottom:104px}
-.crm-row.needs{position:relative}
-.crm-row.needs::before{content:"";position:absolute;inset-inline-start:-14px;top:14px;bottom:14px;
-  width:3px;border-radius:2px;background:#C0603F}
-.crm-flags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
-.crm-flag{font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
-  color:#A9431F;background:#FBEDE7;border-radius:999px;padding:2px 7px}
-.cm-note{display:flex;align-items:flex-start;gap:10px;padding:12px 0}
-.cm-note:not(:last-child){border-bottom:1px solid var(--line)}
-.cm-nx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.pill .badge{margin-inline-start:6px}
-.ao-sec{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
-  font-weight:700;margin:16px 0 6px}
-.ao-none{font-style:normal;color:var(--muted);font-weight:600}
-/* ===== control centre ===== */
-.cc{padding:2px 14px}
-.cc-head{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
-  font-weight:700;padding:10px 0 4px}
-.cc-row{display:flex;align-items:center;gap:10px;width:100%;padding:12px 0;border:0;background:none;
-  color:inherit;font:inherit;text-align:start;cursor:pointer}
-.cc-row:not(:last-child){border-bottom:1px solid var(--line)}
-.cc-ic{flex:none;opacity:.55;display:inline-flex}
-.cc-x{flex:1;min-width:0;font-size:14px;font-weight:600}
-.cc-v{flex:none;font-weight:700;font-size:15px}
-.cc-go{flex:none;opacity:.35;transform:rotate(180deg);display:inline-flex}
-.cc-row.warn .cc-v{color:#C0603F}
-.cc-row.warn .cc-ic{opacity:.9;color:#C0603F}
-.cc-row.good .cc-v{color:#4A6B36}
-.cc-next{display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer}
-.cc-next:not(:last-child){border-bottom:1px solid var(--line)}
-.cc-t{flex:0 0 46px;font-size:13px;font-weight:700}
-.cc-next .cc-x{display:flex;flex-direction:column;gap:1px}
-/* ===== my day ===== */
-.md{padding:2px 14px}
-.md-row{display:flex;align-items:flex-start;gap:11px;padding:11px 0;position:relative}
-.md-row:not(:last-child){border-bottom:1px solid var(--line)}
-.md-row[data-open]{cursor:pointer}
-.md-t{flex:0 0 46px;font-size:13px;font-weight:700;letter-spacing:.2px;padding-top:1px}
-.md-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.md-x b{font-size:15px;font-weight:600}
-.md-k{flex:none;font-size:9px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
-  color:var(--muted);padding:3px 8px;border-radius:999px;background:var(--sand)}
-.md-row.mine{margin-inline:-14px;padding-inline:14px;background:var(--sand);border-radius:10px;border-bottom:0}
-.md-row.mine .md-k{background:var(--espresso);color:#fff}
-.md-row.mine b{font-weight:700}
-.md-row.show .md-k{background:#EDE5F0;color:#5C3F6B}
-.md-row.duty .md-k{background:#FBEDE2;color:#A9631A}
-.md-row.task .md-k{background:#E7EFE4;color:#4A6B36}
-.md-row.past{opacity:.42}
-.md-now{display:flex;align-items:center;gap:8px;padding:4px 0 6px}
-.md-now::before,.md-now::after{content:"";height:1px;background:#C0603F;flex:1;opacity:.55}
-.md-now span{flex:none;font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#C0603F}
 .rq-it{display:flex;align-items:center;gap:10px;padding:12px 0;cursor:pointer}
 .rq-it:not(:last-child){border-bottom:1px solid var(--line)}
 .rq-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
@@ -1931,7 +1769,7 @@ ar:Object.assign({appSub:"فريق الترفيه",guest:"ضيف",staff:"الف�
 const S = {
   lang:"en", theme:"light", session:null, tab:"home",
   day:(new Date().getDay()+6)%7, favorites:[],   // initial only; todayIndex() takes over after load
-  sub:{program:"acts", guests:"bookings", team:"accounts", dash:"overview", inbox:"guests"}, op:null, cat:null,
+  sub:{program:"acts", guests:"bookings", team:"accounts", dash:"overview"}, op:null, cat:null,
   chatRoom:null, seenNote:0,
   activities:[], bookings:[], users:[], tickets:[], orders:[],
   rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[], feedback:[], aiChat:[], profiles:[],
@@ -2019,142 +1857,6 @@ Object.assign(DICT.en, {
   liveNothing:"Nothing running right now.",
   opsToday:"Activities today",
   opsPeople:"Participants",
-  goodMorning:"Good morning",
-  goodAfternoon:"Good afternoon",
-  goodEvening:"Good evening",
-  welcomeParadise:"Welcome to paradise",
-  welcomeBack:"Welcome back",
-  atAGlance:"Everything at a glance",
-  todayHighlight:"Today's highlight",
-  startsAtLbl:"Starts at",
-  viewDetailsBtn:"View details",
-  todayOverview:"Today's overview",
-  seeAllLink:"See all",
-  actsToday:"Activities today",
-  onDutyNow:"Entertainers on duty",
-  guestsJoined:"Guests participated",
-  guestSat:"Guest satisfaction",
-  navHome:"Home",
-  navExplore:"Explore",
-  navProfile:"Profile",
-  navSchedule:"Schedule",
-  navStats:"Stats",
-  navMore:"More",
-  navReports:"Reports",
-  navDashboard:"Dashboard",
-  ovProgram:"Manage activities & events",
-  ovTeam:"Staff, roles & schedules",
-  ovAttendance:"Live participation",
-  ovFeedback:"Reviews & comments",
-  ovRequire:"Event & party requirements",
-  ovSettings:"App configuration",
-  wdThisWeek:"This week",
-  wdRating:"Guest rating",
-  viewFullSchedule:"View the full schedule",
-  goInHouse:"In house",
-  goArriving:"Arriving today",
-  goLeaving:"Leaving today",
-  goAttention:"Need attention",
-  goAll:"All guests",
-  goNoneHere:"Nobody matches that.",
-  goUnread:"Unread message",
-  goNewReq:"Open request",
-  goLowFb:"Feedback to review",
-  goMessage:"Message this guest",
-  goTickets:"Tickets",
-  goMessages:"Messages",
-  goNoMessages:"No messages yet.",
-  tmToday:"Today's assignment",
-  tmNothingToday:"Nothing assigned today.",
-  tmRequests:"Their requests",
-  tmMessage:"Message this person",
-  tmOffToday:"Off today",
-  cmTab:"Inbox",
-  cmHead:"Communication",
-  cmSub:"Everything anyone said to you, in one place. Unread first.",
-  cmGuests:"Guests",
-  cmTeam:"Team",
-  cmRequests:"Requests",
-  cmAnnounce:"Announcements",
-  cmNewAnnounce:"New announcement",
-  cmNoAnnounce:"Nothing announced yet.",
-  cmGuestReq:"From guests",
-  cmTeamReq:"From the team",
-  cmAllRead:"Nothing unread.",
-  cmAud:"To",
-  aoTitle:"Activity",
-  aoBooked:"Booked",
-  aoCapacity:"Capacity",
-  aoWaiting:"Waiting",
-  aoUnlimited:"No limit",
-  aoStaff:"Assigned to",
-  aoNobody:"Nobody assigned yet",
-  aoGuests:"Guest bookings",
-  aoNoGuests:"No bookings yet.",
-  aoReq:"Requirements",
-  aoReqNone:"No requirement sheet for this one yet.",
-  aoReqMake:"Make a requirement sheet",
-  aoReqOpen:"Open the requirement sheet",
-  aoEdit:"Edit activity",
-  aoAttendance:"Mark attendance",
-  aoAssign:"Assignments",
-  aoAndMore:"and {n} more",
-  ccOps:"Today's operations",
-  ccGuestPulse:"Guest pulse",
-  ccTeamPulse:"Team pulse",
-  ccUpNext:"Up next",
-  ccNoAssign:"Activities with nobody assigned",
-  ccReqToday:"Requirement sheets for today",
-  ccOpenTasks:"Open tasks",
-  ccOpenReq:"Open guest requests",
-  ccTeamReq:"Open team requests",
-  ccWorkingToday:"Working today",
-  ccOffToday:"Off today",
-  ccAttMarked:"Attendance marked today",
-  ccAllClear:"Nothing needs you right now.",
-  ccOfN:"of",
-  ccReady:"ready",
-  mdHead:"My day",
-  mdSub:"Everything in one line, in the order it happens.",
-  mdNow:"Now",
-  mdMine:"You",
-  mdRoutine:"Team",
-  mdDuty:"Duty",
-  mdTask:"Task",
-  mdShow:"Show",
-  mdOffAll:"You are off today. Nothing is scheduled for you.",
-  mdNothing:"Nothing scheduled yet.",
-  mdWholeDay:"Everything else happening today",
-  mdEntranceItem:"Entrance duty",
-  mdShowPrep:"Show preparation",
-  hubToday:"Today",
-  hubOperations:"Operations",
-  hubOverview:"Overview",
-  hubMyStay:"My Stay",
-  hubConnect:"Connect",
-  hubMore:"More",
-  hubTasks:"Tasks",
-  secOps:"Operations",
-  secExplore:"Explore",
-  secMyWork:"My work",
-  hubTodayProg:"Manage today's activities",
-  hubWeekProg:"Plan and view the week",
-  hubAssignSub:"Staff activity distribution",
-  hubReqSub:"Event, activity and party needs",
-  hubBookingsSub:"View and manage bookings",
-  hubTicketsSub:"Manage ticket sales",
-  hubChatSub:"Talk with our team",
-  hubTeamSub:"Get to know us",
-  hubSocialSub:"Share your experience",
-  hubGallerySub:"Photos and videos",
-  hubHotelSub:"Useful information",
-  hubWeatherSub:"Current conditions",
-  hubQuizSub:"Test your knowledge",
-  hubAttSub:"View your attendance",
-  hubBusSub:"To and from the hotel",
-  hubMgrChatSub:"Direct communication",
-  hubQrSub:"Generate QR codes",
-  hubSettingsSub:"Theme, features, menu builder",
   reqKind:"Kind",
   reqFromProgram:"Pick it from the programme",
   reqFromProgramOwn:"Type it myself",
@@ -3774,8 +3476,7 @@ function render(){
   }
   const r=S.session.role;
   app.innerHTML =
-    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView())
-    + bottomNav();
+    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView()) + primaryNav();
   navRecord();
   wireCommon();
 }
@@ -4015,71 +3716,37 @@ function navGroupsBase(role){
   if(role==="guest"){
     const un=unreadFor("guest");
     return [
-      {key:"secProgram", head:t("secProgram"), items:[
-        ["home","home",menuLabel("menuHome",t("home")),0],
-        ["program","calendar",menuLabel("menuProgram",t("program")),0],
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[]),
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
-        ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
-      {key:"secBookings", head:t("secBookings"), items:[
-        ["stay","user",menuLabel("menuStay",t("myStay")),0],
-        ...(featureOn("tickets")?[["tickets","ticket",menuLabel("menuTickets",t("tickets")),0]]:[])]},
-      {key:"secConnect", head:t("secConnect"), items:[
-        ["chat","chat",menuLabel("menuChat",t("chat")),un],
-        ["teaminfo","users",t("teamPage"),0],
-        ["social","star",t("socialPage"),0]]}
+      {key:"secProgram", head:"Main", items:[
+        ["home","home","Home",0],["program","calendar","Program",0],["stay","user","My Stay",0],["chat","chat","Connect",un],["more","menu","More",0]]},
+      {key:"secConnect", head:"Behind More", items:[
+        ...(featureOn("tickets")?[["tickets","ticket","Tickets",0]]:[]),["teaminfo","users","Meet the team",0],["social","star","Social & reviews",0],
+        ...(featureOn("gallery")?[["gallery","sparkle","Gallery",0]]:[]),...(featureOn("hotelinfo")?[["hotelinfo","pin","Hotel information",0]]:[]),
+        ...(featureOn("weather")?[["weather","sun","Weather",0]]:[]),...(featureOn("quiz")?[["quiz","sparkle","Quiz",quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[])]}
     ];
   }
   if(role==="staff"){
     const myRoom="staff:"+S.session.username;
     const un=S.messages.filter(m=>m.room===myRoom&&m.sender==="team"&&!m.read_by_guest).length;
-    const taskN=S.tasks.filter(x=>["open","accepted","still"].includes(x.status)&&(!x.assigned_to||x.assigned_to===S.session.username)).length;
+    const taskN=S.tasks.filter(x=>["open","accepted","still","new","progress","completed"].includes(x.status)&&(!x.assigned_to||x.assigned_to===S.session.username)).length;
     return [
-      {key:"secTeamwork", head:t("secTeamwork"), items:[
-        ["workday","clipboard",t("myWorkDay"),0],
-        ["mypage","user",t("myAttendance"),0],
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
-        ...(featureOn("bus")?[["bus","bus",t("busTimes"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-        ["tasks","check",t("tasks"),taskN]]},
-      {key:"secProgram", head:t("secProgram"), items:[
-        ["today","calendar",t("todayProgram"),0],
-        ["week","calendar",t("program"),0],
-        ["bookings","ticket",t("bookings"),0]]},
-      {key:"secConnect", head:t("secConnect"), items:[
-        ["chat","chat",t("chatManager"),un],
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
-        ["teaminfo","users",t("teamPage"),0]]},
-      {key:"secExplore", head:t("secExplore"), items:[
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),0]]:[]),
-        ...(featureOn("bus")?[["bus","bus",t("busItem"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]}
+      {key:"secTeamwork", head:"Main", items:[
+        ["workday","clipboard","Today",0],["week","calendar","Program",0],["tasks","check","Tasks",taskN],["teaminfo","users","Team",0],["more","menu","More",0]]},
+      {key:"secConnect", head:"Behind More", items:[
+        ["mypage","user","My attendance",0],["chat","chat","Manager chat",un],["feedback","star","Feedback",0],
+        ...(featureOn("bus")?[["bus","bus","Bus times",0]]:[]),...(featureOn("gallery")?[["gallery","sparkle","Gallery",0]]:[]),
+        ...(featureOn("weather")?[["weather","sun","Weather",0]]:[]),...(featureOn("quiz")?[["quiz","sparkle","Quiz",quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
+        ["today","calendar","Today programme",0],["bookings","ticket","Bookings",0]]}
     ];
   }
-  const un=unreadFor("manager");
-  const newReq=S.requests.filter(r=>r.status==="new").length;
+  const un=unreadFor("manager"), newReq=S.requests.filter(r=>r.status==="new").length;
   return [
-    {key:"secManage", head:t("secManage"), items:[
-      ["dash","grid",t("dashboard"),0]]},
-    {key:"secOps", head:t("secOps"), items:[
-      ["dayplan","clipboard",t("dayPlan"),0],
-      ["program","calendar",t("manage"),0],
-      ["assign","check",t("assignCenter"),0],
-      ["req","clipboard",t("reqTab"),0]]},
-    {key:"secGuests", head:t("secGuests"), items:[
-      ["inbox","chat",t("cmHead"),unreadGuests()+unreadTeam()+newReq+teamReqCount()],
-      ["guests","chat",t("guestsTab"),unreadGuests()+newReq],
-      ["team","users",t("teamTab"),unreadTeam()+teamReqCount()]]},
-    {key:"secExplore", head:t("secExplore"), items:[
-      ["hotelinfo","pin",t("hotelInfoTab"),0],
-      ["gallery","sparkle",t("galleryTab"),0],
-      ["quiz","sparkle",t("quizCenter"),0],
-      ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-      ...(featureOn("bus")?[["bus","bus",t("busItem"),0]]:[]),
-      ["qr","sparkle",t("qrTab"),0]]},
-    {key:"secSettings", head:t("secSettings"), items:[
-      ["settings","palette",t("settingsHub"),0]]}
+    {key:"secManage", head:"Main", items:[
+      ["dash","grid","Overview",0],["ops","calendar","Operations",0],["guests","user","Guests",unreadGuests()+newReq],["team","users","Team",unreadTeam()+teamReqCount()],["more","menu","More",0]]},
+    {key:"secProgram", head:"Operations", items:[
+      ["program","calendar","Programme & tickets",0],["dayplan","clipboard","Day plan",0],["req","clipboard","Requirements",0],["assign","check","Assignments & tasks",0]]},
+    {key:"secSettings", head:"Behind More", items:[
+      ["settings","palette","Settings",0],["quiz","sparkle","Quiz centre",0],["gallery","sparkle","Gallery",0],["hotelinfo","pin","Hotel information",0],
+      ...(featureOn("weather")?[["weather","sun","Weather",0]]:[]),["qr","sparkle","QR code",0],["builder","menu","Menus & pages",0]]}
   ];
 }
 /* ===== MENU BUILDER =====
@@ -4116,6 +3783,107 @@ function applyMenuConf(role, groups){
 }
 function navGroups(role){ return applyMenuConf(role, navGroupsBase(role)); }
 function navItems(role){ return navGroups(role).flatMap(g=>g.items); }
+
+/* ===== NEW-APP INFORMATION ARCHITECTURE =====
+   Five permanent destinations per role. Existing old-app pages are preserved,
+   but secondary tools now live behind More or inside Operations. */
+const PRIMARY_NAV={
+  guest:[
+    ["home","home","Home"],
+    ["program","calendar","Program"],
+    ["stay","user","My Stay"],
+    ["chat","chat","Connect"],
+    ["more","menu","More"]
+  ],
+  staff:[
+    ["workday","sun","Today"],
+    ["week","calendar","Program"],
+    ["tasks","check","Tasks"],
+    ["teaminfo","users","Team"],
+    ["more","menu","More"]
+  ],
+  manager:[
+    ["dash","grid","Overview"],
+    ["ops","calendar","Operations"],
+    ["guests","user","Guests"],
+    ["team","users","Team"],
+    ["more","menu","More"]
+  ]
+};
+function primaryActive(role,tab){
+  if(role==="guest"){
+    if(["tickets","stay"].includes(tab)) return "stay";
+    if(["teaminfo","social","chat"].includes(tab)) return "chat";
+    if(["gallery","hotelinfo","weather","quiz","more"].includes(tab)||String(tab).startsWith("cp:")) return "more";
+    return tab;
+  }
+  if(role==="staff"){
+    if(["today","week","bookings"].includes(tab)) return "week";
+    if(["chat","feedback","teaminfo"].includes(tab)||String(tab).startsWith("emp:")) return "teaminfo";
+    if(["mypage","bus","gallery","weather","quiz","more"].includes(tab)||String(tab).startsWith("cp:")) return "more";
+    return tab;
+  }
+  if(["program","dayplan","req","assign","ops"].includes(tab)) return "ops";
+  if(["settings","builder","pagedesign","quiz","gallery","hotelinfo","qr","weather","bus","more"].includes(tab)||String(tab).startsWith("set:")||String(tab).startsWith("cp:")) return "more";
+  return tab;
+}
+function primaryNav(){
+  if(!S.session) return "";
+  const role=S.session.role, active=primaryActive(role,S.tab);
+  const unread=unseenNotes(role);
+  return `<nav class="app-primary-nav" aria-label="Primary navigation">${PRIMARY_NAV[role].map(([id,icn,lb])=>
+    `<button data-tab="${id}" class="${active===id?"on":""}" aria-label="${esc(lb)}"><span class="ic">${ic(icn,21)}</span><span class="lb">${esc(lb)}</span>${id==="more"&&unread?'<i class="ndot"></i>':''}</button>`
+  ).join("")}</nav>`;
+}
+function moreHubView(role){
+  let items=[];
+  if(role==="guest") items=[
+    ["tickets","ticket","Tickets","Reservations and collections"],
+    ["teaminfo","users","Meet the team","Who does what"],
+    ["social","star","Social & reviews","Follow, contact and review"],
+    ["gallery","sparkle","Gallery","Photos and videos"],
+    ["hotelinfo","pin","Hotel information","Useful stay information"],
+    ["weather","sun","Weather","Resort conditions"],
+    ["quiz","sparkle","Quiz","Entertainment quiz"]
+  ];
+  else if(role==="staff") items=[
+    ["mypage","user","My attendance","Your month and work record"],
+    ["chat","chat","Manager chat","Direct conversation"],
+    ["feedback","star","Feedback","Guest feedback for your work"],
+    ["bus","bus","Bus times","Transport schedule"],
+    ["gallery","sparkle","Gallery","Team photos and videos"],
+    ["weather","sun","Weather","Today at the resort"],
+    ["quiz","sparkle","Quiz","Entertainment quiz"]
+  ];
+  else items=[
+    ["settings","palette","Settings","Appearance, hotel and system"],
+    ["quiz","sparkle","Quiz centre","Create and manage quizzes"],
+    ["gallery","sparkle","Gallery","Photos and videos"],
+    ["hotelinfo","pin","Hotel information","Guest-facing hotel content"],
+    ["weather","sun","Weather","Resort conditions"],
+    ["qr","sparkle","QR code","Guest app access"],
+    ["builder","menu","Menus & pages","Rename, hide and reorder pages"]
+  ];
+  return `<div class="screen fadein">${topBar("More",S.session.name)}
+    <div class="card profcard"><div class="pf-ava">${ic(role==="guest"?"user":"users",25)}</div>
+      <div style="min-width:0;flex:1"><h4>${esc(S.session.name||"")}</h4><p class="mini">${role==="guest"?t("room")+" "+esc(S.session.room||""):role==="staff"?"Entertainer":"Manager"}</p></div></div>
+    <div class="sec"><h3>More</h3><div class="card" style="padding:2px 14px">${items.map(([id,icn,title,sub])=>
+      `<button class="booking-line" data-tab="${id}" style="width:100%;text-align:start;background:none"><span style="display:flex;gap:11px;align-items:center"><span>${ic(icn,18)}</span><span><b>${esc(title)}</b><br><span class="mini">${esc(sub)}</span></span></span><span>${ic("back",15)}</span></button>`
+    ).join("")}</div></div></div>`;
+}
+function operationsHubView(){
+  const items=[
+    ["program","calendar","Programme & tickets","Activities, programme content and ticket products"],
+    ["dayplan","clipboard","Day plan","Daily operation, duty and standards"],
+    ["req","clipboard","Requirements","Event, activity and party requirement sheets"],
+    ["assign","check","Assignments & tasks","Team allocation, skills and task workflow"]
+  ];
+  return `<div class="screen fadein">${topBar("Operations",S.session.name)}
+    <div class="sec"><h3>Run the day</h3><p class="mini" style="margin:-6px 0 12px">Everything used to operate the entertainment programme is grouped here.</p>
+      <div class="card" style="padding:2px 14px">${items.map(([id,icn,title,sub])=>
+        `<button class="booking-line" data-tab="${id}" style="width:100%;text-align:start;background:none"><span style="display:flex;gap:11px;align-items:center"><span>${ic(icn,18)}</span><span><b>${esc(title)}</b><br><span class="mini">${esc(sub)}</span></span></span><span>${ic("back",15)}</span></button>`
+      ).join("")}</div></div></div>`;
+}
 function topBar(title,sub){
   const role=S.session?S.session.role:"guest";
   const anyDot=navItems(role).some(x=>x[3]>0);
@@ -4131,288 +3899,6 @@ function topBar(title,sub){
     </div>
   </div>
   <div class="who whobar"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>`;
-}
-/* ===== THE NEW LOOK =====
-   A full-bleed hero at the top of each home screen and a bottom tab bar.
-   The hero carries exactly the same buttons as the old top bar (menu, back,
-   forward, social, notifications) so every existing handler keeps working. */
-function greetKey(){
-  const h=new Date().getHours();
-  return h<12 ? "goodMorning" : h<18 ? "goodAfternoon" : "goodEvening";
-}
-function heroImage(){
-  const st=S.settings||{};
-  return st.heroImg || IMG.show;
-}
-function heroTop(o){
-  o=o||{};
-  const role=S.session?S.session.role:"guest";
-  const anyDot=navItems(role).some(x=>x[3]>0);
-  return `<div class="hero">
-    <div class="hero-bg" style="background-image:url('${esc(o.image||heroImage())}')"></div>
-    <div class="hero-in">
-      <div class="top hero-bar">
-        <div class="toprow toprow-l">
-          <button class="iconbtn" id="btn-menu" aria-label="${t("menu")}">${ic("menu",21)}${anyDot?'<span class="reddot"></span>':''}</button>
-          <button class="iconbtn navbtn" id="btn-navback" aria-label="${t("navBack")}" ${canNavBack()?"":"disabled"}>${ic("back",19)}</button>
-          <button class="iconbtn navbtn fwd" id="btn-navfwd" aria-label="${t("navForward")}" ${canNavForward()?"":"disabled"}>${ic("back",19)}</button>
-          <span class="socialrow">${socialTopIcons()}</span>
-        </div>
-        <div class="toprow">
-          <button class="iconbtn" id="btn-notes" aria-label="notifications">${ic("bell",19)}${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
-        </div>
-      </div>
-      <div class="hero-say">
-        <div class="hero-words">
-          ${o.greet?`<span class="hero-hi">${esc(o.greet)}</span>`:""}
-          <h1>${esc(o.title||"")}</h1>
-          ${o.sub?`<p class="hero-sub">${esc(o.sub)}</p>`:""}
-          ${o.quote?`<p class="hero-quote">\u201C${esc(o.quote)}\u201D</p>`:""}
-        </div>
-        ${o.side||""}
-      </div>
-    </div>
-  </div>`;
-}
-function heroWeatherChip(){
-  const w=S.weatherNow || (S.weather && S.weather.now) || null;
-  const temp = w && (w.temp!=null ? w.temp : w.temperature);
-  if(temp==null || isNaN(+temp)) return "";
-  return `<span class="hero-chip">${ic("sun",18)}<b>${Math.round(+temp)}\u00B0</b></span>`;
-}
-function heroAvatar(){
-  const n=String((S.session&&S.session.name)||"?").trim().charAt(0).toUpperCase();
-  const ph=S.session&&S.session.photo;
-  return `<span class="hero-av">${ph?`<img src="${esc(ph)}" alt="">`:`<b>${esc(n)}</b>`}</span>`;
-}
-
-/* ===== SECTION HUBS =====
-   One screen that gathers the pages belonging to one part of the job, so the
-   bottom bar can stay at five real destinations. An item is a tab id, or
-   "tab:sub" to land straight on a sub-tab. Nothing is removed: every page a hub
-   points at is the same page the menu has always opened. */
-const HUB_DEFS={
-  /* --- guest --- */
-  connect:{ role:"guest", title:"hubConnect", groups:[
-    { head:"secConnect", items:[
-      ["chat","chat","chat","hubChatSub"],
-      ["teaminfo","users","teamPage","hubTeamSub"],
-      ["social","sparkle","socialTab","hubSocialSub"]]}]},
-  more:{ role:"guest", title:"hubMore", groups:[
-    { head:"secExplore", items:[
-      ["gallery","sparkle","galleryTab","hubGallerySub"],
-      ["hotelinfo","pin","hotelInfoTab","hubHotelSub"],
-      ["weather","sun","weatherTab","hubWeatherSub"],
-      ["quiz","sparkle","quizTab","hubQuizSub"]]}]},
-
-  /* --- entertainer --- */
-  steam:{ role:"staff", title:"teamTab", groups:[
-    { head:"secConnect", items:[
-      ["chat","chat","chatManager","hubMgrChatSub"],
-      ["teaminfo","users","teamPage","hubTeamSub"],
-      ["gallery","sparkle","galleryTab","hubGallerySub"]]}]},
-  smore:{ role:"staff", title:"hubMore", groups:[
-    { head:"secMyWork", items:[
-      ["mypage","user","myAttendance","hubAttSub"]]},
-    { head:"secExplore", items:[
-      ["quiz","sparkle","quizTab","hubQuizSub"],
-      ["bus","bus","busItem","hubBusSub"],
-      ["weather","sun","weatherTab","hubWeatherSub"]]}]},
-
-  /* --- manager --- */
-  ops:{ role:"manager", title:"hubOperations", groups:[
-    { head:"secOps", items:[
-      ["inbox","chat","cmHead","cmSub"],
-      ["dayplan","clipboard","dayPlan","hubTodayProg"],
-      ["program","calendar","manage","hubWeekProg"],
-      ["assign","check","assignCenter","hubAssignSub"],
-      ["req","clipboard","reqTab","hubReqSub"],
-      ["guests:bookings","ticket","bookings","hubBookingsSub"],
-      ["program:tickets","ticket","tickets","hubTicketsSub"]]}]},
-  mmore:{ role:"manager", title:"hubMore", groups:[
-    { head:"secExplore", items:[
-      ["hotelinfo","pin","hotelInfoTab","hubHotelSub"],
-      ["gallery","sparkle","galleryTab","hubGallerySub"],
-      ["weather","sun","weatherTab","hubWeatherSub"],
-      ["quiz","sparkle","quizTab","hubQuizSub"],
-      ["bus","bus","busItem","hubBusSub"],
-      ["qr","sparkle","qrTab","hubQrSub"]]},
-    { head:"secSettings", items:[
-      ["settings","palette","settingsHub","hubSettingsSub"]]}]}
-};
-function hubFor(id){ return HUB_DEFS[id]||null; }
-function isHub(id){ return !!HUB_DEFS[id]; }
-/* Hub items point at ordinary pages, so anything hidden in the menu builder
-   disappears from the hub too — one source of truth, never two. */
-function hubItemVisible(id, role){
-  const tab=String(id).split(":")[0];
-  return navItems(role).some(x=>x[0]===tab);
-}
-function hubView(id){
-  const h=hubFor(id);
-  if(!h) return "";
-  const role=(S.session&&S.session.role)||h.role;
-  const groups=h.groups
-    .map(g=>({head:g.head, items:g.items.filter(it=>hubItemVisible(it[0], role))}))
-    .filter(g=>g.items.length);
-  return `<div class="screen fadein">
-    ${topBar(t(h.title),S.session?S.session.name:"")}
-    ${groups.map(g=>`
-      <div class="set-sec">${t(g.head)}</div>
-      <div class="card set-list">
-        ${g.items.map(([tid,icn,lb,sub])=>`<button class="set-it" data-hub="${esc(tid)}">
-          <span class="set-ic">${ic(icn,19)}</span>
-          <span class="set-mid"><b>${esc(t(lb))}</b>${sub?`<span class="mini">${esc(t(sub))}</span>`:""}</span>
-          <span class="set-go">${ic("back",16)}</span>
-        </button>`).join("")}
-      </div>`).join("")}
-    ${groups.length?"":`<div class="empty"><div class="big">${ic("grid",30)}</div>${t("none")}</div>`}
-  </div>`;
-}
-
-/* ---- the bottom tab bar ---- */
-function bottomTabs(role){
-  // Five destinations per role, in the order that role actually works in.
-  if(role==="guest") return [
-    ["home","home",t("navHome")],
-    ["program","calendar",menuLabel("menuProgram",t("program"))],
-    ["stay","user",t("hubMyStay")],
-    ["connect","chat",t("hubConnect")],
-    ["more","menu",t("hubMore")]];
-  if(role==="staff") return [
-    ["workday","home",t("hubToday")],
-    ["today","calendar",menuLabel("menuProgram",t("program"))],
-    ["tasks","check",t("hubTasks")],
-    ["steam","users",t("teamTab")],
-    ["smore","menu",t("hubMore")]];
-  return [
-    ["dash","grid",t("hubOverview")],
-    ["ops","calendar",t("hubOperations")],
-    ["guests","chat",t("guestsTab")],
-    ["team","users",t("teamTab")],
-    ["mmore","menu",t("hubMore")]];
-}
-/* Only offer a tab the role can actually reach — she can hide pages. */
-function tabReachable(id, role){
-  if(id==="__menu") return true;
-  if(isHub(id)) return true;                    // a hub is a doorway, not a page she can hide
-  return navItems(role).some(x=>x[0]===id);
-}
-function bottomNav(){
-  if(!S.session) return "";
-  const role=S.session.role;
-  const items=bottomTabs(role).filter(it=>tabReachable(it[0], role));
-  if(items.length<2) return "";
-  const cur=String(S.tab||"");
-  return `<nav class="tabbar">${items.map(([id,icn,lb])=>`
-    <button class="tb ${cur===id?"on":""}" data-bnav="${esc(id)}">
-      ${ic(icn,20)}<span>${esc(lb)}</span>
-    </button>`).join("")}</nav>`;
-}
-/* The picture that belongs to an activity, for the thumbnails and the highlight. */
-function actImage(a){
-  if(!a) return IMG.show;
-  return a.image || a.photo || catImage(normCat(a));
-}
-function actStart(a){ return String(a&&a.time||"").split(/\s*[\u2013\u2014-]\s*/)[0].trim(); }
-
-/* Today's highlight — the one thing a guest should not miss. */
-function highlightCard(a){
-  if(!a) return "";
-  return `<div class="hl" data-open="${esc(String(a.id))}">
-    <div class="hl-bg" style="background-image:url('${esc(actImage(a))}')"></div>
-    <div class="hl-in">
-      <span class="hl-txt">
-        <span class="hl-lbl">${t("todayHighlight")}</span>
-        <span class="hl-name">${esc(a.name)}</span>
-        <span class="hl-when">${t("startsAtLbl")} ${esc(actStart(a))}${a.location?" \u00b7 "+esc(a.location):""}</span>
-      </span>
-      <button class="hl-btn" data-open="${esc(String(a.id))}">${t("viewDetailsBtn")}</button>
-    </div>
-  </div>`;
-}
-
-/* Four round shortcuts into the programme. */
-function categoryRow(){
-  const groups=[["daytime","sun",t("activities")],["dayevents","calendar",t("eventsToday")],
-                ["evening","star",t("eveningShowLbl")],["special","sparkle",t("reqKindParty")]];
-  return `<div class="catrow">${groups.map(([id,icn,lb])=>`
-    <button data-catgo="${esc(id)}"><span class="cb">${ic(icn,23)}</span><span>${esc(lb)}</span></button>`).join("")}</div>`;
-}
-
-/* One programme line with its picture. */
-function thumbRow(a, opts){
-  const o=opts||{};
-  const tick = o.tick
-    ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}">${o.done?ic("check",14):""}</button>`
-    : `<span class="th-go">${ic("back",16)}</span>`;
-  return `<button class="thumbrow" data-open="${esc(String(a.id))}">
-    <span class="th-time">${esc(actStart(a))}</span>
-    <span class="th-img"><img src="${esc(actImage(a))}" alt="" loading="lazy"></span>
-    <span class="th-mid"><b>${esc(a.name)}</b><span>${esc(a.location||"")}</span></span>
-    ${tick}
-  </button>`;
-}
-function secHead(title, linkLabel, linkId){
-  return `<div class="sec-head"><h3>${esc(title)}</h3>${
-    linkLabel?`<button id="${esc(linkId)}">${esc(linkLabel)}</button>`:""}</div>`;
-}
-/* The four numbers an entertainer cares about on their own day. */
-function staffTiles(day, myActs){
-  const acts=myActs||[];
-  const done=acts.filter(a=>activityStatus(a)==="done").length;
-  const num=S.session&&S.session.number;
-  const week=(S.activities||[]).filter(a=>canSeeGuests(a)).length;
-  const att=(()=>{
-    const rec=(S.attendance||[]).filter(r=>String(r.number)===String(num));
-    if(!rec.length) return null;
-    return Math.round(rec.filter(r=>r.present!==false).length/rec.length*100);
-  })();
-  const mine=(S.feedback||[]).filter(f=>String(f.by_user||"")===String((S.session&&S.session.username)||""));
-  const rating=mine.length?fbAvgAll(mine):0;
-  return `<div class="tiles">
-    <div class="ti"><b>${done}/${acts.length}</b><span>${t("activities")}</span></div>
-    <div class="ti"><b>${att==null?"\u2014":att+"%"}</b><span>${t("attendance")}</span></div>
-    <div class="ti"><b>${rating?rating.toFixed(1):"\u2014"}</b><span>${t("wdRating")}</span></div>
-    <div class="ti"><b>${week}</b><span>${t("wdThisWeek")}</span></div>
-  </div>`;
-}
-/* What the manager sees first: four live numbers, then a way into every area. */
-function dashTiles(){
-  const day=todayIndex();
-  const acts=(S.activities||[]).filter(a=>a.day===day);
-  const onDuty=(S.users||[]).filter(u=>u.role==="staff" && u.number
-    && !(dayPlanFor(day).off||[]).map(String).includes(String(u.number))).length;
-  const joined=(S.bookings||[]).filter(b=>acts.some(a=>a.id===b.activity_id)).length;
-  const sat=fbAvgAll(S.feedback||[]);
-  return `<div class="bigtiles">
-    <div class="bt"><span class="bi">${ic("calendar",18)}</span><span><b>${acts.length}</b><span>${t("actsToday")}</span></span></div>
-    <div class="bt"><span class="bi">${ic("users",18)}</span><span><b>${onDuty}</b><span>${t("onDutyNow")}</span></span></div>
-    <div class="bt"><span class="bi">${ic("user",18)}</span><span><b>${joined}</b><span>${t("guestsJoined")}</span></span></div>
-    <div class="bt"><span class="bi">${ic("star",18)}</span><span><b>${sat?sat.toFixed(1):"\u2014"}</b><span>${t("guestSat")}</span></span></div>
-  </div>`;
-}
-function dashOverview(){
-  const openReq=(S.requests||[]).filter(r=>r.status!=="done").length;
-  const rows=[
-    ["program","calendar",menuLabel("menuProgram",t("program")),t("ovProgram"),0],
-    ["team","users",t("teamTab"),t("ovTeam"),0],
-    ["assign","check",t("assignCenter"),t("ovAttendance"),0],
-    ["guests","star",t("feedback"),t("ovFeedback"),openReq],
-    ["req","clipboard",t("reqTab"),t("ovRequire"),0],
-    ["settings","gear",t("settingsHub"),t("ovSettings"),0]
-  ].filter(r=>navItems("manager").some(x=>x[0]===r[0]));
-  if(!rows.length) return "";
-  return `<div class="sec">
-    ${secHead(t("todayOverview"), t("seeAllLink"), "btn-ovall")}
-    <div class="ovlist">${rows.map(([id,icn,lb,sub,badge])=>`
-      <button class="ovrow" data-tab="${esc(id)}">
-        <span class="oi">${ic(icn,19)}</span>
-        <span class="om"><b>${esc(lb)}</b><span>${esc(sub)}</span></span>
-        ${badge?`<span class="ob">${badge}</span>`:""}
-        <span class="og">${ic("back",16)}</span>
-      </button>`).join("")}</div>
-  </div>`;
 }
 function hubBack(){
   // shown on Settings sub-pages so the manager can go back to the hub
@@ -4542,7 +4028,7 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   // the coloured ring is drawn around the guest's own booked activity
   const ringCls = (mine && isToday(a.day)) ? (" "+statusRing(a)) : "";
   const overNow = isToday(a.day) && activityStatus(a)==="done";
-  return `<div class="card act${ringCls}${overNow?" is-over":""}" ${overNow&&!manager&&!staff?"":`data-open="${a.id}"`}>
+  return `<div class="card act${ringCls}${overNow?" is-over":""}" ${manager||staff||overNow?"":`data-open="${a.id}"`}>
     <img class="thumb" src="${esc(a.image||IMG.show)}" alt="" loading="lazy" data-pvsingle="${esc(a.image||IMG.show)}">
     <div class="mid">
       <span class="catbadge">${catLabel(a.category)}</span>
@@ -4705,37 +4191,31 @@ function threadView(room,meSide){
 }
 /* ---------------- guest ---------------- */
 function guestView(){
-  if(isHub(S.tab)) return hubView(S.tab);
   if(String(S.tab||"").startsWith("cp:")) return customPageView(S.tab.slice(3));
   if(String(S.tab||"").startsWith("emp:")) return employeeView(S.tab.slice(4));
   if(S.tab==="weather") return weatherView();
   if(S.tab==="quiz") return quizView();
   if(S.tab==="gallery") return galleryView();
   if(S.tab==="hotelinfo") return hotelInfoView();
+  if(S.tab==="more") return moreHubView("guest");
   const g=S.session;
   const todayIdx=todayIndex();
   if(S.tab==="home"){
     const todays=S.activities.filter(a=>a.day===todayIdx);
     const hl=todays.find(a=>a.highlight)||todays[0];
     const wm=(S.settings.welcomeMsg||"").trim();
-    const rest=todays.filter(a=>a!==hl).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
     return `<div class="screen fadein">
-      ${heroTop({greet:t(greetKey()), title:t("welcomeParadise"),
-                 sub:t("room")+" "+g.room+" · "+t("days")[todayIdx],
-                 image:actImage(hl), side:heroWeatherChip()})}
-      ${highlightCard(hl)}
-      ${categoryRow()}
-      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px;margin-bottom:16px">${esc(wm)}</div>`:""}
-      <div class="sec">
-        ${secHead(t("todayProgram"), t("seeAllLink"), "btn-seeprog")}
-        ${rest.length?`<div class="card" style="padding:2px 15px">${rest.map(a=>thumbRow(a)).join("")}</div>`
-          :`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
-      </div>
+      ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
+      ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
+      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
+      ${heroCarousel([hl].concat(todays.filter(a=>a!==hl && a.highlight)))}
       <div class="quickrow">
         <button id="btn-req-song"><span>${ic("music",22)}</span>${t("songRequest")}</button>
         <button id="btn-req-bday"><span>${ic("gift",22)}</span>${t("birthdayRequest")}</button>
       </div>
-      ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
+      <div class="sec"><h3>${t("todayProgram")}</h3>
+        ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
+      </div>
       ${reviewDue(g)?reviewBlock():""}
       ${socialBlock()}
     </div>`;
@@ -4913,8 +4393,7 @@ function socialBlock(){
 function staffView(){
   const todayIdx=todayIndex();
   // My Work Day is the entertainer's home screen
-  const STAFF_TABS=["workday","mypage","quiz","gallery","weather","bus","today","week","bookings","tasks","chat","feedback","teaminfo","steam","smore"];
-  if(isHub(S.tab)) return hubView(S.tab);
+  const STAFF_TABS=["workday","mypage","quiz","gallery","weather","bus","today","week","bookings","tasks","chat","feedback","teaminfo","more"];
   if(!S.tab || (!STAFF_TABS.includes(S.tab) && !String(S.tab).startsWith("cp:") && !String(S.tab).startsWith("emp:"))) S.tab="workday";
   if(String(S.tab||"").startsWith("cp:")) return customPageView(S.tab.slice(3));
   if(String(S.tab||"").startsWith("emp:")) return employeeView(S.tab.slice(4));
@@ -4924,6 +4403,7 @@ function staffView(){
   if(S.tab==="gallery") return galleryView();
   if(S.tab==="quiz") return quizView();
   if(S.tab==="bus") return busView();
+  if(S.tab==="more") return moreHubView("staff");
   if(S.tab==="today"){
     const acts=S.activities.filter(a=>a.day===todayIdx);
     const hl=acts.find(a=>a.highlight);
@@ -5209,25 +4689,6 @@ function employeeView(username){
       ${stat(r.fb.length?r.avg:"—", t("guestRatings"))}
     </div>`}
     ${empPics(u).length?`<div class="sec">${photoStrip(empPics(u),"emp")}</div>`:""}
-    ${full?(()=>{
-      const d=todayIndex(), dp=dayPlanFor(d);
-      const off=u.number && (dp.off||[]).includes(u.number);
-      const mine=(S.activities||[]).filter(a=>a.day===d
-        && String(a.entertainer||"").toLowerCase().includes(String(u.display_name||u.username||"").toLowerCase()))
-        .sort((x,y)=>(timeToMin(actStart(x))||0)-(timeToMin(actStart(y))||0));
-      const reqs=(S.staffReqs||[]).filter(x=>String(x.username||"")===String(u.username));
-      return `<div class="sec"><h3>${ic("clock",17)} ${t("tmToday")}</h3>
-        ${off?`<div class="card"><p class="mini" style="padding:10px 2px;margin:0">${t("tmOffToday")}</p></div>`
-          :mine.length?`<div class="card">${mine.map(a=>`<div class="g3-row" data-open="${esc(String(a.id))}">
-            <b>${esc(actStart(a))} \u00b7 ${esc(a.name)}</b>
-            <span class="mini">${esc(a.location||"")}</span></div>`).join("")}</div>`
-          :`<div class="card"><p class="mini" style="padding:10px 2px;margin:0">${t("tmNothingToday")}</p></div>`}
-      </div>
-      ${reqs.length?`<div class="sec"><h3>${ic("bell",17)} ${t("tmRequests")}</h3>
-        <div class="card">${reqs.map(x=>`<div class="g3-row"><b>${esc(reqTypeLabel(x.type))}</b>
-          <span class="mini">${esc(x.detail||"")} \u00b7 ${esc(x.status||"")}</span></div>`).join("")}</div></div>`:""}
-      <button class="btn ghost" id="ep-msg" style="margin-bottom:14px">${ic("chat",16)} ${t("tmMessage")}</button>`;
-    })():""}
     <div class="sec"><h3>${ic("user",17)} ${t("employeeProfile")}</h3>
       <div class="card ep-card">
         ${full?line(t("employeeId"), u.employee_id):""}
@@ -5322,57 +4783,23 @@ function guestRecord(acc){
   return {acc, bookings, acts, orders, reqs, fb, msgs, quiz, favs, avg,
     nights:guestStayNights(acc), daysApp:guestDaysInApp(acc)};
 }
-/* Why this guest might need the manager: an unread message, an open request,
-   or feedback that asked for something. Same rules as everywhere else. */
-function guestAttention(acc){
-  const room=String(acc.room);
-  const out=[];
-  if((S.messages||[]).some(m=>String(m.room)===room && m.sender==="guest" && !m.read_by_team)) out.push(t("goUnread"));
-  if((S.requests||[]).some(r=>String(r.room)===room && String(r.status||"")==="new")) out.push(t("goNewReq"));
-  if((S.feedback||[]).some(f=>String(f.room)===room && fbStatus(f)!=="none")) out.push(t("goLowFb"));
-  return out;
-}
-function guestIsArriving(acc){ return String(acc.arrival||"")===todayISO(); }
-function guestIsLeaving(acc){ return String(acc.departure||"")===todayISO(); }
 function guestCrmInner(){
   const q=(S.crmQuery||"").trim().toLowerCase();
-  const all=(S.accounts||[]).slice();
-  const f=["all","arriving","leaving","attention"].includes(S.crmFilter)?S.crmFilter:"all";
-  const counts={
-    all:all.length,
-    arriving:all.filter(guestIsArriving).length,
-    leaving:all.filter(guestIsLeaving).length,
-    attention:all.filter(a=>guestAttention(a).length).length
-  };
-  let list=all;
-  if(f==="arriving") list=list.filter(guestIsArriving);
-  else if(f==="leaving") list=list.filter(guestIsLeaving);
-  else if(f==="attention") list=list.filter(a=>guestAttention(a).length);
+  let list=(S.accounts||[]).slice();
   if(q) list=list.filter(a=>[a.room,a.name,a.nationality].some(v=>String(v||"").toLowerCase().includes(q)));
   list.sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
-  return `<div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
-      <div class="stat"><b>${counts.all}</b><span>${t("goInHouse")}</span></div>
-      <div class="stat"><b>${counts.arriving}</b><span>${t("goArriving")}</span></div>
-      <div class="stat"><b>${counts.leaving}</b><span>${t("goLeaving")}</span></div>
-      <div class="stat${counts.attention?" accent":""}"><b>${counts.attention}</b><span>${t("goAttention")}</span></div>
-    </div>
-    <div class="pills">${[["all","goAll"],["arriving","goArriving"],["leaving","goLeaving"],["attention","goAttention"]]
-      .map(([k,lb])=>`<button class="pill ${f===k?"on":""}" data-crmf="${k}">${esc(t(lb))}${counts[k]?`<span class="badge">${counts[k]}</span>`:""}</button>`).join("")}</div>
-    <input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
+  return `<input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
     ${list.length?`<div class="card">${list.map(a=>{
       const r=guestRecord(a);
-      const flags=guestAttention(a);
-      return `<div class="crm-row${flags.length?" needs":""}" data-crm="${a.id}">
+      return `<div class="crm-row" data-crm="${a.id}">
         <div class="crm-av">${esc(String(a.name||"?").trim().charAt(0).toUpperCase())}</div>
         <div class="crm-mid"><b>${esc(a.name||"")}</b>
-          <span class="mini">${t("room")} ${esc(a.room)}${a.nationality?" · "+esc(a.nationality):""}${
-            guestIsArriving(a)?` · ${t("goArriving")}`:guestIsLeaving(a)?` · ${t("goLeaving")}`:""}</span>
+          <span class="mini">${t("room")} ${esc(a.room)}${a.nationality?" · "+esc(a.nationality):""}</span>
           <span class="mini">${r.bookings.length} ${t("bookings").toLowerCase()} · ${r.reqs.length} ${t("requests").toLowerCase()}${r.fb.length?" · ★ "+r.avg:""}</span>
-          ${flags.length?`<span class="crm-flags">${flags.map(x=>`<span class="crm-flag">${esc(x)}</span>`).join("")}</span>`:""}
         </div>
         <span class="crm-go">${ic("back",15)}</span>
       </div>`;
-    }).join("")}</div>`:`<div class="empty"><div class="big">${ic("users",30)}</div>${q||f!=="all"?t("goNoneHere"):t("noGuests")}</div>`}`;
+    }).join("")}</div>`:`<div class="empty"><div class="big">${ic("users",30)}</div>${t("noGuests")}</div>`}`;
 }
 function guest360View(id){
   const acc=(S.accounts||[]).find(a=>a.id==id);
@@ -5410,22 +4837,8 @@ function guest360View(id){
         <span class="mini">${esc(x.detail||"")} · ${esc(x.status||"")}</span></div>`).join("")}</div></div>`:""}
     ${r.fb.length?`<div class="sec"><h3>${ic("star",17)} ${t("feedback")}</h3>
       <div class="card">${r.fb.map(f=>`<div class="g3-row"><b>${"\u2605".repeat(Math.max(0,Math.min(5,+f.rate||0)))}</b>
-        <span class="mini">${esc(fbComment(f)||"")} · ${fmtDate(f.created_at)}</span></div>`).join("")}</div></div>`:""}
-    ${(r.orders||[]).length?`<div class="sec"><h3>${ic("ticket",17)} ${t("goTickets")}</h3>
-      <div class="card">${r.orders.map(o=>`<div class="g3-row"><b>${esc(ticketName(o.ticket_id)||"")}</b>
-        <span class="mini">\u00d7${esc(String(o.qty||1))} \u00b7 ${esc(o.status||"")}</span></div>`).join("")}</div></div>`:""}
-    <div class="sec"><h3>${ic("chat",17)} ${t("goMessages")}</h3>
-      ${(r.msgs||[]).length?`<div class="card">${r.msgs.slice(-4).map(m=>`<div class="g3-row">
-        <b>${esc(m.sender==="guest"?(acc.name||t("guest")):t("staff"))}</b>
-        <span class="mini">${esc(m.text||"")} \u00b7 ${fmtTime(m.created_at)}</span></div>`).join("")}</div>`
-        :`<p class="mini">${t("goNoMessages")}</p>`}
-      <button class="btn ghost" id="g3-msg" style="margin-top:10px">${ic("chat",16)} ${t("goMessage")}</button>
-    </div>
+        <span class="mini">${esc(f.comment||"")} · ${fmtDate(f.created_at)}</span></div>`).join("")}</div></div>`:""}
   </div>`;
-}
-function ticketName(id){
-  const tk=(S.tickets||[]).find(x=>String(x.id)===String(id));
-  return tk?tk.name:"";
 }
 /* ================= AUTOMATIC ACTIVITY ROSTER =================
    Rules (agreed with the manager):
@@ -7542,116 +6955,20 @@ function myWorkDayView(){
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
   return `<div class="screen fadein">
-    ${heroTop({greet:t(greetKey()), title:S.session.name, quote:t("myActsSub"),
-               sub:"#"+num+" · "+roleForNumber(num), side:heroAvatar()})}
+    ${topBar(t("myWorkDay"),"#"+num+" · "+S.session.name)}
     ${dayChips()}
-    ${staffTiles(day, myActs)}
-    <div class="sec">
-      ${secHead(t("myActs"),"","")}
-      ${myActs.length
-        ? `<div class="card" style="padding:2px 15px">${myActs.map(a=>thumbRow(a,{tick:true, done:activityStatus(a)==="done"})).join("")}</div>`
-        : `<div class="empty"><div class="big">${ic("clipboard",30)}</div>${t("noneToday")}</div>`}
-      <button class="btn ghost" id="btn-fullsched" style="margin-top:10px">${t("viewFullSchedule")}</button>
-    </div>
+    ${photoBlock}
     ${banner}
     ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
     ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
-    ${photoBlock}
-    ${myDayTimeline(day)}
+    ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
+      <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
+      ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
     ${dayPlanInfoCard(day)}
+    ${workdayTimeline(day, myActs)}
     ${workdayFeedbackCard()}
-    ${dayPlanTimes(day, "mdWholeDay")}
-  </div>`;
-}
-/* ===== MY DAY =====
-   The entertainer had to open four screens to work out their own day: the
-   hotel rhythm, their activities, their duties and their tasks. This puts all
-   four on one line, in clock order, with a marker for where "now" is. */
-function mdMin(hhmm){
-  const m=String(hhmm||"").match(/(\d{1,2})\s*[:.]\s*(\d{2})/);
-  return m ? (+m[1])*60 + (+m[2]) : null;
-}
-function mdRow(min, time, title, sub, kind, actId){
-  return {min:(min==null?9999:min), time:time||"", title:title||"", sub:sub||"", kind:kind||"routine", actId:actId||null};
-}
-function myDayItems(day){
-  const num=S.session && S.session.number;
-  const dp=dayPlanFor(day);
-  const info=num?personDayInfo(num,day):null;
-  const out=[];
-
-  // the hotel rhythm everyone shares
-  DAILY_STANDARDS.forEach(r=>{
-    let note=r.nk?t(r.nk):"";
-    if(r.morning) note = dp.practice ? t("practiceInline") : "";
-    out.push(mdRow(mdMin(r.time), r.time, t(r.k), note, "routine"));
-  });
-
-  // the activities this entertainer is on
-  (S.activities||[]).filter(a=>a.day===day && isMineAct(a)).forEach(a=>{
-    out.push(mdRow(mdMin(actStart(a)), actStart(a), a.name, a.location||"", "mine", a.id));
-  });
-
-  // the evening show and the entertainer's own duties
-  if(dp.eveningShow && dp.showTime){
-    const st=mdMin(String(dp.showTime).split(/\s*[\u2013\u2014-]\s*/)[0]);
-    if(st!=null) out.push(mdRow(st-60, minToTime(st-60), t("mdShowPrep"), dp.eveningShow, "show"));
-    out.push(mdRow(st, String(dp.showTime), dp.eveningShow, dp.showLoc||"", "show"));
-  }
-  if(info && info.isEntrance) out.push(mdRow(16*60, "16:00", t("mdEntranceItem"), info.entranceWindow||"", "duty"));
-  if(info && info.makeupForMe) out.push(mdRow(mdMin(makeupText(info.makeupForMe)), "", t("makeupPractice"), makeupText(info.makeupForMe), "duty"));
-  if(info && info.isDJ && info.djNote) out.push(mdRow(null, "", t("djSchedule"), info.djNote, "duty"));
-
-  // the tasks waiting on them
-  const me=String((S.session&&S.session.username)||"").toLowerCase();
-  (S.tasks||[]).filter(k=>{
-    if(String(k.status||"")==="done") return false;
-    const to=String(k.assigned_to||"").toLowerCase();
-    return to==="team" || to===me || (num && to===String(num));
-  }).forEach(k=>{
-    out.push(mdRow(mdMin(k.due), String(k.due||"").trim(), k.title||"", k.location||"", "task"));
-  });
-
-  return out.sort((a,b)=>(a.min-b.min) || String(a.time).localeCompare(String(b.time)));
-}
-function minToTime(m){
-  m=Math.max(0,Math.round(m||0));
-  return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
-}
-function myDayTimeline(day){
-  const num=S.session && S.session.number;
-  const info=num?personDayInfo(num,day):null;
-  if(info && info.isOff){
-    return `<div class="sec"><h3>${ic("clock",18)} ${t("mdHead")}</h3>
-      <div class="empty"><div class="big">${ic("sun",30)}</div>${t("mdOffAll")}</div></div>`;
-  }
-  const items=myDayItems(day);
-  if(!items.length){
-    return `<div class="sec"><h3>${ic("clock",18)} ${t("mdHead")}</h3>
-      <div class="empty"><div class="big">${ic("clock",30)}</div>${t("mdNothing")}</div></div>`;
-  }
-  const live=isToday(day);
-  const now=live ? (new Date().getHours()*60 + new Date().getMinutes()) : -1;
-  let nowShown=false;
-  const kindLabel={mine:t("mdMine"), routine:t("mdRoutine"), duty:t("mdDuty"), task:t("mdTask"), show:t("mdShow")};
-  return `<div class="sec">
-    <div class="sec-head"><h3>${ic("clock",18)} ${t("mdHead")}</h3></div>
-    <p class="mini" style="margin:-6px 0 10px">${t("mdSub")}</p>
-    <div class="card md">
-      ${items.map(it=>{
-        let marker="";
-        if(live && !nowShown && it.min>now){ nowShown=true;
-          marker=`<div class="md-now"><span>${t("mdNow")} ${minToTime(now)}</span></div>`; }
-        const past = live && it.min<=now;
-        const open = it.actId ? ` data-open="${esc(String(it.actId))}"` : "";
-        return marker+`<div class="md-row ${esc(it.kind)}${past?" past":""}"${open}>
-          <span class="md-t">${esc(it.time||"\u2014")}</span>
-          <span class="md-x"><b>${esc(it.title)}</b>${it.sub?`<span class="mini">${esc(it.sub)}</span>`:""}</span>
-          <span class="md-k">${esc(kindLabel[it.kind]||"")}</span>
-        </div>`;
-      }).join("")}
-      ${live && !nowShown ? `<div class="md-now"><span>${t("mdNow")} ${minToTime(now)}</span></div>` : ""}
-    </div>
+    ${dayPlanTimes(day)}
+    ${dayPlanStandards(day)}
   </div>`;
 }
 /* The entertainer's own day as a vertical line: what is done, what is running
@@ -7828,9 +7145,9 @@ function bookingsInner(){
 }
 /* ---------------- manager (full access — manager role only) ---------------- */
 function managerView(){
-  if(isHub(S.tab)) return hubView(S.tab);
   if(S.tab==="dash") return dashView();
-  if(S.tab==="inbox") return inboxView();
+  if(S.tab==="ops") return operationsHubView();
+  if(S.tab==="more") return moreHubView("manager");
   if(S.tab==="req") return requirementsView();
   if(S.tab==="program"){
     const inner = S.sub.program==="tickets" ? managerTicketsInner() : managerActsInner();
@@ -7926,11 +7243,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
    their sub-tabs. The same button and the same modal handle both. */
 const PAGE_SECTIONS={
   dayplan: ["info","times","team","standards"],
-  // The Control Center reads in four bands: what is critical, what still has to
-  // happen today, how the guests are doing, how the team is doing.
-  dash:    ["tiles","attention","live","tonight","ccops",
-            "stats","feedback","nations","activities",
-            "teampulse","overview","trends","export"],
+  dash:    ["attention","tonight","live","export","stats","feedback","nations","activities","trends"],
   guests:  ["crm","rooms","bookings","chat","requests","feedback"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
@@ -7939,8 +7252,7 @@ const PAGE_SECTIONS={
 };
 const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
-  dash:    {tiles:"atAGlance",overview:"todayOverview",attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",
-            ccops:"ccOps",teampulse:"ccTeamPulse",export:"exportData",stats:"ccGuestPulse",feedback:"fbAnalytics",
+  dash:    {attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
             requests:"requests",feedback:"feedback"},
@@ -8097,8 +7409,8 @@ function dayPlanStandards(day){
   return `<div class="sec"><h3>${ic("clock",18)} ${t("standardsHead")}</h3>
     <div class="card">${rows}</div></div>`;
 }
-function dayPlanTimes(day, headKey){
-  return `<div class="sec"><h3>${ic("clock",18)} ${t(headKey||"wholeDay")}</h3>
+function dayPlanTimes(day){
+  return `<div class="sec"><h3>${ic("clock",18)} ${t("wholeDay")}</h3>
     <div class="card tlcard">${dayTimeline(day)}</div></div>`;
 }
 function managerDayPlanView(){
@@ -8212,14 +7524,11 @@ function dashView(){
   const nats=Object.entries(natMap).map(([n,s])=>[n,s.size]).sort((x,y)=>y[1]-x[1]);
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   const parts={
-    tiles:     ()=>dashTiles(),
-    overview:  ()=>dashOverview(),
     attention: ()=>attentionCard(),
     tonight:   ()=>tonightCard(),
     live:      ()=>liveOpsCard(),
     export:    ()=>`<button class="btn ghost" id="btn-exportdata" style="margin:0 0 16px">${ic("download",16)} ${t("exportData")}</button>`,
-    stats:     ()=>`<div class="sec-head"><h3>${t("ccGuestPulse")}</h3></div>
-    <div class="stat-grid">
+    stats:     ()=>`<div class="stat-grid">
       <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
       <div class="stat accent"><b>${occ}%</b><span>${t("occupancy")}</span></div>
       <div class="stat"><b>${tSold}</b><span>${t("tickets")}</span></div>
@@ -8227,8 +7536,6 @@ function dashView(){
       <div class="stat"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div>
       <div class="stat"><b>${people}</b><span>${t("totalPeople")}</span></div>
     </div>`,
-    ccops:     ()=>ccTodayOps(),
-    teampulse: ()=>ccTeamPulse(),
     feedback:  ()=>feedbackAnalyticsCard(),
     nations:   ()=>nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
@@ -8240,196 +7547,11 @@ function dashView(){
     </div>`,
     trends:    ()=>trendsCard()
   };
-  const liveNow=(S.activities||[]).some(a=>a.day===todayIndex() && activityStatus(a)==="live");
   return `<div class="screen fadein">
-    ${heroTop({greet:t("welcomeBack"), title:S.session.name, sub:t("atAGlance"),
-               side:liveNow?`<span class="hero-live"><i></i>${t("liveNow")}</span>`:""})}
+    ${topBar(t("dashboard"),S.session.name)}
         ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
     ${arrangeBtn("dash")}
     ${renderParts("dash",parts)}
-  </div>`;
-}
-/* ===== COMMUNICATION CENTRE =====
-   Guest chats, team chats, requests and announcements were four separate
-   destinations. This is one doorway with four filters over the SAME screens —
-   the data stays apart, only the way in is joined. */
-const CM_FILTERS=["guests","team","requests","announce"];
-function cmCounts(){
-  return {
-    guests: unreadGuests(),
-    team: unreadTeam(),
-    requests: (S.requests||[]).filter(r=>String(r.status||"")==="new").length + teamReqCount(),
-    announce: 0
-  };
-}
-function cmAnnounceInner(){
-  const list=(S.notes||[]).slice().sort((a,b)=>(+b.id||0)-(+a.id||0));
-  return `<button class="btn" id="cm-newnote" style="margin:0 0 12px">\uFF0B ${t("cmNewAnnounce")}</button>
-    ${list.length?`<div class="card" style="padding:2px 14px">${list.map(n=>`
-      <div class="cm-note">
-        <span class="cm-nx"><b>${esc(n.title||"")}</b>
-          ${n.body?`<span class="mini">${esc(n.body)}</span>`:""}
-          <span class="mini">${t("cmAud")}: ${esc(t(n.audience==="guests"?"audGuests":n.audience==="team"?"audTeam":"audAll"))}${n.created_at?" \u00b7 "+fmtDate(n.created_at):""}</span></span>
-        <button class="btn sm ghost warn" data-cmnotedel="${esc(String(n.id))}">${ic("trash",14)}</button>
-      </div>`).join("")}</div>`
-      :`<div class="empty"><div class="big">${ic("bell",30)}</div>${t("cmNoAnnounce")}</div>`}`;
-}
-function cmRequestsInner(){
-  const guest=(S.requests||[]).length;
-  const team=(S.staffReqs||[]).length;
-  return `${guest?`<div class="ao-sec">${t("cmGuestReq")}</div>${requestsInner()}`:""}
-    ${team?`<div class="ao-sec">${t("cmTeamReq")}</div>${teamRequestsInner()}`:""}
-    ${(!guest&&!team)?`<div class="empty"><div class="big">${ic("gift",30)}</div>${t("none")}</div>`:""}`;
-}
-function inboxView(){
-  let f=S.sub.inbox;
-  if(!CM_FILTERS.includes(f)) f=S.sub.inbox="guests";
-  if((f==="guests"||f==="team") && S.chatRoom) return chatThreadScreen();
-  const n=cmCounts();
-  const inner = f==="guests"   ? chatInboxInner()
-              : f==="team"     ? staffChatInbox()
-              : f==="requests" ? cmRequestsInner()
-              : cmAnnounceInner();
-  return `<div class="screen fadein">
-    ${topBar(t("cmHead"),S.session.name)}
-    <p class="mini" style="margin:-4px 0 12px">${t("cmSub")}</p>
-    <div class="pills">${CM_FILTERS.map(k=>`<button class="pill ${f===k?"on":""}" data-cmf="${k}">
-      ${esc(t(k==="guests"?"cmGuests":k==="team"?"cmTeam":k==="requests"?"cmRequests":"cmAnnounce"))}
-      ${n[k]?`<span class="badge">${n[k]}</span>`:""}
-    </button>`).join("")}</div>
-    ${inner}
-  </div>`;
-}
-/* ===== THE ACTIVITY AS ONE OBJECT =====
-   Opening an activity used to do nothing for staff and managers, so the day had
-   to be reconstructed from four screens. This gathers everything that belongs
-   to one activity — who runs it, who booked it, what it needs — and every
-   button leads to the page that already does that job. */
-function openActivitySheet(id){
-  const a=(S.activities||[]).find(x=>String(x.id)===String(id));
-  if(!a) return;
-  const role=(S.session&&S.session.role)||"guest";
-  const isMgr=role==="manager", isStaff=role==="staff";
-  const books=bookingsFor(a.id);
-  const taken=seatsTaken(a.id);
-  const waiting=books.filter(b=>b.status==="waitlist").length;
-  const cap=+a.capacity||0;
-  const sh=reqSheetForAct(a);
-  const rows=(sh&&sh.rows)||[];
-  const done=rows.filter(r=>r.done).length;
-  const who=entertainerName(a.entertainer)||"";
-  const shown=books.filter(b=>b.status==="booked").slice(0,8);
-  const rest=Math.max(0, books.filter(b=>b.status==="booked").length-shown.length);
-  const wrap=baseModal(`
-    <h3>${ic("calendar",20)} ${esc(a.name)}</h3>
-    <p class="mini">${esc([t("days")[a.day], a.time, a.location].filter(Boolean).join(" \u00b7 "))}</p>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${taken}${cap?"/"+cap:""}</b><span>${t("aoBooked")}</span></div>
-      <div class="stat"><b>${cap?cap:t("aoUnlimited")}</b><span>${t("aoCapacity")}</span></div>
-      ${waiting?`<div class="stat"><b>${waiting}</b><span>${t("aoWaiting")}</span></div>`:""}
-      ${rows.length?`<div class="stat"><b>${done}/${rows.length}</b><span>${t("aoReq")}</span></div>`:""}
-    </div>
-    <div class="card cc">
-      <div class="cc-row"><span class="cc-ic">${ic("users",17)}</span>
-        <span class="cc-x">${t("aoStaff")}</span>
-        <span class="cc-v">${who?esc(who):`<i class="ao-none">${esc(t("aoNobody"))}</i>`}</span></div>
-      <div class="cc-row"><span class="cc-ic">${ic("clipboard",17)}</span>
-        <span class="cc-x">${t("aoReq")}</span>
-        <span class="cc-v">${rows.length?`${done}/${rows.length}`:`<i class="ao-none">\u2014</i>`}</span></div>
-    </div>
-    ${(isMgr||isStaff)?`<div class="ao-sec">${t("aoGuests")}</div>
-      ${shown.length?`<div class="card" style="padding:2px 14px">
-        ${shown.map(b=>`<div class="booking-line"><span><b>${t("room")} ${esc(b.room)}</b>${b.guest_name?" \u00b7 "+esc(b.guest_name):""}</span>
-          <span class="pill">${(+b.adults||0)+(+b.children||0)||1}</span></div>`).join("")}
-        ${rest?`<p class="mini" style="padding:8px 0">${t("aoAndMore").replace("{n}",rest)}</p>`:""}
-      </div>`:`<p class="mini">${t("aoNoGuests")}</p>`}`:""}
-    ${isMgr?`
-      <button class="btn" id="ao-edit">${ic("pen",16)} ${t("aoEdit")}</button>
-      <button class="btn ghost" id="ao-att">${ic("check",16)} ${t("aoAttendance")}</button>
-      <button class="btn ghost" id="ao-req">${ic("clipboard",16)} ${sh?t("aoReqOpen"):t("aoReqMake")}</button>
-      <button class="btn ghost" id="ao-assign">${ic("users",16)} ${t("aoAssign")}</button>`:""}
-    ${isStaff?`<button class="btn" id="ao-att">${ic("check",16)} ${t("aoAttendance")}</button>`:""}
-    <button class="btn ghost" id="ao-x">${t("close")}</button>`);
-  wrap.querySelector("#ao-x").onclick=()=>wrap.remove();
-  const ed=wrap.querySelector("#ao-edit");
-  if(ed) ed.onclick=()=>{ wrap.remove(); openEditModal(a); };
-  const at=wrap.querySelector("#ao-att");
-  if(at) at.onclick=()=>{ wrap.remove(); openAttendanceModal(a); };
-  const rq=wrap.querySelector("#ao-req");
-  if(rq) rq.onclick=()=>{
-    wrap.remove();
-    if(sh){ openReqEditor(sh.id); return; }
-    openReqEditor();                       // a blank sheet, ready to be filled for this one
-  };
-  const asg=wrap.querySelector("#ao-assign");
-  if(asg) asg.onclick=()=>{ wrap.remove(); S.tab="assign"; render(); };
-}
-/* ===== CONTROL CENTER =====
-   What still needs doing today, in one card, each line opening the page that
-   fixes it. Everything here is counted from data the app already holds. */
-function ccRow(icon, label, value, tab, tone){
-  return `<button class="cc-row${tone?" "+tone:""}"${tab?` data-ccgo="${esc(tab)}"`:""}>
-    <span class="cc-ic">${ic(icon,17)}</span>
-    <span class="cc-x">${esc(label)}</span>
-    <span class="cc-v">${value}</span>
-    ${tab?`<span class="cc-go">${ic("back",14)}</span>`:""}
-  </button>`;
-}
-function ccTodayOps(){
-  const d=todayIndex();
-  const acts=(S.activities||[]).filter(a=>a && a.day===d);
-  const upNext=acts.filter(a=>activityStatus(a)==="todo")
-    .sort((x,y)=>(timeToMin(actStart(x))||0)-(timeToMin(actStart(y))||0)).slice(0,3);
-  const unassigned=acts.filter(a=>!String(a.entertainer||"").trim()).length;
-  const sheets=reqForDate(todayISO());
-  const sheetLines=sheets.reduce((n,sh)=>n+((sh.rows||[]).length),0);
-  const sheetDone=sheets.reduce((n,sh)=>n+reqDone(sh),0);
-  const openTasks=(S.tasks||[]).filter(k=>String(k.status||"")!=="done").length;
-  const guestReq=(S.requests||[]).filter(r=>String(r.status||"")==="new").length;
-  const teamReq=teamReqCount();
-  const rows=[
-    unassigned ? ccRow("users",  t("ccNoAssign"),  unassigned, "assign", "warn") : "",
-    sheets.length ? ccRow("clipboard", t("ccReqToday"),
-        `${sheetDone} ${t("ccOfN")} ${sheetLines} ${t("ccReady")}`, "req",
-        (sheetLines && sheetDone<sheetLines) ? "warn" : "good") : "",
-    openTasks ? ccRow("check", t("ccOpenTasks"), openTasks, "assign", "warn") : "",
-    guestReq  ? ccRow("bell",  t("ccOpenReq"),   guestReq,  "guests", "warn") : "",
-    teamReq   ? ccRow("bell",  t("ccTeamReq"),   teamReq,   "team",   "warn") : ""
-  ].filter(Boolean).join("");
-  return `<div class="sec"><h3>${ic("clock",18)} ${t("ccOps")}</h3>
-    ${upNext.length?`<div class="card" style="padding:2px 14px;margin-bottom:10px">
-      <div class="cc-head">${t("ccUpNext")}</div>
-      ${upNext.map(a=>`<div class="cc-next" data-open="${esc(String(a.id))}">
-        <span class="cc-t">${esc(actStart(a))}</span>
-        <span class="cc-x"><b>${esc(a.name)}</b>${a.location?`<span class="mini">${esc(a.location)}</span>`:""}</span>
-        <span class="mini">${esc(entertainerName(a.entertainer)||"\u2014")}</span>
-      </div>`).join("")}
-    </div>`:""}
-    ${rows?`<div class="card cc">${rows}</div>`
-      :`<div class="card cc"><p class="mini" style="padding:12px 2px;margin:0">${t("ccAllClear")}</p></div>`}
-  </div>`;
-}
-function ccTeamPulse(){
-  const d=todayIndex();
-  const dp=dayPlanFor(d);
-  const byNum={}; (S.users||[]).forEach(u=>{ if(u.number) byNum[u.number]=u; });
-  const nums=Object.keys(byNum).map(Number).filter(n=>n>=1&&n<=10);
-  const off=nums.filter(n=>(dp.off||[]).includes(n));
-  const working=nums.filter(n=>!(dp.off||[]).includes(n));
-  const today=todayISO();
-  const marked=new Set((S.attendance||[]).filter(r=>String(r.date||"")===today).map(r=>String(r.number))).size;
-  const openTasks=(S.tasks||[]).filter(k=>String(k.status||"")!=="done").length;
-  return `<div class="sec"><h3>${ic("users",18)} ${t("ccTeamPulse")}</h3>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${working.length}</b><span>${t("ccWorkingToday")}</span></div>
-      <div class="stat"><b>${off.length}</b><span>${t("ccOffToday")}</span></div>
-      <div class="stat"><b>${marked}/${working.length||nums.length}</b><span>${t("ccAttMarked")}</span></div>
-      <div class="stat"><b>${openTasks}</b><span>${t("ccOpenTasks")}</span></div>
-    </div>
-    <div class="card cc">
-      ${ccRow("users", t("teamTab"), nums.length, "team", "")}
-      ${ccRow("check", t("assignCenter"), "", "assign", "")}
-    </div>
   </div>`;
 }
 /* Tonight's show or party, and whether the hotel is actually ready for it.
@@ -11031,20 +10153,6 @@ function wireCommon(){
   document.querySelectorAll("[data-fbopen]").forEach(b=>b.onclick=()=>openFeedbackDetail(b.dataset.fbopen));
   document.querySelectorAll("[data-fbdept]").forEach(b=>b.onclick=()=>openDeptDetail(b.dataset.fbdept));
   const fbx=$("#btn-fbexport"); if(fbx) fbx.onclick=openFeedbackExport;
-  document.querySelectorAll("[data-bnav]").forEach(b=>b.onclick=()=>{
-    const id=b.dataset.bnav;
-    if(id==="__menu"){ openMenuDrawer(); return; }
-    S.tab=id; S.chatRoom=null; render();
-  });
-  document.querySelectorAll("[data-catgo]").forEach(b=>b.onclick=()=>{
-    S.tab="program"; S.op=b.dataset.catgo; S.cat=null; render();
-  });
-  const seeP=$("#btn-seeprog");
-  if(seeP) seeP.onclick=()=>{ S.tab="program"; S.op=null; S.cat=null; render(); };
-  const ovAll=$("#btn-ovall");
-  if(ovAll) ovAll.onclick=openMenuDrawer;
-  const fullS=$("#btn-fullsched");
-  if(fullS) fullS.onclick=()=>{ S.tab="today"; render(); };
   const fbd=$("#btn-fbdepts"); if(fbd) fbd.onclick=openDeptEditor;
   const rail=$("#hero-rail"), dots=$("#hero-dots");
   if(rail && dots){
@@ -11104,45 +10212,10 @@ function wireCommon(){
     const b=S.buses.find(x=>x.id==el.dataset.busedit); if(b) openBusModal(b);
   });
   document.querySelectorAll("[data-busadd]").forEach(el=>el.onclick=()=>openBusModal(null, el.dataset.busadd));
-  document.querySelectorAll("[data-crmf]").forEach(b=>b.onclick=()=>{
-    S.crmFilter=b.dataset.crmf; render();
-  });
-  const g3m=$("#g3-msg");
-  if(g3m) g3m.onclick=()=>{
-    const acc=(S.accounts||[]).find(a=>String(a.id)===String(String(S.tab).slice(4)));
-    if(!acc) return;
-    S.tab="inbox"; S.sub.inbox="guests"; S.chatRoom=String(acc.room); render();
-  };
-  const epm=$("#ep-msg");
-  if(epm) epm.onclick=()=>{
-    const un=String(S.tab).startsWith("emp:")?String(S.tab).slice(4):"";
-    if(!un) return;
-    S.tab="inbox"; S.sub.inbox="team"; S.chatRoom="staff:"+un; render();
-  };
-  document.querySelectorAll("[data-cmf]").forEach(b=>b.onclick=()=>{
-    S.sub.inbox=b.dataset.cmf; S.chatRoom=null; render();
-  });
-  const cmN=$("#cm-newnote"); if(cmN) cmN.onclick=openComposeNoteModal;
-  document.querySelectorAll("[data-cmnotedel]").forEach(b=>b.onclick=async ()=>{
-    if(!await confirmAction({question:t("delete"),note:t("cannotUndo"),danger:true})) return;
-    const raw=b.dataset.cmnotedel;
-    try{ await DB.deleteNote(isNaN(+raw)?raw:+raw); toastOk(t("deleted")); render(); }
-    catch(e){ toastErr(t("errSave")); }
-  });
-  document.querySelectorAll("[data-ccgo]").forEach(b=>b.onclick=()=>{
-    const bits=String(b.dataset.ccgo).split(":");
-    if(bits.length===2 && S.sub && Object.prototype.hasOwnProperty.call(S.sub, bits[0])) S.sub[bits[0]]=bits[1];
-    S.tab=bits[0]; S.chatRoom=null; render();
-  });
   document.querySelectorAll("[data-hub]").forEach(el=>el.onclick=()=>{
     const h=el.dataset.hub;
     if(h==="export"){ openExportModal(); return; }
-    // "tab:sub" lands straight on the right sub-tab instead of the default one
-    const bits=String(h).split(":");
-    if(bits.length===2 && S.sub && Object.prototype.hasOwnProperty.call(S.sub, bits[0])){
-      S.sub[bits[0]]=bits[1]; S.tab=bits[0]; S.chatRoom=null; render(); return;
-    }
-    S.tab=h; S.chatRoom=null; render();
+    S.tab=h; render();
   });
   const crumbHub=$("#crumb-hub"); if(crumbHub) crumbHub.onclick=()=>{ S.tab="settings"; render(); };
   const crumbPb=$("#crumb-pb"); if(crumbPb) crumbPb.onclick=()=>{ S.tab="builder"; render(); };
@@ -11467,12 +10540,9 @@ function wireCommon(){
     toastOk(t("saved")); render();
   };
   document.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>{
-    if(!S.session) return;
-    const a=S.activities.find(x=>String(x.id)===String(el.dataset.open));
-    if(!a) return;
-    // a guest books; everyone working opens the activity itself
-    if(S.session.role==="guest"){ if(!myBooking(a.id)) openBookModal(a); return; }
-    openActivitySheet(a.id);
+    if(!S.session || S.session.role!=="guest") return;
+    const a=S.activities.find(x=>x.id===+el.dataset.open);
+    if(a && !myBooking(a.id)) openBookModal(a);
   });
   /* chat send + read marking + scroll */
   const cs=$("#chat-send");
