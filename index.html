@@ -1679,12 +1679,14 @@ html{font-size:calc(16px * var(--fscale,1))}
 .th-mid b{display:block;font-size:14.5px;font-weight:600;line-height:1.25}
 .th-mid span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
 .th-go{flex:none;opacity:.35;transform:rotate(180deg)}
-.th-tick{flex:0 0 30px;width:30px;height:30px;aspect-ratio:1;align-self:center;
-  border-radius:50%;border:1.6px solid var(--line);
+.th-tick{flex:0 0 24px;width:24px;height:24px;aspect-ratio:1;align-self:flex-start;
+  margin-top:3px;margin-inline-start:8px;
+  border-radius:50%;border:1.5px solid var(--line);
   display:grid;place-items:center;background:none;cursor:pointer;padding:0;
   color:var(--line);transition:background .15s ease,border-color .15s ease}
-.th-tick svg{stroke:currentColor}
+.th-tick svg{stroke:currentColor;width:13px;height:13px}
 .th-tick.on{background:#6E9155;border-color:#6E9155;color:#fff}
+.th-tick.on svg{stroke-width:2.4}
 
 /* ===== stat tiles ===== */
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
@@ -1795,6 +1797,10 @@ html{font-size:calc(16px * var(--fscale,1))}
   font-weight:700;margin:16px 0 6px}
 .ao-none{font-style:normal;color:var(--muted);font-weight:600}
 /* ===== control centre ===== */
+.cd{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;letter-spacing:.02em;
+  color:var(--bronze)}
+.cd:empty{display:none}
+.cd.live{color:#C0603F}
 .cc{padding:2px 14px}
 .cc-head{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
   font-weight:700;padding:10px 0 4px}
@@ -2132,6 +2138,10 @@ Object.assign(DICT.en, {
   fbPeriodHint:"Feedback resets at midnight. Nothing is ever deleted — switch the period to look back.",
   fbNoneToday:"No feedback collected today yet.",
   ccAllTeam:"The whole team",
+  cdStartsIn:"starts in",
+  cdEndsIn:"ends in",
+  cdNow:"on now",
+  entNobody:"Nobody assigned yet",
   ccOpenRequests:"Open requests",
   socialShow:"Follow us",
   nfWhatHappened:"What happened",
@@ -4483,7 +4493,7 @@ function categoryRow(){
 function thumbRow(a, opts){
   const o=opts||{};
   const tick = o.tick
-    ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}" aria-pressed="${!!o.done}">${ic("check",15)}</button>`
+    ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}" aria-pressed="${!!o.done}">${ic("check",13)}</button>`
     : `<span class="th-go">${ic("back",16)}</span>`;
   return `<button class="thumbrow" data-open="${esc(String(a.id))}">
     <span class="th-time">${esc(actStart(a))}</span>
@@ -5709,7 +5719,7 @@ function autoAssignDay(day, opts, sharedLoad){
   if(crew.length){
     (S.activities||[])
       .filter(a=>a.day===day && activitySlot(a)==="event")
-      .filter(a=>o.onlyEmpty ? !String(a.entertainer||"").trim() : true)
+      .filter(a=>o.onlyEmpty ? actIsUnassigned(a) : true)
       .forEach(a=>{
         out.push({activity:a, slot:"event",
           username:crew.map(u=>u.username).join(","),
@@ -5719,7 +5729,7 @@ function autoAssignDay(day, opts, sharedLoad){
   ["morning","afternoon"].forEach(slot=>{
     const acts=(S.activities||[])
       .filter(a=>a.day===day && activitySlot(a)===slot)
-      .filter(a=>o.onlyEmpty ? !String(a.entertainer||"").trim() : true)
+      .filter(a=>o.onlyEmpty ? actIsUnassigned(a) : true)
       .sort((x,y)=>String(x.time).localeCompare(String(y.time)));
     if(!acts.length) return;
     const usedThisSlot=new Set();
@@ -6161,7 +6171,7 @@ function assignView(){
   const sub=S.sub.assign||"acts";
   const acts=(S.activities||[]).filter(a=>a.day===day)
     .sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  const open=acts.filter(a=>!String(a.entertainer||"").trim());
+  const open=acts.filter(a=>actIsUnassigned(a));
   const team=(S.users||[]).filter(u=>u.role==="staff"||u.role==="manager");
   const working=team.filter(u=>availableOn(u,day,ds));
   const offList=team.filter(u=>!availableOn(u,day,ds));
@@ -6200,7 +6210,7 @@ function assignActsInner(day, ds, acts, open, working){
       :`<div class="ok-note" style="margin-top:12px">${ic("check",18)} ${t("allAssigned")}</div>`}
     <div class="card" style="margin-top:12px">
       ${acts.length?acts.map(a=>{
-        const who=String(a.entertainer||"").trim();
+        const who=actStaffLabel(a);
         const sk=activitySkill(a);
         return `<div class="asg-row" data-aopen="${a.id}">
           <span class="asg-t">${esc(a.time||"")}</span>
@@ -7673,7 +7683,7 @@ function myWorkDayView(){
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
   return `<div class="screen fadein">
-    ${heroTop({greet:t(greetKey()), title:S.session.name, quote:t("myActsSub"),
+    ${heroTop({greet:t(greetKey()), title:S.session.name,
                sub:"#"+num+" · "+roleForNumber(num), side:heroSide()})}
     ${dayChips()}
     ${staffTiles(day, myActs)}
@@ -7717,10 +7727,8 @@ function myDayItems(day){
     out.push(mdRow(mdMin(r.time), r.time, t(r.k), note, "routine"));
   });
 
-  // the activities this entertainer is on
-  (S.activities||[]).filter(a=>a.day===day && isMineAct(a)).forEach(a=>{
-    out.push(mdRow(mdMin(actStart(a)), actStart(a), a.name, a.location||"", "mine", a.id));
-  });
+  // her own activities are the card directly above this one, so the line does
+  // not repeat them — it carries the rhythm, the duties and the tasks around them
 
   // the evening show and the entertainer's own duties
   if(dp.eveningShow && dp.showTime){
@@ -8060,7 +8068,7 @@ const PAGE_SECTIONS={
   // happen today, how the guests are doing, how the team is doing.
   dash:    ["tiles","attention","live","tonight","ccops",
             "stats","feedback","nations","activities",
-            "teampulse","overview","trends","export"],
+            "teampulse","overview","trends","everything","export"],
   guests:  ["crm","rooms","bookings","chat","requests","feedback"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
@@ -8070,7 +8078,7 @@ const PAGE_SECTIONS={
 const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
   dash:    {tiles:"atAGlance",overview:"todayOverview",attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",
-            ccops:"ccOps",teampulse:"ccTeamPulse",export:"exportData",stats:"ccGuestPulse",feedback:"fbAnalytics",
+            ccops:"ccOps",teampulse:"ccTeamPulse",everything:"mdWholeDay",export:"exportData",stats:"ccGuestPulse",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
             requests:"requests",feedback:"feedback"},
@@ -8359,6 +8367,7 @@ function dashView(){
     </div>`,
     ccops:     ()=>ccTodayOps(),
     teampulse: ()=>ccTeamPulse(),
+    everything: ()=>dayPlanTimes(todayIndex(), "mdWholeDay"),
     feedback:  ()=>feedbackAnalyticsCard(),
     nations:   ()=>nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
@@ -8546,17 +8555,25 @@ function actIsWholeTeam(a){
   if(actIsAllTeam(a)) return true;
   return !ACT_PERSONAL_CATS.includes(normCat(a||{}));
 }
-function actHasStaff(a){
-  return !!String((a&&a.entertainer)||"").trim() || actIsWholeTeam(a);
+/* The picker's first option has always been "All team" with an empty value, so
+   empty means the whole team is on it — never that nobody is. "Nobody yet" now
+   has a value of its own, so a fully staffed show can no longer read unstaffed. */
+const ENT_NOBODY="-";
+function actIsUnassigned(a){
+  return String((a&&a.entertainer)||"").trim()===ENT_NOBODY;
 }
+function actHasStaff(a){ return !actIsUnassigned(a); }
 function actIsAllTeam(a){
   const v=String((a&&a.entertainer)||"").trim().toLowerCase();
-  return v==="all" || v==="all team" || v==="team" || v===String(t("ccAllTeam")).toLowerCase();
+  if(v===ENT_NOBODY) return false;
+  return v==="" || v==="all" || v==="all team" || v==="team"
+      || v===String(t("allTeam")).toLowerCase() || v===String(t("ccAllTeam")).toLowerCase();
 }
 function actStaffLabel(a){
+  if(actIsUnassigned(a)) return "";
   const v=String((a&&a.entertainer)||"").trim();
   if(v && !actIsAllTeam(a)) return entertainerName(v)||v;   // always the display name
-  return actIsWholeTeam(a) ? t("ccAllTeam") : "";
+  return t("ccAllTeam");
 }
 function ccRow(icon, label, value, tab, tone){
   return `<button class="cc-row${tone?" "+tone:""}"${tab?` data-ccgo="${esc(tab)}"`:""}>
@@ -8644,7 +8661,7 @@ function tonightCard(){
   const rows=(sh && sh.rows) || [];
   const done=rows.filter(r=>r.done).length;
   const pct=rows.length?Math.round(done/rows.length*100):0;
-  const who=String(a.entertainer||"").trim();
+  const who=actStaffLabel(a);
   const byDept={};
   rows.forEach(r=>{ const k=r.dept||"\u2014"; byDept[k]=byDept[k]||{n:0,d:0}; byDept[k].n++; if(r.done) byDept[k].d++; });
   const chips=Object.keys(byDept).slice(0,3).map(k=>{
@@ -8670,6 +8687,38 @@ function tonightCard(){
 }
 /* What is running right now, what starts next, and whether anyone is on it.
    The manager's first question every afternoon. */
+/* "20:15 - 22:15" tells the manager nothing at a glance. This says how long
+   until it starts, or how long until it ends, and keeps ticking. */
+function cdText(mins, live){
+  const m=Math.max(0, Math.round(mins));
+  if(live && m<=0) return t("cdNow");
+  const h=Math.floor(m/60), r=m%60;
+  const span = h ? (h+"h"+(r?" "+r+"m":"")) : (m+"m");
+  return (live?t("cdEndsIn"):t("cdStartsIn"))+" "+span;
+}
+function cdChip(startMin, endMin){
+  const live = `${startMin}|${endMin}`;
+  return `<span class="cd" data-cd="${live}"></span>`;
+}
+/* One timer for the whole screen, refreshing only the little countdowns. */
+let cdTimer=null;
+function wireCountdowns(){
+  if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
+  const paint=()=>{
+    const els=document.querySelectorAll("[data-cd]");
+    if(!els.length){ if(cdTimer){ clearInterval(cdTimer); cdTimer=null; } return; }
+    const now=nowMinutes();
+    els.forEach(el=>{
+      const bits=String(el.dataset.cd).split("|");
+      const s0=+bits[0], e0=+bits[1];
+      const live = now>=s0 && now<e0;
+      el.textContent = now>=e0 ? "" : cdText(live ? e0-now : s0-now, live);
+      el.className = "cd"+(live?" live":"");
+    });
+  };
+  paint();
+  cdTimer=setInterval(paint, 30000);
+}
 function liveOpsCard(){
   const day=todayIndex();
   const now=(()=>{ const d=new Date(); return d.getHours()*60+d.getMinutes(); })();
@@ -8695,7 +8744,8 @@ function liveOpsCard(){
     return `<div class="booking-line" data-actopen="${esc(String(a.id))}" style="cursor:pointer">
       <span style="min-width:0"><b>${esc(a.name)}</b>
         <br><span class="mini">${esc(String(a.time||""))}${a.location?" \u00b7 "+esc(a.location):""}${
-          booked?" \u00b7 "+booked+" "+t("guests"):""}${who?" \u00b7 "+esc(who):""}</span></span>
+          booked?" \u00b7 "+booked+" "+t("guests"):""}${who?" \u00b7 "+esc(who):""}</span>
+        <br>${cdChip(x.s0, x.s1)}</span>
       ${chip}
     </div>`;
   };
@@ -9105,7 +9155,7 @@ function buildDataset(kind){
   if(kind==="program") return {title:t("manage")+exportFilterNote(),
     headers:[t("day"),t("time"),t("actName"),t("category"),t("location"),t("entertainer"),t("capacity"),t("makeHighlight")],
     rows:exportActivities().slice().sort((x,y)=>(x.day-y.day)||String(x.time).localeCompare(String(y.time)))
-      .map(a=>[t("days")[a.day]||"",a.time||"",a.name||"",catLabel(normCat(a)),a.location||"",a.entertainer||"",a.capacity||0,a.highlight?t("yes"):""])};
+      .map(a=>[t("days")[a.day]||"",a.time||"",a.name||"",catLabel(normCat(a)),a.location||"",actStaffLabel(a),a.capacity||0,a.highlight?t("yes"):""])};
   if(kind==="dayplan"){
     // One clean row per day — exactly what hotel management needs at a glance
     const onlyDay=expDay();
@@ -11014,9 +11064,11 @@ function openEditModal(a){
   const tm=splitTime(a.time);
   const catOptions=OPS.map(o=>`<optgroup label="${esc(opLabel(o.id))}">${o.cats.map(c=>`<option value="${c}" ${cur===c?"selected":""}>${catLabel(c)}</option>`).join("")}</optgroup>`).join("");
   const staff=S.users.filter(u=>u.role==="staff");
-  const entOptions=`<option value="">${t("allTeam")}</option>`
+  const entOptions=`<option value="" ${actIsAllTeam(a)?"selected":""}>${t("allTeam")}</option>`
+    + `<option value="${ENT_NOBODY}" ${actIsUnassigned(a)?"selected":""}>${t("entNobody")}</option>`
     + staff.map(u=>`<option value="${esc(u.username)}" ${String(a.entertainer||"").toLowerCase()===u.username.toLowerCase()?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("");
-  const knownEnt=!a.entertainer || staff.some(u=>u.username.toLowerCase()===String(a.entertainer).toLowerCase());
+  const knownEnt=!a.entertainer || actIsAllTeam(a) || actIsUnassigned(a)
+    || staff.some(u=>u.username.toLowerCase()===String(a.entertainer).toLowerCase());
   const wrap=baseModal(`
     <h3>${isNew?t("addActivity"):t("editActivity")}</h3>
     <label>${t("actName")}</label><input id="e-name" value="${esc(a.name)}">
@@ -11422,6 +11474,7 @@ function wireCommon(){
   });
   document.querySelectorAll("[data-busadd]").forEach(el=>el.onclick=()=>openBusModal(null, el.dataset.busadd));
   demoteExtraPrimaries();
+  wireCountdowns();
   const bMe=$("#btn-me"); if(bMe) bMe.onclick=openAccountSheet;
   document.querySelectorAll("[data-fbper]").forEach(b=>b.onclick=()=>{ S.fbPeriod=b.dataset.fbper; render(); });
   const bSo=$("#btn-social"); if(bSo) bSo.onclick=()=>{ S.socialOpen=!S.socialOpen; render(); };
