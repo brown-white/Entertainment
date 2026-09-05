@@ -1606,6 +1606,127 @@ html{font-size:calc(16px * var(--fscale,1))}
 .fb-chev{flex:none;opacity:.38;transform:rotate(180deg)}
 .bd-sec-head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   font-weight:700;margin:16px 0 6px}
+/* ===== hero header ===== */
+.hero{position:relative;margin:calc(-1 * (var(--topgap,18px) + env(safe-area-inset-top))) -18px 18px;overflow:hidden;
+  border-radius:0 0 30px 30px;color:#fff;isolation:isolate;
+  box-shadow:0 18px 40px -26px rgba(16,10,6,.6)}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.06)}
+.hero-bg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(168deg,rgba(20,14,9,.52) 0%,rgba(20,14,9,.74) 48%,rgba(20,14,9,.92) 100%)}
+.hero-in{position:relative;padding:calc(14px + env(safe-area-inset-top)) 18px 24px}
+.hero .top.hero-bar{margin-bottom:22px}
+.hero .iconbtn{background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(6px);
+  border-color:rgba(255,255,255,.2)}
+.hero .iconbtn svg{stroke:#fff}
+.hero .iconbtn[disabled]{opacity:.35}
+.hero-say{display:flex;align-items:flex-end;gap:14px}
+.hero-words{flex:1;min-width:0}
+.hero-hi{display:block;font-size:13px;font-weight:500;color:rgba(255,255,255,.82);letter-spacing:.01em}
+.hero-words h1{font-family:var(--font-display);font-size:31px;line-height:1.08;font-weight:500;
+  margin:2px 0 0;letter-spacing:-.01em;color:#fff}
+.hero-sub{font-size:12.5px;color:rgba(255,255,255,.72);margin:6px 0 0}
+.hero-quote{font-size:12px;color:rgba(255,255,255,.66);margin:7px 0 0;font-style:italic}
+.hero-av{flex:none;width:74px;height:74px;border-radius:50%;overflow:hidden;display:grid;place-items:center;
+  border:2.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
+.hero-av img{width:100%;height:100%;object-fit:cover}
+.hero-av b{font-family:var(--font-display);font-size:27px;color:#fff}
+.hero-chip{flex:none;display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;
+  background:rgba(255,255,255,.16);backdrop-filter:blur(6px);font-size:14px;font-weight:600}
+.hero-chip svg{stroke:#fff}
+.hero-chip small{display:block;font-size:10px;font-weight:500;opacity:.8}
+.hero-live{flex:none;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+  background:#B0392B;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.hero-live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulseDot 1.6s infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ===== today's highlight ===== */
+.hl{position:relative;border-radius:20px;overflow:hidden;margin-bottom:18px;min-height:186px;
+  display:flex;align-items:flex-end;color:#fff;box-shadow:0 14px 30px -20px rgba(16,10,6,.7)}
+.hl-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.hl-bg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(18,12,8,.9) 0%,rgba(18,12,8,.25) 62%,rgba(18,12,8,.1) 100%)}
+.hl-in{position:relative;padding:16px;width:100%;display:flex;align-items:flex-end;gap:12px}
+.hl-txt{flex:1;min-width:0}
+.hl-lbl{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.78);font-weight:700}
+.hl-name{display:block;font-family:var(--font-display);font-size:23px;font-weight:500;margin:3px 0 2px}
+.hl-when{display:block;font-size:12px;color:rgba(255,255,255,.8)}
+.hl-btn{flex:none;border:0;background:rgba(255,255,255,.92);color:#2B1F16;border-radius:999px;
+  padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* ===== round category buttons ===== */
+.catrow{display:flex;gap:10px;margin-bottom:20px}
+.catrow button{flex:1;min-width:0;border:0;background:none;padding:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--ink);font-family:inherit}
+.catrow .cb{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;
+  background:var(--sand);border:1px solid var(--line);transition:transform .16s ease}
+.catrow button:active .cb{transform:scale(.93)}
+.catrow .cb svg{stroke:var(--bronze)}
+.catrow span{font-size:11.5px;font-weight:600;text-align:center;line-height:1.2}
+
+/* ===== list rows with a thumbnail ===== */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.sec-head h3{margin:0}
+.sec-head button{border:0;background:none;color:var(--bronze);font-size:12.5px;font-weight:600;
+  cursor:pointer;font-family:inherit;padding:0}
+.thumbrow{display:flex;align-items:center;gap:12px;padding:11px 0;cursor:pointer;width:100%;
+  border:0;background:none;text-align:start;color:inherit;font-family:inherit}
+.thumbrow:not(:last-child){border-bottom:1px solid var(--line)}
+.th-img{flex:none;width:52px;height:52px;border-radius:14px;overflow:hidden;background:var(--sand)}
+.th-img img{width:100%;height:100%;object-fit:cover}
+.th-time{flex:none;width:46px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.th-mid{flex:1;min-width:0}
+.th-mid b{display:block;font-size:14.5px;font-weight:600;line-height:1.25}
+.th-mid span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.th-go{flex:none;opacity:.35;transform:rotate(180deg)}
+.th-tick{flex:none;width:24px;height:24px;border-radius:50%;border:1.6px solid var(--line);
+  display:grid;place-items:center;background:none;cursor:pointer;padding:0}
+.th-tick.on{background:#6E9155;border-color:#6E9155}
+.th-tick.on svg{stroke:#fff}
+
+/* ===== stat tiles ===== */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.tiles .ti{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 8px;
+  text-align:center}
+.tiles .ti b{display:block;font-family:var(--font-display);font-size:19px;font-weight:500}
+.tiles .ti span{display:block;font-size:10px;color:var(--muted);margin-top:2px;line-height:1.2}
+.bigtiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.bigtiles .bt{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 15px;
+  display:flex;align-items:center;gap:11px}
+.bigtiles .bt .bi{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
+  background:var(--sand)}
+.bigtiles .bt .bi svg{stroke:var(--bronze)}
+.bigtiles .bt b{display:block;font-family:var(--font-display);font-size:23px;font-weight:500;line-height:1}
+.bigtiles .bt span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.2}
+
+/* ===== the overview list ===== */
+.ovlist{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 15px;margin-bottom:18px}
+.ovrow{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:14px 0;
+  cursor:pointer;text-align:start;color:inherit;font-family:inherit}
+.ovrow:not(:last-child){border-bottom:1px solid var(--line)}
+.ovrow .oi{flex:none;width:22px;display:grid;place-items:center}
+.ovrow .oi svg{stroke:var(--bronze)}
+.ovrow .om{flex:1;min-width:0}
+.ovrow .om b{display:block;font-size:14.5px;font-weight:600}
+.ovrow .om span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.ovrow .ob{flex:none;min-width:22px;height:22px;border-radius:999px;background:var(--bronze);color:#fff;
+  font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 6px}
+.ovrow .og{flex:none;opacity:.35;transform:rotate(180deg)}
+
+/* ===== bottom tab bar ===== */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:var(--z-sticky,60);display:flex;
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));gap:2px;
+  background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line)}
+.tabbar .tb{flex:1;min-width:0;border:0;background:none;padding:6px 2px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-family:inherit}
+.tabbar .tb span{font-size:9.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tabbar .tb svg{stroke:var(--muted)}
+.tabbar .tb.on{color:var(--bronze)}
+.tabbar .tb.on svg{stroke:var(--bronze)}
+.tabbar .tb.on span{font-weight:700}
+.screen{padding-bottom:104px}
 .rq-it{display:flex;align-items:center;gap:10px;padding:12px 0;cursor:pointer}
 .rq-it:not(:last-child){border-bottom:1px solid var(--line)}
 .rq-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
@@ -1847,6 +1968,38 @@ Object.assign(DICT.en, {
   liveNothing:"Nothing running right now.",
   opsToday:"Activities today",
   opsPeople:"Participants",
+  goodMorning:"Good morning",
+  goodAfternoon:"Good afternoon",
+  goodEvening:"Good evening",
+  welcomeParadise:"Welcome to paradise",
+  welcomeBack:"Welcome back",
+  atAGlance:"Everything at a glance",
+  todayHighlight:"Today's highlight",
+  startsAtLbl:"Starts at",
+  viewDetailsBtn:"View details",
+  todayOverview:"Today's overview",
+  seeAllLink:"See all",
+  actsToday:"Activities today",
+  onDutyNow:"Entertainers on duty",
+  guestsJoined:"Guests participated",
+  guestSat:"Guest satisfaction",
+  navHome:"Home",
+  navExplore:"Explore",
+  navProfile:"Profile",
+  navSchedule:"Schedule",
+  navStats:"Stats",
+  navMore:"More",
+  navReports:"Reports",
+  navDashboard:"Dashboard",
+  ovProgram:"Manage activities & events",
+  ovTeam:"Staff, roles & schedules",
+  ovAttendance:"Live participation",
+  ovFeedback:"Reviews & comments",
+  ovRequire:"Event & party requirements",
+  ovSettings:"App configuration",
+  wdThisWeek:"This week",
+  wdRating:"Guest rating",
+  viewFullSchedule:"View the full schedule",
   reqKind:"Kind",
   reqFromProgram:"Pick it from the programme",
   reqFromProgramOwn:"Type it myself",
@@ -3466,7 +3619,8 @@ function render(){
   }
   const r=S.session.role;
   app.innerHTML =
-    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView());
+    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView())
+    + bottomNav();
   navRecord();
   wireCommon();
 }
@@ -3815,6 +3969,202 @@ function topBar(title,sub){
   </div>
   <div class="who whobar"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>`;
 }
+/* ===== THE NEW LOOK =====
+   A full-bleed hero at the top of each home screen and a bottom tab bar.
+   The hero carries exactly the same buttons as the old top bar (menu, back,
+   forward, social, notifications) so every existing handler keeps working. */
+function greetKey(){
+  const h=new Date().getHours();
+  return h<12 ? "goodMorning" : h<18 ? "goodAfternoon" : "goodEvening";
+}
+function heroImage(){
+  const st=S.settings||{};
+  return st.heroImg || IMG.show;
+}
+function heroTop(o){
+  o=o||{};
+  const role=S.session?S.session.role:"guest";
+  const anyDot=navItems(role).some(x=>x[3]>0);
+  return `<div class="hero">
+    <div class="hero-bg" style="background-image:url('${esc(o.image||heroImage())}')"></div>
+    <div class="hero-in">
+      <div class="top hero-bar">
+        <div class="toprow toprow-l">
+          <button class="iconbtn" id="btn-menu" aria-label="${t("menu")}">${ic("menu",21)}${anyDot?'<span class="reddot"></span>':''}</button>
+          <button class="iconbtn navbtn" id="btn-navback" aria-label="${t("navBack")}" ${canNavBack()?"":"disabled"}>${ic("back",19)}</button>
+          <button class="iconbtn navbtn fwd" id="btn-navfwd" aria-label="${t("navForward")}" ${canNavForward()?"":"disabled"}>${ic("back",19)}</button>
+          <span class="socialrow">${socialTopIcons()}</span>
+        </div>
+        <div class="toprow">
+          <button class="iconbtn" id="btn-notes" aria-label="notifications">${ic("bell",19)}${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
+        </div>
+      </div>
+      <div class="hero-say">
+        <div class="hero-words">
+          ${o.greet?`<span class="hero-hi">${esc(o.greet)}</span>`:""}
+          <h1>${esc(o.title||"")}</h1>
+          ${o.sub?`<p class="hero-sub">${esc(o.sub)}</p>`:""}
+          ${o.quote?`<p class="hero-quote">\u201C${esc(o.quote)}\u201D</p>`:""}
+        </div>
+        ${o.side||""}
+      </div>
+    </div>
+  </div>`;
+}
+function heroWeatherChip(){
+  const w=S.weatherNow || (S.weather && S.weather.now) || null;
+  const temp = w && (w.temp!=null ? w.temp : w.temperature);
+  if(temp==null || isNaN(+temp)) return "";
+  return `<span class="hero-chip">${ic("sun",18)}<b>${Math.round(+temp)}\u00B0</b></span>`;
+}
+function heroAvatar(){
+  const n=String((S.session&&S.session.name)||"?").trim().charAt(0).toUpperCase();
+  const ph=S.session&&S.session.photo;
+  return `<span class="hero-av">${ph?`<img src="${esc(ph)}" alt="">`:`<b>${esc(n)}</b>`}</span>`;
+}
+
+/* ---- the bottom tab bar ---- */
+function bottomTabs(role){
+  if(role==="guest") return [
+    ["home","home",t("navHome")],
+    ["program","calendar",menuLabel("menuProgram",t("program"))],
+    ["gallery","sparkle",t("navExplore")],
+    ["chat","chat",t("chat")],
+    ["stay","user",t("navProfile")]];
+  if(role==="staff") return [
+    ["workday","home",t("navHome")],
+    ["today","calendar",t("navSchedule")],
+    ["teaminfo","users",t("teamPage")],
+    ["mypage","user",t("navStats")],
+    ["__menu","menu",t("navMore")]];
+  return [
+    ["dash","grid",t("navDashboard")],
+    ["program","calendar",menuLabel("menuProgram",t("program"))],
+    ["team","users",t("teamTab")],
+    ["req","clipboard",t("navReports")],
+    ["__menu","menu",t("navMore")]];
+}
+/* Only offer a tab the role can actually reach — she can hide pages. */
+function tabReachable(id, role){
+  if(id==="__menu") return true;
+  return navItems(role).some(x=>x[0]===id);
+}
+function bottomNav(){
+  if(!S.session) return "";
+  const role=S.session.role;
+  const items=bottomTabs(role).filter(it=>tabReachable(it[0], role));
+  if(items.length<2) return "";
+  const cur=String(S.tab||"");
+  return `<nav class="tabbar">${items.map(([id,icn,lb])=>`
+    <button class="tb ${cur===id?"on":""}" data-bnav="${esc(id)}">
+      ${ic(icn,20)}<span>${esc(lb)}</span>
+    </button>`).join("")}</nav>`;
+}
+/* The picture that belongs to an activity, for the thumbnails and the highlight. */
+function actImage(a){
+  if(!a) return IMG.show;
+  return a.image || a.photo || catImage(normCat(a));
+}
+function actStart(a){ return String(a&&a.time||"").split(/\s*[\u2013\u2014-]\s*/)[0].trim(); }
+
+/* Today's highlight — the one thing a guest should not miss. */
+function highlightCard(a){
+  if(!a) return "";
+  return `<div class="hl" data-open="${esc(String(a.id))}">
+    <div class="hl-bg" style="background-image:url('${esc(actImage(a))}')"></div>
+    <div class="hl-in">
+      <span class="hl-txt">
+        <span class="hl-lbl">${t("todayHighlight")}</span>
+        <span class="hl-name">${esc(a.name)}</span>
+        <span class="hl-when">${t("startsAtLbl")} ${esc(actStart(a))}${a.location?" \u00b7 "+esc(a.location):""}</span>
+      </span>
+      <button class="hl-btn" data-open="${esc(String(a.id))}">${t("viewDetailsBtn")}</button>
+    </div>
+  </div>`;
+}
+
+/* Four round shortcuts into the programme. */
+function categoryRow(){
+  const groups=[["daytime","sun",t("activities")],["dayevents","calendar",t("eventsToday")],
+                ["evening","star",t("eveningShowLbl")],["special","sparkle",t("reqKindParty")]];
+  return `<div class="catrow">${groups.map(([id,icn,lb])=>`
+    <button data-catgo="${esc(id)}"><span class="cb">${ic(icn,23)}</span><span>${esc(lb)}</span></button>`).join("")}</div>`;
+}
+
+/* One programme line with its picture. */
+function thumbRow(a, opts){
+  const o=opts||{};
+  const tick = o.tick
+    ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}">${o.done?ic("check",14):""}</button>`
+    : `<span class="th-go">${ic("back",16)}</span>`;
+  return `<button class="thumbrow" data-open="${esc(String(a.id))}">
+    <span class="th-time">${esc(actStart(a))}</span>
+    <span class="th-img"><img src="${esc(actImage(a))}" alt="" loading="lazy"></span>
+    <span class="th-mid"><b>${esc(a.name)}</b><span>${esc(a.location||"")}</span></span>
+    ${tick}
+  </button>`;
+}
+function secHead(title, linkLabel, linkId){
+  return `<div class="sec-head"><h3>${esc(title)}</h3>${
+    linkLabel?`<button id="${esc(linkId)}">${esc(linkLabel)}</button>`:""}</div>`;
+}
+/* The four numbers an entertainer cares about on their own day. */
+function staffTiles(day, myActs){
+  const acts=myActs||[];
+  const done=acts.filter(a=>activityStatus(a)==="done").length;
+  const num=S.session&&S.session.number;
+  const week=(S.activities||[]).filter(a=>canSeeGuests(a)).length;
+  const att=(()=>{
+    const rec=(S.attendance||[]).filter(r=>String(r.number)===String(num));
+    if(!rec.length) return null;
+    return Math.round(rec.filter(r=>r.present!==false).length/rec.length*100);
+  })();
+  const mine=(S.feedback||[]).filter(f=>String(f.by_user||"")===String((S.session&&S.session.username)||""));
+  const rating=mine.length?fbAvgAll(mine):0;
+  return `<div class="tiles">
+    <div class="ti"><b>${done}/${acts.length}</b><span>${t("activities")}</span></div>
+    <div class="ti"><b>${att==null?"\u2014":att+"%"}</b><span>${t("attendance")}</span></div>
+    <div class="ti"><b>${rating?rating.toFixed(1):"\u2014"}</b><span>${t("wdRating")}</span></div>
+    <div class="ti"><b>${week}</b><span>${t("wdThisWeek")}</span></div>
+  </div>`;
+}
+/* What the manager sees first: four live numbers, then a way into every area. */
+function dashTiles(){
+  const day=todayIndex();
+  const acts=(S.activities||[]).filter(a=>a.day===day);
+  const onDuty=(S.users||[]).filter(u=>u.role==="staff" && u.number
+    && !(dayPlanFor(day).off||[]).map(String).includes(String(u.number))).length;
+  const joined=(S.bookings||[]).filter(b=>acts.some(a=>a.id===b.activity_id)).length;
+  const sat=fbAvgAll(S.feedback||[]);
+  return `<div class="bigtiles">
+    <div class="bt"><span class="bi">${ic("calendar",18)}</span><span><b>${acts.length}</b><span>${t("actsToday")}</span></span></div>
+    <div class="bt"><span class="bi">${ic("users",18)}</span><span><b>${onDuty}</b><span>${t("onDutyNow")}</span></span></div>
+    <div class="bt"><span class="bi">${ic("user",18)}</span><span><b>${joined}</b><span>${t("guestsJoined")}</span></span></div>
+    <div class="bt"><span class="bi">${ic("star",18)}</span><span><b>${sat?sat.toFixed(1):"\u2014"}</b><span>${t("guestSat")}</span></span></div>
+  </div>`;
+}
+function dashOverview(){
+  const openReq=(S.requests||[]).filter(r=>r.status!=="done").length;
+  const rows=[
+    ["program","calendar",menuLabel("menuProgram",t("program")),t("ovProgram"),0],
+    ["team","users",t("teamTab"),t("ovTeam"),0],
+    ["assign","check",t("assignCenter"),t("ovAttendance"),0],
+    ["guests","star",t("feedback"),t("ovFeedback"),openReq],
+    ["req","clipboard",t("reqTab"),t("ovRequire"),0],
+    ["settings","gear",t("settingsHub"),t("ovSettings"),0]
+  ].filter(r=>navItems("manager").some(x=>x[0]===r[0]));
+  if(!rows.length) return "";
+  return `<div class="sec">
+    ${secHead(t("todayOverview"), t("seeAllLink"), "btn-ovall")}
+    <div class="ovlist">${rows.map(([id,icn,lb,sub,badge])=>`
+      <button class="ovrow" data-tab="${esc(id)}">
+        <span class="oi">${ic(icn,19)}</span>
+        <span class="om"><b>${esc(lb)}</b><span>${esc(sub)}</span></span>
+        ${badge?`<span class="ob">${badge}</span>`:""}
+        <span class="og">${ic("back",16)}</span>
+      </button>`).join("")}</div>
+  </div>`;
+}
 function hubBack(){
   // shown on Settings sub-pages so the manager can go back to the hub
   if(S.session && S.session.role==="manager")
@@ -4118,18 +4468,24 @@ function guestView(){
     const todays=S.activities.filter(a=>a.day===todayIdx);
     const hl=todays.find(a=>a.highlight)||todays[0];
     const wm=(S.settings.welcomeMsg||"").trim();
+    const rest=todays.filter(a=>a!==hl).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
     return `<div class="screen fadein">
-      ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
-      ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
-      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
-      ${heroCarousel([hl].concat(todays.filter(a=>a!==hl && a.highlight)))}
+      ${heroTop({greet:t(greetKey()), title:t("welcomeParadise"),
+                 sub:t("room")+" "+g.room+" · "+t("days")[todayIdx],
+                 image:actImage(hl), side:heroWeatherChip()})}
+      ${highlightCard(hl)}
+      ${categoryRow()}
+      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px;margin-bottom:16px">${esc(wm)}</div>`:""}
+      <div class="sec">
+        ${secHead(t("todayProgram"), t("seeAllLink"), "btn-seeprog")}
+        ${rest.length?`<div class="card" style="padding:2px 15px">${rest.map(a=>thumbRow(a)).join("")}</div>`
+          :`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
+      </div>
       <div class="quickrow">
         <button id="btn-req-song"><span>${ic("music",22)}</span>${t("songRequest")}</button>
         <button id="btn-req-bday"><span>${ic("gift",22)}</span>${t("birthdayRequest")}</button>
       </div>
-      <div class="sec"><h3>${t("todayProgram")}</h3>
-        ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
-      </div>
+      ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
       ${reviewDue(g)?reviewBlock():""}
       ${socialBlock()}
     </div>`;
@@ -6868,15 +7224,21 @@ function myWorkDayView(){
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
   return `<div class="screen fadein">
-    ${topBar(t("myWorkDay"),"#"+num+" · "+S.session.name)}
+    ${heroTop({greet:t(greetKey()), title:S.session.name, quote:t("myActsSub"),
+               sub:"#"+num+" · "+roleForNumber(num), side:heroAvatar()})}
     ${dayChips()}
-    ${photoBlock}
+    ${staffTiles(day, myActs)}
+    <div class="sec">
+      ${secHead(t("myActs"),"","")}
+      ${myActs.length
+        ? `<div class="card" style="padding:2px 15px">${myActs.map(a=>thumbRow(a,{tick:true, done:activityStatus(a)==="done"})).join("")}</div>`
+        : `<div class="empty"><div class="big">${ic("clipboard",30)}</div>${t("noneToday")}</div>`}
+      <button class="btn ghost" id="btn-fullsched" style="margin-top:10px">${t("viewFullSchedule")}</button>
+    </div>
     ${banner}
     ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
     ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
-    ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
-      <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
-      ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
+    ${photoBlock}
     ${dayPlanInfoCard(day)}
     ${workdayTimeline(day, myActs)}
     ${workdayFeedbackCard()}
@@ -7154,7 +7516,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
    their sub-tabs. The same button and the same modal handle both. */
 const PAGE_SECTIONS={
   dayplan: ["info","times","team","standards"],
-  dash:    ["attention","tonight","live","export","stats","feedback","nations","activities","trends"],
+  dash:    ["tiles","overview","attention","tonight","live","export","stats","feedback","nations","activities","trends"],
   guests:  ["crm","rooms","bookings","chat","requests","feedback"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
@@ -7163,7 +7525,7 @@ const PAGE_SECTIONS={
 };
 const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
-  dash:    {attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
+  dash:    {tiles:"atAGlance",overview:"todayOverview",attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
             requests:"requests",feedback:"feedback"},
@@ -7435,6 +7797,8 @@ function dashView(){
   const nats=Object.entries(natMap).map(([n,s])=>[n,s.size]).sort((x,y)=>y[1]-x[1]);
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   const parts={
+    tiles:     ()=>dashTiles(),
+    overview:  ()=>dashOverview(),
     attention: ()=>attentionCard(),
     tonight:   ()=>tonightCard(),
     live:      ()=>liveOpsCard(),
@@ -7458,8 +7822,10 @@ function dashView(){
     </div>`,
     trends:    ()=>trendsCard()
   };
+  const liveNow=(S.activities||[]).some(a=>a.day===todayIndex() && activityStatus(a)==="live");
   return `<div class="screen fadein">
-    ${topBar(t("dashboard"),S.session.name)}
+    ${heroTop({greet:t("welcomeBack"), title:S.session.name, sub:t("atAGlance"),
+               side:liveNow?`<span class="hero-live"><i></i>${t("liveNow")}</span>`:""})}
         ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
     ${arrangeBtn("dash")}
     ${renderParts("dash",parts)}
@@ -10064,6 +10430,20 @@ function wireCommon(){
   document.querySelectorAll("[data-fbopen]").forEach(b=>b.onclick=()=>openFeedbackDetail(b.dataset.fbopen));
   document.querySelectorAll("[data-fbdept]").forEach(b=>b.onclick=()=>openDeptDetail(b.dataset.fbdept));
   const fbx=$("#btn-fbexport"); if(fbx) fbx.onclick=openFeedbackExport;
+  document.querySelectorAll("[data-bnav]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.bnav;
+    if(id==="__menu"){ openMenuDrawer(); return; }
+    S.tab=id; S.chatRoom=null; render();
+  });
+  document.querySelectorAll("[data-catgo]").forEach(b=>b.onclick=()=>{
+    S.tab="program"; S.op=b.dataset.catgo; S.cat=null; render();
+  });
+  const seeP=$("#btn-seeprog");
+  if(seeP) seeP.onclick=()=>{ S.tab="program"; S.op=null; S.cat=null; render(); };
+  const ovAll=$("#btn-ovall");
+  if(ovAll) ovAll.onclick=openMenuDrawer;
+  const fullS=$("#btn-fullsched");
+  if(fullS) fullS.onclick=()=>{ S.tab="today"; render(); };
   const fbd=$("#btn-fbdepts"); if(fbd) fbd.onclick=openDeptEditor;
   const rail=$("#hero-rail"), dots=$("#hero-dots");
   if(rail && dots){
