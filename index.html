@@ -1679,10 +1679,12 @@ html{font-size:calc(16px * var(--fscale,1))}
 .th-mid b{display:block;font-size:14.5px;font-weight:600;line-height:1.25}
 .th-mid span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
 .th-go{flex:none;opacity:.35;transform:rotate(180deg)}
-.th-tick{flex:none;width:24px;height:24px;border-radius:50%;border:1.6px solid var(--line);
-  display:grid;place-items:center;background:none;cursor:pointer;padding:0}
-.th-tick.on{background:#6E9155;border-color:#6E9155}
-.th-tick.on svg{stroke:#fff}
+.th-tick{flex:0 0 30px;width:30px;height:30px;aspect-ratio:1;align-self:center;
+  border-radius:50%;border:1.6px solid var(--line);
+  display:grid;place-items:center;background:none;cursor:pointer;padding:0;
+  color:var(--line);transition:background .15s ease,border-color .15s ease}
+.th-tick svg{stroke:currentColor}
+.th-tick.on{background:#6E9155;border-color:#6E9155;color:#fff}
 
 /* ===== stat tiles ===== */
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
@@ -1921,7 +1923,7 @@ html{font-size:calc(16px * var(--fscale,1))}
 </div></div>
 <script>
 /* ================================================================
-   ⚙️ SETUP — make it real in 2 steps:
+   SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup.sql (one time)
    2) Paste your project values below (Supabase -> Settings -> API)
    While both are empty the app runs on sample data for preview.
@@ -2123,6 +2125,12 @@ Object.assign(DICT.en, {
   gvWhere:"Where",
   gvWith:"With",
   gvFree:"places left",
+  fbToday:"Today",
+  fbWeek:"This week",
+  fbMonth:"This month",
+  fbAllTime:"All",
+  fbPeriodHint:"Feedback resets at midnight. Nothing is ever deleted — switch the period to look back.",
+  fbNoneToday:"No feedback collected today yet.",
   ccAllTeam:"The whole team",
   ccOpenRequests:"Open requests",
   socialShow:"Follow us",
@@ -2211,6 +2219,7 @@ Object.assign(DICT.en, {
   mdWholeDay:"Everything else happening today",
   mdEntranceItem:"Entrance duty",
   mdShowPrep:"Show preparation",
+  yes:"Yes",
   covHead:"Cover photos",
   covHint:"The picture behind the greeting at the top of each home screen. One per role, so guests, entertainers and you can each have your own.",
   covGuest:"Guest cover",
@@ -4474,7 +4483,7 @@ function categoryRow(){
 function thumbRow(a, opts){
   const o=opts||{};
   const tick = o.tick
-    ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}">${o.done?ic("check",14):""}</button>`
+    ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}" aria-pressed="${!!o.done}">${ic("check",15)}</button>`
     : `<span class="th-go">${ic("back",16)}</span>`;
   return `<button class="thumbrow" data-open="${esc(String(a.id))}">
     <span class="th-time">${esc(actStart(a))}</span>
@@ -5077,7 +5086,7 @@ function staffView(){
     return `<div class="screen fadein">
       ${topBar(t("myTasks"),S.session.name)}
       ${rk.length?`<div class="sec"><h3>${ic("trophy",18)} ${t("rank")}</h3><div class="card">
-        ${rk.map((r,i)=>`<div class="booking-line"><span>${rankBadge(i)} ${esc(r.u.display_name||r.u.username)}${r.u.username===me?" ✦":""}</span><span class="pill">${r.points} ${t("points")}</span></div>`).join("")}
+        ${rk.map((r,i)=>`<div class="booking-line"><span>${rankBadge(i)} ${esc(r.u.display_name||r.u.username)}${r.u.username===me?` ${ic("user",12)}`:""}</span><span class="pill">${r.points} ${t("points")}</span></div>`).join("")}
       </div></div>`:""}
       ${mine.length?`<div class="card">${mine.map(x=>taskLine(x,false)).join("")}</div>`:`<div class="empty"><div class="big">${ic("check",30)}</div>${t("noTasks")}</div>`}
       ${myActsCard()}
@@ -5497,7 +5506,7 @@ function guestCrmInner(){
         <div class="crm-mid"><b>${esc(a.name||"")}</b>
           <span class="mini">${t("room")} ${esc(a.room)}${a.nationality?" · "+esc(a.nationality):""}${
             guestIsArriving(a)?` · ${t("goArriving")}`:guestIsLeaving(a)?` · ${t("goLeaving")}`:""}</span>
-          <span class="mini">${r.bookings.length} ${t("bookings").toLowerCase()} · ${r.reqs.length} ${t("requests").toLowerCase()}${r.fb.length?" · ★ "+r.avg:""}</span>
+          <span class="mini">${r.bookings.length} ${t("bookings").toLowerCase()} · ${r.reqs.length} ${t("requests").toLowerCase()}${r.fb.length?` · ${ic("star",12)} ${r.avg}`:""}</span>
           ${flags.length?`<span class="crm-flags">${flags.map(x=>`<span class="crm-flag">${esc(x)}</span>`).join("")}</span>`:""}
         </div>
         <span class="crm-go">${ic("back",15)}</span>
@@ -7659,15 +7668,7 @@ function myWorkDayView(){
   const info=personDayInfo(num,day);
   const myActs=S.activities.filter(a=>a.day===day && canSeeGuests(a)).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
   // photo ring reflects the entertainer's own next/current activity today
-  const liveAct = isToday(day) ? (myActs.find(a=>activityStatus(a)==="live") || myActs.find(a=>activityStatus(a)==="todo") || myActs[myActs.length-1]) : null;
-  const photoRing = liveAct ? statusRing(liveAct) : "";
-  const photoBlock = `<div class="wd-photo">
-      <div class="wd-av avring ${photoRing}">${S.session.photo?`<img src="${esc(S.session.photo)}" alt="">`:`<span>${esc(String(S.session.name||"?").trim().charAt(0).toUpperCase())}</span>`}
-        <span class="wd-num">${num}</span></div>
-      <div class="wd-who"><b>${esc(S.session.name)}</b>
-        <span class="mini">${esc(roleForNumber(num))}</span>
-        ${liveAct?`<span style="margin-top:4px">${statusPill(liveAct)} <span class="mini">${esc(liveAct.name)}</span></span>`:""}</div>
-    </div>`;
+  // their name, number and photo are already in the hero above — no second copy
   let banner="";
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
@@ -7686,7 +7687,6 @@ function myWorkDayView(){
     ${banner}
     ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
     ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
-    ${photoBlock}
     ${myDayTimeline(day)}
     ${dayPlanInfoCard(day)}
     ${workdayFeedbackCard()}
@@ -7828,7 +7828,7 @@ function workdayFeedbackCard(){
       <div class="stat"><b>${today.length}</b><span>${t("today")}</span></div>
       <div class="stat"><b>${mine.length}</b><span>${t("feedback")}</span></div>
     </div>
-    <button class="btn" id="btn-addfb" style="margin:0 0 10px">\uFF0B ${t("fbNew")}</button>
+    <button class="btn" id="btn-addfb" style="margin:0 0 10px">${ic("plus",16)} ${t("fbNew")}</button>
     ${recent.length?`<div class="card">${recent.map(fbRowHtml).join("")}</div>
       ${mine.length>recent.length?`<button class="btn link" id="btn-fbseeall" style="margin-top:8px">${t("fbSeeAll")}</button>`:""}`
       :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("noMyFeedback")}</div>`}
@@ -7840,7 +7840,7 @@ function staffFeedbackView(){
   const mine=S.feedback.filter(f=>f.by_user===S.session.username);
   return `<div class="screen fadein">
     ${topBar(t("feedback"),S.session.name)}
-    <button class="btn" id="btn-addfb" style="margin:0 0 14px">\uFF0B ${t("fbNew")}</button>
+    <button class="btn" id="btn-addfb" style="margin:0 0 14px">${ic("plus",16)} ${t("fbNew")}</button>
     ${mine.length?`<p class="mini" style="margin:-4px 0 8px">${t("fbTapHint")}</p>
       <div class="card">${mine.map(fbRowHtml).join("")}</div>`
       :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("noMyFeedback")}</div>`}
@@ -8315,7 +8315,7 @@ function feedbackInner(){
   const list=S.feedback||[];
   const avg=fbAvgAll(list);
   return `<div class="row2" style="margin-bottom:12px">
-      <button class="btn" id="btn-addfb">\uFF0B ${t("fbNew")}</button>
+      <button class="btn" id="btn-addfb">${ic("plus",16)} ${t("fbNew")}</button>
       <button class="btn ghost" id="btn-fbexport">${ic("download",15)} ${t("fbExport")}</button>
     </div>
     ${S.session && S.session.role==="manager"
@@ -8394,7 +8394,7 @@ function cmCounts(){
 }
 function cmAnnounceInner(){
   const list=(S.notes||[]).slice().sort((a,b)=>(+b.id||0)-(+a.id||0));
-  return `<button class="btn" id="cm-newnote" style="margin:0 0 12px">\uFF0B ${t("cmNewAnnounce")}</button>
+  return `<button class="btn" id="cm-newnote" style="margin:0 0 12px">${ic("plus",16)} ${t("cmNewAnnounce")}</button>
     ${list.length?`<div class="card" style="padding:2px 14px">${list.map(n=>`
       <div class="cm-note">
         <span class="cm-nx"><b>${esc(n.title||"")}</b>
@@ -8538,18 +8538,25 @@ function openActivitySheet(id){
    What still needs doing today, in one card, each line opening the page that
    fixes it. Everything here is counted from data the app already holds. */
 /* "All team" means everybody is on it, not that nobody is. */
+/* The roster only ever assigns daytime activities to one person. Events, shows
+   and parties are run by the whole team by design, so an empty name on those is
+   not a gap — it means everybody. */
+const ACT_PERSONAL_CATS=["mAdult","mKids","mTeen"];
+function actIsWholeTeam(a){
+  if(actIsAllTeam(a)) return true;
+  return !ACT_PERSONAL_CATS.includes(normCat(a||{}));
+}
 function actHasStaff(a){
-  const v=String((a&&a.entertainer)||"").trim();
-  if(!v) return false;
-  return true;
+  return !!String((a&&a.entertainer)||"").trim() || actIsWholeTeam(a);
 }
 function actIsAllTeam(a){
   const v=String((a&&a.entertainer)||"").trim().toLowerCase();
   return v==="all" || v==="all team" || v==="team" || v===String(t("ccAllTeam")).toLowerCase();
 }
 function actStaffLabel(a){
-  if(actIsAllTeam(a)) return t("ccAllTeam");
-  return entertainerName(a&&a.entertainer)||"";
+  const v=String((a&&a.entertainer)||"").trim();
+  if(v && !actIsAllTeam(a)) return entertainerName(v)||v;   // always the display name
+  return actIsWholeTeam(a) ? t("ccAllTeam") : "";
 }
 function ccRow(icon, label, value, tab, tone){
   return `<button class="cc-row${tone?" "+tone:""}"${tab?` data-ccgo="${esc(tab)}"`:""}>
@@ -8673,17 +8680,16 @@ function liveOpsCard(){
       const s1=(w && (w.e0!=null?w.e0:w.s1)) ?? (s0+45);   // actWindow calls the end e0
       return {a, s0, s1};
     })
-    .filter(x=>x.s1>=now-30)                       // still running, or still to come
+    .filter(x=>x.s1>now)                           // running now, or still to come — never finished
     .sort((x,y)=>x.s0-y.s0)
     .slice(0,5);
   if(!list.length) return "";
-  const staffOf=a=>String(a.entertainer||"").trim();   // the field the assign centre writes
   const row=x=>{
-    const a=x.a, who=staffOf(a), booked=seatsTaken(a.id);
+    const a=x.a, who=actStaffLabel(a), booked=seatsTaken(a.id);
     const live = x.s0<=now && now<=x.s1;
     const mins = Math.round(x.s0-now);
     const chip = live ? `<span class="schip live"><i></i>${t("liveNow")}</span>`
-      : !who   ? `<span class="schip warn"><i></i>${t("liveNoStaff")}</span>`
+      : !actHasStaff(a) ? `<span class="schip warn"><i></i>${t("liveNoStaff")}</span>`
       : mins<=60 ? `<span class="schip gold"><i></i>${t("liveSoon").replace("{n}",Math.max(0,mins))}</span>`
       : `<span class="schip"><i></i>${t("liveAssigned")}</span>`;
     return `<div class="booking-line" data-actopen="${esc(String(a.id))}" style="cursor:pointer">
@@ -8698,10 +8704,29 @@ function liveOpsCard(){
   </div>`;
 }
 /* The feedback picture at a glance — tap a department to read the ratings behind it. */
+/* Feedback is collected day by day, so the dashboard shows today by default and
+   starts fresh after midnight. Nothing is deleted — the other periods look back
+   over exactly the same records. */
+function fbPeriodList(period){
+  const all=S.feedback||[];
+  if(period==="all") return all.slice();
+  const now=new Date();
+  const start=new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if(period==="week") start.setDate(start.getDate()-6);
+  else if(period==="month") start.setDate(start.getDate()-29);
+  return all.filter(f=>{
+    const ts=f.created_at?new Date(f.created_at):null;
+    return ts && !isNaN(ts.getTime()) && ts>=start;
+  });
+}
 function feedbackAnalyticsCard(){
-  const list=S.feedback||[];
+  const period=["today","week","month","all"].includes(S.fbPeriod)?S.fbPeriod:"today";
+  const list=fbPeriodList(period);
   const sum=fbSummary(list);
   return `<div class="sec"><h3>${ic("star",18)} ${t("fbAnalytics")}</h3>
+    <div class="pills">${[["today","fbToday"],["week","fbWeek"],["month","fbMonth"],["all","fbAllTime"]]
+      .map(([k,lb])=>`<button class="pill ${period===k?"on":""}" data-fbper="${k}">${esc(t(lb))}</button>`).join("")}</div>
+    ${(!list.length && period==="today")?`<p class="mini" style="margin:0 0 10px">${t("fbNoneToday")}</p>`:""}
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${sum.overall?sum.overall.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${sum.count}</b><span>${t("feedback")}</span></div>
@@ -8717,12 +8742,12 @@ function feedbackAnalyticsCard(){
           sum.perfect ? t("fbHotelGeneral")+" \u00b7 "+t("fbPerfect")
           : t("fbHotelGeneral")+" \u00b7 "+t("fbNoneWeak")}</p>`:"")}
     ${fbDeptListCard(list)}
-    ${sum.rated?`<p class="mini" style="margin-top:6px">${t("fbTapHint")}</p>`:""}
+    <p class="mini" style="margin-top:6px">${sum.rated?t("fbTapHint")+" ":""}${t("fbPeriodHint")}</p>
   </div>`;
 }
 function managerActsInner(){
   const acts=S.activities.filter(a=>a.day===S.day);
-  const head=dayTabs()+`<button class="btn" id="btn-add" style="margin:0 0 14px">＋ ${t("addActivity")}</button>`;
+  const head=dayTabs()+`<button class="btn" id="btn-add" style="margin:0 0 14px">${ic("plus",16)} ${t("addActivity")}</button>`;
   if(!acts.length) return head+`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`;
   return head + OPS.map(o=>{
     const list=acts.filter(a=>actOp(a)===o.id).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
@@ -8731,7 +8756,7 @@ function managerActsInner(){
   }).join("");
 }
 function managerTicketsInner(){
-  return `<button class="btn" id="btn-addticket" style="margin:0 0 14px">＋ ${t("addTicket")}</button>`
+  return `<button class="btn" id="btn-addticket" style="margin:0 0 14px">${ic("plus",16)} ${t("addTicket")}</button>`
   + (S.tickets.length?S.tickets.map(tk=>{
     const os=ordersFor(tk.id), sold=ticketsSold(tk.id);
     return `<div class="card">
@@ -8765,7 +8790,7 @@ function requestsInner(){
 function roomsInner(){
   return `<label>${t("addRooms")}</label>
     <textarea id="rooms-in" rows="3" placeholder="${t("roomsHint")}"></textarea>
-    <button class="btn" id="btn-addrooms" style="margin:10px 0 16px">＋ ${t("addRooms")}</button>
+    <button class="btn" id="btn-addrooms" style="margin:10px 0 16px">${ic("plus",16)} ${t("addRooms")}</button>
     <input id="rooms-filter" placeholder="..." style="margin-bottom:10px">
     <div class="card roomgrid">
       ${S.rooms.length?S.rooms.map(r=>{
@@ -8800,7 +8825,7 @@ function teamSummaryCard(){
 function accountsInner(){
   const managerCount=S.users.filter(u=>u.role==="manager").length;
   return `${teamSummaryCard()}
-    <button class="btn" id="btn-adduser" style="margin:0 0 12px">＋ ${t("addUser")}</button>
+    <button class="btn" id="btn-adduser" style="margin:0 0 12px">${ic("plus",16)} ${t("addUser")}</button>
     <div class="card">
       ${S.users.filter(u=>!isAttOnly(u)).sort((a,b)=>(hasLeft(a)?1:0)-(hasLeft(b)?1:0) || (a.number||99)-(b.number||99)).map(u=>{
         const lastManager=u.role==="manager"&&managerCount<=1;
@@ -8850,7 +8875,7 @@ function openProfileModal(p){
 }
 function tasksInner(){
   const rk=rankingRows();
-  return `<button class="btn" id="btn-addtask" style="margin:0 0 12px">＋ ${t("addTask")}</button>
+  return `<button class="btn" id="btn-addtask" style="margin:0 0 12px">${ic("plus",16)} ${t("addTask")}</button>
     <button class="btn ghost" id="btn-export" style="margin:0 0 14px">${ic("download",16)} ${t("exportReport")}</button>`
     + (rk.length?`<div class="sec"><h3>${ic("trophy",18)} ${t("taskStats")}</h3><div class="card">
       ${rk.map((r,i)=>`<div class="booking-line">
@@ -9080,7 +9105,7 @@ function buildDataset(kind){
   if(kind==="program") return {title:t("manage")+exportFilterNote(),
     headers:[t("day"),t("time"),t("actName"),t("category"),t("location"),t("entertainer"),t("capacity"),t("makeHighlight")],
     rows:exportActivities().slice().sort((x,y)=>(x.day-y.day)||String(x.time).localeCompare(String(y.time)))
-      .map(a=>[t("days")[a.day]||"",a.time||"",a.name||"",catLabel(normCat(a)),a.location||"",a.entertainer||"",a.capacity||0,a.highlight?"★":""])};
+      .map(a=>[t("days")[a.day]||"",a.time||"",a.name||"",catLabel(normCat(a)),a.location||"",a.entertainer||"",a.capacity||0,a.highlight?t("yes"):""])};
   if(kind==="dayplan"){
     // One clean row per day — exactly what hotel management needs at a glance
     const onlyDay=expDay();
@@ -9937,7 +9962,7 @@ function openDeptEditor(){
     <h3>${ic("grid",20)} ${t("fbDeptsEdit")}</h3>
     <p class="mini">${t("fbDeptsHint")}</p>
     <div id="de-box"></div>
-    <button class="btn ghost" id="de-add">\uFF0B ${t("fbAddDept")}</button>
+    <button class="btn ghost" id="de-add">${ic("plus",16)} ${t("fbAddDept")}</button>
     <button class="btn" id="de-go">${t("save")}</button>
     <button class="btn ghost" id="de-reset">${t("fbResetDepts")}</button>
     <button class="btn ghost" id="de-x">${t("cancelBtn")}</button>`);
@@ -10096,7 +10121,7 @@ function requirementsView(){
     ${topBar(t("reqTab"),S.session.name)}
     <p class="mini" style="margin:-4px 0 12px">${t("reqSub")}</p>
     <div class="row2" style="margin-bottom:10px">
-      <button class="btn" id="rq-new">\uFF0B ${t("reqNew")}</button>
+      <button class="btn" id="rq-new">${ic("plus",16)} ${t("reqNew")}</button>
       <button class="btn ghost" id="rq-pack">${ic("download",15)} ${t("reqExportDay")}</button>
     </div>
     <div style="margin-bottom:14px;display:flex;gap:14px;flex-wrap:wrap">
@@ -10143,7 +10168,7 @@ function openReqEditor(id){
     <label style="margin-top:14px">${t("reqNeed")}</label>
     <div id="rq-rows"></div>
     <div style="margin-top:8px;display:flex;gap:14px;flex-wrap:wrap">
-      <button class="btn link" id="rq-add">\uFF0B ${t("reqAddLine")}</button>
+      <button class="btn link" id="rq-add">${ic("plus",16)} ${t("reqAddLine")}</button>
       <button class="btn link" id="rq-std">${t("reqStandard")}</button>
     </div>
     <label style="margin-top:14px">${t("reqNote")}</label><textarea id="rq-note" rows="2">${esc(sh.note||"")}</textarea>
@@ -10255,7 +10280,7 @@ function openReqDeptEditor(){
     <h3>${ic("grid",20)} ${t("reqDepts")}</h3>
     <p class="mini">${t("reqDeptsHint")}</p>
     <div id="rd-box"></div>
-    <button class="btn ghost" id="rd-add">\uFF0B ${t("reqAddDept")}</button>
+    <button class="btn ghost" id="rd-add">${ic("plus",16)} ${t("reqAddDept")}</button>
     <button class="btn" id="rd-go">${t("save")}</button>
     <button class="btn ghost" id="rd-reset">${t("reqResetLists")}</button>
     <button class="btn ghost" id="rd-x">${t("cancelBtn")}</button>`);
@@ -10304,7 +10329,7 @@ function openReqTemplateEditor(){
       ${REQ_KINDS.map(k=>`<button class="pill ${k==="event"?"on":""}" data-rtkind="${k}">${esc(reqKindLabel(k))}</button>`).join("")}
     </div>
     <div id="rt-box"></div>
-    <button class="btn ghost" id="rt-add">\uFF0B ${t("reqAddLine")}</button>
+    <button class="btn ghost" id="rt-add">${ic("plus",16)} ${t("reqAddLine")}</button>
     <button class="btn" id="rt-go">${t("save")}</button>
     <button class="btn ghost" id="rt-reset">${t("reqResetLists")}</button>
     <button class="btn ghost" id="rt-x">${t("cancelBtn")}</button>`);
@@ -10797,7 +10822,7 @@ function openNotesModal(){
   const feed=notifFeed();
   const wrap=baseModal(`
     <h3>${ic("bell",18)} ${t("notifications")}</h3>
-    ${role==="manager"?`<button class="btn sm" id="n-new" style="margin-bottom:12px">＋ ${t("newAnnouncement")}</button>`:""}
+    ${role==="manager"?`<button class="btn sm" id="n-new" style="margin-bottom:12px">${ic("plus",16)} ${t("newAnnouncement")}</button>`:""}
     ${role!=="guest"?`<div class="ao-sec">${t("nfWhatHappened")}</div>
       ${feed.length?`<div class="card" style="padding:2px 14px">${feed.map(x=>`
         <button class="nf-row${x.unread?" unread":""}" data-nfgo="${esc(x.id)}">
@@ -10836,7 +10861,7 @@ function openNotesModal(){
 }
 function openComposeNoteModal(){
   const wrap=baseModal(`
-    <h3>＋ ${t("newAnnouncement")}</h3>
+    <h3>${ic("plus",16)} ${t("newAnnouncement")}</h3>
     <label>${t("actName")}</label><input id="nn-title">
     <label>${t("desc")}</label><textarea id="nn-body" rows="3"></textarea>
     <label>${t("audience")}</label>
@@ -10852,7 +10877,7 @@ function openComposeNoteModal(){
     const title=wrap.querySelector("#nn-title").value.trim();
     const body=wrap.querySelector("#nn-body").value.trim();
     if(!title&&!body) return;
-    await DB.addNote({title:title||"★",body,audience:wrap.querySelector("#nn-aud").value});
+    await DB.addNote({title:title||t("newAnnouncement"),body,audience:wrap.querySelector("#nn-aud").value});
     S.seenNote=S.notes.reduce((m,n)=>Math.max(m,n.id),S.seenNote); persist();
     wrap.remove(); toast(t("saved")); render();
   };
@@ -11398,6 +11423,7 @@ function wireCommon(){
   document.querySelectorAll("[data-busadd]").forEach(el=>el.onclick=()=>openBusModal(null, el.dataset.busadd));
   demoteExtraPrimaries();
   const bMe=$("#btn-me"); if(bMe) bMe.onclick=openAccountSheet;
+  document.querySelectorAll("[data-fbper]").forEach(b=>b.onclick=()=>{ S.fbPeriod=b.dataset.fbper; render(); });
   const bSo=$("#btn-social"); if(bSo) bSo.onclick=()=>{ S.socialOpen=!S.socialOpen; render(); };
   document.querySelectorAll("[data-crmf]").forEach(b=>b.onclick=()=>{
     S.crmFilter=b.dataset.crmf; render();
