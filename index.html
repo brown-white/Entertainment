@@ -1746,6 +1746,27 @@ html{font-size:calc(16px * var(--fscale,1))}
 .sec > h3,.sec-head h3{font-size:19px;letter-spacing:.005em}
 .sec > .mini:first-of-type{margin-top:-4px}
 .screen > .btn:not(.sm):not(.link) + .btn:not(.sm):not(.link){margin-top:10px}
+.cov{display:flex;align-items:center;gap:12px;padding:10px 0}
+.cov:not(:last-of-type){border-bottom:1px solid var(--line)}
+.cov-box{flex:none;width:96px;height:58px;border-radius:var(--r-md);background:var(--sand);
+  background-size:cover;background-position:center;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--line)}
+.cov-txt{min-width:0;display:flex;flex-direction:column;gap:1px}
+.cov-txt b{font-size:15px}
+.cov-txt .btn.link{margin-top:2px;padding:2px 0}
+.ga-img{border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;background:var(--sand)}
+.ga-img img{width:100%;height:170px;object-fit:cover;display:block}
+.socialset{display:inline-flex;gap:6px;animation:fadein .18s ease}
+.hero-av{border:0;padding:0;background:none;cursor:pointer}
+.ac-top{display:flex;align-items:center;gap:14px;margin:6px 0 2px}
+.ac-ph{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;border:0;padding:0;
+  background:var(--sand);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ac-ph img{width:100%;height:100%;object-fit:cover}
+.ac-ph b{font-size:24px;color:var(--muted)}
+.ac-who{min-width:0;display:flex;flex-direction:column;gap:2px}
+.ac-who b{font-size:19px}
+.ph-big{border-radius:var(--r-lg);overflow:hidden;background:var(--sand)}
+.ph-big img{width:100%;display:block}
 .nf-row{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border:0;background:none;
   color:inherit;font:inherit;text-align:start;cursor:pointer}
 .nf-row:not(:last-child){border-bottom:1px solid var(--line)}
@@ -2082,6 +2103,29 @@ Object.assign(DICT.en, {
   wdThisWeek:"This week",
   wdRating:"Guest rating",
   viewFullSchedule:"View the full schedule",
+  acMe:"My account",
+  acTheme:"Appearance",
+  themeLightLbl:"Light",
+  themeDarkLbl:"Dark",
+  acLanguage:"Language",
+  acSignOut:"Sign out",
+  acViewPhoto:"View photo",
+  acRoom:"Room",
+  acShift:"Number",
+  acRole:"Role",
+  gvDetails:"Activity details",
+  gvAddPlan:"Add to my plan",
+  gvInPlan:"In my plan",
+  gvBookNow:"Book a place",
+  gvBooked:"You have a place",
+  gvNoBooking:"No booking needed \u2014 just come along.",
+  gvWhen:"When",
+  gvWhere:"Where",
+  gvWith:"With",
+  gvFree:"places left",
+  ccAllTeam:"The whole team",
+  ccOpenRequests:"Open requests",
+  socialShow:"Follow us",
   nfWhatHappened:"What happened",
   nfAnnouncements:"Announcements",
   nfNewBooking:"New booking",
@@ -2167,6 +2211,16 @@ Object.assign(DICT.en, {
   mdWholeDay:"Everything else happening today",
   mdEntranceItem:"Entrance duty",
   mdShowPrep:"Show preparation",
+  covHead:"Cover photos",
+  covHint:"The picture behind the greeting at the top of each home screen. One per role, so guests, entertainers and you can each have your own.",
+  covGuest:"Guest cover",
+  covStaff:"Entertainer cover",
+  covManager:"Manager cover",
+  covTap:"Tap to choose a picture",
+  covRemove:"Remove",
+  covDefault:"Using the standard picture",
+  secHome:"Home",
+  secMyStay:"My Stay",
   hubToday:"Today",
   hubOperations:"Operations",
   hubOverview:"Overview",
@@ -4042,10 +4096,16 @@ function startGuestSession(acc){
   askNotifPermission();
 }
 /* ---------------- shared pieces ---------------- */
+/* Five brand icons across the top were louder than the app itself. They now sit
+   behind one star and stay closed until somebody asks for them. */
 function socialTopIcons(){
-  const st=S.settings;
+  const st=S.settings||{};
   const links=[["Facebook",st.facebook],["Instagram",st.instagram],["TikTok",st.tiktok],["YouTube",st.youtube],["WhatsApp",waLink()]].filter(x=>x[1]);
-  return links.map(([n,u])=>`<a class="iconbtn socialtop" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${brandIc(n)}</a>`).join("");
+  if(!links.length) return "";
+  const open=!!S.socialOpen;
+  return `<button class="iconbtn" id="btn-social" aria-label="${esc(t("socialShow"))}" aria-expanded="${open}">${ic("star",19)}</button>`
+    + (open ? `<span class="socialset">${links.map(([n,u])=>
+        `<a class="iconbtn socialtop" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${brandIc(n)}</a>`).join("")}</span>` : "");
 }
 function waLink(){
   const num=String(S.settings.whatsapp||"").replace(/[^0-9]/g,"");
@@ -4054,21 +4114,25 @@ function waLink(){
 function navGroupsBase(role){
   if(role==="guest"){
     const un=unreadFor("guest");
+    // The menu IS the bottom bar: one group per destination, in the same order,
+    // with the same names. There is no second menu to keep in step.
     return [
-      {key:"secProgram", head:t("secProgram"), items:[
-        ["home","home",menuLabel("menuHome",t("home")),0],
-        ["program","calendar",menuLabel("menuProgram",t("program")),0],
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[]),
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
-        ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
-      {key:"secBookings", head:t("secBookings"), items:[
+      {key:"secHome", head:t("secHome"), items:[
+        ["home","home",menuLabel("menuHome",t("home")),0]]},
+      {key:"secProgram", head:menuLabel("menuProgram",t("program")), items:[
+        ["program","calendar",menuLabel("menuProgram",t("program")),0]]},
+      {key:"secBookings", head:t("hubMyStay"), items:[
         ["stay","user",menuLabel("menuStay",t("myStay")),0],
         ...(featureOn("tickets")?[["tickets","ticket",menuLabel("menuTickets",t("tickets")),0]]:[])]},
-      {key:"secConnect", head:t("secConnect"), items:[
+      {key:"secConnect", head:t("hubConnect"), items:[
         ["chat","chat",menuLabel("menuChat",t("chat")),un],
         ["teaminfo","users",t("teamPage"),0],
-        ["social","star",t("socialPage"),0]]}
+        ["social","star",t("socialPage"),0]]},
+      {key:"secExplore", head:t("hubMore"), items:[
+        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
+        ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
+        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
+        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[])]}
     ];
   }
   if(role==="staff"){
@@ -4076,23 +4140,21 @@ function navGroupsBase(role){
     const un=S.messages.filter(m=>m.room===myRoom&&m.sender==="team"&&!m.read_by_guest).length;
     const taskN=S.tasks.filter(x=>["open","accepted","still"].includes(x.status)&&(!x.assigned_to||x.assigned_to===S.session.username)).length;
     return [
-      {key:"secTeamwork", head:t("secTeamwork"), items:[
-        ["workday","clipboard",t("myWorkDay"),0],
-        ["mypage","user",t("myAttendance"),0],
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
-        ...(featureOn("bus")?[["bus","bus",t("busTimes"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-        ["tasks","check",t("tasks"),taskN]]},
-      {key:"secProgram", head:t("secProgram"), items:[
+      {key:"secTeamwork", head:t("hubToday"), items:[
+        ["workday","clipboard",t("myWorkDay"),0]]},
+      {key:"secProgram", head:menuLabel("menuProgram",t("program")), items:[
         ["today","calendar",t("todayProgram"),0],
         ["week","calendar",t("program"),0],
         ["bookings","ticket",t("bookings"),0]]},
-      {key:"secConnect", head:t("secConnect"), items:[
+      {key:"secTasks", head:t("hubTasks"), items:[
+        ["tasks","check",t("tasks"),taskN]]},
+      {key:"secConnect", head:t("teamTab"), items:[
         ["chat","chat",t("chatManager"),un],
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
-        ["teaminfo","users",t("teamPage"),0]]},
-      {key:"secExplore", head:t("secExplore"), items:[
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),0]]:[]),
+        ["teaminfo","users",t("teamPage"),0],
+        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[])]},
+      {key:"secExplore", head:t("hubMore"), items:[
+        ["mypage","user",t("myAttendance"),0],
+        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
         ...(featureOn("bus")?[["bus","bus",t("busItem"),0]]:[]),
         ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]}
     ];
@@ -4100,7 +4162,7 @@ function navGroupsBase(role){
   const un=unreadFor("manager");
   const newReq=S.requests.filter(r=>r.status==="new").length;
   return [
-    {key:"secManage", head:t("secManage"), items:[
+    {key:"secManage", head:t("hubOverview"), items:[
       ["dash","grid",t("dashboard"),0]]},
     {key:"secOps", head:t("secOps"), items:[
       ["dayplan","clipboard",t("dayPlan"),0],
@@ -4108,10 +4170,10 @@ function navGroupsBase(role){
       ["assign","check",t("assignCenter"),0],
       ["req","clipboard",t("reqTab"),0]]},
     {key:"secGuests", head:t("secGuests"), items:[
-      ["inbox","chat",t("cmHead"),unreadGuests()+unreadTeam()+newReq+teamReqCount()],
       ["guests","chat",t("guestsTab"),unreadGuests()+newReq],
-      ["team","users",t("teamTab"),unreadTeam()+teamReqCount()]]},
-    {key:"secExplore", head:t("secExplore"), items:[
+      ["team","users",t("teamTab"),unreadTeam()+teamReqCount()],
+      ["inbox","chat",t("cmHead"),unreadGuests()+unreadTeam()+newReq+teamReqCount()]]},
+    {key:"secExplore", head:t("hubMore"), items:[
       ["hotelinfo","pin",t("hotelInfoTab"),0],
       ["gallery","sparkle",t("galleryTab"),0],
       ["quiz","sparkle",t("quizCenter"),0],
@@ -4182,7 +4244,12 @@ function greetKey(){
 }
 function heroImage(){
   const st=S.settings||{};
-  return st.heroImg || IMG.show;
+  const role=(S.session&&S.session.role)||"guest";
+  const own = role==="manager" ? st.coverManager : role==="staff" ? st.coverStaff : st.coverGuest;
+  return own || st.heroImg || IMG.show;      // her picture, then the old single one, then ours
+}
+function coverKeyFor(role){
+  return role==="manager" ? "coverManager" : role==="staff" ? "coverStaff" : "coverGuest";
 }
 function heroTop(o){
   o=o||{};
@@ -4223,7 +4290,59 @@ function heroWeatherChip(){
 function heroAvatar(){
   const n=String((S.session&&S.session.name)||"?").trim().charAt(0).toUpperCase();
   const ph=S.session&&S.session.photo;
-  return `<span class="hero-av">${ph?`<img src="${esc(ph)}" alt="">`:`<b>${esc(n)}</b>`}</span>`;
+  return `<button class="hero-av" id="btn-me" aria-label="${esc(t("acMe"))}">${ph?`<img src="${esc(ph)}" alt="">`:`<b>${esc(n)}</b>`}</button>`;
+}
+/* The weather belongs where people look first, beside their own face. */
+function heroSide(){ return heroWeatherChip()+heroAvatar(); }
+/* Tapping your own face is the one place your account lives: who you are, how
+   the app looks, what language it speaks, and the way out. */
+function openAccountSheet(){
+  const g=S.session||{};
+  const ph=g.photo;
+  const dark=(S.theme==="dark");
+  const wrap=baseModal(`
+    <h3>${ic("user",20)} ${t("acMe")}</h3>
+    <div class="ac-top">
+      ${ph?`<button class="ac-ph" id="ac-photo"><img src="${esc(ph)}" alt=""></button>`
+          :`<span class="ac-ph"><b>${esc(String(g.name||"?").trim().charAt(0).toUpperCase())}</b></span>`}
+      <span class="ac-who"><b>${esc(g.name||"")}</b>
+        <span class="mini">${esc([
+          g.role==="guest" ? t("acRoom")+" "+(g.room||"") : "",
+          g.number ? "#"+g.number : "",
+          g.role ? t(g.role==="manager"?"roleManager":g.role==="staff"?"roleStaff":"guest") : ""
+        ].filter(Boolean).join(" \u00b7 "))}</span></span>
+    </div>
+    ${ph?`<p class="mini">${t("acViewPhoto")}</p>`:""}
+    <label style="margin-top:14px">${t("acTheme")}</label>
+    <div class="pills">
+      <button class="pill ${dark?"":"on"}" data-actheme="light">${t("themeLightLbl")}</button>
+      <button class="pill ${dark?"on":""}" data-actheme="dark">${t("themeDarkLbl")}</button>
+    </div>
+    <label style="margin-top:14px">${t("acLanguage")}</label>
+    <div class="pills">${LANGS.map(([code,label])=>
+      `<button class="pill ${S.lang===code?"on":""}" data-aclang="${esc(code)}">${esc(label)}</button>`).join("")}</div>
+    <button class="btn ghost warn" id="ac-out" style="margin-top:16px">${ic("power",16)} ${t("logout")}</button>
+    <button class="btn ghost" id="ac-x">${t("close")}</button>`);
+  const p=wrap.querySelector("#ac-photo");
+  if(p) p.onclick=()=>{ wrap.remove(); openPhotoViewer(ph); };
+  wrap.querySelectorAll("[data-actheme]").forEach(b=>b.onclick=()=>{
+    if(S.theme!==b.dataset.actheme) setTheme(b.dataset.actheme);
+    wrap.remove(); render();
+  });
+  wrap.querySelectorAll("[data-aclang]").forEach(b=>b.onclick=()=>{
+    S.lang=b.dataset.aclang; persist(); wrap.remove(); render();
+  });
+  wrap.querySelector("#ac-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#ac-out").onclick=()=>{
+    wrap.remove();
+    S.session=null; S.chatRoom=null; loginMode="guest"; guestMode="new"; resetWiz(); persist(); render();
+  };
+}
+function openPhotoViewer(src){
+  if(!src) return;
+  const wrap=baseModal(`<div class="ph-big"><img src="${esc(src)}" alt=""></div>
+    <button class="btn ghost" id="ph-x">${t("close")}</button>`);
+  wrap.querySelector("#ph-x").onclick=()=>wrap.remove();
 }
 
 /* ===== SECTION HUBS =====
@@ -4231,57 +4350,26 @@ function heroAvatar(){
    bottom bar can stay at five real destinations. An item is a tab id, or
    "tab:sub" to land straight on a sub-tab. Nothing is removed: every page a hub
    points at is the same page the menu has always opened. */
-const HUB_DEFS={
-  /* --- guest --- */
-  connect:{ role:"guest", title:"hubConnect", groups:[
-    { head:"secConnect", items:[
-      ["chat","chat","chat","hubChatSub"],
-      ["teaminfo","users","teamPage","hubTeamSub"],
-      ["social","sparkle","socialTab","hubSocialSub"]]}]},
-  more:{ role:"guest", title:"hubMore", groups:[
-    { head:"secExplore", items:[
-      ["gallery","sparkle","galleryTab","hubGallerySub"],
-      ["hotelinfo","pin","hotelInfoTab","hubHotelSub"],
-      ["weather","sun","weatherTab","hubWeatherSub"],
-      ["quiz","sparkle","quizTab","hubQuizSub"]]}]},
-
-  /* --- entertainer --- */
-  steam:{ role:"staff", title:"teamTab", groups:[
-    { head:"secConnect", items:[
-      ["chat","chat","chatManager","hubMgrChatSub"],
-      ["teaminfo","users","teamPage","hubTeamSub"],
-      ["gallery","sparkle","galleryTab","hubGallerySub"]]}]},
-  smore:{ role:"staff", title:"hubMore", groups:[
-    { head:"secMyWork", items:[
-      ["mypage","user","myAttendance","hubAttSub"]]},
-    { head:"secExplore", items:[
-      ["quiz","sparkle","quizTab","hubQuizSub"],
-      ["bus","bus","busItem","hubBusSub"],
-      ["weather","sun","weatherTab","hubWeatherSub"]]}]},
-
-  /* --- manager --- */
-  ops:{ role:"manager", title:"hubOperations", groups:[
-    { head:"secOps", items:[
-      ["inbox","chat","cmHead","cmSub"],
-      ["dayplan","clipboard","dayPlan","hubTodayProg"],
-      ["program","calendar","manage","hubWeekProg"],
-      ["assign","check","assignCenter","hubAssignSub"],
-      ["req","clipboard","reqTab","hubReqSub"],
-      ["guests:bookings","ticket","bookings","hubBookingsSub"],
-      ["program:tickets","ticket","tickets","hubTicketsSub"]]}]},
-  mmore:{ role:"manager", title:"hubMore", groups:[
-    { head:"secExplore", items:[
-      ["hotelinfo","pin","hotelInfoTab","hubHotelSub"],
-      ["gallery","sparkle","galleryTab","hubGallerySub"],
-      ["weather","sun","weatherTab","hubWeatherSub"],
-      ["quiz","sparkle","quizTab","hubQuizSub"],
-      ["bus","bus","busItem","hubBusSub"],
-      ["qr","sparkle","qrTab","hubQrSub"]]},
-    { head:"secSettings", items:[
-      ["settings","palette","settingsHub","hubSettingsSub"]]}]}
+/* A hub is not a second menu. It is the drawer's own group, shown as a page.
+   Rename an item, hide it or move it in the menu builder and both change,
+   because there is only one list underneath. */
+const HUB_GROUPS={
+  connect:{ role:"guest",   title:"hubConnect", groups:["secConnect"] },
+  more:   { role:"guest",   title:"hubMore",    groups:["secExplore"] },
+  steam:  { role:"staff",   title:"teamTab",    groups:["secConnect"] },
+  smore:  { role:"staff",   title:"hubMore",    groups:["secExplore"] },
+  ops:    { role:"manager", title:"hubOperations", groups:["secOps"] },
+  mmore:  { role:"manager", title:"hubMore",    groups:["secExplore","secSettings"] }
 };
-function hubFor(id){ return HUB_DEFS[id]||null; }
-function isHub(id){ return !!HUB_DEFS[id]; }
+const HUB_SUBLINE={
+  chat:"hubChatSub", teaminfo:"hubTeamSub", social:"hubSocialSub",
+  gallery:"hubGallerySub", hotelinfo:"hubHotelSub", weather:"hubWeatherSub",
+  quiz:"hubQuizSub", bus:"hubBusSub", qr:"hubQrSub", settings:"hubSettingsSub",
+  mypage:"hubAttSub", dayplan:"hubTodayProg", program:"hubWeekProg",
+  assign:"hubAssignSub", req:"hubReqSub"
+};
+function hubFor(id){ return HUB_GROUPS[id]||null; }
+function isHub(id){ return !!HUB_GROUPS[id]; }
 /* Hub items point at ordinary pages, so anything hidden in the menu builder
    disappears from the hub too — one source of truth, never two. */
 function hubItemVisible(id, role){
@@ -4292,19 +4380,21 @@ function hubView(id){
   const h=hubFor(id);
   if(!h) return "";
   const role=(S.session&&S.session.role)||h.role;
-  const groups=h.groups
-    .map(g=>({head:g.head, items:g.items.filter(it=>hubItemVisible(it[0], role))}))
-    .filter(g=>g.items.length);
+  const groups=navGroups(role).filter(g=>h.groups.includes(g.key) && g.items.length);
   return `<div class="screen fadein">
     ${topBar(t(h.title),S.session?S.session.name:"")}
     ${groups.map(g=>`
-      <div class="set-sec">${t(g.head)}</div>
+      ${groups.length>1?`<div class="set-sec">${esc(g.head||"")}</div>`:""}
       <div class="card set-list">
-        ${g.items.map(([tid,icn,lb,sub])=>`<button class="set-it" data-hub="${esc(tid)}">
-          <span class="set-ic">${ic(icn,19)}</span>
-          <span class="set-mid"><b>${esc(t(lb))}</b>${sub?`<span class="mini">${esc(t(sub))}</span>`:""}</span>
-          <span class="set-go">${ic("back",16)}</span>
-        </button>`).join("")}
+        ${g.items.map(([tid,icn,lb,badge])=>{
+          const sub=HUB_SUBLINE[tid];
+          return `<button class="set-it" data-hub="${esc(String(tid))}">
+            <span class="set-ic">${ic(icn,19)}</span>
+            <span class="set-mid"><b>${esc(lb)}</b>${sub?`<span class="mini">${esc(t(sub))}</span>`:""}</span>
+            ${badge>0?`<span class="badge">${badge}</span>`:""}
+            <span class="set-go">${ic("back",16)}</span>
+          </button>`;
+        }).join("")}
       </div>`).join("")}
     ${groups.length?"":`<div class="empty"><div class="big">${ic("grid",30)}</div>${t("none")}</div>`}
   </div>`;
@@ -7583,7 +7673,7 @@ function myWorkDayView(){
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
   return `<div class="screen fadein">
     ${heroTop({greet:t(greetKey()), title:S.session.name, quote:t("myActsSub"),
-               sub:"#"+num+" · "+roleForNumber(num), side:heroAvatar()})}
+               sub:"#"+num+" · "+roleForNumber(num), side:heroSide()})}
     ${dayChips()}
     ${staffTiles(day, myActs)}
     <div class="sec">
@@ -8340,6 +8430,46 @@ function inboxView(){
     ${inner}
   </div>`;
 }
+/* A guest tapping an activity wants to know what it is, not to be handed a
+   booking form. Information first; booking, or simply adding it to their own
+   plan, is their choice from there. */
+function openGuestActivity(id){
+  const a=(S.activities||[]).find(x=>String(x.id)===String(id));
+  if(!a) return;
+  const booking=myBooking(a.id);
+  const fav=(S.favorites||[]).includes(a.id);
+  const cap=+a.capacity||0;
+  const left=cap?Math.max(0, cap-seatsTaken(a.id)):0;
+  const needsBooking=cap>0;
+  const wrap=baseModal(`
+    ${a.image?`<div class="ga-img"><img src="${esc(a.image)}" alt=""></div>`:""}
+    <h3>${esc(a.name)}</h3>
+    <p class="mini">${esc(catLabel(normCat(a)))}</p>
+    <div class="card cc" style="margin-top:12px">
+      <div class="cc-row"><span class="cc-ic">${ic("clock",17)}</span>
+        <span class="cc-x">${t("gvWhen")}</span><span class="cc-v">${esc([t("days")[a.day],a.time].filter(Boolean).join(" \u00b7 "))}</span></div>
+      ${a.location?`<div class="cc-row"><span class="cc-ic">${ic("pin",17)}</span>
+        <span class="cc-x">${t("gvWhere")}</span><span class="cc-v">${esc(a.location)}</span></div>`:""}
+      ${actStaffLabel(a)?`<div class="cc-row"><span class="cc-ic">${ic("users",17)}</span>
+        <span class="cc-x">${t("gvWith")}</span><span class="cc-v">${esc(actStaffLabel(a))}</span></div>`:""}
+      ${needsBooking?`<div class="cc-row"><span class="cc-ic">${ic("ticket",17)}</span>
+        <span class="cc-x">${t("gvFree")}</span><span class="cc-v">${left}</span></div>`:""}
+    </div>
+    ${a.desc?`<p style="margin-top:12px">${esc(a.desc)}</p>`:""}
+    ${!needsBooking?`<p class="mini" style="margin-top:10px">${t("gvNoBooking")}</p>`:""}
+    <button class="btn" id="ga-plan">${ic("star",16)} ${fav?t("gvInPlan"):t("gvAddPlan")}</button>
+    ${needsBooking?`<button class="btn ghost" id="ga-book" ${booking?"disabled":""}>${ic("ticket",16)} ${booking?t("gvBooked"):t("gvBookNow")}</button>`:""}
+    <button class="btn ghost" id="ga-x">${t("close")}</button>`);
+  wrap.querySelector("#ga-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#ga-plan").onclick=()=>{
+    S.favorites=(S.favorites||[]).includes(a.id)
+      ? S.favorites.filter(x=>x!==a.id)
+      : [...(S.favorites||[]), a.id];
+    persist(); wrap.remove(); render();
+  };
+  const bk=wrap.querySelector("#ga-book");
+  if(bk && !booking) bk.onclick=()=>{ wrap.remove(); openBookModal(a); };
+}
 /* ===== THE ACTIVITY AS ONE OBJECT =====
    Opening an activity used to do nothing for staff and managers, so the day had
    to be reconstructed from four screens. This gathers everything that belongs
@@ -8357,7 +8487,7 @@ function openActivitySheet(id){
   const sh=reqSheetForAct(a);
   const rows=(sh&&sh.rows)||[];
   const done=rows.filter(r=>r.done).length;
-  const who=entertainerName(a.entertainer)||"";
+  const who=actStaffLabel(a);
   const shown=books.filter(b=>b.status==="booked").slice(0,8);
   const rest=Math.max(0, books.filter(b=>b.status==="booked").length-shown.length);
   const wrap=baseModal(`
@@ -8407,6 +8537,20 @@ function openActivitySheet(id){
 /* ===== CONTROL CENTER =====
    What still needs doing today, in one card, each line opening the page that
    fixes it. Everything here is counted from data the app already holds. */
+/* "All team" means everybody is on it, not that nobody is. */
+function actHasStaff(a){
+  const v=String((a&&a.entertainer)||"").trim();
+  if(!v) return false;
+  return true;
+}
+function actIsAllTeam(a){
+  const v=String((a&&a.entertainer)||"").trim().toLowerCase();
+  return v==="all" || v==="all team" || v==="team" || v===String(t("ccAllTeam")).toLowerCase();
+}
+function actStaffLabel(a){
+  if(actIsAllTeam(a)) return t("ccAllTeam");
+  return entertainerName(a&&a.entertainer)||"";
+}
 function ccRow(icon, label, value, tab, tone){
   return `<button class="cc-row${tone?" "+tone:""}"${tab?` data-ccgo="${esc(tab)}"`:""}>
     <span class="cc-ic">${ic(icon,17)}</span>
@@ -8420,21 +8564,21 @@ function ccTodayOps(){
   const acts=(S.activities||[]).filter(a=>a && a.day===d);
   const upNext=acts.filter(a=>activityStatus(a)==="todo")
     .sort((x,y)=>(timeToMin(actStart(x))||0)-(timeToMin(actStart(y))||0)).slice(0,3);
-  const unassigned=acts.filter(a=>!String(a.entertainer||"").trim()).length;
+  const unassigned=acts.filter(a=>!actHasStaff(a)).length;
   const sheets=reqForDate(todayISO());
   const sheetLines=sheets.reduce((n,sh)=>n+((sh.rows||[]).length),0);
   const sheetDone=sheets.reduce((n,sh)=>n+reqDone(sh),0);
   const openTasks=(S.tasks||[]).filter(k=>String(k.status||"")!=="done").length;
   const guestReq=(S.requests||[]).filter(r=>String(r.status||"")==="new").length;
   const teamReq=teamReqCount();
+  // one row, one destination — no two lines may lead to the same screen
   const rows=[
-    unassigned ? ccRow("users",  t("ccNoAssign"),  unassigned, "assign", "warn") : "",
+    unassigned ? ccRow("users",  t("ccNoAssign"),  unassigned, "program:acts", "warn") : "",
     sheets.length ? ccRow("clipboard", t("ccReqToday"),
         `${sheetDone} ${t("ccOfN")} ${sheetLines} ${t("ccReady")}`, "req",
         (sheetLines && sheetDone<sheetLines) ? "warn" : "good") : "",
     openTasks ? ccRow("check", t("ccOpenTasks"), openTasks, "assign", "warn") : "",
-    guestReq  ? ccRow("bell",  t("ccOpenReq"),   guestReq,  "guests", "warn") : "",
-    teamReq   ? ccRow("bell",  t("ccTeamReq"),   teamReq,   "team",   "warn") : ""
+    (guestReq+teamReq) ? ccRow("bell", t("ccOpenRequests"), guestReq+teamReq, "inbox:requests", "warn") : ""
   ].filter(Boolean).join("");
   return `<div class="sec"><h3>${ic("clock",18)} ${t("ccOps")}</h3>
     ${upNext.length?`<div class="card" style="padding:2px 14px;margin-bottom:10px">
@@ -8442,7 +8586,7 @@ function ccTodayOps(){
       ${upNext.map(a=>`<div class="cc-next" data-open="${esc(String(a.id))}">
         <span class="cc-t">${esc(actStart(a))}</span>
         <span class="cc-x"><b>${esc(a.name)}</b>${a.location?`<span class="mini">${esc(a.location)}</span>`:""}</span>
-        <span class="mini">${esc(entertainerName(a.entertainer)||"\u2014")}</span>
+        <span class="mini">${esc(actStaffLabel(a)||"\u2014")}</span>
       </div>`).join("")}
     </div>`:""}
     ${rows?`<div class="card cc">${rows}</div>`
@@ -8468,7 +8612,6 @@ function ccTeamPulse(){
     </div>
     <div class="card cc">
       ${ccRow("users", t("teamTab"), nums.length, "team", "")}
-      ${ccRow("check", t("assignCenter"), "", "assign", "")}
     </div>
   </div>`;
 }
@@ -9406,6 +9549,22 @@ function setBrandView(){
       <input id="s-mtick" value="${esc(st.menuTickets)}" placeholder="${t("tickets")}" style="margin-bottom:8px">
       <input id="s-mchat" value="${esc(st.menuChat)}" placeholder="${t("chat")}" style="margin-bottom:8px">
       <input id="s-mstay" value="${esc(st.menuStay)}" placeholder="${t("myStay")}">
+      <label style="margin-top:18px">${t("covHead")}</label>
+      <p class="mini" style="margin:-4px 0 8px">${t("covHint")}</p>
+      ${[["guest","covGuest"],["staff","covStaff"],["manager","covManager"]].map(([r,lb])=>{
+        const key=coverKeyFor(r), url=st[key]||"";
+        return `<div class="cov" data-cov="${r}">
+          <div class="cov-box" data-covbox="${r}" style="${url?`background-image:url('${esc(url)}')`:""}">
+            ${url?"":`<span>${ic("sparkle",22)}</span>`}
+          </div>
+          <div class="cov-txt"><b>${t(lb)}</b>
+            <span class="mini">${url?t("covTap"):t("covDefault")}</span>
+            ${url?`<button class="btn link" type="button" data-covrm="${r}">${ic("trash",13)} ${t("covRemove")}</button>`:""}
+          </div>
+          <input type="hidden" id="s-${esc(key)}" value="${esc(url)}">
+          <input type="file" accept="image/*" data-covinput="${r}" hidden>
+        </div>`;
+      }).join("")}
       <button class="btn" id="btn-savesettings">${t("save")}</button>
     </div>
   </div>`;
@@ -11238,6 +11397,8 @@ function wireCommon(){
   });
   document.querySelectorAll("[data-busadd]").forEach(el=>el.onclick=()=>openBusModal(null, el.dataset.busadd));
   demoteExtraPrimaries();
+  const bMe=$("#btn-me"); if(bMe) bMe.onclick=openAccountSheet;
+  const bSo=$("#btn-social"); if(bSo) bSo.onclick=()=>{ S.socialOpen=!S.socialOpen; render(); };
   document.querySelectorAll("[data-crmf]").forEach(b=>b.onclick=()=>{
     S.crmFilter=b.dataset.crmf; render();
   });
@@ -11452,6 +11613,34 @@ function wireCommon(){
     };
     const rmL=$("#s-logo-rm");
     if(rmL) rmL.onclick=()=>{ const el=$("#s-logo"); if(el) el.value=""; paint(); };
+
+    // one cover per role, picked here and nowhere else
+    ["guest","staff","manager"].forEach(r=>{
+      const box=document.querySelector(`[data-covbox="${r}"]`);
+      const inp=document.querySelector(`[data-covinput="${r}"]`);
+      const hid=$("#s-"+coverKeyFor(r));
+      const show=()=>{
+        if(!box||!hid) return;
+        const u=hid.value;
+        box.style.backgroundImage = u ? `url('${u}')` : "";
+        box.innerHTML = u ? "" : `<span>${ic("sparkle",22)}</span>`;
+      };
+      if(box&&inp) box.onclick=()=>inp.click();
+      // a cover is wide, so it is uploaded whole and the hero crops it on screen —
+      // running it through the square logo cropper would throw the sides away
+      if(inp) inp.onchange=async ()=>{
+        const f=inp.files&&inp.files[0]; if(!f) return;
+        if(box) box.classList.add("uploading");
+        try{
+          const url=await uploadAvatar(f);
+          if(hid){ hid.value=url; show(); toastOk(t("saved")); }
+        }catch(e){ toastErr(t("uploadErr")); }
+        if(box) box.classList.remove("uploading");
+        inp.value="";
+      };
+      const rm=document.querySelector(`[data-covrm="${r}"]`);
+      if(rm) rm.onclick=()=>{ if(hid){ hid.value=""; show(); } };
+    });
   }
   const infoAdd=$("#info-add"); if(infoAdd) infoAdd.onclick=()=>openInfoModal();
   document.querySelectorAll("[data-infoedit]").forEach(b=>b.onclick=()=>openInfoModal(+b.dataset.infoedit));
@@ -11581,6 +11770,10 @@ function wireCommon(){
     if(has("#s-fs"))       st.fontScale=v("#s-fs",st.fontScale);
     if(has("#s-autodark")) st.autoDark=$("#s-autodark").checked;
     if(has("#s-logo"))     st.logo=v("#s-logo","").trim();
+    ["guest","staff","manager"].forEach(r=>{
+      const k=coverKeyFor(r);
+      if(has("#s-"+k)) st[k]=v("#s-"+k,"").trim();
+    });
     if(has("#s-hotel"))    st.hotelName=v("#s-hotel","").trim();
     if(has("#s-contact"))  st.contact=v("#s-contact","").trim();
     if(has("#s-cur"))      st.currency=v("#s-cur","").trim();
@@ -11604,8 +11797,8 @@ function wireCommon(){
     if(!S.session) return;
     const a=S.activities.find(x=>String(x.id)===String(el.dataset.open));
     if(!a) return;
-    // a guest books; everyone working opens the activity itself
-    if(S.session.role==="guest"){ if(!myBooking(a.id)) openBookModal(a); return; }
+    // a guest reads first and decides afterwards; everyone working opens the object
+    if(S.session.role==="guest"){ openGuestActivity(a.id); return; }
     openActivitySheet(a.id);
   });
   /* chat send + read marking + scroll */
