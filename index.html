@@ -1797,6 +1797,13 @@ html{font-size:calc(16px * var(--fscale,1))}
   font-weight:700;margin:16px 0 6px}
 .ao-none{font-style:normal;color:var(--muted);font-weight:600}
 /* ===== control centre ===== */
+.st-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 0}
+.st-row:not(:last-child){border-bottom:1px solid var(--line)}
+.st-row input{margin:0;font-size:14px;padding:8px 9px}
+.st-t{flex:0 0 76px;text-align:center}
+.st-n{flex:1 1 auto;min-width:0}
+.st-note{flex:1 0 100%}
+.st-note:disabled{opacity:.5}
 .af-acc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:6px}
 .af-stars{display:flex;gap:4px;margin:4px 0 2px}
 .af-stars .fb-st{width:34px;height:34px;font-size:26px}
@@ -2143,6 +2150,15 @@ Object.assign(DICT.en, {
   fbAllTime:"All",
   fbPeriodHint:"Feedback resets at midnight. Nothing is ever deleted — switch the period to look back.",
   fbNoneToday:"No feedback collected today yet.",
+  stEdit:"Edit the day",
+  stEditHint:"The fixed rhythm every entertainer sees on My day: meals, briefings, start times, closing. Change a time or a name, add a line of your own, or take one out.",
+  stTime:"Time",
+  stName:"Name",
+  stNote:"Note (optional)",
+  stAdd:"Add a line",
+  stReset:"Back to the standard day",
+  stLast:"Keep at least one line.",
+  stEmpty:"No lines yet. Add one, or go back to the standard day.",
   acAccept:"Accept this activity",
   acAccepted:"Accepted",
   acAcceptedBy:"Accepted by",
@@ -7788,11 +7804,9 @@ function myDayItems(day){
   const info=num?personDayInfo(num,day):null;
   const out=[];
 
-  // the hotel rhythm everyone shares
-  DAILY_STANDARDS.forEach(r=>{
-    let note=r.nk?t(r.nk):"";
-    if(r.morning) note = dp.practice ? t("practiceInline") : "";
-    out.push(mdRow(mdMin(r.time), r.time, t(r.k), note, "routine"));
+  // the hotel rhythm everyone shares — hers if she has edited it
+  dayStandards().forEach(r=>{
+    out.push(mdRow(mdMin(r.time), r.time, r.name, stdNoteFor(r, day), "routine"));
   });
 
   // her own activities are the card directly above this one, so the line does
@@ -8292,16 +8306,89 @@ function dayPlanTeamCard(day){
     </div>
   </div>`;
 }
+/* The hotel's fixed rhythm. It starts as the standard fourteen lines, but the
+   manager owns it: she can retime, rename, reorder, add and remove. Once she
+   saves her own version it lives in settings and the built-in list is only the
+   fallback and the reset. */
+function dayStandards(){
+  const own=S.settings && S.settings.dayStandards;
+  if(Array.isArray(own) && own.length){
+    return own.filter(r=>r && (r.time||r.name)).map((r,i)=>({
+      id:String(r.id||("s"+i)), time:String(r.time||""), name:String(r.name||""),
+      note:String(r.note||""), morning:!!r.morning
+    }));
+  }
+  return DAILY_STANDARDS.map((r,i)=>({
+    id:"d"+i, time:r.time, name:t(r.k), note:r.nk?t(r.nk):"", morning:!!r.morning
+  }));
+}
+function stdNoteFor(r, day){
+  // the one line that changes with the day: practice happens or it does not
+  if(r.morning) return dayPlanFor(day).practice ? t("practiceInline") : "";
+  return r.note||"";
+}
 function dayPlanStandards(day){
-  const dp=dayPlanFor(day);
-  const rows=DAILY_STANDARDS.map(r=>{
-    let note=r.nk?t(r.nk):"";
-    if(r.morning){ note = dp.practice ? t("practiceInline") : ""; }
+  const isMgr=S.session && S.session.role==="manager";
+  const rows=dayStandards().map(r=>{
+    const note=stdNoteFor(r, day);
     return `<div class="std-row"><span class="std-t">${esc(r.time)}</span>
-      <span class="std-x"><b>${esc(t(r.k))}</b>${note?`<span class="mini"> · ${esc(note)}</span>`:""}</span></div>`;
+      <span class="std-x"><b>${esc(r.name)}</b>${note?`<span class="mini"> \u00b7 ${esc(note)}</span>`:""}</span></div>`;
   }).join("");
   return `<div class="sec"><h3>${ic("clock",18)} ${t("standardsHead")}</h3>
-    <div class="card">${rows}</div></div>`;
+    <div class="card">${rows}</div>
+    ${isMgr?`<button class="btn link" id="btn-stdedit">${ic("pen",14)} ${t("stEdit")}</button>`:""}
+  </div>`;
+}
+/* One editor for the whole rhythm. */
+function openStandardsEditor(){
+  let rows=dayStandards().map(r=>({...r}));
+  const wrap=baseModal(`
+    <h3>${ic("clock",20)} ${t("stEdit")}</h3>
+    <p class="mini">${t("stEditHint")}</p>
+    <div id="st-box"></div>
+    <button class="btn link" id="st-add">${ic("plus",14)} ${t("stAdd")}</button>
+    <button class="btn" id="st-go">${t("save")}</button>
+    <button class="btn ghost" id="st-reset">${t("stReset")}</button>
+    <button class="btn ghost" id="st-x">${t("cancelBtn")}</button>`);
+  const box=wrap.querySelector("#st-box");
+  const paint=()=>{
+    box.innerHTML = rows.length ? rows.map((r,i)=>`<div class="st-row">
+      <input class="st-t" data-sttime="${i}" value="${esc(r.time)}" placeholder="${esc(t("stTime"))}">
+      <input class="st-n" data-stname="${i}" value="${esc(r.name)}" placeholder="${esc(t("stName"))}">
+      <span class="rq-acts">
+        <button class="bd-b" data-stup="${i}" ${i===0?"disabled":""}>${ic("back",13)}</button>
+        <button class="bd-b down" data-stdown="${i}" ${i===rows.length-1?"disabled":""}>${ic("back",13)}</button>
+        <button class="bd-b warn" data-stdel="${i}">${ic("trash",13)}</button>
+      </span>
+      <input class="st-note" data-stnote="${i}" value="${esc(r.note)}" placeholder="${esc(t("stNote"))}"
+        ${r.morning?"disabled":""}>
+    </div>`).join("") : `<p class="mini">${t("stEmpty")}</p>`;
+    box.querySelectorAll("[data-sttime]").forEach(el=>el.oninput=()=>{ rows[+el.dataset.sttime].time=el.value; });
+    box.querySelectorAll("[data-stname]").forEach(el=>el.oninput=()=>{ rows[+el.dataset.stname].name=el.value; });
+    box.querySelectorAll("[data-stnote]").forEach(el=>el.oninput=()=>{ rows[+el.dataset.stnote].note=el.value; });
+    box.querySelectorAll("[data-stup]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.stup; [rows[i-1],rows[i]]=[rows[i],rows[i-1]]; paint(); });
+    box.querySelectorAll("[data-stdown]").forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.stdown; [rows[i+1],rows[i]]=[rows[i],rows[i+1]]; paint(); });
+    box.querySelectorAll("[data-stdel]").forEach(b=>b.onclick=()=>{
+      if(rows.length<=1){ toastErr(t("stLast")); return; }
+      rows.splice(+b.dataset.stdel,1); paint(); });
+  };
+  paint();
+  wrap.querySelector("#st-add").onclick=()=>{
+    rows.push({id:"s"+Date.now(), time:"", name:"", note:"", morning:false}); paint();
+  };
+  wrap.querySelector("#st-x").onclick=()=>wrap.remove();
+  const save=async list=>{
+    try{ await DB.saveSettings({...S.settings, dayStandards:list}); wrap.remove(); toastOk(t("saved")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  };
+  wrap.querySelector("#st-reset").onclick=()=>save([]);          // empty means "use the standard day"
+  wrap.querySelector("#st-go").onclick=()=>{
+    const keep=rows.filter(r=>String(r.time||"").trim() || String(r.name||"").trim());
+    if(!keep.length){ toastErr(t("stLast")); return; }
+    save(keep);
+  };
 }
 function dayPlanTimes(day, headKey){
   return `<div class="sec"><h3>${ic("clock",18)} ${t(headKey||"wholeDay")}</h3>
@@ -11829,6 +11916,7 @@ function wireCommon(){
     const id=b.dataset.afact;
     afForActivity(id).length ? openActFbList(id) : openActFbModal(id);
   });
+  const stE=$("#btn-stdedit"); if(stE) stE.onclick=openStandardsEditor;
   const bMe=$("#btn-me"); if(bMe) bMe.onclick=openAccountSheet;
   document.querySelectorAll("[data-fbper]").forEach(b=>b.onclick=()=>{ S.fbPeriod=b.dataset.fbper; render(); });
   const bSo=$("#btn-social"); if(bSo) bSo.onclick=()=>{ S.socialOpen=!S.socialOpen; render(); };
