@@ -1670,7 +1670,7 @@ html{font-size:calc(16px * var(--fscale,1))}
 .sec-head button{border:0;background:none;color:var(--bronze);font-size:12.5px;font-weight:600;
   cursor:pointer;font-family:inherit;padding:0}
 .thumbrow{display:flex;align-items:center;gap:12px;padding:11px 0;cursor:pointer;width:100%;
-  border:0;background:none;text-align:start;color:inherit;font-family:inherit}
+  flex-wrap:nowrap;border:0;background:none;text-align:start;color:inherit;font-family:inherit}
 .thumbrow:not(:last-child){border-bottom:1px solid var(--line)}
 .th-img{flex:none;width:52px;height:52px;border-radius:14px;overflow:hidden;background:var(--sand)}
 .th-img img{width:100%;height:100%;object-fit:cover}
@@ -1797,6 +1797,7 @@ html{font-size:calc(16px * var(--fscale,1))}
   font-weight:700;margin:16px 0 6px}
 .ao-none{font-style:normal;color:var(--muted);font-weight:600}
 /* ===== control centre ===== */
+.af-acc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:6px}
 .af-stars{display:flex;gap:4px;margin:4px 0 2px}
 .af-stars .fb-st{width:34px;height:34px;font-size:26px}
 .af-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0}
@@ -2142,6 +2143,14 @@ Object.assign(DICT.en, {
   fbAllTime:"All",
   fbPeriodHint:"Feedback resets at midnight. Nothing is ever deleted — switch the period to look back.",
   fbNoneToday:"No feedback collected today yet.",
+  acAccept:"Accept this activity",
+  acAccepted:"Accepted",
+  acAcceptedBy:"Accepted by",
+  acNotAccepted:"Not accepted yet",
+  acUndo:"Undo accept",
+  afRooms:"Room numbers",
+  afRoomsHint:"Separate them with a comma.",
+  afLevel:"Activity level",
   afHead:"Entertainment feedback",
   afSub:"How the programme itself went. Kept apart from the guest ratings.",
   afRate:"Rate this activity",
@@ -3410,9 +3419,10 @@ const DB = {
     S.feedback=S.feedback.map(x=>String(x.id)===String(id)?{...x,...patch}:x);
   },
   async addActivityFeedback(f){
-    const row={ room:"", nationality:"", guest_name:f.act_name||"", rate:f.rate,
+    const row={ room:String(f.rooms||""), nationality:"", guest_name:f.act_name||"", rate:f.rate,
                 comment:f.comment||"", by_user:f.by_user||"",
-                depts:JSON.stringify({[AF_MARK]:String(f.act_id), guests:+f.guests||0}) };
+                depts:JSON.stringify({[AF_MARK]:String(f.act_id),
+                                      guests:+f.guests||0, level:f.level||"act"}) };
     if(REMOTE){
       try{
         const r=await sb("feedback",{method:"POST",body:JSON.stringify(row)});
@@ -4550,12 +4560,14 @@ function thumbRow(a, opts){
   const tick = o.tick
     ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}" aria-pressed="${!!o.done}">${ic("check",13)}</button>`
     : `<span class="th-go">${ic("back",16)}</span>`;
-  return `<button class="thumbrow" data-open="${esc(String(a.id))}">
+  // a <button> inside a <button> is invalid, and the browser closes the outer
+  // one early — which is why the tick was landing on its own line underneath
+  return `<div class="thumbrow" role="button" tabindex="0" data-open="${esc(String(a.id))}">
     <span class="th-time">${esc(actStart(a))}</span>
     <span class="th-img"><img src="${esc(actImage(a))}" alt="" loading="lazy"></span>
     <span class="th-mid"><b>${esc(a.name)}</b><span>${esc(a.location||"")}</span></span>
     ${tick}
-  </button>`;
+  </div>`;
 }
 function secHead(title, linkLabel, linkId){
   return `<div class="sec-head"><h3>${esc(title)}</h3>${
@@ -8559,6 +8571,14 @@ function afActId(f){
   if(typeof d==="string"){ try{ d=JSON.parse(d); }catch(e){ return null; } }
   return (d && d[AF_MARK]) || null;
 }
+function afMeta(f){
+  let d=f&&f.depts;
+  if(typeof d==="string"){ try{ d=JSON.parse(d); }catch(e){ d=null; } }
+  return d||{};
+}
+function afRooms(f){ return String((f&&f.room)||"").trim(); }
+function afGuests(f){ return +afMeta(f).guests||0; }
+function afLevel(f){ return afMeta(f).level || afGroupOf(afActivity(f)); }
 function afActivity(f){
   const id=afActId(f);
   return id!=null ? (S.activities||[]).find(a=>String(a.id)===String(id)) || null : null;
@@ -8620,6 +8640,28 @@ function afForActivity(id){
   return (S.actFb||[]).filter(f=>String(afActId(f))===String(id))
     .sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
 }
+/* An entertainer taps Accept to say "I have this one". It shows on the
+   manager's Live operations at once. Kept in settings, so there is no new
+   database table to create. */
+function acceptKey(a){ return String(a&&a.id)+"|"+todayISO(); }
+function acceptedBy(a){
+  const m=(S.settings&&S.settings.actAccept)||{};
+  return m[acceptKey(a)]||"";
+}
+function iAccepted(a){
+  const me=(S.session&&S.session.username)||"";
+  return !!me && String(acceptedBy(a))===String(me);
+}
+async function toggleAccept(id){
+  const a=(S.activities||[]).find(x=>String(x.id)===String(id));
+  if(!a) return;
+  const me=(S.session&&S.session.username)||"";
+  const m={...((S.settings&&S.settings.actAccept)||{})};
+  if(m[acceptKey(a)]===me) delete m[acceptKey(a)];
+  else m[acceptKey(a)]=me;
+  try{ await DB.saveSettings({...S.settings, actAccept:m}); render(); }
+  catch(e){ toastErr(t("errSave")); }
+}
 /* The entertainer rates their own activity right after it finishes: one score,
    what happened, and roughly how many guests came. */
 function openActFbModal(actId){
@@ -8629,8 +8671,16 @@ function openActFbModal(actId){
   const wrap=baseModal(`
     <h3>${ic("star",20)} ${t("afRate")}</h3>
     <p class="mini">${esc([a.name, t("days")[a.day], a.time, a.location].filter(Boolean).join(" \u00b7 "))}</p>
+    <div class="card cc" style="margin:10px 0 4px">
+      <div class="cc-row"><span class="cc-ic">${ic("grid",17)}</span>
+        <span class="cc-x">${t("afLevel")}</span>
+        <span class="cc-v">${esc(afGroupLabel(afGroupOf(a)))}</span></div>
+    </div>
     <label style="margin-top:12px">${t("afHow")}</label>
     <div class="af-stars" id="af-stars"></div>
+    <label style="margin-top:12px">${t("afRooms")}</label>
+    <input id="af-rooms" placeholder="101, 214">
+    <p class="mini" style="margin:4px 0 0">${t("afRoomsHint")}</p>
     <label style="margin-top:12px">${t("afGuests")}</label>
     <input id="af-guests" inputmode="numeric" value="${seatsTaken(a.id)||""}">
     <label>${t("afComment")}</label><textarea id="af-note" rows="3"></textarea>
@@ -8649,6 +8699,8 @@ function openActFbModal(actId){
     try{
       await DB.addActivityFeedback({
         act_id:a.id, act_name:a.name, rate:score,
+        level:afGroupOf(a),
+        rooms:wrap.querySelector("#af-rooms").value.trim(),
         guests:+wrap.querySelector("#af-guests").value||0,
         comment:wrap.querySelector("#af-note").value.trim(),
         by_user:(S.session&&S.session.username)||""
@@ -8671,6 +8723,9 @@ function openActFbList(actId){
     ${list.length?`<div class="card" style="padding:2px 14px">${list.map(f=>`
       <div class="af-row">
         <span class="af-x">${fbStars(+f.rate||0)}
+          <span class="mini">${esc(afGroupLabel(afLevel(f)))}${
+            afRooms(f)?` \u00b7 ${t("afRooms")} ${esc(afRooms(f))}`:""}${
+            afGuests(f)?` \u00b7 ${afGuests(f)} ${t("guests").toLowerCase()}`:""}</span>
           ${fbComment(f)?`<span class="mini">${esc(fbComment(f))}</span>`:""}
           <span class="mini">${t("afByWho")} ${esc(teamName(f.by_user))} \u00b7 ${fmtTime(f.created_at)}</span></span>
         ${mine(f)?`<button class="btn sm ghost warn" data-afdel="${esc(String(f.id))}">${ic("trash",13)}</button>`:""}
@@ -8720,10 +8775,11 @@ function myActFeedbackCard(day){
     <div class="card" style="padding:2px 14px">
       ${mine.map(a=>{
         const list=afForActivity(a.id);
+        const acc=acceptedBy(a);
         const own=list.filter(f=>String(f.by_user||"")===me).length;
         return `<button class="fb-dept ${list.length?(afAvg(list)<3.5?"low":afAvg(list)<4.5?"mid":"top"):""}" data-afact="${esc(String(a.id))}">
           <span class="fb-nm">${esc(a.name)}<br><span class="mini">${esc(actStart(a))}${a.location?" \u00b7 "+esc(a.location):""}${
-            own?" \u00b7 "+t("afRated"):""}</span></span>
+            own?" \u00b7 "+t("afRated"):""}${acc?" \u00b7 "+t("acAccepted"):""}</span></span>
           ${list.length
             ? `<span class="fb-bar"><i style="width:${Math.round(afAvg(list)/5*100)}%"></i></span>
                <span class="fb-val">${afAvg(list).toFixed(1)}</span>`
@@ -8731,9 +8787,13 @@ function myActFeedbackCard(day){
         </button>`;
       }).join("")}
     </div>
+    <div class="af-acc">${mine.map(a=>`
+      <button class="btn link" data-afacc="${esc(String(a.id))}">${ic("check",14)} ${
+        iAccepted(a) ? `${t("acUndo")} \u00b7 ${esc(a.name)}` : `${t("acAccept")} \u00b7 ${esc(a.name)}`}</button>`).join("")}
+    </div>
   </div>`;
 }
-/* The manager's picture of the programme itself. */
+/* The manager\'s picture of the programme itself. */
 function actFeedbackCard(){
   const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
   const list=afPeriodList(period);
@@ -8788,6 +8848,10 @@ function openActivitySheet(id){
       <div class="cc-row"><span class="cc-ic">${ic("users",17)}</span>
         <span class="cc-x">${t("aoStaff")}</span>
         <span class="cc-v">${who?esc(who):`<i class="ao-none">${esc(t("aoNobody"))}</i>`}</span></div>
+      <div class="cc-row"><span class="cc-ic">${ic("check",17)}</span>
+        <span class="cc-x">${t("acAccepted")}</span>
+        <span class="cc-v">${acceptedBy(a)?esc(teamName(acceptedBy(a)))
+          :`<i class="ao-none">${esc(t("acNotAccepted"))}</i>`}</span></div>
       <div class="cc-row"><span class="cc-ic">${ic("clipboard",17)}</span>
         <span class="cc-x">${t("aoReq")}</span>
         <span class="cc-v">${rows.length?`${done}/${rows.length}`:`<i class="ao-none">\u2014</i>`}</span></div>
@@ -8804,6 +8868,8 @@ function openActivitySheet(id){
       <button class="btn ghost" id="ao-req">${ic("clipboard",16)} ${sh?t("aoReqOpen"):t("aoReqMake")}</button>
       <button class="btn ghost" id="ao-assign">${ic("users",16)} ${t("aoAssign")}</button>`:""}
     ${isStaff?`<button class="btn" id="ao-att">${ic("check",16)} ${t("aoAttendance")}</button>`:""}
+    ${isStaff?`<button class="btn ghost" id="ao-acc">${ic("check",16)} ${
+      iAccepted(a) ? t("acUndo") : t("acAccept")}</button>`:""}
     ${(isMgr||isStaff)?`<button class="btn ghost" id="ao-afb">${ic("star",16)} ${
       afForActivity(a.id).length ? `${t("afRated")} \u00b7 ${afAvg(afForActivity(a.id)).toFixed(1)} \u2605` : t("afRate")}</button>`:""}
     <button class="btn ghost" id="ao-x">${t("close")}</button>`);
@@ -8818,6 +8884,8 @@ function openActivitySheet(id){
     if(sh){ openReqEditor(sh.id); return; }
     openReqEditor();                       // a blank sheet, ready to be filled for this one
   };
+  const acc=wrap.querySelector("#ao-acc");
+  if(acc) acc.onclick=async ()=>{ wrap.remove(); await toggleAccept(a.id); };
   const afb=wrap.querySelector("#ao-afb");
   if(afb) afb.onclick=()=>{
     wrap.remove();
@@ -8887,15 +8955,9 @@ function ccTodayOps(){
     openTasks ? ccRow("check", t("ccOpenTasks"), openTasks, "assign", "warn") : "",
     (guestReq+teamReq) ? ccRow("bell", t("ccOpenRequests"), guestReq+teamReq, "inbox:requests", "warn") : ""
   ].filter(Boolean).join("");
+  // the next activities already sit in Live operations right above — this card
+  // is only for what still needs doing
   return `<div class="sec"><h3>${ic("clock",18)} ${t("ccOps")}</h3>
-    ${upNext.length?`<div class="card" style="padding:2px 14px;margin-bottom:10px">
-      <div class="cc-head">${t("ccUpNext")}</div>
-      ${upNext.map(a=>`<div class="cc-next" data-open="${esc(String(a.id))}">
-        <span class="cc-t">${esc(actStart(a))}</span>
-        <span class="cc-x"><b>${esc(a.name)}</b>${a.location?`<span class="mini">${esc(a.location)}</span>`:""}</span>
-        <span class="mini">${esc(actStaffLabel(a)||"\u2014")}</span>
-      </div>`).join("")}
-    </div>`:""}
     ${rows?`<div class="card cc">${rows}</div>`
       :`<div class="card cc"><p class="mini" style="padding:12px 2px;margin:0">${t("ccAllClear")}</p></div>`}
   </div>`;
@@ -9004,7 +9066,7 @@ function wireCountdowns(){
 }
 function liveOpsCard(){
   const day=todayIndex();
-  const now=(()=>{ const d=new Date(); return d.getHours()*60+d.getMinutes(); })();
+  const now=nowMinutes();          // the hotel's clock, not the phone's
   const list=(S.activities||[]).filter(a=>a && a.day===day)
     .map(a=>{
       const w=actWindow(a);
@@ -9020,7 +9082,9 @@ function liveOpsCard(){
     const a=x.a, who=actStaffLabel(a), booked=seatsTaken(a.id);
     const live = x.s0<=now && now<=x.s1;
     const mins = Math.round(x.s0-now);
-    const chip = live ? `<span class="schip live"><i></i>${t("liveNow")}</span>`
+    const acc = acceptedBy(a);
+    const chip = acc ? `<span class="schip ok"><i></i>${t("acAccepted")} \u00b7 ${esc(teamName(acc))}</span>`
+      : live ? `<span class="schip live"><i></i>${t("liveNow")}</span>`
       : !actHasStaff(a) ? `<span class="schip warn"><i></i>${t("liveNoStaff")}</span>`
       : mins<=60 ? `<span class="schip gold"><i></i>${t("liveSoon").replace("{n}",Math.max(0,mins))}</span>`
       : `<span class="schip"><i></i>${t("liveAssigned")}</span>`;
@@ -11759,6 +11823,7 @@ function wireCommon(){
   demoteExtraPrimaries();
   wireCountdowns();
   document.querySelectorAll("[data-afper]").forEach(b=>b.onclick=()=>{ S.afPeriod=b.dataset.afper; render(); });
+  document.querySelectorAll("[data-afacc]").forEach(b=>b.onclick=()=>toggleAccept(b.dataset.afacc));
   document.querySelectorAll("[data-afgroup]").forEach(b=>b.onclick=()=>openAfGroup(b.dataset.afgroup));
   document.querySelectorAll("[data-afact]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.afact;
@@ -12495,7 +12560,17 @@ function applyRealtimeChange(payload){
       if(row && row.data){ S.settings={...DEFAULT_SETTINGS,...row.data}; applySettings(); return true; }
       return false;
     }
-    const key=RT_TABLES[table]; if(!key || !Array.isArray(S[key])) return false;
+    let key=RT_TABLES[table]; if(!key || !Array.isArray(S[key])) return false;
+    // a row arriving live on the feedback table may be an activity rating —
+    // it must land in its own list, never in the guest ratings
+    if(table==="feedback"){
+      const row=payload.new || payload.old || {};
+      if(afIsActivityFb(row)) key="actFb";
+      if(!Array.isArray(S[key])) S[key]=[];
+      // and if it was previously filed in the wrong list, take it out of there
+      const other = key==="actFb" ? "feedback" : "actFb";
+      if(Array.isArray(S[other]) && row.id!=null) S[other]=S[other].filter(x=>x.id!==row.id);
+    }
     const list=S[key];
     if(ev==="INSERT" && payload.new){
       if(!list.some(x=>x.id===payload.new.id)) list.push(payload.new);
