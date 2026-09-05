@@ -1797,6 +1797,11 @@ html{font-size:calc(16px * var(--fscale,1))}
   font-weight:700;margin:16px 0 6px}
 .ao-none{font-style:normal;color:var(--muted);font-weight:600}
 /* ===== control centre ===== */
+.af-stars{display:flex;gap:4px;margin:4px 0 2px}
+.af-stars .fb-st{width:34px;height:34px;font-size:26px}
+.af-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0}
+.af-row:not(:last-child){border-bottom:1px solid var(--line)}
+.af-row .af-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .cd{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;letter-spacing:.02em;
   color:var(--bronze)}
 .cd:empty{display:none}
@@ -1993,7 +1998,7 @@ const S = {
   day:(new Date().getDay()+6)%7, favorites:[],   // initial only; todayIndex() takes over after load
   sub:{program:"acts", guests:"bookings", team:"accounts", dash:"overview", inbox:"guests"}, op:null, cat:null,
   chatRoom:null, seenNote:0,
-  activities:[], bookings:[], users:[], tickets:[], orders:[],
+  activities:[], bookings:[], users:[], tickets:[], orders:[], actFb:[],
   rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[], feedback:[], aiChat:[], profiles:[],
   buses:[], quizzes:[], quizReplies:[], staffAtt:[], attMonth:null, photos:[], staffReqs:[], weather:null, weatherBusy:false, crmQuery:"", drawerOpen:null, pb:null, assignDay:null, openDay:{}, chatSel:null, exportMonth:null, exportDay:"", exportSlot:"", settings:{...DEFAULT_SETTINGS}, loadError:false
 };
@@ -2137,6 +2142,29 @@ Object.assign(DICT.en, {
   fbAllTime:"All",
   fbPeriodHint:"Feedback resets at midnight. Nothing is ever deleted — switch the period to look back.",
   fbNoneToday:"No feedback collected today yet.",
+  afHead:"Entertainment feedback",
+  afSub:"How the programme itself went. Kept apart from the guest ratings.",
+  afRate:"Rate this activity",
+  afRateAgain:"Rate it again",
+  afRated:"Rated",
+  afHow:"How did it go?",
+  afComment:"What happened",
+  afGuests:"Guests who joined",
+  afSaved:"Rating saved",
+  afNone:"Nothing rated in this period yet.",
+  afMine:"My activities",
+  afGroupShow:"Show",
+  afGroupLive:"Live music",
+  afGroupEvent:"Events",
+  afGroupAct:"Activities",
+  afToday:"Today",
+  afWeek:"This week",
+  afAll:"All",
+  afRatings:"ratings",
+  afInGroup:"activities",
+  afByWho:"Rated by",
+  afDelete:"Delete this rating",
+  afOpenGroup:"Tap a group to see the activities inside it.",
   ccAllTeam:"The whole team",
   cdStartsIn:"starts in",
   cdEndsIn:"ends in",
@@ -3117,14 +3145,17 @@ const DB = {
       ]);
       S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
       S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
-      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.feedback=fb||[]; S.profiles=tp||[]; S.buses=bs||[];
+      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.profiles=tp||[]; S.buses=bs||[];
+      // activity ratings never mix into the guest ratings
+      S.feedback=(fb||[]).filter(f=>!afIsActivityFb(f));
+      S.actFb   =(fb||[]).filter(afIsActivityFb);
       S.quizzes=qz||[]; S.quizReplies=qr||[]; S.staffAtt=sa||[]; S.photos=ph||[]; S.staffReqs=sr||[];
       if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
       S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
       S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
+      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.actFb=[]; S.profiles=demoProfiles();
       S.quizzes=[]; S.quizReplies=[]; S.staffAtt=[]; S.photos=[]; S.staffReqs=[];
       S.buses=[{id:1,direction:"toHotel",time:"08:00",note:"",sort:0},{id:2,direction:"toHotel",time:"15:00",note:"",sort:1},{id:3,direction:"toHouse",time:"00:30",note:"",sort:2},{id:4,direction:"toHouse",time:"13:15",note:"",sort:3}];
     }
@@ -3377,6 +3408,30 @@ const DB = {
       }
     }
     S.feedback=S.feedback.map(x=>String(x.id)===String(id)?{...x,...patch}:x);
+  },
+  async addActivityFeedback(f){
+    const row={ room:"", nationality:"", guest_name:f.act_name||"", rate:f.rate,
+                comment:f.comment||"", by_user:f.by_user||"",
+                depts:JSON.stringify({[AF_MARK]:String(f.act_id), guests:+f.guests||0}) };
+    if(REMOTE){
+      try{
+        const r=await sb("feedback",{method:"POST",body:JSON.stringify(row)});
+        S.actFb.unshift(__row(r,row));
+      }catch(e){
+        // an older database without the depts column cannot tell the two apart,
+        // so we keep it in memory rather than corrupt the guest ratings
+        row.id=Date.now(); row.created_at=new Date().toISOString();
+        S.actFb.unshift(row);
+        throw e;
+      }
+    } else {
+      row.id=Date.now(); row.created_at=new Date().toISOString();
+      S.actFb.unshift(row);
+    }
+  },
+  async deleteActivityFeedback(id){
+    if(REMOTE) await sb("feedback?id=eq."+id,{method:"DELETE"});
+    S.actFb=(S.actFb||[]).filter(x=>String(x.id)!==String(id));
   },
   async deleteFeedback(id){
     if(REMOTE) await sb("feedback?id=eq."+id,{method:"DELETE"});
@@ -7700,6 +7755,7 @@ function myWorkDayView(){
     ${myDayTimeline(day)}
     ${dayPlanInfoCard(day)}
     ${workdayFeedbackCard()}
+    ${myActFeedbackCard(day)}
     ${dayPlanTimes(day, "mdWholeDay")}
   </div>`;
 }
@@ -8067,7 +8123,7 @@ const PAGE_SECTIONS={
   // The Control Center reads in four bands: what is critical, what still has to
   // happen today, how the guests are doing, how the team is doing.
   dash:    ["tiles","attention","live","tonight","ccops",
-            "stats","feedback","nations","activities",
+            "stats","feedback","actfb","nations","activities",
             "teampulse","overview","trends","everything","export"],
   guests:  ["crm","rooms","bookings","chat","requests","feedback"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
@@ -8078,7 +8134,7 @@ const PAGE_SECTIONS={
 const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
   dash:    {tiles:"atAGlance",overview:"todayOverview",attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",
-            ccops:"ccOps",teampulse:"ccTeamPulse",everything:"mdWholeDay",export:"exportData",stats:"ccGuestPulse",feedback:"fbAnalytics",
+            ccops:"ccOps",teampulse:"ccTeamPulse",actfb:"afHead",everything:"mdWholeDay",export:"exportData",stats:"ccGuestPulse",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
             requests:"requests",feedback:"feedback"},
@@ -8367,6 +8423,7 @@ function dashView(){
     </div>`,
     ccops:     ()=>ccTodayOps(),
     teampulse: ()=>ccTeamPulse(),
+    actfb:      ()=>actFeedbackCard(),
     everything: ()=>dayPlanTimes(todayIndex(), "mdWholeDay"),
     feedback:  ()=>feedbackAnalyticsCard(),
     nations:   ()=>nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
@@ -8479,6 +8536,225 @@ function openGuestActivity(id){
   const bk=wrap.querySelector("#ga-book");
   if(bk && !booking) bk.onclick=()=>{ wrap.remove(); openBookModal(a); };
 }
+/* ===== ACTIVITY FEEDBACK =====
+   The entertainers rate the programme itself: how the show went, whether the
+   activity worked. It rides in the same table as the guest feedback but is
+   split out the moment it loads, so it can never move a guest rating average.
+   The marker lives in the depts column, which needs no new database column. */
+const AF_MARK="__act";
+const AF_GROUPS=[
+  ["show",  "afGroupShow",  ["eShow"]],
+  ["live",  "afGroupLive",  ["eLive"]],
+  ["event", "afGroupEvent", ["mEvents","eParty"]],   // a party is an event of its own
+  ["act",   "afGroupAct",   []]                       // everything else
+];
+function afIsActivityFb(f){
+  if(!f) return false;
+  let d=f.depts;
+  if(typeof d==="string"){ try{ d=JSON.parse(d); }catch(e){ return false; } }
+  return !!(d && d[AF_MARK]);
+}
+function afActId(f){
+  let d=f&&f.depts;
+  if(typeof d==="string"){ try{ d=JSON.parse(d); }catch(e){ return null; } }
+  return (d && d[AF_MARK]) || null;
+}
+function afActivity(f){
+  const id=afActId(f);
+  return id!=null ? (S.activities||[]).find(a=>String(a.id)===String(id)) || null : null;
+}
+function afGroupOf(a){
+  const c=normCat(a||{});
+  const hit=AF_GROUPS.find(g=>g[2].includes(c));
+  return hit ? hit[0] : "act";
+}
+function afGroupLabel(key){
+  const g=AF_GROUPS.find(x=>x[0]===key);
+  return g ? t(g[1]) : key;
+}
+/* today / this week / everything — the same shape the guest analytics uses */
+function afPeriodList(period){
+  const all=S.actFb||[];
+  if(period==="all") return all.slice();
+  const now=new Date();
+  const start=new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if(period==="week") start.setDate(start.getDate()-6);
+  return all.filter(f=>{
+    const d=f.created_at?new Date(f.created_at):null;
+    return d && !isNaN(d.getTime()) && d>=start;
+  });
+}
+function afAvg(list){
+  const v=(list||[]).map(f=>+f.rate||0).filter(n=>n>0);
+  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0;
+}
+/* grouped the way she asked: Show, Live music, Events, Activities */
+function afGrouped(list){
+  const by={};
+  (list||[]).forEach(f=>{
+    const a=afActivity(f);
+    const key=a?afGroupOf(a):"act";
+    (by[key]=by[key]||[]).push(f);
+  });
+  return AF_GROUPS.map(([key])=>({
+    key, label:afGroupLabel(key), items:by[key]||[],
+    avg:afAvg(by[key]||[]), n:(by[key]||[]).length,
+    acts:afByActivity(by[key]||[]).length
+  })).filter(g=>g.n);
+}
+/* inside a group: one line per activity, worst first so problems surface */
+function afByActivity(list){
+  const by={};
+  (list||[]).forEach(f=>{
+    const id=String(afActId(f));
+    (by[id]=by[id]||[]).push(f);
+  });
+  return Object.keys(by).map(id=>{
+    const a=(S.activities||[]).find(x=>String(x.id)===id);
+    const first=by[id][0];
+    return { id, name:(a&&a.name) || (first&&first.guest_name) || id,
+             items:by[id], n:by[id].length, avg:afAvg(by[id]) };
+  }).sort((x,y)=>x.avg-y.avg);
+}
+function afForActivity(id){
+  return (S.actFb||[]).filter(f=>String(afActId(f))===String(id))
+    .sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
+}
+/* The entertainer rates their own activity right after it finishes: one score,
+   what happened, and roughly how many guests came. */
+function openActFbModal(actId){
+  const a=(S.activities||[]).find(x=>String(x.id)===String(actId));
+  if(!a) return;
+  let score=0;
+  const wrap=baseModal(`
+    <h3>${ic("star",20)} ${t("afRate")}</h3>
+    <p class="mini">${esc([a.name, t("days")[a.day], a.time, a.location].filter(Boolean).join(" \u00b7 "))}</p>
+    <label style="margin-top:12px">${t("afHow")}</label>
+    <div class="af-stars" id="af-stars"></div>
+    <label style="margin-top:12px">${t("afGuests")}</label>
+    <input id="af-guests" inputmode="numeric" value="${seatsTaken(a.id)||""}">
+    <label>${t("afComment")}</label><textarea id="af-note" rows="3"></textarea>
+    <button class="btn" id="af-go">${t("save")}</button>
+    <button class="btn ghost" id="af-x">${t("cancelBtn")}</button>`);
+  const box=wrap.querySelector("#af-stars");
+  const paint=()=>{
+    box.innerHTML=[1,2,3,4,5].map(i=>
+      `<button class="fb-st ${i<=score?"on":""}" data-afset="${i}">${i<=score?"\u2605":"\u2606"}</button>`).join("");
+    box.querySelectorAll("[data-afset]").forEach(b=>b.onclick=()=>{ score=+b.dataset.afset; paint(); });
+  };
+  paint();
+  wrap.querySelector("#af-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#af-go").onclick=async ()=>{
+    if(!score){ toastErr(t("afHow")); return; }
+    try{
+      await DB.addActivityFeedback({
+        act_id:a.id, act_name:a.name, rate:score,
+        guests:+wrap.querySelector("#af-guests").value||0,
+        comment:wrap.querySelector("#af-note").value.trim(),
+        by_user:(S.session&&S.session.username)||""
+      });
+      wrap.remove(); toastOk(t("afSaved")); render();
+    }catch(e){ wrap.remove(); toastErr(t("errSave")); render(); }
+  };
+}
+/* Everything rated for one activity, newest first. */
+function openActFbList(actId){
+  const a=(S.activities||[]).find(x=>String(x.id)===String(actId));
+  const list=afForActivity(actId);
+  const mine=f=>S.session && (S.session.role==="manager" || String(f.by_user||"")===String(S.session.username||""));
+  const wrap=baseModal(`
+    <h3>${ic("star",20)} ${esc((a&&a.name)||t("afHead"))}</h3>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${afAvg(list)?afAvg(list).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
+      <div class="stat"><b>${list.length}</b><span>${t("afRatings")}</span></div>
+    </div>
+    ${list.length?`<div class="card" style="padding:2px 14px">${list.map(f=>`
+      <div class="af-row">
+        <span class="af-x">${fbStars(+f.rate||0)}
+          ${fbComment(f)?`<span class="mini">${esc(fbComment(f))}</span>`:""}
+          <span class="mini">${t("afByWho")} ${esc(teamName(f.by_user))} \u00b7 ${fmtTime(f.created_at)}</span></span>
+        ${mine(f)?`<button class="btn sm ghost warn" data-afdel="${esc(String(f.id))}">${ic("trash",13)}</button>`:""}
+      </div>`).join("")}</div>`:`<p class="mini">${t("afNone")}</p>`}
+    ${a?`<button class="btn" id="af-again">${ic("star",16)} ${list.length?t("afRateAgain"):t("afRate")}</button>`:""}
+    <button class="btn ghost" id="afl-x">${t("close")}</button>`);
+  wrap.querySelector("#afl-x").onclick=()=>wrap.remove();
+  const ag=wrap.querySelector("#af-again");
+  if(ag) ag.onclick=()=>{ wrap.remove(); openActFbModal(actId); };
+  wrap.querySelectorAll("[data-afdel]").forEach(b=>b.onclick=async ()=>{
+    if(!await confirmAction({question:t("afDelete"),note:t("cannotUndo"),danger:true})) return;
+    try{ await DB.deleteActivityFeedback(b.dataset.afdel); wrap.remove(); toastOk(t("deleted")); render(); }
+    catch(e){ toastErr(t("errSave")); }
+  });
+}
+/* One group opened up: the activities inside it, worst first. */
+function openAfGroup(key){
+  const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
+  const list=afPeriodList(period).filter(f=>afGroupOf(afActivity(f))===key);
+  const acts=afByActivity(list);
+  const wrap=baseModal(`
+    <h3>${ic("star",20)} ${esc(afGroupLabel(key))}</h3>
+    <p class="mini">${esc(t("af"+(period==="today"?"Today":period==="week"?"Week":"All")))}</p>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${afAvg(list)?afAvg(list).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
+      <div class="stat"><b>${list.length}</b><span>${t("afRatings")}</span></div>
+    </div>
+    ${acts.length?`<div class="card" style="padding:2px 14px">${acts.map(x=>`
+      <button class="fb-dept ${x.avg<3.5?"low":x.avg<4.5?"mid":"top"}" data-afact="${esc(x.id)}">
+        <span class="fb-nm">${esc(x.name)}<br><span class="mini">${x.n} ${t("afRatings")}</span></span>
+        <span class="fb-bar"><i style="width:${Math.round(x.avg/5*100)}%"></i></span>
+        <span class="fb-val">${x.avg.toFixed(1)}</span></button>`).join("")}</div>`
+      :`<p class="mini">${t("afNone")}</p>`}
+    <button class="btn ghost" id="afg-x">${t("close")}</button>`);
+  wrap.querySelector("#afg-x").onclick=()=>wrap.remove();
+  wrap.querySelectorAll("[data-afact]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.afact; wrap.remove(); openActFbList(id);
+  });
+}
+/* The entertainer's own programme ratings for the day she is looking at. */
+function myActFeedbackCard(day){
+  const me=String((S.session&&S.session.username)||"");
+  const mine=(S.activities||[]).filter(a=>a.day===day && isMineAct(a));
+  if(!mine.length) return "";
+  return `<div class="sec"><h3>${ic("star",18)} ${t("afHead")}</h3>
+    <p class="mini" style="margin:-6px 0 10px">${t("afSub")}</p>
+    <div class="card" style="padding:2px 14px">
+      ${mine.map(a=>{
+        const list=afForActivity(a.id);
+        const own=list.filter(f=>String(f.by_user||"")===me).length;
+        return `<button class="fb-dept ${list.length?(afAvg(list)<3.5?"low":afAvg(list)<4.5?"mid":"top"):""}" data-afact="${esc(String(a.id))}">
+          <span class="fb-nm">${esc(a.name)}<br><span class="mini">${esc(actStart(a))}${a.location?" \u00b7 "+esc(a.location):""}${
+            own?" \u00b7 "+t("afRated"):""}</span></span>
+          ${list.length
+            ? `<span class="fb-bar"><i style="width:${Math.round(afAvg(list)/5*100)}%"></i></span>
+               <span class="fb-val">${afAvg(list).toFixed(1)}</span>`
+            : `<span class="fb-val">${ic("star",16)}</span>`}
+        </button>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
+/* The manager's picture of the programme itself. */
+function actFeedbackCard(){
+  const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
+  const list=afPeriodList(period);
+  const groups=afGrouped(list);
+  return `<div class="sec"><h3>${ic("star",18)} ${t("afHead")}</h3>
+    <p class="mini" style="margin:-6px 0 10px">${t("afSub")}</p>
+    <div class="pills">${[["today","afToday"],["week","afWeek"],["all","afAll"]]
+      .map(([k,lb])=>`<button class="pill ${period===k?"on":""}" data-afper="${k}">${esc(t(lb))}</button>`).join("")}</div>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><b>${afAvg(list)?afAvg(list).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
+      <div class="stat"><b>${list.length}</b><span>${t("afRatings")}</span></div>
+    </div>
+    ${groups.length?`<div class="card" style="padding:2px 14px">${groups.map(g=>`
+      <button class="fb-dept ${g.avg<3.5?"low":g.avg<4.5?"mid":"top"}" data-afgroup="${esc(g.key)}">
+        <span class="fb-nm">${esc(g.label)}<br><span class="mini">${g.acts} ${t("afInGroup")} \u00b7 ${g.n} ${t("afRatings")}</span></span>
+        <span class="fb-bar"><i style="width:${Math.round(g.avg/5*100)}%"></i></span>
+        <span class="fb-val">${g.avg.toFixed(1)}</span></button>`).join("")}</div>
+      <p class="mini" style="margin-top:6px">${t("afOpenGroup")}</p>`
+      :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("afNone")}</div>`}
+  </div>`;
+}
 /* ===== THE ACTIVITY AS ONE OBJECT =====
    Opening an activity used to do nothing for staff and managers, so the day had
    to be reconstructed from four screens. This gathers everything that belongs
@@ -8528,6 +8804,8 @@ function openActivitySheet(id){
       <button class="btn ghost" id="ao-req">${ic("clipboard",16)} ${sh?t("aoReqOpen"):t("aoReqMake")}</button>
       <button class="btn ghost" id="ao-assign">${ic("users",16)} ${t("aoAssign")}</button>`:""}
     ${isStaff?`<button class="btn" id="ao-att">${ic("check",16)} ${t("aoAttendance")}</button>`:""}
+    ${(isMgr||isStaff)?`<button class="btn ghost" id="ao-afb">${ic("star",16)} ${
+      afForActivity(a.id).length ? `${t("afRated")} \u00b7 ${afAvg(afForActivity(a.id)).toFixed(1)} \u2605` : t("afRate")}</button>`:""}
     <button class="btn ghost" id="ao-x">${t("close")}</button>`);
   wrap.querySelector("#ao-x").onclick=()=>wrap.remove();
   const ed=wrap.querySelector("#ao-edit");
@@ -8539,6 +8817,11 @@ function openActivitySheet(id){
     wrap.remove();
     if(sh){ openReqEditor(sh.id); return; }
     openReqEditor();                       // a blank sheet, ready to be filled for this one
+  };
+  const afb=wrap.querySelector("#ao-afb");
+  if(afb) afb.onclick=()=>{
+    wrap.remove();
+    afForActivity(a.id).length ? openActFbList(a.id) : openActFbModal(a.id);
   };
   const asg=wrap.querySelector("#ao-assign");
   if(asg) asg.onclick=()=>{ wrap.remove(); S.tab="assign"; render(); };
@@ -11475,6 +11758,12 @@ function wireCommon(){
   document.querySelectorAll("[data-busadd]").forEach(el=>el.onclick=()=>openBusModal(null, el.dataset.busadd));
   demoteExtraPrimaries();
   wireCountdowns();
+  document.querySelectorAll("[data-afper]").forEach(b=>b.onclick=()=>{ S.afPeriod=b.dataset.afper; render(); });
+  document.querySelectorAll("[data-afgroup]").forEach(b=>b.onclick=()=>openAfGroup(b.dataset.afgroup));
+  document.querySelectorAll("[data-afact]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.afact;
+    afForActivity(id).length ? openActFbList(id) : openActFbModal(id);
+  });
   const bMe=$("#btn-me"); if(bMe) bMe.onclick=openAccountSheet;
   document.querySelectorAll("[data-fbper]").forEach(b=>b.onclick=()=>{ S.fbPeriod=b.dataset.fbper; render(); });
   const bSo=$("#btn-social"); if(bSo) bSo.onclick=()=>{ S.socialOpen=!S.socialOpen; render(); };
@@ -12267,7 +12556,7 @@ function startRealtime(){
     S.activities=demoActivities(); S.bookings=demoBookings();
     S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
     S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
+    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.actFb=[]; S.profiles=demoProfiles();
   }
   /* validate remembered session against fresh data */
   if(S.session){
