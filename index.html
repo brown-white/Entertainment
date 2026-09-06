@@ -11383,5 +11383,172 @@ function startRealtime(){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
 })();
 </script>
+<style id="aurea-ops-v2-style">
+/* ===== AUREA OPERATIONS V2: simple, elegant operational UI ===== */
+.std-card-v2{padding:0!important;overflow:hidden}.std-row-v2{display:grid;grid-template-columns:72px minmax(0,1fr) 34px;gap:12px;align-items:center;padding:16px 16px;border-bottom:1px solid var(--line)}.std-row-v2:last-child{border-bottom:0}.std-time-v2{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--ink)}.std-main-v2{min-width:0}.std-main-v2 b{display:block;font-size:16px;line-height:1.25}.std-main-v2 small{display:block;margin-top:4px;color:var(--muted);font-size:13px}.std-edit-v2{width:32px;height:32px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;border-radius:50%}.std-head-actions{display:flex;gap:8px}.std-manage-list{display:flex;flex-direction:column;gap:8px;margin:12px 0}.std-manage-item{display:grid;grid-template-columns:60px 1fr auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.std-manage-item .tm{font-family:var(--font-display);font-weight:700}.std-manage-item .nm{min-width:0}.std-manage-item .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.std-manage-item .nm span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.std-manage-actions{display:flex;gap:4px}.std-manage-actions button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.live-row-v2{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}.live-row-v2:last-child{border-bottom:0}.live-row-v2 .name{font-size:16px;font-weight:800}.live-row-v2 .meta{margin-top:4px;color:var(--muted);font-size:13px}.live-timer{min-width:106px;text-align:center;padding:9px 11px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.02em;background:var(--soft);color:var(--ink)}.live-timer.live{background:#edf4ef;color:#416b55}.live-timer.soon{background:#f5ede2;color:#8a643c}.live-timer.warn{background:#f7e9e6;color:#a75342}.live-set{display:block;margin-top:5px;font-size:12px;color:var(--muted)}
+.skill-person-v2{padding:15px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center}.skill-person-v2:last-child{border-bottom:0}.skill-person-v2 .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--soft);font-family:var(--font-display);font-weight:700}.skill-person-v2 .who{min-width:0}.skill-person-v2 .who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.skill-person-v2 .who small{display:block;color:var(--muted);margin-top:3px}.skill-counts{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.skill-count{font-size:11px;font-weight:750;padding:5px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}.skill-count.can{background:#edf4ef;color:#3f7358}.skill-count.cant{background:#f7e9e6;color:#a54d40}.skill-edit-go{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--surface);display:grid;place-items:center;color:var(--ink)}.skill-grid-v2{display:flex;flex-direction:column;gap:8px;margin:14px 0}.skill-row-v2{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 14px;border:1px solid var(--line);border-radius:15px;background:var(--surface)}.skill-row-v2 .label{font-weight:750}.skill-state{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}.skill-state button{border:0;background:transparent;padding:7px 10px;font-size:11px;font-weight:800;color:var(--muted)}.skill-state button.on.can{background:#edf4ef;color:#3f7358}.skill-state button.on.cant{background:#f7e9e6;color:#a54d40}.skill-state button.on.any{background:var(--soft);color:var(--ink)}
+.time-set-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}.time-set-row{display:grid;grid-template-columns:1fr 1fr 38px;gap:8px;align-items:end}.time-set-row button{height:48px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-size:20px}.repeat-box-v2{display:flex;gap:8px;margin:8px 0 14px}.repeat-box-v2 button{flex:1;border:1px solid var(--line);background:var(--surface);padding:11px 10px;border-radius:14px;font-weight:750;color:var(--muted)}.repeat-box-v2 button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.modal .modal-sheet{max-width:560px}.ops-note-v2{padding:10px 12px;border-radius:14px;background:var(--soft);font-size:12px;color:var(--muted);margin:8px 0 12px}
+</style>
+
+<script id="aurea-operations-v2">
+(function(){
+  const V2={};
+  const q=(s,r=document)=>r.querySelector(s);
+  const qa=(s,r=document)=>[...r.querySelectorAll(s)];
+  const txt=(v)=>String(v==null?"":v);
+
+  /* ---------- Multi-set programme times ---------- */
+  window.activityTimeSets=function(a){
+    const raw=txt(a&&a.time).trim();
+    if(!raw) return [];
+    return raw.split(/\s*\/\s*/).map(part=>{
+      const p=part.split(/\s*[–—-]\s*/);
+      return {start:(p[0]||"").trim(), end:(p[1]||"").trim()};
+    }).filter(x=>x.start);
+  };
+  window.splitTime=function(tm){
+    const first=txt(tm).split(/\s*\/\s*/)[0]||"";
+    const p=first.split(/\s*[–—-]\s*/);
+    return {start:(p[0]||"").trim(),end:(p[1]||"").trim()};
+  };
+  window.activityWindows=function(a){
+    return activityTimeSets(a).map(x=>{
+      const s0=hmToMin(x.start); if(s0<0) return null;
+      let e0=hmToMin(x.end); if(e0<0) e0=s0+45; if(e0<s0) e0+=1440;
+      return {s0,e0,start:x.start,end:x.end};
+    }).filter(Boolean);
+  };
+  window.actWindow=function(a){ return activityWindows(a)[0]||null; };
+  window.entranceConflict=function(u,day,act){
+    if(!onEntranceDuty(u,day)) return false;
+    const ws=activityWindows(act); if(!ws.length) return true;
+    const ds=16*60,de=18*60+30;
+    return ws.some(w=>w.s0<de && w.e0>ds);
+  };
+
+  /* ---------- Daily Standards: manager-editable ---------- */
+  function defaultStandards(day){
+    const dp=dayPlanFor(day);
+    return DAILY_STANDARDS.map((r,i)=>{
+      let note=r.nk?t(r.nk):"";
+      if(r.morning) note=dp.practice?t("practiceInline"):"";
+      return {id:"std-"+i,time:r.time,name:t(r.k),location:"",note:note};
+    });
+  }
+  function standards(day){
+    const v=S.settings&&Array.isArray(S.settings.dailyStandards)?S.settings.dailyStandards:null;
+    return (v&&v.length?v:defaultStandards(day)).map((x,i)=>({...x,id:x.id||("std-"+i)}));
+  }
+  async function saveStandards(list){ await DB.saveSettings({...S.settings,dailyStandards:list}); render(); }
+
+  window.dayPlanStandards=function(day){
+    const list=standards(day);
+    const manager=S.session&&S.session.role==="manager";
+    const rows=list.map((r,i)=>`<div class="std-row-v2">
+      <span class="std-time-v2">${esc(r.time||"")}</span>
+      <span class="std-main-v2"><b>${esc(r.name||"")}</b>${r.location?`<small>${mi("pin")}${esc(r.location)}</small>`:""}${r.note?`<small>${esc(r.note)}</small>`:""}</span>
+      ${manager?`<button class="std-edit-v2" data-stdedit="${i}" aria-label="Edit">${ic("pen",15)}</button>`:"<span></span>"}
+    </div>`).join("");
+    return `<div class="sec"><h3>${ic("clock",18)} ${t("standardsHead")}${manager?`<span style="margin-left:auto"><button class="btn sm ghost" data-stdmanage>Manage</button></span>`:""}</h3>
+      <div class="card std-card-v2">${rows||`<p class="mini" style="padding:16px">No standards yet.</p>`}</div></div>`;
+  };
+  function openStandardItem(index){
+    const list=standards(typeof S.planDay==="number"?S.planDay:todayIndex());
+    const isNew=index==null || index<0; const r=isNew?{time:"09:00",name:"",location:"",note:""}:{...list[index]};
+    const wrap=baseModal(`<h3>${isNew?"Add standard":"Edit standard"}</h3>
+      <div class="row2"><div><label>Time</label><input id="v2-std-time" type="time" value="${esc(r.time||"09:00")}"></div><div><label>Location</label><input id="v2-std-loc" value="${esc(r.location||"")}" placeholder="Optional"></div></div>
+      <label>Name</label><input id="v2-std-name" value="${esc(r.name||"")}">
+      <label>Note</label><input id="v2-std-note" value="${esc(r.note||"")}" placeholder="Optional">
+      <button class="btn" id="v2-std-save">Save</button>${isNew?"":`<button class="btn warn" id="v2-std-del">Delete</button>`}<button class="btn ghost" id="v2-std-x">Close</button>`);
+    q("#v2-std-x",wrap).onclick=()=>wrap.remove();
+    q("#v2-std-save",wrap).onclick=async()=>{
+      const item={id:r.id||("std-"+Date.now()),time:q("#v2-std-time",wrap).value||"09:00",name:q("#v2-std-name",wrap).value.trim(),location:q("#v2-std-loc",wrap).value.trim(),note:q("#v2-std-note",wrap).value.trim()};
+      if(!item.name) return;
+      if(isNew) list.push(item); else list[index]=item;
+      list.sort((a,b)=>txt(a.time).localeCompare(txt(b.time)));
+      await saveStandards(list); wrap.remove(); toastOk(t("saved"));
+    };
+    const del=q("#v2-std-del",wrap); if(del) del.onclick=async()=>{ list.splice(index,1); await saveStandards(list); wrap.remove(); toastOk(t("deleted")); };
+  }
+  function openStandardsManager(){
+    let list=standards(typeof S.planDay==="number"?S.planDay:todayIndex());
+    const wrap=baseModal(`<h3>${ic("clock",19)} Daily standards</h3><p class="mini">Change the time, name or location. Add and delete rows whenever the operation changes.</p><div id="v2-std-list" class="std-manage-list"></div><button class="btn" id="v2-std-add">＋ Add standard</button><button class="btn ghost" id="v2-std-close">Close</button>`);
+    const paint=()=>{ const box=q("#v2-std-list",wrap); box.innerHTML=list.map((r,i)=>`<div class="std-manage-item"><span class="tm">${esc(r.time||"")}</span><span class="nm"><b>${esc(r.name||"")}</b><span>${esc(r.location||r.note||"")}</span></span><span class="std-manage-actions"><button data-v2se="${i}">${ic("pen",14)}</button><button data-v2sd="${i}">${ic("trash",14)}</button></span></div>`).join("")||`<p class="mini">No standards yet.</p>`;
+      qa("[data-v2se]",box).forEach(b=>b.onclick=()=>{ wrap.remove(); openStandardItem(+b.dataset.v2se); });
+      qa("[data-v2sd]",box).forEach(b=>b.onclick=async()=>{ list.splice(+b.dataset.v2sd,1); await saveStandards(list); wrap.remove(); toastOk(t("deleted")); });
+    }; paint();
+    q("#v2-std-add",wrap).onclick=()=>{ wrap.remove(); openStandardItem(-1); }; q("#v2-std-close",wrap).onclick=()=>wrap.remove();
+  }
+
+  /* ---------- Clean activity-only capability matrix ---------- */
+  function allowedSkillKeys(){ return new Set(programActivities().map(x=>x[0])); }
+  function cleanSkills(u){ const allowed=allowedSkillKeys(); return {can:canDoList(u).filter(k=>allowed.has(k)),cant:cannotDoList(u).filter(k=>allowed.has(k))}; }
+  window.openSkillEditor=function(username){
+    const u=(S.users||[]).find(x=>x.username===username); if(!u) return;
+    if(!S.session||S.session.role!=="manager") return;
+    if(u.role==="manager"||isEventsOnly(u)) return;
+    const list=programActivities(); let {can,cant}=cleanSkills(u);
+    const wrap=baseModal(`<h3>${esc(u.display_name||u.username)}</h3><p class="mini">Activities only. Choose whether this entertainer can or cannot run each activity.</p><div id="v2-skill" class="skill-grid-v2"></div><button class="btn" id="v2-skill-save">Save</button><button class="btn ghost" id="v2-skill-x">Close</button>`);
+    const box=q("#v2-skill",wrap);
+    const paint=()=>{ box.innerHTML=list.length?list.map(([k,label])=>{ const st=cant.includes(k)?"cant":can.includes(k)?"can":"any"; return `<div class="skill-row-v2"><span class="label">${esc(label)}</span><span class="skill-state"><button class="${st==="can"?"on can":"can"}" data-v2sk="${esc(k)}" data-state="can">Can</button><button class="${st==="cant"?"on cant":"cant"}" data-v2sk="${esc(k)}" data-state="cant">Can't</button><button class="${st==="any"?"on any":"any"}" data-v2sk="${esc(k)}" data-state="any">—</button></span></div>`;}).join(""):`<p class="mini">Add daytime activities to the programme first.</p>`;
+      qa("[data-v2sk]",box).forEach(b=>b.onclick=()=>{ const k=b.dataset.v2sk,st=b.dataset.state; can=can.filter(x=>x!==k); cant=cant.filter(x=>x!==k); if(st==="can") can.push(k); if(st==="cant") cant.push(k); paint(); });
+    }; paint();
+    q("#v2-skill-x",wrap).onclick=()=>wrap.remove();
+    q("#v2-skill-save",wrap).onclick=async()=>{ await DB.updateUser(u.id,{can_do:can.join(";"),cannot_do:cant.join(";")}); wrap.remove(); toastOk(t("saved")); render(); };
+  };
+  window.assignWhoInner=function(day,ds,working,offList){
+    const row=(u,ok)=>{ const sk=cleanSkills(u),ent=onEntranceDuty(u,day),n=assignedCount(u.username,day); const unavailable=!ok?(notYetHired(u,ds.slice(0,7),+ds.slice(8,10))?t("attN"):attStatus(u,ds.slice(0,7),+ds.slice(8,10))==="A"?t("attA"):attStatus(u,ds.slice(0,7),+ds.slice(8,10))==="V"?t("attV"):t("dayOff")):"";
+      if(isEventsOnly(u)) return `<div class="skill-person-v2"><span class="avatar">${esc(txt(u.display_name||u.username).trim().charAt(0).toUpperCase())}</span><span class="who"><b>${esc(u.display_name||u.username)}</b><small>${ok?"DJ · Events & shows":unavailable}</small><span class="skill-counts"><span class="skill-count">Events & shows automatically</span></span></span><span></span></div>`;
+      return `<div class="skill-person-v2" data-aemp="${esc(u.username)}"><span class="avatar">${esc(txt(u.display_name||u.username).trim().charAt(0).toUpperCase())}</span><span class="who"><b>${esc(u.display_name||u.username)}</b><small>${ok?`${n} ${t("activities")}${ent?" · "+t("entranceDuty"):""}`:unavailable}</small><span class="skill-counts"><span class="skill-count can">Can ${sk.can.length}</span><span class="skill-count cant">Can't ${sk.cant.length}</span>${!sk.can.length&&!sk.cant.length?`<span class="skill-count">No restrictions</span>`:""}</span></span><button class="skill-edit-go" data-aemp="${esc(u.username)}">${ic("pen",14)}</button></div>`;
+    };
+    return `<p class="mini" style="margin:12px 0 7px">Only daytime activities are listed here. Shows, events and parties belong to the DJ.</p><div class="card" style="padding:0">${working.length?working.map(u=>row(u,true)).join(""):`<p class="mini" style="padding:16px">${t("nobodyWorking")}</p>`}</div>${offList.length?`<h4 style="margin:18px 0 8px">Unavailable</h4><div class="card dim-card" style="padding:0">${offList.map(u=>row(u,false)).join("")}</div>`:""}`;
+  };
+
+  /* ---------- Programme editor: multiple sets + whole-week creation ---------- */
+  window.openEditModal=function(input){
+    let a=input;
+    if(typeof input==="string"||typeof input==="number") a=(S.activities||[]).find(x=>String(x.id)===String(input));
+    const isNew=!a; a=a||{day:S.day,category:(S.cat&&allCats().includes(S.cat)?S.cat:"mAdult"),name:"",desc:"",location:"",time:"10:00 – 10:45",capacity:20,entertainer:"",image:"",highlight:false};
+    const cur=normCat(a), sets=activityTimeSets(a); if(!sets.length) sets.push({start:"10:00",end:"10:45"});
+    const catOptions=OPS.map(o=>`<optgroup label="${esc(opLabel(o.id))}">${o.cats.map(c=>`<option value="${c}" ${cur===c?"selected":""}>${catLabel(c)}</option>`).join("")}</optgroup>`).join("");
+    const staff=S.users.filter(u=>u.role==="staff");
+    const entOptions=`<option value="">${t("allTeam")}</option>`+staff.map(u=>`<option value="${esc(u.username)}" ${txt(a.entertainer).toLowerCase()===txt(u.username).toLowerCase()?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("");
+    const wrap=baseModal(`<h3>${isNew?t("addActivity"):t("editActivity")}</h3><label>${t("actName")}</label><input id="e-name" value="${esc(a.name)}"><label>${t("desc")}</label><textarea id="e-desc" rows="2">${esc(a.desc)}</textarea><div class="row2"><div><label>${t("day")}</label><select id="e-day">${t("days").map((d,i)=>`<option value="${i}" ${a.day===i?"selected":""}>${d}</option>`).join("")}</select></div><div><label>${t("category")}</label><select id="e-cat">${catOptions}</select></div></div>${isNew?`<label>Repeat</label><div class="repeat-box-v2"><button type="button" class="on" data-v2repeat="day">This day</button><button type="button" data-v2repeat="week">Whole week</button></div>`:""}<label>Time set(s)</label><div class="ops-note-v2">Add another set when the same programme item happens more than once, for example Live Singer 20:15–21:00 and 21:30–22:15.</div><div id="v2-times" class="time-set-list"></div><button type="button" class="btn sm ghost" id="v2-time-add">＋ Add another time</button><label>${t("capacity")} (0 = ∞)</label><input id="e-cap" type="number" min="0" value="${a.capacity}"><label>${t("location")}</label><input id="e-loc" value="${esc(a.location)}"><div id="v2-ent-wrap"><label>${t("entertainer")}</label><select id="e-ent">${entOptions}</select><p class="mini" id="v2-ent-note" style="margin-top:5px"></p></div><div class="photo-pick"><div class="photo-box" data-photobox></div><div class="pp-txt"><b>${t("photo")}</b><span class="mini">${t("uploadPhoto")}</span></div><input type="file" accept="image/*" data-photoinput hidden></div><input id="e-img" type="hidden" value="${esc(a.image)}"><label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:15px;color:var(--ink)"><input id="e-hl" type="checkbox" style="width:auto" ${a.highlight?"checked":""}> ${ic("sparkle",14)} ${t("makeHighlight")}</label><button class="btn" id="e-save">${t("save")}</button>${isNew?"":`<button class="btn warn" id="e-del">${t("deleteActivity")}</button>`}<button class="btn ghost" id="e-x">${t("close")}</button>`);
+    let ePhoto=a.image||"",repeat="day";
+    wirePhotoPicker(wrap,()=>ePhoto,v=>{ePhoto=v;q("#e-img",wrap).value=v;});
+    const timeBox=q("#v2-times",wrap);
+    const paintTimes=()=>{ timeBox.innerHTML=sets.map((x,i)=>`<div class="time-set-row"><div><label>Start</label><input type="time" data-ts="${i}" value="${esc(x.start||"")}"></div><div><label>End</label><input type="time" data-te="${i}" value="${esc(x.end||"")}"></div><button type="button" data-trm="${i}" ${sets.length===1?"disabled":""}>×</button></div>`).join(""); qa("[data-ts]",timeBox).forEach(el=>el.onchange=()=>sets[+el.dataset.ts].start=el.value); qa("[data-te]",timeBox).forEach(el=>el.onchange=()=>sets[+el.dataset.te].end=el.value); qa("[data-trm]",timeBox).forEach(b=>b.onclick=()=>{sets.splice(+b.dataset.trm,1);paintTimes();}); }; paintTimes();
+    q("#v2-time-add",wrap).onclick=()=>{ const last=sets[sets.length-1]||{start:"10:00",end:"10:45"}; sets.push({start:last.end||last.start||"10:00",end:""}); paintTimes(); };
+    qa("[data-v2repeat]",wrap).forEach(b=>b.onclick=()=>{repeat=b.dataset.v2repeat;qa("[data-v2repeat]",wrap).forEach(x=>x.classList.toggle("on",x===b));});
+    const updateEntMode=()=>{ const cat=q("#e-cat",wrap).value, sel=q("#e-ent",wrap), note=q("#v2-ent-note",wrap); const isAct=cat==="mAdult"; sel.disabled=!isAct; if(!isAct){ const dj=(S.users||[]).find(u=>u.role==="staff"&&+u.number===DJ_NUMBER); sel.value=dj?dj.username:""; note.textContent=dj?"DJ assigned automatically: "+(dj.display_name||dj.username):"DJ will be assigned automatically when available."; } else note.textContent="Leave empty to let Smart Auto Assign choose fairly."; }; q("#e-cat",wrap).onchange=updateEntMode; updateEntMode();
+    q("#e-x",wrap).onclick=()=>wrap.remove();
+    q("#e-save",wrap).onclick=async()=>{ qa("[data-ts]",timeBox).forEach(el=>sets[+el.dataset.ts].start=el.value); qa("[data-te]",timeBox).forEach(el=>sets[+el.dataset.te].end=el.value); const time=sets.filter(x=>x.start).map(x=>x.start+(x.end?" – "+x.end:"")).join(" / "); const base={...a,name:q("#e-name",wrap).value.trim(),desc:q("#e-desc",wrap).value.trim(),day:+q("#e-day",wrap).value,category:q("#e-cat",wrap).value,time:time||"10:00",capacity:+q("#e-cap",wrap).value||0,location:q("#e-loc",wrap).value.trim(),entertainer:(q("#e-cat",wrap).value!=="mAdult"?(((S.users||[]).find(u=>u.role==="staff"&&+u.number===DJ_NUMBER)||{}).username||""):q("#e-ent",wrap).value.trim()),image:ePhoto,highlight:q("#e-hl",wrap).checked}; if(!base.name) return;
+      if(isNew&&repeat==="week"){ const clean={...base}; delete clean.id; for(let d=0;d<7;d++){ await DB.saveActivity({...clean,day:d}); if(!REMOTE) await new Promise(r=>setTimeout(r,2)); } toastOk("Added to the whole week"); }
+      else await DB.saveActivity(base);
+      wrap.remove(); toastOk(t("saved")); render(); };
+    const del=q("#e-del",wrap); if(del) del.onclick=async()=>{ if(!await confirmAction({question:t("delActivityQ"),danger:true})) return; await DB.deleteActivity(a.id); wrap.remove(); toastOk(t("deleted")); render(); };
+  };
+
+  /* ---------- Live Operations countdown + multi-set awareness ---------- */
+  function fmtCountdown(sec){ sec=Math.max(0,Math.floor(sec)); const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60; return (h?String(h).padStart(2,"0")+":":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"); }
+  window.liveOpsCard=function(){
+    const day=todayIndex(),now=nowMinutes(); const list=[];
+    (S.activities||[]).filter(a=>a&&a.day===day).forEach(a=>{ const ws=activityWindows(a); (ws.length?ws:[{s0:timeToMin(a.time)||0,e0:(timeToMin(a.time)||0)+45,start:txt(a.time),end:""}]).forEach((w,idx)=>{ if(w.e0>=now-30) list.push({a,w,idx}); }); });
+    list.sort((x,y)=>x.w.s0-y.w.s0); const show=list.slice(0,7); if(!show.length) return "";
+    const row=x=>{ const a=x.a,w=x.w,who=txt(a.entertainer).trim(),booked=seatsTaken(a.id),live=w.s0<=now&&now<w.e0,mins=w.s0-now; const cls=live?"live":!who?"warn":mins<=60?"soon":""; const label=live?"Live · "+fmtCountdown((w.e0-now)*60):mins>0?"Starts · "+fmtCountdown(mins*60):"Finished"; return `<div class="live-row-v2" data-actopen="${esc(String(a.id))}"><span><span class="name">${esc(a.name)}</span><span class="live-set">${esc((w.start||"")+(w.end?" – "+w.end:""))}${activityWindows(a).length>1?` · Set ${x.idx+1}/${activityWindows(a).length}`:""}</span><span class="meta">${a.location?esc(a.location):""}${booked?" · "+booked+" "+t("guests"):""}${who?" · "+esc(who):" · "+t("liveNoStaff")}</span></span><span class="live-timer ${cls}" data-live-s="${w.s0}" data-live-e="${w.e0}">${label}</span></div>`; };
+    return `<div class="sec"><h3>${ic("clock",18)} ${t("liveOps")}</h3><div class="card" style="padding:0 16px">${show.map(row).join("")}</div></div>`;
+  };
+  function liveTick(){ const n=hotelNow(),now=n.getHours()*3600+n.getMinutes()*60+n.getSeconds(); qa("[data-live-s]").forEach(el=>{ const s=(+el.dataset.liveS)*60,e=(+el.dataset.liveE)*60; if(now<s){el.textContent="Starts · "+fmtCountdown(s-now);el.className="live-timer "+((s-now)<=3600?"soon":"");} else if(now<e){el.textContent="Live · "+fmtCountdown(e-now);el.className="live-timer live";} else{el.textContent="Finished";el.className="live-timer";} }); }
+  setInterval(liveTick,1000); setTimeout(liveTick,500);
+
+  /* Event delegation survives every render. */
+  document.addEventListener("click",function(e){
+    const se=e.target.closest&&e.target.closest("[data-stdedit]"); if(se){e.preventDefault();e.stopPropagation();openStandardItem(+se.dataset.stdedit);return;}
+    const sm=e.target.closest&&e.target.closest("[data-stdmanage]"); if(sm){e.preventDefault();e.stopPropagation();openStandardsManager();return;}
+  },true);
+})();
+</script>
 </body>
 </html>
