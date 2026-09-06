@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#3E2A1E">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#3E2A1E" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <title>Entertainment</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;family=Cormorant+Garamond:wght@500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;family=Jost:wght@300;400;500;600&amp;family=Nunito:wght@400;600;700&amp;family=Tajawal:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
 <style>
 :root{
 /* ================= DESIGN SYSTEM TOKENS ================= */
@@ -1963,11 +1964,11 @@ html{font-size:calc(16px * var(--fscale,1))}
 </head>
 <body>
 <div class="app" id="app"><div class="skel-wrap">
-  <div class="skel skel-bar"></div>
-  <div class="skel skel-title"></div>
-  <div class="skel skel-card"></div>
-  <div class="skel skel-card"></div>
-  <div class="skel skel-card"></div>
+<div class="skel skel-bar"></div>
+<div class="skel skel-title"></div>
+<div class="skel skel-card"></div>
+<div class="skel skel-card"></div>
+<div class="skel skel-card"></div>
 </div></div>
 <script>
 /* ================================================================
@@ -2710,7 +2711,7 @@ function teamStats(){
   return {total:team.length, entertainers:entertainers.length, byGender, natList,
           noNat:team.filter(u=>!(u.nationality||"").trim()).length};
 }
-function genderLabel(g){ return g==="male"?t("genderM"):g==="female"?t("genderF"):t("genderNone"); }
+function accountGenderLabel(g){ return g==="male"?t("genderM"):g==="female"?t("genderF"):t("genderNone"); }
 function genderOptions(cur){
   return `<option value="" ${!cur?"selected":""}>${t("genderNone")}</option>
     <option value="male" ${cur==="male"?"selected":""}>${t("genderM")}</option>
@@ -4504,7 +4505,7 @@ function openAccountSheet(){
     <button class="btn ghost warn" id="ac-out" style="margin-top:16px">${ic("power",16)} ${t("logout")}</button>
     <button class="btn ghost" id="ac-x">${t("close")}</button>`);
   const p=wrap.querySelector("#ac-photo");
-  if(p) p.onclick=()=>{ wrap.remove(); openPhotoViewer(ph); };
+  if(p) p.onclick=()=>{ wrap.remove(); openSinglePhotoViewer(ph); };
   wrap.querySelectorAll("[data-actheme]").forEach(b=>b.onclick=()=>{
     if(S.theme!==b.dataset.actheme) setTheme(b.dataset.actheme);
     wrap.remove(); render();
@@ -4518,7 +4519,7 @@ function openAccountSheet(){
     S.session=null; S.chatRoom=null; loginMode="guest"; guestMode="new"; resetWiz(); persist(); render();
   };
 }
-function openPhotoViewer(src){
+function openSinglePhotoViewer(src){
   if(!src) return;
   const wrap=baseModal(`<div class="ph-big"><img src="${esc(src)}" alt=""></div>
     <button class="btn ghost" id="ph-x">${t("close")}</button>`);
@@ -5511,7 +5512,7 @@ function employeeView(username){
       <div class="g3-info">
         <b>${esc(u.display_name||u.username)}</b>
         <span class="mini">${esc(u.position||roleForNumber(u.number||0))}${u.number?" · #"+u.number:""}</span>
-        <span class="mini">${u.active===false?t("inactiveAcc"):t("activeAcc")}${u.nationality?" · "+esc(u.nationality):""}${u.gender?" · "+genderLabel(u.gender):""}</span>
+        <span class="mini">${u.active===false?t("inactiveAcc"):t("activeAcc")}${u.nationality?" · "+esc(u.nationality):""}${u.gender?" · "+accountGenderLabel(u.gender):""}</span>
       </div>
     </div>
     ${full?`<div class="g3-stats">
@@ -8359,7 +8360,6 @@ function pageOrder(pageKey,withHidden){
   if(!withHidden){ const h=pageHidden(pageKey); out=out.filter(k=>!h.includes(k)); }
   return out.length?out:def.slice();
 }
-function dayPlanOrder(){ return pageOrder("dayplan"); }
 function arrangeBtn(pageKey){
   if(!S.session) return "";
   if(!PAGE_SECTIONS[pageKey]) return "";
@@ -8844,8 +8844,6 @@ function afMeta(f){
 function afRooms(f){ return String((f&&f.room)||"").trim(); }
 function afGuestName(f){ return String((f&&f.guest_name)||"").trim(); }
 function afPct(f){ return +afMeta(f).pct||0; }
-function afGuests(f){ return +afMeta(f).guests||0; }
-function afLevel(f){ return afMeta(f).level || afGroupOf(afActivity(f)); }
 function afActivity(f){
   const id=afActId(f);
   return id!=null ? (S.activities||[]).find(a=>String(a.id)===String(id)) || null : null;
@@ -9263,10 +9261,6 @@ function openActivitySheet(id){
    and parties are run by the whole team by design, so an empty name on those is
    not a gap — it means everybody. */
 const ACT_PERSONAL_CATS=["mAdult","mKids","mTeen"];
-function actIsWholeTeam(a){
-  if(actIsAllTeam(a)) return true;
-  return !ACT_PERSONAL_CATS.includes(normCat(a||{}));
-}
 /* The picker's first option has always been "All team" with an empty value, so
    empty means the whole team is on it — never that nobody is. "Nobody yet" now
    has a value of its own, so a fully staffed show can no longer read unstaffed. */
