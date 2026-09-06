@@ -1390,6 +1390,8 @@ html{font-size:calc(16px * var(--fscale,1))}
 .aa-per{display:flex;flex-wrap:wrap;gap:7px}
 
 /* ===== assignment balance ===== */
+.aa-var{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 2px}
+.aa-var .btn.link{margin:0;padding:4px 0}
 .aa-bal{display:flex;flex-direction:column;gap:2px;padding:11px 14px;border-radius:var(--r-md);margin-top:10px}
 .aa-bal.good{background:rgba(62,155,95,.14)}
 .aa-bal.warn{background:rgba(229,161,0,.16)}
@@ -1679,6 +1681,14 @@ html{font-size:calc(16px * var(--fscale,1))}
 .th-mid b{display:block;font-size:14.5px;font-weight:600;line-height:1.25}
 .th-mid span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
 .th-go{flex:none;opacity:.35;transform:rotate(180deg)}
+.th-acts{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.th-chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);
+  background:var(--card);color:var(--muted);border-radius:999px;padding:5px 10px;
+  font-size:11px;font-weight:700;letter-spacing:.02em;cursor:pointer;white-space:nowrap;font-family:inherit}
+.th-chip svg{width:12px;height:12px}
+.th-chip.on{background:#6E9155;border-color:#6E9155;color:#fff}
+.th-chip.done.on{background:var(--espresso);border-color:var(--espresso);color:#fff}
+.th-chip:active{transform:scale(.97)}
 .th-tick{flex:0 0 24px;width:24px;height:24px;aspect-ratio:1;align-self:flex-start;
   margin-top:3px;margin-inline-start:8px;
   border-radius:50%;border:1.5px solid var(--line);
@@ -1875,12 +1885,16 @@ html{font-size:calc(16px * var(--fscale,1))}
 .rq-kind.event{background:#EFE7DA;color:#6B4A32}
 .rq-kind.activity{background:#E7EFE4;color:#4A6B36}
 .rq-kind.party{background:#EDE5F0;color:#5C3F6B}
+.rq-kind.purchase{background:#E4EAF0;color:#3F566B}
 .rq-row{display:flex;gap:6px;align-items:center;padding:6px 0}
 .rq-row:not(:last-child){border-bottom:1px solid var(--line)}
 .rq-row input,.rq-row select{margin:0;font-size:14px;padding:8px 9px}
 .rq-need{flex:1 1 auto;min-width:0}
 .rq-qty{flex:0 0 54px;text-align:center}
 .rq-dep{flex:0 0 34%;min-width:0}
+.rq-info{flex:1 0 100%}
+.rq-when{flex:1 1 46%;min-width:0}
+.rq-urg{flex:1 1 46%;min-width:0}
 .rq-acts{flex:none;display:flex;gap:4px}
 .fb-rooms{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .fb-rooms::-webkit-scrollbar{display:none}
@@ -2174,6 +2188,26 @@ Object.assign(DICT.en, {
   stReset:"Back to the standard day",
   stLast:"Keep at least one line.",
   stEmpty:"No lines yet. Add one, or go back to the standard day.",
+  effHead:"Effort",
+  effRelax:"Relax",
+  effActive:"Active",
+  effNormal:"Normal",
+  effHint:"How hard this one is to run. The auto plan spreads the active ones evenly.",
+  gnAny:"Anyone",
+  gnFemale:"Female",
+  gnMale:"Male",
+  gnHead:"Who can run it",
+  gnHint:"Leave it on Anyone unless the activity really needs one.",
+  aaVariant:"Plan {n} of {m}",
+  aaAnother:"Show another plan",
+  aaWhyEntrance:"on entrance duty",
+  aaWhyOff:"day off",
+  acAcceptShort:"Accept",
+  thDone:"Done",
+  thMarkDone:"Mark done",
+  fbThisWeek:"This week",
+  fbThisMonth:"This month",
+  fbAllTime:"All time",
   acRoster:"Who has accepted",
   acRosterHint:"Every entertainer with work today, and whether they have picked it up.",
   acWaiting:"waiting",
@@ -2348,6 +2382,16 @@ Object.assign(DICT.en, {
   hubMgrChatSub:"Direct communication",
   hubQrSub:"Generate QR codes",
   hubSettingsSub:"Theme, features, menu builder",
+  reqKindPurchase:"Purchase",
+  reqPurchase:"Purchase request",
+  reqItem:"Item",
+  reqItemInfo:"Details",
+  reqNeededBy:"Needed by",
+  reqUrgency:"Urgency",
+  reqUrgNormal:"Normal",
+  reqUrgSoon:"Soon",
+  reqUrgUrgent:"Urgent",
+  reqPurchaseHint:"What to buy, how many, when it is needed and how urgent it is.",
   reqKind:"Kind",
   reqFromProgram:"Pick it from the programme",
   reqFromProgramOwn:"Type it myself",
@@ -4609,8 +4653,15 @@ function categoryRow(){
 /* One programme line with its picture. */
 function thumbRow(a, opts){
   const o=opts||{};
+  // A bare circle told nobody what it meant. Two small labelled chips do:
+  // one to take the activity, one to mark it finished.
+  const acc = o.accept
+    ? `<button class="th-chip ${iAccepted(a)?"on":""}" data-thacc="${esc(String(a.id))}">
+         ${ic("check",12)} ${iAccepted(a)?t("acAccepted"):t("acAcceptShort")}</button>`
+    : "";
   const tick = o.tick
-    ? `<button class="th-tick ${o.done?"on":""}" data-att="${esc(String(a.id))}" aria-pressed="${!!o.done}">${ic("check",13)}</button>`
+    ? `<button class="th-chip done ${o.done?"on":""}" data-att="${esc(String(a.id))}" aria-pressed="${!!o.done}">
+         ${ic("check",12)} ${o.done?t("thDone"):t("thMarkDone")}</button>`
     : `<span class="th-go">${ic("back",16)}</span>`;
   // a <button> inside a <button> is invalid, and the browser closes the outer
   // one early — which is why the tick was landing on its own line underneath
@@ -4618,7 +4669,7 @@ function thumbRow(a, opts){
     <span class="th-time">${esc(actStart(a))}</span>
     <span class="th-img"><img src="${esc(actImage(a))}" alt="" loading="lazy"></span>
     <span class="th-mid"><b>${esc(a.name)}</b><span>${esc(a.location||"")}</span></span>
-    ${tick}
+    <span class="th-acts">${acc}${tick}</span>
   </div>`;
 }
 function secHead(title, linkLabel, linkId){
@@ -5728,12 +5779,12 @@ function eventsCrew(day){
     .sort((a,b)=>(a.number||99)-(b.number||99));
 }
 function isEventsOnly(u){ return !!u && EVENTS_ONLY_NUMBERS.includes(u.number); }
-function assignableStaff(day){
-  const dp=dayPlanFor(day);
+function assignableStaff(day, dateStr_){
+  const ds = dateStr_ || (typeof assignDateStr==="function" ? assignDateStr(day) : "");
   return (S.users||[])
-    .filter(u=>u.role==="staff" && u.number && u.active!==false && !hasLeft(u)
+    .filter(u=>u.role==="staff" && u.number
       && !NO_ACTIVITY_NUMBERS.includes(u.number)
-      && !dp.off.includes(u.number))
+      && availableOn(u, day, ds))          // day off, vacation, not yet hired, marked absent
     .sort((a,b)=>(a.number||99)-(b.number||99));
 }
 /* which slot an activity belongs to */
@@ -5749,22 +5800,31 @@ function activitySlot(a){
    When she replaces everything, nothing is kept, so everyone starts at zero. */
 function baseLoad(opts){
   const o=opts||{};
-  const load={c:{}, last:{}, tick:0};
+  const load={c:{}, e:{}, last:{}, tick:0};
   (S.activities||[]).forEach(a=>{
     const slot=activitySlot(a);
     if(slot!=="morning" && slot!=="afternoon") return;
     const who=String(a.entertainer||"").trim().toLowerCase();
     if(!who) return;
-    if(o.onlyEmpty) load.c[who]=(load.c[who]||0)+1;   // this one stays, so it counts
+    if(o.onlyEmpty){
+      load.c[who]=(load.c[who]||0)+1;                 // this one stays, so it counts
+      load.e=load.e||{}; load.e[who]=(load.e[who]||0)+effortWeight(a);
+    }
   });
   return load;
 }
 function baseCounts(opts){ return baseLoad(opts).c; }
 function loadKey(u){ return String(u.username).toLowerCase(); }
 function loadOf(load,u){ return (load.c&&load.c[loadKey(u)])||0; }
+function effortOf(load,u){
+  const k=loadKey(u);
+  return ((load.e&&load.e[k])||0);
+}
 function bumpLoad(load,u,act,day){
   const k=loadKey(u);
   load.c[k]=(load.c[k]||0)+1;
+  load.e=load.e||{};
+  load.e[k]=(load.e[k]||0)+effortWeight(act);   // an active one weighs more than a relax one
   load.last[k]=++load.tick;                    // remember when they last got one
   if(act && act.name){                         // and which activity, so it is not repeated
     load.acts=load.acts||{};
@@ -5806,12 +5866,25 @@ function repeatPenalty(u, act, day, load){
   if(!times && !didYesterday) return 0;
   return (didYesterday?4:0) + times;               // repeated yesterday hurts most
 }
-function pickFairest(pool, load, usedThisSlot, act, day){
-  /* fairness first: never the same activity twice for one person if it can be
-     avoided, then an even share of the work, then whoever went longest ago */
-  const score=u=>repeatPenalty(u,act,day,load)*1e9 + loadOf(load,u)*1e6 + (load.last[loadKey(u)]||0);
-  /* only people who are allowed to run this activity */
-  const allowed=act ? pool.filter(u=>canRunActivity(u,act)) : pool;
+function pickFairest(pool, load, usedThisSlot, act, day, seed){
+  /* In order: never the same activity twice for one person if it can be
+     avoided, then an even share of the effort, then whoever went longest ago.
+     `seed` nudges ties a different way each time, so four runs give four plans. */
+  const jitter=u=>{
+    if(!seed) return 0;
+    let h=seed*2654435761;
+    const k=loadKey(u);
+    for(let i=0;i<k.length;i++) h=(h^k.charCodeAt(i))*16777619>>>0;
+    return (h%997)/1000;                      // under one, so it only breaks ties
+  };
+  const score=u=>repeatPenalty(u,act,day,load)*1e9
+    + effortOf(load,u)*1e6
+    + (load.last[loadKey(u)]||0)
+    + jitter(u);
+  /* only people who are allowed to run this activity, are free at that hour,
+     and match it if it genuinely needs one gender */
+  const allowed=act ? pool.filter(u=>canRunActivity(u,act)
+    && !entranceClash(u,act,day) && genderFits(u,act)) : pool;
   if(!allowed.length) return null;             // nobody may do it — leave it empty
   let best=null, bestScore=Infinity;
   allowed.forEach(u=>{
@@ -5829,6 +5902,7 @@ function pickFairest(pool, load, usedThisSlot, act, day){
 /* One day. Pass a shared `load` so a whole week stays balanced across days. */
 function autoAssignDay(day, opts, sharedLoad){
   const o=opts||{};
+  const seed=+o.seed||0;
   const pool=assignableStaff(day);
   const out=[];
   if(!pool.length) return out;
@@ -5853,7 +5927,7 @@ function autoAssignDay(day, opts, sharedLoad){
     if(!acts.length) return;
     const usedThisSlot=new Set();
     acts.forEach((a,idx)=>{
-      const pick=pickFairest(pool, load, usedThisSlot, a, day);
+      const pick=pickFairest(pool, load, usedThisSlot, a, day, seed);
       if(!pick) return;
       usedThisSlot.add(pick.username);
       bumpLoad(load,pick,a,day);
@@ -5864,9 +5938,13 @@ function autoAssignDay(day, opts, sharedLoad){
 }
 /* The whole week, sharing ONE running count so everybody ends up even. */
 function autoAssignWeek(opts){
-  const load=baseLoad(opts||{});
+  const o=opts||{};
+  const load=baseLoad(o);
   let all=[];
-  for(let d=0; d<7; d++) all=all.concat(autoAssignDay(d, opts, load));
+  /* start the week on a different day for each plan, so plan 2 is genuinely a
+     different rotation and not the same one shuffled */
+  const start=(+o.seed||0)%7;
+  for(let i=0; i<7; i++) all=all.concat(autoAssignDay((start+i)%7, o, load));
   return fixRepeats(balancePlan(all, opts||{}));
 }
 /* Last tidy-up: if anyone still ends up with the same activity on two days next
@@ -5958,11 +6036,15 @@ async function applyAssignments(list){
   return true;
 }
 /* She sees the proposal, can change ANY name, and only then applies it. */
+const AA_PLANS=4;
 function openAutoAssignModal(day){
-  let scope="day", onlyEmpty=true;
+  let scope="day", onlyEmpty=true, variant=1;
   let plan=[];
   const wrap=baseModal("");
-  const rebuild=()=>{ plan=(scope==="day")?autoAssignDay(day,{onlyEmpty}):autoAssignWeek({onlyEmpty}); };
+  const rebuild=()=>{
+    const o={onlyEmpty, seed:variant};
+    plan=(scope==="day")?autoAssignDay(day,o):autoAssignWeek(o);
+  };
   rebuild();
   const draw=()=>{
     const bal=planBalance(plan,{onlyEmpty});
@@ -5978,6 +6060,10 @@ function openAutoAssignModal(day){
       </div>
       <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:14.5px;color:var(--ink);margin:10px 0">
         <input type="checkbox" id="a-empty" style="width:auto" ${onlyEmpty?"checked":""}> ${t("onlyEmptyLbl")}</label>
+      <div class="aa-var">
+        <span class="mini">${t("aaVariant").replace("{n}",variant).replace("{m}",AA_PLANS)}</span>
+        <button class="btn link" id="a-next">${ic("back",13)} ${t("aaAnother")}</button>
+      </div>
       ${plan.length?`
         <div class="aa-bal ${bal.spread<=1?"good":"warn"}">
           <b>${t("balanceLbl")}</b>
@@ -6010,6 +6096,8 @@ function openAutoAssignModal(day){
       :`<div class="empty" style="margin-top:12px"><div class="big">${ic("users",28)}</div>${t("autoNothing")}</div>`}
       <button class="btn ghost" id="a-x">${t("close")}</button>
     </div>`;
+    const nx=wrap.querySelector("#a-next");
+    if(nx) nx.onclick=()=>{ variant=(variant%AA_PLANS)+1; rebuild(); draw(); };
     wrap.querySelectorAll("[data-ascope]").forEach(b=>b.onclick=()=>{ scope=b.dataset.ascope; rebuild(); draw(); });
     const ce=wrap.querySelector("#a-empty"); if(ce) ce.onchange=()=>{ onlyEmpty=ce.checked; rebuild(); draw(); };
     // change any single assignment by hand
@@ -6459,6 +6547,49 @@ function activitySkill(a){
   return "host";
 }
 /* Can this person run THIS activity? */
+/* How much work an activity is, so the plan does not hand one person every
+   hard one. She sets it per activity; anything unset counts as Normal. */
+const ACT_EFFORT=[["relax","effRelax"],["normal","effNormal"],["active","effActive"]];
+function actEffort(a){
+  const v=String((a&&a.effort)||"normal").toLowerCase();
+  return ACT_EFFORT.some(x=>x[0]===v) ? v : "normal";
+}
+function effortLabel(v){
+  const hit=ACT_EFFORT.find(x=>x[0]===String(v||"normal"));
+  return hit ? t(hit[1]) : t("effNormal");
+}
+function effortWeight(a){
+  const e=actEffort(a);
+  return e==="active" ? 2 : e==="relax" ? 0.5 : 1;
+}
+/* Some activities really do need one gender. Anything unset takes anyone. */
+const ACT_GENDERS=[["any","gnAny"],["female","gnFemale"],["male","gnMale"]];
+function actGender(a){
+  const v=String((a&&a.gender)||"any").toLowerCase();
+  return ACT_GENDERS.some(x=>x[0]===v) ? v : "any";
+}
+function genderLabel(v){
+  const hit=ACT_GENDERS.find(x=>x[0]===String(v||"any"));
+  return hit ? t(hit[1]) : t("gnAny");
+}
+function userGender(u){ return String((u&&u.gender)||"").toLowerCase(); }
+function genderFits(u, act){
+  const need=actGender(act);
+  if(need==="any") return true;
+  const has=userGender(u);
+  if(!has) return true;            // unknown never blocks somebody from working
+  return has===need;
+}
+/* Entrance duty means leaving at 16:00 and returning at 18:30, so nothing in
+   that window can be given to whoever is on it. */
+const ENTRANCE_FROM=16*60, ENTRANCE_TO=18*60+30;
+function entranceClash(u, act, day){
+  if(!onEntranceDuty(u, day)) return false;
+  const w=actWindow(act);
+  if(!w) return false;
+  const s0=w.s0, e0=(w.e0!=null?w.e0:w.s0+45);
+  return s0 < ENTRANCE_TO && e0 > ENTRANCE_FROM;
+}
 function canRunActivity(u, act){
   const k=actKey(act && act.name);
   if(!k) return true;
@@ -7811,7 +7942,7 @@ function myWorkDayView(){
       myacts:  ()=>`<div class="sec">
         ${secHead(t("myActs"),"","")}
         ${myActs.length
-          ? `<div class="card" style="padding:2px 15px">${myActs.map(a=>thumbRow(a,{tick:true, done:activityStatus(a)==="done"})).join("")}</div>`
+          ? `<div class="card" style="padding:2px 15px">${myActs.map(a=>thumbRow(a,{tick:true, accept:true, done:activityStatus(a)==="done"})).join("")}</div>`
           : `<div class="empty"><div class="big">${ic("clipboard",30)}</div>${t("noneToday")}</div>`}
         <button class="btn ghost" id="btn-fullsched" style="margin-top:10px">${t("viewFullSchedule")}</button>
       </div>
@@ -8281,7 +8412,8 @@ function dayTimeline(day){
     const rows=all.filter(x=>{ const m=timeToMin(x.time); return m!=null && m>=sl.from && m<sl.to; });
     return `<div class="tl-block">
       <div class="tl-head"><span class="tl-dot ${sl.k}"></span>${t(sl.k+"Part")}<span class="tl-n">${rows.length}</span></div>
-      ${rows.length?rows.map(x=>`<div class="tl-row ${x._tag?("is-"+x._tag):""}${isMineAct(x)?" mine":""}">
+      ${rows.length?rows.map(x=>`<div class="tl-row ${x._tag?("is-"+x._tag):""}${isMineAct(x)?" mine":""}"${
+          (S.session&&S.session.role==="staff")?` data-afact="${esc(String(x.id))}" style="cursor:pointer"`:""}>
           <span class="tl-t">${esc(x.time||"")}</span>
           <span class="tl-x"><b>${esc(x.name)}</b>${x.location?`<span class="mini">${esc(x.location)}</span>`:""}
             ${actStaffLabel(x)?`<span class="mini who">${esc(actStaffLabel(x))}</span>`:""}
@@ -8947,10 +9079,6 @@ function myActFeedbackCard(day){
             : `<span class="fb-val">${ic("star",16)}</span>`}
         </button>`;
       }).join("")}
-    </div>
-    <div class="af-acc">${mine.map(a=>`
-      <button class="btn link" data-afacc="${esc(String(a.id))}">${ic("check",14)} ${
-        iAccepted(a) ? `${t("acUndo")} \u00b7 ${esc(a.name)}` : `${t("acAccept")} \u00b7 ${esc(a.name)}`}</button>`).join("")}
     </div>
   </div>`;
 }
@@ -10561,13 +10689,18 @@ function openFeedbackDetail(id){
   };
 }
 /* One department, opened up: every rating behind the average. */
+function fbPeriodLabel(p){
+  return t(p==="week"?"fbThisWeek":p==="month"?"fbThisMonth":p==="all"?"fbAllTime":"fbToday");
+}
 function openDeptDetail(key){
-  const all=S.feedback||[];
+  // the same period the card is showing — picking Today must not open all time
+  const all=fbPeriodList(S.fbPeriod||"today");
   const list=all.filter(f=>+fbDepts(f)[key]>0)
     .sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
   const st=fbDeptStats(all).find(x=>x.k===key)||{avg:0,n:0};
   const wrap=baseModal(`
     <h3>${ic("star",20)} ${esc(fbDeptLabel(key))}</h3>
+    <p class="mini">${esc(fbPeriodLabel(S.fbPeriod||"today"))}</p>
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${st.avg?st.avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${st.n}</b><span>${t("fbResponses")}</span></div>
@@ -10663,7 +10796,8 @@ function openTextPrompt(title, value, done){
    One sheet per event, activity or party: what is needed, how much of it, and
    which department provides it. Sent to hotel management the day before.
    Everything lives in settings so there is no new database table to create. */
-const REQ_KINDS=["event","activity","party"];
+const REQ_KINDS=["event","activity","party","purchase"];
+const REQ_URGENCY=[["normal","reqUrgNormal"],["soon","reqUrgSoon"],["urgent","reqUrgUrgent"]];
 const REQ_DEPTS_DEFAULT=["Entertainment","F&B","Housekeeping","Engineering","Security","Reception"];
 const REQ_TEMPLATES_DEFAULT={
   event:[
@@ -10676,6 +10810,8 @@ const REQ_TEMPLATES_DEFAULT={
     {need:"Mats", qty:"10", dept:"Entertainment"},
     {need:"Speaker", qty:"1", dept:"Entertainment"},
     {need:"Water", qty:"10", dept:"F&B"}],
+  purchase:[
+    {need:"", qty:"", dept:"Entertainment", info:"", when:"", urg:"normal"}],
   party:[
     {need:"DJ setup", qty:"1", dept:"Entertainment"},
     {need:"Lights", qty:"6", dept:"Engineering"},
@@ -10709,10 +10845,19 @@ function nextDateForDay(dayIdx, fromISO){
   return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
 }
 function reqKindLabel(k){
-  return k==="activity" ? t("reqKindActivity") : k==="party" ? t("reqKindParty") : t("reqKindEvent");
+  return k==="activity" ? t("reqKindActivity") : k==="party" ? t("reqKindParty")
+       : k==="purchase" ? t("reqKindPurchase") : t("reqKindEvent");
 }
 function reqSheetTitle(k){
-  return k==="activity" ? t("reqActivity") : k==="party" ? t("reqParty") : t("reqEvent");
+  return k==="activity" ? t("reqActivity") : k==="party" ? t("reqParty")
+       : k==="purchase" ? t("reqPurchase") : t("reqEvent");
+}
+/* A purchase request is a different animal: it asks for things to be bought,
+   with a deadline and an urgency, not for a department to bring something. */
+function reqIsPurchase(sh){ return String(sh&&sh.kind)==="purchase"; }
+function reqUrgLabel(u){
+  const hit=REQ_URGENCY.find(x=>x[0]===String(u||"normal"));
+  return hit ? t(hit[1]) : t("reqUrgNormal");
 }
 function reqDepts(){
   const c=S.settings && S.settings.reqDepts;
@@ -10811,8 +10956,9 @@ function openReqEditor(id){
   const box=wrap.querySelector("#rq-rows");
   const paintRows=()=>{
     const depts=reqDepts();
+    const buy=reqIsPurchase(sh);
     box.innerHTML = sh.rows.length ? sh.rows.map((r,i)=>`<div class="rq-row">
-      <input class="rq-need" data-rqneed="${i}" value="${esc(r.need||"")}" placeholder="${esc(t("reqNeed"))}">
+      <input class="rq-need" data-rqneed="${i}" value="${esc(r.need||"")}" placeholder="${esc(t(buy?"reqItem":"reqNeed"))}">
       <input class="rq-qty" data-rqqty="${i}" value="${esc(r.qty||"")}" placeholder="${esc(t("reqQty"))}">
       <select class="rq-dep" data-rqdept="${i}">
         <option value="">\u2014</option>
@@ -10824,11 +10970,20 @@ function openReqEditor(id){
         <button class="bd-b" data-rqup="${i}" ${i===0?"disabled":""}>${ic("back",13)}</button>
         <button class="bd-b down" data-rqdown="${i}" ${i===sh.rows.length-1?"disabled":""}>${ic("back",13)}</button>
         <button class="bd-b warn" data-rqdel="${i}">${ic("trash",13)}</button>
-      </span></div>`).join("")
+      </span>
+      ${buy?`<input class="rq-info" data-rqinfo="${i}" value="${esc(r.info||"")}" placeholder="${esc(t("reqItemInfo"))}">
+        <input class="rq-when" data-rqwhen="${i}" value="${esc(r.when||"")}" placeholder="${esc(t("reqNeededBy"))}">
+        <select class="rq-urg" data-rqurg="${i}">
+          ${REQ_URGENCY.map(([k,lb])=>`<option value="${k}" ${String(r.urg||"normal")===k?"selected":""}>${esc(t(lb))}</option>`).join("")}
+        </select>`:""}
+      </div>`).join("")
       : `<p class="mini">${t("reqNoLines")}</p>`;
     box.querySelectorAll("[data-rqneed]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqneed].need=el.value; });
     box.querySelectorAll("[data-rqqty]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqqty].qty=el.value; });
     box.querySelectorAll("[data-rqdept]").forEach(el=>el.onchange=()=>{ sh.rows[+el.dataset.rqdept].dept=el.value; });
+    box.querySelectorAll("[data-rqinfo]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqinfo].info=el.value; });
+    box.querySelectorAll("[data-rqwhen]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqwhen].when=el.value; });
+    box.querySelectorAll("[data-rqurg]").forEach(el=>el.onchange=()=>{ sh.rows[+el.dataset.rqurg].urg=el.value; });
     box.querySelectorAll("[data-rqtick]").forEach(b=>b.onclick=()=>{
       const r=sh.rows[+b.dataset.rqtick]; r.done=!r.done; paintRows(); });
     box.querySelectorAll("[data-rqup]").forEach(b=>b.onclick=()=>{
@@ -10843,6 +10998,9 @@ function openReqEditor(id){
   const pick=wrap.querySelector("#rq-pick");
   const paintPick=()=>{
     if(!pick) return;
+    const holder=pick.parentNode;
+    if(holder && holder.style) holder.style.display = reqIsPurchase(sh) ? "none" : "";
+    if(reqIsPurchase(sh)){ pick.innerHTML=""; return; }
     const list=reqProgramList(sh.kind);
     pick.innerHTML=`<option value="">${esc(t("reqFromProgramOwn"))}</option>`
       + list.map(a=>{
@@ -10868,7 +11026,7 @@ function openReqEditor(id){
     sh.kind=b.dataset.rqkind;
     sh.actId="";                                  // a different kind means a different list
     wrap.querySelectorAll("[data-rqkind]").forEach(x=>x.classList.toggle("on", x.dataset.rqkind===sh.kind));
-    paintPick();
+    paintPick(); paintRows();
   });
   wrap.querySelector("#rq-add").onclick=()=>{ sh.rows.push({need:"",qty:"",dept:""}); paintRows(); };
   wrap.querySelector("#rq-std").onclick=()=>{ sh.rows=sh.rows.concat(reqTemplate(sh.kind)); paintRows(); };
@@ -11065,6 +11223,8 @@ function exportRequirements(sheets, day, blank){
    +"td{padding:8px 9px;border:1px solid #D8CFC1;vertical-align:middle}"
    +"td.qty{width:56px;text-align:center;font-weight:700}"
    +"td.dep{width:130px}"
+   +"td.urg{width:82px;font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase}"
+   +"td.urg.urgent{color:#B0392B}td.urg.soon{color:#D08526}td.urg.normal{color:#6B5C4A}"
    +"td.box{width:52px;text-align:center}"
    +".ck{display:inline-block;width:12px;height:12px;border:1.2px solid #6B5C4A}"
    +".notebox{border:1px solid #D8CFC1;border-radius:3px;padding:8px 10px;min-height:56px;margin-bottom:14px}"
@@ -11079,6 +11239,7 @@ function exportRequirements(sheets, day, blank){
 
   const one=sh=>{
     const rows=(sh.rows||[]);
+    const buy=reqIsPurchase(sh);
     const pad=Math.max(0, (blank?10:rows.length+2)-rows.length);   // room to write more by hand
     return '<div class=sheet><div class=head>'
       +(hotel?'<div class=hotel>'+E2(hotel)+'</div>':'')
@@ -11089,16 +11250,24 @@ function exportRequirements(sheets, day, blank){
       +'<div class=facts>'
         +'<div class=f><i>'+E2(reqKindLabel(sh.kind))+'</i>'+line(sh.title)+'</div>'
         +'<div class=f><i>'+E2(t("reqDate"))+'</i>'+line(sh.date?niceDate(sh.date):"")+'</div>'
-        +'<div class=f><i>'+E2(t("time"))+'</i>'+line(sh.time)+'</div>'
-        +'<div class=f><i>'+E2(t("reqLocation"))+'</i>'+line(sh.location)+'</div>'
+        +(buy?'':'<div class=f><i>'+E2(t("time"))+'</i>'+line(sh.time)+'</div>')
+        +(buy?'':'<div class=f><i>'+E2(t("reqLocation"))+'</i>'+line(sh.location)+'</div>')
       +'</div>'
       +'<table><thead><tr>'
-        +'<th>'+E2(t("reqNeed"))+'</th><th>'+E2(t("reqQty"))+'</th>'
-        +'<th>'+E2(t("reqDept"))+'</th></tr></thead><tbody>'
-      + rows.map(r=>'<tr><td>'+E2(r.need||"")+'</td><td class=qty>'+E2(r.qty||"")+'</td>'
-          +'<td class=dep>'+E2(r.dept||"")+'</td></tr>').join("")
+        +(buy
+          ? '<th>'+E2(t("reqItem"))+'</th><th>'+E2(t("reqQty"))+'</th><th>'+E2(t("reqItemInfo"))+'</th>'
+            +'<th>'+E2(t("reqNeededBy"))+'</th><th>'+E2(t("reqUrgency"))+'</th>'
+          : '<th>'+E2(t("reqNeed"))+'</th><th>'+E2(t("reqQty"))+'</th><th>'+E2(t("reqDept"))+'</th>')
+        +'</tr></thead><tbody>'
+      + rows.map(r=>'<tr>'
+          +'<td>'+E2(r.need||"")+'</td><td class=qty>'+E2(r.qty||"")+'</td>'
+          +(buy
+            ? '<td>'+E2(r.info||"")+'</td><td class=dep>'+E2(r.when||"")+'</td>'
+              +'<td class="urg '+E2(r.urg||"normal")+'">'+E2(reqUrgLabel(r.urg))+'</td>'
+            : '<td class=dep>'+E2(r.dept||"")+'</td>')
+          +'</tr>').join("")
       + Array.from({length:pad}).map(()=>'<tr><td>&nbsp;</td><td class=qty></td>'
-          +'<td class=dep></td></tr>').join("")
+          +(buy?'<td></td><td class=dep></td><td></td>':'<td class=dep></td>')+'</tr>').join("")
       +'</tbody></table>'
       +'<div class=notebox><i>'+E2(t("reqNote"))+'</i><p>'+E2(sh.note||"")+'</p></div>'
       +(sh.responsible?'<div class=resp><i>'+E2(t("reqResponsible"))+'</i>'+E2(sh.responsible)+'</div>':'')
@@ -11115,10 +11284,15 @@ function exportRequirements(sheets, day, blank){
   w.document.close();
 }
 function reqDataset(sh){
+  const buy=reqIsPurchase(sh);
   return {
     title:(sh.title||reqSheetTitle(sh.kind))+(sh.date?" \u00b7 "+niceDate(sh.date):""),
-    headers:[t("reqNeed"),t("reqQty"),t("reqDept"),t("reqStatus")],
-    rows:(sh.rows||[]).map(r=>[r.need||"", r.qty||"", r.dept||"", r.done?"OK":""])
+    headers: buy
+      ? [t("reqItem"),t("reqQty"),t("reqItemInfo"),t("reqNeededBy"),t("reqUrgency"),t("reqDept")]
+      : [t("reqNeed"),t("reqQty"),t("reqDept"),t("reqStatus")],
+    rows:(sh.rows||[]).map(r=> buy
+      ? [r.need||"", r.qty||"", r.info||"", r.when||"", reqUrgLabel(r.urg), r.dept||""]
+      : [r.need||"", r.qty||"", r.dept||"", r.done?"OK":""])
   };
 }
 /* ===== THE GUEST FEEDBACK REPORT =====
@@ -11659,6 +11833,15 @@ function openEditModal(a){
     </div>
     <label>${t("capacity")} (0 = ∞)</label><input id="e-cap" type="number" min="0" value="${a.capacity}">
     <label>${t("location")}</label><input id="e-loc" value="${esc(a.location)}">
+    <div class="row2">
+      <div><label>${t("effHead")}</label><select id="e-effort">
+        ${ACT_EFFORT.map(([k,lb])=>`<option value="${k}" ${actEffort(a)===k?"selected":""}>${esc(t(lb))}</option>`).join("")}
+      </select></div>
+      <div><label>${t("gnHead")}</label><select id="e-gender">
+        ${ACT_GENDERS.map(([k,lb])=>`<option value="${k}" ${actGender(a)===k?"selected":""}>${esc(t(lb))}</option>`).join("")}
+      </select></div>
+    </div>
+    <p class="mini" style="margin:-4px 0 8px">${t("effHint")} ${t("gnHint")}</p>
     <label>${t("entertainer")}</label>
     <select id="e-ent">${entOptions}${knownEnt?"":`<option value="${esc(a.entertainer)}" selected>${esc(a.entertainer)}</option>`}</select>
     <div class="photo-pick"><div class="photo-box" data-photobox></div>
@@ -11683,6 +11866,8 @@ function openEditModal(a){
       capacity:+wrap.querySelector("#e-cap").value||0,
       location:wrap.querySelector("#e-loc").value.trim(),
       entertainer:wrap.querySelector("#e-ent").value.trim(),
+      effort:wrap.querySelector("#e-effort").value,
+      gender:wrap.querySelector("#e-gender").value,
       image:ePhoto,
       highlight:wrap.querySelector("#e-hl").checked};
     if(!upd.name) return;
@@ -12052,6 +12237,9 @@ function wireCommon(){
   demoteExtraPrimaries();
   wireCountdowns();
   document.querySelectorAll("[data-afper]").forEach(b=>b.onclick=()=>{ S.afPeriod=b.dataset.afper; render(); });
+  document.querySelectorAll("[data-thacc]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation(); toggleAccept(b.dataset.thacc);
+  });
   document.querySelectorAll("[data-afacc]").forEach(b=>b.onclick=()=>toggleAccept(b.dataset.afacc));
   document.querySelectorAll("[data-afcat]").forEach(b=>b.onclick=()=>{ S.afCat=b.dataset.afcat; render(); });
   const afx=$("#btn-afexport"); if(afx) afx.onclick=openActFbExport;
