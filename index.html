@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#3E2A1E">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Hotel entertainment operations, programme and guest experience app">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1390,8 +1392,6 @@ html{font-size:calc(16px * var(--fscale,1))}
 .aa-per{display:flex;flex-wrap:wrap;gap:7px}
 
 /* ===== assignment balance ===== */
-.aa-var{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 2px}
-.aa-var .btn.link{margin:0;padding:4px 0}
 .aa-bal{display:flex;flex-direction:column;gap:2px;padding:11px 14px;border-radius:var(--r-md);margin-top:10px}
 .aa-bal.good{background:rgba(62,155,95,.14)}
 .aa-bal.warn{background:rgba(229,161,0,.16)}
@@ -1608,274 +1608,6 @@ html{font-size:calc(16px * var(--fscale,1))}
 .fb-chev{flex:none;opacity:.38;transform:rotate(180deg)}
 .bd-sec-head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   font-weight:700;margin:16px 0 6px}
-/* ===== hero header ===== */
-.hero{position:relative;margin:calc(-1 * (var(--topgap,18px) + env(safe-area-inset-top))) -18px 18px;overflow:hidden;
-  border-radius:0 0 30px 30px;color:#fff;isolation:isolate;
-  box-shadow:0 18px 40px -26px rgba(16,10,6,.6)}
-.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.06)}
-.hero-bg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(168deg,rgba(20,14,9,.52) 0%,rgba(20,14,9,.74) 48%,rgba(20,14,9,.92) 100%)}
-.hero-in{position:relative;padding:calc(14px + env(safe-area-inset-top)) 18px 24px}
-.hero .top.hero-bar{margin-bottom:22px}
-.hero .iconbtn{background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(6px);
-  border-color:rgba(255,255,255,.2)}
-.hero .iconbtn svg{stroke:#fff}
-.hero .iconbtn[disabled]{opacity:.35}
-.hero-say{display:flex;align-items:flex-end;gap:14px}
-.hero-words{flex:1;min-width:0}
-.hero-hi{display:block;font-size:13px;font-weight:500;color:rgba(255,255,255,.82);letter-spacing:.01em}
-.hero-words h1{font-family:var(--font-display);font-size:31px;line-height:1.08;font-weight:500;
-  margin:2px 0 0;letter-spacing:-.01em;color:#fff}
-.hero-sub{font-size:12.5px;color:rgba(255,255,255,.72);margin:6px 0 0}
-.hero-quote{font-size:12px;color:rgba(255,255,255,.66);margin:7px 0 0;font-style:italic}
-.hero-av{flex:none;width:74px;height:74px;border-radius:50%;overflow:hidden;display:grid;place-items:center;
-  border:2.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
-.hero-av img{width:100%;height:100%;object-fit:cover}
-.hero-av b{font-family:var(--font-display);font-size:27px;color:#fff}
-.hero-chip{flex:none;display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;
-  background:rgba(255,255,255,.16);backdrop-filter:blur(6px);font-size:14px;font-weight:600}
-.hero-chip svg{stroke:#fff}
-.hero-chip small{display:block;font-size:10px;font-weight:500;opacity:.8}
-.hero-live{flex:none;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
-  background:#B0392B;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.hero-live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulseDot 1.6s infinite}
-@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.25}}
-
-/* ===== today's highlight ===== */
-.hl{position:relative;border-radius:20px;overflow:hidden;margin-bottom:18px;min-height:186px;
-  display:flex;align-items:flex-end;color:#fff;box-shadow:0 14px 30px -20px rgba(16,10,6,.7)}
-.hl-bg{position:absolute;inset:0;background-size:cover;background-position:center}
-.hl-bg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(18,12,8,.9) 0%,rgba(18,12,8,.25) 62%,rgba(18,12,8,.1) 100%)}
-.hl-in{position:relative;padding:16px;width:100%;display:flex;align-items:flex-end;gap:12px}
-.hl-txt{flex:1;min-width:0}
-.hl-lbl{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(255,255,255,.78);font-weight:700}
-.hl-name{display:block;font-family:var(--font-display);font-size:23px;font-weight:500;margin:3px 0 2px}
-.hl-when{display:block;font-size:12px;color:rgba(255,255,255,.8)}
-.hl-btn{flex:none;border:0;background:rgba(255,255,255,.92);color:#2B1F16;border-radius:999px;
-  padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-
-/* ===== round category buttons ===== */
-.catrow{display:flex;gap:10px;margin-bottom:20px}
-.catrow button{flex:1;min-width:0;border:0;background:none;padding:0;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--ink);font-family:inherit}
-.catrow .cb{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;
-  background:var(--sand);border:1px solid var(--line);transition:transform .16s ease}
-.catrow button:active .cb{transform:scale(.93)}
-.catrow .cb svg{stroke:var(--bronze)}
-.catrow span{font-size:11.5px;font-weight:600;text-align:center;line-height:1.2}
-
-/* ===== list rows with a thumbnail ===== */
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
-.sec-head h3{margin:0}
-.sec-head button{border:0;background:none;color:var(--bronze);font-size:12.5px;font-weight:600;
-  cursor:pointer;font-family:inherit;padding:0}
-.thumbrow{display:flex;align-items:center;gap:12px;padding:11px 0;cursor:pointer;width:100%;
-  flex-wrap:nowrap;border:0;background:none;text-align:start;color:inherit;font-family:inherit}
-.thumbrow:not(:last-child){border-bottom:1px solid var(--line)}
-.th-img{flex:none;width:52px;height:52px;border-radius:14px;overflow:hidden;background:var(--sand)}
-.th-img img{width:100%;height:100%;object-fit:cover}
-.th-time{flex:none;width:46px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
-.th-mid{flex:1;min-width:0}
-.th-mid b{display:block;font-size:14.5px;font-weight:600;line-height:1.25}
-.th-mid span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
-.th-go{flex:none;opacity:.35;transform:rotate(180deg)}
-.th-acts{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-.th-chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);
-  background:var(--card);color:var(--muted);border-radius:999px;padding:5px 10px;
-  font-size:11px;font-weight:700;letter-spacing:.02em;cursor:pointer;white-space:nowrap;font-family:inherit}
-.th-chip svg{width:12px;height:12px}
-.th-chip.on{background:#6E9155;border-color:#6E9155;color:#fff}
-.th-chip.done.on{background:var(--espresso);border-color:var(--espresso);color:#fff}
-.th-chip:active{transform:scale(.97)}
-.th-tick{flex:0 0 24px;width:24px;height:24px;aspect-ratio:1;align-self:flex-start;
-  margin-top:3px;margin-inline-start:8px;
-  border-radius:50%;border:1.5px solid var(--line);
-  display:grid;place-items:center;background:none;cursor:pointer;padding:0;
-  color:var(--line);transition:background .15s ease,border-color .15s ease}
-.th-tick svg{stroke:currentColor;width:13px;height:13px}
-.th-tick.on{background:#6E9155;border-color:#6E9155;color:#fff}
-.th-tick.on svg{stroke-width:2.4}
-
-/* ===== stat tiles ===== */
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
-.tiles .ti{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 8px;
-  text-align:center}
-.tiles .ti b{display:block;font-family:var(--font-display);font-size:19px;font-weight:500}
-.tiles .ti span{display:block;font-size:10px;color:var(--muted);margin-top:2px;line-height:1.2}
-.bigtiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.bigtiles .bt{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 15px;
-  display:flex;align-items:center;gap:11px}
-.bigtiles .bt .bi{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
-  background:var(--sand)}
-.bigtiles .bt .bi svg{stroke:var(--bronze)}
-.bigtiles .bt b{display:block;font-family:var(--font-display);font-size:23px;font-weight:500;line-height:1}
-.bigtiles .bt span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.2}
-
-/* ===== the overview list ===== */
-.ovlist{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 15px;margin-bottom:18px}
-.ovrow{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:14px 0;
-  cursor:pointer;text-align:start;color:inherit;font-family:inherit}
-.ovrow:not(:last-child){border-bottom:1px solid var(--line)}
-.ovrow .oi{flex:none;width:22px;display:grid;place-items:center}
-.ovrow .oi svg{stroke:var(--bronze)}
-.ovrow .om{flex:1;min-width:0}
-.ovrow .om b{display:block;font-size:14.5px;font-weight:600}
-.ovrow .om span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
-.ovrow .ob{flex:none;min-width:22px;height:22px;border-radius:999px;background:var(--bronze);color:#fff;
-  font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 6px}
-.ovrow .og{flex:none;opacity:.35;transform:rotate(180deg)}
-
-/* ===== bottom tab bar ===== */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:var(--z-sticky,60);display:flex;
-  padding:8px 6px calc(8px + env(safe-area-inset-bottom));gap:2px;
-  background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);
-  border-top:1px solid var(--line)}
-.tabbar .tb{flex:1;min-width:0;border:0;background:none;padding:6px 2px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-family:inherit}
-.tabbar .tb span{font-size:9.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.tabbar .tb svg{stroke:var(--muted)}
-.tabbar .tb.on{color:var(--bronze)}
-.tabbar .tb.on svg{stroke:var(--bronze)}
-.tabbar .tb.on span{font-weight:700}
-.screen{padding-bottom:104px}
-/* ===== FOUR BUTTON LEVELS, NOTHING ELSE =====
-   primary   .btn            the one action this screen is for
-   secondary .btn.ghost      a useful alternative
-   action    .btn.link       a small operation that must not compete
-   danger    .btn.warn       destructive
-   Two primaries side by side in a .row2 are a deliberate pair; anywhere else a
-   second filled button is a mistake, so it steps down to secondary by itself. */
-.btn.link{background:transparent;border:0;box-shadow:none;color:var(--bronze);
-  font-weight:600;letter-spacing:.02em;padding:10px 4px;margin-top:6px;width:auto;
-  display:inline-flex;align-items:center;gap:6px}
-.btn.link:active{transform:none;opacity:.6}
-[data-theme="dark"] .btn.link{color:var(--bronze)}
-.btn.link::after{display:none}
-.btn.ghost{font-weight:600}
-.btn.ghost.sm{color:var(--muted);border-color:var(--line)}
-.sec + .sec{margin-top:20px}
-.sec > h3,.sec-head h3{font-size:19px;letter-spacing:.005em}
-.sec > .mini:first-of-type{margin-top:-4px}
-.screen > .btn:not(.sm):not(.link) + .btn:not(.sm):not(.link){margin-top:10px}
-.cov{display:flex;align-items:center;gap:12px;padding:10px 0}
-.cov:not(:last-of-type){border-bottom:1px solid var(--line)}
-.cov-box{flex:none;width:96px;height:58px;border-radius:var(--r-md);background:var(--sand);
-  background-size:cover;background-position:center;cursor:pointer;display:flex;
-  align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--line)}
-.cov-txt{min-width:0;display:flex;flex-direction:column;gap:1px}
-.cov-txt b{font-size:15px}
-.cov-txt .btn.link{margin-top:2px;padding:2px 0}
-.ga-img{border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;background:var(--sand)}
-.ga-img img{width:100%;height:170px;object-fit:cover;display:block}
-.socialset{display:inline-flex;gap:6px;animation:fadein .18s ease}
-.hero-av{border:0;padding:0;background:none;cursor:pointer}
-.ac-top{display:flex;align-items:center;gap:14px;margin:6px 0 2px}
-.ac-ph{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;border:0;padding:0;
-  background:var(--sand);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ac-ph img{width:100%;height:100%;object-fit:cover}
-.ac-ph b{font-size:24px;color:var(--muted)}
-.ac-who{min-width:0;display:flex;flex-direction:column;gap:2px}
-.ac-who b{font-size:19px}
-.ph-big{border-radius:var(--r-lg);overflow:hidden;background:var(--sand)}
-.ph-big img{width:100%;display:block}
-.nf-row{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border:0;background:none;
-  color:inherit;font:inherit;text-align:start;cursor:pointer}
-.nf-row:not(:last-child){border-bottom:1px solid var(--line)}
-.nf-ic{flex:none;opacity:.5;display:inline-flex}
-.nf-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.nf-x b{font-size:14px;font-weight:600}
-.nf-x .mini{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nf-w{flex:none}
-.nf-go{flex:none;opacity:.35;transform:rotate(180deg);display:inline-flex}
-.nf-row.unread .nf-ic{opacity:1;color:#C0603F}
-.nf-row.unread .nf-x b::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:#C0603F;margin-inline-start:6px;vertical-align:middle}
-.crm-row.needs{position:relative}
-.crm-row.needs::before{content:"";position:absolute;inset-inline-start:-14px;top:14px;bottom:14px;
-  width:3px;border-radius:2px;background:#C0603F}
-.crm-flags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
-.crm-flag{font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
-  color:#A9431F;background:#FBEDE7;border-radius:999px;padding:2px 7px}
-.cm-note{display:flex;align-items:flex-start;gap:10px;padding:12px 0}
-.cm-note:not(:last-child){border-bottom:1px solid var(--line)}
-.cm-nx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.pill .badge{margin-inline-start:6px}
-.ao-sec{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
-  font-weight:700;margin:16px 0 6px}
-.ao-none{font-style:normal;color:var(--muted);font-weight:600}
-/* ===== control centre ===== */
-.st-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 0}
-.st-row:not(:last-child){border-bottom:1px solid var(--line)}
-.st-row input{margin:0;font-size:14px;padding:8px 9px}
-.st-t{flex:0 0 76px;text-align:center}
-.st-n{flex:1 1 auto;min-width:0}
-.st-note{flex:1 0 100%}
-.st-note:disabled{opacity:.5}
-.ac-row{display:flex;align-items:center;gap:11px;padding:11px 0}
-.ac-row:not(:last-child){border-bottom:1px solid var(--line)}
-.ac-n{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
-  background:var(--sand);font-weight:700;font-size:12px}
-.ac-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.ac-s{flex:none;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
-.ac-row.done .ac-n{background:#E7EFE4;color:#4A6B36}
-.ac-row.done .ac-s{color:#4A6B36}
-.ac-row.wait .ac-n{background:#FBEDE7;color:#A9431F}
-.ac-row.wait .ac-s{color:#A9431F}
-.ac-row.off{opacity:.5}
-.af-pct{display:flex;align-items:center;gap:10px;margin-top:4px}
-.af-pct input[type=range]{flex:1;margin:0;accent-color:var(--bronze)}
-.af-pctv{flex:none;font-weight:700;font-size:15px;width:48px;text-align:end}
-.af-acts{flex:none;display:flex;gap:4px}
-.af-acc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:6px}
-.af-stars{display:flex;gap:4px;margin:4px 0 2px}
-.af-stars .fb-st{width:34px;height:34px;font-size:26px}
-.af-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0}
-.af-row:not(:last-child){border-bottom:1px solid var(--line)}
-.af-row .af-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.cd{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;letter-spacing:.02em;
-  color:var(--bronze)}
-.cd:empty{display:none}
-.cd.live{color:#C0603F}
-.cc{padding:2px 14px}
-.cc-head{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
-  font-weight:700;padding:10px 0 4px}
-.cc-row{display:flex;align-items:center;gap:10px;width:100%;padding:12px 0;border:0;background:none;
-  color:inherit;font:inherit;text-align:start;cursor:pointer}
-.cc-row:not(:last-child){border-bottom:1px solid var(--line)}
-.cc-ic{flex:none;opacity:.55;display:inline-flex}
-.cc-x{flex:1;min-width:0;font-size:14px;font-weight:600}
-.cc-v{flex:none;font-weight:700;font-size:15px}
-.cc-go{flex:none;opacity:.35;transform:rotate(180deg);display:inline-flex}
-.cc-row.warn .cc-v{color:#C0603F}
-.cc-row.warn .cc-ic{opacity:.9;color:#C0603F}
-.cc-row.good .cc-v{color:#4A6B36}
-.cc-next{display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer}
-.cc-next:not(:last-child){border-bottom:1px solid var(--line)}
-.cc-t{flex:0 0 46px;font-size:13px;font-weight:700}
-.cc-next .cc-x{display:flex;flex-direction:column;gap:1px}
-/* ===== my day ===== */
-.md{padding:2px 14px}
-.md-row{display:flex;align-items:flex-start;gap:11px;padding:11px 0;position:relative}
-.md-row:not(:last-child){border-bottom:1px solid var(--line)}
-.md-row[data-open]{cursor:pointer}
-.md-t{flex:0 0 46px;font-size:13px;font-weight:700;letter-spacing:.2px;padding-top:1px}
-.md-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.md-x b{font-size:15px;font-weight:600}
-.md-k{flex:none;font-size:9px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
-  color:var(--muted);padding:3px 8px;border-radius:999px;background:var(--sand)}
-.md-row.mine{margin-inline:-14px;padding-inline:14px;background:var(--sand);border-radius:10px;border-bottom:0}
-.md-row.mine .md-k{background:var(--espresso);color:#fff}
-.md-row.mine b{font-weight:700}
-.md-row.show .md-k{background:#EDE5F0;color:#5C3F6B}
-.md-row.duty .md-k{background:#FBEDE2;color:#A9631A}
-.md-row.task .md-k{background:#E7EFE4;color:#4A6B36}
-.md-row.past{opacity:.42}
-.md-now{display:flex;align-items:center;gap:8px;padding:4px 0 6px}
-.md-now::before,.md-now::after{content:"";height:1px;background:#C0603F;flex:1;opacity:.55}
-.md-now span{flex:none;font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#C0603F}
 .rq-it{display:flex;align-items:center;gap:10px;padding:12px 0;cursor:pointer}
 .rq-it:not(:last-child){border-bottom:1px solid var(--line)}
 .rq-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
@@ -1885,16 +1617,12 @@ html{font-size:calc(16px * var(--fscale,1))}
 .rq-kind.event{background:#EFE7DA;color:#6B4A32}
 .rq-kind.activity{background:#E7EFE4;color:#4A6B36}
 .rq-kind.party{background:#EDE5F0;color:#5C3F6B}
-.rq-kind.purchase{background:#E4EAF0;color:#3F566B}
 .rq-row{display:flex;gap:6px;align-items:center;padding:6px 0}
 .rq-row:not(:last-child){border-bottom:1px solid var(--line)}
 .rq-row input,.rq-row select{margin:0;font-size:14px;padding:8px 9px}
 .rq-need{flex:1 1 auto;min-width:0}
 .rq-qty{flex:0 0 54px;text-align:center}
 .rq-dep{flex:0 0 34%;min-width:0}
-.rq-info{flex:1 0 100%}
-.rq-when{flex:1 1 46%;min-width:0}
-.rq-urg{flex:1 1 46%;min-width:0}
 .rq-acts{flex:none;display:flex;gap:4px}
 .fb-rooms{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .fb-rooms::-webkit-scrollbar{display:none}
@@ -1960,6 +1688,174 @@ html{font-size:calc(16px * var(--fscale,1))}
   border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center}
 .bubwrap.picked .pick-dot{background:var(--bronze);border-color:var(--bronze);color:#fff}
 </style>
+<style id="aurea-vnext-system">
+
+/* ========================================================================
+   AUREA vNEXT — A-to-Z interface consolidation · 2026-09-06
+   This is the final authority layer. It intentionally normalizes the many
+   historical polish layers above without changing operational data logic.
+   ======================================================================== */
+:root{
+  --content-max: 720px;
+  --page-x: clamp(16px, 4vw, 24px);
+  --page-y: 18px;
+  --surface-1: var(--card);
+  --surface-2: color-mix(in srgb, var(--card) 88%, var(--sand));
+  --hairline: color-mix(in srgb, var(--line) 82%, transparent);
+  --accent: var(--bronze);
+  --accent-strong: var(--cacao);
+  --text-strong: var(--ink);
+  --text-soft: var(--muted);
+  --shadow-card: 0 1px 2px rgba(38,24,14,.05), 0 10px 30px -18px rgba(38,24,14,.24);
+  --shadow-float: 0 20px 50px -24px rgba(38,24,14,.38);
+}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{min-height:100dvh;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+.app{width:100%;max-width:var(--content-max);min-height:100dvh;background:var(--bg);isolation:isolate}
+.screen{width:100%;padding-inline:var(--page-x)!important;padding-bottom:calc(36px + env(safe-area-inset-bottom))!important}
+[data-approle="manager"]{--content-max:820px}
+[data-approle="staff"]{--content-max:680px}
+[data-approle="guest"]{--content-max:600px}
+::selection{background:color-mix(in srgb,var(--bronze) 28%,transparent)}
+
+/* Typography hierarchy */
+h1,h2,h3,h4{color:var(--text-strong)}
+.whobar{margin:12px 0 22px}
+.whobar h2{font-size:clamp(27px,7vw,34px);line-height:1.05;letter-spacing:-.025em}
+.whobar p{font-size:13px;line-height:1.45;margin-top:6px;max-width:62ch}
+.sec{margin-bottom:26px}
+.sec>h3{font-size:17px!important;line-height:1.25;letter-spacing:.005em;padding-bottom:9px;margin-bottom:12px}
+.sec>h3::after{width:42px;height:2px}
+.mini{font-size:12.5px;line-height:1.45}
+
+/* Top utility bar: quiet, consistent and touch-safe */
+.top{position:sticky!important;top:calc(env(safe-area-inset-top) + 6px);z-index:var(--z-sticky);margin:0 calc(var(--page-x) * -.2) 4px!important;padding:6px 4px;border-radius:18px;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.toprow,.toprow-l{gap:7px}
+.iconbtn{width:42px;height:42px;min-width:42px!important;min-height:42px!important;border:1px solid var(--hairline);border-radius:13px!important;background:color-mix(in srgb,var(--card) 94%,transparent);box-shadow:0 5px 18px -13px rgba(38,24,14,.45)}
+.iconbtn:hover{background:var(--surface-2)}
+.iconbtn:disabled{opacity:.32;cursor:default;transform:none}
+.socialrow{gap:5px;max-width:min(38vw,210px)}
+.socialtop{width:38px;height:38px;min-width:38px!important;min-height:38px!important}
+.reddot{width:9px;height:9px;top:3px;right:3px;box-shadow:0 0 0 2px var(--bg)}
+
+/* One card language across the entire product */
+.card,.stat,.tk,.opcard,.catcard,.daycard{border:1px solid var(--hairline);box-shadow:var(--shadow-card)!important}
+.card{padding:16px;margin-bottom:12px;border-radius:18px!important}
+.card:active{transform:none}
+.stat{padding:17px;border-radius:18px!important;background:var(--surface-1)}
+.stat b{font-size:34px;letter-spacing:-.035em}
+.stat span{margin-top:6px;display:block;line-height:1.25}
+.stat-grid{gap:10px;margin-bottom:22px}
+.booking-line{padding:11px 0}
+.empty{padding:42px 18px}
+.empty .big{width:68px;height:68px}
+
+/* Manager reads like an operations console instead of a stretched phone list */
+[data-approle="manager"] .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+[data-approle="manager"] .quickrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+[data-approle="manager"] .dc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+[data-approle="manager"] .dc-cell.wide{grid-column:1/-1}
+
+/* Activity / programme cards */
+.act{gap:14px;align-items:center}
+.act .thumb{width:88px;height:88px;border-radius:16px}
+.act .mid h4{font-size:17px;letter-spacing:-.01em}
+.act .meta{line-height:1.45;margin-top:4px}
+.act .side{min-width:72px;align-self:stretch;justify-content:center}
+.hero{border-radius:24px;margin-bottom:26px;box-shadow:var(--shadow-float)!important}
+.hero img{height:clamp(220px,58vw,310px);animation:none!important}
+.hero .veil{background:linear-gradient(180deg,rgba(22,14,8,.02) 10%,rgba(22,14,8,.86) 88%)}
+.hero .body{padding:20px}
+.hero .body h3{font-size:clamp(27px,7vw,36px);letter-spacing:-.02em;color:#fff}
+.hero .tag{top:16px;left:16px}
+.tk{border-radius:22px}
+.tk img{height:180px}
+
+/* Controls and forms */
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--bronze) 44%,transparent);outline-offset:2px}
+.btn{min-height:48px;padding:13px 16px;border-radius:14px!important;font-weight:650;letter-spacing:.015em;box-shadow:none!important}
+.btn.sm{min-height:40px;padding:9px 14px}
+.btn.ghost{background:var(--card);border-color:var(--hairline)}
+input,select,textarea{min-height:48px;border-radius:13px;padding:12px 14px;border-color:var(--hairline);background:var(--card)}
+textarea{min-height:110px;resize:vertical}
+label{font-size:11.5px;font-weight:700;letter-spacing:.085em;margin-top:15px}
+.pills,.daytabs,.daychips{scroll-snap-type:x proximity;padding:3px 2px 10px;margin-inline:-2px}
+.pills button,.daytabs button,.daychip{scroll-snap-align:start;min-height:40px;border:1px solid var(--hairline);box-shadow:none}
+
+/* Login: simpler visual hierarchy, less noise */
+.login-wrap{min-height:100dvh;justify-content:center;padding-inline:clamp(20px,6vw,32px)!important;background:radial-gradient(130% 88% at 50% -8%,#694B37 0%,#3E2A1E 48%,#1E130D 100%)}
+.login-wrap>.brandmark,.login-wrap>.role-tabs,.login-wrap>.login-card,.login-wrap>.staff-link,.login-wrap>.lang-row{width:100%;max-width:460px;margin-inline:auto}
+.brandmark .mono{width:72px;height:72px}
+.brandmark h1{font-size:clamp(31px,8vw,40px);line-height:1.05}
+.brandmark p{margin-top:7px}
+.login-card{padding:22px;border:1px solid rgba(255,255,255,.42);box-shadow:0 30px 70px -30px rgba(0,0,0,.62)}
+.role-tabs{gap:7px}
+.role-tabs button{min-height:42px;border:1px solid rgba(255,255,255,.14)}
+.lang-row{gap:6px}
+.lang-row button{min-height:36px;padding:6px 11px}
+.wz-dots{margin-bottom:20px}
+.pickfield{min-height:54px}
+
+/* Drawer: grouped information architecture with stronger current-state cue */
+.drawer{width:min(344px,88vw);padding-inline:18px;box-shadow:38px 0 90px -32px rgba(0,0,0,.58)}
+.dr-head{padding:2px 3px 18px;margin-bottom:8px;border-bottom:1px solid var(--hairline)}
+.dr-items{gap:2px;padding-top:6px}
+.dr-sec{padding:15px 12px 7px;letter-spacing:.11em}
+.dr-it{min-height:48px;padding:11px 12px;border-radius:13px}
+.dr-it.on{box-shadow:none}
+.dr-foot{margin-top:10px}
+
+/* Timeline / workday / roster */
+.wk-item,.tl-row,.roster-row,.std-row{min-height:52px}
+.wk-info{padding-block:10px 18px}
+.wk-info img{width:60px;height:60px}
+.tl-row{padding-block:11px}
+.roster-row{padding:12px 16px}
+.rnum{width:38px;height:38px}
+.wd-banner{padding:16px 17px;border-radius:16px}
+.dc-cell{padding:15px 16px}
+.dc-cell span{font-size:10.5px}
+.dc-cell b{font-size:15px;line-height:1.35}
+
+/* Chat */
+.thread{gap:2px}
+.bub{max-width:min(84%,520px);padding:11px 14px;box-shadow:none}
+.chatbar{max-width:var(--content-max);padding:10px var(--page-x) calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 91%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--hairline)}
+.chatbar input{min-height:50px}
+.chatbar button{width:48px;height:48px}
+
+/* Modal / sheets */
+.modal-bg{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.modal{max-width:var(--content-max);border:1px solid var(--hairline);border-bottom:0;box-shadow:0 -24px 70px -30px rgba(0,0,0,.56);padding-inline:var(--page-x)}
+.modal .grab{height:4px;width:42px}
+
+/* Dense screens remain readable on small phones */
+@media (max-width:680px){
+  [data-approle="manager"] .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  [data-approle="manager"] .quickrow{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:390px){
+  :root{--page-x:14px}
+  .socialrow{display:none}
+  .whobar h2{font-size:27px}
+  .act .thumb{width:74px;height:74px}
+  .act{gap:10px}
+  .act .side{min-width:58px}
+  .stat b{font-size:30px}
+  .dc-grid{grid-template-columns:1fr!important}
+  .dc-cell:nth-child(odd){border-inline-end:0}
+  .dc-cell.wide{grid-column:auto}
+}
+@media (min-width:900px){
+  body{padding-block:24px}
+  .app{min-height:calc(100dvh - 48px);border:1px solid var(--hairline);border-radius:28px;overflow:clip;box-shadow:0 30px 90px -48px rgba(38,24,14,.38)}
+  .screen{min-height:calc(100dvh - 48px)}
+  .login-wrap{min-height:calc(100dvh - 48px);border-radius:28px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.iconbtn,.card,.drawer,.modal{transition:none!important}}
+@media print{.top,.drawer-bg,.chatbar,.arrange-b,.btn{display:none!important}.app,.screen{max-width:none!important;padding:0!important;box-shadow:none!important;border:0!important}.card{break-inside:avoid;box-shadow:none!important}}
+</style>
 </head>
 <body>
 <div class="app" id="app"><div class="skel-wrap">
@@ -1971,7 +1867,7 @@ html{font-size:calc(16px * var(--fscale,1))}
 </div></div>
 <script>
 /* ================================================================
-   SETUP — make it real in 2 steps:
+   ⚙️ SETUP — make it real in 2 steps:
    1) In Supabase: SQL Editor -> run supabase-setup.sql (one time)
    2) Paste your project values below (Supabase -> Settings -> API)
    While both are empty the app runs on sample data for preview.
@@ -2033,9 +1929,9 @@ ar:Object.assign({appSub:"فريق الترفيه",guest:"ضيف",staff:"الف�
 const S = {
   lang:"en", theme:"light", session:null, tab:"home",
   day:(new Date().getDay()+6)%7, favorites:[],   // initial only; todayIndex() takes over after load
-  sub:{program:"acts", guests:"bookings", team:"accounts", dash:"overview", inbox:"guests"}, op:null, cat:null,
+  sub:{program:"acts", guests:"bookings", team:"accounts", dash:"overview"}, op:null, cat:null,
   chatRoom:null, seenNote:0,
-  activities:[], bookings:[], users:[], tickets:[], orders:[], actFb:[],
+  activities:[], bookings:[], users:[], tickets:[], orders:[],
   rooms:[], accounts:[], messages:[], requests:[], tasks:[], notes:[], attendance:[], feedback:[], aiChat:[], profiles:[],
   buses:[], quizzes:[], quizReplies:[], staffAtt:[], attMonth:null, photos:[], staffReqs:[], weather:null, weatherBusy:false, crmQuery:"", drawerOpen:null, pb:null, assignDay:null, openDay:{}, chatSel:null, exportMonth:null, exportDay:"", exportSlot:"", settings:{...DEFAULT_SETTINGS}, loadError:false
 };
@@ -2121,277 +2017,6 @@ Object.assign(DICT.en, {
   liveNothing:"Nothing running right now.",
   opsToday:"Activities today",
   opsPeople:"Participants",
-  goodMorning:"Good morning",
-  goodAfternoon:"Good afternoon",
-  goodEvening:"Good evening",
-  welcomeParadise:"Welcome to paradise",
-  welcomeBack:"Welcome back",
-  atAGlance:"Everything at a glance",
-  todayHighlight:"Today's highlight",
-  startsAtLbl:"Starts at",
-  viewDetailsBtn:"View details",
-  todayOverview:"Today's overview",
-  seeAllLink:"See all",
-  actsToday:"Activities today",
-  onDutyNow:"Entertainers on duty",
-  guestsJoined:"Guests participated",
-  guestSat:"Guest satisfaction",
-  navHome:"Home",
-  navExplore:"Explore",
-  navProfile:"Profile",
-  navSchedule:"Schedule",
-  navStats:"Stats",
-  navMore:"More",
-  navReports:"Reports",
-  navDashboard:"Dashboard",
-  ovProgram:"Manage activities & events",
-  ovTeam:"Staff, roles & schedules",
-  ovAttendance:"Live participation",
-  ovFeedback:"Reviews & comments",
-  ovRequire:"Event & party requirements",
-  ovSettings:"App configuration",
-  wdThisWeek:"This week",
-  wdRating:"Guest rating",
-  viewFullSchedule:"View the full schedule",
-  acMe:"My account",
-  acTheme:"Appearance",
-  themeLightLbl:"Light",
-  themeDarkLbl:"Dark",
-  acLanguage:"Language",
-  acSignOut:"Sign out",
-  acViewPhoto:"View photo",
-  acRoom:"Room",
-  acShift:"Number",
-  acRole:"Role",
-  gvDetails:"Activity details",
-  gvAddPlan:"Add to my plan",
-  gvInPlan:"In my plan",
-  gvBookNow:"Book a place",
-  gvBooked:"You have a place",
-  gvNoBooking:"No booking needed \u2014 just come along.",
-  gvWhen:"When",
-  gvWhere:"Where",
-  gvWith:"With",
-  gvFree:"places left",
-  fbToday:"Today",
-  fbWeek:"This week",
-  fbMonth:"This month",
-  fbAllTime:"All",
-  fbPeriodHint:"Feedback resets at midnight. Nothing is ever deleted — switch the period to look back.",
-  fbNoneToday:"No feedback collected today yet.",
-  stEdit:"Edit the day",
-  stEditHint:"The fixed rhythm every entertainer sees on My day: meals, briefings, start times, closing. Change a time or a name, add a line of your own, or take one out.",
-  stTime:"Time",
-  stName:"Name",
-  stNote:"Note (optional)",
-  stAdd:"Add a line",
-  stReset:"Back to the standard day",
-  stLast:"Keep at least one line.",
-  stEmpty:"No lines yet. Add one, or go back to the standard day.",
-  effHead:"Effort",
-  effRelax:"Relax",
-  effActive:"Active",
-  effNormal:"Normal",
-  effHint:"How hard this one is to run. The auto plan spreads the active ones evenly.",
-  gnAny:"Anyone",
-  gnFemale:"Female",
-  gnMale:"Male",
-  gnHead:"Who can run it",
-  gnHint:"Leave it on Anyone unless the activity really needs one.",
-  aaVariant:"Plan {n} of {m}",
-  aaAnother:"Show another plan",
-  aaWhyEntrance:"on entrance duty",
-  aaWhyOff:"day off",
-  acAcceptShort:"Accept",
-  thDone:"Done",
-  thMarkDone:"Mark done",
-  fbThisWeek:"This week",
-  fbThisMonth:"This month",
-  fbAllTime:"All time",
-  acRoster:"Who has accepted",
-  acRosterHint:"Every entertainer with work today, and whether they have picked it up.",
-  acWaiting:"waiting",
-  acAccept:"Accept this activity",
-  acAccepted:"Accepted",
-  acAcceptedBy:"Accepted by",
-  acNotAccepted:"Not accepted yet",
-  acUndo:"Undo accept",
-  afRoom:"Room number",
-  afGuestName:"Guest name",
-  afPct:"Activity level",
-  afPctHint:"How full it felt, from empty to packed.",
-  afCategory:"Category",
-  afAllCats:"All categories",
-  afEdit:"Edit this rating",
-  afExport:"Export",
-  afNoCat:"Nothing rated in this category yet.",
-  afRooms:"Room numbers",
-  afRoomsHint:"Separate them with a comma.",
-  afLevel:"Activity level",
-  afHead:"Entertainment feedback",
-  afSub:"How the programme itself went. Kept apart from the guest ratings.",
-  afRate:"Rate this activity",
-  afRateAgain:"Rate it again",
-  afRated:"Rated",
-  afHow:"How did it go?",
-  afComment:"What happened",
-  afGuests:"Guests who joined",
-  afSaved:"Rating saved",
-  afNone:"Nothing rated in this period yet.",
-  afMine:"My activities",
-  afGroupShow:"Show",
-  afGroupLive:"Live music",
-  afGroupEvent:"Events",
-  afGroupAct:"Activities",
-  afToday:"Today",
-  afWeek:"This week",
-  afAll:"All",
-  afRatings:"ratings",
-  afInGroup:"activities",
-  afByWho:"Rated by",
-  afDelete:"Delete this rating",
-  afOpenGroup:"Tap a group to see the activities inside it.",
-  ccAllTeam:"The whole team",
-  cdStartsIn:"starts in",
-  cdEndsIn:"ends in",
-  cdNow:"on now",
-  entNobody:"Nobody assigned yet",
-  ccOpenRequests:"Open requests",
-  socialShow:"Follow us",
-  nfWhatHappened:"What happened",
-  nfAnnouncements:"Announcements",
-  nfNewBooking:"New booking",
-  nfNewMessage:"New message",
-  nfNewRequest:"New request",
-  nfTeamRequest:"Team request",
-  nfNewFeedback:"New feedback",
-  nfNothing:"Nothing new.",
-  nfOpen:"Open",
-  goInHouse:"In house",
-  goArriving:"Arriving today",
-  goLeaving:"Leaving today",
-  goAttention:"Need attention",
-  goAll:"All guests",
-  goNoneHere:"Nobody matches that.",
-  goUnread:"Unread message",
-  goNewReq:"Open request",
-  goLowFb:"Feedback to review",
-  goMessage:"Message this guest",
-  goTickets:"Tickets",
-  goMessages:"Messages",
-  goNoMessages:"No messages yet.",
-  tmToday:"Today's assignment",
-  tmNothingToday:"Nothing assigned today.",
-  tmRequests:"Their requests",
-  tmMessage:"Message this person",
-  tmOffToday:"Off today",
-  cmTab:"Inbox",
-  cmHead:"Communication",
-  cmSub:"Everything anyone said to you, in one place. Unread first.",
-  cmGuests:"Guests",
-  cmTeam:"Team",
-  cmRequests:"Requests",
-  cmAnnounce:"Announcements",
-  cmNewAnnounce:"New announcement",
-  cmNoAnnounce:"Nothing announced yet.",
-  cmGuestReq:"From guests",
-  cmTeamReq:"From the team",
-  cmAllRead:"Nothing unread.",
-  cmAud:"To",
-  aoTitle:"Activity",
-  aoBooked:"Booked",
-  aoCapacity:"Capacity",
-  aoWaiting:"Waiting",
-  aoUnlimited:"No limit",
-  aoStaff:"Assigned to",
-  aoNobody:"Nobody assigned yet",
-  aoGuests:"Guest bookings",
-  aoNoGuests:"No bookings yet.",
-  aoReq:"Requirements",
-  aoReqNone:"No requirement sheet for this one yet.",
-  aoReqMake:"Make a requirement sheet",
-  aoReqOpen:"Open the requirement sheet",
-  aoEdit:"Edit activity",
-  aoAttendance:"Mark attendance",
-  aoAssign:"Assignments",
-  aoAndMore:"and {n} more",
-  ccOps:"Today's operations",
-  ccGuestPulse:"Guest pulse",
-  ccTeamPulse:"Team pulse",
-  ccUpNext:"Up next",
-  ccNoAssign:"Activities with nobody assigned",
-  ccReqToday:"Requirement sheets for today",
-  ccOpenTasks:"Open tasks",
-  ccOpenReq:"Open guest requests",
-  ccTeamReq:"Open team requests",
-  ccWorkingToday:"Working today",
-  ccOffToday:"Off today",
-  ccAttMarked:"Attendance marked today",
-  ccAllClear:"Nothing needs you right now.",
-  ccOfN:"of",
-  ccReady:"ready",
-  mdHead:"My day",
-  mdSub:"Everything in one line, in the order it happens.",
-  mdNow:"Now",
-  mdMine:"You",
-  mdRoutine:"Team",
-  mdDuty:"Duty",
-  mdTask:"Task",
-  mdShow:"Show",
-  mdOffAll:"You are off today. Nothing is scheduled for you.",
-  mdNothing:"Nothing scheduled yet.",
-  mdWholeDay:"Everything else happening today",
-  mdEntranceItem:"Entrance duty",
-  mdShowPrep:"Show preparation",
-  yes:"Yes",
-  covHead:"Cover photos",
-  covHint:"The picture behind the greeting at the top of each home screen. One per role, so guests, entertainers and you can each have your own.",
-  covGuest:"Guest cover",
-  covStaff:"Entertainer cover",
-  covManager:"Manager cover",
-  covTap:"Tap to choose a picture",
-  covRemove:"Remove",
-  covDefault:"Using the standard picture",
-  secHome:"Home",
-  secMyStay:"My Stay",
-  hubToday:"Today",
-  hubOperations:"Operations",
-  hubOverview:"Overview",
-  hubMyStay:"My Stay",
-  hubConnect:"Connect",
-  hubMore:"More",
-  hubTasks:"Tasks",
-  secOps:"Operations",
-  secExplore:"Explore",
-  secMyWork:"My work",
-  hubTodayProg:"Manage today's activities",
-  hubWeekProg:"Plan and view the week",
-  hubAssignSub:"Staff activity distribution",
-  hubReqSub:"Event, activity and party needs",
-  hubBookingsSub:"View and manage bookings",
-  hubTicketsSub:"Manage ticket sales",
-  hubChatSub:"Talk with our team",
-  hubTeamSub:"Get to know us",
-  hubSocialSub:"Share your experience",
-  hubGallerySub:"Photos and videos",
-  hubHotelSub:"Useful information",
-  hubWeatherSub:"Current conditions",
-  hubQuizSub:"Test your knowledge",
-  hubAttSub:"View your attendance",
-  hubBusSub:"To and from the hotel",
-  hubMgrChatSub:"Direct communication",
-  hubQrSub:"Generate QR codes",
-  hubSettingsSub:"Theme, features, menu builder",
-  reqKindPurchase:"Purchase",
-  reqPurchase:"Purchase request",
-  reqItem:"Item",
-  reqItemInfo:"Details",
-  reqNeededBy:"Needed by",
-  reqUrgency:"Urgency",
-  reqUrgNormal:"Normal",
-  reqUrgSoon:"Soon",
-  reqUrgUrgent:"Urgent",
-  reqPurchaseHint:"What to buy, how many, when it is needed and how urgent it is.",
   reqKind:"Kind",
   reqFromProgram:"Pick it from the programme",
   reqFromProgramOwn:"Type it myself",
@@ -3241,17 +2866,14 @@ const DB = {
       ]);
       S.activities=a||[]; S.bookings=b||[]; S.users=u||[]; S.tickets=tk||[]; S.orders=o||[];
       S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
-      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.profiles=tp||[]; S.buses=bs||[];
-      // activity ratings never mix into the guest ratings
-      S.feedback=(fb||[]).filter(f=>!afIsActivityFb(f));
-      S.actFb   =(fb||[]).filter(afIsActivityFb);
+      S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.feedback=fb||[]; S.profiles=tp||[]; S.buses=bs||[];
       S.quizzes=qz||[]; S.quizReplies=qr||[]; S.staffAtt=sa||[]; S.photos=ph||[]; S.staffReqs=sr||[];
       if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
       S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
       S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.actFb=[]; S.profiles=demoProfiles();
+      S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
       S.quizzes=[]; S.quizReplies=[]; S.staffAtt=[]; S.photos=[]; S.staffReqs=[];
       S.buses=[{id:1,direction:"toHotel",time:"08:00",note:"",sort:0},{id:2,direction:"toHotel",time:"15:00",note:"",sort:1},{id:3,direction:"toHouse",time:"00:30",note:"",sort:2},{id:4,direction:"toHouse",time:"13:15",note:"",sort:3}];
     }
@@ -3504,40 +3126,6 @@ const DB = {
       }
     }
     S.feedback=S.feedback.map(x=>String(x.id)===String(id)?{...x,...patch}:x);
-  },
-  async addActivityFeedback(f){
-    const row={ room:String(f.room||""), nationality:"", guest_name:String(f.guest_name||""), rate:f.rate,
-                comment:f.comment||"", by_user:f.by_user||"",
-                depts:JSON.stringify({[AF_MARK]:String(f.act_id), cat:f.cat||"",
-                                      pct:Math.max(0,Math.min(100,+f.pct||0)), name:f.act_name||""}) };
-    if(f.id!=null) row.id=f.id;
-    if(REMOTE){
-      try{
-        const r=await sb("feedback",{method:"POST",body:JSON.stringify(row)});
-        S.actFb.unshift(__row(r,row));
-      }catch(e){
-        // an older database without the depts column cannot tell the two apart,
-        // so we keep it in memory rather than corrupt the guest ratings
-        row.id=Date.now(); row.created_at=new Date().toISOString();
-        S.actFb.unshift(row);
-        throw e;
-      }
-    } else {
-      row.id=Date.now(); row.created_at=new Date().toISOString();
-      S.actFb.unshift(row);
-    }
-  },
-  async updateActivityFeedback(id, f){
-    const patch={ room:String(f.room||""), guest_name:String(f.guest_name||""), rate:f.rate,
-                  comment:f.comment||"",
-                  depts:JSON.stringify({[AF_MARK]:String(f.act_id), cat:f.cat||"",
-                                        pct:Math.max(0,Math.min(100,+f.pct||0)), name:f.act_name||""}) };
-    if(REMOTE) await sb("feedback?id=eq."+id,{method:"PATCH",body:JSON.stringify(patch)});
-    S.actFb=(S.actFb||[]).map(x=>String(x.id)===String(id)?{...x,...patch}:x);
-  },
-  async deleteActivityFeedback(id){
-    if(REMOTE) await sb("feedback?id=eq."+id,{method:"DELETE"});
-    S.actFb=(S.actFb||[]).filter(x=>String(x.id)!==String(id));
   },
   async deleteFeedback(id){
     if(REMOTE) await sb("feedback?id=eq."+id,{method:"DELETE"});
@@ -4048,8 +3636,7 @@ function render(){
   }
   const r=S.session.role;
   app.innerHTML =
-    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView())
-    + bottomNav();
+    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView());
   navRecord();
   wireCommon();
 }
@@ -4116,7 +3703,7 @@ function loginView(){
       </div>
       <div class="login-card">
         ${fields}
-        <button class="btn" id="btn-login">${t("signin")}</button>
+        ${guestMode==="signin"?`<button class="btn" id="btn-login">${t("signin")}</button>`:""}
         <div class="err" id="login-err"></div>
         ${!REMOTE?`<p class="hint">${t("demoNote")}</p>`:""}
       </div>
@@ -4276,16 +3863,10 @@ function startGuestSession(acc){
   askNotifPermission();
 }
 /* ---------------- shared pieces ---------------- */
-/* Five brand icons across the top were louder than the app itself. They now sit
-   behind one star and stay closed until somebody asks for them. */
 function socialTopIcons(){
-  const st=S.settings||{};
+  const st=S.settings;
   const links=[["Facebook",st.facebook],["Instagram",st.instagram],["TikTok",st.tiktok],["YouTube",st.youtube],["WhatsApp",waLink()]].filter(x=>x[1]);
-  if(!links.length) return "";
-  const open=!!S.socialOpen;
-  return `<button class="iconbtn" id="btn-social" aria-label="${esc(t("socialShow"))}" aria-expanded="${open}">${ic("star",19)}</button>`
-    + (open ? `<span class="socialset">${links.map(([n,u])=>
-        `<a class="iconbtn socialtop" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${brandIc(n)}</a>`).join("")}</span>` : "");
+  return links.map(([n,u])=>`<a class="iconbtn socialtop" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}">${brandIc(n)}</a>`).join("");
 }
 function waLink(){
   const num=String(S.settings.whatsapp||"").replace(/[^0-9]/g,"");
@@ -4294,25 +3875,21 @@ function waLink(){
 function navGroupsBase(role){
   if(role==="guest"){
     const un=unreadFor("guest");
-    // The menu IS the bottom bar: one group per destination, in the same order,
-    // with the same names. There is no second menu to keep in step.
     return [
-      {key:"secHome", head:t("secHome"), items:[
-        ["home","home",menuLabel("menuHome",t("home")),0]]},
-      {key:"secProgram", head:menuLabel("menuProgram",t("program")), items:[
-        ["program","calendar",menuLabel("menuProgram",t("program")),0]]},
-      {key:"secBookings", head:t("hubMyStay"), items:[
-        ["stay","user",menuLabel("menuStay",t("myStay")),0],
-        ...(featureOn("tickets")?[["tickets","ticket",menuLabel("menuTickets",t("tickets")),0]]:[])]},
-      {key:"secConnect", head:t("hubConnect"), items:[
-        ["chat","chat",menuLabel("menuChat",t("chat")),un],
-        ["teaminfo","users",t("teamPage"),0],
-        ["social","star",t("socialPage"),0]]},
-      {key:"secExplore", head:t("hubMore"), items:[
+      {key:"secProgram", head:t("secProgram"), items:[
+        ["home","home",menuLabel("menuHome",t("home")),0],
+        ["program","calendar",menuLabel("menuProgram",t("program")),0],
+        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[]),
         ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
         ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[])]}
+        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
+      {key:"secBookings", head:t("secBookings"), items:[
+        ["stay","user",menuLabel("menuStay",t("myStay")),0],
+        ...(featureOn("tickets")?[["tickets","ticket",menuLabel("menuTickets",t("tickets")),0]]:[])]},
+      {key:"secConnect", head:t("secConnect"), items:[
+        ["chat","chat",menuLabel("menuChat",t("chat")),un],
+        ["teaminfo","users",t("teamPage"),0],
+        ["social","star",t("socialPage"),0]]}
     ];
   }
   if(role==="staff"){
@@ -4320,46 +3897,40 @@ function navGroupsBase(role){
     const un=S.messages.filter(m=>m.room===myRoom&&m.sender==="team"&&!m.read_by_guest).length;
     const taskN=S.tasks.filter(x=>["open","accepted","still"].includes(x.status)&&(!x.assigned_to||x.assigned_to===S.session.username)).length;
     return [
-      {key:"secTeamwork", head:t("hubToday"), items:[
-        ["workday","clipboard",t("myWorkDay"),0]]},
-      {key:"secProgram", head:menuLabel("menuProgram",t("program")), items:[
+      {key:"secTeamwork", head:t("secTeamwork"), items:[
+        ["workday","clipboard",t("myWorkDay"),0],
+        ["mypage","user",t("myAttendance"),0],
+        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
+        ...(featureOn("bus")?[["bus","bus",t("busTimes"),0]]:[]),
+        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
+        ["tasks","check",t("tasks"),taskN]]},
+      {key:"secProgram", head:t("secProgram"), items:[
         ["today","calendar",t("todayProgram"),0],
         ["week","calendar",t("program"),0],
         ["bookings","ticket",t("bookings"),0]]},
-      {key:"secTasks", head:t("hubTasks"), items:[
-        ["tasks","check",t("tasks"),taskN]]},
-      {key:"secConnect", head:t("teamTab"), items:[
+      {key:"secConnect", head:t("secConnect"), items:[
         ["chat","chat",t("chatManager"),un],
-        ["teaminfo","users",t("teamPage"),0],
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[])]},
-      {key:"secExplore", head:t("hubMore"), items:[
-        ["mypage","user",t("myAttendance"),0],
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
-        ...(featureOn("bus")?[["bus","bus",t("busItem"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]}
+        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
+        ["teaminfo","users",t("teamPage"),0]]}
     ];
   }
   const un=unreadFor("manager");
   const newReq=S.requests.filter(r=>r.status==="new").length;
   return [
-    {key:"secManage", head:t("hubOverview"), items:[
-      ["dash","grid",t("dashboard"),0]]},
-    {key:"secOps", head:t("secOps"), items:[
-      ["dayplan","clipboard",t("dayPlan"),0],
+    {key:"secManage", head:t("secManage"), items:[
+      ["dash","grid",t("dashboard"),0],
       ["program","calendar",t("manage"),0],
+      ["dayplan","clipboard",t("dayPlan"),0],
+      ["req","clipboard",t("reqTab"),0],
       ["assign","check",t("assignCenter"),0],
-      ["req","clipboard",t("reqTab"),0]]},
+      ["quiz","sparkle",t("quizCenter"),0],
+      ["gallery","sparkle",t("galleryTab"),0],
+      ["hotelinfo","pin",t("hotelInfoTab"),0],
+      ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
+      ["qr","sparkle",t("qrTab"),0]]},
     {key:"secGuests", head:t("secGuests"), items:[
       ["guests","chat",t("guestsTab"),unreadGuests()+newReq],
-      ["team","users",t("teamTab"),unreadTeam()+teamReqCount()],
-      ["inbox","chat",t("cmHead"),unreadGuests()+unreadTeam()+newReq+teamReqCount()]]},
-    {key:"secExplore", head:t("hubMore"), items:[
-      ["hotelinfo","pin",t("hotelInfoTab"),0],
-      ["gallery","sparkle",t("galleryTab"),0],
-      ["quiz","sparkle",t("quizCenter"),0],
-      ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-      ...(featureOn("bus")?[["bus","bus",t("busItem"),0]]:[]),
-      ["qr","sparkle",t("qrTab"),0]]},
+      ["team","users",t("teamTab"),unreadTeam()+teamReqCount()]]},
     {key:"secSettings", head:t("secSettings"), items:[
       ["settings","palette",t("settingsHub"),0]]}
   ];
@@ -4413,325 +3984,6 @@ function topBar(title,sub){
     </div>
   </div>
   <div class="who whobar"><h2>${esc(title)}</h2><p>${esc(sub||"")}</p></div>`;
-}
-/* ===== THE NEW LOOK =====
-   A full-bleed hero at the top of each home screen and a bottom tab bar.
-   The hero carries exactly the same buttons as the old top bar (menu, back,
-   forward, social, notifications) so every existing handler keeps working. */
-function greetKey(){
-  const h=new Date().getHours();
-  return h<12 ? "goodMorning" : h<18 ? "goodAfternoon" : "goodEvening";
-}
-function heroImage(){
-  const st=S.settings||{};
-  const role=(S.session&&S.session.role)||"guest";
-  const own = role==="manager" ? st.coverManager : role==="staff" ? st.coverStaff : st.coverGuest;
-  return own || st.heroImg || IMG.show;      // her picture, then the old single one, then ours
-}
-function coverKeyFor(role){
-  return role==="manager" ? "coverManager" : role==="staff" ? "coverStaff" : "coverGuest";
-}
-function heroTop(o){
-  o=o||{};
-  const role=S.session?S.session.role:"guest";
-  const anyDot=navItems(role).some(x=>x[3]>0);
-  return `<div class="hero">
-    <div class="hero-bg" style="background-image:url('${esc(o.image||heroImage())}')"></div>
-    <div class="hero-in">
-      <div class="top hero-bar">
-        <div class="toprow toprow-l">
-          <button class="iconbtn" id="btn-menu" aria-label="${t("menu")}">${ic("menu",21)}${anyDot?'<span class="reddot"></span>':''}</button>
-          <button class="iconbtn navbtn" id="btn-navback" aria-label="${t("navBack")}" ${canNavBack()?"":"disabled"}>${ic("back",19)}</button>
-          <button class="iconbtn navbtn fwd" id="btn-navfwd" aria-label="${t("navForward")}" ${canNavForward()?"":"disabled"}>${ic("back",19)}</button>
-          <span class="socialrow">${socialTopIcons()}</span>
-        </div>
-        <div class="toprow">
-          <button class="iconbtn" id="btn-notes" aria-label="notifications">${ic("bell",19)}${unseenNotes(role)?'<span class="reddot"></span>':''}</button>
-        </div>
-      </div>
-      <div class="hero-say">
-        <div class="hero-words">
-          ${o.greet?`<span class="hero-hi">${esc(o.greet)}</span>`:""}
-          <h1>${esc(o.title||"")}</h1>
-          ${o.sub?`<p class="hero-sub">${esc(o.sub)}</p>`:""}
-          ${o.quote?`<p class="hero-quote">\u201C${esc(o.quote)}\u201D</p>`:""}
-        </div>
-        ${o.side||""}
-      </div>
-    </div>
-  </div>`;
-}
-function heroWeatherChip(){
-  const w=S.weatherNow || (S.weather && S.weather.now) || null;
-  const temp = w && (w.temp!=null ? w.temp : w.temperature);
-  if(temp==null || isNaN(+temp)) return "";
-  return `<span class="hero-chip">${ic("sun",18)}<b>${Math.round(+temp)}\u00B0</b></span>`;
-}
-function heroAvatar(){
-  const n=String((S.session&&S.session.name)||"?").trim().charAt(0).toUpperCase();
-  const ph=S.session&&S.session.photo;
-  return `<button class="hero-av" id="btn-me" aria-label="${esc(t("acMe"))}">${ph?`<img src="${esc(ph)}" alt="">`:`<b>${esc(n)}</b>`}</button>`;
-}
-/* The weather belongs where people look first, beside their own face. */
-function heroSide(){ return heroWeatherChip()+heroAvatar(); }
-/* Tapping your own face is the one place your account lives: who you are, how
-   the app looks, what language it speaks, and the way out. */
-function openAccountSheet(){
-  const g=S.session||{};
-  const ph=g.photo;
-  const dark=(S.theme==="dark");
-  const wrap=baseModal(`
-    <h3>${ic("user",20)} ${t("acMe")}</h3>
-    <div class="ac-top">
-      ${ph?`<button class="ac-ph" id="ac-photo"><img src="${esc(ph)}" alt=""></button>`
-          :`<span class="ac-ph"><b>${esc(String(g.name||"?").trim().charAt(0).toUpperCase())}</b></span>`}
-      <span class="ac-who"><b>${esc(g.name||"")}</b>
-        <span class="mini">${esc([
-          g.role==="guest" ? t("acRoom")+" "+(g.room||"") : "",
-          g.number ? "#"+g.number : "",
-          g.role ? t(g.role==="manager"?"roleManager":g.role==="staff"?"roleStaff":"guest") : ""
-        ].filter(Boolean).join(" \u00b7 "))}</span></span>
-    </div>
-    ${ph?`<p class="mini">${t("acViewPhoto")}</p>`:""}
-    <label style="margin-top:14px">${t("acTheme")}</label>
-    <div class="pills">
-      <button class="pill ${dark?"":"on"}" data-actheme="light">${t("themeLightLbl")}</button>
-      <button class="pill ${dark?"on":""}" data-actheme="dark">${t("themeDarkLbl")}</button>
-    </div>
-    <label style="margin-top:14px">${t("acLanguage")}</label>
-    <div class="pills">${LANGS.map(([code,label])=>
-      `<button class="pill ${S.lang===code?"on":""}" data-aclang="${esc(code)}">${esc(label)}</button>`).join("")}</div>
-    <button class="btn ghost warn" id="ac-out" style="margin-top:16px">${ic("power",16)} ${t("logout")}</button>
-    <button class="btn ghost" id="ac-x">${t("close")}</button>`);
-  const p=wrap.querySelector("#ac-photo");
-  if(p) p.onclick=()=>{ wrap.remove(); openPhotoViewer(ph); };
-  wrap.querySelectorAll("[data-actheme]").forEach(b=>b.onclick=()=>{
-    if(S.theme!==b.dataset.actheme) setTheme(b.dataset.actheme);
-    wrap.remove(); render();
-  });
-  wrap.querySelectorAll("[data-aclang]").forEach(b=>b.onclick=()=>{
-    S.lang=b.dataset.aclang; persist(); wrap.remove(); render();
-  });
-  wrap.querySelector("#ac-x").onclick=()=>wrap.remove();
-  wrap.querySelector("#ac-out").onclick=()=>{
-    wrap.remove();
-    S.session=null; S.chatRoom=null; loginMode="guest"; guestMode="new"; resetWiz(); persist(); render();
-  };
-}
-function openPhotoViewer(src){
-  if(!src) return;
-  const wrap=baseModal(`<div class="ph-big"><img src="${esc(src)}" alt=""></div>
-    <button class="btn ghost" id="ph-x">${t("close")}</button>`);
-  wrap.querySelector("#ph-x").onclick=()=>wrap.remove();
-}
-
-/* ===== SECTION HUBS =====
-   One screen that gathers the pages belonging to one part of the job, so the
-   bottom bar can stay at five real destinations. An item is a tab id, or
-   "tab:sub" to land straight on a sub-tab. Nothing is removed: every page a hub
-   points at is the same page the menu has always opened. */
-/* A hub is not a second menu. It is the drawer's own group, shown as a page.
-   Rename an item, hide it or move it in the menu builder and both change,
-   because there is only one list underneath. */
-const HUB_GROUPS={
-  connect:{ role:"guest",   title:"hubConnect", groups:["secConnect"] },
-  more:   { role:"guest",   title:"hubMore",    groups:["secExplore"] },
-  steam:  { role:"staff",   title:"teamTab",    groups:["secConnect"] },
-  smore:  { role:"staff",   title:"hubMore",    groups:["secExplore"] },
-  ops:    { role:"manager", title:"hubOperations", groups:["secOps"] },
-  mmore:  { role:"manager", title:"hubMore",    groups:["secExplore","secSettings"] }
-};
-const HUB_SUBLINE={
-  chat:"hubChatSub", teaminfo:"hubTeamSub", social:"hubSocialSub",
-  gallery:"hubGallerySub", hotelinfo:"hubHotelSub", weather:"hubWeatherSub",
-  quiz:"hubQuizSub", bus:"hubBusSub", qr:"hubQrSub", settings:"hubSettingsSub",
-  mypage:"hubAttSub", dayplan:"hubTodayProg", program:"hubWeekProg",
-  assign:"hubAssignSub", req:"hubReqSub"
-};
-function hubFor(id){ return HUB_GROUPS[id]||null; }
-function isHub(id){ return !!HUB_GROUPS[id]; }
-/* Hub items point at ordinary pages, so anything hidden in the menu builder
-   disappears from the hub too — one source of truth, never two. */
-function hubItemVisible(id, role){
-  const tab=String(id).split(":")[0];
-  return navItems(role).some(x=>x[0]===tab);
-}
-function hubView(id){
-  const h=hubFor(id);
-  if(!h) return "";
-  const role=(S.session&&S.session.role)||h.role;
-  const groups=navGroups(role).filter(g=>h.groups.includes(g.key) && g.items.length);
-  return `<div class="screen fadein">
-    ${topBar(t(h.title),S.session?S.session.name:"")}
-    ${groups.map(g=>`
-      ${groups.length>1?`<div class="set-sec">${esc(g.head||"")}</div>`:""}
-      <div class="card set-list">
-        ${g.items.map(([tid,icn,lb,badge])=>{
-          const sub=HUB_SUBLINE[tid];
-          return `<button class="set-it" data-hub="${esc(String(tid))}">
-            <span class="set-ic">${ic(icn,19)}</span>
-            <span class="set-mid"><b>${esc(lb)}</b>${sub?`<span class="mini">${esc(t(sub))}</span>`:""}</span>
-            ${badge>0?`<span class="badge">${badge}</span>`:""}
-            <span class="set-go">${ic("back",16)}</span>
-          </button>`;
-        }).join("")}
-      </div>`).join("")}
-    ${groups.length?"":`<div class="empty"><div class="big">${ic("grid",30)}</div>${t("none")}</div>`}
-  </div>`;
-}
-
-/* ---- the bottom tab bar ---- */
-function bottomTabs(role){
-  // Five destinations per role, in the order that role actually works in.
-  if(role==="guest") return [
-    ["home","home",t("navHome")],
-    ["program","calendar",menuLabel("menuProgram",t("program"))],
-    ["stay","user",t("hubMyStay")],
-    ["connect","chat",t("hubConnect")],
-    ["more","menu",t("hubMore")]];
-  if(role==="staff") return [
-    ["workday","home",t("hubToday")],
-    ["today","calendar",menuLabel("menuProgram",t("program"))],
-    ["tasks","check",t("hubTasks")],
-    ["steam","users",t("teamTab")],
-    ["smore","menu",t("hubMore")]];
-  return [
-    ["dash","grid",t("hubOverview")],
-    ["ops","calendar",t("hubOperations")],
-    ["guests","chat",t("guestsTab")],
-    ["team","users",t("teamTab")],
-    ["mmore","menu",t("hubMore")]];
-}
-/* Only offer a tab the role can actually reach — she can hide pages. */
-function tabReachable(id, role){
-  if(id==="__menu") return true;
-  if(isHub(id)) return true;                    // a hub is a doorway, not a page she can hide
-  return navItems(role).some(x=>x[0]===id);
-}
-function bottomNav(){
-  if(!S.session) return "";
-  const role=S.session.role;
-  const items=bottomTabs(role).filter(it=>tabReachable(it[0], role));
-  if(items.length<2) return "";
-  const cur=String(S.tab||"");
-  return `<nav class="tabbar">${items.map(([id,icn,lb])=>`
-    <button class="tb ${cur===id?"on":""}" data-bnav="${esc(id)}">
-      ${ic(icn,20)}<span>${esc(lb)}</span>
-    </button>`).join("")}</nav>`;
-}
-/* The picture that belongs to an activity, for the thumbnails and the highlight. */
-function actImage(a){
-  if(!a) return IMG.show;
-  return a.image || a.photo || catImage(normCat(a));
-}
-function actStart(a){ return String(a&&a.time||"").split(/\s*[\u2013\u2014-]\s*/)[0].trim(); }
-
-/* Today's highlight — the one thing a guest should not miss. */
-function highlightCard(a){
-  if(!a) return "";
-  return `<div class="hl" data-open="${esc(String(a.id))}">
-    <div class="hl-bg" style="background-image:url('${esc(actImage(a))}')"></div>
-    <div class="hl-in">
-      <span class="hl-txt">
-        <span class="hl-lbl">${t("todayHighlight")}</span>
-        <span class="hl-name">${esc(a.name)}</span>
-        <span class="hl-when">${t("startsAtLbl")} ${esc(actStart(a))}${a.location?" \u00b7 "+esc(a.location):""}</span>
-      </span>
-      <button class="hl-btn" data-open="${esc(String(a.id))}">${t("viewDetailsBtn")}</button>
-    </div>
-  </div>`;
-}
-
-/* Four round shortcuts into the programme. */
-function categoryRow(){
-  const groups=[["daytime","sun",t("activities")],["dayevents","calendar",t("eventsToday")],
-                ["evening","star",t("eveningShowLbl")],["special","sparkle",t("reqKindParty")]];
-  return `<div class="catrow">${groups.map(([id,icn,lb])=>`
-    <button data-catgo="${esc(id)}"><span class="cb">${ic(icn,23)}</span><span>${esc(lb)}</span></button>`).join("")}</div>`;
-}
-
-/* One programme line with its picture. */
-function thumbRow(a, opts){
-  const o=opts||{};
-  // A bare circle told nobody what it meant. Two small labelled chips do:
-  // one to take the activity, one to mark it finished.
-  const acc = o.accept
-    ? `<button class="th-chip ${iAccepted(a)?"on":""}" data-thacc="${esc(String(a.id))}">
-         ${ic("check",12)} ${iAccepted(a)?t("acAccepted"):t("acAcceptShort")}</button>`
-    : "";
-  const tick = o.tick
-    ? `<button class="th-chip done ${o.done?"on":""}" data-att="${esc(String(a.id))}" aria-pressed="${!!o.done}">
-         ${ic("check",12)} ${o.done?t("thDone"):t("thMarkDone")}</button>`
-    : `<span class="th-go">${ic("back",16)}</span>`;
-  // a <button> inside a <button> is invalid, and the browser closes the outer
-  // one early — which is why the tick was landing on its own line underneath
-  return `<div class="thumbrow" role="button" tabindex="0" data-open="${esc(String(a.id))}">
-    <span class="th-time">${esc(actStart(a))}</span>
-    <span class="th-img"><img src="${esc(actImage(a))}" alt="" loading="lazy"></span>
-    <span class="th-mid"><b>${esc(a.name)}</b><span>${esc(a.location||"")}</span></span>
-    <span class="th-acts">${acc}${tick}</span>
-  </div>`;
-}
-function secHead(title, linkLabel, linkId){
-  return `<div class="sec-head"><h3>${esc(title)}</h3>${
-    linkLabel?`<button id="${esc(linkId)}">${esc(linkLabel)}</button>`:""}</div>`;
-}
-/* The four numbers an entertainer cares about on their own day. */
-function staffTiles(day, myActs){
-  const acts=myActs||[];
-  const done=acts.filter(a=>activityStatus(a)==="done").length;
-  const num=S.session&&S.session.number;
-  const week=(S.activities||[]).filter(a=>canSeeGuests(a)).length;
-  const att=(()=>{
-    const rec=(S.attendance||[]).filter(r=>String(r.number)===String(num));
-    if(!rec.length) return null;
-    return Math.round(rec.filter(r=>r.present!==false).length/rec.length*100);
-  })();
-  const mine=(S.feedback||[]).filter(f=>String(f.by_user||"")===String((S.session&&S.session.username)||""));
-  const rating=mine.length?fbAvgAll(mine):0;
-  return `<div class="tiles">
-    <div class="ti"><b>${done}/${acts.length}</b><span>${t("activities")}</span></div>
-    <div class="ti"><b>${att==null?"\u2014":att+"%"}</b><span>${t("attendance")}</span></div>
-    <div class="ti"><b>${rating?rating.toFixed(1):"\u2014"}</b><span>${t("wdRating")}</span></div>
-    <div class="ti"><b>${week}</b><span>${t("wdThisWeek")}</span></div>
-  </div>`;
-}
-/* What the manager sees first: four live numbers, then a way into every area. */
-function dashTiles(){
-  const day=todayIndex();
-  const acts=(S.activities||[]).filter(a=>a.day===day);
-  const onDuty=(S.users||[]).filter(u=>u.role==="staff" && u.number
-    && !(dayPlanFor(day).off||[]).map(String).includes(String(u.number))).length;
-  const joined=(S.bookings||[]).filter(b=>acts.some(a=>a.id===b.activity_id)).length;
-  const sat=fbAvgAll(S.feedback||[]);
-  return `<div class="bigtiles">
-    <div class="bt"><span class="bi">${ic("calendar",18)}</span><span><b>${acts.length}</b><span>${t("actsToday")}</span></span></div>
-    <div class="bt"><span class="bi">${ic("users",18)}</span><span><b>${onDuty}</b><span>${t("onDutyNow")}</span></span></div>
-    <div class="bt"><span class="bi">${ic("user",18)}</span><span><b>${joined}</b><span>${t("guestsJoined")}</span></span></div>
-    <div class="bt"><span class="bi">${ic("star",18)}</span><span><b>${sat?sat.toFixed(1):"\u2014"}</b><span>${t("guestSat")}</span></span></div>
-  </div>`;
-}
-function dashOverview(){
-  const openReq=(S.requests||[]).filter(r=>r.status!=="done").length;
-  const rows=[
-    ["program","calendar",menuLabel("menuProgram",t("program")),t("ovProgram"),0],
-    ["team","users",t("teamTab"),t("ovTeam"),0],
-    ["assign","check",t("assignCenter"),t("ovAttendance"),0],
-    ["guests","star",t("feedback"),t("ovFeedback"),openReq],
-    ["req","clipboard",t("reqTab"),t("ovRequire"),0],
-    ["settings","gear",t("settingsHub"),t("ovSettings"),0]
-  ].filter(r=>navItems("manager").some(x=>x[0]===r[0]));
-  if(!rows.length) return "";
-  return `<div class="sec">
-    ${secHead(t("todayOverview"), t("seeAllLink"), "btn-ovall")}
-    <div class="ovlist">${rows.map(([id,icn,lb,sub,badge])=>`
-      <button class="ovrow" data-tab="${esc(id)}">
-        <span class="oi">${ic(icn,19)}</span>
-        <span class="om"><b>${esc(lb)}</b><span>${esc(sub)}</span></span>
-        ${badge?`<span class="ob">${badge}</span>`:""}
-        <span class="og">${ic("back",16)}</span>
-      </button>`).join("")}</div>
-  </div>`;
 }
 function hubBack(){
   // shown on Settings sub-pages so the manager can go back to the hub
@@ -4861,7 +4113,7 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   // the coloured ring is drawn around the guest's own booked activity
   const ringCls = (mine && isToday(a.day)) ? (" "+statusRing(a)) : "";
   const overNow = isToday(a.day) && activityStatus(a)==="done";
-  return `<div class="card act${ringCls}${overNow?" is-over":""}" ${overNow&&!manager&&!staff?"":`data-open="${a.id}"`}>
+  return `<div class="card act${ringCls}${overNow?" is-over":""}" ${manager||staff||overNow?"":`data-open="${a.id}"`}>
     <img class="thumb" src="${esc(a.image||IMG.show)}" alt="" loading="lazy" data-pvsingle="${esc(a.image||IMG.show)}">
     <div class="mid">
       <span class="catbadge">${catLabel(a.category)}</span>
@@ -5024,7 +4276,6 @@ function threadView(room,meSide){
 }
 /* ---------------- guest ---------------- */
 function guestView(){
-  if(isHub(S.tab)) return hubView(S.tab);
   if(String(S.tab||"").startsWith("cp:")) return customPageView(S.tab.slice(3));
   if(String(S.tab||"").startsWith("emp:")) return employeeView(S.tab.slice(4));
   if(S.tab==="weather") return weatherView();
@@ -5037,24 +4288,18 @@ function guestView(){
     const todays=S.activities.filter(a=>a.day===todayIdx);
     const hl=todays.find(a=>a.highlight)||todays[0];
     const wm=(S.settings.welcomeMsg||"").trim();
-    const rest=todays.filter(a=>a!==hl).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
     return `<div class="screen fadein">
-      ${heroTop({greet:t(greetKey()), title:t("welcomeParadise"),
-                 sub:t("room")+" "+g.room+" · "+t("days")[todayIdx],
-                 image:actImage(hl), side:heroWeatherChip()})}
-      ${highlightCard(hl)}
-      ${categoryRow()}
-      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px;margin-bottom:16px">${esc(wm)}</div>`:""}
-      <div class="sec">
-        ${secHead(t("todayProgram"), t("seeAllLink"), "btn-seeprog")}
-        ${rest.length?`<div class="card" style="padding:2px 15px">${rest.map(a=>thumbRow(a)).join("")}</div>`
-          :`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
-      </div>
+      ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
+      ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
+      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
+      ${heroCarousel([hl].concat(todays.filter(a=>a!==hl && a.highlight)))}
       <div class="quickrow">
         <button id="btn-req-song"><span>${ic("music",22)}</span>${t("songRequest")}</button>
         <button id="btn-req-bday"><span>${ic("gift",22)}</span>${t("birthdayRequest")}</button>
       </div>
-      ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
+      <div class="sec"><h3>${t("todayProgram")}</h3>
+        ${todays.filter(a=>a!==hl).sort((x,y)=>x.time.localeCompare(y.time)).map(a=>activityCard(a)).join("")||`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`}
+      </div>
       ${reviewDue(g)?reviewBlock():""}
       ${socialBlock()}
     </div>`;
@@ -5232,8 +4477,7 @@ function socialBlock(){
 function staffView(){
   const todayIdx=todayIndex();
   // My Work Day is the entertainer's home screen
-  const STAFF_TABS=["workday","mypage","quiz","gallery","weather","bus","today","week","bookings","tasks","chat","feedback","teaminfo","steam","smore"];
-  if(isHub(S.tab)) return hubView(S.tab);
+  const STAFF_TABS=["workday","mypage","quiz","gallery","weather","bus","today","week","bookings","tasks","chat","feedback","teaminfo"];
   if(!S.tab || (!STAFF_TABS.includes(S.tab) && !String(S.tab).startsWith("cp:") && !String(S.tab).startsWith("emp:"))) S.tab="workday";
   if(String(S.tab||"").startsWith("cp:")) return customPageView(S.tab.slice(3));
   if(String(S.tab||"").startsWith("emp:")) return employeeView(S.tab.slice(4));
@@ -5266,7 +4510,7 @@ function staffView(){
     return `<div class="screen fadein">
       ${topBar(t("myTasks"),S.session.name)}
       ${rk.length?`<div class="sec"><h3>${ic("trophy",18)} ${t("rank")}</h3><div class="card">
-        ${rk.map((r,i)=>`<div class="booking-line"><span>${rankBadge(i)} ${esc(r.u.display_name||r.u.username)}${r.u.username===me?` ${ic("user",12)}`:""}</span><span class="pill">${r.points} ${t("points")}</span></div>`).join("")}
+        ${rk.map((r,i)=>`<div class="booking-line"><span>${rankBadge(i)} ${esc(r.u.display_name||r.u.username)}${r.u.username===me?" ✦":""}</span><span class="pill">${r.points} ${t("points")}</span></div>`).join("")}
       </div></div>`:""}
       ${mine.length?`<div class="card">${mine.map(x=>taskLine(x,false)).join("")}</div>`:`<div class="empty"><div class="big">${ic("check",30)}</div>${t("noTasks")}</div>`}
       ${myActsCard()}
@@ -5528,25 +4772,6 @@ function employeeView(username){
       ${stat(r.fb.length?r.avg:"—", t("guestRatings"))}
     </div>`}
     ${empPics(u).length?`<div class="sec">${photoStrip(empPics(u),"emp")}</div>`:""}
-    ${full?(()=>{
-      const d=todayIndex(), dp=dayPlanFor(d);
-      const off=u.number && (dp.off||[]).includes(u.number);
-      const mine=(S.activities||[]).filter(a=>a.day===d
-        && String(a.entertainer||"").toLowerCase().includes(String(u.display_name||u.username||"").toLowerCase()))
-        .sort((x,y)=>(timeToMin(actStart(x))||0)-(timeToMin(actStart(y))||0));
-      const reqs=(S.staffReqs||[]).filter(x=>String(x.username||"")===String(u.username));
-      return `<div class="sec"><h3>${ic("clock",17)} ${t("tmToday")}</h3>
-        ${off?`<div class="card"><p class="mini" style="padding:10px 2px;margin:0">${t("tmOffToday")}</p></div>`
-          :mine.length?`<div class="card">${mine.map(a=>`<div class="g3-row" data-open="${esc(String(a.id))}">
-            <b>${esc(actStart(a))} \u00b7 ${esc(a.name)}</b>
-            <span class="mini">${esc(a.location||"")}</span></div>`).join("")}</div>`
-          :`<div class="card"><p class="mini" style="padding:10px 2px;margin:0">${t("tmNothingToday")}</p></div>`}
-      </div>
-      ${reqs.length?`<div class="sec"><h3>${ic("bell",17)} ${t("tmRequests")}</h3>
-        <div class="card">${reqs.map(x=>`<div class="g3-row"><b>${esc(reqTypeLabel(x.type))}</b>
-          <span class="mini">${esc(x.detail||"")} \u00b7 ${esc(x.status||"")}</span></div>`).join("")}</div></div>`:""}
-      <button class="btn ghost" id="ep-msg" style="margin-bottom:14px">${ic("chat",16)} ${t("tmMessage")}</button>`;
-    })():""}
     <div class="sec"><h3>${ic("user",17)} ${t("employeeProfile")}</h3>
       <div class="card ep-card">
         ${full?line(t("employeeId"), u.employee_id):""}
@@ -5641,57 +4866,23 @@ function guestRecord(acc){
   return {acc, bookings, acts, orders, reqs, fb, msgs, quiz, favs, avg,
     nights:guestStayNights(acc), daysApp:guestDaysInApp(acc)};
 }
-/* Why this guest might need the manager: an unread message, an open request,
-   or feedback that asked for something. Same rules as everywhere else. */
-function guestAttention(acc){
-  const room=String(acc.room);
-  const out=[];
-  if((S.messages||[]).some(m=>String(m.room)===room && m.sender==="guest" && !m.read_by_team)) out.push(t("goUnread"));
-  if((S.requests||[]).some(r=>String(r.room)===room && String(r.status||"")==="new")) out.push(t("goNewReq"));
-  if((S.feedback||[]).some(f=>String(f.room)===room && fbStatus(f)!=="none")) out.push(t("goLowFb"));
-  return out;
-}
-function guestIsArriving(acc){ return String(acc.arrival||"")===todayISO(); }
-function guestIsLeaving(acc){ return String(acc.departure||"")===todayISO(); }
 function guestCrmInner(){
   const q=(S.crmQuery||"").trim().toLowerCase();
-  const all=(S.accounts||[]).slice();
-  const f=["all","arriving","leaving","attention"].includes(S.crmFilter)?S.crmFilter:"all";
-  const counts={
-    all:all.length,
-    arriving:all.filter(guestIsArriving).length,
-    leaving:all.filter(guestIsLeaving).length,
-    attention:all.filter(a=>guestAttention(a).length).length
-  };
-  let list=all;
-  if(f==="arriving") list=list.filter(guestIsArriving);
-  else if(f==="leaving") list=list.filter(guestIsLeaving);
-  else if(f==="attention") list=list.filter(a=>guestAttention(a).length);
+  let list=(S.accounts||[]).slice();
   if(q) list=list.filter(a=>[a.room,a.name,a.nationality].some(v=>String(v||"").toLowerCase().includes(q)));
   list.sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
-  return `<div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
-      <div class="stat"><b>${counts.all}</b><span>${t("goInHouse")}</span></div>
-      <div class="stat"><b>${counts.arriving}</b><span>${t("goArriving")}</span></div>
-      <div class="stat"><b>${counts.leaving}</b><span>${t("goLeaving")}</span></div>
-      <div class="stat${counts.attention?" accent":""}"><b>${counts.attention}</b><span>${t("goAttention")}</span></div>
-    </div>
-    <div class="pills">${[["all","goAll"],["arriving","goArriving"],["leaving","goLeaving"],["attention","goAttention"]]
-      .map(([k,lb])=>`<button class="pill ${f===k?"on":""}" data-crmf="${k}">${esc(t(lb))}${counts[k]?`<span class="badge">${counts[k]}</span>`:""}</button>`).join("")}</div>
-    <input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
+  return `<input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
     ${list.length?`<div class="card">${list.map(a=>{
       const r=guestRecord(a);
-      const flags=guestAttention(a);
-      return `<div class="crm-row${flags.length?" needs":""}" data-crm="${a.id}">
+      return `<div class="crm-row" data-crm="${a.id}">
         <div class="crm-av">${esc(String(a.name||"?").trim().charAt(0).toUpperCase())}</div>
         <div class="crm-mid"><b>${esc(a.name||"")}</b>
-          <span class="mini">${t("room")} ${esc(a.room)}${a.nationality?" · "+esc(a.nationality):""}${
-            guestIsArriving(a)?` · ${t("goArriving")}`:guestIsLeaving(a)?` · ${t("goLeaving")}`:""}</span>
-          <span class="mini">${r.bookings.length} ${t("bookings").toLowerCase()} · ${r.reqs.length} ${t("requests").toLowerCase()}${r.fb.length?` · ${ic("star",12)} ${r.avg}`:""}</span>
-          ${flags.length?`<span class="crm-flags">${flags.map(x=>`<span class="crm-flag">${esc(x)}</span>`).join("")}</span>`:""}
+          <span class="mini">${t("room")} ${esc(a.room)}${a.nationality?" · "+esc(a.nationality):""}</span>
+          <span class="mini">${r.bookings.length} ${t("bookings").toLowerCase()} · ${r.reqs.length} ${t("requests").toLowerCase()}${r.fb.length?" · ★ "+r.avg:""}</span>
         </div>
         <span class="crm-go">${ic("back",15)}</span>
       </div>`;
-    }).join("")}</div>`:`<div class="empty"><div class="big">${ic("users",30)}</div>${q||f!=="all"?t("goNoneHere"):t("noGuests")}</div>`}`;
+    }).join("")}</div>`:`<div class="empty"><div class="big">${ic("users",30)}</div>${t("noGuests")}</div>`}`;
 }
 function guest360View(id){
   const acc=(S.accounts||[]).find(a=>a.id==id);
@@ -5729,22 +4920,8 @@ function guest360View(id){
         <span class="mini">${esc(x.detail||"")} · ${esc(x.status||"")}</span></div>`).join("")}</div></div>`:""}
     ${r.fb.length?`<div class="sec"><h3>${ic("star",17)} ${t("feedback")}</h3>
       <div class="card">${r.fb.map(f=>`<div class="g3-row"><b>${"\u2605".repeat(Math.max(0,Math.min(5,+f.rate||0)))}</b>
-        <span class="mini">${esc(fbComment(f)||"")} · ${fmtDate(f.created_at)}</span></div>`).join("")}</div></div>`:""}
-    ${(r.orders||[]).length?`<div class="sec"><h3>${ic("ticket",17)} ${t("goTickets")}</h3>
-      <div class="card">${r.orders.map(o=>`<div class="g3-row"><b>${esc(ticketName(o.ticket_id)||"")}</b>
-        <span class="mini">\u00d7${esc(String(o.qty||1))} \u00b7 ${esc(o.status||"")}</span></div>`).join("")}</div></div>`:""}
-    <div class="sec"><h3>${ic("chat",17)} ${t("goMessages")}</h3>
-      ${(r.msgs||[]).length?`<div class="card">${r.msgs.slice(-4).map(m=>`<div class="g3-row">
-        <b>${esc(m.sender==="guest"?(acc.name||t("guest")):t("staff"))}</b>
-        <span class="mini">${esc(m.text||"")} \u00b7 ${fmtTime(m.created_at)}</span></div>`).join("")}</div>`
-        :`<p class="mini">${t("goNoMessages")}</p>`}
-      <button class="btn ghost" id="g3-msg" style="margin-top:10px">${ic("chat",16)} ${t("goMessage")}</button>
-    </div>
+        <span class="mini">${esc(f.comment||"")} · ${fmtDate(f.created_at)}</span></div>`).join("")}</div></div>`:""}
   </div>`;
-}
-function ticketName(id){
-  const tk=(S.tickets||[]).find(x=>String(x.id)===String(id));
-  return tk?tk.name:"";
 }
 /* ================= AUTOMATIC ACTIVITY ROSTER =================
    Rules (agreed with the manager):
@@ -5779,12 +4956,12 @@ function eventsCrew(day){
     .sort((a,b)=>(a.number||99)-(b.number||99));
 }
 function isEventsOnly(u){ return !!u && EVENTS_ONLY_NUMBERS.includes(u.number); }
-function assignableStaff(day, dateStr_){
-  const ds = dateStr_ || (typeof assignDateStr==="function" ? assignDateStr(day) : "");
+function assignableStaff(day){
+  const dp=dayPlanFor(day);
   return (S.users||[])
-    .filter(u=>u.role==="staff" && u.number
+    .filter(u=>u.role==="staff" && u.number && u.active!==false && !hasLeft(u)
       && !NO_ACTIVITY_NUMBERS.includes(u.number)
-      && availableOn(u, day, ds))          // day off, vacation, not yet hired, marked absent
+      && !dp.off.includes(u.number))
     .sort((a,b)=>(a.number||99)-(b.number||99));
 }
 /* which slot an activity belongs to */
@@ -5800,31 +4977,22 @@ function activitySlot(a){
    When she replaces everything, nothing is kept, so everyone starts at zero. */
 function baseLoad(opts){
   const o=opts||{};
-  const load={c:{}, e:{}, last:{}, tick:0};
+  const load={c:{}, last:{}, tick:0};
   (S.activities||[]).forEach(a=>{
     const slot=activitySlot(a);
     if(slot!=="morning" && slot!=="afternoon") return;
     const who=String(a.entertainer||"").trim().toLowerCase();
     if(!who) return;
-    if(o.onlyEmpty){
-      load.c[who]=(load.c[who]||0)+1;                 // this one stays, so it counts
-      load.e=load.e||{}; load.e[who]=(load.e[who]||0)+effortWeight(a);
-    }
+    if(o.onlyEmpty) load.c[who]=(load.c[who]||0)+1;   // this one stays, so it counts
   });
   return load;
 }
 function baseCounts(opts){ return baseLoad(opts).c; }
 function loadKey(u){ return String(u.username).toLowerCase(); }
 function loadOf(load,u){ return (load.c&&load.c[loadKey(u)])||0; }
-function effortOf(load,u){
-  const k=loadKey(u);
-  return ((load.e&&load.e[k])||0);
-}
 function bumpLoad(load,u,act,day){
   const k=loadKey(u);
   load.c[k]=(load.c[k]||0)+1;
-  load.e=load.e||{};
-  load.e[k]=(load.e[k]||0)+effortWeight(act);   // an active one weighs more than a relax one
   load.last[k]=++load.tick;                    // remember when they last got one
   if(act && act.name){                         // and which activity, so it is not repeated
     load.acts=load.acts||{};
@@ -5866,25 +5034,12 @@ function repeatPenalty(u, act, day, load){
   if(!times && !didYesterday) return 0;
   return (didYesterday?4:0) + times;               // repeated yesterday hurts most
 }
-function pickFairest(pool, load, usedThisSlot, act, day, seed){
-  /* In order: never the same activity twice for one person if it can be
-     avoided, then an even share of the effort, then whoever went longest ago.
-     `seed` nudges ties a different way each time, so four runs give four plans. */
-  const jitter=u=>{
-    if(!seed) return 0;
-    let h=seed*2654435761;
-    const k=loadKey(u);
-    for(let i=0;i<k.length;i++) h=(h^k.charCodeAt(i))*16777619>>>0;
-    return (h%997)/1000;                      // under one, so it only breaks ties
-  };
-  const score=u=>repeatPenalty(u,act,day,load)*1e9
-    + effortOf(load,u)*1e6
-    + (load.last[loadKey(u)]||0)
-    + jitter(u);
-  /* only people who are allowed to run this activity, are free at that hour,
-     and match it if it genuinely needs one gender */
-  const allowed=act ? pool.filter(u=>canRunActivity(u,act)
-    && !entranceClash(u,act,day) && genderFits(u,act)) : pool;
+function pickFairest(pool, load, usedThisSlot, act, day){
+  /* fairness first: never the same activity twice for one person if it can be
+     avoided, then an even share of the work, then whoever went longest ago */
+  const score=u=>repeatPenalty(u,act,day,load)*1e9 + loadOf(load,u)*1e6 + (load.last[loadKey(u)]||0);
+  /* only people who are allowed to run this activity */
+  const allowed=act ? pool.filter(u=>canRunActivity(u,act)) : pool;
   if(!allowed.length) return null;             // nobody may do it — leave it empty
   let best=null, bestScore=Infinity;
   allowed.forEach(u=>{
@@ -5902,7 +5057,6 @@ function pickFairest(pool, load, usedThisSlot, act, day, seed){
 /* One day. Pass a shared `load` so a whole week stays balanced across days. */
 function autoAssignDay(day, opts, sharedLoad){
   const o=opts||{};
-  const seed=+o.seed||0;
   const pool=assignableStaff(day);
   const out=[];
   if(!pool.length) return out;
@@ -5912,7 +5066,7 @@ function autoAssignDay(day, opts, sharedLoad){
   if(crew.length){
     (S.activities||[])
       .filter(a=>a.day===day && activitySlot(a)==="event")
-      .filter(a=>o.onlyEmpty ? actIsUnassigned(a) : true)
+      .filter(a=>o.onlyEmpty ? !String(a.entertainer||"").trim() : true)
       .forEach(a=>{
         out.push({activity:a, slot:"event",
           username:crew.map(u=>u.username).join(","),
@@ -5922,12 +5076,12 @@ function autoAssignDay(day, opts, sharedLoad){
   ["morning","afternoon"].forEach(slot=>{
     const acts=(S.activities||[])
       .filter(a=>a.day===day && activitySlot(a)===slot)
-      .filter(a=>o.onlyEmpty ? actIsUnassigned(a) : true)
+      .filter(a=>o.onlyEmpty ? !String(a.entertainer||"").trim() : true)
       .sort((x,y)=>String(x.time).localeCompare(String(y.time)));
     if(!acts.length) return;
     const usedThisSlot=new Set();
     acts.forEach((a,idx)=>{
-      const pick=pickFairest(pool, load, usedThisSlot, a, day, seed);
+      const pick=pickFairest(pool, load, usedThisSlot, a, day);
       if(!pick) return;
       usedThisSlot.add(pick.username);
       bumpLoad(load,pick,a,day);
@@ -5938,13 +5092,9 @@ function autoAssignDay(day, opts, sharedLoad){
 }
 /* The whole week, sharing ONE running count so everybody ends up even. */
 function autoAssignWeek(opts){
-  const o=opts||{};
-  const load=baseLoad(o);
+  const load=baseLoad(opts||{});
   let all=[];
-  /* start the week on a different day for each plan, so plan 2 is genuinely a
-     different rotation and not the same one shuffled */
-  const start=(+o.seed||0)%7;
-  for(let i=0; i<7; i++) all=all.concat(autoAssignDay((start+i)%7, o, load));
+  for(let d=0; d<7; d++) all=all.concat(autoAssignDay(d, opts, load));
   return fixRepeats(balancePlan(all, opts||{}));
 }
 /* Last tidy-up: if anyone still ends up with the same activity on two days next
@@ -6036,15 +5186,11 @@ async function applyAssignments(list){
   return true;
 }
 /* She sees the proposal, can change ANY name, and only then applies it. */
-const AA_PLANS=4;
 function openAutoAssignModal(day){
-  let scope="day", onlyEmpty=true, variant=1;
+  let scope="day", onlyEmpty=true;
   let plan=[];
   const wrap=baseModal("");
-  const rebuild=()=>{
-    const o={onlyEmpty, seed:variant};
-    plan=(scope==="day")?autoAssignDay(day,o):autoAssignWeek(o);
-  };
+  const rebuild=()=>{ plan=(scope==="day")?autoAssignDay(day,{onlyEmpty}):autoAssignWeek({onlyEmpty}); };
   rebuild();
   const draw=()=>{
     const bal=planBalance(plan,{onlyEmpty});
@@ -6060,10 +5206,6 @@ function openAutoAssignModal(day){
       </div>
       <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:14.5px;color:var(--ink);margin:10px 0">
         <input type="checkbox" id="a-empty" style="width:auto" ${onlyEmpty?"checked":""}> ${t("onlyEmptyLbl")}</label>
-      <div class="aa-var">
-        <span class="mini">${t("aaVariant").replace("{n}",variant).replace("{m}",AA_PLANS)}</span>
-        <button class="btn link" id="a-next">${ic("back",13)} ${t("aaAnother")}</button>
-      </div>
       ${plan.length?`
         <div class="aa-bal ${bal.spread<=1?"good":"warn"}">
           <b>${t("balanceLbl")}</b>
@@ -6096,8 +5238,6 @@ function openAutoAssignModal(day){
       :`<div class="empty" style="margin-top:12px"><div class="big">${ic("users",28)}</div>${t("autoNothing")}</div>`}
       <button class="btn ghost" id="a-x">${t("close")}</button>
     </div>`;
-    const nx=wrap.querySelector("#a-next");
-    if(nx) nx.onclick=()=>{ variant=(variant%AA_PLANS)+1; rebuild(); draw(); };
     wrap.querySelectorAll("[data-ascope]").forEach(b=>b.onclick=()=>{ scope=b.dataset.ascope; rebuild(); draw(); });
     const ce=wrap.querySelector("#a-empty"); if(ce) ce.onchange=()=>{ onlyEmpty=ce.checked; rebuild(); draw(); };
     // change any single assignment by hand
@@ -6378,7 +5518,7 @@ function assignView(){
   const sub=S.sub.assign||"acts";
   const acts=(S.activities||[]).filter(a=>a.day===day)
     .sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
-  const open=acts.filter(a=>actIsUnassigned(a));
+  const open=acts.filter(a=>!String(a.entertainer||"").trim());
   const team=(S.users||[]).filter(u=>u.role==="staff"||u.role==="manager");
   const working=team.filter(u=>availableOn(u,day,ds));
   const offList=team.filter(u=>!availableOn(u,day,ds));
@@ -6393,9 +5533,9 @@ function assignView(){
     <div class="daypick" id="asg-days">
       ${t("daysShort").map((d,i)=>`<button class="${i===day?"on":""}" data-aday="${i}">${d}</button>`).join("")}
     </div>
-    ${sub==="acts"?assignActsInner(day,ds,acts,open,working)+acceptRosterCard(day)
+    ${sub==="acts"?assignActsInner(day,ds,acts,open,working)
      :sub==="tasks"?`<div style="margin-top:12px">${tasksInner()}</div>`
-     :assignWhoInner(day,ds,working,offList)+acceptRosterCard(day)}
+     :assignWhoInner(day,ds,working,offList)}
   </div>`;
 }
 function assignActsInner(day, ds, acts, open, working){
@@ -6417,7 +5557,7 @@ function assignActsInner(day, ds, acts, open, working){
       :`<div class="ok-note" style="margin-top:12px">${ic("check",18)} ${t("allAssigned")}</div>`}
     <div class="card" style="margin-top:12px">
       ${acts.length?acts.map(a=>{
-        const who=actStaffLabel(a);
+        const who=String(a.entertainer||"").trim();
         const sk=activitySkill(a);
         return `<div class="asg-row" data-aopen="${a.id}">
           <span class="asg-t">${esc(a.time||"")}</span>
@@ -6547,49 +5687,6 @@ function activitySkill(a){
   return "host";
 }
 /* Can this person run THIS activity? */
-/* How much work an activity is, so the plan does not hand one person every
-   hard one. She sets it per activity; anything unset counts as Normal. */
-const ACT_EFFORT=[["relax","effRelax"],["normal","effNormal"],["active","effActive"]];
-function actEffort(a){
-  const v=String((a&&a.effort)||"normal").toLowerCase();
-  return ACT_EFFORT.some(x=>x[0]===v) ? v : "normal";
-}
-function effortLabel(v){
-  const hit=ACT_EFFORT.find(x=>x[0]===String(v||"normal"));
-  return hit ? t(hit[1]) : t("effNormal");
-}
-function effortWeight(a){
-  const e=actEffort(a);
-  return e==="active" ? 2 : e==="relax" ? 0.5 : 1;
-}
-/* Some activities really do need one gender. Anything unset takes anyone. */
-const ACT_GENDERS=[["any","gnAny"],["female","gnFemale"],["male","gnMale"]];
-function actGender(a){
-  const v=String((a&&a.gender)||"any").toLowerCase();
-  return ACT_GENDERS.some(x=>x[0]===v) ? v : "any";
-}
-function genderLabel(v){
-  const hit=ACT_GENDERS.find(x=>x[0]===String(v||"any"));
-  return hit ? t(hit[1]) : t("gnAny");
-}
-function userGender(u){ return String((u&&u.gender)||"").toLowerCase(); }
-function genderFits(u, act){
-  const need=actGender(act);
-  if(need==="any") return true;
-  const has=userGender(u);
-  if(!has) return true;            // unknown never blocks somebody from working
-  return has===need;
-}
-/* Entrance duty means leaving at 16:00 and returning at 18:30, so nothing in
-   that window can be given to whoever is on it. */
-const ENTRANCE_FROM=16*60, ENTRANCE_TO=18*60+30;
-function entranceClash(u, act, day){
-  if(!onEntranceDuty(u, day)) return false;
-  const w=actWindow(act);
-  if(!w) return false;
-  const s0=w.s0, e0=(w.e0!=null?w.e0:w.s0+45);
-  return s0 < ENTRANCE_TO && e0 > ENTRANCE_FROM;
-}
 function canRunActivity(u, act){
   const k=actKey(act && act.name);
   if(!k) return true;
@@ -7928,120 +7025,33 @@ function myWorkDayView(){
   const info=personDayInfo(num,day);
   const myActs=S.activities.filter(a=>a.day===day && canSeeGuests(a)).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
   // photo ring reflects the entertainer's own next/current activity today
-  // their name, number and photo are already in the hero above — no second copy
+  const liveAct = isToday(day) ? (myActs.find(a=>activityStatus(a)==="live") || myActs.find(a=>activityStatus(a)==="todo") || myActs[myActs.length-1]) : null;
+  const photoRing = liveAct ? statusRing(liveAct) : "";
+  const photoBlock = `<div class="wd-photo">
+      <div class="wd-av avring ${photoRing}">${S.session.photo?`<img src="${esc(S.session.photo)}" alt="">`:`<span>${esc(String(S.session.name||"?").trim().charAt(0).toUpperCase())}</span>`}
+        <span class="wd-num">${num}</span></div>
+      <div class="wd-who"><b>${esc(S.session.name)}</b>
+        <span class="mini">${esc(roleForNumber(num))}</span>
+        ${liveAct?`<span style="margin-top:4px">${statusPill(liveAct)} <span class="mini">${esc(liveAct.name)}</span></span>`:""}</div>
+    </div>`;
   let banner="";
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
   return `<div class="screen fadein">
-    ${heroTop({greet:t(greetKey()), title:S.session.name,
-               sub:"#"+num+" · "+roleForNumber(num), side:heroSide()})}
+    ${topBar(t("myWorkDay"),"#"+num+" · "+S.session.name)}
     ${dayChips()}
-    ${arrangeBtn("workday")}
-    ${renderParts("workday", {
-      tiles:   ()=>staffTiles(day, myActs),
-      myacts:  ()=>`<div class="sec">
-        ${secHead(t("myActs"),"","")}
-        ${myActs.length
-          ? `<div class="card" style="padding:2px 15px">${myActs.map(a=>thumbRow(a,{tick:true, accept:true, done:activityStatus(a)==="done"})).join("")}</div>`
-          : `<div class="empty"><div class="big">${ic("clipboard",30)}</div>${t("noneToday")}</div>`}
-        <button class="btn ghost" id="btn-fullsched" style="margin-top:10px">${t("viewFullSchedule")}</button>
-      </div>
-      ${banner}
-      ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
-      ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}`,
-      myday:   ()=>myDayTimeline(day),
-      dayinfo: ()=>dayPlanInfoCard(day),
-      guestfb: ()=>workdayFeedbackCard(),
-      actfb:   ()=>myActFeedbackCard(day),
-      wholeday:()=>dayPlanTimes(day, "mdWholeDay")
-    })}
-  </div>`;
-}
-/* ===== MY DAY =====
-   The entertainer had to open four screens to work out their own day: the
-   hotel rhythm, their activities, their duties and their tasks. This puts all
-   four on one line, in clock order, with a marker for where "now" is. */
-function mdMin(hhmm){
-  const m=String(hhmm||"").match(/(\d{1,2})\s*[:.]\s*(\d{2})/);
-  return m ? (+m[1])*60 + (+m[2]) : null;
-}
-function mdRow(min, time, title, sub, kind, actId){
-  return {min:(min==null?9999:min), time:time||"", title:title||"", sub:sub||"", kind:kind||"routine", actId:actId||null};
-}
-function myDayItems(day){
-  const num=S.session && S.session.number;
-  const dp=dayPlanFor(day);
-  const info=num?personDayInfo(num,day):null;
-  const out=[];
-
-  // the hotel rhythm everyone shares — hers if she has edited it
-  dayStandards().forEach(r=>{
-    out.push(mdRow(mdMin(r.time), r.time, r.name, stdNoteFor(r, day), "routine"));
-  });
-
-  // her own activities are the card directly above this one, so the line does
-  // not repeat them — it carries the rhythm, the duties and the tasks around them
-
-  // the evening show and the entertainer's own duties
-  if(dp.eveningShow && dp.showTime){
-    const st=mdMin(String(dp.showTime).split(/\s*[\u2013\u2014-]\s*/)[0]);
-    if(st!=null) out.push(mdRow(st-60, minToTime(st-60), t("mdShowPrep"), dp.eveningShow, "show"));
-    out.push(mdRow(st, String(dp.showTime), dp.eveningShow, dp.showLoc||"", "show"));
-  }
-  if(info && info.isEntrance) out.push(mdRow(16*60, "16:00", t("mdEntranceItem"), info.entranceWindow||"", "duty"));
-  if(info && info.makeupForMe) out.push(mdRow(mdMin(makeupText(info.makeupForMe)), "", t("makeupPractice"), makeupText(info.makeupForMe), "duty"));
-  if(info && info.isDJ && info.djNote) out.push(mdRow(null, "", t("djSchedule"), info.djNote, "duty"));
-
-  // the tasks waiting on them
-  const me=String((S.session&&S.session.username)||"").toLowerCase();
-  (S.tasks||[]).filter(k=>{
-    if(String(k.status||"")==="done") return false;
-    const to=String(k.assigned_to||"").toLowerCase();
-    return to==="team" || to===me || (num && to===String(num));
-  }).forEach(k=>{
-    out.push(mdRow(mdMin(k.due), String(k.due||"").trim(), k.title||"", k.location||"", "task"));
-  });
-
-  return out.sort((a,b)=>(a.min-b.min) || String(a.time).localeCompare(String(b.time)));
-}
-function minToTime(m){
-  m=Math.max(0,Math.round(m||0));
-  return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
-}
-function myDayTimeline(day){
-  const num=S.session && S.session.number;
-  const info=num?personDayInfo(num,day):null;
-  if(info && info.isOff){
-    return `<div class="sec"><h3>${ic("clock",18)} ${t("mdHead")}</h3>
-      <div class="empty"><div class="big">${ic("sun",30)}</div>${t("mdOffAll")}</div></div>`;
-  }
-  const items=myDayItems(day);
-  if(!items.length){
-    return `<div class="sec"><h3>${ic("clock",18)} ${t("mdHead")}</h3>
-      <div class="empty"><div class="big">${ic("clock",30)}</div>${t("mdNothing")}</div></div>`;
-  }
-  const live=isToday(day);
-  const now=live ? (new Date().getHours()*60 + new Date().getMinutes()) : -1;
-  let nowShown=false;
-  const kindLabel={mine:t("mdMine"), routine:t("mdRoutine"), duty:t("mdDuty"), task:t("mdTask"), show:t("mdShow")};
-  return `<div class="sec">
-    <div class="sec-head"><h3>${ic("clock",18)} ${t("mdHead")}</h3></div>
-    <p class="mini" style="margin:-6px 0 10px">${t("mdSub")}</p>
-    <div class="card md">
-      ${items.map(it=>{
-        let marker="";
-        if(live && !nowShown && it.min>now){ nowShown=true;
-          marker=`<div class="md-now"><span>${t("mdNow")} ${minToTime(now)}</span></div>`; }
-        const past = live && it.min<=now;
-        const open = it.actId ? ` data-open="${esc(String(it.actId))}"` : "";
-        return marker+`<div class="md-row ${esc(it.kind)}${past?" past":""}"${open}>
-          <span class="md-t">${esc(it.time||"\u2014")}</span>
-          <span class="md-x"><b>${esc(it.title)}</b>${it.sub?`<span class="mini">${esc(it.sub)}</span>`:""}</span>
-          <span class="md-k">${esc(kindLabel[it.kind]||"")}</span>
-        </div>`;
-      }).join("")}
-      ${live && !nowShown ? `<div class="md-now"><span>${t("mdNow")} ${minToTime(now)}</span></div>` : ""}
-    </div>
+    ${photoBlock}
+    ${banner}
+    ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
+    ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
+    ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
+      <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
+      ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
+    ${dayPlanInfoCard(day)}
+    ${workdayTimeline(day, myActs)}
+    ${workdayFeedbackCard()}
+    ${dayPlanTimes(day)}
+    ${dayPlanStandards(day)}
   </div>`;
 }
 /* The entertainer's own day as a vertical line: what is done, what is running
@@ -8088,9 +7098,9 @@ function workdayFeedbackCard(){
       <div class="stat"><b>${today.length}</b><span>${t("today")}</span></div>
       <div class="stat"><b>${mine.length}</b><span>${t("feedback")}</span></div>
     </div>
-    <button class="btn" id="btn-addfb" style="margin:0 0 10px">${ic("plus",16)} ${t("fbNew")}</button>
+    <button class="btn" id="btn-addfb" style="margin:0 0 10px">\uFF0B ${t("fbNew")}</button>
     ${recent.length?`<div class="card">${recent.map(fbRowHtml).join("")}</div>
-      ${mine.length>recent.length?`<button class="btn link" id="btn-fbseeall" style="margin-top:8px">${t("fbSeeAll")}</button>`:""}`
+      ${mine.length>recent.length?`<button class="btn ghost sm" id="btn-fbseeall" style="margin-top:8px">${t("fbSeeAll")}</button>`:""}`
       :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("noMyFeedback")}</div>`}
   </div>`;
 }
@@ -8100,7 +7110,7 @@ function staffFeedbackView(){
   const mine=S.feedback.filter(f=>f.by_user===S.session.username);
   return `<div class="screen fadein">
     ${topBar(t("feedback"),S.session.name)}
-    <button class="btn" id="btn-addfb" style="margin:0 0 14px">${ic("plus",16)} ${t("fbNew")}</button>
+    <button class="btn" id="btn-addfb" style="margin:0 0 14px">\uFF0B ${t("fbNew")}</button>
     ${mine.length?`<p class="mini" style="margin:-4px 0 8px">${t("fbTapHint")}</p>
       <div class="card">${mine.map(fbRowHtml).join("")}</div>`
       :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("noMyFeedback")}</div>`}
@@ -8218,9 +7228,7 @@ function bookingsInner(){
 }
 /* ---------------- manager (full access — manager role only) ---------------- */
 function managerView(){
-  if(isHub(S.tab)) return hubView(S.tab);
   if(S.tab==="dash") return dashView();
-  if(S.tab==="inbox") return inboxView();
   if(S.tab==="req") return requirementsView();
   if(S.tab==="program"){
     const inner = S.sub.program==="tickets" ? managerTicketsInner() : managerActsInner();
@@ -8316,12 +7324,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
    their sub-tabs. The same button and the same modal handle both. */
 const PAGE_SECTIONS={
   dayplan: ["info","times","team","standards"],
-  workday: ["tiles","myacts","myday","dayinfo","guestfb","actfb","wholeday"],
-  // The Control Center reads in four bands: what is critical, what still has to
-  // happen today, how the guests are doing, how the team is doing.
-  dash:    ["tiles","attention","live","tonight","ccops",
-            "stats","feedback","actfb","nations","activities",
-            "teampulse","overview","trends","everything","export"],
+  dash:    ["attention","tonight","live","export","stats","feedback","nations","activities","trends"],
   guests:  ["crm","rooms","bookings","chat","requests","feedback"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
@@ -8330,10 +7333,7 @@ const PAGE_SECTIONS={
 };
 const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
-  workday: {tiles:"atAGlance",myacts:"myActs",myday:"mdHead",dayinfo:"dayInfoSec",
-            guestfb:"fbMyFeedback",actfb:"afHead",wholeday:"mdWholeDay"},
-  dash:    {tiles:"atAGlance",overview:"todayOverview",attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",
-            ccops:"ccOps",teampulse:"ccTeamPulse",actfb:"afHead",everything:"mdWholeDay",export:"exportData",stats:"ccGuestPulse",feedback:"fbAnalytics",
+  dash:    {attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
             requests:"requests",feedback:"feedback"},
@@ -8361,12 +7361,9 @@ function pageOrder(pageKey,withHidden){
 }
 function dayPlanOrder(){ return pageOrder("dayplan"); }
 function arrangeBtn(pageKey){
-  if(!S.session) return "";
+  if(!S.session || S.session.role!=="manager") return "";
   if(!PAGE_SECTIONS[pageKey]) return "";
-  // the manager arranges the shared pages; an entertainer may arrange her own day
-  const mine = pageKey==="workday" && S.session.role==="staff";
-  if(S.session.role!=="manager" && !mine) return "";
-  return `<button class="btn link arrange-b" data-arrange="${pageKey}">${ic("grid",14)} ${t("arrangeSections")}</button>`;
+  return `<button class="btn sm ghost arrange-b" data-arrange="${pageKey}">${ic("grid",14)} ${t("arrangeSections")}</button>`;
 }
 function renderParts(pageKey,parts){
   return pageOrder(pageKey).map(k=>parts[k]?parts[k]():"").join("");
@@ -8412,12 +7409,10 @@ function dayTimeline(day){
     const rows=all.filter(x=>{ const m=timeToMin(x.time); return m!=null && m>=sl.from && m<sl.to; });
     return `<div class="tl-block">
       <div class="tl-head"><span class="tl-dot ${sl.k}"></span>${t(sl.k+"Part")}<span class="tl-n">${rows.length}</span></div>
-      ${rows.length?rows.map(x=>`<div class="tl-row ${x._tag?("is-"+x._tag):""}${isMineAct(x)?" mine":""}"${
-          (S.session&&S.session.role==="staff")?` data-afact="${esc(String(x.id))}" style="cursor:pointer"`:""}>
+      ${rows.length?rows.map(x=>`<div class="tl-row ${x._tag?("is-"+x._tag):""}${isMineAct(x)?" mine":""}">
           <span class="tl-t">${esc(x.time||"")}</span>
           <span class="tl-x"><b>${esc(x.name)}</b>${x.location?`<span class="mini">${esc(x.location)}</span>`:""}
-            ${actStaffLabel(x)?`<span class="mini who">${esc(actStaffLabel(x))}</span>`:""}
-            ${acceptedBy(x)?`<span class="mini who acc">${ic("check",11)} ${esc(t("acAccepted"))}</span>`:""}</span>
+            ${entertainerName(x.entertainer)?`<span class="mini who">${esc(entertainerName(x.entertainer))}</span>`:""}</span>
           ${(()=>{ if(!x._tag) return "";
             const lbl=t(x._tag==="show"?"eveningShowLbl":x._tag==="live"?"liveBandLbl":"practiceHead");
             return String(lbl).toLowerCase()===String(x.name||"").toLowerCase()
@@ -8484,92 +7479,19 @@ function dayPlanTeamCard(day){
     </div>
   </div>`;
 }
-/* The hotel's fixed rhythm. It starts as the standard fourteen lines, but the
-   manager owns it: she can retime, rename, reorder, add and remove. Once she
-   saves her own version it lives in settings and the built-in list is only the
-   fallback and the reset. */
-function dayStandards(){
-  const own=S.settings && S.settings.dayStandards;
-  if(Array.isArray(own) && own.length){
-    return own.filter(r=>r && (r.time||r.name)).map((r,i)=>({
-      id:String(r.id||("s"+i)), time:String(r.time||""), name:String(r.name||""),
-      note:String(r.note||""), morning:!!r.morning
-    }));
-  }
-  return DAILY_STANDARDS.map((r,i)=>({
-    id:"d"+i, time:r.time, name:t(r.k), note:r.nk?t(r.nk):"", morning:!!r.morning
-  }));
-}
-function stdNoteFor(r, day){
-  // the one line that changes with the day: practice happens or it does not
-  if(r.morning) return dayPlanFor(day).practice ? t("practiceInline") : "";
-  return r.note||"";
-}
 function dayPlanStandards(day){
-  const isMgr=S.session && S.session.role==="manager";
-  const rows=dayStandards().map(r=>{
-    const note=stdNoteFor(r, day);
+  const dp=dayPlanFor(day);
+  const rows=DAILY_STANDARDS.map(r=>{
+    let note=r.nk?t(r.nk):"";
+    if(r.morning){ note = dp.practice ? t("practiceInline") : ""; }
     return `<div class="std-row"><span class="std-t">${esc(r.time)}</span>
-      <span class="std-x"><b>${esc(r.name)}</b>${note?`<span class="mini"> \u00b7 ${esc(note)}</span>`:""}</span></div>`;
+      <span class="std-x"><b>${esc(t(r.k))}</b>${note?`<span class="mini"> · ${esc(note)}</span>`:""}</span></div>`;
   }).join("");
   return `<div class="sec"><h3>${ic("clock",18)} ${t("standardsHead")}</h3>
-    <div class="card">${rows}</div>
-    ${isMgr?`<button class="btn link" id="btn-stdedit">${ic("pen",14)} ${t("stEdit")}</button>`:""}
-  </div>`;
+    <div class="card">${rows}</div></div>`;
 }
-/* One editor for the whole rhythm. */
-function openStandardsEditor(){
-  let rows=dayStandards().map(r=>({...r}));
-  const wrap=baseModal(`
-    <h3>${ic("clock",20)} ${t("stEdit")}</h3>
-    <p class="mini">${t("stEditHint")}</p>
-    <div id="st-box"></div>
-    <button class="btn link" id="st-add">${ic("plus",14)} ${t("stAdd")}</button>
-    <button class="btn" id="st-go">${t("save")}</button>
-    <button class="btn ghost" id="st-reset">${t("stReset")}</button>
-    <button class="btn ghost" id="st-x">${t("cancelBtn")}</button>`);
-  const box=wrap.querySelector("#st-box");
-  const paint=()=>{
-    box.innerHTML = rows.length ? rows.map((r,i)=>`<div class="st-row">
-      <input class="st-t" data-sttime="${i}" value="${esc(r.time)}" placeholder="${esc(t("stTime"))}">
-      <input class="st-n" data-stname="${i}" value="${esc(r.name)}" placeholder="${esc(t("stName"))}">
-      <span class="rq-acts">
-        <button class="bd-b" data-stup="${i}" ${i===0?"disabled":""}>${ic("back",13)}</button>
-        <button class="bd-b down" data-stdown="${i}" ${i===rows.length-1?"disabled":""}>${ic("back",13)}</button>
-        <button class="bd-b warn" data-stdel="${i}">${ic("trash",13)}</button>
-      </span>
-      <input class="st-note" data-stnote="${i}" value="${esc(r.note)}" placeholder="${esc(t("stNote"))}"
-        ${r.morning?"disabled":""}>
-    </div>`).join("") : `<p class="mini">${t("stEmpty")}</p>`;
-    box.querySelectorAll("[data-sttime]").forEach(el=>el.oninput=()=>{ rows[+el.dataset.sttime].time=el.value; });
-    box.querySelectorAll("[data-stname]").forEach(el=>el.oninput=()=>{ rows[+el.dataset.stname].name=el.value; });
-    box.querySelectorAll("[data-stnote]").forEach(el=>el.oninput=()=>{ rows[+el.dataset.stnote].note=el.value; });
-    box.querySelectorAll("[data-stup]").forEach(b=>b.onclick=()=>{
-      const i=+b.dataset.stup; [rows[i-1],rows[i]]=[rows[i],rows[i-1]]; paint(); });
-    box.querySelectorAll("[data-stdown]").forEach(b=>b.onclick=()=>{
-      const i=+b.dataset.stdown; [rows[i+1],rows[i]]=[rows[i],rows[i+1]]; paint(); });
-    box.querySelectorAll("[data-stdel]").forEach(b=>b.onclick=()=>{
-      if(rows.length<=1){ toastErr(t("stLast")); return; }
-      rows.splice(+b.dataset.stdel,1); paint(); });
-  };
-  paint();
-  wrap.querySelector("#st-add").onclick=()=>{
-    rows.push({id:"s"+Date.now(), time:"", name:"", note:"", morning:false}); paint();
-  };
-  wrap.querySelector("#st-x").onclick=()=>wrap.remove();
-  const save=async list=>{
-    try{ await DB.saveSettings({...S.settings, dayStandards:list}); wrap.remove(); toastOk(t("saved")); render(); }
-    catch(e){ toastErr(t("errSave")); }
-  };
-  wrap.querySelector("#st-reset").onclick=()=>save([]);          // empty means "use the standard day"
-  wrap.querySelector("#st-go").onclick=()=>{
-    const keep=rows.filter(r=>String(r.time||"").trim() || String(r.name||"").trim());
-    if(!keep.length){ toastErr(t("stLast")); return; }
-    save(keep);
-  };
-}
-function dayPlanTimes(day, headKey){
-  return `<div class="sec"><h3>${ic("clock",18)} ${t(headKey||"wholeDay")}</h3>
+function dayPlanTimes(day){
+  return `<div class="sec"><h3>${ic("clock",18)} ${t("wholeDay")}</h3>
     <div class="card tlcard">${dayTimeline(day)}</div></div>`;
 }
 function managerDayPlanView(){
@@ -8656,11 +7578,11 @@ function feedbackInner(){
   const list=S.feedback||[];
   const avg=fbAvgAll(list);
   return `<div class="row2" style="margin-bottom:12px">
-      <button class="btn" id="btn-addfb">${ic("plus",16)} ${t("fbNew")}</button>
+      <button class="btn" id="btn-addfb">\uFF0B ${t("fbNew")}</button>
       <button class="btn ghost" id="btn-fbexport">${ic("download",15)} ${t("fbExport")}</button>
     </div>
     ${S.session && S.session.role==="manager"
-      ? `<button class="btn link" id="btn-fbdepts" style="margin:0 0 12px">${ic("grid",14)} ${t("fbDeptsEdit")}</button>` : ""}
+      ? `<button class="btn ghost sm" id="btn-fbdepts" style="margin:0 0 12px">${ic("grid",14)} ${t("fbDeptsEdit")}</button>` : ""}
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${avg?avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${list.length}</b><span>${t("feedback")}</span></div>
@@ -8683,14 +7605,11 @@ function dashView(){
   const nats=Object.entries(natMap).map(([n,s])=>[n,s.size]).sort((x,y)=>y[1]-x[1]);
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   const parts={
-    tiles:     ()=>dashTiles(),
-    overview:  ()=>dashOverview(),
     attention: ()=>attentionCard(),
     tonight:   ()=>tonightCard(),
     live:      ()=>liveOpsCard(),
     export:    ()=>`<button class="btn ghost" id="btn-exportdata" style="margin:0 0 16px">${ic("download",16)} ${t("exportData")}</button>`,
-    stats:     ()=>`<div class="sec-head"><h3>${t("ccGuestPulse")}</h3></div>
-    <div class="stat-grid">
+    stats:     ()=>`<div class="stat-grid">
       <div class="stat"><b>${totalB}</b><span>${t("totalBookings")}</span></div>
       <div class="stat accent"><b>${occ}%</b><span>${t("occupancy")}</span></div>
       <div class="stat"><b>${tSold}</b><span>${t("tickets")}</span></div>
@@ -8698,10 +7617,6 @@ function dashView(){
       <div class="stat"><b>${rooms}</b><span>${t("uniqueGuests")}</span></div>
       <div class="stat"><b>${people}</b><span>${t("totalPeople")}</span></div>
     </div>`,
-    ccops:     ()=>ccTodayOps(),
-    teampulse: ()=>ccTeamPulse(),
-    actfb:      ()=>actFeedbackCard(),
-    everything: ()=>dayPlanTimes(todayIndex(), "mdWholeDay"),
     feedback:  ()=>feedbackAnalyticsCard(),
     nations:   ()=>nats.length?`<div class="sec"><h3>${t("natStats")}</h3><div class="card">
       ${nats.map(([n,c])=>`<div class="booking-line"><span>${esc(n)}</span><span class="pill">${c}</span></div>`).join("")}
@@ -8713,636 +7628,11 @@ function dashView(){
     </div>`,
     trends:    ()=>trendsCard()
   };
-  const liveNow=(S.activities||[]).some(a=>a.day===todayIndex() && activityStatus(a)==="live");
   return `<div class="screen fadein">
-    ${heroTop({greet:t("welcomeBack"), title:S.session.name, sub:t("atAGlance"),
-               side:liveNow?`<span class="hero-live"><i></i>${t("liveNow")}</span>`:""})}
+    ${topBar(t("dashboard"),S.session.name)}
         ${!REMOTE?`<div class="setup">${t("demoNote")}</div>`:""}
     ${arrangeBtn("dash")}
     ${renderParts("dash",parts)}
-  </div>`;
-}
-/* ===== COMMUNICATION CENTRE =====
-   Guest chats, team chats, requests and announcements were four separate
-   destinations. This is one doorway with four filters over the SAME screens —
-   the data stays apart, only the way in is joined. */
-const CM_FILTERS=["guests","team","requests","announce"];
-function cmCounts(){
-  return {
-    guests: unreadGuests(),
-    team: unreadTeam(),
-    requests: (S.requests||[]).filter(r=>String(r.status||"")==="new").length + teamReqCount(),
-    announce: 0
-  };
-}
-function cmAnnounceInner(){
-  const list=(S.notes||[]).slice().sort((a,b)=>(+b.id||0)-(+a.id||0));
-  return `<button class="btn" id="cm-newnote" style="margin:0 0 12px">${ic("plus",16)} ${t("cmNewAnnounce")}</button>
-    ${list.length?`<div class="card" style="padding:2px 14px">${list.map(n=>`
-      <div class="cm-note">
-        <span class="cm-nx"><b>${esc(n.title||"")}</b>
-          ${n.body?`<span class="mini">${esc(n.body)}</span>`:""}
-          <span class="mini">${t("cmAud")}: ${esc(t(n.audience==="guests"?"audGuests":n.audience==="team"?"audTeam":"audAll"))}${n.created_at?" \u00b7 "+fmtDate(n.created_at):""}</span></span>
-        <button class="btn sm ghost warn" data-cmnotedel="${esc(String(n.id))}">${ic("trash",14)}</button>
-      </div>`).join("")}</div>`
-      :`<div class="empty"><div class="big">${ic("bell",30)}</div>${t("cmNoAnnounce")}</div>`}`;
-}
-function cmRequestsInner(){
-  const guest=(S.requests||[]).length;
-  const team=(S.staffReqs||[]).length;
-  return `${guest?`<div class="ao-sec">${t("cmGuestReq")}</div>${requestsInner()}`:""}
-    ${team?`<div class="ao-sec">${t("cmTeamReq")}</div>${teamRequestsInner()}`:""}
-    ${(!guest&&!team)?`<div class="empty"><div class="big">${ic("gift",30)}</div>${t("none")}</div>`:""}`;
-}
-function inboxView(){
-  let f=S.sub.inbox;
-  if(!CM_FILTERS.includes(f)) f=S.sub.inbox="guests";
-  if((f==="guests"||f==="team") && S.chatRoom) return chatThreadScreen();
-  const n=cmCounts();
-  const inner = f==="guests"   ? chatInboxInner()
-              : f==="team"     ? staffChatInbox()
-              : f==="requests" ? cmRequestsInner()
-              : cmAnnounceInner();
-  return `<div class="screen fadein">
-    ${topBar(t("cmHead"),S.session.name)}
-    <p class="mini" style="margin:-4px 0 12px">${t("cmSub")}</p>
-    <div class="pills">${CM_FILTERS.map(k=>`<button class="pill ${f===k?"on":""}" data-cmf="${k}">
-      ${esc(t(k==="guests"?"cmGuests":k==="team"?"cmTeam":k==="requests"?"cmRequests":"cmAnnounce"))}
-      ${n[k]?`<span class="badge">${n[k]}</span>`:""}
-    </button>`).join("")}</div>
-    ${inner}
-  </div>`;
-}
-/* A guest tapping an activity wants to know what it is, not to be handed a
-   booking form. Information first; booking, or simply adding it to their own
-   plan, is their choice from there. */
-function openGuestActivity(id){
-  const a=(S.activities||[]).find(x=>String(x.id)===String(id));
-  if(!a) return;
-  const booking=myBooking(a.id);
-  const fav=(S.favorites||[]).includes(a.id);
-  const cap=+a.capacity||0;
-  const left=cap?Math.max(0, cap-seatsTaken(a.id)):0;
-  const needsBooking=cap>0;
-  const wrap=baseModal(`
-    ${a.image?`<div class="ga-img"><img src="${esc(a.image)}" alt=""></div>`:""}
-    <h3>${esc(a.name)}</h3>
-    <p class="mini">${esc(catLabel(normCat(a)))}</p>
-    <div class="card cc" style="margin-top:12px">
-      <div class="cc-row"><span class="cc-ic">${ic("clock",17)}</span>
-        <span class="cc-x">${t("gvWhen")}</span><span class="cc-v">${esc([t("days")[a.day],a.time].filter(Boolean).join(" \u00b7 "))}</span></div>
-      ${a.location?`<div class="cc-row"><span class="cc-ic">${ic("pin",17)}</span>
-        <span class="cc-x">${t("gvWhere")}</span><span class="cc-v">${esc(a.location)}</span></div>`:""}
-      ${actStaffLabel(a)?`<div class="cc-row"><span class="cc-ic">${ic("users",17)}</span>
-        <span class="cc-x">${t("gvWith")}</span><span class="cc-v">${esc(actStaffLabel(a))}</span></div>`:""}
-      ${needsBooking?`<div class="cc-row"><span class="cc-ic">${ic("ticket",17)}</span>
-        <span class="cc-x">${t("gvFree")}</span><span class="cc-v">${left}</span></div>`:""}
-    </div>
-    ${a.desc?`<p style="margin-top:12px">${esc(a.desc)}</p>`:""}
-    ${!needsBooking?`<p class="mini" style="margin-top:10px">${t("gvNoBooking")}</p>`:""}
-    <button class="btn" id="ga-plan">${ic("star",16)} ${fav?t("gvInPlan"):t("gvAddPlan")}</button>
-    ${needsBooking?`<button class="btn ghost" id="ga-book" ${booking?"disabled":""}>${ic("ticket",16)} ${booking?t("gvBooked"):t("gvBookNow")}</button>`:""}
-    <button class="btn ghost" id="ga-x">${t("close")}</button>`);
-  wrap.querySelector("#ga-x").onclick=()=>wrap.remove();
-  wrap.querySelector("#ga-plan").onclick=()=>{
-    S.favorites=(S.favorites||[]).includes(a.id)
-      ? S.favorites.filter(x=>x!==a.id)
-      : [...(S.favorites||[]), a.id];
-    persist(); wrap.remove(); render();
-  };
-  const bk=wrap.querySelector("#ga-book");
-  if(bk && !booking) bk.onclick=()=>{ wrap.remove(); openBookModal(a); };
-}
-/* ===== ACTIVITY FEEDBACK =====
-   The entertainers rate the programme itself: how the show went, whether the
-   activity worked. It rides in the same table as the guest feedback but is
-   split out the moment it loads, so it can never move a guest rating average.
-   The marker lives in the depts column, which needs no new database column. */
-const AF_MARK="__act";
-const AF_GROUPS=[
-  ["show",  "afGroupShow",  ["eShow"]],
-  ["live",  "afGroupLive",  ["eLive"]],
-  ["event", "afGroupEvent", ["mEvents","eParty"]],   // a party is an event of its own
-  ["act",   "afGroupAct",   []]                       // everything else
-];
-function afIsActivityFb(f){
-  if(!f) return false;
-  let d=f.depts;
-  if(typeof d==="string"){ try{ d=JSON.parse(d); }catch(e){ return false; } }
-  return !!(d && d[AF_MARK]);
-}
-function afActId(f){
-  let d=f&&f.depts;
-  if(typeof d==="string"){ try{ d=JSON.parse(d); }catch(e){ return null; } }
-  return (d && d[AF_MARK]) || null;
-}
-function afMeta(f){
-  let d=f&&f.depts;
-  if(typeof d==="string"){ try{ d=JSON.parse(d); }catch(e){ d=null; } }
-  return d||{};
-}
-function afRooms(f){ return String((f&&f.room)||"").trim(); }
-function afGuestName(f){ return String((f&&f.guest_name)||"").trim(); }
-function afPct(f){ return +afMeta(f).pct||0; }
-function afGuests(f){ return +afMeta(f).guests||0; }
-function afLevel(f){ return afMeta(f).level || afGroupOf(afActivity(f)); }
-function afActivity(f){
-  const id=afActId(f);
-  return id!=null ? (S.activities||[]).find(a=>String(a.id)===String(id)) || null : null;
-}
-/* The category comes straight off the activity — she never picks it by hand,
-   and the manager can filter the whole picture down to one. */
-function afGroupOf(a){ return normCat(a||{}); }
-function afGroupLabel(key){ return catLabel(key); }
-function afCatOf(f){
-  const m=afMeta(f);
-  return m.cat || afGroupOf(afActivity(f));
-}
-function afCatList(){
-  return allCats().filter(c=>(S.actFb||[]).some(f=>afCatOf(f)===c));
-}
-/* today / this week / everything — the same shape the guest analytics uses */
-function afPeriodList(period){
-  const all=S.actFb||[];
-  if(period==="all") return all.slice();
-  const now=new Date();
-  const start=new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if(period==="week") start.setDate(start.getDate()-6);
-  return all.filter(f=>{
-    const d=f.created_at?new Date(f.created_at):null;
-    return d && !isNaN(d.getTime()) && d>=start;
-  });
-}
-function afAvg(list){
-  const v=(list||[]).map(f=>+f.rate||0).filter(n=>n>0);
-  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0;
-}
-/* grouped the way she asked: Show, Live music, Events, Activities */
-function afGrouped(list){
-  const by={};
-  (list||[]).forEach(f=>{ const key=afCatOf(f); (by[key]=by[key]||[]).push(f); });
-  return allCats().map(key=>({
-    key, label:afGroupLabel(key), items:by[key]||[],
-    avg:afAvg(by[key]||[]), n:(by[key]||[]).length,
-    pct:afPctAvg(by[key]||[]),
-    acts:afByActivity(by[key]||[]).length
-  })).filter(g=>g.n);
-}
-function afPctAvg(list){
-  const v=(list||[]).map(f=>+afMeta(f).pct).filter(n=>n>0);
-  return v.length ? Math.round(v.reduce((a,b)=>a+b,0)/v.length) : 0;
-}
-/* everything, or only one category */
-function afFiltered(period){
-  const list=afPeriodList(period);
-  const c=S.afCat;
-  return (c && allCats().includes(c)) ? list.filter(f=>afCatOf(f)===c) : list;
-}
-/* inside a group: one line per activity, worst first so problems surface */
-function afByActivity(list){
-  const by={};
-  (list||[]).forEach(f=>{
-    const id=String(afActId(f));
-    (by[id]=by[id]||[]).push(f);
-  });
-  return Object.keys(by).map(id=>{
-    const a=(S.activities||[]).find(x=>String(x.id)===id);
-    const first=by[id][0];
-    return { id, name:(a&&a.name) || (first&&first.guest_name) || id,
-             items:by[id], n:by[id].length, avg:afAvg(by[id]) };
-  }).sort((x,y)=>x.avg-y.avg);
-}
-function afForActivity(id){
-  return (S.actFb||[]).filter(f=>String(afActId(f))===String(id))
-    .sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
-}
-/* An entertainer taps Accept to say "I have this one". It shows on the
-   manager's Live operations at once. Kept in settings, so there is no new
-   database table to create. */
-function acceptKey(a){ return String(a&&a.id)+"|"+todayISO(); }
-function acceptedBy(a){
-  const m=(S.settings&&S.settings.actAccept)||{};
-  return m[acceptKey(a)]||"";
-}
-function iAccepted(a){
-  const me=(S.session&&S.session.username)||"";
-  return !!me && String(acceptedBy(a))===String(me);
-}
-async function toggleAccept(id){
-  const a=(S.activities||[]).find(x=>String(x.id)===String(id));
-  if(!a) return;
-  const me=(S.session&&S.session.username)||"";
-  const m={...((S.settings&&S.settings.actAccept)||{})};
-  if(m[acceptKey(a)]===me) delete m[acceptKey(a)];
-  else m[acceptKey(a)]=me;
-  try{ await DB.saveSettings({...S.settings, actAccept:m}); render(); }
-  catch(e){ toastErr(t("errSave")); }
-}
-/* The entertainer rates their own activity right after it finishes: one score,
-   what happened, and roughly how many guests came. */
-function openActFbModal(actId, editId){
-  const a=(S.activities||[]).find(x=>String(x.id)===String(actId));
-  if(!a) return;
-  const ex = editId!=null ? (S.actFb||[]).find(f=>String(f.id)===String(editId)) : null;
-  let score = ex ? (+ex.rate||0) : 0;
-  const wrap=baseModal(`
-    <h3>${ic("star",20)} ${t("afRate")}</h3>
-    <p class="mini">${esc([a.name, t("days")[a.day], a.time, a.location].filter(Boolean).join(" \u00b7 "))}</p>
-    <div class="card cc" style="margin:10px 0 4px">
-      <div class="cc-row"><span class="cc-ic">${ic("grid",17)}</span>
-        <span class="cc-x">${t("afCategory")}</span>
-        <span class="cc-v">${esc(catLabel(afGroupOf(a)))}</span></div>
-    </div>
-    <label style="margin-top:12px">${t("afHow")}</label>
-    <div class="af-stars" id="af-stars"></div>
-    <label style="margin-top:12px">${t("afPct")}</label>
-    <div class="af-pct">
-      <input type="range" id="af-pct" min="0" max="100" step="5" value="${ex?afPct(ex):50}">
-      <span class="af-pctv" id="af-pctv">${ex?afPct(ex):50}%</span>
-    </div>
-    <p class="mini" style="margin:2px 0 0">${t("afPctHint")}</p>
-    <label style="margin-top:12px">${t("afRoom")}</label>
-    <input id="af-room" inputmode="numeric" value="${esc(ex?afRooms(ex):"")}" placeholder="214">
-    <label>${t("afGuestName")}</label>
-    <input id="af-guest" value="${esc(ex?afGuestName(ex):"")}">
-    <label>${t("afComment")}</label><textarea id="af-note" rows="3">${esc(ex?fbComment(ex):"")}</textarea>
-    <button class="btn" id="af-go">${t("save")}</button>
-    <button class="btn ghost" id="af-x">${t("cancelBtn")}</button>`);
-  const box=wrap.querySelector("#af-stars");
-  const paint=()=>{
-    box.innerHTML=[1,2,3,4,5].map(i=>
-      `<button class="fb-st ${i<=score?"on":""}" data-afset="${i}">${i<=score?"\u2605":"\u2606"}</button>`).join("");
-    box.querySelectorAll("[data-afset]").forEach(b=>b.onclick=()=>{ score=+b.dataset.afset; paint(); });
-  };
-  paint();
-  const pct=wrap.querySelector("#af-pct"), pctv=wrap.querySelector("#af-pctv");
-  if(pct && pctv) pct.oninput=()=>{ pctv.textContent=pct.value+"%"; };
-  wrap.querySelector("#af-x").onclick=()=>wrap.remove();
-  wrap.querySelector("#af-go").onclick=async ()=>{
-    if(!score){ toastErr(t("afHow")); return; }
-    try{
-      const payload={
-        act_id:a.id, act_name:a.name, rate:score,
-        cat:afGroupOf(a),
-        pct:+(wrap.querySelector("#af-pct")||{}).value||0,
-        room:wrap.querySelector("#af-room").value.trim(),
-        guest_name:wrap.querySelector("#af-guest").value.trim(),
-        comment:wrap.querySelector("#af-note").value.trim(),
-        by_user:(S.session&&S.session.username)||""
-      };
-      if(ex) await DB.updateActivityFeedback(ex.id, payload);
-      else await DB.addActivityFeedback(payload);
-      wrap.remove(); toastOk(t("afSaved")); render();
-    }catch(e){ wrap.remove(); toastErr(t("errSave")); render(); }
-  };
-}
-/* Everything rated for one activity, newest first. */
-function openActFbList(actId){
-  const a=(S.activities||[]).find(x=>String(x.id)===String(actId));
-  const list=afForActivity(actId);
-  const mine=f=>S.session && (S.session.role==="manager" || String(f.by_user||"")===String(S.session.username||""));
-  const wrap=baseModal(`
-    <h3>${ic("star",20)} ${esc((a&&a.name)||t("afHead"))}</h3>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${afAvg(list)?afAvg(list).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
-      <div class="stat"><b>${list.length}</b><span>${t("afRatings")}</span></div>
-    </div>
-    ${list.length?`<div class="card" style="padding:2px 14px">${list.map(f=>`
-      <div class="af-row">
-        <span class="af-x">${fbStars(+f.rate||0)}
-          <span class="mini">${esc(catLabel(afCatOf(f)))} \u00b7 ${afPct(f)}%${
-            afRooms(f)?` \u00b7 ${t("room")} ${esc(afRooms(f))}`:""}${
-            afGuestName(f)?` \u00b7 ${esc(afGuestName(f))}`:""}</span>
-          ${fbComment(f)?`<span class="mini">${esc(fbComment(f))}</span>`:""}
-          <span class="mini">${t("afByWho")} ${esc(teamName(f.by_user))} \u00b7 ${fmtTime(f.created_at)}</span></span>
-        ${mine(f)?`<span class="af-acts">
-          <button class="bd-b" data-afedit="${esc(String(f.id))}|${esc(String(afActId(f)))}">${ic("pen",13)}</button>
-          <button class="bd-b warn" data-afdel="${esc(String(f.id))}">${ic("trash",13)}</button></span>`:""}
-      </div>`).join("")}</div>`:`<p class="mini">${t("afNone")}</p>`}
-    ${a?`<button class="btn" id="af-again">${ic("star",16)} ${list.length?t("afRateAgain"):t("afRate")}</button>`:""}
-    <button class="btn ghost" id="afl-x">${t("close")}</button>`);
-  wrap.querySelector("#afl-x").onclick=()=>wrap.remove();
-  const ag=wrap.querySelector("#af-again");
-  if(ag) ag.onclick=()=>{ wrap.remove(); openActFbModal(actId); };
-  wrap.querySelectorAll("[data-afedit]").forEach(b=>b.onclick=()=>{
-    const bits=String(b.dataset.afedit).split("|");
-    wrap.remove(); openActFbModal(bits[1], bits[0]);
-  });
-  wrap.querySelectorAll("[data-afdel]").forEach(b=>b.onclick=async ()=>{
-    if(!await confirmAction({question:t("afDelete"),note:t("cannotUndo"),danger:true})) return;
-    try{ await DB.deleteActivityFeedback(b.dataset.afdel); wrap.remove(); toastOk(t("deleted")); render(); }
-    catch(e){ toastErr(t("errSave")); }
-  });
-}
-/* One group opened up: the activities inside it, worst first. */
-function openAfGroup(key){
-  const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
-  const list=afPeriodList(period).filter(f=>afCatOf(f)===key);
-  const acts=afByActivity(list);
-  const wrap=baseModal(`
-    <h3>${ic("star",20)} ${esc(afGroupLabel(key))}</h3>
-    <p class="mini">${esc(t("af"+(period==="today"?"Today":period==="week"?"Week":"All")))}</p>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${afAvg(list)?afAvg(list).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
-      <div class="stat"><b>${list.length}</b><span>${t("afRatings")}</span></div>
-    </div>
-    ${acts.length?`<div class="card" style="padding:2px 14px">${acts.map(x=>`
-      <button class="fb-dept ${x.avg<3.5?"low":x.avg<4.5?"mid":"top"}" data-afact="${esc(x.id)}">
-        <span class="fb-nm">${esc(x.name)}<br><span class="mini">${x.n} ${t("afRatings")}</span></span>
-        <span class="fb-bar"><i style="width:${Math.round(x.avg/5*100)}%"></i></span>
-        <span class="fb-val">${x.avg.toFixed(1)}</span></button>`).join("")}</div>`
-      :`<p class="mini">${t("afNone")}</p>`}
-    <button class="btn ghost" id="afg-x">${t("close")}</button>`);
-  wrap.querySelector("#afg-x").onclick=()=>wrap.remove();
-  wrap.querySelectorAll("[data-afact]").forEach(b=>b.onclick=()=>{
-    const id=b.dataset.afact; wrap.remove(); openActFbList(id);
-  });
-}
-/* The entertainer's own programme ratings for the day she is looking at. */
-function myActFeedbackCard(day){
-  const me=String((S.session&&S.session.username)||"");
-  const mine=(S.activities||[]).filter(a=>a.day===day && isMineAct(a));
-  if(!mine.length) return "";
-  return `<div class="sec"><h3>${ic("star",18)} ${t("afHead")}</h3>
-    <p class="mini" style="margin:-6px 0 10px">${t("afSub")}</p>
-    <div class="card" style="padding:2px 14px">
-      ${mine.map(a=>{
-        const list=afForActivity(a.id);
-        const acc=acceptedBy(a);
-        const own=list.filter(f=>String(f.by_user||"")===me).length;
-        return `<button class="fb-dept ${list.length?(afAvg(list)<3.5?"low":afAvg(list)<4.5?"mid":"top"):""}" data-afact="${esc(String(a.id))}">
-          <span class="fb-nm">${esc(a.name)}<br><span class="mini">${esc(actStart(a))}${a.location?" \u00b7 "+esc(a.location):""}${
-            own?" \u00b7 "+t("afRated"):""}${acc?" \u00b7 "+t("acAccepted"):""}</span></span>
-          ${list.length
-            ? `<span class="fb-bar"><i style="width:${Math.round(afAvg(list)/5*100)}%"></i></span>
-               <span class="fb-val">${afAvg(list).toFixed(1)}</span>`
-            : `<span class="fb-val">${ic("star",16)}</span>`}
-        </button>`;
-      }).join("")}
-    </div>
-  </div>`;
-}
-/* Who has picked up today's work and who has not — one line per person. */
-function acceptRosterCard(day){
-  const acts=(S.activities||[]).filter(a=>a && a.day===day);
-  const staff=(S.users||[]).filter(u=>u.role==="staff" && u.number)
-    .sort((a,b)=>(+a.number||0)-(+b.number||0));
-  if(!staff.length) return "";
-  const dp=dayPlanFor(day);
-  const rows=staff.map(u=>{
-    const off=(dp.off||[]).map(String).includes(String(u.number));
-    const mine=acts.filter(a=>String(a.entertainer||"").toLowerCase()===String(u.username||"").toLowerCase());
-    const taken=mine.filter(a=>String(acceptedBy(a))===String(u.username));
-    return {u, off, n:mine.length, taken:taken.length};
-  });
-  const waiting=rows.filter(r=>!r.off && r.n>r.taken).length;
-  return `<div class="sec"><h3>${ic("check",18)} ${t("acRoster")}
-      ${waiting?`<span class="hd-chip absent">${waiting} ${t("acWaiting")}</span>`:""}</h3>
-    <p class="mini" style="margin:-6px 0 10px">${t("acRosterHint")}</p>
-    <div class="card" style="padding:2px 14px">
-      ${rows.map(r=>`<div class="ac-row ${r.off?"off":(r.n&&r.n===r.taken?"done":(r.n?"wait":""))}">
-        <span class="ac-n">#${esc(String(r.u.number))}</span>
-        <span class="ac-x"><b>${esc(r.u.display_name||r.u.username)}</b>
-          <span class="mini">${r.off ? t("dayOff")
-            : r.n ? `${r.taken}/${r.n} ${t("acAccepted").toLowerCase()}`
-            : t("tmNothingToday")}</span></span>
-        <span class="ac-s">${r.off ? "\u2014"
-          : (r.n && r.n===r.taken) ? ic("check",16)
-          : r.n ? t("acNotAccepted") : "\u2014"}</span>
-      </div>`).join("")}
-    </div>
-  </div>`;
-}
-/* Excel or PDF of exactly what is on screen — same period, same category. */
-function openActFbExport(){
-  const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
-  const list=afFiltered(period);
-  const cur=S.afCat && allCats().includes(S.afCat) ? S.afCat : "";
-  const title=t("afHead")+" \u00b7 "+t(period==="today"?"afToday":period==="week"?"afWeek":"afAll")
-    +(cur?" \u00b7 "+catLabel(cur):"");
-  const set={
-    title,
-    headers:[t("day"),t("afCategory"),t("actName"),t("afHow"),t("afPct"),t("afRoom"),t("afGuestName"),t("comment"),t("afByWho")],
-    rows:list.map(f=>{
-      const a=afActivity(f);
-      return [ shortStamp(f.created_at), catLabel(afCatOf(f)), (a&&a.name)||afMeta(f).name||"",
-               +f.rate||0, afPct(f)+"%", afRooms(f), afGuestName(f), fbComment(f), teamName(f.by_user) ];
-    })
-  };
-  const wrap=baseModal(`
-    <h3>${ic("download",20)} ${t("afExport")}</h3>
-    <p class="mini">${esc(title)} \u00b7 ${list.length} ${t("afRatings")}</p>
-    <button class="btn" id="afe-x1">${ic("download",16)} ${t("exportExcel")}</button>
-    <button class="btn ghost" id="afe-pdf">${ic("download",16)} ${t("exportPdf")}</button>
-    <button class="btn ghost" id="afe-x">${t("close")}</button>`);
-  wrap.querySelector("#afe-x").onclick=()=>wrap.remove();
-  wrap.querySelector("#afe-x1").onclick=async ()=>{
-    if(!list.length){ toastErr(t("afNone")); return; }
-    await exportExcelSets([set], "entertainment-feedback-"+todayISO()); toast(t("saved"));
-  };
-  wrap.querySelector("#afe-pdf").onclick=()=>{
-    if(!list.length){ toastErr(t("afNone")); return; }
-    exportPdfSets([set], title); wrap.remove();
-  };
-}
-/* The manager\'s picture of the programme itself. */
-function actFeedbackCard(){
-  const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
-  const list=afFiltered(period);
-  const groups=afGrouped(list);
-  const cats=afCatList();
-  const cur=S.afCat && allCats().includes(S.afCat) ? S.afCat : "";
-  return `<div class="sec"><h3>${ic("star",18)} ${t("afHead")}</h3>
-    <p class="mini" style="margin:-6px 0 10px">${t("afSub")}</p>
-    <div class="pills">${[["today","afToday"],["week","afWeek"],["all","afAll"]]
-      .map(([k,lb])=>`<button class="pill ${period===k?"on":""}" data-afper="${k}">${esc(t(lb))}</button>`).join("")}</div>
-    ${cats.length>1?`<div class="pills">
-      <button class="pill ${cur?"":"on"}" data-afcat="">${esc(t("afAllCats"))}</button>
-      ${cats.map(c=>`<button class="pill ${cur===c?"on":""}" data-afcat="${esc(c)}">${esc(catLabel(c))}</button>`).join("")}
-    </div>`:""}
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${afAvg(list)?afAvg(list).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
-      <div class="stat"><b>${list.length}</b><span>${t("afRatings")}</span></div>
-    </div>
-    ${groups.length?`<div class="card" style="padding:2px 14px">${groups.map(g=>`
-      <button class="fb-dept ${g.avg<3.5?"low":g.avg<4.5?"mid":"top"}" data-afgroup="${esc(g.key)}">
-        <span class="fb-nm">${esc(g.label)}<br><span class="mini">${g.acts} ${t("afInGroup")} \u00b7 ${g.n} ${t("afRatings")}${
-          g.pct?` \u00b7 ${g.pct}%`:""}</span></span>
-        <span class="fb-bar"><i style="width:${Math.round(g.avg/5*100)}%"></i></span>
-        <span class="fb-val">${g.avg.toFixed(1)}</span></button>`).join("")}</div>
-      <p class="mini" style="margin-top:6px">${t("afOpenGroup")}</p>`
-      :`<div class="empty"><div class="big">${ic("star",30)}</div>${cur?t("afNoCat"):t("afNone")}</div>`}
-    ${(S.session&&S.session.role==="manager")
-      ? `<button class="btn link" id="btn-afexport">${ic("download",14)} ${t("afExport")}</button>` : ""}
-  </div>`;
-}
-/* ===== THE ACTIVITY AS ONE OBJECT =====
-   Opening an activity used to do nothing for staff and managers, so the day had
-   to be reconstructed from four screens. This gathers everything that belongs
-   to one activity — who runs it, who booked it, what it needs — and every
-   button leads to the page that already does that job. */
-function openActivitySheet(id){
-  const a=(S.activities||[]).find(x=>String(x.id)===String(id));
-  if(!a) return;
-  const role=(S.session&&S.session.role)||"guest";
-  const isMgr=role==="manager", isStaff=role==="staff";
-  const books=bookingsFor(a.id);
-  const taken=seatsTaken(a.id);
-  const waiting=books.filter(b=>b.status==="waitlist").length;
-  const cap=+a.capacity||0;
-  const sh=reqSheetForAct(a);
-  const rows=(sh&&sh.rows)||[];
-  const done=rows.filter(r=>r.done).length;
-  const who=actStaffLabel(a);
-  const shown=books.filter(b=>b.status==="booked").slice(0,8);
-  const rest=Math.max(0, books.filter(b=>b.status==="booked").length-shown.length);
-  const wrap=baseModal(`
-    <h3>${ic("calendar",20)} ${esc(a.name)}</h3>
-    <p class="mini">${esc([t("days")[a.day], a.time, a.location].filter(Boolean).join(" \u00b7 "))}</p>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${taken}${cap?"/"+cap:""}</b><span>${t("aoBooked")}</span></div>
-      <div class="stat"><b>${cap?cap:t("aoUnlimited")}</b><span>${t("aoCapacity")}</span></div>
-      ${waiting?`<div class="stat"><b>${waiting}</b><span>${t("aoWaiting")}</span></div>`:""}
-      ${rows.length?`<div class="stat"><b>${done}/${rows.length}</b><span>${t("aoReq")}</span></div>`:""}
-    </div>
-    <div class="card cc">
-      <div class="cc-row"><span class="cc-ic">${ic("users",17)}</span>
-        <span class="cc-x">${t("aoStaff")}</span>
-        <span class="cc-v">${who?esc(who):`<i class="ao-none">${esc(t("aoNobody"))}</i>`}</span></div>
-      <div class="cc-row"><span class="cc-ic">${ic("check",17)}</span>
-        <span class="cc-x">${t("acAccepted")}</span>
-        <span class="cc-v">${acceptedBy(a)?esc(teamName(acceptedBy(a)))
-          :`<i class="ao-none">${esc(t("acNotAccepted"))}</i>`}</span></div>
-      <div class="cc-row"><span class="cc-ic">${ic("clipboard",17)}</span>
-        <span class="cc-x">${t("aoReq")}</span>
-        <span class="cc-v">${rows.length?`${done}/${rows.length}`:`<i class="ao-none">\u2014</i>`}</span></div>
-    </div>
-    ${(isMgr||isStaff)?`<div class="ao-sec">${t("aoGuests")}</div>
-      ${shown.length?`<div class="card" style="padding:2px 14px">
-        ${shown.map(b=>`<div class="booking-line"><span><b>${t("room")} ${esc(b.room)}</b>${b.guest_name?" \u00b7 "+esc(b.guest_name):""}</span>
-          <span class="pill">${(+b.adults||0)+(+b.children||0)||1}</span></div>`).join("")}
-        ${rest?`<p class="mini" style="padding:8px 0">${t("aoAndMore").replace("{n}",rest)}</p>`:""}
-      </div>`:`<p class="mini">${t("aoNoGuests")}</p>`}`:""}
-    ${isMgr?`
-      <button class="btn" id="ao-edit">${ic("pen",16)} ${t("aoEdit")}</button>
-      <button class="btn ghost" id="ao-att">${ic("check",16)} ${t("aoAttendance")}</button>
-      <button class="btn ghost" id="ao-req">${ic("clipboard",16)} ${sh?t("aoReqOpen"):t("aoReqMake")}</button>
-      <button class="btn ghost" id="ao-assign">${ic("users",16)} ${t("aoAssign")}</button>`:""}
-    ${isStaff?`<button class="btn" id="ao-att">${ic("check",16)} ${t("aoAttendance")}</button>`:""}
-    ${isStaff?`<button class="btn ghost" id="ao-acc">${ic("check",16)} ${
-      iAccepted(a) ? t("acUndo") : t("acAccept")}</button>`:""}
-    ${(isMgr||isStaff)?`<button class="btn ghost" id="ao-afb">${ic("star",16)} ${
-      afForActivity(a.id).length ? `${t("afRated")} \u00b7 ${afAvg(afForActivity(a.id)).toFixed(1)} \u2605` : t("afRate")}</button>`:""}
-    <button class="btn ghost" id="ao-x">${t("close")}</button>`);
-  wrap.querySelector("#ao-x").onclick=()=>wrap.remove();
-  const ed=wrap.querySelector("#ao-edit");
-  if(ed) ed.onclick=()=>{ wrap.remove(); openEditModal(a); };
-  const at=wrap.querySelector("#ao-att");
-  if(at) at.onclick=()=>{ wrap.remove(); openAttendanceModal(a); };
-  const rq=wrap.querySelector("#ao-req");
-  if(rq) rq.onclick=()=>{
-    wrap.remove();
-    if(sh){ openReqEditor(sh.id); return; }
-    openReqEditor();                       // a blank sheet, ready to be filled for this one
-  };
-  const acc=wrap.querySelector("#ao-acc");
-  if(acc) acc.onclick=async ()=>{ wrap.remove(); await toggleAccept(a.id); };
-  const afb=wrap.querySelector("#ao-afb");
-  if(afb) afb.onclick=()=>{
-    wrap.remove();
-    afForActivity(a.id).length ? openActFbList(a.id) : openActFbModal(a.id);
-  };
-  const asg=wrap.querySelector("#ao-assign");
-  if(asg) asg.onclick=()=>{ wrap.remove(); S.tab="assign"; render(); };
-}
-/* ===== CONTROL CENTER =====
-   What still needs doing today, in one card, each line opening the page that
-   fixes it. Everything here is counted from data the app already holds. */
-/* "All team" means everybody is on it, not that nobody is. */
-/* The roster only ever assigns daytime activities to one person. Events, shows
-   and parties are run by the whole team by design, so an empty name on those is
-   not a gap — it means everybody. */
-const ACT_PERSONAL_CATS=["mAdult","mKids","mTeen"];
-function actIsWholeTeam(a){
-  if(actIsAllTeam(a)) return true;
-  return !ACT_PERSONAL_CATS.includes(normCat(a||{}));
-}
-/* The picker's first option has always been "All team" with an empty value, so
-   empty means the whole team is on it — never that nobody is. "Nobody yet" now
-   has a value of its own, so a fully staffed show can no longer read unstaffed. */
-const ENT_NOBODY="-";
-function actIsUnassigned(a){
-  return String((a&&a.entertainer)||"").trim()===ENT_NOBODY;
-}
-function actHasStaff(a){ return !actIsUnassigned(a); }
-function actIsAllTeam(a){
-  const v=String((a&&a.entertainer)||"").trim().toLowerCase();
-  if(v===ENT_NOBODY) return false;
-  return v==="" || v==="all" || v==="all team" || v==="team"
-      || v===String(t("allTeam")).toLowerCase() || v===String(t("ccAllTeam")).toLowerCase();
-}
-function actStaffLabel(a){
-  if(actIsUnassigned(a)) return "";
-  const v=String((a&&a.entertainer)||"").trim();
-  if(v && !actIsAllTeam(a)) return entertainerName(v)||v;   // always the display name
-  return t("ccAllTeam");
-}
-function ccRow(icon, label, value, tab, tone){
-  return `<button class="cc-row${tone?" "+tone:""}"${tab?` data-ccgo="${esc(tab)}"`:""}>
-    <span class="cc-ic">${ic(icon,17)}</span>
-    <span class="cc-x">${esc(label)}</span>
-    <span class="cc-v">${value}</span>
-    ${tab?`<span class="cc-go">${ic("back",14)}</span>`:""}
-  </button>`;
-}
-function ccTodayOps(){
-  const d=todayIndex();
-  const acts=(S.activities||[]).filter(a=>a && a.day===d);
-  const upNext=acts.filter(a=>activityStatus(a)==="todo")
-    .sort((x,y)=>(timeToMin(actStart(x))||0)-(timeToMin(actStart(y))||0)).slice(0,3);
-  const unassigned=acts.filter(a=>!actHasStaff(a)).length;
-  const sheets=reqForDate(todayISO());
-  const sheetLines=sheets.reduce((n,sh)=>n+((sh.rows||[]).length),0);
-  const sheetDone=sheets.reduce((n,sh)=>n+reqDone(sh),0);
-  const openTasks=(S.tasks||[]).filter(k=>String(k.status||"")!=="done").length;
-  const guestReq=(S.requests||[]).filter(r=>String(r.status||"")==="new").length;
-  const teamReq=teamReqCount();
-  // one row, one destination — no two lines may lead to the same screen
-  const rows=[
-    unassigned ? ccRow("users",  t("ccNoAssign"),  unassigned, "program:acts", "warn") : "",
-    sheets.length ? ccRow("clipboard", t("ccReqToday"),
-        `${sheetDone} ${t("ccOfN")} ${sheetLines} ${t("ccReady")}`, "req",
-        (sheetLines && sheetDone<sheetLines) ? "warn" : "good") : "",
-    openTasks ? ccRow("check", t("ccOpenTasks"), openTasks, "assign", "warn") : "",
-    (guestReq+teamReq) ? ccRow("bell", t("ccOpenRequests"), guestReq+teamReq, "inbox:requests", "warn") : ""
-  ].filter(Boolean).join("");
-  // the next activities already sit in Live operations right above — this card
-  // is only for what still needs doing
-  return `<div class="sec"><h3>${ic("clock",18)} ${t("ccOps")}</h3>
-    ${rows?`<div class="card cc">${rows}</div>`
-      :`<div class="card cc"><p class="mini" style="padding:12px 2px;margin:0">${t("ccAllClear")}</p></div>`}
-  </div>`;
-}
-function ccTeamPulse(){
-  const d=todayIndex();
-  const dp=dayPlanFor(d);
-  const byNum={}; (S.users||[]).forEach(u=>{ if(u.number) byNum[u.number]=u; });
-  const nums=Object.keys(byNum).map(Number).filter(n=>n>=1&&n<=10);
-  const off=nums.filter(n=>(dp.off||[]).includes(n));
-  const working=nums.filter(n=>!(dp.off||[]).includes(n));
-  const today=todayISO();
-  const marked=new Set((S.attendance||[]).filter(r=>String(r.date||"")===today).map(r=>String(r.number))).size;
-  const openTasks=(S.tasks||[]).filter(k=>String(k.status||"")!=="done").length;
-  return `<div class="sec"><h3>${ic("users",18)} ${t("ccTeamPulse")}</h3>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${working.length}</b><span>${t("ccWorkingToday")}</span></div>
-      <div class="stat"><b>${off.length}</b><span>${t("ccOffToday")}</span></div>
-      <div class="stat"><b>${marked}/${working.length||nums.length}</b><span>${t("ccAttMarked")}</span></div>
-      <div class="stat"><b>${openTasks}</b><span>${t("ccOpenTasks")}</span></div>
-    </div>
-    <div class="card cc">
-      ${ccRow("users", t("teamTab"), nums.length, "team", "")}
-    </div>
   </div>`;
 }
 /* Tonight's show or party, and whether the hotel is actually ready for it.
@@ -9367,7 +7657,7 @@ function tonightCard(){
   const rows=(sh && sh.rows) || [];
   const done=rows.filter(r=>r.done).length;
   const pct=rows.length?Math.round(done/rows.length*100):0;
-  const who=actStaffLabel(a);
+  const who=String(a.entertainer||"").trim();
   const byDept={};
   rows.forEach(r=>{ const k=r.dept||"\u2014"; byDept[k]=byDept[k]||{n:0,d:0}; byDept[k].n++; if(r.done) byDept[k].d++; });
   const chips=Object.keys(byDept).slice(0,3).map(k=>{
@@ -9393,41 +7683,9 @@ function tonightCard(){
 }
 /* What is running right now, what starts next, and whether anyone is on it.
    The manager's first question every afternoon. */
-/* "20:15 - 22:15" tells the manager nothing at a glance. This says how long
-   until it starts, or how long until it ends, and keeps ticking. */
-function cdText(mins, live){
-  const m=Math.max(0, Math.round(mins));
-  if(live && m<=0) return t("cdNow");
-  const h=Math.floor(m/60), r=m%60;
-  const span = h ? (h+"h"+(r?" "+r+"m":"")) : (m+"m");
-  return (live?t("cdEndsIn"):t("cdStartsIn"))+" "+span;
-}
-function cdChip(startMin, endMin){
-  const live = `${startMin}|${endMin}`;
-  return `<span class="cd" data-cd="${live}"></span>`;
-}
-/* One timer for the whole screen, refreshing only the little countdowns. */
-let cdTimer=null;
-function wireCountdowns(){
-  if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
-  const paint=()=>{
-    const els=document.querySelectorAll("[data-cd]");
-    if(!els.length){ if(cdTimer){ clearInterval(cdTimer); cdTimer=null; } return; }
-    const now=nowMinutes();
-    els.forEach(el=>{
-      const bits=String(el.dataset.cd).split("|");
-      const s0=+bits[0], e0=+bits[1];
-      const live = now>=s0 && now<e0;
-      el.textContent = now>=e0 ? "" : cdText(live ? e0-now : s0-now, live);
-      el.className = "cd"+(live?" live":"");
-    });
-  };
-  paint();
-  cdTimer=setInterval(paint, 30000);
-}
 function liveOpsCard(){
   const day=todayIndex();
-  const now=nowMinutes();          // the hotel's clock, not the phone's
+  const now=(()=>{ const d=new Date(); return d.getHours()*60+d.getMinutes(); })();
   const list=(S.activities||[]).filter(a=>a && a.day===day)
     .map(a=>{
       const w=actWindow(a);
@@ -9435,25 +7693,23 @@ function liveOpsCard(){
       const s1=(w && (w.e0!=null?w.e0:w.s1)) ?? (s0+45);   // actWindow calls the end e0
       return {a, s0, s1};
     })
-    .filter(x=>x.s1>now)                           // running now, or still to come — never finished
+    .filter(x=>x.s1>=now-30)                       // still running, or still to come
     .sort((x,y)=>x.s0-y.s0)
     .slice(0,5);
   if(!list.length) return "";
+  const staffOf=a=>String(a.entertainer||"").trim();   // the field the assign centre writes
   const row=x=>{
-    const a=x.a, who=actStaffLabel(a), booked=seatsTaken(a.id);
+    const a=x.a, who=staffOf(a), booked=seatsTaken(a.id);
     const live = x.s0<=now && now<=x.s1;
     const mins = Math.round(x.s0-now);
-    const acc = acceptedBy(a);
-    const chip = acc ? `<span class="schip ok"><i></i>${t("acAccepted")} \u00b7 ${esc(teamName(acc))}</span>`
-      : live ? `<span class="schip live"><i></i>${t("liveNow")}</span>`
-      : !actHasStaff(a) ? `<span class="schip warn"><i></i>${t("liveNoStaff")}</span>`
+    const chip = live ? `<span class="schip live"><i></i>${t("liveNow")}</span>`
+      : !who   ? `<span class="schip warn"><i></i>${t("liveNoStaff")}</span>`
       : mins<=60 ? `<span class="schip gold"><i></i>${t("liveSoon").replace("{n}",Math.max(0,mins))}</span>`
       : `<span class="schip"><i></i>${t("liveAssigned")}</span>`;
     return `<div class="booking-line" data-actopen="${esc(String(a.id))}" style="cursor:pointer">
       <span style="min-width:0"><b>${esc(a.name)}</b>
         <br><span class="mini">${esc(String(a.time||""))}${a.location?" \u00b7 "+esc(a.location):""}${
-          booked?" \u00b7 "+booked+" "+t("guests"):""}${who?" \u00b7 "+esc(who):""}</span>
-        <br>${cdChip(x.s0, x.s1)}</span>
+          booked?" \u00b7 "+booked+" "+t("guests"):""}${who?" \u00b7 "+esc(who):""}</span></span>
       ${chip}
     </div>`;
   };
@@ -9462,29 +7718,10 @@ function liveOpsCard(){
   </div>`;
 }
 /* The feedback picture at a glance — tap a department to read the ratings behind it. */
-/* Feedback is collected day by day, so the dashboard shows today by default and
-   starts fresh after midnight. Nothing is deleted — the other periods look back
-   over exactly the same records. */
-function fbPeriodList(period){
-  const all=S.feedback||[];
-  if(period==="all") return all.slice();
-  const now=new Date();
-  const start=new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if(period==="week") start.setDate(start.getDate()-6);
-  else if(period==="month") start.setDate(start.getDate()-29);
-  return all.filter(f=>{
-    const ts=f.created_at?new Date(f.created_at):null;
-    return ts && !isNaN(ts.getTime()) && ts>=start;
-  });
-}
 function feedbackAnalyticsCard(){
-  const period=["today","week","month","all"].includes(S.fbPeriod)?S.fbPeriod:"today";
-  const list=fbPeriodList(period);
+  const list=S.feedback||[];
   const sum=fbSummary(list);
   return `<div class="sec"><h3>${ic("star",18)} ${t("fbAnalytics")}</h3>
-    <div class="pills">${[["today","fbToday"],["week","fbWeek"],["month","fbMonth"],["all","fbAllTime"]]
-      .map(([k,lb])=>`<button class="pill ${period===k?"on":""}" data-fbper="${k}">${esc(t(lb))}</button>`).join("")}</div>
-    ${(!list.length && period==="today")?`<p class="mini" style="margin:0 0 10px">${t("fbNoneToday")}</p>`:""}
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${sum.overall?sum.overall.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${sum.count}</b><span>${t("feedback")}</span></div>
@@ -9500,12 +7737,12 @@ function feedbackAnalyticsCard(){
           sum.perfect ? t("fbHotelGeneral")+" \u00b7 "+t("fbPerfect")
           : t("fbHotelGeneral")+" \u00b7 "+t("fbNoneWeak")}</p>`:"")}
     ${fbDeptListCard(list)}
-    <p class="mini" style="margin-top:6px">${sum.rated?t("fbTapHint")+" ":""}${t("fbPeriodHint")}</p>
+    ${sum.rated?`<p class="mini" style="margin-top:6px">${t("fbTapHint")}</p>`:""}
   </div>`;
 }
 function managerActsInner(){
   const acts=S.activities.filter(a=>a.day===S.day);
-  const head=dayTabs()+`<button class="btn" id="btn-add" style="margin:0 0 14px">${ic("plus",16)} ${t("addActivity")}</button>`;
+  const head=dayTabs()+`<button class="btn" id="btn-add" style="margin:0 0 14px">＋ ${t("addActivity")}</button>`;
   if(!acts.length) return head+`<div class="empty"><div class="big">${ic("pin",30)}</div>${t("noneToday")}</div>`;
   return head + OPS.map(o=>{
     const list=acts.filter(a=>actOp(a)===o.id).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
@@ -9514,7 +7751,7 @@ function managerActsInner(){
   }).join("");
 }
 function managerTicketsInner(){
-  return `<button class="btn" id="btn-addticket" style="margin:0 0 14px">${ic("plus",16)} ${t("addTicket")}</button>`
+  return `<button class="btn" id="btn-addticket" style="margin:0 0 14px">＋ ${t("addTicket")}</button>`
   + (S.tickets.length?S.tickets.map(tk=>{
     const os=ordersFor(tk.id), sold=ticketsSold(tk.id);
     return `<div class="card">
@@ -9548,7 +7785,7 @@ function requestsInner(){
 function roomsInner(){
   return `<label>${t("addRooms")}</label>
     <textarea id="rooms-in" rows="3" placeholder="${t("roomsHint")}"></textarea>
-    <button class="btn" id="btn-addrooms" style="margin:10px 0 16px">${ic("plus",16)} ${t("addRooms")}</button>
+    <button class="btn" id="btn-addrooms" style="margin:10px 0 16px">＋ ${t("addRooms")}</button>
     <input id="rooms-filter" placeholder="..." style="margin-bottom:10px">
     <div class="card roomgrid">
       ${S.rooms.length?S.rooms.map(r=>{
@@ -9583,7 +7820,7 @@ function teamSummaryCard(){
 function accountsInner(){
   const managerCount=S.users.filter(u=>u.role==="manager").length;
   return `${teamSummaryCard()}
-    <button class="btn" id="btn-adduser" style="margin:0 0 12px">${ic("plus",16)} ${t("addUser")}</button>
+    <button class="btn" id="btn-adduser" style="margin:0 0 12px">＋ ${t("addUser")}</button>
     <div class="card">
       ${S.users.filter(u=>!isAttOnly(u)).sort((a,b)=>(hasLeft(a)?1:0)-(hasLeft(b)?1:0) || (a.number||99)-(b.number||99)).map(u=>{
         const lastManager=u.role==="manager"&&managerCount<=1;
@@ -9633,7 +7870,7 @@ function openProfileModal(p){
 }
 function tasksInner(){
   const rk=rankingRows();
-  return `<button class="btn" id="btn-addtask" style="margin:0 0 12px">${ic("plus",16)} ${t("addTask")}</button>
+  return `<button class="btn" id="btn-addtask" style="margin:0 0 12px">＋ ${t("addTask")}</button>
     <button class="btn ghost" id="btn-export" style="margin:0 0 14px">${ic("download",16)} ${t("exportReport")}</button>`
     + (rk.length?`<div class="sec"><h3>${ic("trophy",18)} ${t("taskStats")}</h3><div class="card">
       ${rk.map((r,i)=>`<div class="booking-line">
@@ -9863,7 +8100,7 @@ function buildDataset(kind){
   if(kind==="program") return {title:t("manage")+exportFilterNote(),
     headers:[t("day"),t("time"),t("actName"),t("category"),t("location"),t("entertainer"),t("capacity"),t("makeHighlight")],
     rows:exportActivities().slice().sort((x,y)=>(x.day-y.day)||String(x.time).localeCompare(String(y.time)))
-      .map(a=>[t("days")[a.day]||"",a.time||"",a.name||"",catLabel(normCat(a)),a.location||"",actStaffLabel(a),a.capacity||0,a.highlight?t("yes"):""])};
+      .map(a=>[t("days")[a.day]||"",a.time||"",a.name||"",catLabel(normCat(a)),a.location||"",a.entertainer||"",a.capacity||0,a.highlight?"★":""])};
   if(kind==="dayplan"){
     // One clean row per day — exactly what hotel management needs at a glance
     const onlyDay=expDay();
@@ -10332,22 +8569,6 @@ function setBrandView(){
       <input id="s-mtick" value="${esc(st.menuTickets)}" placeholder="${t("tickets")}" style="margin-bottom:8px">
       <input id="s-mchat" value="${esc(st.menuChat)}" placeholder="${t("chat")}" style="margin-bottom:8px">
       <input id="s-mstay" value="${esc(st.menuStay)}" placeholder="${t("myStay")}">
-      <label style="margin-top:18px">${t("covHead")}</label>
-      <p class="mini" style="margin:-4px 0 8px">${t("covHint")}</p>
-      ${[["guest","covGuest"],["staff","covStaff"],["manager","covManager"]].map(([r,lb])=>{
-        const key=coverKeyFor(r), url=st[key]||"";
-        return `<div class="cov" data-cov="${r}">
-          <div class="cov-box" data-covbox="${r}" style="${url?`background-image:url('${esc(url)}')`:""}">
-            ${url?"":`<span>${ic("sparkle",22)}</span>`}
-          </div>
-          <div class="cov-txt"><b>${t(lb)}</b>
-            <span class="mini">${url?t("covTap"):t("covDefault")}</span>
-            ${url?`<button class="btn link" type="button" data-covrm="${r}">${ic("trash",13)} ${t("covRemove")}</button>`:""}
-          </div>
-          <input type="hidden" id="s-${esc(key)}" value="${esc(url)}">
-          <input type="file" accept="image/*" data-covinput="${r}" hidden>
-        </div>`;
-      }).join("")}
       <button class="btn" id="btn-savesettings">${t("save")}</button>
     </div>
   </div>`;
@@ -10689,18 +8910,13 @@ function openFeedbackDetail(id){
   };
 }
 /* One department, opened up: every rating behind the average. */
-function fbPeriodLabel(p){
-  return t(p==="week"?"fbThisWeek":p==="month"?"fbThisMonth":p==="all"?"fbAllTime":"fbToday");
-}
 function openDeptDetail(key){
-  // the same period the card is showing — picking Today must not open all time
-  const all=fbPeriodList(S.fbPeriod||"today");
+  const all=S.feedback||[];
   const list=all.filter(f=>+fbDepts(f)[key]>0)
     .sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
   const st=fbDeptStats(all).find(x=>x.k===key)||{avg:0,n:0};
   const wrap=baseModal(`
     <h3>${ic("star",20)} ${esc(fbDeptLabel(key))}</h3>
-    <p class="mini">${esc(fbPeriodLabel(S.fbPeriod||"today"))}</p>
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${st.avg?st.avg.toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${st.n}</b><span>${t("fbResponses")}</span></div>
@@ -10725,7 +8941,7 @@ function openDeptEditor(){
     <h3>${ic("grid",20)} ${t("fbDeptsEdit")}</h3>
     <p class="mini">${t("fbDeptsHint")}</p>
     <div id="de-box"></div>
-    <button class="btn ghost" id="de-add">${ic("plus",16)} ${t("fbAddDept")}</button>
+    <button class="btn ghost" id="de-add">\uFF0B ${t("fbAddDept")}</button>
     <button class="btn" id="de-go">${t("save")}</button>
     <button class="btn ghost" id="de-reset">${t("fbResetDepts")}</button>
     <button class="btn ghost" id="de-x">${t("cancelBtn")}</button>`);
@@ -10796,8 +9012,7 @@ function openTextPrompt(title, value, done){
    One sheet per event, activity or party: what is needed, how much of it, and
    which department provides it. Sent to hotel management the day before.
    Everything lives in settings so there is no new database table to create. */
-const REQ_KINDS=["event","activity","party","purchase"];
-const REQ_URGENCY=[["normal","reqUrgNormal"],["soon","reqUrgSoon"],["urgent","reqUrgUrgent"]];
+const REQ_KINDS=["event","activity","party"];
 const REQ_DEPTS_DEFAULT=["Entertainment","F&B","Housekeeping","Engineering","Security","Reception"];
 const REQ_TEMPLATES_DEFAULT={
   event:[
@@ -10810,8 +9025,6 @@ const REQ_TEMPLATES_DEFAULT={
     {need:"Mats", qty:"10", dept:"Entertainment"},
     {need:"Speaker", qty:"1", dept:"Entertainment"},
     {need:"Water", qty:"10", dept:"F&B"}],
-  purchase:[
-    {need:"", qty:"", dept:"Entertainment", info:"", when:"", urg:"normal"}],
   party:[
     {need:"DJ setup", qty:"1", dept:"Entertainment"},
     {need:"Lights", qty:"6", dept:"Engineering"},
@@ -10845,19 +9058,10 @@ function nextDateForDay(dayIdx, fromISO){
   return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
 }
 function reqKindLabel(k){
-  return k==="activity" ? t("reqKindActivity") : k==="party" ? t("reqKindParty")
-       : k==="purchase" ? t("reqKindPurchase") : t("reqKindEvent");
+  return k==="activity" ? t("reqKindActivity") : k==="party" ? t("reqKindParty") : t("reqKindEvent");
 }
 function reqSheetTitle(k){
-  return k==="activity" ? t("reqActivity") : k==="party" ? t("reqParty")
-       : k==="purchase" ? t("reqPurchase") : t("reqEvent");
-}
-/* A purchase request is a different animal: it asks for things to be bought,
-   with a deadline and an urgency, not for a department to bring something. */
-function reqIsPurchase(sh){ return String(sh&&sh.kind)==="purchase"; }
-function reqUrgLabel(u){
-  const hit=REQ_URGENCY.find(x=>x[0]===String(u||"normal"));
-  return hit ? t(hit[1]) : t("reqUrgNormal");
+  return k==="activity" ? t("reqActivity") : k==="party" ? t("reqParty") : t("reqEvent");
 }
 function reqDepts(){
   const c=S.settings && S.settings.reqDepts;
@@ -10896,12 +9100,12 @@ function requirementsView(){
     ${topBar(t("reqTab"),S.session.name)}
     <p class="mini" style="margin:-4px 0 12px">${t("reqSub")}</p>
     <div class="row2" style="margin-bottom:10px">
-      <button class="btn" id="rq-new">${ic("plus",16)} ${t("reqNew")}</button>
+      <button class="btn" id="rq-new">\uFF0B ${t("reqNew")}</button>
       <button class="btn ghost" id="rq-pack">${ic("download",15)} ${t("reqExportDay")}</button>
     </div>
-    <div style="margin-bottom:14px;display:flex;gap:14px;flex-wrap:wrap">
-      <button class="btn link" id="rq-depts">${ic("grid",14)} ${t("reqDepts")}</button>
-      <button class="btn link" id="rq-tpl">${ic("pen",14)} ${t("reqTemplates")}</button>
+    <div class="row2" style="margin-bottom:14px">
+      <button class="btn ghost sm" id="rq-depts">${ic("grid",14)} ${t("reqDepts")}</button>
+      <button class="btn ghost sm" id="rq-tpl">${ic("pen",14)} ${t("reqTemplates")}</button>
     </div>
     <label>${t("reqPickDate")}</label>
     <input type="date" id="rq-date" value="${esc(day)}" style="margin-bottom:14px">
@@ -10942,9 +9146,9 @@ function openReqEditor(id){
     <label style="margin-top:10px">${t("reqLocation")}</label><input id="rq-loc" value="${esc(sh.location||"")}">
     <label style="margin-top:14px">${t("reqNeed")}</label>
     <div id="rq-rows"></div>
-    <div style="margin-top:8px;display:flex;gap:14px;flex-wrap:wrap">
-      <button class="btn link" id="rq-add">${ic("plus",16)} ${t("reqAddLine")}</button>
-      <button class="btn link" id="rq-std">${t("reqStandard")}</button>
+    <div class="row2" style="margin-top:8px">
+      <button class="btn ghost sm" id="rq-add">\uFF0B ${t("reqAddLine")}</button>
+      <button class="btn ghost sm" id="rq-std">${t("reqStandard")}</button>
     </div>
     <label style="margin-top:14px">${t("reqNote")}</label><textarea id="rq-note" rows="2">${esc(sh.note||"")}</textarea>
     <label>${t("reqResponsible")}</label><input id="rq-resp" value="${esc(sh.responsible||"")}">
@@ -10956,9 +9160,8 @@ function openReqEditor(id){
   const box=wrap.querySelector("#rq-rows");
   const paintRows=()=>{
     const depts=reqDepts();
-    const buy=reqIsPurchase(sh);
     box.innerHTML = sh.rows.length ? sh.rows.map((r,i)=>`<div class="rq-row">
-      <input class="rq-need" data-rqneed="${i}" value="${esc(r.need||"")}" placeholder="${esc(t(buy?"reqItem":"reqNeed"))}">
+      <input class="rq-need" data-rqneed="${i}" value="${esc(r.need||"")}" placeholder="${esc(t("reqNeed"))}">
       <input class="rq-qty" data-rqqty="${i}" value="${esc(r.qty||"")}" placeholder="${esc(t("reqQty"))}">
       <select class="rq-dep" data-rqdept="${i}">
         <option value="">\u2014</option>
@@ -10970,20 +9173,11 @@ function openReqEditor(id){
         <button class="bd-b" data-rqup="${i}" ${i===0?"disabled":""}>${ic("back",13)}</button>
         <button class="bd-b down" data-rqdown="${i}" ${i===sh.rows.length-1?"disabled":""}>${ic("back",13)}</button>
         <button class="bd-b warn" data-rqdel="${i}">${ic("trash",13)}</button>
-      </span>
-      ${buy?`<input class="rq-info" data-rqinfo="${i}" value="${esc(r.info||"")}" placeholder="${esc(t("reqItemInfo"))}">
-        <input class="rq-when" data-rqwhen="${i}" value="${esc(r.when||"")}" placeholder="${esc(t("reqNeededBy"))}">
-        <select class="rq-urg" data-rqurg="${i}">
-          ${REQ_URGENCY.map(([k,lb])=>`<option value="${k}" ${String(r.urg||"normal")===k?"selected":""}>${esc(t(lb))}</option>`).join("")}
-        </select>`:""}
-      </div>`).join("")
+      </span></div>`).join("")
       : `<p class="mini">${t("reqNoLines")}</p>`;
     box.querySelectorAll("[data-rqneed]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqneed].need=el.value; });
     box.querySelectorAll("[data-rqqty]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqqty].qty=el.value; });
     box.querySelectorAll("[data-rqdept]").forEach(el=>el.onchange=()=>{ sh.rows[+el.dataset.rqdept].dept=el.value; });
-    box.querySelectorAll("[data-rqinfo]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqinfo].info=el.value; });
-    box.querySelectorAll("[data-rqwhen]").forEach(el=>el.oninput=()=>{ sh.rows[+el.dataset.rqwhen].when=el.value; });
-    box.querySelectorAll("[data-rqurg]").forEach(el=>el.onchange=()=>{ sh.rows[+el.dataset.rqurg].urg=el.value; });
     box.querySelectorAll("[data-rqtick]").forEach(b=>b.onclick=()=>{
       const r=sh.rows[+b.dataset.rqtick]; r.done=!r.done; paintRows(); });
     box.querySelectorAll("[data-rqup]").forEach(b=>b.onclick=()=>{
@@ -10998,9 +9192,6 @@ function openReqEditor(id){
   const pick=wrap.querySelector("#rq-pick");
   const paintPick=()=>{
     if(!pick) return;
-    const holder=pick.parentNode;
-    if(holder && holder.style) holder.style.display = reqIsPurchase(sh) ? "none" : "";
-    if(reqIsPurchase(sh)){ pick.innerHTML=""; return; }
     const list=reqProgramList(sh.kind);
     pick.innerHTML=`<option value="">${esc(t("reqFromProgramOwn"))}</option>`
       + list.map(a=>{
@@ -11026,7 +9217,7 @@ function openReqEditor(id){
     sh.kind=b.dataset.rqkind;
     sh.actId="";                                  // a different kind means a different list
     wrap.querySelectorAll("[data-rqkind]").forEach(x=>x.classList.toggle("on", x.dataset.rqkind===sh.kind));
-    paintPick(); paintRows();
+    paintPick();
   });
   wrap.querySelector("#rq-add").onclick=()=>{ sh.rows.push({need:"",qty:"",dept:""}); paintRows(); };
   wrap.querySelector("#rq-std").onclick=()=>{ sh.rows=sh.rows.concat(reqTemplate(sh.kind)); paintRows(); };
@@ -11068,7 +9259,7 @@ function openReqDeptEditor(){
     <h3>${ic("grid",20)} ${t("reqDepts")}</h3>
     <p class="mini">${t("reqDeptsHint")}</p>
     <div id="rd-box"></div>
-    <button class="btn ghost" id="rd-add">${ic("plus",16)} ${t("reqAddDept")}</button>
+    <button class="btn ghost" id="rd-add">\uFF0B ${t("reqAddDept")}</button>
     <button class="btn" id="rd-go">${t("save")}</button>
     <button class="btn ghost" id="rd-reset">${t("reqResetLists")}</button>
     <button class="btn ghost" id="rd-x">${t("cancelBtn")}</button>`);
@@ -11117,7 +9308,7 @@ function openReqTemplateEditor(){
       ${REQ_KINDS.map(k=>`<button class="pill ${k==="event"?"on":""}" data-rtkind="${k}">${esc(reqKindLabel(k))}</button>`).join("")}
     </div>
     <div id="rt-box"></div>
-    <button class="btn ghost" id="rt-add">${ic("plus",16)} ${t("reqAddLine")}</button>
+    <button class="btn ghost" id="rt-add">\uFF0B ${t("reqAddLine")}</button>
     <button class="btn" id="rt-go">${t("save")}</button>
     <button class="btn ghost" id="rt-reset">${t("reqResetLists")}</button>
     <button class="btn ghost" id="rt-x">${t("cancelBtn")}</button>`);
@@ -11223,23 +9414,20 @@ function exportRequirements(sheets, day, blank){
    +"td{padding:8px 9px;border:1px solid #D8CFC1;vertical-align:middle}"
    +"td.qty{width:56px;text-align:center;font-weight:700}"
    +"td.dep{width:130px}"
-   +"td.urg{width:82px;font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase}"
-   +"td.urg.urgent{color:#B0392B}td.urg.soon{color:#D08526}td.urg.normal{color:#6B5C4A}"
    +"td.box{width:52px;text-align:center}"
    +".ck{display:inline-block;width:12px;height:12px;border:1.2px solid #6B5C4A}"
    +".notebox{border:1px solid #D8CFC1;border-radius:3px;padding:8px 10px;min-height:56px;margin-bottom:14px}"
    +".notebox i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;"
      +"color:#8A7C6A;font-weight:700;margin-bottom:4px}"
    +".notebox p{margin:0;font-size:10.5px;line-height:1.5}"
-   +".resp{margin-top:16px;font-size:11px}"
-   +".resp i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;"
-     +"color:#8A7C6A;font-weight:700;margin-bottom:3px}"
+   +".sign{display:flex;gap:26px;margin-top:20px}"
+   +".sign div{flex:1;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#8A7C6A;font-weight:700}"
+   +".sign span{display:block;border-bottom:1px solid #B9AE9E;height:26px;margin-bottom:4px}"
    +".foot{margin-top:16px;padding-top:8px;border-top:1px solid #E0D8CB;font-size:8.5px;color:#9C9081;"
      +"display:flex;justify-content:space-between}";
 
   const one=sh=>{
     const rows=(sh.rows||[]);
-    const buy=reqIsPurchase(sh);
     const pad=Math.max(0, (blank?10:rows.length+2)-rows.length);   // room to write more by hand
     return '<div class=sheet><div class=head>'
       +(hotel?'<div class=hotel>'+E2(hotel)+'</div>':'')
@@ -11250,27 +9438,23 @@ function exportRequirements(sheets, day, blank){
       +'<div class=facts>'
         +'<div class=f><i>'+E2(reqKindLabel(sh.kind))+'</i>'+line(sh.title)+'</div>'
         +'<div class=f><i>'+E2(t("reqDate"))+'</i>'+line(sh.date?niceDate(sh.date):"")+'</div>'
-        +(buy?'':'<div class=f><i>'+E2(t("time"))+'</i>'+line(sh.time)+'</div>')
-        +(buy?'':'<div class=f><i>'+E2(t("reqLocation"))+'</i>'+line(sh.location)+'</div>')
+        +'<div class=f><i>'+E2(t("time"))+'</i>'+line(sh.time)+'</div>'
+        +'<div class=f><i>'+E2(t("reqLocation"))+'</i>'+line(sh.location)+'</div>'
       +'</div>'
       +'<table><thead><tr>'
-        +(buy
-          ? '<th>'+E2(t("reqItem"))+'</th><th>'+E2(t("reqQty"))+'</th><th>'+E2(t("reqItemInfo"))+'</th>'
-            +'<th>'+E2(t("reqNeededBy"))+'</th><th>'+E2(t("reqUrgency"))+'</th>'
-          : '<th>'+E2(t("reqNeed"))+'</th><th>'+E2(t("reqQty"))+'</th><th>'+E2(t("reqDept"))+'</th>')
-        +'</tr></thead><tbody>'
-      + rows.map(r=>'<tr>'
-          +'<td>'+E2(r.need||"")+'</td><td class=qty>'+E2(r.qty||"")+'</td>'
-          +(buy
-            ? '<td>'+E2(r.info||"")+'</td><td class=dep>'+E2(r.when||"")+'</td>'
-              +'<td class="urg '+E2(r.urg||"normal")+'">'+E2(reqUrgLabel(r.urg))+'</td>'
-            : '<td class=dep>'+E2(r.dept||"")+'</td>')
-          +'</tr>').join("")
+        +'<th>'+E2(t("reqNeed"))+'</th><th>'+E2(t("reqQty"))+'</th>'
+        +'<th>'+E2(t("reqDept"))+'</th><th>'+E2(t("reqStatus"))+'</th></tr></thead><tbody>'
+      + rows.map(r=>'<tr><td>'+E2(r.need||"")+'</td><td class=qty>'+E2(r.qty||"")+'</td>'
+          +'<td class=dep>'+E2(r.dept||"")+'</td><td class=box><span class=ck></span></td></tr>').join("")
       + Array.from({length:pad}).map(()=>'<tr><td>&nbsp;</td><td class=qty></td>'
-          +(buy?'<td></td><td class=dep></td><td></td>':'<td class=dep></td>')+'</tr>').join("")
+          +'<td class=dep></td><td class=box><span class=ck></span></td></tr>').join("")
       +'</tbody></table>'
       +'<div class=notebox><i>'+E2(t("reqNote"))+'</i><p>'+E2(sh.note||"")+'</p></div>'
-      +(sh.responsible?'<div class=resp><i>'+E2(t("reqResponsible"))+'</i>'+E2(sh.responsible)+'</div>':'')
+      +'<div class=sign>'
+        +'<div><span></span>'+E2(t("reqResponsible"))+(sh.responsible?' \u00b7 '+E2(sh.responsible):'')+'</div>'
+        +'<div><span></span>'+E2(t("reqReceived"))+'</div>'
+        +'<div><span></span>'+E2(t("reqSignature"))+'</div>'
+      +'</div>'
       +'<div class=foot><span>'+E2(hotel||t("reqTab"))+'</span><span>'
         +E2(sh.date?niceDate(sh.date):(day?niceDate(day):t("reqTab")))+'</span></div>'
       +'</div>';
@@ -11284,15 +9468,10 @@ function exportRequirements(sheets, day, blank){
   w.document.close();
 }
 function reqDataset(sh){
-  const buy=reqIsPurchase(sh);
   return {
     title:(sh.title||reqSheetTitle(sh.kind))+(sh.date?" \u00b7 "+niceDate(sh.date):""),
-    headers: buy
-      ? [t("reqItem"),t("reqQty"),t("reqItemInfo"),t("reqNeededBy"),t("reqUrgency"),t("reqDept")]
-      : [t("reqNeed"),t("reqQty"),t("reqDept"),t("reqStatus")],
-    rows:(sh.rows||[]).map(r=> buy
-      ? [r.need||"", r.qty||"", r.info||"", r.when||"", reqUrgLabel(r.urg), r.dept||""]
-      : [r.need||"", r.qty||"", r.dept||"", r.done?"OK":""])
+    headers:[t("reqNeed"),t("reqQty"),t("reqDept"),t("reqStatus")],
+    rows:(sh.rows||[]).map(r=>[r.need||"", r.qty||"", r.dept||"", r.done?"OK":""])
   };
 }
 /* ===== THE GUEST FEEDBACK REPORT =====
@@ -11539,100 +9718,12 @@ function openFeedbackExport(){
   };
   wrap.querySelector("#fe-pdf").onclick=()=>{ apply(); exportFeedbackReport(); wrap.remove(); };
 }
-/* ===== WHAT HAPPENED =====
-   A notification that only says "New booking" makes the manager go looking.
-   Each line here names the thing and carries the way to it, so tapping lands
-   on that booking, that conversation, that request. */
-/* A screen answers one question, so it gets one filled button. Any further
-   full-width primary quietly becomes a secondary — a pair inside a .row2 is
-   left alone, because those are two halves of one choice. */
-function demoteExtraPrimaries(){
-  document.querySelectorAll(".screen").forEach(screen=>{
-    let seen=false;
-    screen.querySelectorAll("button.btn").forEach(b=>{
-      const cl=b.classList;
-      if(cl.contains("ghost")||cl.contains("warn")||cl.contains("link")||cl.contains("sm")) return;
-      if(b.closest && b.closest(".row2")) return;         // a deliberate pair
-      if(!seen){ seen=true; return; }
-      cl.add("ghost");
-    });
-  });
-}
-function nfGo(target){
-  if(!target) return;
-  if(target.chatRoom!=null){
-    S.tab="inbox"; S.sub.inbox=target.sub||"guests"; S.chatRoom=String(target.chatRoom); render(); return;
-  }
-  if(target.tab){
-    if(target.sub && S.sub && Object.prototype.hasOwnProperty.call(S.sub, target.tab)) S.sub[target.tab]=target.sub;
-    S.tab=target.tab; S.chatRoom=null; render(); return;
-  }
-  if(target.act!=null){ openActivitySheet(target.act); }
-}
-function notifFeed(){
-  const role=(S.session&&S.session.role)||"guest";
-  if(role==="guest") return [];
-  const out=[];
-  const when=x=>String(x&&x.created_at||"");
-
-  (S.bookings||[]).forEach(b=>{
-    const a=(S.activities||[]).find(x=>String(x.id)===String(b.activity_id));
-    out.push({ id:"bk"+b.id, icon:"ticket", when:when(b),
-      title:t("nfNewBooking"),
-      detail:[a?a.name:"", t("room")+" "+b.room].filter(Boolean).join(" \u00b7 "),
-      target:a?{act:a.id}:{tab:"guests", sub:"bookings"} });
-  });
-  (S.messages||[]).filter(m=>m.sender==="guest").forEach(m=>{
-    const staff=isStaffRoom(m.room);
-    out.push({ id:"ms"+m.id, icon:"chat", when:when(m),
-      title:t("nfNewMessage"),
-      detail:[staff?teamName(String(m.room).slice(6)):accountName(m.room), m.text].filter(Boolean).join(" \u00b7 "),
-      unread:!m.read_by_team,
-      target:{chatRoom:m.room, sub:staff?"team":"guests"} });
-  });
-  (S.requests||[]).forEach(r=>{
-    out.push({ id:"rq"+r.id, icon:"gift", when:when(r),
-      title:t("nfNewRequest"),
-      detail:[r.detail, t("room")+" "+r.room].filter(Boolean).join(" \u00b7 "),
-      unread:String(r.status||"")==="new",
-      target:{tab:"inbox", sub:"requests"} });
-  });
-  (S.staffReqs||[]).forEach(r=>{
-    out.push({ id:"sr"+r.id, icon:"bell", when:when(r),
-      title:t("nfTeamRequest"),
-      detail:[r.display_name||r.username, reqTypeLabel(r.type), r.detail].filter(Boolean).join(" \u00b7 "),
-      unread:String(r.status||"new")==="new",
-      target:{tab:"inbox", sub:"requests"} });
-  });
-  (S.feedback||[]).forEach(f=>{
-    const st=fbStatus(f);
-    out.push({ id:"fb"+f.id, icon:"star", when:when(f),
-      title:t("nfNewFeedback"),
-      detail:[t("room")+" "+f.room, fbOverall(f)?fbOverall(f).toFixed(1)+" \u2605":"", fbStatusLabel(st)].filter(Boolean).join(" \u00b7 "),
-      unread:st!=="none",
-      target:{tab:"guests", sub:"feedback"} });
-  });
-
-  // unread first, then newest first
-  return out.sort((a,b)=>(!!b.unread-!!a.unread) || String(b.when).localeCompare(String(a.when))).slice(0,25);
-}
 function openNotesModal(){
   const role=S.session?S.session.role:"guest";
   const list=visibleNotes(role);
-  const feed=notifFeed();
   const wrap=baseModal(`
     <h3>${ic("bell",18)} ${t("notifications")}</h3>
-    ${role==="manager"?`<button class="btn sm" id="n-new" style="margin-bottom:12px">${ic("plus",16)} ${t("newAnnouncement")}</button>`:""}
-    ${role!=="guest"?`<div class="ao-sec">${t("nfWhatHappened")}</div>
-      ${feed.length?`<div class="card" style="padding:2px 14px">${feed.map(x=>`
-        <button class="nf-row${x.unread?" unread":""}" data-nfgo="${esc(x.id)}">
-          <span class="nf-ic">${ic(x.icon,16)}</span>
-          <span class="nf-x"><b>${esc(x.title)}</b><span class="mini">${esc(x.detail)}</span></span>
-          <span class="mini nf-w">${x.when?fmtTime(x.when):""}</span>
-          <span class="nf-go">${ic("back",14)}</span>
-        </button>`).join("")}</div>`
-        :`<p class="mini">${t("nfNothing")}</p>`}
-      <div class="ao-sec">${t("nfAnnouncements")}</div>`:""}
+    ${role==="manager"?`<button class="btn sm" id="n-new" style="margin-bottom:12px">＋ ${t("newAnnouncement")}</button>`:""}
     ${list.length?list.map(n=>`<div class="card" style="padding:12px 14px">
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
         <b>${esc(n.title)}</b>
@@ -11653,15 +9744,10 @@ function openNotesModal(){
   wrap.querySelectorAll("[data-notedel]").forEach(b=>b.onclick=async ()=>{
     await DB.deleteNote(+b.dataset.notedel); wrap.remove(); openNotesModal();
   });
-  wrap.querySelectorAll("[data-nfgo]").forEach(b=>b.onclick=()=>{
-    const hit=feed.find(x=>x.id===b.dataset.nfgo);
-    wrap.remove();
-    if(hit) nfGo(hit.target);
-  });
 }
 function openComposeNoteModal(){
   const wrap=baseModal(`
-    <h3>${ic("plus",16)} ${t("newAnnouncement")}</h3>
+    <h3>＋ ${t("newAnnouncement")}</h3>
     <label>${t("actName")}</label><input id="nn-title">
     <label>${t("desc")}</label><textarea id="nn-body" rows="3"></textarea>
     <label>${t("audience")}</label>
@@ -11677,7 +9763,7 @@ function openComposeNoteModal(){
     const title=wrap.querySelector("#nn-title").value.trim();
     const body=wrap.querySelector("#nn-body").value.trim();
     if(!title&&!body) return;
-    await DB.addNote({title:title||t("newAnnouncement"),body,audience:wrap.querySelector("#nn-aud").value});
+    await DB.addNote({title:title||"★",body,audience:wrap.querySelector("#nn-aud").value});
     S.seenNote=S.notes.reduce((m,n)=>Math.max(m,n.id),S.seenNote); persist();
     wrap.remove(); toast(t("saved")); render();
   };
@@ -11814,11 +9900,9 @@ function openEditModal(a){
   const tm=splitTime(a.time);
   const catOptions=OPS.map(o=>`<optgroup label="${esc(opLabel(o.id))}">${o.cats.map(c=>`<option value="${c}" ${cur===c?"selected":""}>${catLabel(c)}</option>`).join("")}</optgroup>`).join("");
   const staff=S.users.filter(u=>u.role==="staff");
-  const entOptions=`<option value="" ${actIsAllTeam(a)?"selected":""}>${t("allTeam")}</option>`
-    + `<option value="${ENT_NOBODY}" ${actIsUnassigned(a)?"selected":""}>${t("entNobody")}</option>`
+  const entOptions=`<option value="">${t("allTeam")}</option>`
     + staff.map(u=>`<option value="${esc(u.username)}" ${String(a.entertainer||"").toLowerCase()===u.username.toLowerCase()?"selected":""}>${esc(u.display_name||u.username)}</option>`).join("");
-  const knownEnt=!a.entertainer || actIsAllTeam(a) || actIsUnassigned(a)
-    || staff.some(u=>u.username.toLowerCase()===String(a.entertainer).toLowerCase());
+  const knownEnt=!a.entertainer || staff.some(u=>u.username.toLowerCase()===String(a.entertainer).toLowerCase());
   const wrap=baseModal(`
     <h3>${isNew?t("addActivity"):t("editActivity")}</h3>
     <label>${t("actName")}</label><input id="e-name" value="${esc(a.name)}">
@@ -11833,15 +9917,6 @@ function openEditModal(a){
     </div>
     <label>${t("capacity")} (0 = ∞)</label><input id="e-cap" type="number" min="0" value="${a.capacity}">
     <label>${t("location")}</label><input id="e-loc" value="${esc(a.location)}">
-    <div class="row2">
-      <div><label>${t("effHead")}</label><select id="e-effort">
-        ${ACT_EFFORT.map(([k,lb])=>`<option value="${k}" ${actEffort(a)===k?"selected":""}>${esc(t(lb))}</option>`).join("")}
-      </select></div>
-      <div><label>${t("gnHead")}</label><select id="e-gender">
-        ${ACT_GENDERS.map(([k,lb])=>`<option value="${k}" ${actGender(a)===k?"selected":""}>${esc(t(lb))}</option>`).join("")}
-      </select></div>
-    </div>
-    <p class="mini" style="margin:-4px 0 8px">${t("effHint")} ${t("gnHint")}</p>
     <label>${t("entertainer")}</label>
     <select id="e-ent">${entOptions}${knownEnt?"":`<option value="${esc(a.entertainer)}" selected>${esc(a.entertainer)}</option>`}</select>
     <div class="photo-pick"><div class="photo-box" data-photobox></div>
@@ -11866,8 +9941,6 @@ function openEditModal(a){
       capacity:+wrap.querySelector("#e-cap").value||0,
       location:wrap.querySelector("#e-loc").value.trim(),
       entertainer:wrap.querySelector("#e-ent").value.trim(),
-      effort:wrap.querySelector("#e-effort").value,
-      gender:wrap.querySelector("#e-gender").value,
       image:ePhoto,
       highlight:wrap.querySelector("#e-hl").checked};
     if(!upd.name) return;
@@ -12161,20 +10234,6 @@ function wireCommon(){
   document.querySelectorAll("[data-fbopen]").forEach(b=>b.onclick=()=>openFeedbackDetail(b.dataset.fbopen));
   document.querySelectorAll("[data-fbdept]").forEach(b=>b.onclick=()=>openDeptDetail(b.dataset.fbdept));
   const fbx=$("#btn-fbexport"); if(fbx) fbx.onclick=openFeedbackExport;
-  document.querySelectorAll("[data-bnav]").forEach(b=>b.onclick=()=>{
-    const id=b.dataset.bnav;
-    if(id==="__menu"){ openMenuDrawer(); return; }
-    S.tab=id; S.chatRoom=null; render();
-  });
-  document.querySelectorAll("[data-catgo]").forEach(b=>b.onclick=()=>{
-    S.tab="program"; S.op=b.dataset.catgo; S.cat=null; render();
-  });
-  const seeP=$("#btn-seeprog");
-  if(seeP) seeP.onclick=()=>{ S.tab="program"; S.op=null; S.cat=null; render(); };
-  const ovAll=$("#btn-ovall");
-  if(ovAll) ovAll.onclick=openMenuDrawer;
-  const fullS=$("#btn-fullsched");
-  if(fullS) fullS.onclick=()=>{ S.tab="today"; render(); };
   const fbd=$("#btn-fbdepts"); if(fbd) fbd.onclick=openDeptEditor;
   const rail=$("#hero-rail"), dots=$("#hero-dots");
   if(rail && dots){
@@ -12234,63 +10293,10 @@ function wireCommon(){
     const b=S.buses.find(x=>x.id==el.dataset.busedit); if(b) openBusModal(b);
   });
   document.querySelectorAll("[data-busadd]").forEach(el=>el.onclick=()=>openBusModal(null, el.dataset.busadd));
-  demoteExtraPrimaries();
-  wireCountdowns();
-  document.querySelectorAll("[data-afper]").forEach(b=>b.onclick=()=>{ S.afPeriod=b.dataset.afper; render(); });
-  document.querySelectorAll("[data-thacc]").forEach(b=>b.onclick=e=>{
-    e.stopPropagation(); toggleAccept(b.dataset.thacc);
-  });
-  document.querySelectorAll("[data-afacc]").forEach(b=>b.onclick=()=>toggleAccept(b.dataset.afacc));
-  document.querySelectorAll("[data-afcat]").forEach(b=>b.onclick=()=>{ S.afCat=b.dataset.afcat; render(); });
-  const afx=$("#btn-afexport"); if(afx) afx.onclick=openActFbExport;
-  document.querySelectorAll("[data-afgroup]").forEach(b=>b.onclick=()=>openAfGroup(b.dataset.afgroup));
-  document.querySelectorAll("[data-afact]").forEach(b=>b.onclick=()=>{
-    const id=b.dataset.afact;
-    afForActivity(id).length ? openActFbList(id) : openActFbModal(id);
-  });
-  const stE=$("#btn-stdedit"); if(stE) stE.onclick=openStandardsEditor;
-  const bMe=$("#btn-me"); if(bMe) bMe.onclick=openAccountSheet;
-  document.querySelectorAll("[data-fbper]").forEach(b=>b.onclick=()=>{ S.fbPeriod=b.dataset.fbper; render(); });
-  const bSo=$("#btn-social"); if(bSo) bSo.onclick=()=>{ S.socialOpen=!S.socialOpen; render(); };
-  document.querySelectorAll("[data-crmf]").forEach(b=>b.onclick=()=>{
-    S.crmFilter=b.dataset.crmf; render();
-  });
-  const g3m=$("#g3-msg");
-  if(g3m) g3m.onclick=()=>{
-    const acc=(S.accounts||[]).find(a=>String(a.id)===String(String(S.tab).slice(4)));
-    if(!acc) return;
-    S.tab="inbox"; S.sub.inbox="guests"; S.chatRoom=String(acc.room); render();
-  };
-  const epm=$("#ep-msg");
-  if(epm) epm.onclick=()=>{
-    const un=String(S.tab).startsWith("emp:")?String(S.tab).slice(4):"";
-    if(!un) return;
-    S.tab="inbox"; S.sub.inbox="team"; S.chatRoom="staff:"+un; render();
-  };
-  document.querySelectorAll("[data-cmf]").forEach(b=>b.onclick=()=>{
-    S.sub.inbox=b.dataset.cmf; S.chatRoom=null; render();
-  });
-  const cmN=$("#cm-newnote"); if(cmN) cmN.onclick=openComposeNoteModal;
-  document.querySelectorAll("[data-cmnotedel]").forEach(b=>b.onclick=async ()=>{
-    if(!await confirmAction({question:t("delete"),note:t("cannotUndo"),danger:true})) return;
-    const raw=b.dataset.cmnotedel;
-    try{ await DB.deleteNote(isNaN(+raw)?raw:+raw); toastOk(t("deleted")); render(); }
-    catch(e){ toastErr(t("errSave")); }
-  });
-  document.querySelectorAll("[data-ccgo]").forEach(b=>b.onclick=()=>{
-    const bits=String(b.dataset.ccgo).split(":");
-    if(bits.length===2 && S.sub && Object.prototype.hasOwnProperty.call(S.sub, bits[0])) S.sub[bits[0]]=bits[1];
-    S.tab=bits[0]; S.chatRoom=null; render();
-  });
   document.querySelectorAll("[data-hub]").forEach(el=>el.onclick=()=>{
     const h=el.dataset.hub;
     if(h==="export"){ openExportModal(); return; }
-    // "tab:sub" lands straight on the right sub-tab instead of the default one
-    const bits=String(h).split(":");
-    if(bits.length===2 && S.sub && Object.prototype.hasOwnProperty.call(S.sub, bits[0])){
-      S.sub[bits[0]]=bits[1]; S.tab=bits[0]; S.chatRoom=null; render(); return;
-    }
-    S.tab=h; S.chatRoom=null; render();
+    S.tab=h; render();
   });
   const crumbHub=$("#crumb-hub"); if(crumbHub) crumbHub.onclick=()=>{ S.tab="settings"; render(); };
   const crumbPb=$("#crumb-pb"); if(crumbPb) crumbPb.onclick=()=>{ S.tab="builder"; render(); };
@@ -12466,34 +10472,6 @@ function wireCommon(){
     };
     const rmL=$("#s-logo-rm");
     if(rmL) rmL.onclick=()=>{ const el=$("#s-logo"); if(el) el.value=""; paint(); };
-
-    // one cover per role, picked here and nowhere else
-    ["guest","staff","manager"].forEach(r=>{
-      const box=document.querySelector(`[data-covbox="${r}"]`);
-      const inp=document.querySelector(`[data-covinput="${r}"]`);
-      const hid=$("#s-"+coverKeyFor(r));
-      const show=()=>{
-        if(!box||!hid) return;
-        const u=hid.value;
-        box.style.backgroundImage = u ? `url('${u}')` : "";
-        box.innerHTML = u ? "" : `<span>${ic("sparkle",22)}</span>`;
-      };
-      if(box&&inp) box.onclick=()=>inp.click();
-      // a cover is wide, so it is uploaded whole and the hero crops it on screen —
-      // running it through the square logo cropper would throw the sides away
-      if(inp) inp.onchange=async ()=>{
-        const f=inp.files&&inp.files[0]; if(!f) return;
-        if(box) box.classList.add("uploading");
-        try{
-          const url=await uploadAvatar(f);
-          if(hid){ hid.value=url; show(); toastOk(t("saved")); }
-        }catch(e){ toastErr(t("uploadErr")); }
-        if(box) box.classList.remove("uploading");
-        inp.value="";
-      };
-      const rm=document.querySelector(`[data-covrm="${r}"]`);
-      if(rm) rm.onclick=()=>{ if(hid){ hid.value=""; show(); } };
-    });
   }
   const infoAdd=$("#info-add"); if(infoAdd) infoAdd.onclick=()=>openInfoModal();
   document.querySelectorAll("[data-infoedit]").forEach(b=>b.onclick=()=>openInfoModal(+b.dataset.infoedit));
@@ -12623,10 +10601,6 @@ function wireCommon(){
     if(has("#s-fs"))       st.fontScale=v("#s-fs",st.fontScale);
     if(has("#s-autodark")) st.autoDark=$("#s-autodark").checked;
     if(has("#s-logo"))     st.logo=v("#s-logo","").trim();
-    ["guest","staff","manager"].forEach(r=>{
-      const k=coverKeyFor(r);
-      if(has("#s-"+k)) st[k]=v("#s-"+k,"").trim();
-    });
     if(has("#s-hotel"))    st.hotelName=v("#s-hotel","").trim();
     if(has("#s-contact"))  st.contact=v("#s-contact","").trim();
     if(has("#s-cur"))      st.currency=v("#s-cur","").trim();
@@ -12647,12 +10621,9 @@ function wireCommon(){
     toastOk(t("saved")); render();
   };
   document.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>{
-    if(!S.session) return;
-    const a=S.activities.find(x=>String(x.id)===String(el.dataset.open));
-    if(!a) return;
-    // a guest reads first and decides afterwards; everyone working opens the object
-    if(S.session.role==="guest"){ openGuestActivity(a.id); return; }
-    openActivitySheet(a.id);
+    if(!S.session || S.session.role!=="guest") return;
+    const a=S.activities.find(x=>x.id===+el.dataset.open);
+    if(a && !myBooking(a.id)) openBookModal(a);
   });
   /* chat send + read marking + scroll */
   const cs=$("#chat-send");
@@ -12719,7 +10690,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.04-aurea";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.06-aurea-vNext";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -12980,17 +10951,7 @@ function applyRealtimeChange(payload){
       if(row && row.data){ S.settings={...DEFAULT_SETTINGS,...row.data}; applySettings(); return true; }
       return false;
     }
-    let key=RT_TABLES[table]; if(!key || !Array.isArray(S[key])) return false;
-    // a row arriving live on the feedback table may be an activity rating —
-    // it must land in its own list, never in the guest ratings
-    if(table==="feedback"){
-      const row=payload.new || payload.old || {};
-      if(afIsActivityFb(row)) key="actFb";
-      if(!Array.isArray(S[key])) S[key]=[];
-      // and if it was previously filed in the wrong list, take it out of there
-      const other = key==="actFb" ? "feedback" : "actFb";
-      if(Array.isArray(S[other]) && row.id!=null) S[other]=S[other].filter(x=>x.id!==row.id);
-    }
+    const key=RT_TABLES[table]; if(!key || !Array.isArray(S[key])) return false;
     const list=S[key];
     if(ev==="INSERT" && payload.new){
       if(!list.some(x=>x.id===payload.new.id)) list.push(payload.new);
@@ -13051,7 +11012,7 @@ function startRealtime(){
     S.activities=demoActivities(); S.bookings=demoBookings();
     S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
     S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
-    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.actFb=[]; S.profiles=demoProfiles();
+    S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
   }
   /* validate remembered session against fresh data */
   if(S.session){
@@ -13101,6 +11062,27 @@ function startRealtime(){
   setTimeout(alarmTick, 1500);                            // run shortly after load
   window.addEventListener("focus", alarmTick);            // catch phone waking up
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) alarmTick(); });
+})();
+</script>
+<script id="aurea-vnext-enhancements">
+(function(){
+  function enhance(){
+    try{
+      document.querySelectorAll('button:not([type])').forEach(function(b){ b.type='button'; });
+      document.querySelectorAll('.modal').forEach(function(m){ m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); });
+      document.querySelectorAll('.dr-it.on').forEach(function(x){ x.setAttribute('aria-current','page'); });
+      document.querySelectorAll('img').forEach(function(img){
+        if(!img.closest('.hero') && !img.hasAttribute('loading')) img.loading='lazy';
+        if(!img.hasAttribute('decoding')) img.decoding='async';
+      });
+      var p=document.getElementById('f-pass'); if(p) p.autocomplete='current-password';
+      var gp=document.getElementById('f-gpass'); if(gp) gp.autocomplete='current-password';
+      var u=document.getElementById('f-user'); if(u) u.autocomplete='username';
+    }catch(e){}
+  }
+  var obs=new MutationObserver(function(){ window.clearTimeout(window.__aureaEnhanceTimer); window.__aureaEnhanceTimer=window.setTimeout(enhance,40); });
+  function start(){ enhance(); var app=document.getElementById('app'); if(app) obs.observe(app,{childList:true,subtree:true}); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
 })();
 </script>
 </body>
