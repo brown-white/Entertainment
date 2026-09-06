@@ -3960,7 +3960,7 @@ function render(){
       else html=guestView();
     }catch(e2){
       console.error("fallback view failed",e2);
-      html=`<div class="screen fadein"><div class="empty"><div class="big">!</div><b>Signed in, but this screen could not open.</b><br><span class="mini">${esc(String((e2&&e2.message)||(e&&e.message)||"Unknown screen error"))}</span><button class="btn" id="safe-home" style="margin-top:18px">Open safe home</button></div></div>`;
+      html=`<div class="screen fadein"><div class="empty"><div class="big">!</div><b>Signed in, but this screen could not open.</b><br><span class="mini">A screen component failed to load. Please retry or open safe home.</span><button class="btn" id="safe-home" style="margin-top:18px">Open safe home</button></div></div>`;
     }
   }
   app.innerHTML=html;
@@ -4048,8 +4048,6 @@ function loginView(){
       <label>${t("pass")}</label><input id="f-pass" type="password" placeholder="••••">
       <button class="btn" id="btn-login">${t("signin")}</button>
       <div class="err" id="login-err"></div>
-      ${loginRole==="manager"?`<p class="hint" style="margin-top:12px">Manager recovery: <b>manager</b> / <b>1234</b></p>`:""}
-      ${!REMOTE?`<p class="hint">${t("demoNote")}<br>Demo: manager / 1234 · team / 1234</p>`:""}
     </div>
     <button class="staff-link" id="btn-guestlink"><span>${t("backToGuest")}</span></button>
   </div>`;
@@ -4134,14 +4132,10 @@ function wireLogin(){
         (loginRole==="manager" ? x.role==="manager" : x.role==="staff")
       );
 
-      // Built-in manager recovery remains available even if the remote manager row is missing or damaged.
-      if(loginRole==="manager" && u==="manager" && p==="1234"){
-        found=found || (S.users||[]).find(x=>x.role==="manager" && !isAttOnly(x)) ||
-          {id:"manager-recovery",username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager",number:1,active:true};
-      } else {
-        if(!found || String(found.password==null?"":found.password).trim()!==p){
-          err.textContent=t("loginErr"); return;
-        }
+      // Authenticate only against a real Manager/Team account in the loaded user directory.
+      // No hard-coded recovery password is exposed or accepted in production.
+      if(!found || String(found.password==null?"":found.password).trim()!==p){
+        err.textContent=t("loginErr"); return;
       }
 
       if(!accountActive(found)){ err.textContent=t("accountOff"); return; }
@@ -6091,6 +6085,14 @@ function timeToMin(hhmm){
   const m=String(hhmm||"").match(/(\d{1,2}):(\d{2})/);
   return m ? (+m[1])*60+(+m[2]) : null;
 }
+/* Global time formatter used by manager Live Operations and later enhancement layers.
+   It MUST live in base scope; keeping it inside a later IIFE caused runtime ReferenceError on login. */
+function fmtCountdown(sec){
+  sec=Math.max(0,Math.floor(Number(sec)||0));
+  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), ss=sec%60;
+  return (h?String(h).padStart(2,"0")+":":"")+String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");
+}
+window.fmtCountdown=fmtCountdown;
 /* Suggest one person per unassigned activity on a given weekday. */
 /* ================= WEATHER =================
    Free open service, no key needed, so it works for guests too.
@@ -11089,7 +11091,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.06-aurea-signature";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.07-aurea-stability-v6.2";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -11424,10 +11426,10 @@ function startRealtime(){
         accountId:acc.id,username:acc.username||acc.room};
     } else {
       const su=String(S.session.username||"").trim().toLowerCase();
-      const u=S.users.find(x=>String(x.username||"").trim().toLowerCase()===su);
-      const recovery=S.session.role==="manager" && (S.session.userId==="manager-recovery" || su==="manager");
-      if((!u && !recovery) || (u && S.session.role==="manager" && u.role!=="manager")) S.session=null;
-      else if(u) S.session={...S.session,name:u.display_name||u.username,userId:u.id,number:u.number||null,photo:u.photo||''};
+      const u=S.users.find(x=>String(x.username||"").trim().toLowerCase()===su && !isAttOnly(x));
+      const roleOk=!!u && (S.session.role==="manager" ? u.role==="manager" : u.role==="staff");
+      if(!roleOk || !accountActive(u)) S.session=null;
+      else S.session={...S.session,name:u.display_name||u.username,userId:u.id,number:u.number||null,photo:u.photo||''};
     }
     if(!S.session){ S.tab="home"; }
     persist();
@@ -11636,7 +11638,7 @@ function startRealtime(){
   };
 
   /* ---------- Live Operations countdown + multi-set awareness ---------- */
-  function fmtCountdown(sec){ sec=Math.max(0,Math.floor(sec)); const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60; return (h?String(h).padStart(2,"0")+":":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"); }
+  window.fmtCountdown=window.fmtCountdown||function(sec){ sec=Math.max(0,Math.floor(Number(sec)||0)); const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),ss=sec%60; return (h?String(h).padStart(2,"0")+":":"")+String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0"); };
   window.liveOpsCard=function(){
     const day=todayIndex(),now=nowMinutes(); const list=[];
     (S.activities||[]).filter(a=>a&&a.day===day).forEach(a=>{ const ws=activityWindows(a); (ws.length?ws:[{s0:timeToMin(a.time)||0,e0:(timeToMin(a.time)||0)+45,start:txt(a.time),end:""}]).forEach((w,idx)=>{ if(w.e0>=now-30) list.push({a,w,idx}); }); });
@@ -11853,5 +11855,124 @@ function startRealtime(){
 </script>
 
 <!-- AUREA V5.3 DASHBOARD RESTORED -->
+
+<style id="day-info-v6-style">
+.dayinfo-head-v6{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.dayinfo-head-v6 h3{margin:0!important;border:0!important;padding:0!important}
+.dayinfo-edit-v6{width:auto!important;margin:0!important;padding:8px 12px!important;border-radius:999px!important}
+.dayinfo-v6{overflow:hidden;padding:0!important}
+.dayinfo-grid-v6{display:grid;grid-template-columns:1fr 1fr}
+.dayinfo-item-v6{padding:16px;border-bottom:1px solid var(--line);min-width:0}
+.dayinfo-item-v6:nth-child(odd){border-right:1px solid var(--line)}
+.dayinfo-item-v6.wide{grid-column:1/-1;border-right:0}
+.dayinfo-item-v6 span{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:7px}
+.dayinfo-item-v6 b{display:block;font-size:15px;line-height:1.4;white-space:pre-line}
+.dayinfo-item-v6 small{display:block;color:var(--muted);margin-top:4px;line-height:1.45;white-space:pre-line}
+.dayinfo-auto-v6{font-size:10px!important;letter-spacing:.05em!important;text-transform:none!important;color:var(--bronze)!important;margin:5px 0 0!important}
+.di-v6-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.di-v6-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.di-v6-check{display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.di-v6-check input{width:18px;height:18px;margin:0}
+@media(max-width:420px){.dayinfo-grid-v6,.di-v6-grid,.di-v6-checks{grid-template-columns:1fr}.dayinfo-item-v6:nth-child(odd){border-right:0}.dayinfo-item-v6.wide{grid-column:auto}}
+</style>
+<script id="day-info-v6-patch">
+(()=>{
+  function diActs(day, cats){
+    return (S.activities||[]).filter(a=>a&&a.day===day&&cats.includes(normCat(a)))
+      .slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
+  }
+  function diActText(a){
+    const ws=(typeof activityTimeSets==='function'?activityTimeSets(a):[]);
+    const times=ws&&ws.length?ws.map(x=>[x.start,x.end].filter(Boolean).join('–')).join(' · '):String(a.time||'');
+    return `${a.name||'—'}${times?' · '+times:''}${a.location?' · '+a.location:''}`;
+  }
+  function diAuto(day){
+    const events=diActs(day,['mEvents','eParty']);
+    const live=diActs(day,['eLive']);
+    const shows=diActs(day,['eShow']);
+    return {
+      events:events.map(diActText).join('\n'),
+      live:live.map(diActText).join('\n'),
+      show:shows.map(diActText).join('\n')
+    };
+  }
+  function diOverride(day){
+    const all=(S.settings&&S.settings.dayInfoOverrides)||{};
+    return all[String(day)]||null;
+  }
+  function diDisplay(day){
+    const auto=diAuto(day), ov=diOverride(day), dp=dayPlanFor(day);
+    return {
+      events:ov&&Object.prototype.hasOwnProperty.call(ov,'events')?ov.events:auto.events,
+      live:ov&&Object.prototype.hasOwnProperty.call(ov,'live')?ov.live:auto.live,
+      show:ov&&Object.prototype.hasOwnProperty.call(ov,'show')?ov.show:auto.show,
+      entrance:personTag(dp.entrance)||'—',
+      off:personTags(dp.off)||'—',
+      custom:!!ov
+    };
+  }
+  function valueHtml(v){ return `<b>${esc(v||'—')}</b>`; }
+  window.v6DayInfoHtml=function(day){
+    const d=diDisplay(day);
+    return `<div class="card dayinfo-v6"><div class="dayinfo-grid-v6">
+      <div class="dayinfo-item-v6 wide"><span>${t('eventsToday')}</span>${valueHtml(d.events)}</div>
+      <div class="dayinfo-item-v6"><span>Live music</span>${valueHtml(d.live)}</div>
+      <div class="dayinfo-item-v6"><span>Show time</span>${valueHtml(d.show)}</div>
+      <div class="dayinfo-item-v6"><span>${t('entranceDuty')}</span>${valueHtml(d.entrance)}</div>
+      <div class="dayinfo-item-v6"><span>${t('dayOff')}</span>${valueHtml(d.off)}</div>
+    </div></div>`;
+  };
+  function managerHead(day,label){
+    const mgr=S.session&&S.session.role==='manager';
+    return `<div class="dayinfo-head-v6"><h3>${ic('calendar',18)} ${label}</h3>${mgr?`<button class="btn sm ghost dayinfo-edit-v6" type="button" onclick="openDayInfoEditorV6(${day})">${ic('pen',14)} Edit</button>`:''}</div>`;
+  }
+  window.dayPlanInfoCard=function(day){
+    const dp=dayPlanFor(day);
+    return `<div class="sec">${managerHead(day,esc(t('days')[dp.day]||dp.name))}${v6DayInfoHtml(day)}</div>`;
+  };
+  window.workdayCompactInfo=function(day){
+    return `<div class="sec wd-dayinfo">${managerHead(day,t('dayInfoSec'))}${v6DayInfoHtml(day)}</div>`;
+  };
+  window.openDayInfoEditorV6=function(day){
+    if(!(S.session&&S.session.role==='manager')) return;
+    const auto=diAuto(day), ov=diOverride(day)||{}, dp=dayPlanFor(day);
+    const staff=(S.users||[]).filter(u=>u&&u.role==='staff'&&u.active!==false&&!hasLeft(u)&&u.number).sort((a,b)=>(a.number||99)-(b.number||99));
+    const cur=(key)=>Object.prototype.hasOwnProperty.call(ov,key)?ov[key]:auto[key];
+    const checks=staff.map(u=>`<label class="di-v6-check"><input type="checkbox" data-di-off value="${u.number}" ${dp.off.includes(u.number)?'checked':''}><span>#${u.number} · ${esc(u.display_name||u.username||'')}</span></label>`).join('');
+    const opts=['<option value="">— Nobody —</option>'].concat(staff.map(u=>`<option value="${u.number}" ${dp.entrance===u.number?'selected':''}>#${u.number} · ${esc(u.display_name||u.username||'')}</option>`)).join('');
+    const wrap=baseModal(`<h3>${ic('calendar',20)} Edit day information</h3>
+      <p class="mini">Events, live music and show time come from the programme automatically. Edit them here only when you want a custom display for this day.</p>
+      <label>Events</label><textarea id="di-v6-events" rows="3">${esc(cur('events')||'')}</textarea>
+      <div class="di-v6-grid"><div><label>Live music</label><textarea id="di-v6-live" rows="3">${esc(cur('live')||'')}</textarea></div><div><label>Show time</label><textarea id="di-v6-show" rows="3">${esc(cur('show')||'')}</textarea></div></div>
+      <label>${t('entranceDuty')}</label><select id="di-v6-ent">${opts}</select>
+      <label>${t('dayOff')}</label><div class="di-v6-checks">${checks||'<span class="mini">No team members</span>'}</div>
+      <button class="btn" id="di-v6-save">Save changes</button>
+      <button class="btn ghost" id="di-v6-reset">Reset text to programme</button>
+      <button class="btn ghost" id="di-v6-close">${t('close')}</button>`);
+    wrap.querySelector('#di-v6-close').onclick=()=>wrap.remove();
+    wrap.querySelector('#di-v6-save').onclick=async()=>{
+      const allInfo={...((S.settings&&S.settings.dayInfoOverrides)||{})};
+      allInfo[String(day)]={
+        events:wrap.querySelector('#di-v6-events').value.trim(),
+        live:wrap.querySelector('#di-v6-live').value.trim(),
+        show:wrap.querySelector('#di-v6-show').value.trim()
+      };
+      const allDuty={...((S.settings&&S.settings.dayOverrides)||{})};
+      const off=[...wrap.querySelectorAll('[data-di-off]')].filter(x=>x.checked).map(x=>+x.value);
+      const ent=wrap.querySelector('#di-v6-ent').value;
+      allDuty[String(day)]={...(allDuty[String(day)]||{}),off,entrance:ent?+ent:null};
+      try{
+        await DB.saveSettings({...S.settings,dayInfoOverrides:allInfo,dayOverrides:allDuty});
+        wrap.remove(); toastOk(t('saved')); render();
+      }catch(e){ toastErr(t('errSave')); }
+    };
+    wrap.querySelector('#di-v6-reset').onclick=async()=>{
+      const allInfo={...((S.settings&&S.settings.dayInfoOverrides)||{})}; delete allInfo[String(day)];
+      try{ await DB.saveSettings({...S.settings,dayInfoOverrides:allInfo}); wrap.remove(); toastOk(t('saved')); render(); }
+      catch(e){ toastErr(t('errSave')); }
+    };
+  };
+})();
+</script>
 </body>
 </html>
