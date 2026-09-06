@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment</title>
+<title>Entertainment · AUREA Signature</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -1856,6 +1856,270 @@ label{font-size:11.5px;font-weight:700;letter-spacing:.085em;margin-top:15px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.iconbtn,.card,.drawer,.modal{transition:none!important}}
 @media print{.top,.drawer-bg,.chatbar,.arrange-b,.btn{display:none!important}.app,.screen{max-width:none!important;padding:0!important;box-shadow:none!important;border:0!important}.card{break-inside:avoid;box-shadow:none!important}}
 </style>
+
+<style id="aurea-signature-luxury">
+/* =====================================================================
+   AUREA SIGNATURE — Quiet Luxury UI · 2026-09-06
+   A restrained visual authority layer. Functionality is intentionally
+   untouched; this layer simplifies hierarchy, density and interaction.
+   ===================================================================== */
+:root{
+  --espresso:#30241D;
+  --cacao:#5A4638;
+  --bronze:#B69163;
+  --sand:#EEE7DD;
+  --bg-light:#F8F6F2;
+  --bg:#F8F6F2;
+  --ink-light:#251D18;
+  --ink:#251D18;
+  --card:#FFFEFC;
+  --muted:#80756C;
+  --line:#E8E1D8;
+  --ok:#56705A;
+  --warn:#9B5E49;
+  --font-display:'Cormorant Garamond',serif;
+  --font-body:'Jost',sans-serif;
+  --radius:20px;
+  --content-max:760px;
+  --page-x:clamp(18px,4vw,28px);
+  --lux-line:rgba(75,57,45,.11);
+  --lux-gold:#B69163;
+  --lux-gold-soft:#D8C5AA;
+  --lux-shadow:0 16px 48px -34px rgba(42,31,24,.34);
+  --lux-shadow-deep:0 28px 70px -42px rgba(35,25,19,.46);
+}
+[data-theme="dark"]{
+  --bg:#171411;
+  --card:#211D19;
+  --ink:#F4EFE8;
+  --muted:#AFA49A;
+  --line:#332D27;
+  --sand:#2A241F;
+  --espresso:#E4D2BA;
+  --cacao:#C7A87E;
+  --bronze:#C7A87E;
+  --lux-line:rgba(245,237,227,.10);
+  --lux-shadow:0 18px 52px -34px rgba(0,0,0,.72);
+  --lux-shadow-deep:0 30px 80px -44px rgba(0,0,0,.82);
+}
+html{background:var(--bg)}
+body{background:var(--bg);font-weight:400;letter-spacing:.002em}
+.app{background:var(--bg)}
+.screen{padding-inline:var(--page-x)!important}
+[data-approle="manager"]{--content-max:900px}
+[data-approle="staff"]{--content-max:720px}
+[data-approle="guest"]{--content-max:640px}
+
+/* Editorial typography — elegant without looking decorative */
+h1,h2,h3,.serif{font-weight:600;letter-spacing:-.018em}
+h4{letter-spacing:-.008em}
+.whobar{margin:17px 0 28px}
+.whobar h2{font-size:clamp(31px,7vw,42px)!important;line-height:.98;font-weight:600;letter-spacing:-.035em}
+.whobar p{margin-top:9px;font-family:var(--font-body);font-size:13.5px;line-height:1.55;color:var(--muted);max-width:54ch}
+.sec{margin-bottom:30px}
+.sec>h3{font-family:var(--font-body)!important;font-size:11px!important;font-weight:700!important;line-height:1.2!important;text-transform:uppercase;letter-spacing:.15em!important;color:var(--muted);padding:0 0 10px!important;margin-bottom:13px!important;border-bottom:1px solid var(--lux-line)}
+.sec>h3::after{display:none!important}
+.sec>h3 .count{font-size:10px;letter-spacing:.12em}
+.mini{font-size:12.5px;line-height:1.5}
+
+/* Header — essentially invisible until needed */
+.top{top:calc(env(safe-area-inset-top) + 5px);padding:5px 0!important;margin:0 0 8px!important;background:color-mix(in srgb,var(--bg) 91%,transparent)!important;border-radius:0!important;border-bottom:0!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.iconbtn{width:43px;height:43px;min-width:43px!important;min-height:43px!important;border-radius:50%!important;border:1px solid var(--lux-line)!important;background:color-mix(in srgb,var(--card) 94%,transparent)!important;box-shadow:none!important;color:var(--ink)}
+.iconbtn:hover,.iconbtn:active{background:var(--sand)!important;transform:none!important}
+.socialtop{border-radius:50%!important;opacity:.72}
+.socialtop:hover{opacity:1}
+.reddot{width:8px;height:8px;border:1px solid var(--bg)}
+
+/* Surfaces — fewer boxes, more calm */
+.card,.stat,.tk,.daycard{background:var(--card);border:1px solid var(--lux-line)!important;box-shadow:var(--lux-shadow)!important;border-radius:20px!important}
+.card{padding:18px;margin-bottom:14px}
+.card:active{transform:none!important}
+.stat{padding:18px 18px 17px}
+.stat b{font-family:var(--font-display);font-size:38px;font-weight:600;line-height:.95;letter-spacing:-.045em;color:var(--ink)}
+.stat span{font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.stat-grid{gap:12px;margin-bottom:26px}
+[data-approle="manager"] .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+[data-approle="manager"] .stat:first-child{grid-column:span 2}
+[data-approle="manager"] .stat:first-child b{font-size:48px}
+
+/* Hero — one cinematic statement, no busy embellishment */
+.hero{border:none!important;border-radius:26px!important;margin-bottom:32px!important;box-shadow:var(--lux-shadow-deep)!important;background:#221A15}
+.hero img{height:clamp(250px,62vw,360px)!important;opacity:.93;animation:none!important}
+.hero .veil{background:linear-gradient(180deg,rgba(16,12,9,.02) 18%,rgba(16,12,9,.18) 45%,rgba(16,12,9,.88) 100%)!important}
+.hero .body{padding:24px 22px 22px!important}
+.hero .body h3{font-size:clamp(32px,8vw,44px)!important;line-height:.98;letter-spacing:-.03em;color:#fff;font-weight:600}
+.hero .meta{margin-top:9px;gap:15px;color:#EEE7DF;font-size:12.5px}
+.hero .desc{margin-top:9px;font-size:13.5px;line-height:1.45;color:#F3EDE6;max-width:48ch}
+.hero .tag{top:18px!important;inset-inline-start:18px!important;padding:7px 12px!important;border:1px solid rgba(255,255,255,.28)!important;background:rgba(249,246,240,.91)!important;color:#30241D!important;font-family:var(--font-body);font-size:9.5px!important;font-weight:700;letter-spacing:.16em;box-shadow:none!important}
+.hero-dots i{width:5px!important;height:5px!important;opacity:.28}
+.hero-dots i.on{width:18px!important;opacity:.85}
+
+/* Programme: image + information, no cramped right rail */
+.act{gap:15px;align-items:center}
+.act .thumb{width:92px;height:92px;border-radius:17px;background:var(--sand)}
+.act .mid h4{font-size:18px;font-weight:600;line-height:1.22}
+.act .meta{font-size:12.5px;line-height:1.5;margin-top:5px}
+.act .side{min-width:68px;gap:7px;align-items:flex-end;justify-content:center}
+.catbadge{font-size:9px;letter-spacing:.13em;color:var(--bronze)}
+.chip,.pill,.rstat,.tchip{border:1px solid var(--lux-line);box-shadow:none!important;font-weight:600;letter-spacing:.02em}
+.chip{padding:5px 10px;font-size:10px}
+.pill{background:var(--sand);font-size:11.5px}
+
+/* Operations browse becomes editorial image tiles */
+.opgrid{gap:17px}
+.catgrid{gap:14px}
+.opcard,.catcard{border:none!important;border-radius:24px!important;box-shadow:var(--lux-shadow-deep)!important;min-height:150px}
+.catcard{min-height:158px}
+.opcard .veil,.catcard .veil{background:linear-gradient(180deg,rgba(20,14,10,.05),rgba(20,14,10,.72) 95%)}
+.opc-txt{padding:19px 20px}
+.opc-txt h3{font-size:29px;letter-spacing:-.025em;font-weight:600}
+.opc-txt h4{font-size:21px;letter-spacing:-.018em;font-weight:600}
+.opc-txt span{font-size:11.5px;letter-spacing:.05em}
+.opc-go{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;top:15px;inset-inline-end:15px}
+
+/* Buttons — hierarchy instead of decoration */
+.btn{min-height:50px;padding:13px 18px;border-radius:999px!important;font-size:14px;font-weight:600;letter-spacing:.025em;box-shadow:none!important;background:var(--espresso)!important;color:#FBF7F1!important;border:1px solid transparent!important}
+[data-theme="dark"] .btn{background:var(--bronze)!important;color:#1E1712!important}
+.btn::after{display:none!important}
+.btn:hover{filter:brightness(1.03)}
+.btn:active{transform:scale(.985)!important}
+.btn.ghost{background:transparent!important;color:var(--ink)!important;border-color:var(--lux-line)!important}
+.btn.ghost:hover{background:var(--sand)!important}
+.btn.warn{background:var(--warn)!important;color:white!important}
+.btn.sm{min-height:38px;padding:8px 13px;font-size:12.5px}
+.quickrow{gap:10px;margin-bottom:27px}
+.quickrow button{min-height:86px;padding:17px 12px;border:1px solid var(--lux-line);border-radius:18px;background:var(--card);box-shadow:none!important;font-size:12px;font-weight:600;line-height:1.3}
+.quickrow button span{font-size:22px;margin-bottom:8px;color:var(--bronze)}
+
+/* Inputs — deliberately plain */
+input,select,textarea{min-height:50px;padding:13px 15px;border:1px solid var(--lux-line)!important;border-radius:14px!important;background:var(--card);box-shadow:none!important}
+input:focus,select:focus,textarea:focus{border-color:var(--lux-gold)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--lux-gold) 15%,transparent)!important}
+label{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:var(--muted);margin:17px 0 7px}
+
+/* Tabs — quiet segmented navigation */
+.pills,.daytabs,.daychips{gap:7px;margin-bottom:17px;padding-bottom:5px}
+.pills button,.daytabs button,.daychip{min-height:39px;padding:9px 14px;border:1px solid var(--lux-line)!important;border-radius:999px!important;background:transparent!important;box-shadow:none!important;font-size:12.5px;font-weight:600;color:var(--muted)}
+.pills button.on,.daytabs button.on,.daychip.on{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+[data-theme="dark"] .pills button.on,[data-theme="dark"] .daytabs button.on,[data-theme="dark"] .daychip.on{background:var(--bronze)!important;color:#18120E!important;border-color:var(--bronze)!important}
+
+/* Login — boutique-hotel welcome screen */
+.login-wrap{justify-content:center!important;padding-inline:clamp(22px,7vw,38px)!important;background:linear-gradient(180deg,#372920 0%,#271D17 58%,#1C1511 100%)!important}
+.login-wrap::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(70% 46% at 50% 2%,rgba(208,177,137,.14),transparent 70%)}
+.login-wrap>.brandmark,.login-wrap>.role-tabs,.login-wrap>.login-card,.login-wrap>.staff-link,.login-wrap>.lang-row{max-width:430px;position:relative;z-index:1}
+.brandmark .mono{width:66px;height:66px;border:1px solid rgba(225,202,170,.5)!important;box-shadow:none!important;background:transparent!important;color:#E6D7C3!important;font-size:31px}
+.brandmark h1{font-size:clamp(36px,9vw,48px)!important;font-weight:600;letter-spacing:.02em!important;color:#F8F3EC!important}
+.brandmark p{font-size:9.5px!important;letter-spacing:.22em!important;color:#CDBCA8!important;margin-top:8px!important}
+.role-tabs{margin-top:24px!important;padding:4px;border:1px solid rgba(255,255,255,.10);border-radius:999px;background:rgba(255,255,255,.035);gap:2px!important}
+.role-tabs button{border:0!important;border-radius:999px!important;background:transparent!important;color:#CDBFAF!important;min-height:40px;font-size:12px;font-weight:600}
+.role-tabs button.on{background:#F7F2EA!important;color:#33251D!important}
+.login-card{margin-top:14px!important;padding:23px 21px 22px!important;border:1px solid rgba(255,255,255,.46)!important;border-radius:24px!important;background:#FBF8F3!important;color:#271F19!important;box-shadow:0 34px 80px -38px rgba(0,0,0,.75)!important}
+.login-card input,.login-card select,.login-card textarea{background:#fff!important;color:#271F19!important;border-color:#E6DED4!important}
+.login-card label,.login-card .mini,.login-card .hint{color:#7A6E64!important}
+.login-card .btn{background:#33251D!important;color:#FBF7F1!important}
+.login-card .btn.ghost{background:transparent!important;color:#33251D!important;border-color:#DED4C8!important}
+.lang-row{margin-top:13px!important;opacity:.9}
+.lang-row button{border:0!important;color:#C9B9A7!important;padding:6px 9px!important;font-size:11px!important}
+.lang-row button.on{background:transparent!important;color:#fff!important;text-decoration:underline;text-underline-offset:4px}
+.staff-link{margin-top:17px!important;color:#C8B7A3!important;font-size:11.5px!important}
+
+/* Drawer — like a hotel folio, not an app control panel */
+.drawer-bg{background:rgba(18,13,10,.48)!important;backdrop-filter:blur(7px)!important}
+.drawer{width:min(350px,89vw)!important;padding-inline:20px!important;background:var(--bg)!important;box-shadow:36px 0 90px -34px rgba(0,0,0,.62)!important;border-inline-end:1px solid var(--lux-line)}
+[data-theme="dark"] .drawer{background:#181512!important}
+.dr-head{margin-bottom:10px!important;padding:4px 3px 20px!important;border-bottom:1px solid var(--lux-line)}
+.dr-head .mono.sm{width:43px;height:43px;border-radius:50%!important;background:transparent!important;border:1px solid var(--lux-gold-soft)!important;color:var(--bronze)!important;box-shadow:none!important}
+.dr-head h3{font-size:23px;font-weight:600;letter-spacing:-.02em}
+.dr-head p{font-size:11.5px}
+.dr-sec{font-size:9px!important;letter-spacing:.17em!important;padding:18px 12px 7px!important}
+.dr-it{min-height:47px;padding:11px 12px!important;border-radius:13px!important;font-size:14px!important;color:var(--ink)}
+.dr-it.on{background:var(--ink)!important;color:var(--bg)!important;box-shadow:none!important}
+[data-theme="dark"] .dr-it.on{background:var(--bronze)!important;color:#1A1410!important}
+.dr-foot{border-top:1px solid var(--lux-line)}
+.dr-out{background:transparent!important;border:1px solid var(--lux-line)!important}
+
+/* Workday / roster — information first */
+.wd-banner{padding:16px 17px;border-radius:17px!important;box-shadow:none!important;border:1px solid var(--lux-line)!important;background:var(--card)!important;color:var(--ink)!important}
+.wd-banner.off{border-color:color-mix(in srgb,var(--ok) 28%,var(--line))!important}
+.wd-banner.entrance{border-color:color-mix(in srgb,var(--bronze) 45%,var(--line))!important}
+.dc-grid{background:var(--card)}
+.dc-cell{padding:16px 17px;border-color:var(--lux-line)!important}
+.dc-cell span{font-size:9.5px;letter-spacing:.13em}
+.dc-cell b{font-size:15.5px}
+.roster-row{padding:13px 16px}
+.rnum{width:38px;height:38px;background:var(--sand)!important;color:var(--cacao)!important;border:1px solid var(--lux-line)}
+.roster-row.off .rnum,.roster-row.entrance .rnum{background:var(--sand)!important;color:var(--cacao)!important}
+
+/* Timeline */
+.wk{padding-top:2px}
+.wk-time{font-size:17px;color:var(--cacao);width:58px}
+.wk-dot{width:7px;height:7px;background:var(--bronze);margin-top:15px}
+.wk-line{width:1px;background:var(--line)}
+.wk-info{padding:9px 0 18px}
+.wk-info img{width:58px;height:58px;border-radius:15px}
+.wk-info h4{font-size:16px}
+
+/* Tickets */
+.tk{overflow:hidden;border-radius:24px!important}
+.tk img{height:190px}
+.tk .bd{padding:18px 18px 20px}
+.tk h4{font-size:29px;letter-spacing:-.025em}
+.tk .price{font-size:26px;color:var(--cacao)}
+
+/* Chat */
+.bub{max-width:min(82%,540px);padding:11px 15px;border-radius:18px!important;border:1px solid var(--lux-line)!important;box-shadow:none!important}
+.bub.me{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+[data-theme="dark"] .bub.me{background:var(--bronze)!important;color:#19120E!important;border-color:var(--bronze)!important}
+.bub.them{background:var(--card)!important}
+.bub-tools{opacity:.38}
+.chatbar{background:color-mix(in srgb,var(--bg) 94%,transparent)!important;border-top:1px solid var(--lux-line)!important;backdrop-filter:blur(20px)!important}
+.chatbar input{border-radius:999px!important}
+.chatbar button{width:48px;height:48px;background:var(--ink)!important;border-radius:50%!important;box-shadow:none!important}
+[data-theme="dark"] .chatbar button{background:var(--bronze)!important;color:#19120E!important}
+
+/* Modal */
+.modal-bg{background:rgba(18,13,10,.44)!important;backdrop-filter:blur(8px)!important}
+.modal{border-radius:28px 28px 0 0!important;background:var(--bg)!important;border:1px solid var(--lux-line)!important;border-bottom:0!important;box-shadow:0 -32px 80px -42px rgba(0,0,0,.58)!important}
+.modal h3{font-size:28px;letter-spacing:-.025em}
+.modal .grab{width:36px;height:3px;background:color-mix(in srgb,var(--muted) 35%,transparent)}
+
+/* Status / utility */
+.setup{border-radius:15px;border-color:#E7DCC6;background:#FBF6EA;color:#725D39}
+[data-theme="dark"] .setup{background:#292318;border-color:#423927;color:#D8C39A}
+.empty{padding:46px 20px}
+.empty .big{width:62px;height:62px;border:1px solid var(--lux-line);background:transparent!important}
+.cred{border-style:solid;border-color:var(--lux-line);background:var(--card)}
+.cred b{color:var(--cacao)}
+
+/* Desktop is a framed hotel tablet, mobile remains native */
+@media (min-width:900px){
+  body{padding-block:28px}
+  .app{border-radius:32px!important;border:1px solid var(--lux-line)!important;box-shadow:0 38px 110px -64px rgba(45,31,23,.5)!important;overflow:clip}
+  .login-wrap{border-radius:32px!important}
+}
+@media (max-width:700px){
+  [data-approle="manager"] .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  [data-approle="manager"] .stat:first-child{grid-column:auto}
+  [data-approle="manager"] .stat:first-child b{font-size:38px}
+}
+@media (max-width:420px){
+  :root{--page-x:16px}
+  .whobar{margin-bottom:24px}
+  .whobar h2{font-size:32px!important}
+  .hero img{height:270px!important}
+  .hero .body h3{font-size:34px!important}
+  .act .thumb{width:78px;height:78px}
+  .act{gap:11px}
+  .act .mid h4{font-size:16.5px}
+  .act .side{min-width:54px}
+  .stat{padding:16px}
+  .stat b{font-size:33px}
+  .quickrow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .catgrid{grid-template-columns:1fr}
+  .catcard{min-height:145px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
 </head>
 <body>
 <div class="app" id="app"><div class="skel-wrap">
@@ -10690,7 +10954,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.06-aurea-vNext";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.06-aurea-signature";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
