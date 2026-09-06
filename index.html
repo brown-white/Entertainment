@@ -2130,6 +2130,38 @@ label{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:var(--muted);m
 @media(max-width:430px){.db-nums-five{grid-template-columns:repeat(3,1fr)}.db-nums-five .db-n:nth-child(4),.db-nums-five .db-n:nth-child(5){grid-column:auto}}
 </style>
 
+
+<style id="workday-v3-cleanup">
+.workday-clean .workday-yourday{margin-top:18px}
+.workday-clean .wd-sub{margin:-5px 0 10px}
+.tlx.unified{background:var(--surface,#fff);border:1px solid var(--line);border-radius:24px;padding:6px 0;overflow:hidden}
+.tlx.unified .tlx-row{margin:0;padding:14px 16px 14px 52px;border-bottom:1px solid var(--line);min-height:82px}
+.tlx.unified .tlx-row:last-child{border-bottom:0}
+.tlx.unified .tlx-body{box-shadow:none!important;border:0!important;background:transparent!important;padding:0!important}
+.tlx.unified .eyebrow{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.tlx.unified .tlx-body>b{font-size:17px;line-height:1.22}
+.tlx.unified .tlx-mark{left:17px}
+.tlx.unified .task .tlx-mark{background:#efe7dc;color:#6c523d}
+.tlx.unified .task.overdue .tlx-mark{background:#f8e6e2;color:#b34d3f}
+.task-inline-status{display:inline-flex;width:max-content;margin-top:7px;padding:4px 8px;border-radius:999px;background:#f5f0e8;font-size:10px;font-weight:700;color:var(--muted)}
+.wd-dayinfo{margin-top:22px}
+.wd-info-compact{display:grid;grid-template-columns:1fr 1fr;padding:0!important;overflow:hidden}
+.wd-info-compact>div{padding:14px 15px;border-bottom:1px solid var(--line)}
+.wd-info-compact>div:nth-child(odd){border-right:1px solid var(--line)}
+.wd-info-compact>div.wide{grid-column:1/-1;border-right:0}
+.wd-info-compact span{display:block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px}
+.wd-info-compact b{font-size:14px;line-height:1.35}
+.wd-info-compact small{display:block;color:var(--muted);margin-top:3px}
+.wd-feedback-compact{margin-top:20px;margin-bottom:6px}
+.wd-fb-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:var(--surface,#fff);border:1px solid var(--line);border-radius:20px}
+.wd-fb-head h3{margin:0!important;border:0!important;padding:0!important}
+.wd-fb-head .mini{margin:4px 0 0}
+.wd-fb-head .btn{width:auto;min-width:124px;margin:0}
+.compact-empty{padding:22px 14px!important}
+/* entertainer programme: prevent the old duplicated personal-activity panel from visually resurfacing */
+.workday-clean .sec>h3+ .mini + .activity-card{margin-top:0}
+@media(max-width:390px){.wd-info-compact{grid-template-columns:1fr}.wd-info-compact>div:nth-child(odd){border-right:0}.wd-info-compact>div.wide{grid-column:auto}.wd-fb-head{align-items:flex-start}.wd-fb-head .btn{min-width:110px}}
+</style>
 </head>
 <body>
 <div class="app" id="app"><div class="skel-wrap">
@@ -4179,8 +4211,7 @@ function navGroupsBase(role){
         ["mypage","user",t("myAttendance"),0],
         ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("staff")&&!myQuizReply(quizForToday("staff").id)?1:0]]:[]),
         ...(featureOn("bus")?[["bus","bus",t("busTimes"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[]),
-        ["tasks","check",t("tasks"),taskN]]},
+        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
       {key:"secProgram", head:t("secProgram"), items:[
         ["today","calendar",t("todayProgram"),0],
         ["week","calendar",t("program"),0],
@@ -4772,9 +4803,6 @@ function staffView(){
       ${topBar(t("schedule"),t("days")[todayIdx]+" · "+S.session.name)}
       ${heroCard(hl)}
       ${statusLegend()}
-      ${mine.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
-        <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
-        ${mine.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
       <div class="sec"><h3>${t("todayProgram")}</h3>
         ${listByCat(acts.filter(a=>a!==hl),{staff:true,showBook:false,showFav:false})}</div>
     </div>`;
@@ -7310,15 +7338,15 @@ function myWorkDayView(){
   if(!num){
     return `<div class="screen fadein">
       ${topBar(t("myWorkDay"),S.session.name)}
+      ${dayChips()}
       <div class="empty"><div class="big">${ic("users",30)}</div>${t("noNumber")}</div>
-      ${dayPlanInfoCard(day)}
-      ${dayPlanTimes(day)}
+      ${workdayUnifiedTimeline(day,[])}
+      ${workdayFeedbackCard()}
       ${dayPlanStandards(day)}
     </div>`;
   }
   const info=personDayInfo(num,day);
   const myActs=S.activities.filter(a=>a.day===day && canSeeGuests(a)).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
-  // photo ring reflects the entertainer's own next/current activity today
   const liveAct = isToday(day) ? (myActs.find(a=>activityStatus(a)==="live") || myActs.find(a=>activityStatus(a)==="todo") || myActs[myActs.length-1]) : null;
   const photoRing = liveAct ? statusRing(liveAct) : "";
   const photoBlock = `<div class="wd-photo">
@@ -7331,48 +7359,83 @@ function myWorkDayView(){
   let banner="";
   if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
   else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
-  return `<div class="screen fadein">
+  return `<div class="screen fadein workday-clean">
     ${topBar(t("myWorkDay"),"#"+num+" · "+S.session.name)}
     ${dayChips()}
     ${photoBlock}
     ${banner}
     ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
     ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
-    ${myActs.length?`<div class="sec"><h3>${ic("clipboard",18)} ${t("myActs")}</h3>
-      <p class="mini" style="margin:-6px 0 10px">${t("myActsSub")}</p>
-      ${myActs.map(a=>activityCard(a,{staff:true,showBook:false,showFav:false})).join("")}</div>`:""}
-    ${dayPlanInfoCard(day)}
-    ${workdayTimeline(day, myActs)}
+    ${workdayUnifiedTimeline(day,myActs)}
+    ${workdayCompactInfo(day)}
     ${workdayFeedbackCard()}
-    ${dayPlanTimes(day)}
     ${dayPlanStandards(day)}
   </div>`;
 }
-/* The entertainer's own day as a vertical line: what is done, what is running
-   now, what is still to come. The live one carries the action. */
-function workdayTimeline(day, acts){
-  acts=(acts||[]).slice();
-  if(!acts.length) return "";
-  const live = isToday(day) ? acts.find(a=>activityStatus(a)==="live") : null;
-  const next = isToday(day) ? acts.find(a=>activityStatus(a)==="todo") : null;
-  const star = live || (isToday(day)?next:null);
-  return `<div class="sec"><h3>${ic("clock",18)} ${t("yourDay")}</h3>
-    <div class="tlx">${acts.map(a=>{
-      const st=isToday(day)?activityStatus(a):"todo";
-      const isStar = star && a.id===star.id;
-      const start=String(a.time||"").split(/\s*[\u2013\u2014-]\s*/)[0].trim();
-      const booked=seatsTaken(a.id);
-      return `<div class="tlx-row ${st}${isStar?" star":""}">
+function taskDueMinutes(x){
+  if(!x || !x.due) return 24*60+1;
+  const d=new Date(String(x.due).replace(" ","T"));
+  if(isNaN(d.getTime())) return 24*60+1;
+  return d.getHours()*60+d.getMinutes();
+}
+function taskBelongsToDay(x,day){
+  if(!x || !(x.assigned_to===S.session.username || !x.assigned_to || x.assigned_to==="team")) return false;
+  if(["verified"].includes(taskStatus(x))) return false;
+  const target=assignDateStr(day);
+  if(x.due){
+    const d=new Date(String(x.due).replace(" ","T"));
+    if(!isNaN(d.getTime())) return localDateKey(d)===target;
+  }
+  return isToday(day) && ["new","accepted","progress"].includes(taskStatus(x));
+}
+function workdayUnifiedTimeline(day,acts){
+  const activityItems=(acts||[]).map(a=>({kind:"activity",sort:timeToMin(a.time)??9999,a}));
+  const taskItems=(S.tasks||[]).filter(x=>taskBelongsToDay(x,day)).map(x=>({kind:"task",sort:taskDueMinutes(x),x}));
+  const items=activityItems.concat(taskItems).sort((a,b)=>a.sort-b.sort);
+  return `<div class="sec workday-yourday"><h3>${ic("clock",18)} ${t("yourDay")}</h3>
+    <p class="mini wd-sub">Activities and manager tasks in one place.</p>
+    ${items.length?`<div class="tlx unified">${items.map(it=>{
+      if(it.kind==="task"){
+        const x=it.x, st=taskStatus(x), over=taskIsOverdue(x);
+        const due=x.due?new Date(String(x.due).replace(" ","T")):null;
+        const tm=due&&!isNaN(due.getTime())?fmtTime(due.toISOString()):"";
+        return `<div class="tlx-row task ${st} ${over?"overdue":""}">
+          <span class="tlx-mark">${ic("check",12)}</span>
+          <div class="tlx-body task-body" data-taskopen="${x.id}">
+            <span class="eyebrow">${t("tasks")}</span>
+            <b>${esc(x.title||x.type||t("tasks"))}</b>
+            <span class="mini">${tm?esc(tm)+(x.location?" · "+esc(x.location):""):(x.location?esc(x.location):"")}</span>
+            ${x.desc?`<span class="mini">${esc(x.desc)}</span>`:""}
+            <span class="task-inline-status">${taskStatusLabel(st)}</span>
+          </div>
+        </div>`;
+      }
+      const a=it.a, st=isToday(day)?activityStatus(a):"todo", booked=seatsTaken(a.id);
+      return `<div class="tlx-row ${st}">
         <span class="tlx-mark">${st==="done"?ic("check",13):(st==="live"?"":"")}</span>
         <div class="tlx-body" data-actopen="${esc(String(a.id))}">
-          ${isStar&&st==="live"?`<span class="eyebrow tlx-now">${t("nowLbl")}</span>`:""}
+          ${st==="live"?`<span class="eyebrow tlx-now">${t("nowLbl")}</span>`:""}
+          <span class="eyebrow">${t("activities")||"Activity"}</span>
           <b>${esc(a.name)}</b>
-          <span class="mini">${esc(String(a.time||""))}${a.location?" \u00b7 "+esc(a.location):""}</span>
+          <span class="mini">${esc(String(a.time||""))}${a.location?" · "+esc(a.location):""}</span>
           ${booked?`<span class="mini">${booked} ${t("registered")}</span>`:""}
-          ${isStar?`<button class="btn sm tlx-go" data-startact="${esc(String(a.id))}">${t("startActivity")}</button>`:""}
         </div>
       </div>`;
-    }).join("")}</div>
+    }).join("")}</div>`:`<div class="empty compact-empty">${t("noneToday")}</div>`}
+  </div>`;
+}
+function workdayCompactInfo(day){
+  const dp=dayPlanFor(day);
+  const evs=(S.activities||[]).filter(a=>a.day===day && activitySlot(a)==="event")
+    .slice().sort((x,y)=>(timeToMin(x.time)||0)-(timeToMin(y.time)||0));
+  return `<div class="sec wd-dayinfo"><h3>${ic("calendar",18)} ${t("dayInfoSec")}</h3>
+    <div class="card wd-info-compact">
+      <div><span>${t("dressCode")}</span><b>${esc(dp.dress||"—")}</b></div>
+      <div><span>${t("eveningShowLbl")}</span><b>${esc(dp.eveningShow||"—")}</b>${dp.showTime?`<small>${esc(dp.showTime)}</small>`:""}</div>
+      <div><span>${t("liveBandLbl")}</span><b>${esc(dp.liveBand||"—")}</b></div>
+      <div><span>${t("entranceDuty")}</span><b>${personTag(dp.entrance)||"—"}</b></div>
+      ${evs.length?`<div class="wide"><span>${t("eventsToday")}</span><b>${evs.map(e=>esc(String(e.time||"").split(/\s*[–—-]\s*/)[0])+" · "+esc(e.name)).join("<br>")}</b></div>`:""}
+    </div>
   </div>`;
 }
 /* Collecting guest feedback is a daily job, so it sits inside the work day
@@ -7385,17 +7448,9 @@ function workdayFeedbackCard(){
     const ts=f.created_at?new Date(f.created_at):null;
     return ts && !isNaN(ts.getTime()) && localDateKey(ts)===localDateKey(new Date());
   });
-  const recent=mine.slice(0,3);
-  return `<div class="sec"><h3>${ic("star",18)} ${t("fbMyFeedback")}</h3>
-    <p class="mini" style="margin:-6px 0 10px">${t("fbMySub")}</p>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
-      <div class="stat"><b>${today.length}</b><span>${t("today")}</span></div>
-      <div class="stat"><b>${mine.length}</b><span>${t("feedback")}</span></div>
-    </div>
-    <button class="btn" id="btn-addfb" style="margin:0 0 10px">\uFF0B ${t("fbNew")}</button>
-    ${recent.length?`<div class="card">${recent.map(fbRowHtml).join("")}</div>
-      ${mine.length>recent.length?`<button class="btn ghost sm" id="btn-fbseeall" style="margin-top:8px">${t("fbSeeAll")}</button>`:""}`
-      :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("noMyFeedback")}</div>`}
+  return `<div class="sec wd-feedback-compact">
+    <div class="wd-fb-head"><div><h3>${ic("star",18)} ${t("fbMyFeedback")}</h3><p class="mini">${today.length} ${t("today")} · ${mine.length} ${t("feedback")}</p></div>
+      <button class="btn sm" id="btn-addfb">＋ ${t("fbNew")}</button></div>
   </div>`;
 }
 /* full day detail: theme, dress, timings, show — used by staff + manager */
