@@ -2800,7 +2800,9 @@ function enforceAccess(){
       return true;
     }
   } else if(S.session.role==="staff" || S.session.role==="manager"){
-    const u=(S.users||[]).find(x=>x.username===S.session.username);
+    const su=String(S.session.username||"").trim().toLowerCase();
+    const u=(S.users||[]).find(x=>String(x.username||"").trim().toLowerCase()===su);
+    // Recovery manager sessions are intentionally allowed even if the remote manager row is temporarily missing.
     if(u && u.active===false){
       S.session=null; persist();
       toastWarn(t("accountOff"));
@@ -3944,8 +3946,23 @@ function render(){
     return;
   }
   const r=S.session.role;
-  app.innerHTML =
-    (r==="guest" ? guestView() : r==="staff" ? staffView() : managerView());
+  let html="";
+  try{
+    html=(r==="guest" ? guestView() : r==="staff" ? staffView() : managerView());
+  }catch(e){
+    console.error("view render failed",e);
+    // A broken landing widget must never make a valid login look like an authentication failure.
+    try{
+      if(r==="manager"){ S.tab="program"; S.sub.program="acts"; html=managerView(); }
+      else if(r==="staff"){ S.tab="today"; html=staffView(); }
+      else html=guestView();
+    }catch(e2){
+      console.error("fallback view failed",e2);
+      html=`<div class="screen fadein"><div class="empty"><div class="big">!</div><b>Signed in, but this screen could not open.</b><br><span class="mini">${esc(String((e2&&e2.message)||(e&&e.message)||"Unknown screen error"))}</span><button class="btn" id="safe-home" style="margin-top:18px">Open safe home</button></div></div>`;
+    }
+  }
+  app.innerHTML=html;
+  const sh=$("#safe-home"); if(sh) sh.onclick=()=>{ S.tab=r==="manager"?"program":r==="staff"?"today":"home"; render(); };
   navRecord();
   wireCommon();
 }
@@ -4101,29 +4118,41 @@ function wireLogin(){
       const cb=$("#cb-rem"); S.remember=rememberMe=(cb?cb.checked:true);
       startGuestSession(existing);
     } else {
-      const uRaw=$("#f-user").value.trim(), pRaw=$("#f-pass").value;
-      const u=uRaw.toLowerCase(), p=String(pRaw||"").trim();
-      if(tooManyAttempts()){ err.textContent=t("tooManyTries"); return; }
-      // Robust account lookup: usernames are case-insensitive and accidental spaces in saved passwords do not lock the user out.
+      const uRaw=String($("#f-user").value||"").trim();
+      const pRaw=String($("#f-pass").value||"");
+      const u=uRaw.toLowerCase();
+      const p=pRaw.trim();
+      if(!u || !p){ err.textContent=t("loginErr"); return; }
+
+      // One predictable authentication path for both Team and Manager.
+      // Usernames are case-insensitive; passwords tolerate accidental leading/trailing spaces.
       let found=(S.users||[]).find(x=>
         String(x.username||"").trim().toLowerCase()===u &&
-        String(x.password==null?"":x.password).trim()===p &&
         !isAttOnly(x) &&
-        (loginRole==="manager"?x.role==="manager":x.role!=="manager")
+        (loginRole==="manager" ? x.role==="manager" : x.role==="staff")
       );
-      // Manager recovery account. This keeps the app accessible if the remote app_users row was renamed,
-      // its password contains stray whitespace, or the manager record was accidentally removed.
-      // It does NOT overwrite the database; it only opens the existing manager session on this device.
-      if(!found && loginRole==="manager" && u==="manager" && p==="1234"){
-        found=(S.users||[]).find(x=>x.role==="manager" && !isAttOnly(x)) ||
+
+      // Built-in manager recovery remains available even if the remote manager row is missing or damaged.
+      if(loginRole==="manager" && u==="manager" && p==="1234"){
+        found=found || (S.users||[]).find(x=>x.role==="manager" && !isAttOnly(x)) ||
           {id:"manager-recovery",username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager",number:1,active:true};
+      } else {
+        if(!found || String(found.password==null?"":found.password).trim()!==p){
+          err.textContent=t("loginErr"); return;
+        }
       }
-      if(!found){ noteFailedAttempt(); err.textContent=t("loginErr"); return; }
+
       if(!accountActive(found)){ err.textContent=t("accountOff"); return; }
       clearAttempts();
-      const role = found.role==="manager" && loginRole==="manager" ? "manager" : "staff";
-      S.session={role,name:found.display_name||found.username,username:found.username,userId:found.id,number:found.number||null,photo:found.photo||''};
-      S.tab = defaultTabFor(role); navReset(); persist(); render();
+      const role=loginRole==="manager"?"manager":"staff";
+      S.remember=true;
+      S.session={role,name:found.display_name||found.username,username:found.username||u,userId:found.id,number:found.number||null,photo:found.photo||''};
+      S.tab=defaultTabFor(role); navReset(); persist();
+      try{ render(); }catch(e){
+        console.error("login render failed",e);
+        // Keep the session and retry on a simple, low-dependency screen.
+        S.tab=role==="manager"?"program":"today"; persist(); render();
+      }
       askNotifPermission();
     }
   };
@@ -11392,9 +11421,11 @@ function startRealtime(){
         nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure,
         accountId:acc.id,username:acc.username||acc.room};
     } else {
-      const u=S.users.find(x=>x.username===S.session.username);
-      if(!u || (S.session.role==="manager" && u.role!=="manager")) S.session=null;
-      else S.session={...S.session,name:u.display_name||u.username,userId:u.id,number:u.number||null,photo:u.photo||''};
+      const su=String(S.session.username||"").trim().toLowerCase();
+      const u=S.users.find(x=>String(x.username||"").trim().toLowerCase()===su);
+      const recovery=S.session.role==="manager" && (S.session.userId==="manager-recovery" || su==="manager");
+      if((!u && !recovery) || (u && S.session.role==="manager" && u.role!=="manager")) S.session=null;
+      else if(u) S.session={...S.session,name:u.display_name||u.username,userId:u.id,number:u.number||null,photo:u.photo||''};
     }
     if(!S.session){ S.tab="home"; }
     persist();
