@@ -3946,6 +3946,8 @@ function render(){
     return;
   }
   const r=S.session.role;
+  // V5.3: migrate Manager sessions that were accidentally saved on Program by the auth repair.
+  if(r==="manager" && (!S.tab || S.tab==="home")){ S.tab="dash"; S.sub.dash="overview"; }
   let html="";
   try{
     html=(r==="guest" ? guestView() : r==="staff" ? staffView() : managerView());
@@ -3953,7 +3955,7 @@ function render(){
     console.error("view render failed",e);
     // A broken landing widget must never make a valid login look like an authentication failure.
     try{
-      if(r==="manager"){ S.tab="program"; S.sub.program="acts"; html=managerView(); }
+      if(r==="manager"){ S.tab="dash"; S.sub.dash="overview"; html=managerView(); }
       else if(r==="staff"){ S.tab="today"; html=staffView(); }
       else html=guestView();
     }catch(e2){
@@ -3962,7 +3964,7 @@ function render(){
     }
   }
   app.innerHTML=html;
-  const sh=$("#safe-home"); if(sh) sh.onclick=()=>{ S.tab=r==="manager"?"program":r==="staff"?"today":"home"; render(); };
+  const sh=$("#safe-home"); if(sh) sh.onclick=()=>{ S.tab=r==="manager"?"dash":r==="staff"?"today":"home"; render(); };
   navRecord();
   wireCommon();
 }
@@ -4151,7 +4153,7 @@ function wireLogin(){
       try{ render(); }catch(e){
         console.error("login render failed",e);
         // Keep the session and retry on a simple, low-dependency screen.
-        S.tab=role==="manager"?"program":"today"; persist(); render();
+        S.tab=role==="manager"?"dash":"today"; if(role==="manager") S.sub.dash="overview"; persist(); render();
       }
       askNotifPermission();
     }
@@ -11850,5 +11852,6 @@ function startRealtime(){
 })();
 </script>
 
+<!-- AUREA V5.3 DASHBOARD RESTORED -->
 </body>
 </html>
