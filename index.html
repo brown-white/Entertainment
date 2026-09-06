@@ -2876,10 +2876,7 @@ function demoBookings(){
 function demoOrders(){
   return [{id:1,ticket_id:1,room:"4215",guest_name:"Familie Weber",nationality:"German",qty:2,status:"reserved"}];
 }
-const DEMO_USERS=[
-  {id:1,username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager"},
-  {id:2,username:"team",password:"1234",role:"staff",display_name:"Entertainer"}
-];
+const DEMO_USERS=[];
 function demoRooms(){ return ["4215","4308","4510","4102","4103"].map((r,i)=>({id:i+1,room:r,active:true})); }
 function demoAccounts(){
   const today=new Date(), plus=d=>{const x=new Date(today);x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
@@ -11974,5 +11971,152 @@ function startRealtime(){
   };
 })();
 </script>
+
+<!-- AUREA V6.4: relocated V6.3 enhancement block -->
+<script>
+/* ============================================================
+   V6.3 — Day information + feedback consistency repair
+   ============================================================ */
+(function(){
+  'use strict';
+
+  function v63RangeFeedback(){
+    const all=(S.feedback||[]), mode=S.fbRangeV5||'all';
+    if(mode==='all') return all.slice();
+    const now=hotelNow(), today=localDateKey(now);
+    if(mode==='today') return all.filter(f=>{
+      const d=f.created_at?new Date(f.created_at):null;
+      return d&&!isNaN(d.getTime())&&localDateKey(d)===today;
+    });
+    const start=new Date(now); start.setHours(0,0,0,0); start.setDate(start.getDate()-6);
+    return all.filter(f=>{ const d=f.created_at?new Date(f.created_at):null; return d&&!isNaN(d.getTime())&&d>=start&&d<=now; });
+  }
+  window.v63RangeFeedback=v63RangeFeedback;
+
+  /* ---------- Day information: 7 useful fields ---------- */
+  function v63ProgrammeInfo(day){
+    const acts=(S.activities||[]).filter(a=>a.day===day).slice().sort((a,b)=>(timeToMin(a.time)||9999)-(timeToMin(b.time)||9999));
+    const line=a=>{
+      const sets=(typeof activitySets==='function'?activitySets(a):null)||[];
+      const times=sets.length?sets.map(x=>String(x.start||'')+(x.end?'–'+String(x.end):'')).filter(Boolean).join(' · '):String(a.time||'');
+      return [a.name,times,a.location].filter(Boolean).map(x=>esc(String(x))).join(' · ');
+    };
+    const isLive=a=>normCat(a)==='eLive';
+    const isShow=a=>['eBefore','eShow','eAfter','eParty'].includes(normCat(a));
+    const isEvent=a=>normCat(a)==='mEvents';
+    return {
+      events:acts.filter(isEvent).map(line).join('<br>')||'—',
+      live:acts.filter(isLive).map(line).join('<br>')||'—',
+      show:acts.filter(isShow).map(line).join('<br>')||'—'
+    };
+  }
+  function v63InfoOverride(day){
+    const all=(S.settings&&S.settings.dayInfoOverrides)||{};
+    return all[String(day)]||{};
+  }
+  function v63DayInfo(day){
+    const dp=dayPlanFor(day), auto=v63ProgrammeInfo(day), ov=v63InfoOverride(day);
+    const pick=(k,autoVal)=>Object.prototype.hasOwnProperty.call(ov,k)?(ov[k]||'—'):autoVal;
+    return {
+      theme:pick('theme',esc(dp.theme||'—')),
+      dress:pick('dress',esc(dp.dress||'—')),
+      events:pick('events',auto.events),
+      live:pick('live',auto.live),
+      show:pick('show',auto.show),
+      entrance:pick('entrance',personTag(dp.entrance)||'—'),
+      off:pick('off',personTags(dp.off)||'—')
+    };
+  }
+  function v63Val(v){ return `<b>${v||'—'}</b>`; }
+  window.v6DayInfoHtml=function(day){
+    const d=v63DayInfo(day);
+    return `<div class="card dayinfo-v6"><div class="dayinfo-grid-v6">
+      <div class="dayinfo-item-v6"><span>${t('restaurantTheme')}</span>${v63Val(d.theme)}</div>
+      <div class="dayinfo-item-v6"><span>${t('dressCode')}</span>${v63Val(d.dress)}</div>
+      <div class="dayinfo-item-v6 wide"><span>${t('eventsToday')}</span>${v63Val(d.events)}</div>
+      <div class="dayinfo-item-v6"><span>Live music</span>${v63Val(d.live)}</div>
+      <div class="dayinfo-item-v6"><span>Show time</span>${v63Val(d.show)}</div>
+      <div class="dayinfo-item-v6"><span>${t('entranceDuty')}</span>${v63Val(d.entrance)}</div>
+      <div class="dayinfo-item-v6"><span>${t('dayOff')}</span>${v63Val(d.off)}</div>
+    </div></div>`;
+  };
+
+  window.openDayInfoEditorV6=function(day){
+    if(!(S.session&&S.session.role==='manager')) return;
+    const dp=dayPlanFor(day), auto=v63ProgrammeInfo(day), ov=v63InfoOverride(day);
+    const autoText={theme:dp.theme||'',dress:dp.dress||'',events:auto.events==='—'?'':auto.events.replace(/<br>/g,'\n'),live:auto.live==='—'?'':auto.live.replace(/<br>/g,'\n'),show:auto.show==='—'?'':auto.show.replace(/<br>/g,'\n'),entrance:personTag(dp.entrance)||'',off:personTags(dp.off)||''};
+    const cur=k=>Object.prototype.hasOwnProperty.call(ov,k)?String(ov[k]||''):String(autoText[k]||'');
+    const wrap=baseModal(`<h3>${ic('calendar',20)} Edit day information</h3>
+      <p class="mini">Programme information is filled automatically. You can override any field for this day without changing the programme itself.</p>
+      <div class="di-v6-grid"><div><label>${t('restaurantTheme')}</label><input id="di63-theme" value="${esc(cur('theme'))}"></div><div><label>${t('dressCode')}</label><input id="di63-dress" value="${esc(cur('dress'))}"></div></div>
+      <label>${t('eventsToday')}</label><textarea id="di63-events" rows="3">${esc(cur('events'))}</textarea>
+      <div class="di-v6-grid"><div><label>Live music</label><textarea id="di63-live" rows="3">${esc(cur('live'))}</textarea></div><div><label>Show time</label><textarea id="di63-show" rows="3">${esc(cur('show'))}</textarea></div></div>
+      <div class="di-v6-grid"><div><label>${t('entranceDuty')}</label><textarea id="di63-ent" rows="2">${esc(cur('entrance'))}</textarea></div><div><label>${t('dayOff')}</label><textarea id="di63-off" rows="2">${esc(cur('off'))}</textarea></div></div>
+      <button class="btn" id="di63-save">${t('save')}</button>
+      <button class="btn ghost" id="di63-reset">Reset all to automatic</button>
+      <button class="btn ghost" id="di63-close">${t('close')}</button>`);
+    wrap.querySelector('#di63-close').onclick=()=>wrap.remove();
+    wrap.querySelector('#di63-save').onclick=async()=>{
+      const all={...((S.settings&&S.settings.dayInfoOverrides)||{})};
+      all[String(day)]={theme:wrap.querySelector('#di63-theme').value.trim(),dress:wrap.querySelector('#di63-dress').value.trim(),events:wrap.querySelector('#di63-events').value.trim().replace(/\n/g,'<br>'),live:wrap.querySelector('#di63-live').value.trim().replace(/\n/g,'<br>'),show:wrap.querySelector('#di63-show').value.trim().replace(/\n/g,'<br>'),entrance:wrap.querySelector('#di63-ent').value.trim(),off:wrap.querySelector('#di63-off').value.trim()};
+      try{ await DB.saveSettings({...S.settings,dayInfoOverrides:all}); wrap.remove(); toastOk(t('saved')); render(); }
+      catch(e){ console.error('day info save',e); toastErr(t('errSave')); }
+    };
+    wrap.querySelector('#di63-reset').onclick=async()=>{
+      const all={...((S.settings&&S.settings.dayInfoOverrides)||{})}; delete all[String(day)];
+      try{ await DB.saveSettings({...S.settings,dayInfoOverrides:all}); wrap.remove(); toastOk(t('saved')); render(); }
+      catch(e){ console.error('day info reset',e); toastErr(t('errSave')); }
+    };
+  };
+
+  /* ---------- Entertainer: feedback only on My Work Day ---------- */
+  window.workdayFeedbackCard=function(){
+    const me=(S.session&&S.session.username)||'';
+    const mine=(S.feedback||[]).filter(f=>String(f.by_user||'')===String(me)).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    const today=mine.filter(f=>{ const d=f.created_at?new Date(f.created_at):null; return d&&!isNaN(d.getTime())&&localDateKey(d)===localDateKey(hotelNow()); });
+    const rows=mine.slice(0,3).map(f=>`<button class="wd-myfb-row" data-fbopen="${esc(String(f.id))}"><span><b>${t('room')} ${esc(f.room||'—')}</b><small>${esc(f.comment||'')} · ${fmtDate(f.created_at)}</small></span><strong>${fbOverall(f)?fbOverall(f).toFixed(1)+' ★':'—'}</strong></button>`).join('');
+    return `<div class="sec wd-feedback-compact"><div class="wd-fb-head"><div><h3>${ic('star',18)} ${t('fbMyFeedback')}</h3><p class="mini">${today.length} ${t('today')} · ${mine.length} ${t('feedback')}</p></div><button class="btn sm" id="btn-addfb">＋ ${t('fbNew')}</button></div>${rows?`<div class="card wd-myfb-list">${rows}</div>`:''}${mine.length>3?`<button class="btn ghost sm" id="btn-myfb-all">View all my feedback</button>`:''}</div>`;
+  };
+
+  window.openMyFeedbackV63=function(){
+    const me=(S.session&&S.session.username)||'';
+    const mine=(S.feedback||[]).filter(f=>String(f.by_user||'')===String(me)).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    const wrap=baseModal(`<h3>${ic('star',20)} ${t('fbMyFeedback')}</h3>${mine.length?`<div class="card">${mine.map(fbRowHtml).join('')}</div>`:`<p class="mini">${t('noMyFeedback')}</p>`}<button class="btn ghost" id="mf63-x">${t('close')}</button>`);
+    wrap.querySelector('#mf63-x').onclick=()=>wrap.remove();
+    wrap.querySelectorAll('[data-fbopen]').forEach(b=>b.onclick=()=>{ const id=b.dataset.fbopen; wrap.remove(); openFeedbackDetail(id); });
+  };
+
+  /* Attendance/My Page = attendance + requests only, never duplicate feedback. */
+  window.myPageView=function(){
+    const mk=currentAttMonth(), me=S.session;
+    const user=(S.users||[]).find(u=>u.username===me.username)||{username:me.username,display_name:me.name,number:me.number};
+    const tot=attTotals(user,mk), reqs=myStaffReqs(), n=monthDays(mk);
+    const strip=Array.from({length:n},(_,i)=>{ const d=i+1; if(isFutureDay(mk,d)) return `<span class="ms-d future" title="${d}">·</span>`; if(notYetHired(user,mk,d)||leftBefore(user,mk,d)) return `<span class="ms-d notyet" title="${d}">N</span>`; const st=attStatus(user,mk,d); return `<span class="ms-d s-${st}" title="${d}">${st}</span>`; }).join('');
+    return `<div class="screen fadein">${topBar(t('myAttendance'),monthLabel(mk))}<div class="att-head"><button class="iconbtn" id="att-prev" aria-label="${t('prevMonth')}">${ic('back',18)}</button><b class="att-month">${esc(monthLabel(mk))}</b><button class="iconbtn att-next" id="att-next" aria-label="${t('nextMonth')}">${ic('back',18)}</button></div><div class="card attsum"><div class="as-row"><div class="as-n p"><b>${tot.P}</b><span class="mini">${t('workDays')}</span></div><div class="as-n o"><b>${tot.O}</b><span class="mini">${t('attTotalsO')}</span></div><div class="as-n a"><b>${tot.A}</b><span class="mini">${t('attTotalsA')}</span></div></div><div class="ms-strip">${strip}</div><p class="mini" style="margin:8px 0 0">${t('attLegend')}</p></div><div class="sec"><h3>${ic('chat',18)} ${t('myRequestsTeam')}</h3><button class="btn" id="sr-new" style="margin-bottom:10px">${ic('plus',16)} ${t('askManager')}</button>${reqs.length?`<div class="card">${reqs.map(r=>`<div class="sr-row"><div class="sr-mid"><b>${esc(reqTypeLabel(r.type))}</b><span>${esc(r.detail||'')}</span>${r.the_date?`<span class="mini">${esc(r.the_date)}</span>`:''}${r.reply?`<span class="mini sr-reply">${ic('chat',12)} ${esc(r.reply)}</span>`:''}</div><span class="sr-st st-${esc(r.status)}">${r.status==='ok'?t('statusOk'):r.status==='no'?t('statusNo'):r.status==='done'?t('done'):t('statusNew')}</span></div>`).join('')}</div>`:''}</div></div>`;
+  };
+
+  /* Manager feedback: button must open Guests > Feedback, preserving filter. */
+  const oldWire=wireCommon;
+  window.wireCommon=wireCommon=function(){
+    oldWire();
+    const see=document.querySelector('#btn-fbseeall');
+    if(see) see.onclick=()=>{ S.tab='guests'; S.sub.guests='feedback'; render(); };
+    const allMine=document.querySelector('#btn-myfb-all'); if(allMine) allMine.onclick=openMyFeedbackV63;
+  };
+
+  /* Department drill-down must obey Today / 7 days / All too. */
+  window.openDeptDetail=function(key){
+    const all=v63RangeFeedback();
+    const list=all.filter(f=>+fbDepts(f)[key]>0).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    const st=fbDeptStats(all).find(x=>x.k===key)||{avg:0,n:0};
+    const wrap=baseModal(`<h3>${ic('star',20)} ${esc(fbDeptLabel(key))}</h3><div class="stat-grid" style="grid-template-columns:1fr 1fr"><div class="stat"><b>${st.avg?st.avg.toFixed(1)+' ★':'—'}</b><span>${t('avgRate')}</span></div><div class="stat"><b>${st.n}</b><span>${t('fbResponses')}</span></div></div>${list.length?`<div class="card">${list.map(f=>`<div class="fb-line" data-fbjump="${esc(String(f.id))}"><span style="min-width:0"><b>${t('room')} ${esc(f.room)}</b>${f.guest_name?' · '+esc(f.guest_name):''}<br><span class="mini">${fmtTime(f.created_at)}${fbComment(f)?' · '+esc(fbComment(f)):''}</span></span>${fbStars(fbDepts(f)[key])}</div>`).join('')}</div>`:`<p class="mini">${t('fbNoDept')}</p>`}<button class="btn ghost" id="dd63-x">${t('close')}</button>`);
+    wrap.querySelector('#dd63-x').onclick=()=>wrap.remove();
+    wrap.querySelectorAll('[data-fbjump]').forEach(b=>b.onclick=()=>{const id=b.dataset.fbjump;wrap.remove();openFeedbackDetail(id);});
+  };
+})();
+</script>
+<style>
+.wd-myfb-list{padding:4px 14px;margin-top:12px}.wd-myfb-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;font:inherit}.wd-myfb-row:last-child{border-bottom:0}.wd-myfb-row span{display:grid;gap:3px;min-width:0}.wd-myfb-row small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wd-myfb-row strong{font-family:var(--display);font-size:20px;flex:none}.dayinfo-v6 .dayinfo-item-v6 b{line-height:1.45}.dayinfo-edit-v6{white-space:nowrap}
+</style>
 </body>
 </html>
