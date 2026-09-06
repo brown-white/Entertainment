@@ -11605,5 +11605,125 @@ function startRealtime(){
   },true);
 })();
 </script>
+<style id="aurea-v4-manager-polish">
+/* ===== AUREA V4 — MANAGER CLARITY ===== */
+.mgr-fb-v4{padding:0!important;overflow:hidden}
+.mgr-fb-v4 .fb-hero-v4{display:grid;grid-template-columns:1.15fr .85fr .85fr;gap:1px;background:var(--line)}
+.mgr-fb-v4 .fb-kpi-v4{background:var(--card);padding:18px 16px;min-height:100px;display:flex;flex-direction:column;justify-content:center}
+.mgr-fb-v4 .fb-kpi-v4 strong{font-family:var(--font-display);font-size:38px;line-height:1;color:var(--espresso);font-weight:700}
+.mgr-fb-v4 .fb-kpi-v4 small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:7px;font-weight:700}
+.mgr-fb-v4 .fb-kpi-v4.warn strong{color:#b95e49}
+.fb-attention-v4{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:15px 16px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--card) 88%,#fff7ef)}
+.fb-attention-v4 b{display:block;font-size:15px}.fb-attention-v4 span{font-size:13px;color:var(--muted)}
+.fb-attention-v4 .score{font-family:var(--font-display);font-size:25px;color:#b95e49}
+.fb-mini-list-v4{padding:6px 16px 2px}
+.fb-mini-v4{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 74px 38px;gap:10px;align-items:center;padding:11px 0;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;color:var(--ink)}
+.fb-mini-v4:last-child{border-bottom:0}.fb-mini-v4 b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fb-mini-v4 .bar{height:5px;background:var(--soft);border-radius:99px;overflow:hidden}.fb-mini-v4 .bar i{height:100%;display:block;background:var(--gold);border-radius:99px}.fb-mini-v4 em{font-style:normal;font-weight:800;text-align:right}
+.fb-more-v4{margin:10px 16px 16px;width:calc(100% - 32px)}
+.live-card-v4{padding:0!important;overflow:hidden}
+.live-row-v4{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px;border-bottom:1px solid var(--line);cursor:pointer}.live-row-v4:last-child{border-bottom:0}
+.live-row-v4 .live-eyebrow{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}.live-row-v4 .live-eyebrow i{width:7px;height:7px;border-radius:50%;background:#c9a04a}
+.live-row-v4.is-live .live-eyebrow i{background:#5b8b72;box-shadow:0 0 0 4px rgba(91,139,114,.12)}.live-row-v4.is-finished .live-eyebrow i{background:#b9ada4}
+.live-row-v4 .live-name{font-size:17px;font-weight:800;line-height:1.2}.live-row-v4 .live-meta{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.45}.live-row-v4 .live-owner{font-size:12px;font-weight:700;color:var(--espresso);margin-top:7px;display:flex;gap:5px;align-items:center}.live-row-v4 .live-owner.unavailable{color:#b95e49}
+.live-clock-v4{min-width:98px;text-align:center;padding:9px 10px;border-radius:999px;background:var(--soft);font-size:12px;font-weight:800;white-space:nowrap}.live-clock-v4.live{background:#e7f1eb;color:#476f5c}.live-clock-v4.soon{background:#f6ecd8;color:#916b2c}.live-clock-v4.finished{background:#f2efec;color:var(--muted)}
+.dayinfo-v4{padding:0!important;overflow:hidden}.dayinfo-grid-v4{display:grid;grid-template-columns:1fr 1fr}.dayinfo-item-v4{padding:16px;border-bottom:1px solid var(--line);min-width:0}.dayinfo-item-v4:nth-child(odd){border-right:1px solid var(--line)}.dayinfo-item-v4.wide{grid-column:1/-1;border-right:0}.dayinfo-item-v4 span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:7px}.dayinfo-item-v4 b{font-size:15px;line-height:1.35;display:block}.dayinfo-item-v4 small{display:block;color:var(--muted);margin-top:4px;font-size:12px;line-height:1.35}.dayinfo-event-v4+ .dayinfo-event-v4{margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}
+@media(max-width:430px){.mgr-fb-v4 .fb-hero-v4{grid-template-columns:1.15fr .85fr}.mgr-fb-v4 .fb-kpi-v4:last-child{grid-column:1/-1;min-height:76px;flex-direction:row;align-items:center;justify-content:space-between}.mgr-fb-v4 .fb-kpi-v4:last-child small{margin:0}.mgr-fb-v4 .fb-kpi-v4 strong{font-size:34px}.live-row-v4{grid-template-columns:minmax(0,1fr);gap:9px}.live-clock-v4{justify-self:start}.dayinfo-grid-v4{grid-template-columns:1fr 1fr}}
+</style>
+<script id="aurea-v4-manager-logic">
+(function(){
+  function v4Dj(){ return (S.users||[]).find(u=>u.role==="staff" && +u.number===DJ_NUMBER && u.active!==false && !hasLeft(u)); }
+  function v4Special(a){ return a && normCat(a)!=="mAdult"; }
+  function v4Owner(a,day){
+    if(v4Special(a)){
+      const dj=v4Dj();
+      if(!dj) return {name:"DJ not configured",raw:"",bad:true};
+      const ok=typeof availableOn==="function" ? availableOn(dj,day,assignDateStr(day)) : true;
+      return {name:(dj.display_name||dj.username)+" · DJ",raw:dj.username,bad:!ok};
+    }
+    const raw=String(a&&a.entertainer||"").trim();
+    return {name:raw?entertainerName(raw):"",raw,bad:false};
+  }
+  async function v4RepairDj(){
+    if(!S.session || S.session.role!=="manager") return;
+    const dj=v4Dj(); if(!dj) return;
+    const bad=(S.activities||[]).filter(a=>v4Special(a) && String(a.entertainer||"").trim().toLowerCase()!==String(dj.username||"").toLowerCase());
+    const sig=bad.map(a=>String(a.id)).sort().join("|")+"::"+dj.username;
+    if(!bad.length || window.__aureaV4DjRepair===sig) return;
+    window.__aureaV4DjRepair=sig;
+    for(const a of bad){
+      a.entertainer=dj.username;
+      try{ await DB.saveActivity({...a,entertainer:dj.username}); }catch(e){ console.warn("DJ assignment repair",e&&e.message); }
+    }
+  }
+  window.__aureaRepairDjAssignments=v4RepairDj;
+
+  function v4EventRows(day){
+    return (S.activities||[]).filter(a=>a&&a.day===day && ["mEvents","eParty"].includes(normCat(a)))
+      .slice().sort((a,b)=>(timeToMin(a.time)||0)-(timeToMin(b.time)||0));
+  }
+  function v4DayInfoHtml(day){
+    const dp=dayPlanFor(day), evs=v4EventRows(day);
+    const events=evs.length?evs.map(a=>`<div class="dayinfo-event-v4"><b>${esc(a.name)}</b><small>${esc(String(a.time||""))}${a.location?" · "+esc(a.location):""}</small></div>`).join(""):`<b>—</b>`;
+    return `<div class="card dayinfo-v4"><div class="dayinfo-grid-v4">
+      <div class="dayinfo-item-v4"><span>${t("restaurantTheme")}</span><b>${esc(dp.theme||"—")}</b></div>
+      <div class="dayinfo-item-v4"><span>${t("dressCode")}</span><b>${esc(dp.dress||"—")}</b></div>
+      <div class="dayinfo-item-v4"><span>${t("eventsToday")}</span>${events}</div>
+      <div class="dayinfo-item-v4"><span>${t("eveningShowLbl")}</span><b>${esc(dp.eveningShow||"—")}</b>${dp.showTime?`<small>${esc(dp.showTime)}${dp.showLoc?" · "+esc(dp.showLoc):""}</small>`:""}</div>
+      <div class="dayinfo-item-v4"><span>${t("liveBandLbl")}</span><b>${esc(dp.liveBand||"—")}</b></div>
+      <div class="dayinfo-item-v4"><span>${t("dayOff")}</span><b>${personTags(dp.off)||"—"}</b></div>
+      <div class="dayinfo-item-v4 wide"><span>${t("entranceDuty")}</span><b>${personTag(dp.entrance)||"—"}</b></div>
+    </div></div>`;
+  }
+  window.dayPlanInfoCard=function(day){ const dp=dayPlanFor(day); return `<div class="sec"><h3>${ic("calendar",18)} ${esc(t("days")[dp.day]||dp.name)}</h3>${v4DayInfoHtml(day)}</div>`; };
+  window.workdayCompactInfo=function(day){ return `<div class="sec wd-dayinfo"><h3>${ic("calendar",18)} ${t("dayInfoSec")}</h3>${v4DayInfoHtml(day)}</div>`; };
+
+  window.liveOpsCard=function(){
+    const day=todayIndex(), hn=hotelNow(), now=hn.getHours()*60+hn.getMinutes()+hn.getSeconds()/60, rows=[];
+    (S.activities||[]).filter(a=>a&&a.day===day).forEach(a=>{
+      const ws=activityWindows(a); const use=ws.length?ws:[{s0:timeToMin(a.time)||0,e0:(timeToMin(a.time)||0)+45,start:String(a.time||""),end:""}];
+      use.forEach((w,idx)=>rows.push({a,w,idx,total:use.length}));
+    });
+    rows.sort((x,y)=>x.w.s0-y.w.s0);
+    let show=rows.filter(x=>x.w.e0>=now-20 && x.w.s0<=now+240).slice(0,4);
+    if(!show.length){ const past=rows.filter(x=>x.w.e0<now).slice(-1); const future=rows.filter(x=>x.w.s0>now).slice(0,3); show=past.concat(future); }
+    if(!show.length) return "";
+    setTimeout(v4RepairDj,50);
+    const row=x=>{
+      const a=x.a,w=x.w,own=v4Owner(a,day),live=w.s0<=now&&now<w.e0,finished=now>=w.e0,soon=!live&&!finished&&(w.s0-now)<=60;
+      const state=live?"Live now":finished?"Finished":soon?"Starting soon":"Upcoming";
+      const cls=live?"is-live":finished?"is-finished":"";
+      const timer=live?"Live · "+fmtCountdown((w.e0-now)*60):finished?"Finished":"Starts · "+fmtCountdown((w.s0-now)*60);
+      const cat=v4Special(a)?catLabel(normCat(a)):t("activities");
+      return `<div class="live-row-v4 ${cls}" data-actopen="${esc(String(a.id))}">
+        <div><div class="live-eyebrow"><i></i>${esc(state)} · ${esc(cat)}</div><div class="live-name">${esc(a.name)}</div>
+          <div class="live-meta">${esc((w.start||"")+(w.end?" – "+w.end:""))}${x.total>1?` · Set ${x.idx+1}/${x.total}`:""}${a.location?" · "+esc(a.location):""}</div>
+          <div class="live-owner ${own.bad?"unavailable":""}">${ic("user",13)} ${own.name?esc(own.name):t("liveNoStaff")}${own.bad?" · unavailable":""}</div></div>
+        <div class="live-clock-v4 ${live?"live":soon?"soon":finished?"finished":""}" data-live-s="${w.s0}" data-live-e="${w.e0}">${timer}</div>
+      </div>`;
+    };
+    return `<div class="sec"><h3>${ic("clock",18)} ${t("liveOps")}</h3><div class="card live-card-v4">${show.map(row).join("")}</div></div>`;
+  };
+
+  window.feedbackAnalyticsCard=function(){
+    const list=S.feedback||[], sum=fbSummary(list), st=(sum.stat||[]).slice().sort((a,b)=>a.avg-b.avg), mini=st.slice(0,5);
+    const weak=sum.weak;
+    return `<div class="sec"><h3>${ic("star",18)} ${t("fbAnalytics")}</h3>
+      <div class="card mgr-fb-v4">
+        <div class="fb-hero-v4">
+          <div class="fb-kpi-v4"><strong>${sum.overall?sum.overall.toFixed(1):"—"}</strong><small>${t("avgRate")}</small></div>
+          <div class="fb-kpi-v4"><strong>${sum.count}</strong><small>${t("feedback")}</small></div>
+          <div class="fb-kpi-v4 ${sum.toReview?"warn":""}"><strong>${sum.toReview}</strong><small>${t("fbToReview")}</small></div>
+        </div>
+        ${weak?`<button class="fb-attention-v4" data-fbdept="${esc(weak.k)}"><span><b>${t("attentionHead")}</b><span>${esc(fbDeptLabel(weak.k))} · ${weak.n} ${t("fbResponses")}</span></span><strong class="score">${weak.avg.toFixed(1)}</strong></button>`:""}
+        ${mini.length?`<div class="fb-mini-list-v4">${mini.map(d=>`<button class="fb-mini-v4" data-fbdept="${esc(d.k)}"><b>${esc(fbDeptLabel(d.k))}</b><span class="bar"><i style="width:${Math.round(d.avg/5*100)}%"></i></span><em>${d.avg.toFixed(1)}</em></button>`).join("")}</div>`:""}
+        <button class="btn sm ghost fb-more-v4" id="btn-fbseeall">View all feedback</button>
+      </div>
+    </div>`;
+  };
+
+  setTimeout(v4RepairDj,900);
+})();
+</script>
+
 </body>
 </html>
