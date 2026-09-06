@@ -1804,6 +1804,21 @@ html{font-size:calc(16px * var(--fscale,1))}
 .st-n{flex:1 1 auto;min-width:0}
 .st-note{flex:1 0 100%}
 .st-note:disabled{opacity:.5}
+.ac-row{display:flex;align-items:center;gap:11px;padding:11px 0}
+.ac-row:not(:last-child){border-bottom:1px solid var(--line)}
+.ac-n{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
+  background:var(--sand);font-weight:700;font-size:12px}
+.ac-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ac-s{flex:none;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.ac-row.done .ac-n{background:#E7EFE4;color:#4A6B36}
+.ac-row.done .ac-s{color:#4A6B36}
+.ac-row.wait .ac-n{background:#FBEDE7;color:#A9431F}
+.ac-row.wait .ac-s{color:#A9431F}
+.ac-row.off{opacity:.5}
+.af-pct{display:flex;align-items:center;gap:10px;margin-top:4px}
+.af-pct input[type=range]{flex:1;margin:0;accent-color:var(--bronze)}
+.af-pctv{flex:none;font-weight:700;font-size:15px;width:48px;text-align:end}
+.af-acts{flex:none;display:flex;gap:4px}
 .af-acc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:6px}
 .af-stars{display:flex;gap:4px;margin:4px 0 2px}
 .af-stars .fb-st{width:34px;height:34px;font-size:26px}
@@ -2159,11 +2174,23 @@ Object.assign(DICT.en, {
   stReset:"Back to the standard day",
   stLast:"Keep at least one line.",
   stEmpty:"No lines yet. Add one, or go back to the standard day.",
+  acRoster:"Who has accepted",
+  acRosterHint:"Every entertainer with work today, and whether they have picked it up.",
+  acWaiting:"waiting",
   acAccept:"Accept this activity",
   acAccepted:"Accepted",
   acAcceptedBy:"Accepted by",
   acNotAccepted:"Not accepted yet",
   acUndo:"Undo accept",
+  afRoom:"Room number",
+  afGuestName:"Guest name",
+  afPct:"Activity level",
+  afPctHint:"How full it felt, from empty to packed.",
+  afCategory:"Category",
+  afAllCats:"All categories",
+  afEdit:"Edit this rating",
+  afExport:"Export",
+  afNoCat:"Nothing rated in this category yet.",
   afRooms:"Room numbers",
   afRoomsHint:"Separate them with a comma.",
   afLevel:"Activity level",
@@ -3435,10 +3462,11 @@ const DB = {
     S.feedback=S.feedback.map(x=>String(x.id)===String(id)?{...x,...patch}:x);
   },
   async addActivityFeedback(f){
-    const row={ room:String(f.rooms||""), nationality:"", guest_name:f.act_name||"", rate:f.rate,
+    const row={ room:String(f.room||""), nationality:"", guest_name:String(f.guest_name||""), rate:f.rate,
                 comment:f.comment||"", by_user:f.by_user||"",
-                depts:JSON.stringify({[AF_MARK]:String(f.act_id),
-                                      guests:+f.guests||0, level:f.level||"act"}) };
+                depts:JSON.stringify({[AF_MARK]:String(f.act_id), cat:f.cat||"",
+                                      pct:Math.max(0,Math.min(100,+f.pct||0)), name:f.act_name||""}) };
+    if(f.id!=null) row.id=f.id;
     if(REMOTE){
       try{
         const r=await sb("feedback",{method:"POST",body:JSON.stringify(row)});
@@ -3454,6 +3482,14 @@ const DB = {
       row.id=Date.now(); row.created_at=new Date().toISOString();
       S.actFb.unshift(row);
     }
+  },
+  async updateActivityFeedback(id, f){
+    const patch={ room:String(f.room||""), guest_name:String(f.guest_name||""), rate:f.rate,
+                  comment:f.comment||"",
+                  depts:JSON.stringify({[AF_MARK]:String(f.act_id), cat:f.cat||"",
+                                        pct:Math.max(0,Math.min(100,+f.pct||0)), name:f.act_name||""}) };
+    if(REMOTE) await sb("feedback?id=eq."+id,{method:"PATCH",body:JSON.stringify(patch)});
+    S.actFb=(S.actFb||[]).map(x=>String(x.id)===String(id)?{...x,...patch}:x);
   },
   async deleteActivityFeedback(id){
     if(REMOTE) await sb("feedback?id=eq."+id,{method:"DELETE"});
@@ -6269,9 +6305,9 @@ function assignView(){
     <div class="daypick" id="asg-days">
       ${t("daysShort").map((d,i)=>`<button class="${i===day?"on":""}" data-aday="${i}">${d}</button>`).join("")}
     </div>
-    ${sub==="acts"?assignActsInner(day,ds,acts,open,working)
+    ${sub==="acts"?assignActsInner(day,ds,acts,open,working)+acceptRosterCard(day)
      :sub==="tasks"?`<div style="margin-top:12px">${tasksInner()}</div>`
-     :assignWhoInner(day,ds,working,offList)}
+     :assignWhoInner(day,ds,working,offList)+acceptRosterCard(day)}
   </div>`;
 }
 function assignActsInner(day, ds, acts, open, working){
@@ -7769,22 +7805,25 @@ function myWorkDayView(){
     ${heroTop({greet:t(greetKey()), title:S.session.name,
                sub:"#"+num+" · "+roleForNumber(num), side:heroSide()})}
     ${dayChips()}
-    ${staffTiles(day, myActs)}
-    <div class="sec">
-      ${secHead(t("myActs"),"","")}
-      ${myActs.length
-        ? `<div class="card" style="padding:2px 15px">${myActs.map(a=>thumbRow(a,{tick:true, done:activityStatus(a)==="done"})).join("")}</div>`
-        : `<div class="empty"><div class="big">${ic("clipboard",30)}</div>${t("noneToday")}</div>`}
-      <button class="btn ghost" id="btn-fullsched" style="margin-top:10px">${t("viewFullSchedule")}</button>
-    </div>
-    ${banner}
-    ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
-    ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
-    ${myDayTimeline(day)}
-    ${dayPlanInfoCard(day)}
-    ${workdayFeedbackCard()}
-    ${myActFeedbackCard(day)}
-    ${dayPlanTimes(day, "mdWholeDay")}
+    ${arrangeBtn("workday")}
+    ${renderParts("workday", {
+      tiles:   ()=>staffTiles(day, myActs),
+      myacts:  ()=>`<div class="sec">
+        ${secHead(t("myActs"),"","")}
+        ${myActs.length
+          ? `<div class="card" style="padding:2px 15px">${myActs.map(a=>thumbRow(a,{tick:true, done:activityStatus(a)==="done"})).join("")}</div>`
+          : `<div class="empty"><div class="big">${ic("clipboard",30)}</div>${t("noneToday")}</div>`}
+        <button class="btn ghost" id="btn-fullsched" style="margin-top:10px">${t("viewFullSchedule")}</button>
+      </div>
+      ${banner}
+      ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
+      ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}`,
+      myday:   ()=>myDayTimeline(day),
+      dayinfo: ()=>dayPlanInfoCard(day),
+      guestfb: ()=>workdayFeedbackCard(),
+      actfb:   ()=>myActFeedbackCard(day),
+      wholeday:()=>dayPlanTimes(day, "mdWholeDay")
+    })}
   </div>`;
 }
 /* ===== MY DAY =====
@@ -8146,6 +8185,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
    their sub-tabs. The same button and the same modal handle both. */
 const PAGE_SECTIONS={
   dayplan: ["info","times","team","standards"],
+  workday: ["tiles","myacts","myday","dayinfo","guestfb","actfb","wholeday"],
   // The Control Center reads in four bands: what is critical, what still has to
   // happen today, how the guests are doing, how the team is doing.
   dash:    ["tiles","attention","live","tonight","ccops",
@@ -8159,6 +8199,8 @@ const PAGE_SECTIONS={
 };
 const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
+  workday: {tiles:"atAGlance",myacts:"myActs",myday:"mdHead",dayinfo:"dayInfoSec",
+            guestfb:"fbMyFeedback",actfb:"afHead",wholeday:"mdWholeDay"},
   dash:    {tiles:"atAGlance",overview:"todayOverview",attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",
             ccops:"ccOps",teampulse:"ccTeamPulse",actfb:"afHead",everything:"mdWholeDay",export:"exportData",stats:"ccGuestPulse",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
@@ -8188,8 +8230,11 @@ function pageOrder(pageKey,withHidden){
 }
 function dayPlanOrder(){ return pageOrder("dayplan"); }
 function arrangeBtn(pageKey){
-  if(!S.session || S.session.role!=="manager") return "";
+  if(!S.session) return "";
   if(!PAGE_SECTIONS[pageKey]) return "";
+  // the manager arranges the shared pages; an entertainer may arrange her own day
+  const mine = pageKey==="workday" && S.session.role==="staff";
+  if(S.session.role!=="manager" && !mine) return "";
   return `<button class="btn link arrange-b" data-arrange="${pageKey}">${ic("grid",14)} ${t("arrangeSections")}</button>`;
 }
 function renderParts(pageKey,parts){
@@ -8239,7 +8284,8 @@ function dayTimeline(day){
       ${rows.length?rows.map(x=>`<div class="tl-row ${x._tag?("is-"+x._tag):""}${isMineAct(x)?" mine":""}">
           <span class="tl-t">${esc(x.time||"")}</span>
           <span class="tl-x"><b>${esc(x.name)}</b>${x.location?`<span class="mini">${esc(x.location)}</span>`:""}
-            ${entertainerName(x.entertainer)?`<span class="mini who">${esc(entertainerName(x.entertainer))}</span>`:""}</span>
+            ${actStaffLabel(x)?`<span class="mini who">${esc(actStaffLabel(x))}</span>`:""}
+            ${acceptedBy(x)?`<span class="mini who acc">${ic("check",11)} ${esc(t("acAccepted"))}</span>`:""}</span>
           ${(()=>{ if(!x._tag) return "";
             const lbl=t(x._tag==="show"?"eveningShowLbl":x._tag==="live"?"liveBandLbl":"practiceHead");
             return String(lbl).toLowerCase()===String(x.name||"").toLowerCase()
@@ -8664,20 +8710,24 @@ function afMeta(f){
   return d||{};
 }
 function afRooms(f){ return String((f&&f.room)||"").trim(); }
+function afGuestName(f){ return String((f&&f.guest_name)||"").trim(); }
+function afPct(f){ return +afMeta(f).pct||0; }
 function afGuests(f){ return +afMeta(f).guests||0; }
 function afLevel(f){ return afMeta(f).level || afGroupOf(afActivity(f)); }
 function afActivity(f){
   const id=afActId(f);
   return id!=null ? (S.activities||[]).find(a=>String(a.id)===String(id)) || null : null;
 }
-function afGroupOf(a){
-  const c=normCat(a||{});
-  const hit=AF_GROUPS.find(g=>g[2].includes(c));
-  return hit ? hit[0] : "act";
+/* The category comes straight off the activity — she never picks it by hand,
+   and the manager can filter the whole picture down to one. */
+function afGroupOf(a){ return normCat(a||{}); }
+function afGroupLabel(key){ return catLabel(key); }
+function afCatOf(f){
+  const m=afMeta(f);
+  return m.cat || afGroupOf(afActivity(f));
 }
-function afGroupLabel(key){
-  const g=AF_GROUPS.find(x=>x[0]===key);
-  return g ? t(g[1]) : key;
+function afCatList(){
+  return allCats().filter(c=>(S.actFb||[]).some(f=>afCatOf(f)===c));
 }
 /* today / this week / everything — the same shape the guest analytics uses */
 function afPeriodList(period){
@@ -8698,16 +8748,23 @@ function afAvg(list){
 /* grouped the way she asked: Show, Live music, Events, Activities */
 function afGrouped(list){
   const by={};
-  (list||[]).forEach(f=>{
-    const a=afActivity(f);
-    const key=a?afGroupOf(a):"act";
-    (by[key]=by[key]||[]).push(f);
-  });
-  return AF_GROUPS.map(([key])=>({
+  (list||[]).forEach(f=>{ const key=afCatOf(f); (by[key]=by[key]||[]).push(f); });
+  return allCats().map(key=>({
     key, label:afGroupLabel(key), items:by[key]||[],
     avg:afAvg(by[key]||[]), n:(by[key]||[]).length,
+    pct:afPctAvg(by[key]||[]),
     acts:afByActivity(by[key]||[]).length
   })).filter(g=>g.n);
+}
+function afPctAvg(list){
+  const v=(list||[]).map(f=>+afMeta(f).pct).filter(n=>n>0);
+  return v.length ? Math.round(v.reduce((a,b)=>a+b,0)/v.length) : 0;
+}
+/* everything, or only one category */
+function afFiltered(period){
+  const list=afPeriodList(period);
+  const c=S.afCat;
+  return (c && allCats().includes(c)) ? list.filter(f=>afCatOf(f)===c) : list;
 }
 /* inside a group: one line per activity, worst first so problems surface */
 function afByActivity(list){
@@ -8751,26 +8808,32 @@ async function toggleAccept(id){
 }
 /* The entertainer rates their own activity right after it finishes: one score,
    what happened, and roughly how many guests came. */
-function openActFbModal(actId){
+function openActFbModal(actId, editId){
   const a=(S.activities||[]).find(x=>String(x.id)===String(actId));
   if(!a) return;
-  let score=0;
+  const ex = editId!=null ? (S.actFb||[]).find(f=>String(f.id)===String(editId)) : null;
+  let score = ex ? (+ex.rate||0) : 0;
   const wrap=baseModal(`
     <h3>${ic("star",20)} ${t("afRate")}</h3>
     <p class="mini">${esc([a.name, t("days")[a.day], a.time, a.location].filter(Boolean).join(" \u00b7 "))}</p>
     <div class="card cc" style="margin:10px 0 4px">
       <div class="cc-row"><span class="cc-ic">${ic("grid",17)}</span>
-        <span class="cc-x">${t("afLevel")}</span>
-        <span class="cc-v">${esc(afGroupLabel(afGroupOf(a)))}</span></div>
+        <span class="cc-x">${t("afCategory")}</span>
+        <span class="cc-v">${esc(catLabel(afGroupOf(a)))}</span></div>
     </div>
     <label style="margin-top:12px">${t("afHow")}</label>
     <div class="af-stars" id="af-stars"></div>
-    <label style="margin-top:12px">${t("afRooms")}</label>
-    <input id="af-rooms" placeholder="101, 214">
-    <p class="mini" style="margin:4px 0 0">${t("afRoomsHint")}</p>
-    <label style="margin-top:12px">${t("afGuests")}</label>
-    <input id="af-guests" inputmode="numeric" value="${seatsTaken(a.id)||""}">
-    <label>${t("afComment")}</label><textarea id="af-note" rows="3"></textarea>
+    <label style="margin-top:12px">${t("afPct")}</label>
+    <div class="af-pct">
+      <input type="range" id="af-pct" min="0" max="100" step="5" value="${ex?afPct(ex):50}">
+      <span class="af-pctv" id="af-pctv">${ex?afPct(ex):50}%</span>
+    </div>
+    <p class="mini" style="margin:2px 0 0">${t("afPctHint")}</p>
+    <label style="margin-top:12px">${t("afRoom")}</label>
+    <input id="af-room" inputmode="numeric" value="${esc(ex?afRooms(ex):"")}" placeholder="214">
+    <label>${t("afGuestName")}</label>
+    <input id="af-guest" value="${esc(ex?afGuestName(ex):"")}">
+    <label>${t("afComment")}</label><textarea id="af-note" rows="3">${esc(ex?fbComment(ex):"")}</textarea>
     <button class="btn" id="af-go">${t("save")}</button>
     <button class="btn ghost" id="af-x">${t("cancelBtn")}</button>`);
   const box=wrap.querySelector("#af-stars");
@@ -8780,18 +8843,23 @@ function openActFbModal(actId){
     box.querySelectorAll("[data-afset]").forEach(b=>b.onclick=()=>{ score=+b.dataset.afset; paint(); });
   };
   paint();
+  const pct=wrap.querySelector("#af-pct"), pctv=wrap.querySelector("#af-pctv");
+  if(pct && pctv) pct.oninput=()=>{ pctv.textContent=pct.value+"%"; };
   wrap.querySelector("#af-x").onclick=()=>wrap.remove();
   wrap.querySelector("#af-go").onclick=async ()=>{
     if(!score){ toastErr(t("afHow")); return; }
     try{
-      await DB.addActivityFeedback({
+      const payload={
         act_id:a.id, act_name:a.name, rate:score,
-        level:afGroupOf(a),
-        rooms:wrap.querySelector("#af-rooms").value.trim(),
-        guests:+wrap.querySelector("#af-guests").value||0,
+        cat:afGroupOf(a),
+        pct:+(wrap.querySelector("#af-pct")||{}).value||0,
+        room:wrap.querySelector("#af-room").value.trim(),
+        guest_name:wrap.querySelector("#af-guest").value.trim(),
         comment:wrap.querySelector("#af-note").value.trim(),
         by_user:(S.session&&S.session.username)||""
-      });
+      };
+      if(ex) await DB.updateActivityFeedback(ex.id, payload);
+      else await DB.addActivityFeedback(payload);
       wrap.remove(); toastOk(t("afSaved")); render();
     }catch(e){ wrap.remove(); toastErr(t("errSave")); render(); }
   };
@@ -8810,18 +8878,24 @@ function openActFbList(actId){
     ${list.length?`<div class="card" style="padding:2px 14px">${list.map(f=>`
       <div class="af-row">
         <span class="af-x">${fbStars(+f.rate||0)}
-          <span class="mini">${esc(afGroupLabel(afLevel(f)))}${
-            afRooms(f)?` \u00b7 ${t("afRooms")} ${esc(afRooms(f))}`:""}${
-            afGuests(f)?` \u00b7 ${afGuests(f)} ${t("guests").toLowerCase()}`:""}</span>
+          <span class="mini">${esc(catLabel(afCatOf(f)))} \u00b7 ${afPct(f)}%${
+            afRooms(f)?` \u00b7 ${t("room")} ${esc(afRooms(f))}`:""}${
+            afGuestName(f)?` \u00b7 ${esc(afGuestName(f))}`:""}</span>
           ${fbComment(f)?`<span class="mini">${esc(fbComment(f))}</span>`:""}
           <span class="mini">${t("afByWho")} ${esc(teamName(f.by_user))} \u00b7 ${fmtTime(f.created_at)}</span></span>
-        ${mine(f)?`<button class="btn sm ghost warn" data-afdel="${esc(String(f.id))}">${ic("trash",13)}</button>`:""}
+        ${mine(f)?`<span class="af-acts">
+          <button class="bd-b" data-afedit="${esc(String(f.id))}|${esc(String(afActId(f)))}">${ic("pen",13)}</button>
+          <button class="bd-b warn" data-afdel="${esc(String(f.id))}">${ic("trash",13)}</button></span>`:""}
       </div>`).join("")}</div>`:`<p class="mini">${t("afNone")}</p>`}
     ${a?`<button class="btn" id="af-again">${ic("star",16)} ${list.length?t("afRateAgain"):t("afRate")}</button>`:""}
     <button class="btn ghost" id="afl-x">${t("close")}</button>`);
   wrap.querySelector("#afl-x").onclick=()=>wrap.remove();
   const ag=wrap.querySelector("#af-again");
   if(ag) ag.onclick=()=>{ wrap.remove(); openActFbModal(actId); };
+  wrap.querySelectorAll("[data-afedit]").forEach(b=>b.onclick=()=>{
+    const bits=String(b.dataset.afedit).split("|");
+    wrap.remove(); openActFbModal(bits[1], bits[0]);
+  });
   wrap.querySelectorAll("[data-afdel]").forEach(b=>b.onclick=async ()=>{
     if(!await confirmAction({question:t("afDelete"),note:t("cannotUndo"),danger:true})) return;
     try{ await DB.deleteActivityFeedback(b.dataset.afdel); wrap.remove(); toastOk(t("deleted")); render(); }
@@ -8831,7 +8905,7 @@ function openActFbList(actId){
 /* One group opened up: the activities inside it, worst first. */
 function openAfGroup(key){
   const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
-  const list=afPeriodList(period).filter(f=>afGroupOf(afActivity(f))===key);
+  const list=afPeriodList(period).filter(f=>afCatOf(f)===key);
   const acts=afByActivity(list);
   const wrap=baseModal(`
     <h3>${ic("star",20)} ${esc(afGroupLabel(key))}</h3>
@@ -8880,26 +8954,98 @@ function myActFeedbackCard(day){
     </div>
   </div>`;
 }
+/* Who has picked up today's work and who has not — one line per person. */
+function acceptRosterCard(day){
+  const acts=(S.activities||[]).filter(a=>a && a.day===day);
+  const staff=(S.users||[]).filter(u=>u.role==="staff" && u.number)
+    .sort((a,b)=>(+a.number||0)-(+b.number||0));
+  if(!staff.length) return "";
+  const dp=dayPlanFor(day);
+  const rows=staff.map(u=>{
+    const off=(dp.off||[]).map(String).includes(String(u.number));
+    const mine=acts.filter(a=>String(a.entertainer||"").toLowerCase()===String(u.username||"").toLowerCase());
+    const taken=mine.filter(a=>String(acceptedBy(a))===String(u.username));
+    return {u, off, n:mine.length, taken:taken.length};
+  });
+  const waiting=rows.filter(r=>!r.off && r.n>r.taken).length;
+  return `<div class="sec"><h3>${ic("check",18)} ${t("acRoster")}
+      ${waiting?`<span class="hd-chip absent">${waiting} ${t("acWaiting")}</span>`:""}</h3>
+    <p class="mini" style="margin:-6px 0 10px">${t("acRosterHint")}</p>
+    <div class="card" style="padding:2px 14px">
+      ${rows.map(r=>`<div class="ac-row ${r.off?"off":(r.n&&r.n===r.taken?"done":(r.n?"wait":""))}">
+        <span class="ac-n">#${esc(String(r.u.number))}</span>
+        <span class="ac-x"><b>${esc(r.u.display_name||r.u.username)}</b>
+          <span class="mini">${r.off ? t("dayOff")
+            : r.n ? `${r.taken}/${r.n} ${t("acAccepted").toLowerCase()}`
+            : t("tmNothingToday")}</span></span>
+        <span class="ac-s">${r.off ? "\u2014"
+          : (r.n && r.n===r.taken) ? ic("check",16)
+          : r.n ? t("acNotAccepted") : "\u2014"}</span>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+/* Excel or PDF of exactly what is on screen — same period, same category. */
+function openActFbExport(){
+  const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
+  const list=afFiltered(period);
+  const cur=S.afCat && allCats().includes(S.afCat) ? S.afCat : "";
+  const title=t("afHead")+" \u00b7 "+t(period==="today"?"afToday":period==="week"?"afWeek":"afAll")
+    +(cur?" \u00b7 "+catLabel(cur):"");
+  const set={
+    title,
+    headers:[t("day"),t("afCategory"),t("actName"),t("afHow"),t("afPct"),t("afRoom"),t("afGuestName"),t("comment"),t("afByWho")],
+    rows:list.map(f=>{
+      const a=afActivity(f);
+      return [ shortStamp(f.created_at), catLabel(afCatOf(f)), (a&&a.name)||afMeta(f).name||"",
+               +f.rate||0, afPct(f)+"%", afRooms(f), afGuestName(f), fbComment(f), teamName(f.by_user) ];
+    })
+  };
+  const wrap=baseModal(`
+    <h3>${ic("download",20)} ${t("afExport")}</h3>
+    <p class="mini">${esc(title)} \u00b7 ${list.length} ${t("afRatings")}</p>
+    <button class="btn" id="afe-x1">${ic("download",16)} ${t("exportExcel")}</button>
+    <button class="btn ghost" id="afe-pdf">${ic("download",16)} ${t("exportPdf")}</button>
+    <button class="btn ghost" id="afe-x">${t("close")}</button>`);
+  wrap.querySelector("#afe-x").onclick=()=>wrap.remove();
+  wrap.querySelector("#afe-x1").onclick=async ()=>{
+    if(!list.length){ toastErr(t("afNone")); return; }
+    await exportExcelSets([set], "entertainment-feedback-"+todayISO()); toast(t("saved"));
+  };
+  wrap.querySelector("#afe-pdf").onclick=()=>{
+    if(!list.length){ toastErr(t("afNone")); return; }
+    exportPdfSets([set], title); wrap.remove();
+  };
+}
 /* The manager\'s picture of the programme itself. */
 function actFeedbackCard(){
   const period=["today","week","all"].includes(S.afPeriod)?S.afPeriod:"today";
-  const list=afPeriodList(period);
+  const list=afFiltered(period);
   const groups=afGrouped(list);
+  const cats=afCatList();
+  const cur=S.afCat && allCats().includes(S.afCat) ? S.afCat : "";
   return `<div class="sec"><h3>${ic("star",18)} ${t("afHead")}</h3>
     <p class="mini" style="margin:-6px 0 10px">${t("afSub")}</p>
     <div class="pills">${[["today","afToday"],["week","afWeek"],["all","afAll"]]
       .map(([k,lb])=>`<button class="pill ${period===k?"on":""}" data-afper="${k}">${esc(t(lb))}</button>`).join("")}</div>
+    ${cats.length>1?`<div class="pills">
+      <button class="pill ${cur?"":"on"}" data-afcat="">${esc(t("afAllCats"))}</button>
+      ${cats.map(c=>`<button class="pill ${cur===c?"on":""}" data-afcat="${esc(c)}">${esc(catLabel(c))}</button>`).join("")}
+    </div>`:""}
     <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat"><b>${afAvg(list)?afAvg(list).toFixed(1)+" \u2605":"\u2014"}</b><span>${t("avgRate")}</span></div>
       <div class="stat"><b>${list.length}</b><span>${t("afRatings")}</span></div>
     </div>
     ${groups.length?`<div class="card" style="padding:2px 14px">${groups.map(g=>`
       <button class="fb-dept ${g.avg<3.5?"low":g.avg<4.5?"mid":"top"}" data-afgroup="${esc(g.key)}">
-        <span class="fb-nm">${esc(g.label)}<br><span class="mini">${g.acts} ${t("afInGroup")} \u00b7 ${g.n} ${t("afRatings")}</span></span>
+        <span class="fb-nm">${esc(g.label)}<br><span class="mini">${g.acts} ${t("afInGroup")} \u00b7 ${g.n} ${t("afRatings")}${
+          g.pct?` \u00b7 ${g.pct}%`:""}</span></span>
         <span class="fb-bar"><i style="width:${Math.round(g.avg/5*100)}%"></i></span>
         <span class="fb-val">${g.avg.toFixed(1)}</span></button>`).join("")}</div>
       <p class="mini" style="margin-top:6px">${t("afOpenGroup")}</p>`
-      :`<div class="empty"><div class="big">${ic("star",30)}</div>${t("afNone")}</div>`}
+      :`<div class="empty"><div class="big">${ic("star",30)}</div>${cur?t("afNoCat"):t("afNone")}</div>`}
+    ${(S.session&&S.session.role==="manager")
+      ? `<button class="btn link" id="btn-afexport">${ic("download",14)} ${t("afExport")}</button>` : ""}
   </div>`;
 }
 /* ===== THE ACTIVITY AS ONE OBJECT =====
@@ -10925,9 +11071,9 @@ function exportRequirements(sheets, day, blank){
    +".notebox i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;"
      +"color:#8A7C6A;font-weight:700;margin-bottom:4px}"
    +".notebox p{margin:0;font-size:10.5px;line-height:1.5}"
-   +".sign{display:flex;gap:26px;margin-top:20px}"
-   +".sign div{flex:1;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#8A7C6A;font-weight:700}"
-   +".sign span{display:block;border-bottom:1px solid #B9AE9E;height:26px;margin-bottom:4px}"
+   +".resp{margin-top:16px;font-size:11px}"
+   +".resp i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;"
+     +"color:#8A7C6A;font-weight:700;margin-bottom:3px}"
    +".foot{margin-top:16px;padding-top:8px;border-top:1px solid #E0D8CB;font-size:8.5px;color:#9C9081;"
      +"display:flex;justify-content:space-between}";
 
@@ -10948,18 +11094,14 @@ function exportRequirements(sheets, day, blank){
       +'</div>'
       +'<table><thead><tr>'
         +'<th>'+E2(t("reqNeed"))+'</th><th>'+E2(t("reqQty"))+'</th>'
-        +'<th>'+E2(t("reqDept"))+'</th><th>'+E2(t("reqStatus"))+'</th></tr></thead><tbody>'
+        +'<th>'+E2(t("reqDept"))+'</th></tr></thead><tbody>'
       + rows.map(r=>'<tr><td>'+E2(r.need||"")+'</td><td class=qty>'+E2(r.qty||"")+'</td>'
-          +'<td class=dep>'+E2(r.dept||"")+'</td><td class=box><span class=ck></span></td></tr>').join("")
+          +'<td class=dep>'+E2(r.dept||"")+'</td></tr>').join("")
       + Array.from({length:pad}).map(()=>'<tr><td>&nbsp;</td><td class=qty></td>'
-          +'<td class=dep></td><td class=box><span class=ck></span></td></tr>').join("")
+          +'<td class=dep></td></tr>').join("")
       +'</tbody></table>'
       +'<div class=notebox><i>'+E2(t("reqNote"))+'</i><p>'+E2(sh.note||"")+'</p></div>'
-      +'<div class=sign>'
-        +'<div><span></span>'+E2(t("reqResponsible"))+(sh.responsible?' \u00b7 '+E2(sh.responsible):'')+'</div>'
-        +'<div><span></span>'+E2(t("reqReceived"))+'</div>'
-        +'<div><span></span>'+E2(t("reqSignature"))+'</div>'
-      +'</div>'
+      +(sh.responsible?'<div class=resp><i>'+E2(t("reqResponsible"))+'</i>'+E2(sh.responsible)+'</div>':'')
       +'<div class=foot><span>'+E2(hotel||t("reqTab"))+'</span><span>'
         +E2(sh.date?niceDate(sh.date):(day?niceDate(day):t("reqTab")))+'</span></div>'
       +'</div>';
@@ -11911,6 +12053,8 @@ function wireCommon(){
   wireCountdowns();
   document.querySelectorAll("[data-afper]").forEach(b=>b.onclick=()=>{ S.afPeriod=b.dataset.afper; render(); });
   document.querySelectorAll("[data-afacc]").forEach(b=>b.onclick=()=>toggleAccept(b.dataset.afacc));
+  document.querySelectorAll("[data-afcat]").forEach(b=>b.onclick=()=>{ S.afCat=b.dataset.afcat; render(); });
+  const afx=$("#btn-afexport"); if(afx) afx.onclick=openActFbExport;
   document.querySelectorAll("[data-afgroup]").forEach(b=>b.onclick=()=>openAfGroup(b.dataset.afgroup));
   document.querySelectorAll("[data-afact]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.afact;
