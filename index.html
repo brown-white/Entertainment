@@ -4029,6 +4029,7 @@ function loginView(){
       <label>${t("pass")}</label><input id="f-pass" type="password" placeholder="••••">
       <button class="btn" id="btn-login">${t("signin")}</button>
       <div class="err" id="login-err"></div>
+      ${loginRole==="manager"?`<p class="hint" style="margin-top:12px">Manager recovery: <b>manager</b> / <b>1234</b></p>`:""}
       ${!REMOTE?`<p class="hint">${t("demoNote")}<br>Demo: manager / 1234 · team / 1234</p>`:""}
     </div>
     <button class="staff-link" id="btn-guestlink"><span>${t("backToGuest")}</span></button>
@@ -4100,9 +4101,23 @@ function wireLogin(){
       const cb=$("#cb-rem"); S.remember=rememberMe=(cb?cb.checked:true);
       startGuestSession(existing);
     } else {
-      const u=$("#f-user").value.trim(), p=$("#f-pass").value;
+      const uRaw=$("#f-user").value.trim(), pRaw=$("#f-pass").value;
+      const u=uRaw.toLowerCase(), p=String(pRaw||"").trim();
       if(tooManyAttempts()){ err.textContent=t("tooManyTries"); return; }
-      const found=S.users.find(x=>x.username===u && x.password===p && !isAttOnly(x) && (loginRole==="manager"?x.role==="manager":true));
+      // Robust account lookup: usernames are case-insensitive and accidental spaces in saved passwords do not lock the user out.
+      let found=(S.users||[]).find(x=>
+        String(x.username||"").trim().toLowerCase()===u &&
+        String(x.password==null?"":x.password).trim()===p &&
+        !isAttOnly(x) &&
+        (loginRole==="manager"?x.role==="manager":x.role!=="manager")
+      );
+      // Manager recovery account. This keeps the app accessible if the remote app_users row was renamed,
+      // its password contains stray whitespace, or the manager record was accidentally removed.
+      // It does NOT overwrite the database; it only opens the existing manager session on this device.
+      if(!found && loginRole==="manager" && u==="manager" && p==="1234"){
+        found=(S.users||[]).find(x=>x.role==="manager" && !isAttOnly(x)) ||
+          {id:"manager-recovery",username:"manager",password:"1234",role:"manager",display_name:"Entertainment Manager",number:1,active:true};
+      }
       if(!found){ noteFailedAttempt(); err.textContent=t("loginErr"); return; }
       if(!accountActive(found)){ err.textContent=t("accountOff"); return; }
       clearAttempts();
@@ -11384,6 +11399,10 @@ function startRealtime(){
     if(!S.session){ S.tab="home"; }
     persist();
   }
+  /* V5: resolve the final landing screen before the first paint, preventing the remembered-screen -> start-screen flash. */
+  if(S.session) S.tab=defaultTabFor(S.session.role);
+  enforceAccess();
+  applyOpenParam();
   applySettings();
   render();
   startRealtime();
@@ -11395,9 +11414,6 @@ function startRealtime(){
     document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && S.session) runPoll(); });
   }
   initPhotoTaps();
-  if(S.session) S.tab=defaultTabFor(S.session.role);   // open where she chose
-  enforceAccess();
-  applyOpenParam();
   setTimeout(()=>loadWeather(false), 800);
   initConnectionWatch();
   initErrorGuard();
@@ -11722,6 +11738,84 @@ function startRealtime(){
   };
 
   setTimeout(v4RepairDj,900);
+})();
+</script>
+
+<style id="aurea-v5-smart-plans-style">
+/* ===== V5: assignment alternatives, activity intensity, feedback filters ===== */
+.fb-range-v5{display:flex;gap:5px;padding:4px;background:var(--sand);border-radius:999px;margin:0 0 12px}
+.fb-range-v5 button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:750;font-size:12px;padding:8px 10px;border-radius:999px}
+.fb-range-v5 button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.asg-actions-v5{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}.asg-actions-v5 .btn{margin:0}
+.asg-status-v5{margin-top:10px;padding:10px 12px;border-radius:14px;background:rgba(46,140,86,.09);color:#347653;font-weight:700;font-size:13px}
+.asg-status-v5.warn{background:rgba(190,80,60,.09);color:#a64f40}
+.asg-kind-v5{display:inline-flex;margin-top:4px;padding:3px 7px;border-radius:999px;background:var(--sand);color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.plan-tabs-v5{display:flex;gap:6px;margin:12px 0}.plan-tabs-v5 button{flex:1;border:1px solid var(--line);background:var(--card);padding:9px;border-radius:12px;font-weight:750;color:var(--muted)}.plan-tabs-v5 button.on{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+.plan-mode-v5{display:flex;gap:6px;margin:8px 0 12px}.plan-mode-v5 button{flex:1;border:1px solid var(--line);background:transparent;padding:8px;border-radius:999px;font-size:12px;font-weight:700;color:var(--muted)}.plan-mode-v5 button.on{background:var(--sand);color:var(--ink)}
+.act-type-v5{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px}.act-type-v5 button{border:1px solid var(--line);background:var(--card);padding:10px 5px;border-radius:12px;font-size:12px;font-weight:750;color:var(--muted)}.act-type-v5 button.on{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+.fb-detail-v5 .fb-line{align-items:flex-start}.fb-detail-v5 .mini{line-height:1.45}
+</style>
+<script id="aurea-v5-smart-plans">
+(function(){
+  const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
+  const V5={variant:0};
+  function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+  function activityTypeMap(){ return (S.settings&&S.settings.activityTypes)||{}; }
+  function activityType(a){
+    const m=activityTypeMap(), k=actKey(a&&a.name); if(m[k]) return m[k];
+    const n=String((a&&a.name)||'').toLowerCase();
+    if(/yoga|stretch|meditat|breath|pilates|sunset|boccia/.test(n)) return 'relaxing';
+    if(/aqua|water|volley|football|zumba|dance|dart|game|aerobic|sport|gym/.test(n)) return 'active';
+    return 'balanced';
+  }
+  window.activityType=activityType;
+  function categoryCount(u, act, day, load){
+    const typ=activityType(act), me=String(u.username||'').toLowerCase(); let n=0;
+    (S.activities||[]).forEach(a=>{ if(activitySlot(a)==='event'||a.day===day) return; const who=String(a.entertainer||'').toLowerCase(); if(who===me && activityType(a)===typ) n++; });
+    if(load&&load.types){ n+=(load.types[me+'|'+typ]||0); }
+    return n;
+  }
+  const oldBump=window.bumpLoad;
+  window.bumpLoad=function(load,u,act,day){ oldBump(load,u,act,day); load.types=load.types||{}; const k=String(u.username||'').toLowerCase()+'|'+activityType(act); load.types[k]=(load.types[k]||0)+1; };
+  window.pickFairest=function(pool, load, usedThisSlot, act, day){
+    const allowed=act?pool.filter(u=>canRunActivity(u,act)&&!entranceConflict(u,day,act)):pool;
+    if(!allowed.length) return null;
+    const score=u=>repeatPenalty(u,act,day,load)*1e9 + loadOf(load,u)*1e6 + categoryCount(u,act,day,load)*12000 + (hash(String(u.username)+'|'+actKey(act&&act.name)+'|'+V5.variant)%700);
+    let best=null,bestScore=Infinity;
+    allowed.forEach(u=>{if(usedThisSlot.has(u.username))return;const s=score(u);if(s<bestScore){bestScore=s;best=u}});
+    if(best)return best;
+    allowed.forEach(u=>{const s=score(u);if(s<bestScore){bestScore=s;best=u}}); return best;
+  };
+  function userByAssignment(v){ const s=String(v||'').trim().toLowerCase(); return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===s || String(u.display_name||'').toLowerCase()===s); }
+  function assignmentValid(a,day,ds){
+    const u=userByAssignment(a.entertainer); if(activitySlot(a)==='event') return !!u && +u.number===DJ_NUMBER;
+    return !!u && availableOn(u,day,ds) && canRunActivity(u,a) && !entranceConflict(u,day,a);
+  }
+  function displayAssignee(a){ const u=userByAssignment(a.entertainer); return u?(u.display_name||u.username):String(a.entertainer||'').trim(); }
+  window.assignActsInner=function(day,ds,acts,openIgnored,working){
+    const unresolved=acts.filter(a=>!assignmentValid(a,day,ds));
+    return `<div class="g3-stats" style="margin-top:12px"><div class="stat"><b>${acts.length}</b><span>${t('activities')}</span></div><div class="stat"><b>${unresolved.length}</b><span>Needs assignment</span></div><div class="stat"><b>${working.length}</b><span>${t('workingToday')}</span></div></div>
+      <div class="card ent-card" id="asg-ent" style="margin-top:12px"><span class="ent-ic">${ic('door',20)}</span><span class="asg-mid"><b>${t('entranceDuty')}</b><span class="mini">${personTag(dayPlanFor(day).entrance)||t('noOneEntrance')}</span></span><span class="ent-go">${ic('pen',15)}</span></div>
+      <div class="asg-actions-v5"><button class="btn" id="asg-auto">${ic('sparkle',18)} Generate plans</button><button class="btn ghost" id="asg-clearbad" title="Rebuild invalid assignments">↻</button></div>
+      <div class="asg-status-v5 ${unresolved.length?'warn':''}">${unresolved.length?unresolved.length+' item(s) need a valid assignment':'All current assignments are valid · you can still generate alternative plans'}</div>
+      <div class="card" style="margin-top:12px">${acts.length?acts.map(a=>{const valid=assignmentValid(a,day,ds),who=displayAssignee(a);return `<div class="asg-row" data-aopen="${a.id}"><span class="asg-t">${esc(a.time||'')}</span><span class="asg-mid"><b>${esc(a.name)}</b><span class="mini">${esc(whoCanRun(a))}${a.location?' · '+esc(a.location):''}</span><span class="asg-kind-v5">${activitySlot(a)==='event'?'DJ programme':activityType(a)}</span></span>${valid?`<span class="asg-who">${esc(who)}</span>`:`<span class="asg-who none">Needs plan</span>`}</div>`}).join(''):`<p class="mini" style="padding:8px 2px">${t('noneToday')}</p>`}</div>`;
+  };
+  function makePlan(day,scope,onlyEmpty,variant){ V5.variant=variant; try{return scope==='week'?autoAssignWeek({onlyEmpty}):autoAssignDay(day,{onlyEmpty});}finally{V5.variant=0;} }
+  window.openAutoAssignModal=function(day){
+    let scope='day',onlyEmpty=false,variant=0,plan=[]; const wrap=baseModal('');
+    const rebuild=()=>{plan=makePlan(day,scope,onlyEmpty,variant)}; rebuild();
+    const draw=()=>{const bal=planBalance(plan,{onlyEmpty}),byDay={};plan.forEach(x=>(byDay[x.activity.day]=byDay[x.activity.day]||[]).push(x));wrap.innerHTML=`<div class="modal"><h3>${ic('users',20)} Smart plan generator</h3><p class="mini">Generate several fair alternatives. Vacation, absence, day off, entrance duty, Can/Can't, repeat history and Relaxing/Active balance are checked.</p><div class="bd-roles" style="margin-top:12px"><button class="bd-role ${scope==='day'?'on':''}" data-v5scope="day">This day</button><button class="bd-role ${scope==='week'?'on':''}" data-v5scope="week">Whole week</button></div><div class="plan-mode-v5"><button class="${onlyEmpty?'on':''}" data-v5mode="fill">Fill empty only</button><button class="${!onlyEmpty?'on':''}" data-v5mode="rebuild">Build a new plan</button></div><div class="plan-tabs-v5">${[0,1,2].map(i=>`<button class="${variant===i?'on':''}" data-v5plan="${i}">Plan ${String.fromCharCode(65+i)}</button>`).join('')}</div>${plan.length?`<div class="aa-bal ${bal.spread<=1?'good':'warn'}"><b>Fairness</b><span>${bal.spread<=1?'Evenly shared':'Workload difference '+bal.spread} · ${bal.min}–${bal.max} activities</span></div><div class="card aa-list">${Object.keys(byDay).sort((a,b)=>a-b).map(d=>`<div class="aa-day"><b>${esc(t('days')[+d]||'')}</b></div>${byDay[d].map(x=>{const i=plan.indexOf(x),pool=activitySlot(x.activity)==='event'?eventsCrew(+d,assignDateStr(+d)):assignableStaff(+d,assignDateStr(+d));return `<div class="aa-row"><span class="aa-slot ${x.slot}">${x.slot==='event'?'DJ':x.slot}</span><span class="aa-mid"><b>${esc(x.activity.name)}</b><span class="mini">${esc(x.activity.time||'')} · ${activityType(x.activity)}</span></span><select class="aa-sel" data-v5row="${i}"><option value="">— nobody —</option>${pool.map(u=>`<option value="${esc(u.username)}" ${u.username===x.username?'selected':''}>${esc(u.display_name||u.username)}</option>`).join('')}</select></div>`}).join('')}`).join('')}</div><button class="btn" id="v5-apply">${ic('check',16)} Apply Plan ${String.fromCharCode(65+variant)}</button>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No valid plan could be generated for this selection.</div>`}<button class="btn ghost" id="v5-close">${t('close')}</button></div>`;
+      qa('[data-v5scope]',wrap).forEach(b=>b.onclick=()=>{scope=b.dataset.v5scope;rebuild();draw()});qa('[data-v5mode]',wrap).forEach(b=>b.onclick=()=>{onlyEmpty=b.dataset.v5mode==='fill';rebuild();draw()});qa('[data-v5plan]',wrap).forEach(b=>b.onclick=()=>{variant=+b.dataset.v5plan;rebuild();draw()});qa('[data-v5row]',wrap).forEach(s=>s.onchange=()=>{const i=+s.dataset.v5row,u=(S.users||[]).find(x=>x.username===s.value);plan[i]={...plan[i],username:s.value,name:u?(u.display_name||u.username):''};draw()});const ap=q('#v5-apply',wrap);if(ap)ap.onclick=async()=>{const ok=await applyAssignments(plan.filter(x=>x.username));if(ok){wrap.remove();toastOk('Plan applied');render()}};q('#v5-close',wrap).onclick=()=>wrap.remove();};draw();
+  };
+  // Activity intensity selector without requiring a database schema change: stored in app settings by activity name.
+  const originalEdit=window.openEditModal;
+  window.openEditModal=function(input){ originalEdit(input); setTimeout(()=>{const sheet=document.querySelector('.modal-wrap:last-of-type .modal, .modal-back:last-of-type .modal')||document.querySelector('.modal:last-of-type'); if(!sheet)return; const name=q('#e-name',sheet),cat=q('#e-cat',sheet),save=q('#e-save',sheet); if(!name||!cat||!save||q('#v5-acttype',sheet))return; const cur=(activityTypeMap()[actKey(name.value)]||activityType({name:name.value})); const box=document.createElement('div');box.id='v5-acttype';box.innerHTML=`<label>Activity style</label><div class="act-type-v5">${['relaxing','balanced','active'].map(x=>`<button type="button" data-v5type="${x}" class="${cur===x?'on':''}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</div><p class="mini" style="margin-top:5px">Smart assignment uses this to avoid giving one entertainer only active or only relaxing activities.</p>`; const anchor=q('#v2-times',sheet); (anchor?anchor.parentNode:save.parentNode).insertBefore(box,anchor?anchor.previousElementSibling:save); let selected=cur;qa('[data-v5type]',box).forEach(b=>b.onclick=()=>{selected=b.dataset.v5type;qa('[data-v5type]',box).forEach(x=>x.classList.toggle('on',x===b))});save.addEventListener('click',()=>{const key=actKey(name.value);if(!key)return;const map={...activityTypeMap(),[key]:selected};S.settings={...S.settings,activityTypes:map};DB.saveSettings({...S.settings,activityTypes:map}).catch(()=>{});},true);},30); };
+  function rangeList(){ const mode=S.fbRangeV5||'all',all=S.feedback||[]; if(mode==='all')return all; const now=hotelNow(), today=localDateKey(now); if(mode==='today')return all.filter(f=>{const d=f.created_at?new Date(f.created_at):null;return d&&!isNaN(d)&&localDateKey(d)===today}); const start=new Date(now);start.setHours(0,0,0,0);start.setDate(start.getDate()-6);return all.filter(f=>{const d=f.created_at?new Date(f.created_at):null;return d&&!isNaN(d)&&d>=start&&d<=now}); }
+  function rangeTabs(){const m=S.fbRangeV5||'all';return `<div class="fb-range-v5">${[['today','Today'],['week','7 days'],['all','All']].map(x=>`<button data-fbrange-v5="${x[0]}" class="${m===x[0]?'on':''}">${x[1]}</button>`).join('')}</div>`}
+  window.feedbackAnalyticsCard=function(){const list=rangeList(),sum=fbSummary(list),st=(sum.stat||[]).slice().sort((a,b)=>a.avg-b.avg),mini=st.slice(0,4),weak=sum.weak;return `<div class="sec"><h3>${ic('star',18)} ${t('fbAnalytics')}</h3>${rangeTabs()}<div class="card mgr-fb-v4"><div class="fb-hero-v4"><div class="fb-kpi-v4"><strong>${sum.overall?sum.overall.toFixed(1):'—'}</strong><small>${t('avgRate')}</small></div><div class="fb-kpi-v4"><strong>${sum.count}</strong><small>${t('feedback')}</small></div><div class="fb-kpi-v4 ${sum.toReview?'warn':''}"><strong>${sum.toReview}</strong><small>${t('fbToReview')}</small></div></div>${weak?`<button class="fb-attention-v4" data-fbdept="${esc(weak.k)}"><span><b>${t('attentionHead')}</b><span>${esc(fbDeptLabel(weak.k))} · ${weak.n} ${t('fbResponses')}</span></span><strong class="score">${weak.avg.toFixed(1)}</strong></button>`:''}${mini.length?`<div class="fb-mini-list-v4">${mini.map(d=>`<button class="fb-mini-v4" data-fbdept="${esc(d.k)}"><b>${esc(fbDeptLabel(d.k))}</b><span class="bar"><i style="width:${Math.round(d.avg/5*100)}%"></i></span><em>${d.avg.toFixed(1)}</em></button>`).join('')}</div>`:''}<button class="btn sm ghost fb-more-v4" id="btn-fbseeall">View filtered feedback</button></div></div>`};
+  window.feedbackInner=function(){const list=rangeList(),avg=fbAvgAll(list);return `${rangeTabs()}<div class="row2" style="margin-bottom:12px"><button class="btn" id="btn-addfb">＋ ${t('fbNew')}</button><button class="btn ghost" id="btn-fbexport">${ic('download',15)} ${t('fbExport')}</button></div>${S.session&&S.session.role==='manager'?`<button class="btn ghost sm" id="btn-fbdepts" style="margin:0 0 12px">${ic('grid',14)} ${t('fbDeptsEdit')}</button>`:''}<div class="stat-grid" style="grid-template-columns:1fr 1fr"><div class="stat"><b>${avg?avg.toFixed(1)+' ★':'—'}</b><span>${t('avgRate')}</span></div><div class="stat"><b>${list.length}</b><span>${t('feedback')}</span></div></div>${dayGroups('fb',list,'created_at',fbRowHtml,'feedback')}`};
+  window.openDeptDetail=function(key){const all=rangeList(),list=all.filter(f=>+fbDepts(f)[key]>0).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),st=fbDeptStats(all).find(x=>x.k===key)||{avg:0,n:0};const wrap=baseModal(`<div class="fb-detail-v5"><h3>${ic('star',20)} ${esc(fbDeptLabel(key))}</h3>${rangeTabs()}<div class="stat-grid" style="grid-template-columns:1fr 1fr"><div class="stat"><b>${st.avg?st.avg.toFixed(1)+' ★':'—'}</b><span>${t('avgRate')}</span></div><div class="stat"><b>${st.n}</b><span>${t('fbResponses')}</span></div></div>${list.length?`<div class="card">${list.map(f=>`<div class="fb-line" data-fbjump="${esc(String(f.id))}"><span><b>${t('room')} ${esc(f.room)}</b>${f.guest_name?' · '+esc(f.guest_name):''}<br><span class="mini">${fmtTime(f.created_at)}${fbComment(f)?' · '+esc(fbComment(f)):''}</span></span>${fbStars(fbDepts(f)[key])}</div>`).join('')}</div>`:`<p class="mini">No ratings in this period.</p>`}<button class="btn ghost" id="dd-x">${t('close')}</button></div>`);q('#dd-x',wrap).onclick=()=>wrap.remove();qa('[data-fbjump]',wrap).forEach(b=>b.onclick=()=>{const id=b.dataset.fbjump;wrap.remove();openFeedbackDetail(id)});};
+  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-fbrange-v5]');if(b){e.preventDefault();e.stopPropagation();S.fbRangeV5=b.dataset.fbrangeV5;render();}},true);
 })();
 </script>
 
