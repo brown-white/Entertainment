@@ -12118,5 +12118,128 @@ function startRealtime(){
 <style>
 .wd-myfb-list{padding:4px 14px;margin-top:12px}.wd-myfb-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;font:inherit}.wd-myfb-row:last-child{border-bottom:0}.wd-myfb-row span{display:grid;gap:3px;min-width:0}.wd-myfb-row small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wd-myfb-row strong{font-family:var(--display);font-size:20px;flex:none}.dayinfo-v6 .dayinfo-item-v6 b{line-height:1.45}.dayinfo-edit-v6{white-space:nowrap}
 </style>
+
+<style>
+/* ===== V6.5 — CHRONOLOGICAL EVENTS + PURCHASE REQUESTS ===== */
+.timeline-program-v65{display:grid;gap:10px}.timeline-program-v65 .tp65-head{margin:18px 0 4px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:800}.timeline-program-v65 .tp65-event{border:1px solid rgba(184,130,72,.34);background:linear-gradient(135deg,rgba(184,130,72,.13),rgba(255,255,255,.9));box-shadow:none}.timeline-program-v65 .tp65-event .catbadge{background:rgba(184,130,72,.15);color:#8a5f32}.timeline-program-v65 .tp65-event h4:before{content:'◆';font-size:9px;margin-right:7px;color:#b5824e;vertical-align:middle}.timeline-program-v65 .tp65-evening{margin-top:20px}.purchase-card-v65{padding:16px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);display:grid;gap:12px;margin-bottom:12px}.purchase-card-v65.urgent{border-color:rgba(181,70,54,.35);box-shadow:0 0 0 1px rgba(181,70,54,.08) inset}.purchase-card-v65 .pc65-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.purchase-card-v65 .urgent-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#f8e5e1;color:#a94334;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}.purchase-card-v65 .normal-badge{display:inline-flex;padding:5px 9px;border-radius:999px;background:var(--soft);color:var(--muted);font-size:11px;font-weight:800}.purchase-items-v65{display:grid;gap:9px}.purchase-item-v65{display:grid;grid-template-columns:minmax(0,1fr) 74px;gap:8px;padding:11px 0;border-top:1px solid var(--line)}.purchase-item-v65:first-child{border-top:0}.purchase-item-v65 b{display:block;font-size:14px}.purchase-item-v65 small{display:block;margin-top:3px;color:var(--muted);line-height:1.4}.purchase-item-v65 .qty{justify-self:end;font-weight:800}.pr65-item{border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px;background:rgba(255,255,255,.58)}.pr65-item-grid{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:8px}.pr65-remove{margin-top:8px}.pr65-urgent-row{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px}.pr65-urgent-row input{width:22px;height:22px}.rq-purchase-btn-v65{background:#2f2119!important;color:#fff!important}.rq-kind.purchase{background:#efe7dc;color:#6e4b2f}.rq-it.purchase-row-v65{align-items:flex-start}.rq-it.purchase-row-v65 .rq-mid{gap:4px}
+</style>
+<script>
+(function(){
+  'use strict';
+  /* -------- Programme: daytime events sit exactly where their start time belongs. -------- */
+  const _activityCardV65=activityCard;
+  function v65Start(a){ const m=timeToMin(String(a&&a.time||'')); return m==null?9999:m; }
+  function v65Phase(a){
+    const c=normCat(a);
+    if(c==='mEvents') return 'event';
+    if(['eBefore','eLive','eShow','eAfter','eParty'].includes(c)) return 'evening';
+    return 'activity';
+  }
+  window.listByCat=listByCat=function(acts,opts){
+    acts=(acts||[]).filter(Boolean).slice().sort((a,b)=>v65Start(a)-v65Start(b)||String(a.name||'').localeCompare(String(b.name||'')));
+    if(!acts.length) return `<div class="empty"><div class="big">${ic('pin',30)}</div>${t('noneToday')}</div>`;
+    let out='<div class="timeline-program-v65">', last='';
+    acts.forEach(a=>{
+      const phase=v65Phase(a);
+      if(phase==='event'){
+        out+=`<div class="tp65-head">Event</div>`;
+        out+=_activityCardV65(a,opts).replace('class="card act','class="card act tp65-event');
+        last='event';
+        return;
+      }
+      if(phase==='evening'){
+        if(last!=='evening') out+=`<div class="tp65-head tp65-evening">Evening operation</div>`;
+        out+=_activityCardV65(a,opts); last='evening'; return;
+      }
+      if(last!=='activity') out+=`<div class="tp65-head">Activities</div>`;
+      out+=_activityCardV65(a,opts); last='activity';
+    });
+    return out+'</div>';
+  };
+
+  /* -------- Requirements: dedicated Purchase Request workflow. -------- */
+  /* Purchase is a dedicated request type, intentionally kept out of the existing Event/Activity/Party editor. */
+  const _reqKindLabelV65=reqKindLabel, _reqSheetTitleV65=reqSheetTitle, _openReqEditorV65=openReqEditor, _requirementsViewV65=requirementsView;
+  window.reqKindLabel=reqKindLabel=function(k){ return k==='purchase'?'Purchase request':_reqKindLabelV65(k); };
+  window.reqSheetTitle=reqSheetTitle=function(k){ return k==='purchase'?'Purchase request':_reqSheetTitleV65(k); };
+
+  function purchaseSummaryV65(sh){
+    const needed=[sh.needDate?niceDate(sh.needDate):'',sh.needTime||''].filter(Boolean).join(' · ');
+    return [needed?('Needed '+needed):'',sh.urgent?'URGENT':''].filter(Boolean).join(' · ');
+  }
+  function purchaseItemsV65(sh){ return Array.isArray(sh.rows)?sh.rows:[]; }
+
+  window.requirementsView=requirementsView=function(){
+    const day=S.reqDate||'';
+    const list=reqForDate(day);
+    return `<div class="screen fadein">
+      ${topBar(t('reqTab'),S.session.name)}
+      <p class="mini" style="margin:-4px 0 12px">${t('reqSub')}</p>
+      <div class="row2" style="margin-bottom:10px">
+        <button class="btn" id="rq-new">＋ ${t('reqNew')}</button>
+        <button class="btn rq-purchase-btn-v65" id="rq-purchase">＋ Purchase request</button>
+      </div>
+      <div class="row2" style="margin-bottom:10px">
+        <button class="btn ghost" id="rq-pack">${ic('download',15)} ${t('reqExportDay')}</button>
+        <button class="btn ghost sm" id="rq-depts">${ic('grid',14)} ${t('reqDepts')}</button>
+      </div>
+      <div style="margin-bottom:14px"><button class="btn ghost sm" id="rq-tpl">${ic('pen',14)} ${t('reqTemplates')}</button></div>
+      <label>${t('reqPickDate')}</label>
+      <input type="date" id="rq-date" value="${esc(day)}" style="margin-bottom:14px">
+      ${list.length?`<div class="card" style="padding:2px 14px">${list.map(sh=>{
+        const purchase=sh.kind==='purchase';
+        const meta=purchase?purchaseSummaryV65(sh):[sh.date?niceDate(sh.date):'',sh.time,sh.location].filter(Boolean).join(' · ');
+        const lines=purchase?`${purchaseItemsV65(sh).length} item${purchaseItemsV65(sh).length===1?'':'s'}`:`${(sh.rows||[]).length} ${t('reqLines')} · ${reqDone(sh)}/${(sh.rows||[]).length} ${t('reqStatus').toLowerCase()}`;
+        return `<div class="rq-it ${purchase?'purchase-row-v65':''}" data-rqopen="${esc(String(sh.id))}"><span class="rq-kind ${esc(sh.kind)}">${esc(reqKindLabel(sh.kind))}</span><span class="rq-mid"><b>${esc(sh.title||reqSheetTitle(sh.kind))}</b><span class="mini">${esc(meta)}</span><span class="mini">${esc(lines)}</span></span><span class="rq-go">${ic('back',16)}</span></div>`;
+      }).join('')}</div>`:`<div class="empty"><div class="big">${ic('clipboard',30)}</div>${day?t('reqNothingOn'):t('reqNone')}</div>`}
+    </div>`;
+  };
+
+  function openPurchaseRequestV65(id){
+    const ex=id?reqSheet(id):null;
+    let sh=ex?JSON.parse(JSON.stringify(ex)):{id:'pr'+Date.now(),kind:'purchase',title:'',date:todayISO(),needDate:todayISO(),needTime:'',urgent:false,note:'',rows:[{need:'',details:'',qty:'1'}]};
+    sh.kind='purchase'; sh.rows=Array.isArray(sh.rows)&&sh.rows.length?sh.rows:[{need:'',details:'',qty:'1'}];
+    const wrap=baseModal(`<h3>${ic('clipboard',20)} ${ex?'Edit purchase request':'New purchase request'}</h3>
+      <p class="mini">List what your operation needs, how many, the details/specification, and when you need it.</p>
+      <label>Operation / purpose</label><input id="pr65-title" value="${esc(sh.title||'')}" placeholder="e.g. Foam Party / Daily operation">
+      <div class="row2"><div><label>Request date</label><input type="date" id="pr65-date" value="${esc(sh.date||todayISO())}"></div><div><label>Needed by date</label><input type="date" id="pr65-needdate" value="${esc(sh.needDate||sh.date||todayISO())}"></div></div>
+      <label>Needed by time</label><input type="time" id="pr65-time" value="${esc(sh.needTime||'')}">
+      <div class="pr65-urgent-row"><div><b>Urgent request</b><div class="mini">Turn this on when the purchase must be prioritised.</div></div><input id="pr65-urgent" type="checkbox" ${sh.urgent?'checked':''}></div>
+      <label style="margin-top:14px">Items</label><div id="pr65-items"></div><button class="btn ghost sm" id="pr65-add">＋ Add item</button>
+      <label style="margin-top:14px">General details / note</label><textarea id="pr65-note" rows="3">${esc(sh.note||'')}</textarea>
+      <button class="btn" id="pr65-save" style="margin-top:14px">${t('save')}</button>
+      ${ex?`<button class="btn ghost warn" id="pr65-del">${ic('trash',16)} ${t('reqDelete')}</button>`:''}
+      <button class="btn ghost" id="pr65-x">${t('cancelBtn')}</button>`);
+    const box=wrap.querySelector('#pr65-items');
+    const paint=()=>{
+      box.innerHTML=sh.rows.map((r,i)=>`<div class="pr65-item"><div class="pr65-item-grid"><div><label>Item</label><input data-pr65-name="${i}" value="${esc(r.need||'')}" placeholder="e.g. White towels"></div><div><label>Quantity</label><input data-pr65-qty="${i}" value="${esc(r.qty||'')}" inputmode="numeric" placeholder="10"></div></div><label>Details / specification</label><textarea data-pr65-details="${i}" rows="2" placeholder="Size, colour, brand, exact requirement…">${esc(r.details||'')}</textarea><button class="btn ghost sm warn pr65-remove" data-pr65-del="${i}" ${sh.rows.length===1?'disabled':''}>Remove item</button></div>`).join('');
+      box.querySelectorAll('[data-pr65-name]').forEach(el=>el.oninput=()=>sh.rows[+el.dataset.pr65Name].need=el.value);
+      box.querySelectorAll('[data-pr65-qty]').forEach(el=>el.oninput=()=>sh.rows[+el.dataset.pr65Qty].qty=el.value);
+      box.querySelectorAll('[data-pr65-details]').forEach(el=>el.oninput=()=>sh.rows[+el.dataset.pr65Details].details=el.value);
+      box.querySelectorAll('[data-pr65-del]').forEach(b=>b.onclick=()=>{ if(sh.rows.length>1){sh.rows.splice(+b.dataset.pr65Del,1);paint();} });
+    };
+    paint();
+    wrap.querySelector('#pr65-add').onclick=()=>{sh.rows.push({need:'',details:'',qty:'1'});paint();};
+    wrap.querySelector('#pr65-x').onclick=()=>wrap.remove();
+    wrap.querySelector('#pr65-save').onclick=async()=>{
+      sh.title=wrap.querySelector('#pr65-title').value.trim(); sh.date=wrap.querySelector('#pr65-date').value; sh.needDate=wrap.querySelector('#pr65-needdate').value; sh.needTime=wrap.querySelector('#pr65-time').value; sh.urgent=!!wrap.querySelector('#pr65-urgent').checked; sh.note=wrap.querySelector('#pr65-note').value.trim();
+      sh.rows=sh.rows.map(r=>({need:String(r.need||'').trim(),details:String(r.details||'').trim(),qty:String(r.qty||'').trim(),done:false})).filter(r=>r.need||r.details||r.qty);
+      if(!sh.title){ toastErr('Please add the operation or purpose.'); return; }
+      if(!sh.rows.length || !sh.rows.some(r=>r.need)){ toastErr('Please add at least one item.'); return; }
+      const list=reqSheets().filter(x=>String(x.id)!==String(sh.id)); list.push(sh);
+      try{await reqSave(list);wrap.remove();toastOk(t('saved'));render();}catch(e){console.error('purchase save',e);toastErr(t('errSave'));}
+    };
+    const del=wrap.querySelector('#pr65-del'); if(del) del.onclick=async()=>{ if(!await confirmAction({question:sh.title||'Purchase request',note:t('cannotUndo'),danger:true})) return; try{await reqSave(reqSheets().filter(x=>String(x.id)!==String(sh.id)));wrap.remove();toastOk(t('deleted'));render();}catch(e){toastErr(t('errSave'));} };
+  }
+  window.openPurchaseRequestV65=openPurchaseRequestV65;
+  window.openReqEditor=openReqEditor=function(id){ const ex=id?reqSheet(id):null; if(ex&&ex.kind==='purchase') return openPurchaseRequestV65(id); return _openReqEditorV65(id); };
+
+  const _wireCommonV65=wireCommon;
+  window.wireCommon=wireCommon=function(){
+    _wireCommonV65();
+    const p=document.querySelector('#rq-purchase'); if(p) p.onclick=()=>openPurchaseRequestV65();
+  };
+})();
+</script>
 </body>
 </html>
