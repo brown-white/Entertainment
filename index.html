@@ -13080,5 +13080,233 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
 })();
 </script>
 
+
+<!-- ===== AUREA V6.11 · GUEST MODERNIZATION (isolated guest presentation + ticket identity fix) ===== -->
+<style id="aurea-v611-guest-modern">
+/* This layer is intentionally guest-scoped. Manager/entertainer screens stay untouched. */
+.g611{padding-bottom:calc(108px + env(safe-area-inset-bottom))}
+.g611 .g611-eyebrow{font:700 11px/1.2 var(--font-body);letter-spacing:.16em;text-transform:uppercase;color:var(--bronze,#b88757)}
+.g611 .g611-title{font-family:var(--font-display);font-size:clamp(34px,9vw,52px);line-height:.96;letter-spacing:-.035em;color:var(--espresso,#2a1a13)}
+.g611 .g611-sub{color:var(--muted);font-size:14px;line-height:1.5}
+
+/* TODAY */
+.g611-today .guest-welcome-head{margin-bottom:16px}
+.g611-today .staycard{border:1px solid rgba(112,77,54,.12);box-shadow:0 14px 36px rgba(49,31,22,.06);background:rgba(255,255,255,.82);backdrop-filter:blur(16px)}
+.g611-today .guest-welcome-msg{border:0;background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(247,241,231,.76));box-shadow:none;padding:18px 20px;border-left:3px solid rgba(184,135,87,.45)}
+.g611-today .guest-quick-actions{gap:10px;margin:18px 0 22px}
+.g611-today .gqa{min-height:112px;border-radius:25px;border:1px solid rgba(112,77,54,.10);box-shadow:0 10px 28px rgba(49,31,22,.05);background:rgba(255,255,255,.88)}
+.g611-today .gqa .gqa-ic{width:48px;height:48px;border-radius:16px;background:rgba(202,159,111,.15)}
+.g611-today .hero,.g611-today .hero-wrap{border-radius:30px;overflow:hidden;box-shadow:0 20px 44px rgba(37,22,16,.14)}
+.g611-today .hero{min-height:390px}
+.g611-today .hero .body{padding:26px 24px 28px}
+.g611-today .hero .body h3{font-size:clamp(39px,10vw,60px);line-height:.92;letter-spacing:-.04em}
+.g611-today .quickrow{margin:18px 0 24px;gap:10px}
+.g611-today .quickrow button{border-radius:22px;border:1px solid rgba(112,77,54,.1);background:rgba(255,255,255,.76);min-height:78px}
+.g611-program-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:30px 0 12px;padding-bottom:12px;border-bottom:1px solid rgba(112,77,54,.12)}
+.g611-program-head h2{font:500 29px/1 var(--font-display);letter-spacing:-.025em;margin:0;color:var(--espresso)}
+.g611-program-head span{font-size:12px;color:var(--muted);white-space:nowrap}
+.g611-timeline{display:flex;flex-direction:column;gap:10px}
+.g611-today-card{position:relative;display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:center;min-height:104px;padding:13px 13px 13px 12px;border:1px solid rgba(112,77,54,.1);border-radius:24px;background:rgba(255,255,255,.9);box-shadow:0 8px 25px rgba(49,31,22,.045);cursor:pointer;overflow:hidden}
+.g611-today-card:before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:3px;background:#c9a06e}
+.g611-today-card.g611-event:before{background:#d67568}.g611-today-card.g611-live:before{background:#766556}.g611-today-card.g611-show:before{background:#8b6a91}.g611-today-card.g611-party:before{background:#c36d93}
+.g611-today-card.g611-event{background:linear-gradient(135deg,#fff 0%,#fff7f4 100%)}
+.g611-today-card.g611-live{background:linear-gradient(135deg,#fff 0%,#f5f1ed 100%)}
+.g611-today-card.g611-show{background:linear-gradient(135deg,#fff 0%,#f8f2fa 100%)}
+.g611-today-card.g611-party{background:linear-gradient(135deg,#fff 0%,#fff3f7 100%)}
+.g611-today-img{width:72px;height:76px;border-radius:18px;object-fit:cover;background:#eee}
+.g611-today-copy{min-width:0}
+.g611-today-type{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a67950;margin-bottom:5px}
+.g611-today-card.g611-event .g611-today-type{color:#b35e53}.g611-today-card.g611-show .g611-today-type{color:#795782}.g611-today-card.g611-party .g611-today-type{color:#a94f78}
+.g611-today-copy h4{margin:0 0 5px;font-size:19px;line-height:1.1;color:var(--espresso);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g611-today-meta{display:flex;gap:11px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.g611-today-side{display:flex;flex-direction:column;align-items:flex-end;gap:7px;min-width:72px}
+.g611-time-pill{font-weight:750;font-size:12px;padding:7px 9px;border-radius:999px;background:#f2eadf;color:#5b4336;white-space:nowrap}
+.g611-mini-book{border:0;border-radius:999px;padding:8px 12px;background:var(--espresso);color:white;font-size:11px;font-weight:800;white-space:nowrap}
+.g611-mini-status{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+
+/* MY STAY */
+.g611-stay .g611-stay-hero{padding:22px;border-radius:30px;background:linear-gradient(145deg,#2d1d16,#52382a);color:#fff;box-shadow:0 20px 42px rgba(43,27,20,.18);margin:10px 0 18px;position:relative;overflow:hidden}
+.g611-stay .g611-stay-hero:after{content:"";position:absolute;width:180px;height:180px;border:1px solid rgba(255,255,255,.12);border-radius:50%;right:-70px;top:-80px}
+.g611-stay .g611-stay-hero h2{font:500 34px/1 var(--font-display);margin:0 0 8px;color:#fff}
+.g611-stay .g611-stay-hero .mini{color:rgba(255,255,255,.68)}
+.g611-stay .staycard{margin:0;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:none}
+.g611-stay .staycard .mini,.g611-stay .staycard .sc-foot{color:rgba(255,255,255,.75)}
+.g611-stay .staycard .sc-bar{background:rgba(255,255,255,.13)}
+.g611-stay .staycard .sc-bar span{background:linear-gradient(90deg,#e6d0ad,#fff)}
+.g611-stay-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 24px}
+.g611-stay-action{padding:18px;border:1px solid rgba(112,77,54,.1);border-radius:23px;background:rgba(255,255,255,.84);text-align:left}
+.g611-stay-action b{font:500 31px/1 var(--font-display);display:block;color:var(--espresso)}
+.g611-stay-action span{display:block;margin-top:5px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:750}
+.g611-section-title{display:flex;align-items:center;justify-content:space-between;margin:26px 0 10px}
+.g611-section-title h3{font:500 25px/1 var(--font-display);margin:0;color:var(--espresso)}
+.g611-section-title .count{font:700 11px/1 var(--font-body);padding:7px 10px;border-radius:999px;background:#f0e7db;color:#715445}
+.g611-res-card{display:grid;grid-template-columns:66px minmax(0,1fr) auto;gap:13px;align-items:center;padding:12px;border-radius:22px;background:rgba(255,255,255,.88);border:1px solid rgba(112,77,54,.1);margin-bottom:9px}
+.g611-res-card img{width:66px;height:70px;border-radius:17px;object-fit:cover}
+.g611-res-card h4{margin:0 0 5px;font-size:17px;color:var(--espresso)}
+.g611-res-card .mini{font-size:11px;line-height:1.4}.g611-res-side{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.g611-empty{padding:32px 22px;text-align:center;border:1px dashed rgba(112,77,54,.17);border-radius:24px;color:var(--muted);background:rgba(255,255,255,.35)}
+.g611-empty .g611-empty-ic{width:58px;height:58px;margin:0 auto 12px;border:1px solid rgba(184,135,87,.2);border-radius:50%;display:grid;place-items:center;color:#c2996e}
+
+/* TICKETS */
+.g611-tickets .g611-ticket-intro{margin:3px 0 17px;padding:15px 17px;border-radius:20px;background:#f3eadf;color:#6d5548;font-size:12px;line-height:1.5}
+.g611-ticket-card{position:relative;display:grid;grid-template-columns:120px minmax(0,1fr);min-height:168px;border-radius:28px;overflow:hidden;margin-bottom:14px;background:#fff;border:1px solid rgba(112,77,54,.1);box-shadow:0 12px 30px rgba(49,31,22,.06)}
+.g611-ticket-card>img{width:100%;height:100%;object-fit:cover}
+.g611-ticket-body{padding:18px 17px;min-width:0}.g611-ticket-body h4{margin:0 0 5px;font:500 25px/1 var(--font-display);color:var(--espresso)}
+.g611-ticket-meta{display:flex;gap:7px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-bottom:9px}.g611-ticket-desc{font-size:12px;line-height:1.45;color:#6d625d;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.g611-ticket-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.g611-ticket-price{font:600 20px/1 var(--font-display);color:var(--espresso)}
+.g611-ticket-card .btn.sm{border-radius:999px;padding:9px 15px}
+.ticket-buy-modern h3{font-size:36px;line-height:.98;margin-bottom:9px}.ticket-buy-modern .ticket-collect-title{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px}.ticket-buy-modern .memberrow{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(105px,1fr);overflow-x:auto;gap:9px;padding:2px 2px 8px;scroll-snap-type:x proximity}.ticket-buy-modern .memb{min-width:105px;border-radius:22px;padding:12px 8px;background:#fff;border:1px solid rgba(112,77,54,.12);scroll-snap-align:start}.ticket-buy-modern .memb.on{background:#302019;color:#fff;border-color:#302019;box-shadow:0 10px 22px rgba(48,32,25,.15)}.ticket-buy-modern .mb-av{width:54px;height:54px;margin:auto auto 8px}.ticket-buy-modern .mb-nm{font-size:12px;line-height:1.2}
+
+/* CHAT */
+.g611-chat .g611-chat-person{display:flex;align-items:center;gap:13px;padding:15px 17px;border-radius:24px;background:linear-gradient(145deg,#2c1c15,#493126);color:#fff;margin:3px 0 14px;box-shadow:0 14px 30px rgba(49,31,22,.12)}
+.g611-chat-avatar{width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.12);display:grid;place-items:center;font:500 25px/1 var(--font-display);flex:none}
+.g611-chat-person b{display:block;font-size:15px}.g611-chat-person span{font-size:11px;color:rgba(255,255,255,.65)}
+.g611-chat .thread{min-height:calc(100dvh - 370px);padding:14px 2px 112px;display:flex;flex-direction:column;justify-content:flex-end}
+.g611-chat .thread>.empty{margin:auto 0;min-height:260px;display:flex;flex-direction:column;justify-content:center;border:1px dashed rgba(112,77,54,.14);border-radius:28px;background:rgba(255,255,255,.28);font-size:14px}
+.g611-chat .bub{border-radius:20px;max-width:82%;padding:12px 14px}.g611-chat .bub.me{background:#38251c;color:#fff}.g611-chat .bub.them{background:#fff;border:1px solid rgba(112,77,54,.09)}
+.g611-chat .chatbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));width:min(calc(100% - 26px),514px);padding:8px;background:rgba(250,247,239,.92);backdrop-filter:blur(18px);border:1px solid rgba(112,77,54,.1);border-radius:999px;box-shadow:0 16px 42px rgba(49,31,22,.12);z-index:70}
+.g611-chat .chatbar input{border:0;background:transparent;height:48px;padding-left:15px}.g611-chat .chatbar button{width:48px;height:48px;border-radius:50%}
+
+@media(max-width:390px){
+ .g611-today-card{grid-template-columns:62px minmax(0,1fr) auto;gap:10px}.g611-today-img{width:62px;height:68px}.g611-today-copy h4{font-size:17px}.g611-time-pill{font-size:11px;padding:6px 7px}
+ .g611-ticket-card{grid-template-columns:100px minmax(0,1fr)}.g611-ticket-body{padding:15px 13px}.g611-ticket-body h4{font-size:22px}
+ .g611-res-card{grid-template-columns:58px minmax(0,1fr) auto}.g611-res-card img{width:58px;height:62px}
+}
+</style>
+<script id="aurea-v611-guest-modern-js">
+(function(){
+  'use strict';
+  const __guestViewV610 = guestView;
+
+  function identityKeyV611(name){
+    return String(name||'').normalize('NFKD').toLowerCase()
+      .replace(/\b(mr|mrs|ms|miss|mister|madam)\.?\b/g,'')
+      .replace(/[^a-z0-9\u00c0-\uffff]+/g,'')
+      .trim();
+  }
+
+  // Canonical team list: merges Team Profiles + Team Accounts even when titles/punctuation differ.
+  teamMemberList = function(){
+    const map=new Map();
+    function add(name,photo,rank){
+      const nm=String(name||'').trim(); if(!nm) return;
+      const key=identityKeyV611(nm) || nm.toLowerCase();
+      const old=map.get(key);
+      if(!old){ map.set(key,{name:nm,photo:photo||'',rank:rank||9}); return; }
+      if(!old.photo && photo) old.photo=photo;
+      if((rank||9)<old.rank){ old.name=nm; old.rank=rank||9; }
+    }
+    (S.profiles||[]).forEach(p=>add(p.name,p.photo,2));
+    (S.users||[]).filter(u=>(u.role==='staff'||u.role==='manager') && u.active!==false && !isAttOnly(u)).forEach(u=>{
+      const ph=(u.photos&&u.photos[0])||u.photo||'';
+      add(u.display_name||u.username,ph,1);
+    });
+    return [...map.values()].sort((a,b)=>a.name.localeCompare(b.name)).map(({name,photo})=>({name,photo}));
+  };
+
+  function typeInfoV611(a){
+    const c=normCat(a);
+    if(c==='mEvents') return {cls:'g611-event',label:catLabel(c),icon:'sparkle'};
+    if(c==='eLive'||c==='eBefore'||c==='eAfter') return {cls:'g611-live',label:catLabel(c),icon:'music'};
+    if(c==='eShow') return {cls:'g611-show',label:catLabel(c),icon:'star'};
+    if(c==='eParty') return {cls:'g611-party',label:catLabel(c),icon:'sparkle'};
+    return {cls:'g611-activity',label:catLabel(c),icon:'flag'};
+  }
+
+  function todayCardV611(a){
+    const tp=typeInfoV611(a), mine=myBooking(a.id), st=isToday(a.day)?activityStatus(a):'todo';
+    const unlimited=!(+a.capacity), taken=seatsTaken(a.id), left=Math.max(0,(+a.capacity||0)-taken), full=!unlimited&&left<=0;
+    let action='';
+    if(st==='done') action=`<span class="g611-mini-status">${esc(t('finishedChip'))}</span>`;
+    else if(mine) action=`<span class="g611-mini-status">${esc(mine.status==='booked'?t('booked'):t('onWaitlist'))}</span>`;
+    else if(full) action=`<span class="g611-mini-status">${esc(t('full'))}</span>`;
+    else action=`<button class="g611-mini-book" data-book="${a.id}">${esc(st==='live'?t('bookNowLive'):t('book'))}</button>`;
+    return `<div class="g611-today-card ${tp.cls}" data-open="${a.id}">
+      <img class="g611-today-img" src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
+      <div class="g611-today-copy">
+        <div class="g611-today-type">${ic(tp.icon,12)} ${esc(tp.label)}</div>
+        <h4>${esc(a.name)}</h4>
+        <div class="g611-today-meta"><span>${mi('pin')}${esc(a.location||'')}</span>${!unlimited&&!full?`<span>${left} ${esc(t('seatsLeft'))}</span>`:''}</div>
+      </div>
+      <div class="g611-today-side"><span class="g611-time-pill">${esc(a.time||'')}</span>${action}</div>
+    </div>`;
+  }
+
+  function emptyV611(icon,text){
+    return `<div class="g611-empty"><div class="g611-empty-ic">${ic(icon,23)}</div>${esc(text)}</div>`;
+  }
+
+  function guestHomeV611(){
+    const g=S.session, todayIdx=todayIndex();
+    const todays=(S.activities||[]).filter(a=>a.day===todayIdx).sort((x,y)=>String(x.time||'').localeCompare(String(y.time||'')));
+    const hl=todays.find(a=>a.highlight)||todays[0];
+    const rest=todays.filter(a=>!hl||a.id!==hl.id);
+    const wm=(S.settings.welcomeMsg||'').trim();
+    return `<div class="screen fadein g611 g611-today">
+      ${guestHomeTopBar(g,todayIdx)}
+      ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
+      ${wm?`<div class="card guest-welcome-msg">${esc(wm)}</div>`:''}
+      ${guestQuickActions()}
+      ${hl?heroCarousel([hl].concat(todays.filter(a=>a.id!==hl.id&&a.highlight))):''}
+      <div class="quickrow"><button id="btn-req-song"><span>${ic('music',22)}</span>${t('songRequest')}</button><button id="btn-req-bday"><span>${ic('gift',22)}</span>${t('birthdayRequest')}</button></div>
+      <div class="g611-program-head"><h2>${esc(t('todayProgram'))}</h2><span>${rest.length} ${esc(t('itemsWord')||t('activities'))}</span></div>
+      <div class="g611-timeline">${rest.length?rest.map(todayCardV611).join(''):emptyV611('calendar',t('noneToday'))}</div>
+      ${reviewDue(g)?reviewBlock():''}${socialBlock()}
+    </div>`;
+  }
+
+  function bookingCardV611(b){
+    const a=(S.activities||[]).find(x=>x.id===b.activity_id); if(!a) return '';
+    return `<div class="g611-res-card" data-open="${a.id}"><img src="${esc(a.image||IMG.show)}" alt="" loading="lazy"><div><h4>${esc(a.name)}</h4><p class="mini">${esc(t('daysShort')[a.day]||'')} · ${esc(a.time||'')} · ${esc(a.location||'')}</p></div><div class="g611-res-side"><span class="chip ${b.status==='booked'?'ok':''}">${esc(b.status==='booked'?t('booked'):t('onWaitlist'))}</span><button class="btn sm warn" data-cancel="${b.id}">${ic('close',13)}</button></div></div>`;
+  }
+  function orderCardV611(o){
+    const tk=(S.tickets||[]).find(x=>x.id===o.ticket_id); if(!tk) return '';
+    return `<div class="g611-res-card"><img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy"><div><h4>${esc(tk.name)}</h4><p class="mini">${esc(t('daysShort')[tk.day]||'')} · ${esc(tk.time||'')} · ×${o.qty}${o.collect_from?' · '+esc(o.collect_from):''}</p></div><div class="g611-res-side"><span class="chip ${o.status==='paid'?'ok':'res'}">${esc(o.status==='paid'?t('paid'):t('reserved'))}</span>${o.status==='paid'?'':`<button class="btn sm warn" data-cancelorder="${o.id}">${ic('close',13)}</button>`}</div></div>`;
+  }
+
+  function guestStayV611(){
+    const g=S.session, acc=(S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room));
+    const mine=(S.bookings||[]).filter(b=>String(b.room)===String(g.room));
+    const orders=myOrders();
+    return `<div class="screen fadein g611 g611-stay">
+      ${topBar(t('myStay'),g.name)}
+      <div class="g611-stay-hero"><div class="g611-eyebrow">${esc(t('myStay'))}</div><h2>${esc(g.name)}</h2><p class="mini">${esc(t('room'))} ${esc(g.room)}${g.nationality?' · '+esc(g.nationality):''}</p>${stayCard(acc)}<button class="btn sm ghost" id="btn-chpass" style="margin-top:12px;color:#fff;border-color:rgba(255,255,255,.25)">${ic('key',14)} ${esc(t('changePass'))}</button></div>
+      <div class="g611-stay-actions"><div class="g611-stay-action"><b>${mine.length}</b><span>${esc(t('myBookings'))}</span></div><div class="g611-stay-action"><b>${orders.length}</b><span>${esc(t('myTickets'))}</span></div></div>
+      <div class="g611-section-title"><h3>${esc(t('myBookings'))}</h3><span class="count">${mine.length}</span></div>${mine.length?mine.map(bookingCardV611).join(''):emptyV611('calendar',t('noBookings'))}
+      <div class="g611-section-title"><h3>${esc(t('myTickets'))}</h3><span class="count">${orders.length}</span></div>${orders.length?orders.map(orderCardV611).join(''):emptyV611('ticket',t('ticketsNone'))}
+    </div>`;
+  }
+
+  guestTicketsView = function(){
+    return `<div class="screen fadein g611 g611-tickets">${topBar(t('tickets'),'')}<div class="g611-ticket-intro">${esc(t('payNote'))}</div>${(S.tickets||[]).length?(S.tickets||[]).map(tk=>{
+      const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null,soldOut=left!==null&&left<=0;
+      return `<article class="g611-ticket-card"><img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy"><div class="g611-ticket-body"><div class="g611-eyebrow">${esc(t('tickets'))}</div><h4>${esc(tk.name)}</h4><div class="g611-ticket-meta"><span>${esc(t('days')[tk.day])}</span><span>${mi('clock')}${esc(tk.time)}</span><span>${mi('pin')}${esc(tk.location||'')}</span>${left!==null?`<span>${left} ${esc(t('seatsLeft'))}</span>`:''}</div><div class="g611-ticket-desc">${esc(tk.desc||'')}</div><div class="g611-ticket-foot"><span class="g611-ticket-price">${esc(tk.price||'')}</span>${soldOut?`<span class="chip full">${esc(t('soldOut'))}</span>`:`<button class="btn sm" data-buy="${tk.id}">${esc(t('buyTicket'))}</button>`}</div></div></article>`;
+    }).join(''):emptyV611('ticket',t('ticketsNone'))}</div>`;
+  };
+
+  openTicketBuyModal = function(tk){
+    const sold=ticketsSold(tk.id), left=tk.capacity>0?Math.max(0,tk.capacity-sold):null, max=left!==null?Math.max(1,Math.min(10,left)):10;
+    const team=teamMemberList(); let chosen='';
+    const wrap=baseModal(`<div class="ticket-buy-modern"><div class="g611-eyebrow">${esc(t('tickets'))}</div><h3>${esc(tk.name)}</h3><p class="mini">${esc(t('days')[tk.day])} · ${mi('clock')}${esc(tk.time)} · ${mi('pin')}${esc(tk.location||'')}</p>${tk.desc?`<p style="margin:12px 0 6px">${esc(tk.desc)}</p>`:''}<p class="mini">${esc(t('payNote'))}</p><div class="row2" style="align-items:end;margin-top:12px"><div><label>${esc(t('qty'))}</label><input id="tq" type="number" min="1" max="${max}" value="1"></div><div style="text-align:end;font-family:var(--font-display);font-size:26px;color:var(--cacao);padding-bottom:10px">${esc(tk.price||'')}</div></div>${team.length?`<div class="ticket-collect-title"><label style="margin:0">${esc(t('collectFrom'))}</label><span class="mini">${team.length}</span></div><div class="memberrow">${team.map(m=>`<button type="button" class="memb" data-memb="${esc(m.name)}"><span class="mb-av">${m.photo?`<img src="${esc(m.photo)}" alt="">`:esc(m.name.trim().charAt(0).toUpperCase())}</span><span class="mb-nm">${esc(m.name)}</span></button>`).join('')}</div>`:''}<button class="btn" id="t-go">${esc(t('buyTicket'))}</button><div class="err" id="t-err"></div><button class="btn ghost" id="t-x">${esc(t('close'))}</button></div>`);
+    wrap.querySelector('#t-x').onclick=()=>wrap.remove();
+    wrap.querySelectorAll('[data-memb]').forEach(b=>b.onclick=()=>{chosen=b.dataset.memb;wrap.querySelectorAll('.memb').forEach(x=>x.classList.toggle('on',x===b));wrap.querySelector('#t-err').textContent='';});
+    wrap.querySelector('#t-go').onclick=async()=>{if(team.length&&!chosen){wrap.querySelector('#t-err').textContent=t('chooseMember');return;}const g=S.session,qty=Math.max(1,Math.min(max,+wrap.querySelector('#tq').value||1));await DB.addOrder({ticket_id:tk.id,room:g.room,guest_name:g.name,nationality:g.nationality||'',qty,status:'reserved',collect_from:chosen});wrap.remove();toast(t('ticketOk'));render();};
+  };
+
+  function guestChatV611(){
+    const g=S.session, has=(S.messages||[]).some(m=>String(m.room)===String(g.room));
+    return `<div class="screen fadein g611 g611-chat">${topBar(t('chat'),accountName(g.room))}<div class="g611-chat-person"><div class="g611-chat-avatar">E</div><div><b>${esc(t('team'))}</b><span>${has?esc(t('chat')):esc(t('noMessages'))}</span></div></div>${threadView(g.room,'guest')}</div>`;
+  }
+
+  guestView = function(){
+    if(S.session && S.session.role==='guest'){
+      if(S.tab==='home') return guestHomeV611();
+      if(S.tab==='chat') return guestChatV611();
+      if(S.tab==='stay'||S.tab==='bookings') return guestStayV611();
+    }
+    return __guestViewV610();
+  };
+})();
+</script>
 </body>
 </html>
