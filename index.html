@@ -2162,6 +2162,76 @@ label{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:var(--muted);m
 .workday-clean .sec>h3+ .mini + .activity-card{margin-top:0}
 @media(max-width:390px){.wd-info-compact{grid-template-columns:1fr}.wd-info-compact>div:nth-child(odd){border-right:0}.wd-info-compact>div.wide{grid-column:auto}.wd-fb-head{align-items:flex-start}.wd-fb-head .btn{min-width:110px}}
 </style>
+
+<style id="guest-experience-v68">
+/* AUREA V6.8 — Guest Experience only. Manager and Entertainer remain untouched. */
+[data-approle="guest"] .screen{padding-inline:18px!important;padding-bottom:calc(118px + env(safe-area-inset-bottom))!important}
+[data-approle="guest"] .guest-welcome-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:8px 2px 18px}
+[data-approle="guest"] .guest-welcome-head h1{font-family:var(--font-display);font-size:clamp(34px,8vw,48px);line-height:.98;letter-spacing:-.035em;margin:0;color:var(--text)}
+[data-approle="guest"] .guest-welcome-head p{margin:8px 0 0;color:var(--muted);font-size:14px}
+[data-approle="guest"] .guest-weather{appearance:none;border:1px solid rgba(122,91,58,.18);background:rgba(255,255,255,.72);box-shadow:0 10px 28px -20px rgba(46,30,18,.45);border-radius:999px;min-height:46px;padding:8px 12px;display:flex;align-items:center;gap:7px;color:var(--text);flex:none}
+[data-approle="guest"] .guest-weather .gw-icon{display:grid;place-items:center;color:var(--accent)}
+[data-approle="guest"] .guest-weather .gw-temp{font-family:var(--font-display);font-size:20px;font-weight:700}
+[data-approle="guest"] .guest-weather .gw-label{font-size:11px;color:var(--muted);max-width:76px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[data-approle="guest"] .guest-welcome-msg{padding:17px 18px!important;border-radius:22px!important;font-size:15px!important;line-height:1.55!important;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(248,243,234,.88))!important}
+[data-approle="guest"] .guest-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 20px}
+[data-approle="guest"] .gqa{border:1px solid rgba(122,91,58,.16);background:rgba(255,255,255,.82);border-radius:20px;padding:14px 9px 12px;min-height:94px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:var(--text);font-weight:700;font-size:12px;box-shadow:0 14px 34px -27px rgba(55,35,20,.58);position:relative}
+[data-approle="guest"] .gqa .gqa-ic{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;background:var(--sand);color:var(--accent)}
+[data-approle="guest"] .gqa i{position:absolute;right:9px;top:9px;opacity:.28;transform:rotate(180deg)}
+[data-approle="guest"] .hero{border-radius:28px!important;min-height:350px!important;box-shadow:0 30px 60px -38px rgba(31,20,13,.72)!important;overflow:hidden}
+[data-approle="guest"] .hero .veil{background:linear-gradient(180deg,rgba(20,12,8,.04) 25%,rgba(20,12,8,.82) 100%)!important}
+[data-approle="guest"] .hero .body{padding:24px!important}
+[data-approle="guest"] .hero .body h3{font-size:42px!important;color:#fff!important;line-height:.96!important;text-shadow:0 2px 14px rgba(0,0,0,.22)}
+[data-approle="guest"] .hero .meta,[data-approle="guest"] .hero .desc{color:rgba(255,255,255,.9)!important}
+[data-approle="guest"] .opgrid{gap:16px!important}
+[data-approle="guest"] .opcard{min-height:230px!important;border-radius:28px!important;box-shadow:0 25px 55px -38px rgba(32,20,12,.7)!important;overflow:hidden}
+[data-approle="guest"] .opcard .veil{background:linear-gradient(180deg,rgba(16,10,7,.06) 22%,rgba(16,10,7,.82) 100%)!important}
+[data-approle="guest"] .opcard .opc-txt{inset:auto 20px 20px 20px!important;text-align:left!important}
+[data-approle="guest"] .opcard .opc-txt h3{font-size:34px!important;line-height:1!important;color:#fff!important;text-shadow:0 2px 12px rgba(0,0,0,.3)!important}
+[data-approle="guest"] .opcard .opc-txt span{color:rgba(255,255,255,.9)!important}
+[data-approle="guest"] .guest-act{display:grid!important;grid-template-columns:104px minmax(0,1fr) auto!important;gap:14px!important;padding:12px!important;border-radius:24px!important;align-items:center!important;min-height:132px;cursor:pointer;box-shadow:0 17px 42px -32px rgba(42,27,17,.62)!important;transition:transform .16s ease,box-shadow .16s ease}
+[data-approle="guest"] .guest-act:active{transform:scale(.988)}
+[data-approle="guest"] .guest-act .thumb{width:104px!important;height:108px!important;border-radius:18px!important;object-fit:cover!important}
+[data-approle="guest"] .guest-act .mid{min-width:0!important;padding:2px 0!important}
+[data-approle="guest"] .guest-act .catbadge{font-size:9px!important;letter-spacing:.12em!important;color:var(--accent)!important}
+[data-approle="guest"] .guest-act h4{font-size:20px!important;line-height:1.1!important;margin:4px 0 7px!important}
+[data-approle="guest"] .guest-act .meta{display:flex!important;flex-wrap:wrap!important;gap:5px 11px!important;font-size:12px!important}
+[data-approle="guest"] .guest-act-desc{margin:7px 0 0;color:var(--muted);font-size:11.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+[data-approle="guest"] .guest-act .side{min-width:74px!important;align-self:stretch!important;display:flex!important;flex-direction:column!important;align-items:flex-end!important;justify-content:space-between!important;gap:7px!important}
+[data-approle="guest"] .guest-act .side .btn.sm{min-height:38px!important;padding:8px 14px!important;border-radius:999px!important;font-size:12px!important;position:relative;z-index:2}
+[data-approle="guest"] .guest-act .fav{width:34px!important;height:34px!important}
+[data-approle="guest"] .guest-detail-arrow{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);opacity:.55;transform:rotate(180deg)}
+[data-approle="guest"] .guest-status-line{margin-top:7px}
+[data-approle="guest"] .modal .guest-detail{margin:-2px -2px 0}
+[data-approle="guest"] .guest-detail .gd-photo{position:relative;height:210px;border-radius:24px;overflow:hidden;margin-bottom:18px}
+[data-approle="guest"] .guest-detail .gd-photo img{width:100%;height:100%;object-fit:cover}
+[data-approle="guest"] .guest-detail .gd-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(20,12,7,.5))}
+[data-approle="guest"] .gd-cat{position:absolute;z-index:1;left:14px;bottom:13px;background:rgba(255,255,255,.9);border-radius:999px;padding:7px 10px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+[data-approle="guest"] .gd-copy h3{font-family:var(--font-display);font-size:36px;line-height:1;margin:0 0 10px}
+[data-approle="guest"] .gd-meta{display:flex;gap:8px 15px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+[data-approle="guest"] .gd-desc{font-size:15px;line-height:1.62;margin:18px 0;color:var(--text)}
+[data-approle="guest"] .gd-facts{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0 18px}
+[data-approle="guest"] .gd-facts>span{display:flex;align-items:center;gap:6px;background:var(--sand);border-radius:999px;padding:8px 11px;font-size:11px}
+[data-approle="guest"] .gd-booked{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:16px;background:rgba(80,140,100,.12);color:#4f8462;padding:13px;font-weight:800;margin:16px 0 8px}
+[data-approle="guest"] .guest-book-now{margin-top:16px!important}
+[data-approle="guest"] .drawer .dr-person{display:flex;align-items:center;gap:8px;margin-top:3px}
+[data-approle="guest"] .drawer .dr-person>p{margin:0}
+[data-approle="guest"] .drawer .guest-weather{min-height:30px;padding:4px 8px;gap:4px;background:var(--sand);box-shadow:none}
+[data-approle="guest"] .drawer .guest-weather .gw-temp{font-size:14px}
+[data-approle="guest"] .drawer .guest-weather .gw-label{display:none}
+[data-approle="guest"] .drawer .guest-weather .gw-icon svg{width:14px;height:14px}
+[data-approle="guest"] .dr-group .dr-it{min-height:50px!important;border-radius:15px!important;margin-bottom:3px!important}
+[data-approle="guest"] .dr-sec{margin-top:13px!important}
+@media(max-width:390px){
+ [data-approle="guest"] .guest-welcome-head h1{font-size:32px}
+ [data-approle="guest"] .guest-weather .gw-label{display:none}
+ [data-approle="guest"] .guest-act{grid-template-columns:88px minmax(0,1fr) auto!important;gap:10px!important}
+ [data-approle="guest"] .guest-act .thumb{width:88px!important;height:96px!important}
+ [data-approle="guest"] .guest-act h4{font-size:18px!important}
+ [data-approle="guest"] .guest-act-desc{display:none}
+ [data-approle="guest"] .guest-act .side{min-width:66px!important}
+}
+</style>
 </head>
 <body>
 <div class="app" id="app"><div class="skel-wrap">
@@ -4225,16 +4295,11 @@ function navGroupsBase(role){
       {key:"secProgram", head:t("secProgram"), items:[
         ["home","home",menuLabel("menuHome",t("home")),0],
         ["program","calendar",menuLabel("menuProgram",t("program")),0],
-        ...(featureOn("quiz")?[["quiz","sparkle",t("quizTab"),quizForToday("guest")&&!myQuizReply(quizForToday("guest").id)?1:0]]:[]),
-        ...(featureOn("gallery")?[["gallery","sparkle",t("galleryTab"),0]]:[]),
-        ...(featureOn("hotelinfo")?[["hotelinfo","pin",t("hotelInfoTab"),0]]:[]),
-        ...(featureOn("weather")?[["weather","sun",t("weatherTab"),0]]:[])]},
-      {key:"secBookings", head:t("secBookings"), items:[
-        ["stay","user",menuLabel("menuStay",t("myStay")),0],
-        ...(featureOn("tickets")?[["tickets","ticket",menuLabel("menuTickets",t("tickets")),0]]:[])]},
-      {key:"secConnect", head:t("secConnect"), items:[
         ["chat","chat",menuLabel("menuChat",t("chat")),un],
         ["teaminfo","users",t("teamPage"),0],
+        ["stay","user",t("myActs"),0],
+        ...(featureOn("tickets")?[["tickets","ticket",t("myTickets"),0]]:[])]},
+      {key:"secConnect", head:t("secConnect"), items:[
         ["social","star",t("socialPage"),0]]}
     ];
   }
@@ -4312,7 +4377,18 @@ function applyMenuConf(role, groups){
   }
   return out.filter(g=>g.items.length);
 }
-function navGroups(role){ return applyMenuConf(role, navGroupsBase(role)); }
+function navGroups(role){
+  const groups=applyMenuConf(role, navGroupsBase(role));
+  if(role!=="guest") return groups;
+  const wanted=["home","program","chat","teaminfo","stay","tickets","social"];
+  const all=groups.flatMap(g=>g.items), byId=new Map(all.map(it=>[it[0],it]));
+  // Re-add required guest destinations if an old Menu Builder configuration hid them.
+  const base=navGroupsBase("guest").flatMap(g=>g.items);
+  base.forEach(it=>{ if(!byId.has(it[0])) byId.set(it[0],it); });
+  const primary=wanted.slice(0,6).map(id=>byId.get(id)).filter(Boolean);
+  const social=byId.get("social");
+  return [{key:"secProgram",head:t("secProgram"),items:primary}, ...(social?[{key:"secConnect",head:t("secConnect"),items:[social]}]:[])];
+}
 function navItems(role){ return navGroups(role).flatMap(g=>g.items); }
 function topBar(title,sub){
   const role=S.session?S.session.role:"guest";
@@ -4349,7 +4425,7 @@ function openMenuDrawer(){
   wrap.innerHTML=`<div class="drawer">
     <div class="dr-head">
       <div class="mono serif sm">${esc((S.settings.name||"E").trim().charAt(0).toUpperCase())}</div>
-      <div><h3>${esc(S.settings.name)}</h3><p>${esc(S.session?S.session.name:"")}</p></div>
+      <div><h3>${esc(S.settings.name)}</h3><div class="dr-person"><p>${esc(S.session?S.session.name:"")}</p>${role==="guest"?guestWeatherChip():""}</div></div>
     </div>
     <div class="dr-items">
       ${navGroups(role).map((g,gi)=>{
@@ -4458,17 +4534,20 @@ function activityCard(a,{showBook=true,showFav=true,manager=false,staff=false}={
   // the coloured ring is drawn around the guest's own booked activity
   const ringCls = (mine && isToday(a.day)) ? (" "+statusRing(a)) : "";
   const overNow = isToday(a.day) && activityStatus(a)==="done";
-  return `<div class="card act${ringCls}${overNow?" is-over":""}" ${manager||staff||overNow?"":`data-open="${a.id}"`}>
-    <img class="thumb" src="${esc(a.image||IMG.show)}" alt="" loading="lazy" data-pvsingle="${esc(a.image||IMG.show)}">
+  const guestCard=!manager&&!staff;
+  return `<div class="card act${guestCard?" guest-act":""}${ringCls}${overNow?" is-over":""}" ${manager||staff||overNow?"":`data-open="${a.id}"`}>
+    <img class="thumb" src="${esc(a.image||IMG.show)}" alt="" loading="lazy" ${guestCard?"":`data-pvsingle="${esc(a.image||IMG.show)}"` }>
     <div class="mid">
       <span class="catbadge">${catLabel(a.category)}</span>
       <h4>${statusDot(a)}${esc(a.name)}</h4>
       <div class="meta"><span>${mi("clock")}${esc(a.time)}</span><span>${mi("pin")}${esc(a.location)}</span></div>
-      ${mine&&isToday(a.day)?`<div style="margin-top:6px">${statusPill(a)}</div>`:""}
+      ${guestCard&&a.desc?`<p class="guest-act-desc">${esc(a.desc)}</p>`:""}
+      ${mine&&isToday(a.day)?`<div class="guest-status-line">${statusPill(a)}</div>`:""}
     </div>
     <div class="side">
       ${showFav&&!manager&&!staff?`<button class="fav" data-fav="${a.id}">${fav?`<span class="hf">${ic("heart",19)}</span>`:ic("heart",19)}</button>`:""}
       ${side}
+      ${guestCard&&!overNow?`<span class="guest-detail-arrow">${ic("back",15)}</span>`:""}
     </div>
   </div>`;
 }
@@ -4620,6 +4699,70 @@ function threadView(room,meSide){
   </div>`;
 }
 /* ---------------- guest ---------------- */
+function guestWeatherChip(){
+  if(!featureOn("weather")) return "";
+  const w=S.weather;
+  if(w && !w.error && w.cur){
+    const c=w.cur;
+    return `<button class="guest-weather" data-tab="weather" aria-label="${esc(t("weatherTab"))}">
+      <span class="gw-icon">${ic(wmoIcon(c.weather_code),18)}</span>
+      <span class="gw-temp">${Math.round(c.temperature_2m)}°</span>
+      <span class="gw-label">${esc(wmoLabel(c.weather_code))}</span>
+    </button>`;
+  }
+  return `<button class="guest-weather loading" data-tab="weather" aria-label="${esc(t("weatherTab"))}">
+    <span class="gw-icon">${ic("sun",18)}</span><span class="gw-label">${esc(t("weatherTab"))}</span>
+  </button>`;
+}
+function guestHomeTopBar(g,todayIdx){
+  const role="guest", anyDot=navItems(role).some(x=>x[3]>0);
+  return `<div class="top guest-top">
+    <div class="toprow toprow-l">
+      <button class="iconbtn" id="btn-menu" aria-label="${t("menu")}">${ic("menu",21)}${anyDot?'<span class="reddot"></span>':''}</button>
+      <button class="iconbtn navbtn" id="btn-navback" aria-label="${t("navBack")}" ${canNavBack()?"":"disabled"}>${ic("back",19)}</button>
+      <button class="iconbtn navbtn fwd" id="btn-navfwd" aria-label="${t("navForward")}" ${canNavForward()?"":"disabled"}>${ic("back",19)}</button>
+      <span class="socialrow">${socialTopIcons()}</span>
+    </div>
+    <div class="toprow"><button class="iconbtn" id="btn-notes" aria-label="notifications">${ic("bell",19)}${unseenNotes(role)?'<span class="reddot"></span>':''}</button></div>
+  </div>
+  <div class="guest-welcome-head">
+    <div><h1>${esc(t("welcome"))}, ${esc(g.name)}</h1><p>${esc(t("room"))} ${esc(g.room)} · ${esc(t("days")[todayIdx])}</p></div>
+    ${guestWeatherChip()}
+  </div>`;
+}
+function guestQuickActions(){
+  const items=[];
+  if(featureOn("hotelinfo")) items.push(["hotelinfo","pin",t("hotelInfoTab")]);
+  if(featureOn("gallery")) items.push(["gallery","sparkle",t("galleryTab")]);
+  if(featureOn("quiz")) items.push(["quiz","sparkle",t("quizTab")]);
+  if(!items.length) return "";
+  return `<div class="guest-quick-actions">${items.map(([tab,icon,label])=>
+    `<button data-tab="${tab}" class="gqa"><span class="gqa-ic">${ic(icon,22)}</span><span>${esc(label)}</span><i>${ic("back",14)}</i></button>`
+  ).join("")}</div>`;
+}
+function openGuestActivityDetail(a){
+  if(!a) return;
+  const unlimited=!(+a.capacity), taken=seatsTaken(a.id), left=Math.max(0,(+a.capacity||0)-taken), full=!unlimited&&left<=0;
+  const mine=myBooking(a.id), status=isToday(a.day)?activityStatus(a):"";
+  const wrap=baseModal(`<div class="guest-detail">
+    <div class="gd-photo"><img src="${esc(a.image||IMG.show)}" alt=""><span class="gd-cat">${esc(catLabel(normCat(a)))}</span></div>
+    <div class="gd-copy">
+      <h3>${esc(a.name)}</h3>
+      <div class="gd-meta"><span>${mi("clock")}${esc(a.time)}${a.end_time?" – "+esc(a.end_time):""}</span><span>${mi("pin")}${esc(a.location||"")}</span></div>
+      ${a.desc?`<p class="gd-desc">${esc(a.desc)}</p>`:""}
+      <div class="gd-facts">
+        ${!unlimited?`<span>${ic("users",16)} <b>${full?t("full"):left+" "+t("seatsLeft")}</b></span>`:""}
+        ${status?`<span>${statusDot(a)} <b>${status==="live"?t("st_live"):status==="done"?t("st_done"):t("st_todo")}</b></span>`:""}
+      </div>
+    </div>
+    ${mine?`<div class="gd-booked">${ic("check",17)} ${mine.status==="booked"?t("booked"):t("onWaitlist")}</div>`:
+      `<button class="btn guest-book-now" id="gd-book">${full?t("waitlist"):t("book")}</button>`}
+    <button class="btn ghost" id="gd-close">${t("close")}</button>
+  </div>`);
+  wrap.querySelector("#gd-close").onclick=()=>wrap.remove();
+  const book=wrap.querySelector("#gd-book");
+  if(book) book.onclick=()=>{wrap.remove();openBookModal(a);};
+}
 function guestView(){
   if(String(S.tab||"").startsWith("cp:")) return customPageView(S.tab.slice(3));
   if(String(S.tab||"").startsWith("emp:")) return employeeView(S.tab.slice(4));
@@ -4634,9 +4777,10 @@ function guestView(){
     const hl=todays.find(a=>a.highlight)||todays[0];
     const wm=(S.settings.welcomeMsg||"").trim();
     return `<div class="screen fadein">
-      ${topBar(t("welcome")+", "+g.name, t("room")+" "+g.room+" · "+t("days")[todayIdx])}
+      ${guestHomeTopBar(g,todayIdx)}
       ${stayCard((S.accounts||[]).find(a=>a.id===g.accountId)||(S.accounts||[]).find(a=>String(a.room)===String(g.room)))}
-      ${wm?`<div class="card" style="padding:14px 16px;font-size:15px">${esc(wm)}</div>`:""}
+      ${wm?`<div class="card guest-welcome-msg">${esc(wm)}</div>`:""}
+      ${guestQuickActions()}
       ${heroCarousel([hl].concat(todays.filter(a=>a!==hl && a.highlight)))}
       <div class="quickrow">
         <button id="btn-req-song"><span>${ic("music",22)}</span>${t("songRequest")}</button>
@@ -11021,7 +11165,7 @@ function wireCommon(){
   document.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>{
     if(!S.session || S.session.role!=="guest") return;
     const a=S.activities.find(x=>x.id===+el.dataset.open);
-    if(a && !myBooking(a.id)) openBookModal(a);
+    if(a) openGuestActivityDetail(a);
   });
   /* chat send + read marking + scroll */
   const cs=$("#chat-send");
