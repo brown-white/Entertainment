@@ -12859,5 +12859,226 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
   };
 })();
 </script>
+
+<!-- ============================================================
+     AUREA V6.10 — MODERN GUEST PROGRAMME + MANAGER DAY BRANDING
+     Isolated presentation/settings layer. Core programme/booking logic unchanged.
+     ============================================================ -->
+<style id="guest-program-modern-v610-style">
+/* Day identity */
+[data-approle="guest"] .gp10-daymeta,
+[data-approle="manager"] .gp10-daymeta{
+  position:relative;overflow:hidden;margin:4px 0 18px;padding:18px 19px;
+  border:1px solid rgba(96,70,50,.10);border-radius:24px;
+  background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(246,239,229,.90));
+  box-shadow:0 18px 44px -36px rgba(53,34,21,.42)
+}
+.gp10-daymeta-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.gp10-daymeta-kicker{font-size:9px;letter-spacing:.22em;text-transform:uppercase;font-weight:900;color:var(--bronze);margin-bottom:5px}
+.gp10-daymeta-title{font-family:var(--font-display);font-size:29px;line-height:1.02;color:var(--ink);font-weight:600}
+.gp10-daymeta-title small{font-family:var(--font-sans);font-size:14px;line-height:1.3;color:var(--muted);font-weight:600;display:block;margin-top:6px}
+.gp10-daymeta-theme{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.gp10-daymeta-theme b{color:var(--ink);font-weight:750}
+.gp10-edit{flex:none;border-radius:999px!important}
+
+/* Modern root programme bento */
+[data-approle="guest"] .opgrid.gp10-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
+[data-approle="guest"] .gp10-opcard{min-height:174px!important;margin:0!important;border-radius:25px!important;border:1px solid rgba(255,255,255,.25)!important;box-shadow:0 22px 48px -36px rgba(35,24,17,.58)!important;isolation:isolate!important}
+[data-approle="guest"] .gp10-opcard.go-daytime{grid-column:1/-1!important;min-height:190px!important}
+[data-approle="guest"] .gp10-opcard.go-special{grid-column:1/-1!important;min-height:154px!important}
+[data-approle="guest"] .gp10-opcard>img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:-3!important}
+[data-approle="guest"] .gp10-opcard.no-cover>img{display:none!important}
+[data-approle="guest"] .gp10-opcard .veil{z-index:-2!important;background:linear-gradient(180deg,rgba(22,15,12,.05) 8%,rgba(25,17,13,.82) 100%)!important}
+[data-approle="guest"] .gp10-opcard .opc-txt{position:absolute!important;left:18px!important;right:58px!important;bottom:17px!important;top:auto!important;padding:0!important;color:#fff!important}
+[data-approle="guest"] .gp10-opcard .opc-txt:before{display:inline-flex!important;margin:0 0 7px!important;font-family:var(--font-sans)!important;font-size:8px!important;line-height:1!important;letter-spacing:.22em!important;font-weight:900!important;text-transform:uppercase!important;color:rgba(255,255,255,.72)!important;background:transparent!important;padding:0!important}
+[data-approle="guest"] .gp10-opcard.go-daytime .opc-txt:before{content:"MOVE & PLAY"!important}
+[data-approle="guest"] .gp10-opcard.go-dayevents .opc-txt:before{content:"DAY EVENT"!important}
+[data-approle="guest"] .gp10-opcard.go-evening .opc-txt:before{content:"TONIGHT"!important}
+[data-approle="guest"] .gp10-opcard.go-special .opc-txt:before{content:"SPECIAL"!important}
+[data-approle="guest"] .gp10-opcard .opc-txt h3{font-family:var(--font-display)!important;font-size:28px!important;line-height:.98!important;color:#fff!important;text-shadow:0 2px 16px rgba(0,0,0,.22)!important;margin:0 0 5px!important}
+[data-approle="guest"] .gp10-opcard.go-daytime .opc-txt h3{font-size:34px!important}
+[data-approle="guest"] .gp10-opcard .opc-txt span{font-size:12px!important;color:rgba(255,255,255,.78)!important}
+[data-approle="guest"] .gp10-opcard .opc-go{top:15px!important;right:15px!important;width:40px!important;height:40px!important;border-radius:50%!important;background:rgba(255,255,255,.13)!important;border:1px solid rgba(255,255,255,.26)!important;backdrop-filter:blur(10px)!important}
+[data-approle="guest"] .gp10-opcard.go-daytime{background:linear-gradient(135deg,#7b6a55,#3f3128)!important}
+[data-approle="guest"] .gp10-opcard.go-dayevents{background:linear-gradient(145deg,#a76158,#663f3b)!important}
+[data-approle="guest"] .gp10-opcard.go-evening{background:linear-gradient(145deg,#29231f,#171411)!important}
+[data-approle="guest"] .gp10-opcard.go-special{background:linear-gradient(145deg,#77526b,#382538)!important}
+
+/* Compact programme type indicator while browsing */
+[data-approle="guest"] .guest-prog-card{transition:transform .18s ease,box-shadow .18s ease!important}
+[data-approle="guest"] .guest-prog-card:active{transform:scale(.988)!important}
+[data-approle="guest"] .guest-prog-card.gp-activity{border-radius:21px!important;box-shadow:0 14px 36px -32px rgba(53,34,21,.42)!important}
+[data-approle="guest"] .guest-prog-card.gp-event,[data-approle="guest"] .guest-prog-card.gp-party{border-radius:25px!important}
+[data-approle="guest"] .guest-prog-card.gp-live,[data-approle="guest"] .guest-prog-card.gp-show{border-radius:25px!important}
+
+/* Manager programme-branding editor */
+.gp10-editor-note{padding:10px 12px;border-radius:14px;background:var(--sand);font-size:12px;color:var(--muted);margin-bottom:14px}
+.gp10-cover-list{display:grid;gap:10px;margin:8px 0 16px}
+.gp10-cover-row{border:1px solid var(--line);border-radius:18px;padding:11px;background:var(--card)}
+.gp10-cover-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.gp10-cover-head b{font-size:14px}
+.gp10-cover-preview{height:112px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,var(--sand),var(--card));border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);position:relative}
+.gp10-cover-preview img{width:100%;height:100%;object-fit:cover}
+.gp10-cover-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.gp10-cover-actions .btn{flex:1;min-width:84px}
+.gp10-inline{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+@media(max-width:390px){
+ [data-approle="guest"] .opgrid.gp10-grid{gap:10px!important}
+ [data-approle="guest"] .gp10-opcard{min-height:160px!important}
+ [data-approle="guest"] .gp10-opcard.go-daytime{min-height:180px!important}
+ [data-approle="guest"] .gp10-opcard .opc-txt h3{font-size:25px!important}
+ [data-approle="guest"] .gp10-opcard.go-daytime .opc-txt h3{font-size:31px!important}
+ .gp10-daymeta-title{font-size:26px}
+ .gp10-inline{grid-template-columns:1fr}
+}
+</style>
+<script id="guest-program-modern-v610-logic">
+(function(){
+  'use strict';
+  var baseBrowseViewV610=browseView;
+
+  function hasOwn(o,k){ return !!o && Object.prototype.hasOwnProperty.call(o,k); }
+  function allDesign(){ return (S.settings&&S.settings.guestProgramDays)||{}; }
+  function dayDesign(day){ return allDesign()[String(day)]||{}; }
+  function defaultTheme(day){ var dp=dayPlanFor(day); return String((dp&&dp.theme)||''); }
+  function displayTheme(day){
+    var info=(S.settings&&S.settings.dayInfoOverrides&&S.settings.dayInfoOverrides[String(day)])||{};
+    if(hasOwn(info,'theme')) return String(info.theme||'');
+    var d=dayDesign(day);
+    return hasOwn(d,'restaurantTheme')?String(d.restaurantTheme||''):defaultTheme(day);
+  }
+  function displayDayName(day){ var d=dayDesign(day); return String(d.dayName||'').trim(); }
+  function coverState(day,op){
+    var d=dayDesign(day), covers=d.covers||{};
+    if(hasOwn(covers,op)) return {custom:true,url:String(covers[op]||'')};
+    return {custom:false,url:opImage(op)};
+  }
+  window.guestProgrammeDayDesignV610=dayDesign;
+
+  function dayMetaHtml(day){
+    var dn=displayDayName(day), th=displayTheme(day), weekday=String((t('days')||[])[day]||'');
+    var manager=S.session&&S.session.role==='manager';
+    if(!dn&&!th&&!manager) return '';
+    return `<section class="gp10-daymeta">
+      <div class="gp10-daymeta-top"><div>
+        <div class="gp10-daymeta-kicker">Today's identity</div>
+        <div class="gp10-daymeta-title">${esc(weekday)}${dn?` · ${esc(dn)}`:''}
+          ${dn?`<small>${esc(weekday)} programme</small>`:''}
+        </div>
+      </div>${manager?`<button type="button" class="btn sm ghost gp10-edit" id="gp10-edit-day">${ic('pen',14)} Edit</button>`:''}</div>
+      ${th?`<div class="gp10-daymeta-theme">${ic('sparkle',14)} <span>${t('restaurantTheme')}</span><b>${esc(th)}</b></div>`:''}
+    </section>`;
+  }
+
+  function modernOperationCard(op){
+    var acts=(S.activities||[]).filter(a=>a.day===S.day&&actOp(a)===op.id);
+    var cs=coverState(S.day,op.id), img=cs.url;
+    return `<button class="opcard guest-opcard gp10-opcard go-${esc(op.id)}${img?'':' no-cover'}" data-op="${esc(op.id)}">
+      ${img?`<img src="${esc(img)}" alt="" loading="lazy">`:''}<div class="veil"></div>
+      <div class="opc-txt"><h3>${esc(opLabel(op.id))}</h3><span>${acts.length} ${t('activities')}</span></div>
+      <span class="opc-go">${ic('back',18)}</span>
+    </button>`;
+  }
+
+  /* Root programme only. Deeper category/activity views remain the tested V6.9 logic. */
+  browseView=function(title){
+    if(S.op) return baseBrowseViewV610(title);
+    var html=baseBrowseViewV610(title);
+    if(!(S.session&&(S.session.role==='guest'||S.session.role==='manager'))) return html;
+    /* Remove old restaurant banner if it exists. */
+    html=html.replace(/<div class="theme-banner">[\s\S]*?<\/div>/,'');
+    var meta=dayMetaHtml(S.day);
+    var cards=`<div class="opgrid gp10-grid">${OPS.map(modernOperationCard).join('')}</div>`;
+    html=html.replace(/<div class="opgrid">[\s\S]*?<\/div>\s*<\/div>$/,(m)=>cards+'</div>');
+    if(html.indexOf('gp10-grid')<0){
+      /* Conservative fallback if future markup changes: replace opening only, then rely on existing cards. */
+      html=html.replace('<div class="opgrid">','<div class="opgrid gp10-grid">');
+    }
+    html=html.replace('<div class="opgrid gp10-grid">',meta+'<div class="opgrid gp10-grid">');
+    return html;
+  };
+
+  function editorCoverLabel(op){
+    return {daytime:'Daytime Activities',dayevents:'Daytime Events',evening:'Evening Operation',special:'Special Events'}[op]||op;
+  }
+  function readFileUrl(file){
+    return new Promise(function(resolve,reject){
+      try{ var r=new FileReader(); r.onload=()=>resolve(String(r.result||'')); r.onerror=reject; r.readAsDataURL(file); }
+      catch(e){ reject(e); }
+    });
+  }
+
+  window.openGuestProgrammeDesignV610=function(day){
+    if(!(S.session&&S.session.role==='manager')) return;
+    day=Number(day); if(!Number.isFinite(day)) day=S.day;
+    var all={...allDesign()}, original=all[String(day)]||{}, draft={...original,covers:{...(original.covers||{})}};
+    var weekday=String((t('days')||[])[day]||'');
+    var wrap=baseModal(`<h3>${ic('sparkle',20)} Programme appearance · ${esc(weekday)}</h3>
+      <div class="gp10-editor-note">Day Name and Restaurant Theme can be added, changed or left empty. Each programme cover can use the default image, a custom image, or no image.</div>
+      <div class="gp10-inline"><div><label>Day Name</label><input id="gp10-dayname" placeholder="e.g. Habibi Day" value="${esc(String(draft.dayName||''))}"><button type="button" class="btn sm ghost" id="gp10-clear-dayname" style="margin-top:7px">Clear Day Name</button></div>
+      <div><label>${t('restaurantTheme')}</label><input id="gp10-theme" placeholder="e.g. Seafood" value="${esc(displayTheme(day))}"><button type="button" class="btn sm ghost" id="gp10-clear-theme" style="margin-top:7px">Delete Restaurant Theme</button></div></div>
+      <div class="gp10-cover-list" id="gp10-covers"></div>
+      <button class="btn" id="gp10-save">${t('save')}</button>
+      <button class="btn ghost" id="gp10-reset-day">Reset Day Name & Restaurant Theme</button>
+      <button class="btn ghost" id="gp10-close">${t('close')}</button>`);
+    var box=wrap.querySelector('#gp10-covers');
+    function paint(){
+      box.innerHTML=OPS.map(function(op){
+        var state=hasOwn(draft.covers,op.id)?{custom:true,url:String(draft.covers[op.id]||'')}:{custom:false,url:opImage(op.id)};
+        return `<div class="gp10-cover-row"><div class="gp10-cover-head"><b>${esc(editorCoverLabel(op.id))}</b><span class="mini">${state.custom?(state.url?'Custom':'No photo'):'Default'}</span></div>
+          <div class="gp10-cover-preview">${state.url?`<img src="${esc(state.url)}" alt="">`:`<span>${ic('photo',22)} No cover photo</span>`}</div>
+          <div class="gp10-cover-actions">
+            <button type="button" class="btn sm ghost" data-gp10-upload="${esc(op.id)}">Change photo</button>
+            <button type="button" class="btn sm ghost" data-gp10-clear="${esc(op.id)}">Delete photo</button>
+            <button type="button" class="btn sm ghost" data-gp10-default="${esc(op.id)}">Use default</button>
+          </div><input type="file" accept="image/*" data-gp10-file="${esc(op.id)}" hidden></div>`;
+      }).join('');
+      box.querySelectorAll('[data-gp10-upload]').forEach(function(b){ b.onclick=function(){ var f=box.querySelector('[data-gp10-file="'+b.dataset.gp10Upload+'"]'); if(f) f.click(); }; });
+      box.querySelectorAll('[data-gp10-clear]').forEach(function(b){ b.onclick=function(){ draft.covers[b.dataset.gp10Clear]=''; paint(); }; });
+      box.querySelectorAll('[data-gp10-default]').forEach(function(b){ b.onclick=function(){ delete draft.covers[b.dataset.gp10Default]; paint(); }; });
+      box.querySelectorAll('[data-gp10-file]').forEach(function(inp){ inp.onchange=async function(){
+        var file=inp.files&&inp.files[0]; if(!file) return;
+        try{
+          var url='';
+          if(typeof uploadAvatar==='function'&&REMOTE){ url=await uploadAvatar(file); }
+          else { url=await readFileUrl(file); }
+          draft.covers[inp.dataset.gp10File]=url; paint();
+        }catch(e){ console.error('programme cover upload',e); toastErr(t('uploadErr')); }
+      }; });
+    }
+    paint();
+    wrap.querySelector('#gp10-close').onclick=()=>wrap.remove();
+    wrap.querySelector('#gp10-clear-dayname').onclick=function(){ wrap.querySelector('#gp10-dayname').value=''; };
+    wrap.querySelector('#gp10-clear-theme').onclick=function(){ wrap.querySelector('#gp10-theme').value=''; };
+    wrap.querySelector('#gp10-reset-day').onclick=function(){
+      wrap.querySelector('#gp10-dayname').value='';
+      wrap.querySelector('#gp10-theme').value=defaultTheme(day);
+      delete draft.dayName; delete draft.restaurantTheme;
+    };
+    wrap.querySelector('#gp10-save').onclick=async function(){
+      var dayName=wrap.querySelector('#gp10-dayname').value.trim();
+      var theme=wrap.querySelector('#gp10-theme').value.trim();
+      draft.dayName=dayName;
+      delete draft.restaurantTheme; /* V6.10 uses the shared Day Information theme source. */
+      if(!Object.keys(draft.covers||{}).length) delete draft.covers;
+      all[String(day)]=draft;
+      var infoAll={...((S.settings&&S.settings.dayInfoOverrides)||{})};
+      infoAll[String(day)]={...(infoAll[String(day)]||{}),theme:theme};
+      try{ await DB.saveSettings({...S.settings,guestProgramDays:all,dayInfoOverrides:infoAll}); wrap.remove(); toastOk(t('saved')); render(); }
+      catch(e){ console.error('programme appearance save',e); toastErr(t('errSave')); }
+    };
+  };
+
+  /* Manager editor binding after every render without replacing the core bind system. */
+  document.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest?e.target.closest('#gp10-edit-day'):null;
+    if(!b) return;
+    e.preventDefault(); e.stopPropagation();
+    openGuestProgrammeDesignV610(S.day);
+  });
+})();
+</script>
+
 </body>
 </html>
