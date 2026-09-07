@@ -12715,5 +12715,149 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
 }
 
 </style>
+
+<!-- AUREA V6.9 — Guest Programme Luxury Presentation only -->
+<style id="guest-program-luxury-v69">
+/* Programme hierarchy — guest only. No manager / entertainer rules are changed. */
+[data-approle="guest"] .opgrid{display:grid!important;grid-template-columns:1fr!important;gap:14px!important}
+[data-approle="guest"] .guest-opcard{position:relative!important;min-height:190px!important;border:1px solid rgba(87,61,43,.10)!important;overflow:hidden!important;isolation:isolate!important}
+[data-approle="guest"] .guest-opcard .opc-go{width:42px!important;height:42px!important;border-radius:50%!important;background:rgba(255,255,255,.18)!important;border:1px solid rgba(255,255,255,.28)!important;backdrop-filter:blur(8px)!important;display:grid!important;place-items:center!important}
+
+/* Daytime activities — editorial ivory split card */
+[data-approle="guest"] .guest-opcard.go-daytime{background:linear-gradient(135deg,#fffdf9,#f6efe5)!important;min-height:205px!important}
+[data-approle="guest"] .guest-opcard.go-daytime>img{position:absolute!important;right:0!important;left:auto!important;top:0!important;width:52%!important;height:100%!important;object-fit:cover!important;filter:saturate(.78) contrast(.96)!important}
+[data-approle="guest"] .guest-opcard.go-daytime .veil{background:linear-gradient(90deg,#fffdf9 10%,rgba(255,253,249,.96) 42%,rgba(255,253,249,.10) 74%)!important}
+[data-approle="guest"] .guest-opcard.go-daytime .opc-txt{left:22px!important;right:46%!important;bottom:24px!important;z-index:2!important}
+[data-approle="guest"] .guest-opcard.go-daytime .opc-txt:before{content:"ACTIVITIES";display:block;margin-bottom:10px;font-size:9px;letter-spacing:.22em;font-weight:800;color:var(--accent)}
+[data-approle="guest"] .guest-opcard.go-daytime .opc-txt h3{color:var(--espresso)!important;text-shadow:none!important;font-size:34px!important;line-height:.95!important}
+[data-approle="guest"] .guest-opcard.go-daytime .opc-txt span{color:var(--muted)!important}
+[data-approle="guest"] .guest-opcard.go-daytime .opc-go{right:15px!important;top:15px!important;color:#fff!important;background:rgba(48,31,22,.38)!important}
+
+/* Day events — bright feature with framed event label */
+[data-approle="guest"] .guest-opcard.go-dayevents{min-height:230px!important;border-radius:30px!important}
+[data-approle="guest"] .guest-opcard.go-dayevents>img{filter:saturate(1.04) contrast(.96)!important}
+[data-approle="guest"] .guest-opcard.go-dayevents .veil{background:linear-gradient(180deg,rgba(46,25,20,.04) 20%,rgba(60,31,24,.82) 100%)!important}
+[data-approle="guest"] .guest-opcard.go-dayevents .opc-txt:before{content:"DAY EVENT";display:inline-flex;margin-bottom:10px;padding:7px 10px;border-radius:999px;background:rgba(255,245,239,.90);color:#9d5348;font-size:9px;letter-spacing:.18em;font-weight:900}
+[data-approle="guest"] .guest-opcard.go-dayevents .opc-txt h3{font-size:38px!important;color:#fff!important}
+
+/* Evening programme — deep stage / night treatment */
+[data-approle="guest"] .guest-opcard.go-evening{min-height:220px!important;background:#1f1a18!important;border-color:rgba(183,144,105,.22)!important}
+[data-approle="guest"] .guest-opcard.go-evening>img{filter:saturate(.82) brightness(.70) contrast(1.08)!important}
+[data-approle="guest"] .guest-opcard.go-evening .veil{background:linear-gradient(100deg,rgba(18,14,13,.90) 0%,rgba(18,14,13,.54) 52%,rgba(18,14,13,.20) 100%)!important}
+[data-approle="guest"] .guest-opcard.go-evening .opc-txt:before{content:"EVENING";display:block;margin-bottom:10px;color:#d9b791;font-size:9px;letter-spacing:.24em;font-weight:900}
+[data-approle="guest"] .guest-opcard.go-evening .opc-txt h3{font-size:37px!important;color:#fff!important}
+[data-approle="guest"] .guest-opcard.go-evening .opc-txt span{color:rgba(255,255,255,.76)!important}
+
+/* Special / parties — high impact signature card */
+[data-approle="guest"] .guest-opcard.go-special{min-height:250px!important;border-radius:32px!important;box-shadow:0 28px 62px -38px rgba(47,19,38,.72)!important}
+[data-approle="guest"] .guest-opcard.go-special>img{filter:saturate(1.15) contrast(1.04)!important}
+[data-approle="guest"] .guest-opcard.go-special .veil{background:linear-gradient(180deg,rgba(35,9,30,.08),rgba(34,12,29,.85))!important}
+[data-approle="guest"] .guest-opcard.go-special:after{content:"";position:absolute;inset:9px;border:1px solid rgba(255,255,255,.24);border-radius:25px;pointer-events:none;z-index:1}
+[data-approle="guest"] .guest-opcard.go-special .opc-txt:before{content:"SPECIAL";display:inline-flex;margin-bottom:10px;color:#fff;font-size:9px;letter-spacing:.24em;font-weight:900}
+[data-approle="guest"] .guest-opcard.go-special .opc-txt h3{font-size:39px!important;color:#fff!important}
+
+/* Individual programme items */
+[data-approle="guest"] .guest-prog-card{margin-bottom:13px!important;overflow:hidden!important;position:relative!important}
+[data-approle="guest"] .guest-prog-card .catbadge{font-weight:900!important}
+
+/* Activity = clean operational horizontal card */
+[data-approle="guest"] .guest-prog-card.gp-activity{background:rgba(255,255,255,.92)!important;border:1px solid rgba(92,66,47,.10)!important}
+[data-approle="guest"] .guest-prog-card.gp-activity .catbadge{color:#8c6b4f!important}
+[data-approle="guest"] .guest-prog-card.gp-activity .thumb{filter:saturate(.78) contrast(.98)!important}
+
+/* Event = image-led editorial card */
+[data-approle="guest"] .guest-prog-card.gp-event{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:0!important;padding:0 0 15px!important;border-radius:27px!important;background:#fffaf6!important;border:1px solid rgba(174,92,76,.16)!important;box-shadow:0 22px 48px -36px rgba(92,43,35,.62)!important}
+[data-approle="guest"] .guest-prog-card.gp-event .thumb{grid-column:1/-1!important;width:100%!important;height:172px!important;border-radius:0!important;object-fit:cover!important;margin:0!important;filter:saturate(1.02)!important}
+[data-approle="guest"] .guest-prog-card.gp-event .mid{padding:15px 8px 0 17px!important}
+[data-approle="guest"] .guest-prog-card.gp-event .side{padding:13px 15px 0 5px!important;min-width:84px!important;height:auto!important;align-self:stretch!important}
+[data-approle="guest"] .guest-prog-card.gp-event .catbadge{display:inline-flex!important;width:max-content;background:#f7e4df!important;color:#a44f45!important;border-radius:999px;padding:5px 8px!important}
+[data-approle="guest"] .guest-prog-card.gp-event h4{font-family:var(--font-display)!important;font-size:27px!important;line-height:1!important;margin-top:7px!important}
+[data-approle="guest"] .guest-prog-card.gp-event .guest-act-desc{display:-webkit-box!important}
+
+/* Live music = dark split card */
+[data-approle="guest"] .guest-prog-card.gp-live{grid-template-columns:minmax(0,1fr) 104px!important;grid-template-areas:"mid image" "side side"!important;gap:0!important;padding:0!important;background:linear-gradient(135deg,#241d19,#3a2a21)!important;border:1px solid rgba(208,174,136,.20)!important;border-radius:27px!important;color:#fff!important}
+[data-approle="guest"] .guest-prog-card.gp-live .thumb{grid-area:image!important;width:104px!important;height:138px!important;border-radius:0!important;filter:saturate(.72) brightness(.82)!important}
+[data-approle="guest"] .guest-prog-card.gp-live .mid{grid-area:mid!important;padding:18px 10px 14px 18px!important}
+[data-approle="guest"] .guest-prog-card.gp-live .side{grid-area:side!important;min-width:0!important;flex-direction:row!important;align-items:center!important;padding:10px 14px 13px!important;border-top:1px solid rgba(255,255,255,.10)!important}
+[data-approle="guest"] .guest-prog-card.gp-live h4{font-family:var(--font-display)!important;font-size:27px!important;color:#fff!important}
+[data-approle="guest"] .guest-prog-card.gp-live .meta,[data-approle="guest"] .guest-prog-card.gp-live .guest-act-desc{color:rgba(255,255,255,.69)!important}
+[data-approle="guest"] .guest-prog-card.gp-live .catbadge{color:#d8b693!important}
+[data-approle="guest"] .guest-prog-card.gp-live .fav,[data-approle="guest"] .guest-prog-card.gp-live .guest-detail-arrow{color:#fff!important;border-color:rgba(255,255,255,.18)!important;background:rgba(255,255,255,.05)!important}
+[data-approle="guest"] .guest-prog-card.gp-live .side .seats{color:rgba(255,255,255,.62)!important}
+
+/* Show = cinematic full-bleed poster */
+[data-approle="guest"] .guest-prog-card.gp-show{display:flex!important;min-height:250px!important;padding:0!important;border:0!important;border-radius:29px!important;background:#171311!important;isolation:isolate!important;box-shadow:0 28px 58px -38px rgba(25,15,10,.78)!important}
+[data-approle="guest"] .guest-prog-card.gp-show .thumb{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border-radius:0!important;object-fit:cover!important;filter:saturate(.92) brightness(.67)!important;z-index:-2!important}
+[data-approle="guest"] .guest-prog-card.gp-show:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,10,8,.06) 15%,rgba(16,10,8,.86) 90%);z-index:-1;pointer-events:none}
+[data-approle="guest"] .guest-prog-card.gp-show .mid{align-self:flex-end!important;padding:22px 18px!important;min-width:0!important}
+[data-approle="guest"] .guest-prog-card.gp-show .side{position:absolute!important;right:15px!important;top:15px!important;bottom:15px!important;min-width:74px!important;z-index:2!important}
+[data-approle="guest"] .guest-prog-card.gp-show h4{font-family:var(--font-display)!important;font-size:34px!important;line-height:.98!important;color:#fff!important;text-shadow:0 2px 16px rgba(0,0,0,.32)!important}
+[data-approle="guest"] .guest-prog-card.gp-show .catbadge{color:#e0c2a0!important}
+[data-approle="guest"] .guest-prog-card.gp-show .meta,[data-approle="guest"] .guest-prog-card.gp-show .guest-act-desc{color:rgba(255,255,255,.80)!important}
+[data-approle="guest"] .guest-prog-card.gp-show .fav,[data-approle="guest"] .guest-prog-card.gp-show .guest-detail-arrow{color:#fff!important;border-color:rgba(255,255,255,.24)!important;background:rgba(20,12,8,.28)!important;backdrop-filter:blur(8px)!important}
+
+/* Party = signature statement card */
+[data-approle="guest"] .guest-prog-card.gp-party{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:0!important;padding:0 0 14px!important;border-radius:30px!important;border:1px solid rgba(120,56,103,.18)!important;background:linear-gradient(150deg,#fff7fb,#f8edf4)!important;box-shadow:0 25px 58px -39px rgba(86,37,74,.65)!important}
+[data-approle="guest"] .guest-prog-card.gp-party .thumb{grid-column:1/-1!important;width:100%!important;height:190px!important;border-radius:0!important;filter:saturate(1.15) contrast(1.02)!important}
+[data-approle="guest"] .guest-prog-card.gp-party .mid{padding:16px 8px 0 18px!important}
+[data-approle="guest"] .guest-prog-card.gp-party .side{padding:14px 15px 0 6px!important;min-width:82px!important}
+[data-approle="guest"] .guest-prog-card.gp-party .catbadge{display:inline-flex!important;background:#f1dce9!important;color:#87476e!important;border-radius:999px;padding:5px 8px!important}
+[data-approle="guest"] .guest-prog-card.gp-party h4{font-family:var(--font-display)!important;font-size:29px!important;line-height:1!important}
+
+/* Other evening items remain elegant but visually quieter than a Show */
+[data-approle="guest"] .guest-prog-card.gp-evening{background:linear-gradient(135deg,#fbf7f2,#f0e7dc)!important;border-color:rgba(125,94,67,.13)!important}
+[data-approle="guest"] .guest-prog-card.gp-evening .catbadge{color:#8e684d!important}
+
+/* Category cards inside an operation */
+[data-approle="guest"] .guest-catcard.gc-activity{border-left:4px solid #b99773!important}
+[data-approle="guest"] .guest-catcard.gc-event{border-left:4px solid #b7675a!important}
+[data-approle="guest"] .guest-catcard.gc-live{border-left:4px solid #725b49!important}
+[data-approle="guest"] .guest-catcard.gc-show{border-left:4px solid #29211d!important}
+[data-approle="guest"] .guest-catcard.gc-party{border-left:4px solid #884f75!important}
+
+/* Programme section headers */
+[data-approle="guest"] .sec>h3{font-size:11px!important;letter-spacing:.17em!important;text-transform:uppercase!important;color:var(--muted)!important;font-family:var(--font-sans)!important;font-weight:800!important}
+
+@media(max-width:390px){
+ [data-approle="guest"] .guest-opcard.go-daytime .opc-txt{right:39%!important}
+ [data-approle="guest"] .guest-opcard.go-daytime>img{width:58%!important}
+ [data-approle="guest"] .guest-opcard .opc-txt h3{font-size:31px!important}
+ [data-approle="guest"] .guest-prog-card.gp-event .thumb{height:150px!important}
+ [data-approle="guest"] .guest-prog-card.gp-show{min-height:230px!important}
+ [data-approle="guest"] .guest-prog-card.gp-show h4{font-size:30px!important}
+ [data-approle="guest"] .guest-prog-card.gp-party .thumb{height:165px!important}
+}
+</style>
+<script id="guest-program-luxury-v69-logic">
+(function(){
+  var baseActivityCard = activityCard;
+  var baseOperationCard = operationCard;
+  var baseCategoryCard = categoryCard;
+  function guestProgrammeType(a){
+    var c=normCat(a||{});
+    if(c==="mAdult") return "activity";
+    if(c==="mEvents") return "event";
+    if(c==="eLive") return "live";
+    if(c==="eShow") return "show";
+    if(c==="eParty") return "party";
+    return "evening";
+  }
+  activityCard=function(a,opts){
+    opts=opts||{};
+    var html=baseActivityCard(a,opts);
+    if(opts.manager||opts.staff) return html;
+    var type=guestProgrammeType(a);
+    return html.replace('class="card act guest-act','class="card act guest-act guest-prog-card gp-'+type);
+  };
+  operationCard=function(op){
+    var html=baseOperationCard(op);
+    return html.replace('class="opcard"','class="opcard guest-opcard go-'+String(op&&op.id||'daytime')+'"');
+  };
+  categoryCard=function(cat){
+    var html=baseCategoryCard(cat), type=guestProgrammeType({category:cat});
+    return html.replace('class="catcard ','class="catcard guest-catcard gc-'+type+' ');
+  };
+})();
+</script>
 </body>
 </html>
