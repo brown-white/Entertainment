@@ -14065,5 +14065,122 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
   window.wireCommon=function(){prevWireCommon617();const p=document.querySelector('#rq-purchase');if(p)p.onclick=()=>openPurchaseRequest617();document.querySelectorAll('[data-rqopen]').forEach(el=>{const id=el.getAttribute('data-rqopen');const sh=reqSheet(id);if(sh&&sh.kind==='purchase')el.onclick=()=>openPurchaseRequest617(id);});};
 })();
 </script>
+<style id="aurea-purchase-catalog-v618-style">
+/* AUREA V6.18 · reusable Purchase Item Catalog */
+.pr618-tools{display:grid;grid-template-columns:1.25fr .9fr;gap:8px;margin:12px 0 4px;padding:11px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(248,241,232,.82),rgba(255,255,255,.68))}
+.pr618-tools .hint{grid-column:1/-1;font-size:10px;line-height:1.45;color:var(--muted)}
+.pr618-pickrow{margin-left:auto;display:flex;gap:6px;align-items:center}.pr618-pickrow .btn{min-height:32px!important;padding:5px 9px!important;font-size:10px!important}
+.pr618-catalog{display:grid;gap:8px;margin:10px 0}.pr618-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:17px;background:var(--card)}
+.pr618-item strong{display:block;font-size:13px;color:var(--ink);line-height:1.25}.pr618-item p{margin:4px 0 0;font-size:10px;color:var(--muted);line-height:1.4}.pr618-item .qty{display:inline-flex;margin-top:7px;padding:4px 7px;border-radius:999px;background:var(--soft);font-size:9px;font-weight:800;color:var(--muted)}
+.pr618-actions{display:flex;gap:6px;align-items:center}.pr618-actions .btn{min-height:34px!important;padding:6px 9px!important;width:auto!important}.pr618-search{margin-bottom:10px}.pr618-empty{padding:22px 14px;text-align:center;border:1px dashed var(--line);border-radius:17px;color:var(--muted);font-size:11px;line-height:1.5}
+.pr618-editor-note{margin:6px 0 12px;color:var(--muted);font-size:10px;line-height:1.45}
+@media(max-width:430px){.pr618-tools{grid-template-columns:1fr}.pr618-item{grid-template-columns:1fr}.pr618-actions{justify-content:flex-start}}
+</style>
+<script id="aurea-purchase-catalog-v618-script">
+(()=>{
+  'use strict';
+  if(window.__AUREA_PURCHASE_CATALOG_V618) return;
+  window.__AUREA_PURCHASE_CATALOG_V618=true;
+
+  const esc618=v=>esc(String(v??''));
+  const uid618=()=> 'pci'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  const normalizeItem618=(x={})=>({id:String(x.id||uid618()),name:String(x.name||'').trim(),description:String(x.description||'').trim(),quantity:String(x.quantity??x.qty??'').trim()});
+  function catalog618(){
+    const raw=S.settings&&S.settings.purchaseItemCatalog;
+    return (Array.isArray(raw)?raw:[]).map(normalizeItem618).filter(x=>x.name);
+  }
+  async function saveCatalog618(list){
+    const clean=(Array.isArray(list)?list:[]).map(normalizeItem618).filter(x=>x.name);
+    const next={...S.settings,purchaseItemCatalog:clean};
+    await DB.saveSettings(next);
+    S.settings=next;
+    return clean;
+  }
+  function itemText618(it){return it.name+(it.description?' — '+it.description:'');}
+
+  function openItemEditor618(existing,onSaved){
+    const item=normalizeItem618(existing||{}),isEdit=!!existing;
+    const wrap=baseModal(`<h3>${isEdit?'Edit catalog item':'Add catalog item'}</h3>
+      <p class="pr618-editor-note">Save frequently purchased items once, then reuse them inside any Purchase Request.</p>
+      <label>Item name</label><input id="pr618-name" value="${esc618(item.name)}" placeholder="e.g. A4 Paper">
+      <label style="margin-top:10px">Short description</label><textarea id="pr618-desc" rows="3" placeholder="Brand, size, colour, specification…">${esc618(item.description)}</textarea>
+      <label style="margin-top:10px">Default quantity</label><input id="pr618-qty" value="${esc618(item.quantity)}" inputmode="decimal" placeholder="e.g. 10">
+      <button class="btn" id="pr618-saveitem">${isEdit?'Save changes':'Add item'}</button>
+      <button class="btn ghost" id="pr618-cancelitem">Cancel</button>`);
+    wrap.querySelector('#pr618-cancelitem').onclick=()=>wrap.remove();
+    wrap.querySelector('#pr618-saveitem').onclick=async()=>{
+      const name=wrap.querySelector('#pr618-name').value.trim(),description=wrap.querySelector('#pr618-desc').value.trim(),quantity=wrap.querySelector('#pr618-qty').value.trim();
+      if(!name){toastErr('Please add the item name.');return;}
+      const list=catalog618(),next={...item,name,description,quantity};
+      const idx=list.findIndex(x=>String(x.id)===String(item.id));
+      if(idx>=0)list[idx]=next;else list.push(next);
+      try{await saveCatalog618(list);wrap.remove();toastOk(isEdit?'Item updated':'Item added');if(typeof onSaved==='function')onSaved(next);}catch(e){console.error('purchase catalog save',e);toastErr(t('errSave'));}
+    };
+  }
+
+  function openCatalogManager618(){
+    const wrap=baseModal(`<h3>Purchase Item List</h3><p class="pr618-editor-note">Manage reusable items for Purchase Requests. Each item has a name, short description and default quantity.</p><button class="btn" id="pr618-newitem">＋ Add item</button><div id="pr618-managelist" class="pr618-catalog"></div><button class="btn ghost" id="pr618-done">Close</button>`);
+    const box=wrap.querySelector('#pr618-managelist');
+    const paint=()=>{
+      const list=catalog618();
+      box.innerHTML=list.length?list.map(it=>`<div class="pr618-item"><div><strong>${esc618(it.name)}</strong>${it.description?`<p>${esc618(it.description)}</p>`:''}<span class="qty">Default quantity: ${esc618(it.quantity||'—')}</span></div><div class="pr618-actions"><button class="btn ghost sm" data-pr618-edit="${esc618(it.id)}">Edit</button><button class="btn ghost warn sm" data-pr618-remove="${esc618(it.id)}">Remove</button></div></div>`).join(''):`<div class="pr618-empty">No saved items yet.<br>Add the things your department orders regularly.</div>`;
+      box.querySelectorAll('[data-pr618-edit]').forEach(b=>b.onclick=()=>{const it=catalog618().find(x=>String(x.id)===String(b.dataset.pr618Edit));if(it)openItemEditor618(it,paint);});
+      box.querySelectorAll('[data-pr618-remove]').forEach(b=>b.onclick=async()=>{const it=catalog618().find(x=>String(x.id)===String(b.dataset.pr618Remove));if(!it)return;if(!await confirmAction({question:'Remove '+it.name+'?',note:t('cannotUndo'),danger:true}))return;try{await saveCatalog618(catalog618().filter(x=>String(x.id)!==String(it.id)));toastOk('Item removed');paint();}catch(e){console.error(e);toastErr(t('errSave'));}});
+    };
+    paint();wrap.querySelector('#pr618-newitem').onclick=()=>openItemEditor618(null,paint);wrap.querySelector('#pr618-done').onclick=()=>wrap.remove();
+  }
+
+  function openCatalogPicker618(onPick){
+    const wrap=baseModal(`<h3>Select purchase item</h3><p class="pr618-editor-note">Choose a saved item. Its name, description and default quantity will be copied into the request and can still be edited there.</p><input class="pr618-search" id="pr618-search" placeholder="Search items…"><div id="pr618-picklist" class="pr618-catalog"></div><button class="btn ghost" id="pr618-managefrompick">Manage item list</button><button class="btn ghost" id="pr618-closepick">Close</button>`);
+    const box=wrap.querySelector('#pr618-picklist'),search=wrap.querySelector('#pr618-search');
+    const paint=()=>{const q=search.value.trim().toLowerCase();const list=catalog618().filter(it=>!q||(`${it.name} ${it.description}`).toLowerCase().includes(q));box.innerHTML=list.length?list.map(it=>`<button type="button" class="pr618-item" data-pr618-pick="${esc618(it.id)}" style="width:100%;text-align:left"><div><strong>${esc618(it.name)}</strong>${it.description?`<p>${esc618(it.description)}</p>`:''}<span class="qty">Quantity: ${esc618(it.quantity||'—')}</span></div><span>${ic('back',15)}</span></button>`).join(''):`<div class="pr618-empty">${catalog618().length?'No matching items.':'No items saved yet. Use “Manage item list” to add one.'}</div>`;box.querySelectorAll('[data-pr618-pick]').forEach(b=>b.onclick=()=>{const it=catalog618().find(x=>String(x.id)===String(b.dataset.pr618Pick));if(it){wrap.remove();onPick(it);}});};
+    search.oninput=paint;paint();wrap.querySelector('#pr618-closepick').onclick=()=>wrap.remove();wrap.querySelector('#pr618-managefrompick').onclick=()=>{wrap.remove();openCatalogManager618();};
+  }
+
+  function fillRow618(rowEl,it){
+    if(!rowEl||!it)return;
+    const desc=rowEl.querySelector('[data-f="description"]'),qty=rowEl.querySelector('[data-f="wantedQty"]');
+    if(desc){desc.value=itemText618(it);desc.dispatchEvent(new Event('input',{bubbles:true}));}
+    if(qty&&it.quantity!==''){qty.value=it.quantity;qty.dispatchEvent(new Event('input',{bubbles:true}));}
+  }
+  function decorateRows618(rowsBox){
+    if(!rowsBox)return;
+    rowsBox.querySelectorAll('.pr617-row').forEach(row=>{
+      const head=row.querySelector('.pr617-rowhead');if(!head||head.querySelector('[data-pr618-rowpick]'))return;
+      const holder=document.createElement('div');holder.className='pr618-pickrow';holder.innerHTML=`<button type="button" class="btn ghost sm" data-pr618-rowpick>${ic('grid',13)} Pick item</button>`;
+      const remove=head.querySelector('[data-pr617-del]');if(remove)head.insertBefore(holder,remove);else head.appendChild(holder);
+      holder.querySelector('[data-pr618-rowpick]').onclick=()=>openCatalogPicker618(it=>fillRow618(row,it));
+    });
+  }
+  function enhancePurchase618(){
+    const wraps=[...document.querySelectorAll('.modal-bg')];
+    const wrap=wraps.reverse().find(w=>w.querySelector('#pr617-rows'));
+    if(!wrap||wrap.querySelector('#pr618-tools'))return;
+    const rows=wrap.querySelector('#pr617-rows'),add=wrap.querySelector('#pr617-add');
+    const tools=document.createElement('div');tools.id='pr618-tools';tools.className='pr618-tools';tools.innerHTML=`<button type="button" class="btn" id="pr618-addfromlist">${ic('grid',14)} Add from item list</button><button type="button" class="btn ghost" id="pr618-manageitems">${ic('pen',14)} Manage item list</button><div class="hint">Pick a saved item to fill its name, short description and default quantity automatically. You can still edit every field in this request.</div>`;
+    rows.parentNode.insertBefore(tools,rows);
+    tools.querySelector('#pr618-manageitems').onclick=()=>openCatalogManager618();
+    tools.querySelector('#pr618-addfromlist').onclick=()=>openCatalogPicker618(it=>{
+      const before=rows.querySelectorAll('.pr617-row').length;
+      if(add)add.click();
+      requestAnimationFrame(()=>{const all=rows.querySelectorAll('.pr617-row');const target=all[Math.min(before,all.length-1)]||all[all.length-1];fillRow618(target,it);decorateRows618(rows);});
+    });
+    decorateRows618(rows);
+    const observer=new MutationObserver(()=>decorateRows618(rows));observer.observe(rows,{childList:true,subtree:false});
+    wrap.addEventListener('DOMNodeRemoved',()=>{if(!document.body.contains(wrap))observer.disconnect();},{once:true});
+  }
+
+  const baseOpen618=window.openPurchaseRequestV617;
+  if(typeof baseOpen618==='function'){
+    window.openPurchaseRequestV617=function(id){const result=baseOpen618(id);setTimeout(enhancePurchase618,0);return result;};
+    window.openPurchaseRequestV65=window.openPurchaseRequestV617;
+  }
+  const prevOpenReqEditor618=window.openReqEditor;
+  window.openReqEditor=function(id){const ex=id?reqSheet(id):null;if(ex&&ex.kind==='purchase')return window.openPurchaseRequestV617(id);return prevOpenReqEditor618(id);};
+  const prevWireCommon618=window.wireCommon;
+  window.wireCommon=function(){prevWireCommon618();const p=document.querySelector('#rq-purchase');if(p)p.onclick=()=>window.openPurchaseRequestV617();document.querySelectorAll('[data-rqopen]').forEach(el=>{const id=el.getAttribute('data-rqopen'),sh=reqSheet(id);if(sh&&sh.kind==='purchase')el.onclick=()=>window.openPurchaseRequestV617(id);});};
+  window.openPurchaseItemCatalog=openCatalogManager618;
+})();
+</script>
 </body>
 </html>
