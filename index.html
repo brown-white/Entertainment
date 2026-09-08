@@ -13773,5 +13773,116 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
 })();
 </script>
 
+
+
+<!-- ============================================================
+     AUREA V6.15 — SYSTEM STABILITY + BOOKING POLICY
+     Guest booking policy: Activities / Events / Parties only.
+     Live Music / Shows / evening presentation are included for all.
+     Adds write de-duplication and lightweight guest-render hygiene.
+     ============================================================ -->
+<style id="aurea-v615-stability-style">
+.v615-included{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:#edf1ea;color:#52705a;font-size:9px;font-weight:850;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.v615-included svg{width:13px;height:13px}.v615-viewonly{text-align:left}.v615-viewonly .vo-hero{position:relative;height:220px;margin:-2px -2px 18px;border-radius:25px;overflow:hidden;background:#241a15}.v615-viewonly .vo-hero img{width:100%;height:100%;object-fit:cover;display:block}.v615-viewonly .vo-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,12,8,.08),rgba(20,12,8,.70))}.v615-viewonly .vo-badge{position:absolute;z-index:2;left:16px;top:16px;display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.92);color:#4b3426;font-size:9px;font-weight:900;letter-spacing:.10em;text-transform:uppercase}.v615-viewonly .vo-title{position:absolute;z-index:2;left:17px;right:17px;bottom:16px;color:#fff}.v615-viewonly .vo-title h3{margin:0;font:500 32px/1 var(--font-display);color:#fff}.v615-viewonly .vo-title p{margin:7px 0 0;color:rgba(255,255,255,.78);font-size:11px}.v615-viewonly .vo-info{padding:14px 15px;border-radius:19px;background:#edf1ea;border:1px solid rgba(67,100,75,.10);color:#486451;margin:0 0 12px}.v615-viewonly .vo-info b{display:block;font-size:13px}.v615-viewonly .vo-info span{display:block;margin-top:4px;font-size:10px;line-height:1.5;color:#718178}.v615-viewonly .vo-desc{font-size:13px;line-height:1.6;color:var(--ink);margin:14px 1px 18px}.v615-save-state{opacity:.72;pointer-events:none}
+[data-theme="dark"] .v615-included,[data-theme="dark"] .v615-viewonly .vo-info{background:rgba(111,153,121,.13);color:#a8c6ae;border-color:rgba(150,190,159,.12)}
+</style>
+<script id="aurea-v615-system-stability">
+(function(){
+  'use strict';
+  if(window.__AUREA_V615__) return; window.__AUREA_V615__=true;
+
+  const BOOKABLE_CATS_V615=new Set(['mAdult','mEvents','eParty']);
+  const VIEW_ONLY_CATS_V615=new Set(['eLive','eShow','eBefore','eAfter','eKidsStage']);
+  function catV615(a){try{return normCat(a);}catch(e){return String((a&&a.category)||'');}}
+  function canGuestBookV615(a){return !!a && BOOKABLE_CATS_V615.has(catV615(a));}
+  function isViewOnlyV615(a){return !!a && !canGuestBookV615(a);}
+  window.canGuestBookV615=canGuestBookV615;
+
+  const COPY_V615={
+    en:{included:'Included for all guests',noBooking:'No booking required',copy:'Just come to the location at the scheduled time and enjoy.',show:'Show',live:'Live Music',other:'Programme'},
+    de:{included:'Für alle Gäste inklusive',noBooking:'Keine Buchung erforderlich',copy:'Komm einfach zur angegebenen Zeit zum Veranstaltungsort und genieße das Programm.',show:'Show',live:'Live-Musik',other:'Programm'},
+    ru:{included:'Включено для всех гостей',noBooking:'Бронирование не требуется',copy:'Просто приходите в указанное место ко времени начала и наслаждайтесь программой.',show:'Шоу',live:'Живая музыка',other:'Программа'},
+    nl:{included:'Inbegrepen voor alle gasten',noBooking:'Reserveren is niet nodig',copy:'Kom gewoon op de aangegeven tijd naar de locatie en geniet.',show:'Show',live:'Live muziek',other:'Programma'},
+    fr:{included:'Inclus pour tous les clients',noBooking:'Aucune réservation nécessaire',copy:"Venez simplement au lieu indiqué à l'heure prévue et profitez du programme.",show:'Spectacle',live:'Musique live',other:'Programme'},
+    ar:{included:'متاح لجميع الضيوف',noBooking:'لا يحتاج إلى حجز',copy:'فقط تعال إلى المكان في الوقت المحدد واستمتع بالبرنامج.',show:'عرض',live:'موسيقى حية',other:'البرنامج'}
+  };
+  function cv615(k){const d=COPY_V615[S.lang]||COPY_V615.en;return d[k]||COPY_V615.en[k]||k;}
+  function typeLabelV615(a){const c=catV615(a);if(c==='eShow'||c==='eKidsStage')return cv615('show');if(c==='eLive'||c==='eBefore'||c==='eAfter')return cv615('live');return cv615('other');}
+
+  function openIncludedV615(a){
+    if(!a)return;
+    const wrap=baseModal(`<div class="v615-viewonly"><div class="vo-hero"><img src="${esc(a.image||IMG.show)}" alt="" decoding="async"><span class="vo-badge">${ic('check',13)} ${esc(cv615('included'))}</span><div class="vo-title"><h3>${esc(a.name||'')}</h3><p>${esc(typeLabelV615(a))} · ${esc(a.time||'')} · ${esc(a.location||'')}</p></div></div><div class="vo-info"><b>${esc(cv615('noBooking'))}</b><span>${esc(cv615('copy'))}</span></div>${a.desc?`<p class="vo-desc">${esc(a.desc)}</p>`:''}<button class="btn ghost" id="v615-close">${esc(t('close'))}</button></div>`);
+    const x=wrap.querySelector('#v615-close');if(x)x.onclick=()=>wrap.remove();
+  }
+
+  /* Universal policy guard. Even stale/legacy UI cannot create a booking for a non-bookable item. */
+  const prevOpenBookV615=openBookModal;
+  window.openBookModal=openBookModal=function(a){
+    if(S.session&&S.session.role==='guest'&&isViewOnlyV615(a))return openIncludedV615(a);
+    return prevOpenBookV615(a);
+  };
+
+  /* Details-first remains universal. View-only programme items never expose a Book action. */
+  const prevDetailV615=openGuestActivityDetail;
+  window.openGuestActivityDetail=openGuestActivityDetail=function(a){
+    if(S.session&&S.session.role==='guest'&&isViewOnlyV615(a))return openIncludedV615(a);
+    return prevDetailV615(a);
+  };
+
+  /* Prevent duplicate booking writes from rapid taps / slow networks without changing the DB schema. */
+  if(DB&&typeof DB.addBooking==='function'&&!DB.__v615BookingGuard){
+    const baseAddBooking=DB.addBooking.bind(DB),pendingBookings=new Map();
+    DB.addBooking=async function(row){
+      if(!(S.session&&S.session.role==='guest')||!row||row.activity_id==null)return baseAddBooking(row);
+      const a=(S.activities||[]).find(x=>String(x.id)===String(row.activity_id));
+      if(a&&!canGuestBookV615(a))return null;
+      const room=String(row.room||S.session.room||''),key=room+'|'+String(row.activity_id);
+      const existing=(S.bookings||[]).find(b=>String(b.activity_id)===String(row.activity_id)&&String(b.room)===room);
+      if(existing)return existing;
+      if(pendingBookings.has(key))return pendingBookings.get(key);
+      const p=Promise.resolve().then(()=>baseAddBooking(row)).finally(()=>pendingBookings.delete(key));
+      pendingBookings.set(key,p);return p;
+    };
+    DB.__v615BookingGuard=true;
+  }
+
+  /* Prevent concurrent duplicate ticket writes caused by a double tap while the first request is saving. */
+  if(DB&&typeof DB.addOrder==='function'&&!DB.__v615OrderGuard){
+    const baseAddOrder=DB.addOrder.bind(DB),pendingOrders=new Map();
+    DB.addOrder=async function(row){
+      if(!(S.session&&S.session.role==='guest')||!row)return baseAddOrder(row);
+      const key=[String(row.ticket_id||''),String(row.room||S.session.room||''),String(row.collect_from||''),String(row.qty||1)].join('|');
+      if(pendingOrders.has(key))return pendingOrders.get(key);
+      const p=Promise.resolve().then(()=>baseAddOrder(row)).finally(()=>pendingOrders.delete(key));
+      pendingOrders.set(key,p);return p;
+    };
+    DB.__v615OrderGuard=true;
+  }
+
+  function applyGuestPolicyV615(){
+    if(!(S.session&&S.session.role==='guest'))return;
+    /* Remove any stale Book controls for view-only programme types. */
+    document.querySelectorAll('[data-book]').forEach(btn=>{
+      const a=(S.activities||[]).find(x=>String(x.id)===String(btn.dataset.book));
+      if(!a||canGuestBookV615(a))return;
+      const chip=document.createElement('span');chip.className='v615-included';chip.innerHTML=ic('check',13)+' '+esc(cv615('included'));btn.replaceWith(chip);
+    });
+    /* Any generic activity-open route becomes details-first for guests. */
+    document.querySelectorAll('[data-actopen]').forEach(el=>{
+      const a=(S.activities||[]).find(x=>String(x.id)===String(el.dataset.actopen));
+      if(a)el.onclick=(ev)=>{if(ev&&ev.stopPropagation)ev.stopPropagation();openGuestActivityDetail(a);};
+    });
+    /* Cheap render hygiene: decode content images asynchronously; preserve eager loading where explicitly set. */
+    document.querySelectorAll('.screen img').forEach((img,i)=>{if(!img.decoding)img.decoding='async';if(i>1&&!img.hasAttribute('loading'))img.loading='lazy';});
+  }
+
+  const oldWireV615=wireCommon;
+  window.wireCommon=wireCommon=function(){oldWireV615();applyGuestPolicyV615();};
+
+  /* Expose policy for diagnostics and future manager UI without duplicating category rules. */
+  window.AUREA_BOOKING_POLICY={bookable:['mAdult','mEvents','eParty'],viewOnly:['eLive','eShow','eBefore','eAfter','eKidsStage'],canBook:canGuestBookV615};
+})();
+</script>
+
 </body>
 </html>
