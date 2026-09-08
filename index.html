@@ -7782,7 +7782,7 @@ function managerView(){
     const sub=S.sub.guests;
     if(sub==="chat" && S.chatRoom) return chatThreadScreen();
     let inner="";
-    if(sub==="history") inner=guestHistoryInnerV619();
+    if(sub==="history") inner=(typeof window.guestHistoryInnerV619==="function" ? window.guestHistoryInnerV619() : `<div class="empty">Guest history is loading…</div>`);
     else if(sub==="rooms") inner=roomsInner();
     else if(sub==="crm") inner=guestCrmInner();
     else if(sub==="bookings") inner=bookingsInner();
@@ -7869,7 +7869,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
 const PAGE_SECTIONS={
   dayplan: ["info","times","team","standards"],
   dash:    ["attention","tonight","live","export","stats","feedback","nations","activities","trends"],
-  guests:  ["crm","rooms","bookings","chat","requests","feedback"],
+  guests:  ["crm","rooms","bookings","chat","requests","feedback","history"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
   settings:["set:theme","set:brand","builder","set:features","set:notif","set:links",
@@ -7880,7 +7880,7 @@ const SECTION_LABELS={
   dash:    {attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
-            requests:"requests",feedback:"feedback"},
+            requests:"requests",feedback:"feedback",history:"Guest history"},
   team:    {accounts:"teamAccounts",chat:"teamChatTab",requests:"teamRequests",
             monthatt:"monthAtt",attendance:"attendance"},
   program: {acts:"activities",tickets:"tickets"},
