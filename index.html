@@ -14729,5 +14729,258 @@ window.openGuestTicketOrderEditV620=openOrderEdit620;
   DB.poll=async function(){const changed=await oldPollV6193();if(S.settings&&!S.settings.guestTicketsTabMigrationV6193)await migrateGuestTicketsTabV6193();return changed;};
 })();
 </script>
+<style id="aurea-smart-export-v620-style">
+.ex620-group{margin:14px 0}.ex620-group h4{margin:0 0 7px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.ex620-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.ex620-it{display:flex;align-items:flex-start;gap:8px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-size:11px;line-height:1.35;text-transform:none;letter-spacing:0;color:var(--ink)}
+.ex620-it input{width:18px;height:18px;flex:0 0 auto}.ex620-note{padding:10px 12px;border-radius:14px;background:var(--soft);font-size:10px;line-height:1.5;color:var(--muted);margin:10px 0}
+.ex620-note b{color:var(--ink)}.ex620-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+@media(max-width:400px){.ex620-grid,.ex620-actions{grid-template-columns:1fr}}
+</style>
+<script id="aurea-smart-export-v620-script">
+(()=>{
+'use strict';
+if(window.__AUREA_SMART_EXPORT_V620)return;
+window.__AUREA_SMART_EXPORT_V620=true;
+
+const baseBuildDatasetV620=buildDataset;
+const api620=()=>window.AUREA_GUEST_LIFECYCLE||null;
+const txt620=v=>String(v??'').trim();
+const dayName620=d=>(t("days")&&t("days")[d])||["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][d]||String(d);
+const cat620=a=>normCat(a);
+const dateForDay620=d=>typeof assignDateStr==="function"?assignDateStr(d):"";
+const startMin620=a=>{const w=typeof activityWindows==="function"?activityWindows(a):[];return w.length?w[0].s0:(timeToMin(a&&a.time)||9999);};
+const sortedProgram620=day=>(S.activities||[]).filter(a=>a&&a.day===day).slice().sort((a,b)=>startMin620(a)-startMin620(b)||txt620(a.name).localeCompare(txt620(b.name)));
+const display620=u=>u?(u.display_name||u.username||""):"";
+const staffNumber620=u=>u?(u.number||((u.role==="manager")?1:"")):"";
+function userByAssignment620(v){
+  const q=txt620(v).toLowerCase();if(!q)return null;
+  return (S.users||[]).find(u=>[u.username,u.display_name].some(x=>txt620(x).toLowerCase()===q))||null;
+}
+function activeTeam620(){
+  return (S.users||[]).filter(u=>u&&(u.role==="staff"||u.role==="manager")&&u.active!==false&&!hasLeft(u))
+    .slice().sort((a,b)=>(staffNumber620(a)||99)-(staffNumber620(b)||99)||display620(a).localeCompare(display620(b)));
+}
+function dutyState620(u,day){
+  const ds=dateForDay620(day),mk=ds.slice(0,7),dd=+ds.slice(8,10),dp=dayPlanFor(day);
+  let num=staffNumber620(u),st=(mk&&dd)?attStatus(u,mk,dd):"";
+  if(st==="V")return{key:"vacation",label:"Vacation"};
+  if(st==="A")return{key:"absent",label:"Absent"};
+  if(st==="N")return{key:"notworking",label:"Not employed"};
+  if(num&&dp.off.includes(+num))return{key:"off",label:"Day off"};
+  return{key:"working",label:"Working"};
+}
+function isEntrance620(u,day){return +staffNumber620(u)===+dayPlanFor(day).entrance;}
+function assignedPrograms620(u,day){
+  const un=txt620(u.username).toLowerCase(),dn=txt620(u.display_name).toLowerCase(),num=+staffNumber620(u);
+  return sortedProgram620(day).filter(a=>{
+    if(cat620(a)==="mAdult"){
+      const parts=txt620(a.entertainer).toLowerCase().split(/[,;/]/).map(x=>x.trim()).filter(Boolean);
+      return parts.includes(un)||(dn&&parts.includes(dn));
+    }
+    return num===DJ_NUMBER; // programme events / live / show / party operationally belong to DJ
+  });
+}
+function programType620(a){
+  const c=cat620(a);
+  if(c==="mAdult")return"Activity";
+  if(c==="mEvents")return"Event";
+  if(c==="eLive"||c==="eBefore"||c==="eAfter")return"Live Music / Stage";
+  if(c==="eShow"||c==="eKidsStage")return"Show";
+  if(c==="eParty")return"Party";
+  return catLabel(c)||c;
+}
+function responsible620(a){
+  const c=cat620(a);
+  if(c==="mAdult"){
+    const u=userByAssignment620(a.entertainer);
+    return u?display620(u):(txt620(a.entertainer)||"Unassigned");
+  }
+  const dj=(S.users||[]).find(u=>u.role==="staff"&&+u.number===DJ_NUMBER&&u.active!==false&&!hasLeft(u));
+  return dj?display620(dj)+" · DJ":"DJ not available";
+}
+function programStatus620(a){
+  const c=cat620(a),day=a.day;
+  let u=c==="mAdult"?userByAssignment620(a.entertainer):(S.users||[]).find(x=>x.role==="staff"&&+x.number===DJ_NUMBER&&x.active!==false&&!hasLeft(x));
+  if(!u)return c==="mAdult"?(txt620(a.entertainer)?"Assigned user not found":"UNASSIGNED"):"DJ NOT AVAILABLE";
+  const st=dutyState620(u,day);
+  if(st.key!=="working")return"CONFLICT · "+st.label;
+  if(c==="mAdult"&&isEntrance620(u,day)&&entranceConflict(u,day,a))return"CONFLICT · Entrance duty 16:00–18:30";
+  return isEntrance620(u,day)?"Working · Entrance duty":"Ready";
+}
+function daysFilter620(){
+  const d=expDay();return d==null?[0,1,2,3,4,5,6]:[d];
+}
+function operationsDataset620(title,days){
+  const rows=[];
+  days.forEach(day=>sortedProgram620(day).filter(a=>inExportSlot(a.time)).forEach(a=>rows.push([
+    dayName620(day),dateForDay620(day),a.time||"",programType620(a),a.name||"",a.location||"",
+    responsible620(a),programStatus620(a),a.capacity||0
+  ])));
+  return{title,headers:["Day","Date","Time","Type","Programme item","Location","Responsible","Operational status","Capacity"],rows,landscape:true,
+    sourceNote:"Source: live programme + current assignments/duty status"};
+}
+function teamDutyDataset620(){
+  const rows=[];
+  daysFilter620().forEach(day=>{
+    activeTeam620().forEach(u=>{
+      const st=dutyState620(u,day),ent=isEntrance620(u,day),items=assignedPrograms620(u,day)
+        .map(a=>(a.time||"")+" "+(a.name||"")).join(" | ");
+      rows.push([dayName620(day),dateForDay620(day),staffNumber620(u)?("#"+staffNumber620(u)):"",display620(u),
+        u.role==="manager"?"Manager":(+staffNumber620(u)===DJ_NUMBER?"DJ":(+staffNumber620(u)===2?"Social Media":"Entertainer")),
+        st.label,ent?"16:00–18:30":"",items||"—"]);
+    });
+  });
+  return{title:"Team duty & availability"+exportFilterNote(),headers:["Day","Date","#","Team member","Role","Status","Entrance duty","Programme assignments"],rows,landscape:true,
+    sourceNote:"Vacation/absence from attendance; day off/entrance from assigned duty plan; assignments from live programme"};
+}
+function currentAccounts620(){const a=api620();return a&&a.currentAccounts?a.currentAccounts():(S.accounts||[]).filter(x=>x.active!==false&&!stayExpired(x));}
+function currentRows620(arr,field="room"){
+  const a=api620(),acs=currentAccounts620();if(!(a&&a.rowBelongs))return arr||[];
+  return (arr||[]).filter(r=>acs.some(ac=>a.rowBelongs(r,ac,field)));
+}
+function visibleRoom620(v){const a=api620();return a&&a.visibleRoom?a.visibleRoom(v):v;}
+function activeGuestName620(room){
+  const vr=visibleRoom620(room),a=currentAccounts620().find(x=>String(x.room)===String(vr));return a?a.name:"";
+}
+function smartBaseKind620(kind){
+  if(kind==="program")return operationsDataset620("Live programme"+exportFilterNote(),daysFilter620());
+  if(kind==="dayplan")return operationsDataset620("Management operations plan"+exportFilterNote(),daysFilter620());
+  if(kind==="todayplan")return operationsDataset620("Today's live operations",[todayIndex()]);
+  if(kind==="operations")return operationsDataset620("Smart operations schedule"+exportFilterNote(),daysFilter620());
+  if(kind==="teamduty")return teamDutyDataset620();
+  if(kind==="guests")return{title:"Current guest stays",headers:["Room","Username","Name","Nationality","Phone","Arrival","Departure"],rows:currentAccounts620().map(a=>[a.room,a.username||a.room,a.name||"",a.nationality||"",a.phone||"",a.arrival||"",a.departure||""])};
+  if(kind==="bookings"){
+    const rows=currentRows620(S.bookings).map(b=>{const a=(S.activities||[]).find(x=>String(x.id)===String(b.activity_id))||{};return[visibleRoom620(b.room),b.guest_name||activeGuestName620(b.room),a.name||"",dayName620(a.day),a.time||"",a.location||"",((+b.adults)||0)+((+b.children)||0),b.status||""];});
+    return{title:"Current guest bookings",headers:["Room","Guest","Activity / event","Day","Time","Location","Persons","Status"],rows};
+  }
+  if(kind==="tickets"){
+    const rows=currentRows620(S.orders).map(o=>{const tk=(S.tickets||[]).find(x=>String(x.id)===String(o.ticket_id))||{};return[visibleRoom620(o.room),o.guest_name||activeGuestName620(o.room),tk.name||"",o.qty||1,o.status||"reserved",o.collect_from||"",fmtDate(o.created_at)];});
+    return{title:"Current ticket orders",headers:["Room","Guest","Ticket","Quantity","Status","Collect / pay to","Ordered"],rows};
+  }
+  if(kind==="requests")return{title:"Current guest requests",headers:["Room","Guest","Type","Detail","Date","Note","Status","Created"],rows:currentRows620(S.requests).map(r=>[visibleRoom620(r.room),r.guest_name||activeGuestName620(r.room),r.type||"",r.detail||"",r.date||"",r.note||"",r.status||"",fmtDate(r.created_at)])};
+  if(kind==="chat")return{title:"Current guest messages",headers:["Room","Guest","From","Message","Date"],rows:currentRows620((S.messages||[]).filter(m=>!isStaffRoom(m.room))).map(m=>[visibleRoom620(m.room),activeGuestName620(m.room),m.sender==="team"?"Team":"Guest",m.text||"",fmtDate(m.created_at)])};
+  if(kind==="feedback")return baseBuildDatasetV620(kind); // feedback already has its own professional filter/report
+  return null;
+}
+function extraDataset620(kind){
+  if(kind==="tasks")return{title:"Tasks",headers:["Created","Task","Type","Assigned to","Location","Due","Status"],rows:(S.tasks||[]).map(x=>[fmtDate(x.created_at),x.title||"",typeof taskTypeLabel==="function"?taskTypeLabel(x.type):x.type||"",x.assigned_to||"Whole team",x.location||"",String(x.due||"").replace("T"," "),x.status||"new"])};
+  if(kind==="standards"){
+    const custom=S.settings&&Array.isArray(S.settings.dailyStandards)?S.settings.dailyStandards:null;
+    const rows=(custom||DAILY_STANDARDS.map((r,i)=>({time:r.time,name:t(r.k),location:"",note:r.nk?t(r.nk):""}))).map(r=>[r.time||"",r.name||"",r.location||"",r.note||""]);
+    return{title:"Daily standards",headers:["Time","Standard","Location","Note"],rows};
+  }
+  if(kind==="requirements"){
+    const list=typeof reqSheets==="function"?reqSheets().filter(x=>x.kind!=="purchase"):[];
+    const rows=[];list.forEach(sh=>(sh.rows||[]).forEach(r=>rows.push([sh.date||"",sh.time||"",sh.kind||"",sh.title||"",sh.location||"",r.need||"",r.qty||"",r.dept||"",r.done?"Done":"Open",sh.responsible||""])));
+    return{title:"Operational requirements",headers:["Date","Time","Kind","Programme / operation","Location","Need","Quantity","Department","Status","Responsible"],rows,landscape:true};
+  }
+  if(kind==="purchases"){
+    const list=typeof reqSheets==="function"?reqSheets().filter(x=>x.kind==="purchase"):[];
+    const rows=[];list.forEach(sh=>(sh.rows||[]).forEach(r=>rows.push([sh.dateIssued||sh.date||"",sh.department||"",sh.wantedFor||sh.title||"",sh.projectNo||"",r.description||r.need||"",r.wantedQty||r.qty||"",r.stockQty||"",r.dateWanted||"",r.orderedDealer||"",r.orderedQty||"",r.orderedUnitPrice||"",r.totalPrice||"",r.orderNo||""])));
+    return{title:"Purchase requests",headers:["Date issued","Department","Wanted for","Project","Article & description","Qty wanted","Stock","Date wanted","Dealer","Ordered qty","Unit price","Total price","Order no."],rows,landscape:true};
+  }
+  if(kind==="notifications")return{title:"Announcements / notifications",headers:["Created","Audience","Title","Message"],rows:(S.notes||[]).map(n=>[fmtDate(n.created_at),n.audience||"all",n.title||"",n.text||n.message||""])};
+  if(kind==="quiz"){
+    const rows=(S.quizzes||[]).map(q=>[q.quiz_date||"",q.audience||"",q.question||"",q.hint||"",q.answer||q.correct_answer||"", (S.quizReplies||[]).filter(r=>String(r.quiz_id)===String(q.id)).length, q.active===false?"Inactive":"Active"]);
+    return{title:"Daily quiz",headers:["Date","Audience","Question","Hint","Correct answer","Replies","Status"],rows};
+  }
+  if(kind==="buses")return{title:"Bus schedule",headers:["Direction","Time","Note"],rows:(S.buses||[]).map(b=>[b.direction||"",b.time||"",b.note||""])};
+  if(kind==="skills")return{title:"Team activity capabilities",headers:["#","Team member","Can run","Cannot run"],rows:activeTeam620().filter(u=>u.role==="staff"&&+staffNumber620(u)!==DJ_NUMBER&&+staffNumber620(u)!==2).map(u=>["#"+staffNumber620(u),display620(u),(canDoList(u)||[]).map(prettyAct).join(", "),(cannotDoList(u)||[]).map(prettyAct).join(", ")])};
+  if(kind==="guesthistory"){
+    const a=api620(),list=a&&a.archive?a.archive():[];
+    return{title:"Archived guest stays",headers:["Room","Guest","Nationality","Arrival","Departure","Archived"],rows:list.map(x=>[x.room||"",x.name||"",x.nationality||"",x.arrival||"",x.departure||"",fmtDate(x.archivedAt)])};
+  }
+  return null;
+}
+window.buildDataset=buildDataset=function(kind){
+  return smartBaseKind620(kind)||extraDataset620(kind)||baseBuildDatasetV620(kind);
+};
+
+const GROUPS620=[
+  ["Live operations",[
+    ["todayplan","Today's live operations"],["dayplan","Operations plan"],["operations","Programme + responsibility"],["teamduty","Team duty / vacation / off / entrance"],
+    ["program","Live programme"],["monthatt","Monthly attendance"],["teamsummary","Team summary"],["skills","Activity capabilities"],["standards","Daily standards"]
+  ]],
+  ["Guests",[
+    ["guests","Current guest stays"],["bookings","Bookings"],["tickets","Ticket orders"],["requests","Guest requests"],["chat","Guest messages"],
+    ["feedback","Guest feedback"],["fbdepts","Feedback by department"],["guesthistory","Archived guest stays"]
+  ]],
+  ["Management",[
+    ["tasks","Tasks"],["requirements","Requirements"],["purchases","Purchase requests"],["notifications","Announcements"],["quiz","Daily quiz"],
+    ["buses","Bus schedule"],["users","Team accounts"]
+  ]]
+];
+const SMART_KINDS620=GROUPS620.flatMap(g=>g[1].map(x=>x[0]));
+function smartExportExcel620(sets,fname){
+  return (async()=>{
+    const ok=await loadXLSX();if(!ok||!window.XLSX){await exportExcelSets(sets,fname);return;}
+    const wb=XLSX.utils.book_new();
+    const cover=[
+      ["ENTERTAINMENT OPERATIONS EXPORT"],
+      ["Hotel",(S.settings&&(S.settings.hotelName||S.settings.name))||""],
+      ["Generated",new Date().toLocaleString()],
+      ["Prepared by",(S.session&&S.session.name)||""],
+      ["Data source","Live app data. Programme sheets use the live programme; duty sheets resolve vacation/day off/absence/entrance automatically."],
+      ["Sheets",sets.length]
+    ];
+    const cws=XLSX.utils.aoa_to_sheet(cover);cws["!cols"]=[{wch:18},{wch:82}];XLSX.utils.book_append_sheet(wb,cws,"Export summary");
+    const used=new Set(["Export summary"]);
+    sets.forEach((ds,idx)=>{
+      const headers=ds.notes?ds.headers.concat([ds.noteLabel||"Note"]):ds.headers;
+      const rows=ds.notes?ds.rows.map((r,i)=>r.concat([ds.notes[i]||""])):ds.rows;
+      const aoa=[headers,...rows],ws=XLSX.utils.aoa_to_sheet(aoa);
+      ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:Math.max(0,rows.length),c:Math.max(0,headers.length-1)}})};
+      ws["!cols"]=headers.map((h,ci)=>{
+        let max=String(h||"").length;
+        rows.slice(0,500).forEach(r=>{max=Math.max(max,String(r[ci]??"").length);});
+        return{wch:Math.min(45,Math.max(10,max+2))};
+      });
+      let name=(ds.title||("Sheet "+(idx+1))).replace(/[\\/?*\[\]:]/g,"").slice(0,28)||("Sheet "+(idx+1));
+      let base=name,n=2;while(used.has(name)){name=(base.slice(0,25)+" "+n++).slice(0,28);}used.add(name);
+      XLSX.utils.book_append_sheet(wb,ws,name);
+    });
+    XLSX.writeFile(wb,fname+".xlsx");
+  })();
+}
+function openSmartExport620(){
+  S.fbMonth="";S.fbDate="";
+  const defaultPick=new Set(["todayplan","teamduty","program"]);
+  const wrap=baseModal(`<h3>${ic("download",20)} Smart Export Center</h3>
+    <div class="ex620-note"><b>Live-source export.</b> Programme and operation sheets are generated from the programme currently saved in the app. Vacation, absence, day off and entrance duty are resolved automatically from the actual staff/duty data.</div>
+    ${GROUPS620.map(([title,items])=>`<div class="ex620-group"><h4>${title}</h4><div class="ex620-grid">${items.map(([k,lb])=>`<label class="ex620-it"><input type="checkbox" data-ex620="${k}" ${defaultPick.has(k)?"checked":""}><span>${lb}</span></label>`).join("")}</div></div>`).join("")}
+    <div class="row2"><div><label>${t("whichDay")}</label><select id="ex620-day"><option value="">${t("allDays")}</option>${t("days").map((d,i)=>`<option value="${i}" ${String(S.exportDay)===String(i)?"selected":""}>${esc(d)}</option>`).join("")}</select></div>
+    <div><label>${t("whichTime")}</label><select id="ex620-slot"><option value="">${t("allDayLong")}</option>${["morning","afternoon","evening"].map(k=>`<option value="${k}" ${S.exportSlot===k?"selected":""}>${t(k+"Part")}</option>`).join("")}</select></div></div>
+    <div id="ex620-monthwrap" style="display:none"><label>${t("whichMonth")}</label><select id="ex620-month">${exportMonthOptions().map(([mk,lb])=>`<option value="${mk}" ${mk===(S.exportMonth||currentAttMonth())?"selected":""}>${esc(lb)}</option>`).join("")}</select></div>
+    <div class="ex620-actions"><button class="btn" id="ex620-xlsx">${ic("download",16)} Professional Excel</button><button class="btn ghost" id="ex620-pdf">${ic("download",16)} PDF / Print</button></div><button class="btn ghost" id="ex620-close">${t("close")}</button>`);
+  const boxes=[...wrap.querySelectorAll("[data-ex620]")],monthWrap=wrap.querySelector("#ex620-monthwrap");
+  const sync=()=>{monthWrap.style.display=boxes.some(b=>b.checked&&b.dataset.ex620==="monthatt")?"":"none";};
+  boxes.forEach(b=>b.onchange=sync);sync();
+  wrap.querySelector("#ex620-close").onclick=()=>wrap.remove();
+  const gather=()=>{
+    S.exportDay=wrap.querySelector("#ex620-day").value;S.exportSlot=wrap.querySelector("#ex620-slot").value;
+    const m=wrap.querySelector("#ex620-month");if(m)S.exportMonth=m.value;
+    return boxes.filter(b=>b.checked).map(b=>buildDataset(b.dataset.ex620)).filter(Boolean);
+  };
+  const fname="entertainment-smart-export-"+todayISO();
+  wrap.querySelector("#ex620-xlsx").onclick=async()=>{const sets=gather();if(!sets.length){toastWarn("Choose at least one export.");return;}try{await smartExportExcel620(sets,fname);toastOk(t("saved"));}catch(e){console.error("smart excel",e);toastErr(t("errSave"));}};
+  wrap.querySelector("#ex620-pdf").onclick=()=>{const sets=gather();if(!sets.length){toastWarn("Choose at least one export.");return;}exportPdfSets(sets,((S.settings&&(S.settings.hotelName||S.settings.name))||"Hotel")+" — Smart operations export");wrap.remove();};
+}
+window.openExportModal=openExportModal=openSmartExport620;
+
+/* Weekly report now uses the same live-source engine, so it cannot disagree with the Export Center. */
+window.exportReport=exportReport=async function(){
+  const sets=[buildDataset("operations"),buildDataset("teamduty"),buildDataset("tasks"),buildDataset("feedback")].filter(Boolean);
+  try{await smartExportExcel620(sets,"entertainment-weekly-operations-"+todayISO());toastOk(t("saved"));}catch(e){console.error("weekly smart export",e);toastErr(t("errSave"));}
+};
+
+window.AUREA_EXPORT_AUDIT_V620={
+  version:"6.20",
+  kinds:SMART_KINDS620.slice(),
+  programSource:"S.activities",
+  dutySources:["dayPlanFor","attStatus","entranceConflict"],
+  build:kind=>buildDataset(kind)
+};
+})();
+</script>
 </body>
 </html>
