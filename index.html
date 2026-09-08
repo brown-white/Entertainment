@@ -13967,5 +13967,103 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
   };
 })();
 </script>
+<style id="aurea-purchase-request-v617">
+/* AUREA V6.17 · Purchase Request — digital version of the hotel paper form */
+.pr617-sheet{display:grid;gap:14px}.pr617-head{padding:18px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,#fffdf9,#f4ecdf)}
+.pr617-kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:900}.pr617-title{font-family:var(--serif);font-size:28px;line-height:1;margin:6px 0 3px}.pr617-sub{color:var(--muted);font-size:12px;line-height:1.5}
+.pr617-section{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:14px}.pr617-section h4{margin:0 0 12px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.pr617-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pr617-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.pr617-row{border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(255,255,255,.48);margin-top:10px}.pr617-row:first-child{margin-top:0}
+.pr617-rowhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.pr617-no{width:28px;height:28px;border-radius:999px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}.pr617-remove{min-height:34px!important;padding:6px 10px!important;width:auto!important}
+.pr617-mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pr617-mini-grid .wide{grid-column:1/-1}.pr617-price{position:relative}.pr617-price:before{content:'$';position:absolute;left:13px;bottom:15px;color:var(--muted);font-size:13px}.pr617-price input{padding-left:28px}
+.pr617-auth{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pr617-authbox{border:1px dashed var(--line);border-radius:14px;padding:10px}.pr617-authbox b{font-size:11px;display:block;margin-bottom:6px}.pr617-actions{display:grid;gap:9px}.pr617-actions.two{grid-template-columns:1fr 1fr}.pr617-note{font-size:11px;line-height:1.45;color:var(--muted)}
+.pr617-legend{padding:10px 12px;border-radius:14px;background:var(--soft);font-size:10px;color:var(--muted);line-height:1.55}.pr617-legend b{color:var(--ink)}
+@media(max-width:430px){.pr617-grid2,.pr617-grid3,.pr617-auth{grid-template-columns:1fr}.pr617-mini-grid{grid-template-columns:1fr}.pr617-actions.two{grid-template-columns:1fr}}
+</style>
+<script id="aurea-purchase-request-v617-script">
+(()=>{
+  const prevOpenReqEditor617=window.openReqEditor;
+  const prevWireCommon617=window.wireCommon;
+  const money617=v=>{const n=parseFloat(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0;};
+  const esc617=v=>esc(String(v??''));
+  const normalizeRow617=(r={})=>({
+    lastDate:r.lastDate||'', lastQty:r.lastQty||'', lastUnitPrice:r.lastUnitPrice||'', lastDealer:r.lastDealer||'',
+    stockQty:r.stockQty||'', wantedQty:r.wantedQty||r.qty||'', description:r.description||[r.need,r.details].filter(Boolean).join(' — '),
+    dateWanted:r.dateWanted||'', orderedDealer:r.orderedDealer||'', orderedQty:r.orderedQty||'', orderedUnitPrice:r.orderedUnitPrice||'',
+    totalPrice:r.totalPrice||'', orderNo:r.orderNo||'', need:r.need||'', details:r.details||'', qty:r.qty||r.wantedQty||''
+  });
+  function normalize617(ex){
+    const sh=ex?JSON.parse(JSON.stringify(ex)):{id:'pr'+Date.now(),kind:'purchase'};
+    sh.kind='purchase'; sh.dateIssued=sh.dateIssued||sh.date||todayISO(); sh.date=sh.date||sh.dateIssued;
+    sh.department=sh.department||''; sh.projectNo=sh.projectNo||''; sh.wantedFor=sh.wantedFor||sh.title||''; sh.title=sh.title||sh.wantedFor||'';
+    sh.remarks=sh.remarks||sh.note||''; sh.note=sh.note||sh.remarks||'';
+    sh.rows=(Array.isArray(sh.rows)&&sh.rows.length?sh.rows:[{}]).map(normalizeRow617);
+    sh.quotations=Array.isArray(sh.quotations)&&sh.quotations.length?sh.quotations.slice(0,3):[{dealer:'',price:''},{dealer:'',price:''},{dealer:'',price:''}];
+    while(sh.quotations.length<3) sh.quotations.push({dealer:'',price:''});
+    sh.authorization=Object.assign({departmentHead:'',financialController:'',generalManager:''},sh.authorization||{});
+    return sh;
+  }
+  function calcRow617(r){
+    if(String(r.orderedQty||'').trim() && String(r.orderedUnitPrice||'').trim()) r.totalPrice=(money617(r.orderedQty)*money617(r.orderedUnitPrice)).toFixed(2);
+    return r;
+  }
+  function syncLegacy617(sh){
+    sh.title=sh.wantedFor||'Purchase Request'; sh.date=sh.dateIssued||todayISO(); sh.note=sh.remarks||'';
+    sh.rows=sh.rows.map(r=>{calcRow617(r);return {...r,need:r.need||r.description||'',details:r.details||r.description||'',qty:r.qty||r.wantedQty||''};});
+    return sh;
+  }
+  function exportName617(sh){
+    const base=(sh.wantedFor||sh.department||'purchase-request').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,42)||'purchase-request';
+    return base+'-'+String(sh.dateIssued||todayISO()).replace(/[^0-9-]/g,'');
+  }
+  function printHtml617(sh){
+    const e=x=>String(x??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    const rows=[...sh.rows]; while(rows.length<6) rows.push(normalizeRow617({}));
+    const body=rows.slice(0,6).map((r,i)=>`<tr><td>${i+1}</td><td>${e(r.lastDate)}</td><td>${e(r.lastQty)}</td><td>${e(r.lastUnitPrice)}</td><td>${e(r.lastDealer)}</td><td>${e(r.stockQty)}</td><td>${e(r.wantedQty)}</td><td class="desc">${e(r.description)}</td><td>${e(r.dateWanted)}</td><td>${e(r.orderedDealer)}</td><td>${e(r.orderedQty)}</td><td>${e(r.orderedUnitPrice)}</td><td>${e(r.totalPrice)}</td><td>${e(r.orderNo)}</td></tr>`).join('');
+    const q=sh.quotations.slice(0,3).map((x,i)=>`<td><b>Dealer ${i+1}</b><br>${e(x.dealer)}<br><span>${e(x.price)}</span></td>`).join('');
+    return `<div class="brand"><b>AMARINA HOTELS & RESORTS</b><span>PURCHASE REQUEST</span></div><div class="meta"><div><b>Date Issued</b>${e(sh.dateIssued)}</div><div><b>Department</b>${e(sh.department)}</div></div><table class="main"><thead><tr><th rowspan="2">ITEM</th><th colspan="4">LAST PURCHASE</th><th rowspan="2">Quantity & Stock</th><th rowspan="2">Quantity Wanted</th><th rowspan="2" class="desc">Articles & Description</th><th rowspan="2">Date Wanted</th><th colspan="5">ORDERED FROM</th></tr><tr><th>Date</th><th>Quant.</th><th>Unit Price</th><th>Dealer</th><th>Dealer</th><th>Quant.</th><th>Unit Price</th><th>Total Price</th><th>Order No.</th></tr></thead><tbody>${body}</tbody></table><div class="remarks"><b>WANTED FOR / REMARKS — ENTER PROJECT NUMBER IF ANY</b><div><strong>${e(sh.wantedFor)}</strong>${sh.projectNo?' · Project '+e(sh.projectNo):''}</div><p>${e(sh.remarks)}</p></div><div class="quotes"><b>QUOTATIONS</b><table><tr>${q}</tr></table></div><div class="auth"><b>AUTHORISATION TO PURCHASE</b><table><tr><th>Department Head</th><th>Financial Controller</th><th>General Manager</th></tr><tr><td>${e(sh.authorization.departmentHead)}</td><td>${e(sh.authorization.financialController)}</td><td>${e(sh.authorization.generalManager)}</td></tr></table></div><div class="routing"><b>Form routing:</b> White (Original) · Purchasing &nbsp; | &nbsp; Yellow · Department Head &nbsp; | &nbsp; Pink · Accounting (AP) &nbsp; | &nbsp; Green · Receiving</div>`;
+  }
+  function exportPdf617(sh){
+    syncLegacy617(sh);
+    const w=window.open('','_blank'); if(!w){toastErr('Could not open the print window.');return;}
+    const css=`@page{size:A4 landscape;margin:8mm}body{font-family:Arial,sans-serif;color:#17213a;margin:0;font-size:9px}.brand{display:flex;justify-content:space-between;align-items:end;border-bottom:2px solid #25365c;padding:0 0 7px;margin-bottom:7px}.brand b{font-size:15px}.brand span{font-size:18px;font-weight:800;letter-spacing:.05em}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:7px}.meta div{border:1px solid #25365c;padding:5px}.meta b{display:block;font-size:8px;text-transform:uppercase;margin-bottom:3px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #25365c;padding:4px;vertical-align:top}th{background:#eef1f7;font-size:7px}.main td{height:31px}.main .desc{min-width:145px}.remarks{border:1px solid #25365c;margin-top:7px;padding:6px;min-height:42px}.remarks>b,.auth>b,.quotes>b{display:block;text-align:center;font-size:8px;letter-spacing:.05em;margin-bottom:5px}.remarks p{margin:4px 0 0}.quotes{margin-top:7px}.quotes td{height:35px;width:33.33%}.quotes span{font-weight:700}.auth{margin-top:7px}.auth th{text-align:center}.auth td{height:30px;text-align:center}.routing{margin-top:7px;font-size:7px;color:#555}`;
+    w.document.write('<html><head><title>Purchase Request</title><meta charset="utf-8"><style>'+css+'</style></head><body>'+printHtml617(sh)+'<scr'+'ipt>setTimeout(function(){window.print();},350);<\/scr'+'ipt></body></html>'); w.document.close();
+  }
+  async function exportExcel617(sh){
+    syncLegacy617(sh); const ok=await loadXLSX(); if(!ok||!window.XLSX) throw new Error('Excel library unavailable');
+    const aoa=[['AMARINA HOTELS & RESORTS','PURCHASE REQUEST'],['Date Issued',sh.dateIssued,'Department',sh.department],[],['ITEM','LAST PURCHASE - Date','LAST PURCHASE - Quant.','LAST PURCHASE - Unit Price','LAST PURCHASE - Dealer','Quantity & Stock','Quantity Wanted','Articles & Description','Date Wanted','ORDERED FROM - Dealer','Ordered Quant.','Ordered Unit Price','Total Price','Order No.']];
+    sh.rows.forEach((r,i)=>aoa.push([i+1,r.lastDate,r.lastQty,r.lastUnitPrice,r.lastDealer,r.stockQty,r.wantedQty,r.description,r.dateWanted,r.orderedDealer,r.orderedQty,r.orderedUnitPrice,r.totalPrice,r.orderNo]));
+    aoa.push([],['WANTED FOR',sh.wantedFor,'PROJECT NUMBER',sh.projectNo],['REMARKS',sh.remarks],[],['QUOTATIONS'],['Dealer 1',sh.quotations[0].dealer,'Price',sh.quotations[0].price],['Dealer 2',sh.quotations[1].dealer,'Price',sh.quotations[1].price],['Dealer 3',sh.quotations[2].dealer,'Price',sh.quotations[2].price],[],['AUTHORISATION TO PURCHASE'],['Department Head',sh.authorization.departmentHead,'Financial Controller',sh.authorization.financialController,'General Manager',sh.authorization.generalManager]);
+    const ws=XLSX.utils.aoa_to_sheet(aoa); ws['!cols']=[{wch:6},{wch:14},{wch:14},{wch:16},{wch:18},{wch:16},{wch:16},{wch:38},{wch:14},{wch:20},{wch:14},{wch:16},{wch:16},{wch:14}];
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Purchase Request'); XLSX.writeFile(wb,exportName617(sh)+'.xlsx');
+  }
+  function openPurchaseRequest617(id){
+    const ex=id?reqSheet(id):null; const sh=normalize617(ex);
+    const wrap=baseModal(`<div class="pr617-sheet"><div class="pr617-head"><div class="pr617-kicker">Amarina Hotels & Resorts</div><div class="pr617-title">Purchase Request</div><div class="pr617-sub">Digital version of the official purchase request form. Complete the known fields; purchasing can complete supplier/order fields later.</div></div>
+      <div class="pr617-section"><h4>Request information</h4><div class="pr617-grid2"><div><label>Date issued</label><input type="date" id="pr617-date" value="${esc617(sh.dateIssued)}"></div><div><label>Department</label><input id="pr617-dept" value="${esc617(sh.department)}" placeholder="e.g. Entertainment"></div><div><label>Wanted for</label><input id="pr617-for" value="${esc617(sh.wantedFor)}" placeholder="Event / activity / operation"></div><div><label>Project number (if any)</label><input id="pr617-project" value="${esc617(sh.projectNo)}" placeholder="Optional"></div></div></div>
+      <div class="pr617-section"><h4>Purchase lines</h4><div class="pr617-note">Matches the paper form: last purchase, stock, quantity wanted, description, date wanted and ordered-from information.</div><div id="pr617-rows"></div><button class="btn ghost sm" id="pr617-add">＋ Add item</button></div>
+      <div class="pr617-section"><h4>Wanted for / remarks</h4><textarea id="pr617-remarks" rows="4" placeholder="Remarks, specifications, reason for purchase…">${esc617(sh.remarks)}</textarea></div>
+      <div class="pr617-section"><h4>Quotations</h4><div class="pr617-grid3">${sh.quotations.map((q,i)=>`<div><label>Dealer ${i+1}</label><input data-pr617-qdealer="${i}" value="${esc617(q.dealer)}" placeholder="Dealer"><label>Price</label><input data-pr617-qprice="${i}" value="${esc617(q.price)}" inputmode="decimal" placeholder="0.00"></div>`).join('')}</div></div>
+      <div class="pr617-section"><h4>Authorisation to purchase</h4><div class="pr617-auth"><div class="pr617-authbox"><b>Department Head</b><input id="pr617-ah" value="${esc617(sh.authorization.departmentHead)}" placeholder="Name / approval"></div><div class="pr617-authbox"><b>Financial Controller</b><input id="pr617-af" value="${esc617(sh.authorization.financialController)}" placeholder="Name / approval"></div><div class="pr617-authbox"><b>General Manager</b><input id="pr617-ag" value="${esc617(sh.authorization.generalManager)}" placeholder="Name / approval"></div></div></div>
+      <div class="pr617-legend"><b>Paper-form routing:</b> White (Original) — Purchasing · Yellow — Department Head · Pink — Accounting (AP) · Green — Receiving.</div>
+      <div class="pr617-actions"><button class="btn" id="pr617-save">${t('save')}</button>${ex?`<div class="pr617-actions two"><button class="btn ghost" id="pr617-pdf">${ic('download',16)} Export / Print PDF</button><button class="btn ghost" id="pr617-xlsx">${ic('download',16)} Export Excel</button></div><button class="btn ghost warn" id="pr617-del">${ic('trash',16)} ${t('reqDelete')}</button>`:''}<button class="btn ghost" id="pr617-close">${t('cancelBtn')}</button></div></div>`);
+    const rowsBox=wrap.querySelector('#pr617-rows');
+    const paint=()=>{
+      rowsBox.innerHTML=sh.rows.map((r,i)=>`<div class="pr617-row"><div class="pr617-rowhead"><span class="pr617-no">${i+1}</span><button class="btn ghost warn pr617-remove" data-pr617-del="${i}" ${sh.rows.length===1?'disabled':''}>Remove</button></div><div class="pr617-mini-grid"><div class="wide"><label>Articles & description</label><textarea data-f="description" data-i="${i}" rows="2" placeholder="Article, specification, size, colour, brand…">${esc617(r.description)}</textarea></div><div><label>Quantity & stock</label><input data-f="stockQty" data-i="${i}" value="${esc617(r.stockQty)}"></div><div><label>Quantity wanted</label><input data-f="wantedQty" data-i="${i}" value="${esc617(r.wantedQty)}"></div><div><label>Date wanted</label><input type="date" data-f="dateWanted" data-i="${i}" value="${esc617(r.dateWanted)}"></div><div><label>Last purchase date</label><input type="date" data-f="lastDate" data-i="${i}" value="${esc617(r.lastDate)}"></div><div><label>Last purchase quantity</label><input data-f="lastQty" data-i="${i}" value="${esc617(r.lastQty)}"></div><div class="pr617-price"><label>Last unit price</label><input data-f="lastUnitPrice" data-i="${i}" value="${esc617(r.lastUnitPrice)}" inputmode="decimal"></div><div><label>Last dealer</label><input data-f="lastDealer" data-i="${i}" value="${esc617(r.lastDealer)}"></div><div><label>Ordered from / dealer</label><input data-f="orderedDealer" data-i="${i}" value="${esc617(r.orderedDealer)}"></div><div><label>Ordered quantity</label><input data-f="orderedQty" data-i="${i}" value="${esc617(r.orderedQty)}"></div><div class="pr617-price"><label>Ordered unit price</label><input data-f="orderedUnitPrice" data-i="${i}" value="${esc617(r.orderedUnitPrice)}" inputmode="decimal"></div><div class="pr617-price"><label>Total price</label><input data-f="totalPrice" data-i="${i}" value="${esc617(r.totalPrice)}" inputmode="decimal" placeholder="Auto when qty + unit price"></div><div><label>Order number</label><input data-f="orderNo" data-i="${i}" value="${esc617(r.orderNo)}"></div></div></div>`).join('');
+      rowsBox.querySelectorAll('[data-f]').forEach(el=>el.oninput=()=>{const r=sh.rows[+el.dataset.i];r[el.dataset.f]=el.value;if(el.dataset.f==='orderedQty'||el.dataset.f==='orderedUnitPrice'){calcRow617(r);const total=rowsBox.querySelector(`[data-f="totalPrice"][data-i="${el.dataset.i}"]`);if(total)total.value=r.totalPrice;}});
+      rowsBox.querySelectorAll('[data-pr617-del]').forEach(b=>b.onclick=()=>{if(sh.rows.length>1){sh.rows.splice(+b.dataset.pr617Del,1);paint();}});
+    }; paint();
+    const sync=()=>{sh.dateIssued=wrap.querySelector('#pr617-date').value;sh.department=wrap.querySelector('#pr617-dept').value.trim();sh.wantedFor=wrap.querySelector('#pr617-for').value.trim();sh.projectNo=wrap.querySelector('#pr617-project').value.trim();sh.remarks=wrap.querySelector('#pr617-remarks').value.trim();wrap.querySelectorAll('[data-pr617-qdealer]').forEach(x=>sh.quotations[+x.dataset.pr617Qdealer].dealer=x.value.trim());wrap.querySelectorAll('[data-pr617-qprice]').forEach(x=>sh.quotations[+x.dataset.pr617Qprice].price=x.value.trim());sh.authorization.departmentHead=wrap.querySelector('#pr617-ah').value.trim();sh.authorization.financialController=wrap.querySelector('#pr617-af').value.trim();sh.authorization.generalManager=wrap.querySelector('#pr617-ag').value.trim();syncLegacy617(sh);};
+    wrap.querySelector('#pr617-add').onclick=()=>{sh.rows.push(normalizeRow617({}));paint();}; wrap.querySelector('#pr617-close').onclick=()=>wrap.remove();
+    wrap.querySelector('#pr617-save').onclick=async()=>{sync();if(!sh.department){toastErr('Please add the department.');return;}if(!sh.wantedFor){toastErr('Please add what the purchase is wanted for.');return;}if(!sh.rows.some(r=>String(r.description||'').trim())){toastErr('Please add at least one article or description.');return;}const list=reqSheets().filter(x=>String(x.id)!==String(sh.id));list.push(sh);try{await reqSave(list);wrap.remove();toastOk(t('saved'));render();}catch(e){console.error('purchase v6.17 save',e);toastErr(t('errSave'));}};
+    const pdf=wrap.querySelector('#pr617-pdf');if(pdf)pdf.onclick=()=>{try{sync();exportPdf617(sh);}catch(e){console.error(e);toastErr('Could not export PDF.');}};
+    const xls=wrap.querySelector('#pr617-xlsx');if(xls)xls.onclick=async()=>{try{sync();await exportExcel617(sh);toastOk(t('saved'));}catch(e){console.error(e);toastErr('Could not export Excel.');}};
+    const del=wrap.querySelector('#pr617-del');if(del)del.onclick=async()=>{if(!await confirmAction({question:sh.wantedFor||'Purchase request',note:t('cannotUndo'),danger:true}))return;try{await reqSave(reqSheets().filter(x=>String(x.id)!==String(sh.id)));wrap.remove();toastOk(t('deleted'));render();}catch(e){toastErr(t('errSave'));}};
+  }
+  window.openPurchaseRequestV617=openPurchaseRequest617;
+  window.openPurchaseRequestV65=openPurchaseRequest617;
+  window.openReqEditor=function(id){const ex=id?reqSheet(id):null;if(ex&&ex.kind==='purchase')return openPurchaseRequest617(id);return prevOpenReqEditor617(id);};
+  window.wireCommon=function(){prevWireCommon617();const p=document.querySelector('#rq-purchase');if(p)p.onclick=()=>openPurchaseRequest617();document.querySelectorAll('[data-rqopen]').forEach(el=>{const id=el.getAttribute('data-rqopen');const sh=reqSheet(id);if(sh&&sh.kind==='purchase')el.onclick=()=>openPurchaseRequest617(id);});};
+})();
+</script>
 </body>
 </html>
