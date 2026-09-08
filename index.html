@@ -15359,5 +15359,225 @@ window.AUREA_SMART_ASSIGNMENT_V622={
 };
 })();
 </script>
+<style id="aurea-smart-plans-v624-style">
+.plan-fresh-v624{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 2px;padding:9px 11px;border-radius:13px;background:var(--soft);font-size:10px;color:var(--muted)}
+.plan-fresh-v624 b{color:var(--ink)}.plan-diff-v624{margin-top:5px;font-size:9px;color:var(--muted)}
+.plan-unassigned-v624{color:#a65d48;font-weight:800}.plan-rules-v624{margin:9px 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-size:10px;line-height:1.5;color:var(--muted)}
+.plan-rules-v624 b{color:var(--ink)}
+</style>
+<script id="aurea-smart-plans-v624-script">
+(()=>{
+'use strict';
+if(window.__AUREA_SMART_PLANS_V624)return;
+window.__AUREA_SMART_PLANS_V624=true;
+
+const api624=()=>window.AUREA_SMART_ASSIGNMENT_V622;
+const key624=u=>String(u&&u.username||'').trim().toLowerCase();
+const hash624=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;};
+const start624=a=>{const w=activityWindows(a);return w.length?w[0].s0:timeToMin(a&&a.time);};
+const wt624=a=>activityType(a)==='active'?3:activityType(a)==='relaxing'?1:2;
+const targetActs624=(day,onlyEmpty)=>(S.activities||[])
+  .filter(a=>a&&a.day===day&&['morning','afternoon'].includes(activitySlot(a)))
+  .filter(a=>onlyEmpty?!String(a.entertainer||'').trim():true)
+  .slice().sort((a,b)=>(start624(a)||9999)-(start624(b)||9999)||String(a.name||'').localeCompare(String(b.name||'')));
+
+function user624(v){
+  const q=String(v||'').trim().toLowerCase();
+  return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===q||String(u.display_name||'').toLowerCase()===q)||null;
+}
+function baseMetrics624(excluded){
+  const skip=new Set(excluded||[]);
+  const m={count:{},points:{},acts:{},times:{},types:{},days:{},ops:{}};
+  (S.activities||[]).forEach(a=>{
+    if(skip.has(a)||activitySlot(a)==='event'||!String(a.entertainer||'').trim())return;
+    const u=user624(a.entertainer);if(!u||+u.number===DJ_NUMBER)return;
+    bump624(m,u,a,a.day);
+  });
+  return m;
+}
+function bump624(m,u,a,day){
+  const k=key624(u),ak=actKey(a.name),tm=start624(a),typ=activityType(a),op=activitySlot(a);
+  m.count[k]=(m.count[k]||0)+1;
+  m.points[k]=(m.points[k]||0)+wt624(a);
+  m.acts[k+'|'+ak]=(m.acts[k+'|'+ak]||0)+1;
+  if(tm!=null)m.times[k+'|'+tm]=(m.times[k+'|'+tm]||0)+1;
+  m.types[k+'|'+typ]=(m.types[k+'|'+typ]||0)+1;
+  m.ops[k+'|'+day+'|'+op]=(m.ops[k+'|'+day+'|'+op]||0)+1;
+  m.days[k+'|'+ak]=m.days[k+'|'+ak]||[];m.days[k+'|'+ak].push(day);
+}
+function baseScore624(m,u,a,day){
+  const k=key624(u),ak=actKey(a.name),tm=start624(a),typ=activityType(a);
+  const recent=(m.days[k+'|'+ak]||[]).some(d=>dayGap(d,day)<=1)?1:0;
+  return (m.points[k]||0)*100 +
+    (m.count[k]||0)*24 +
+    (m.acts[k+'|'+ak]||0)*55 +
+    (tm==null?0:(m.times[k+'|'+tm]||0)*34) +
+    (m.types[k+'|'+typ]||0)*11 +
+    recent*40;
+}
+function previousAssignees624(previousPlans,a){
+  const id=String(a.id);
+  const set=new Set();
+  (previousPlans||[]).forEach(p=>(p||[]).forEach(x=>{if(String(x.activity&&x.activity.id)===id&&x.username)set.add(x.username)}));
+  return set;
+}
+function candidate624(day,a,m,usedOps,previousPlans,alt,generation){
+  const api=api624(),date=assignDateStr(day),op=activitySlot(a);
+  let pool=assignableStaff(day,date)
+    .filter(u=>+u.number!==DJ_NUMBER)
+    .filter(u=>api&&api.hardAvailable?api.hardAvailable(u,a,day):true)
+    .filter(u=>!usedOps.has(key624(u)+'|'+day+'|'+op));
+  if(!pool.length)return null;
+
+  const prev=previousAssignees624(previousPlans,a);
+  const scored=pool.map(u=>({u,base:baseScore624(m,u,a,day),
+    jitter:hash624(key624(u)+'|'+a.id+'|'+day+'|'+alt+'|'+generation)%23,
+    repeatedAlt:prev.has(u.username)})).sort((x,y)=>x.base-y.base||x.jitter-y.jitter);
+  const best=scored[0].base;
+
+  /* Diversity is allowed only among near-equally fair candidates.
+     We never sacrifice hard safety rules to make A/B/C look different. */
+  let near=scored.filter(x=>x.base<=best+38);
+  const fresh=near.filter(x=>!x.repeatedAlt);
+  if(fresh.length)near=fresh;
+  near.sort((x,y)=>x.jitter-y.jitter||x.base-y.base);
+  return near[0].u;
+}
+function eventRows624(day){
+  const dj=(eventsCrew(day,assignDateStr(day))||[]).find(u=>+u.number===DJ_NUMBER)||null;
+  return (S.activities||[]).filter(a=>a&&a.day===day&&activitySlot(a)==='event').map(a=>({
+    activity:a,slot:'event',username:dj?dj.username:'',name:dj?(dj.display_name||dj.username):'DJ unavailable',day,user:dj||null
+  }));
+}
+function preservedUsage624(day,targets,m,usedOps){
+  const targetSet=new Set(targets);
+  (S.activities||[]).forEach(a=>{
+    if(a.day!==day||activitySlot(a)==='event'||targetSet.has(a)||!String(a.entertainer||'').trim())return;
+    const u=user624(a.entertainer);if(!u||+u.number===DJ_NUMBER)return;
+    usedOps.add(key624(u)+'|'+day+'|'+activitySlot(a));
+  });
+}
+function buildAlternative624(scope,selectedDay,onlyEmpty,alt,generation,previousPlans){
+  const days=scope==='week'?[0,1,2,3,4,5,6]:[selectedDay];
+  const allTargets=days.flatMap(d=>targetActs624(d,onlyEmpty));
+  const exclude=onlyEmpty?[]:allTargets;
+  const m=baseMetrics624(exclude),usedOps=new Set(),plan=[];
+  days.forEach(day=>{
+    const targets=targetActs624(day,onlyEmpty);
+    preservedUsage624(day,targets,m,usedOps);
+    targets.forEach(a=>{
+      const u=candidate624(day,a,m,usedOps,previousPlans,alt,generation);
+      const item={activity:a,slot:activitySlot(a),username:u?u.username:'',name:u?(u.display_name||u.username):'',day,user:u||null};
+      plan.push(item);
+      if(u){usedOps.add(key624(u)+'|'+day+'|'+activitySlot(a));bump624(m,u,a,day);}
+    });
+    plan.push(...eventRows624(day));
+  });
+  return plan;
+}
+function signature624(plan){return (plan||[]).filter(x=>x.slot!=='event').map(x=>String(x.activity.id)+':'+String(x.username||'-')).join('|');}
+function generateSet624(scope,day,onlyEmpty,generation){
+  const plans=[];
+  for(let alt=0;alt<3;alt++){
+    let p=buildAlternative624(scope,day,onlyEmpty,alt,generation,plans);
+    /* Retry with another seed if a distinct valid alternative is possible. */
+    let tries=0;
+    while(tries<5&&plans.some(x=>signature624(x)===signature624(p))){
+      tries++;p=buildAlternative624(scope,day,onlyEmpty,alt,generation+tries*17,plans);
+    }
+    plans.push(p);
+  }
+  return plans;
+}
+function countDifference624(a,b){
+  const ma=new Map((a||[]).filter(x=>x.slot!=='event').map(x=>[String(x.activity.id),x.username||'']));
+  return (b||[]).filter(x=>x.slot!=='event').reduce((n,x)=>n+(ma.get(String(x.activity.id))!==(x.username||'')?1:0),0);
+}
+
+/* Enforce V6.23 hard rules even after manual changes in the Plan dropdowns. */
+const baseApply624=window.applyAssignments;
+window.applyAssignments=applyAssignments=async function(list){
+  const api=api624(),seen=new Set(),incomingIds=new Set((list||[]).map(x=>String(x&&x.activity&&x.activity.id)));
+  for(const it of (list||[])){
+    if(!it||!it.activity||!it.username)continue;
+    const a=it.activity,u=user624(it.username);
+    if(activitySlot(a)==='event'){
+      if(!u||+u.number!==DJ_NUMBER||!availableOn(u,a.day,assignDateStr(a.day))){
+        toastErr('DJ is not available for '+(a.name||'this programme item')+'.');return false;
+      }
+      continue;
+    }
+    if(!u||+u.number===DJ_NUMBER||!(api&&api.hardAvailable&&api.hardAvailable(u,a,a.day))){
+      toastErr((u?(u.display_name||u.username):'This entertainer')+' is not eligible for '+(a.name||'this activity')+'.');return false;
+    }
+    const k=key624(u)+'|'+a.day+'|'+activitySlot(a);
+    const preservedConflict=(S.activities||[]).some(b=>String(b.id)!==String(a.id)&&!incomingIds.has(String(b.id))&&b.day===a.day&&activitySlot(b)===activitySlot(a)&&user624(b.entertainer)&&key624(user624(b.entertainer))===key624(u));
+    if(seen.has(k)||preservedConflict){toastErr((u.display_name||u.username)+' already has an activity in this '+activitySlot(a)+' operation.');return false;}
+    seen.add(k);
+  }
+  return baseApply624(list);
+};
+
+window.openAutoAssignModal=function(day){
+  let scope='day',onlyEmpty=false,variant=0,generation=1,plans=generateSet624(scope,day,onlyEmpty,generation);
+  const wrap=baseModal('');
+  const regenerate=()=>{generation++;plans=generateSet624(scope,day,onlyEmpty,generation);variant=0;};
+  const current=()=>plans[variant]||[];
+
+  const draw=()=>{
+    const plan=current(),bal=planBalance(plan.filter(x=>x.username&&x.slot!=='event'),{onlyEmpty}),byDay={};
+    plan.forEach(x=>(byDay[x.activity.day]=byDay[x.activity.day]||[]).push(x));
+    const diffAB=countDifference624(plans[0],plans[1]),diffAC=countDifference624(plans[0],plans[2]);
+    wrap.innerHTML=`<div class="modal"><h3>${ic('users',20)} Smart plan generator</h3>
+      <p class="mini">Plan A, B and C are three separate fair alternatives. Every plan follows the same hard availability and fairness rules.</p>
+      <div class="plan-rules-v624"><b>Hard rules:</b> max 1 activity per entertainer per operation · no DJ in normal activities · Day Off / Vacation / Absent blocked · Entrance Duty must be free by 16:00 · Can/Can't · configured gender · no time overlap. Fairness also avoids repeated activity/time and balances active/relaxing workload.</div>
+      <div class="bd-roles" style="margin-top:12px"><button class="bd-role ${scope==='day'?'on':''}" data-v624scope="day">This day</button><button class="bd-role ${scope==='week'?'on':''}" data-v624scope="week">Whole week</button></div>
+      <div class="plan-mode-v5"><button class="${onlyEmpty?'on':''}" data-v624mode="fill">Fill empty only</button><button class="${!onlyEmpty?'on':''}" data-v624mode="rebuild">Build a new plan</button></div>
+      <div class="plan-fresh-v624"><span><b>Alternative set #${generation}</b><br>Build a new plan again to generate a fresh A/B/C set.</span><button class="btn ghost sm" id="v624-newset">${ic('sparkle',14)} New A/B/C</button></div>
+      <div class="plan-tabs-v5">${[0,1,2].map(i=>`<button class="${variant===i?'on':''}" data-v624plan="${i}">Plan ${String.fromCharCode(65+i)}</button>`).join('')}</div>
+      <div class="plan-diff-v624">Difference from Plan A: Plan B ${diffAB} assignment${diffAB===1?'':'s'} · Plan C ${diffAC} assignment${diffAC===1?'':'s'}${diffAB===0&&diffAC===0?' · Current hard constraints may leave only one valid arrangement.':''}</div>
+      ${plan.length?`<div class="aa-bal ${bal.spread<=1?'good':'warn'}"><b>Fairness</b><span>${bal.spread<=1?'Evenly shared':'Workload difference '+bal.spread} · ${bal.min}–${bal.max} activities</span></div>
+      <div class="card aa-list">${Object.keys(byDay).sort((a,b)=>a-b).map(d=>`<div class="aa-day"><b>${esc(t('days')[+d]||'')}</b></div>${byDay[d].map(x=>{
+        const i=plan.indexOf(x),isEvent=x.slot==='event';
+        const pool=isEvent?eventsCrew(+d,assignDateStr(+d)):assignableStaff(+d,assignDateStr(+d)).filter(u=>+u.number!==DJ_NUMBER&&(api624()?.hardAvailable?api624().hardAvailable(u,x.activity,+d):true));
+        return `<div class="aa-row"><span class="aa-slot ${x.slot}">${isEvent?'DJ':x.slot}</span><span class="aa-mid"><b>${esc(x.activity.name)}</b><span class="mini">${esc(x.activity.time||'')} · ${activityType(x.activity)}</span></span><select class="aa-sel" data-v624row="${i}" ${isEvent?'disabled':''}><option value="">${isEvent?'DJ unavailable':'— unassigned —'}</option>${pool.map(u=>`<option value="${esc(u.username)}" ${u.username===x.username?'selected':''}>${esc(u.display_name||u.username)}</option>`).join('')}</select></div>`;
+      }).join('')}`).join('')}</div>
+      <button class="btn" id="v624-apply">${ic('check',16)} Apply Plan ${String.fromCharCode(65+variant)}</button>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No programme items for this selection.</div>`}
+      <button class="btn ghost" id="v624-close">${t('close')}</button></div>`;
+
+    qa('[data-v624scope]',wrap).forEach(b=>b.onclick=()=>{scope=b.dataset.v624scope;regenerate();draw();});
+    qa('[data-v624mode]',wrap).forEach(b=>b.onclick=()=>{
+      const next=b.dataset.v624mode==='fill';
+      if(next!==onlyEmpty){onlyEmpty=next;regenerate();}
+      else if(!next){regenerate();} // clicking Build a new plan again creates a new set
+      draw();
+    });
+    qa('[data-v624plan]',wrap).forEach(b=>b.onclick=()=>{variant=+b.dataset.v624plan;draw();});
+    const fresh=q('#v624-newset',wrap);if(fresh)fresh.onclick=()=>{regenerate();draw();};
+    qa('[data-v624row]',wrap).forEach(s=>s.onchange=()=>{
+      const i=+s.dataset.v624row,u=(S.users||[]).find(x=>x.username===s.value),row=plan[i];
+      if(u&&row&&row.slot!=='event'){
+        const duplicate=plan.some((x,j)=>j!==i&&x.username===u.username&&x.activity.day===row.activity.day&&x.slot===row.slot);
+        if(duplicate){toastWarn((u.display_name||u.username)+' already has an activity in this '+row.slot+' operation.');draw();return;}
+      }
+      plan[i]={...row,username:s.value,name:u?(u.display_name||u.username):'',user:u||null};draw();
+    });
+    const ap=q('#v624-apply',wrap);if(ap)ap.onclick=async()=>{
+      const ok=await applyAssignments(plan.filter(x=>x.username));
+      if(ok){wrap.remove();toastOk('Plan applied');render();}
+    };
+    q('#v624-close',wrap).onclick=()=>wrap.remove();
+  };
+  draw();
+};
+
+window.AUREA_SMART_PLANS_V624={
+  version:'6.24',
+  generateSet:generateSet624,
+  signature:signature624,
+  difference:countDifference624
+};
+})();
+</script>
 </body>
 </html>
