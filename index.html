@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Signature Luxury</title>
+<title>Entertainment · AUREA Signature Luxury V6.13</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -13435,6 +13435,214 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
   guestView=function(){if(S.session&&S.session.role==='guest'){if(S.tab==='home')return guestHomeV612();if(S.tab==='stay'||S.tab==='bookings')return guestStayV612();}return __guestViewV611();};
 
   document.addEventListener('click',function(e){const b=e.target.closest('#guest-photo-open,#guest-photo-edit,#guest-photo-tool');if(!b)return;e.preventDefault();e.stopPropagation();openGuestPhotoV612();},true);
+})();
+</script>
+
+
+<!-- ============================================================
+     AUREA V6.13 — MANAGER DAY BRANDING CONTROL
+     Unified Manager control for day identity, restaurant theme,
+     and Guest programme covers. Existing Guest/Staff logic stays intact.
+     ============================================================ -->
+<style id="aurea-v613-manager-day-branding">
+.mdb613-summary{margin:0 0 14px;padding:14px 15px;border:1px solid rgba(95,68,48,.10);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.94),rgba(248,242,233,.86))}
+.mdb613-summary small{display:block;margin-bottom:5px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.mdb613-summary b{font-family:var(--font-display);font-size:22px;line-height:1.1;color:var(--cacao)}
+.mdb613-section{margin:16px 0 10px;padding:14px;border:1px solid rgba(95,68,48,.10);border-radius:20px;background:rgba(255,255,255,.66)}
+.mdb613-section>h4{margin:0 0 5px;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.mdb613-help{margin:0 0 12px;color:var(--muted);font-size:12px;line-height:1.45}
+.mdb613-field-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.mdb613-field-actions .btn{min-height:38px!important;padding:8px 11px!important}
+.mdb613-cover-list{display:grid;gap:11px}
+.mdb613-cover{overflow:hidden;border:1px solid rgba(95,68,48,.10);border-radius:17px;background:var(--card)}
+.mdb613-cover-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px 8px}
+.mdb613-cover-head b{font-size:13px}.mdb613-cover-head span{font-size:10px;text-transform:uppercase;letter-spacing:.10em;color:var(--muted);font-weight:800}
+.mdb613-cover-preview{height:116px;margin:0 10px;border-radius:13px;overflow:hidden;background:linear-gradient(135deg,#eee6da,#ded2c3);display:grid;place-items:center;color:var(--muted);font-size:12px}
+.mdb613-cover-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.mdb613-cover-actions{display:flex;gap:7px;flex-wrap:wrap;padding:10px}
+.mdb613-cover-actions .btn{flex:1 1 100px;min-height:39px!important;padding:8px 9px!important;font-size:11px!important}
+.mdb613-savebar{position:sticky;bottom:-1px;z-index:2;padding-top:12px;background:linear-gradient(180deg,rgba(247,243,236,0),rgba(247,243,236,.96) 28%)}
+[data-theme="dark"] .mdb613-summary,[data-theme="dark"] .mdb613-section{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.09)}
+[data-theme="dark"] .mdb613-summary b{color:var(--text)}
+@media(max-width:390px){.mdb613-cover-preview{height:102px}.mdb613-cover-actions .btn{flex-basis:92px}}
+</style>
+<script id="aurea-v613-manager-day-branding-logic">
+(function(){
+  'use strict';
+  if(typeof window.openDayInfoEditorV6!=='function') return;
+
+  function own(o,k){ return !!o && Object.prototype.hasOwnProperty.call(o,k); }
+  function cloneObj(o){ return o&&typeof o==='object'?{...o}:{}; }
+  function designAll(){ return cloneObj(S.settings&&S.settings.guestProgramDays); }
+  function designFor(day){ return cloneObj(designAll()[String(day)]); }
+  function infoAll(){ return cloneObj(S.settings&&S.settings.dayInfoOverrides); }
+  function infoFor(day){ return cloneObj(infoAll()[String(day)]); }
+  function baseTheme(day){ var dp=dayPlanFor(day); return String(dp&&dp.theme||''); }
+  function currentTheme(day){ var i=infoFor(day); return own(i,'theme')?String(i.theme||''):baseTheme(day); }
+  function dayName(day){ return String(designFor(day).dayName||'').trim(); }
+  function coverLabel(id){ return {daytime:'Activities cover',dayevents:'Event cover',evening:'Evening Operation cover'}[id]||id; }
+  function fallbackCover(id){ try{return String(opImage(id)||'');}catch(e){return '';} }
+  function coverStatus(covers,id){
+    if(!own(covers,id)) return {mode:'default',url:fallbackCover(id),label:'Default photo'};
+    var u=String(covers[id]||'');
+    return u?{mode:'custom',url:u,label:'Custom photo'}:{mode:'none',url:'',label:'No photo'};
+  }
+  function autoProgrammeInfo613(day){
+    var acts=(S.activities||[]).filter(function(a){return Number(a.day)===Number(day);});
+    function line(a){
+      var time=String(a.time||'').trim(), name=String(a.name||'').trim(), loc=String(a.location||'').trim();
+      return [time,name].filter(Boolean).join(' · ')+(loc?' · '+loc:'');
+    }
+    function byCat(cat){ return acts.filter(function(a){ try{return normCat(a)===cat;}catch(e){return String(a.category||'')===cat;} }).map(line).filter(Boolean).join('\n'); }
+    return {events:byCat('mEvents'),live:byCat('eLive'),show:byCat('eShow')};
+  }
+  function fileAsDataURL(file){
+    return new Promise(function(resolve,reject){
+      var r=new FileReader();
+      r.onload=function(){resolve(String(r.result||''));};
+      r.onerror=reject;
+      r.readAsDataURL(file);
+    });
+  }
+  function compressedCover(file){
+    return new Promise(function(resolve,reject){
+      try{
+        var r=new FileReader();
+        r.onerror=reject;
+        r.onload=function(){
+          var img=new Image();
+          img.onerror=function(){ resolve(String(r.result||'')); };
+          img.onload=function(){
+            try{
+              var max=1400, scale=Math.min(1,max/Math.max(img.width||1,img.height||1));
+              var w=Math.max(1,Math.round(img.width*scale)), h=Math.max(1,Math.round(img.height*scale));
+              var c=document.createElement('canvas'); c.width=w; c.height=h;
+              var ctx=c.getContext('2d'); if(!ctx){resolve(String(r.result||''));return;}
+              ctx.drawImage(img,0,0,w,h);
+              resolve(c.toDataURL('image/jpeg',.84));
+            }catch(e){ resolve(String(r.result||'')); }
+          };
+          img.src=String(r.result||'');
+        };
+        r.readAsDataURL(file);
+      }catch(e){reject(e);}
+    });
+  }
+
+  window.openDayInfoEditorV6=function(day){
+    if(!(S.session&&S.session.role==='manager')) return;
+    day=Number(day); if(!Number.isFinite(day)) day=S.day;
+    var dp=dayPlanFor(day), weekday=String((t('days')||[])[day]||dp&&dp.name||'Day');
+    var designAllDraft=designAll(), originalDesign=designFor(day), draftDesign={...originalDesign,covers:{...(originalDesign.covers||{})}};
+    var allInfoDraft=infoAll(), originalInfo=infoFor(day), draftInfo={...originalInfo};
+    var themeMode=own(originalInfo,'theme')?'override':'default';
+    var auto=autoProgrammeInfo613(day);
+    var autoText={
+      theme:baseTheme(day), dress:String(dp&&dp.dress||''),
+      events:String(auto.events||''),
+      live:String(auto.live||''),
+      show:String(auto.show||''),
+      entrance:personTag(dp&&dp.entrance)||'', off:personTags(dp&&dp.off)||''
+    };
+    function cur(k){ return own(originalInfo,k)?String(originalInfo[k]||''):String(autoText[k]||''); }
+    var identity=String(draftDesign.dayName||'').trim();
+    var wrap=baseModal(`<h3>${ic('calendar',20)} Edit day · ${esc(weekday)}</h3>
+      <p class="mini">Manage the operational day information and the Guest programme identity from one place.</p>
+      <div class="mdb613-summary"><small>Guest day identity</small><b id="mdb613-summary-title">${esc(weekday)}${identity?` · ${esc(identity)}`:''}</b></div>
+
+      <div class="mdb613-section"><h4>Day identity & restaurant</h4><p class="mdb613-help">Day Identity is optional. Restaurant Theme can be edited, removed completely, or returned to the weekly default.</p>
+        <label>Day Identity Name</label><input id="mdb613-dayname" placeholder="e.g. Habibi Day" value="${esc(identity)}">
+        <div class="mdb613-field-actions"><button type="button" class="btn sm ghost" id="mdb613-remove-dayname">Remove Day Name</button></div>
+        <label style="margin-top:12px">${t('restaurantTheme')}</label><input id="di63-theme" placeholder="e.g. Seafood" value="${esc(currentTheme(day))}">
+        <div class="mdb613-field-actions"><button type="button" class="btn sm ghost" id="mdb613-remove-theme">Remove Theme</button><button type="button" class="btn sm ghost" id="mdb613-default-theme">Use weekly default</button></div>
+      </div>
+
+      <div class="mdb613-section"><h4>Guest programme covers</h4><p class="mdb613-help">Choose a custom cover, remove the cover completely, or return to the app's default photo.</p><div class="mdb613-cover-list" id="mdb613-covers"></div></div>
+
+      <div class="mdb613-section"><h4>Operational information</h4>
+        <div class="di-v6-grid"><div><label>${t('dressCode')}</label><input id="di63-dress" value="${esc(cur('dress'))}"></div></div>
+        <label>${t('eventsToday')}</label><textarea id="di63-events" rows="3">${esc(cur('events'))}</textarea>
+        <div class="di-v6-grid"><div><label>Live music</label><textarea id="di63-live" rows="3">${esc(cur('live'))}</textarea></div><div><label>Show time</label><textarea id="di63-show" rows="3">${esc(cur('show'))}</textarea></div></div>
+        <div class="di-v6-grid"><div><label>${t('entranceDuty')}</label><textarea id="di63-ent" rows="2">${esc(cur('entrance'))}</textarea></div><div><label>${t('dayOff')}</label><textarea id="di63-off" rows="2">${esc(cur('off'))}</textarea></div></div>
+      </div>
+
+      <div class="mdb613-savebar"><button class="btn" id="di63-save">${t('save')}</button><button class="btn ghost" id="di63-reset">Reset operational text to automatic</button><button class="btn ghost" id="di63-close">${t('close')}</button></div>`);
+
+    var coverBox=wrap.querySelector('#mdb613-covers');
+    var coverIds=['daytime','dayevents','evening'];
+    function paintCovers(){
+      coverBox.innerHTML=coverIds.map(function(id){
+        var st=coverStatus(draftDesign.covers,id);
+        return `<div class="mdb613-cover"><div class="mdb613-cover-head"><b>${esc(coverLabel(id))}</b><span>${esc(st.label)}</span></div><div class="mdb613-cover-preview">${st.url?`<img src="${esc(st.url)}" alt="${esc(coverLabel(id))}">`:`<span>${ic('photo',18)} No cover photo</span>`}</div><div class="mdb613-cover-actions"><button type="button" class="btn sm ghost" data-mdb613-upload="${esc(id)}">Add / change</button><button type="button" class="btn sm ghost" data-mdb613-remove="${esc(id)}">Remove</button><button type="button" class="btn sm ghost" data-mdb613-default="${esc(id)}">Use default</button></div><input type="file" accept="image/*" data-mdb613-file="${esc(id)}" hidden></div>`;
+      }).join('');
+      coverBox.querySelectorAll('[data-mdb613-upload]').forEach(function(b){ b.onclick=function(){ var f=coverBox.querySelector('[data-mdb613-file="'+b.dataset.mdb613Upload+'"]'); if(f) f.click(); }; });
+      coverBox.querySelectorAll('[data-mdb613-remove]').forEach(function(b){ b.onclick=function(){ draftDesign.covers[b.dataset.mdb613Remove]=''; paintCovers(); }; });
+      coverBox.querySelectorAll('[data-mdb613-default]').forEach(function(b){ b.onclick=function(){ delete draftDesign.covers[b.dataset.mdb613Default]; paintCovers(); }; });
+      coverBox.querySelectorAll('[data-mdb613-file]').forEach(function(inp){ inp.onchange=async function(){
+        var file=inp.files&&inp.files[0]; if(!file) return;
+        try{
+          var url='';
+          if(typeof uploadAvatar==='function'&&typeof REMOTE!=='undefined'&&REMOTE) url=await uploadAvatar(file);
+          else url=await compressedCover(file);
+          if(!url) url=await fileAsDataURL(file);
+          draftDesign.covers[inp.dataset.mdb613File]=url;
+          paintCovers();
+        }catch(e){ console.error('V6.13 cover upload',e); toastErr(t('uploadErr')); }
+      }; });
+    }
+    paintCovers();
+
+    var nameInput=wrap.querySelector('#mdb613-dayname'), summary=wrap.querySelector('#mdb613-summary-title'), themeInput=wrap.querySelector('#di63-theme');
+    function refreshSummary(){ var n=nameInput.value.trim(); summary.textContent=weekday+(n?' · '+n:''); }
+    nameInput.addEventListener('input',refreshSummary);
+    themeInput.addEventListener('input',function(){ themeMode='override'; });
+    wrap.querySelector('#mdb613-remove-dayname').onclick=function(){ nameInput.value=''; refreshSummary(); };
+    wrap.querySelector('#mdb613-remove-theme').onclick=function(){ themeMode='override'; themeInput.value=''; };
+    wrap.querySelector('#mdb613-default-theme').onclick=function(){ themeMode='default'; themeInput.value=baseTheme(day); };
+    wrap.querySelector('#di63-close').onclick=function(){ wrap.remove(); };
+
+    wrap.querySelector('#di63-reset').onclick=function(){
+      wrap.querySelector('#di63-dress').value=autoText.dress;
+      wrap.querySelector('#di63-events').value=autoText.events;
+      wrap.querySelector('#di63-live').value=autoText.live;
+      wrap.querySelector('#di63-show').value=autoText.show;
+      wrap.querySelector('#di63-ent').value=autoText.entrance;
+      wrap.querySelector('#di63-off').value=autoText.off;
+    };
+
+    wrap.querySelector('#di63-save').onclick=async function(){
+      var nm=nameInput.value.trim();
+      if(nm) draftDesign.dayName=nm; else delete draftDesign.dayName;
+      delete draftDesign.restaurantTheme;
+      if(!Object.keys(draftDesign.covers||{}).length) delete draftDesign.covers;
+      designAllDraft[String(day)]=draftDesign;
+
+      draftInfo.dress=wrap.querySelector('#di63-dress').value.trim();
+      draftInfo.events=wrap.querySelector('#di63-events').value.trim().replace(/\n/g,'<br>');
+      draftInfo.live=wrap.querySelector('#di63-live').value.trim().replace(/\n/g,'<br>');
+      draftInfo.show=wrap.querySelector('#di63-show').value.trim().replace(/\n/g,'<br>');
+      draftInfo.entrance=wrap.querySelector('#di63-ent').value.trim();
+      draftInfo.off=wrap.querySelector('#di63-off').value.trim();
+      if(themeMode==='default') delete draftInfo.theme; else draftInfo.theme=themeInput.value.trim();
+      allInfoDraft[String(day)]=draftInfo;
+
+      try{
+        await DB.saveSettings({...S.settings,guestProgramDays:designAllDraft,dayInfoOverrides:allInfoDraft});
+        wrap.remove(); toastOk(t('saved')); render();
+      }catch(e){ console.error('V6.13 manager day branding save',e); toastErr(t('errSave')); }
+    };
+  };
+
+  /* Add Day Identity to the Manager/Staff Day Information card without changing its data source. */
+  if(typeof window.v6DayInfoHtml==='function'){
+    var baseV6DayInfoHtml613=window.v6DayInfoHtml;
+    window.v6DayInfoHtml=function(day){
+      var html=baseV6DayInfoHtml613(day), nm=dayName(day);
+      if(!nm) return html;
+      var label=String((t('days')||[])[day]||'Day')+' · '+nm;
+      return html.replace('<div class="dayinfo-grid-v6">','<div class="dayinfo-grid-v6"><div class="dayinfo-item-v6 wide"><span>Day Identity</span><b>'+esc(label)+'</b></div>');
+    };
+  }
 })();
 </script>
 </body>
