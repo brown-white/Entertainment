@@ -13884,5 +13884,88 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
 })();
 </script>
 
+
+
+<script id="aurea-write-safety-v616">
+/* ================================================================
+   V6.16 — GLOBAL DATABASE WRITE SAFETY
+   Prevents accidental duplicate mutations caused by repeated taps,
+   Enter-key repeats, slow connections, or multiple handlers firing
+   before the first identical write has completed.
+   ================================================================ */
+(function(){
+  'use strict';
+  if(typeof DB==='undefined' || !DB || DB.__v616GlobalWriteSafety) return;
+
+  const pending=new Map();
+  const MUTATION_RE=/^(?:add|save|update|delete|remove|set)/;
+  const EXTRA_MUTATIONS=new Set(['markRead']);
+  const SKIP=new Set(['load','poll']);
+
+  function normalize(value, seen){
+    if(value===null || value===undefined) return value;
+    const t=typeof value;
+    if(t==='number' || t==='boolean' || t==='string') return value;
+    if(t==='function') return '[function]';
+    if(value instanceof Date) return value.toISOString();
+    if(!seen) seen=new WeakSet();
+    if(t==='object'){
+      if(seen.has(value)) return '[circular]';
+      seen.add(value);
+      if(Array.isArray(value)) return value.map(v=>normalize(v,seen));
+      const out={};
+      Object.keys(value).sort().forEach(k=>{ out[k]=normalize(value[k],seen); });
+      return out;
+    }
+    return String(value);
+  }
+
+  function keyFor(name,args){
+    let body='';
+    try{ body=JSON.stringify(normalize(args)); }
+    catch(_){ body=String(args); }
+    return name+'|'+body;
+  }
+
+  function wrapMutation(name){
+    const original=DB[name];
+    if(typeof original!=='function' || original.__v616WriteGuard) return;
+    const guarded=async function(...args){
+      const key=keyFor(name,args);
+      if(pending.has(key)) return pending.get(key);
+      let task;
+      try{
+        task=Promise.resolve().then(()=>original.apply(DB,args));
+      }catch(err){
+        throw err;
+      }
+      pending.set(key,task);
+      try{
+        return await task;
+      }finally{
+        if(pending.get(key)===task) pending.delete(key);
+      }
+    };
+    guarded.__v616WriteGuard=true;
+    guarded.__v616Original=original;
+    DB[name]=guarded;
+  }
+
+  Object.keys(DB).forEach(name=>{
+    if(SKIP.has(name)) return;
+    if(MUTATION_RE.test(name) || EXTRA_MUTATIONS.has(name)) wrapMutation(name);
+  });
+
+  DB.__v616GlobalWriteSafety=true;
+  DB.__v616PendingWrites=pending;
+
+  /* Expose read-only diagnostics for stability checks/support. */
+  window.AUREA_WRITE_SAFETY={
+    version:'6.16',
+    pendingCount:()=>pending.size,
+    guardedMethods:()=>Object.keys(DB).filter(k=>typeof DB[k]==='function' && DB[k].__v616WriteGuard)
+  };
+})();
+</script>
 </body>
 </html>
