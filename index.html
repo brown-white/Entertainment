@@ -7892,7 +7892,11 @@ const SECTION_LABELS={
 function sectionLabel(pageKey,k){ const m=SECTION_LABELS[pageKey]||{}; return m[k]?t(m[k]):k; }
 function pageHidden(pageKey){
   const all=(S.settings && S.settings.pageHidden) || {};
-  return (all[pageKey]||[]).slice();
+  let hidden=(all[pageKey]||[]).slice();
+  // V6.19.3 one-time migration: stale saved Guest layouts could hide the newly-added Tickets tab.
+  // Until the migration is recorded, Tickets must remain visible. Afterwards normal Arrange Page control resumes.
+  if(pageKey==="guests" && !(S.settings&&S.settings.guestTicketsTabMigrationV6193)) hidden=hidden.filter(k=>k!=="tickets");
+  return hidden;
 }
 function pageOrder(pageKey,withHidden){
   const def=PAGE_SECTIONS[pageKey]||[];
@@ -7901,10 +7905,9 @@ function pageOrder(pageKey,withHidden){
   if(!saved && pageKey==="dayplan") saved=(S.settings && S.settings.dayPlanOrder);  // the older name
   const kept=(saved||[]).filter(k=>def.includes(k));
   let out=kept.concat(def.filter(k=>!kept.includes(k)));
-  // V6.19.2 migration: older saved Guest layouts did not know the Tickets tab.
-  // Insert it beside Bookings once; if the manager later arranges Tickets manually,
-  // the saved position is respected.
-  if(pageKey==="guests" && (!saved || !saved.includes("tickets")) && out.includes("tickets")){
+  // V6.19.3 one-time migration: older/stale saved Guest layouts may already contain Tickets
+  // in the wrong position, or may have hidden it. Force the intended location once.
+  if(pageKey==="guests" && !(S.settings&&S.settings.guestTicketsTabMigrationV6193) && out.includes("tickets")){
     out=out.filter(k=>k!=="tickets");
     const bi=out.indexOf("bookings");
     out.splice(bi>=0?bi+1:Math.min(3,out.length),0,"tickets");
@@ -14693,6 +14696,37 @@ wireCommon=function(){
   const events=document.querySelector('#gt620-events');if(events)events.onclick=()=>{S.tab='program';S.sub.program='tickets';render();};
 };
 window.openGuestTicketOrderEditV620=openOrderEdit620;
+})();
+</script>
+<script id="aurea-guest-ticket-tab-migration-v6193">
+(()=>{
+  'use strict';
+  if(window.__AUREA_GUEST_TICKET_TAB_MIGRATION_V6193)return;
+  window.__AUREA_GUEST_TICKET_TAB_MIGRATION_V6193=true;
+  let running=false;
+  async function migrateGuestTicketsTabV6193(){
+    if(running||!S.settings||S.settings.guestTicketsTabMigrationV6193)return false;
+    running=true;
+    try{
+      const po={...((S.settings&&S.settings.pageOrder)||{})};
+      let order=Array.isArray(po.guests)?po.guests.filter(k=>PAGE_SECTIONS.guests.includes(k)):PAGE_SECTIONS.guests.slice();
+      for(const k of PAGE_SECTIONS.guests)if(!order.includes(k))order.push(k);
+      order=order.filter(k=>k!=="tickets");
+      const bi=order.indexOf("bookings");order.splice(bi>=0?bi+1:Math.min(3,order.length),0,"tickets");
+      po.guests=order;
+      const ph={...((S.settings&&S.settings.pageHidden)||{})};
+      ph.guests=(Array.isArray(ph.guests)?ph.guests:[]).filter(k=>k!=="tickets");
+      const next={...S.settings,pageOrder:po,pageHidden:ph,guestTicketsTabMigrationV6193:true};
+      await DB.saveSettings(next);S.settings=next;
+      if(S.session&&S.session.role==="manager"&&S.tab==="guests")render();
+      return true;
+    }catch(e){console.error('Guest Tickets tab migration V6.19.3',e);return false;}
+    finally{running=false;}
+  }
+  window.migrateGuestTicketsTabV6193=migrateGuestTicketsTabV6193;
+  setTimeout(migrateGuestTicketsTabV6193,650);
+  const oldPollV6193=DB.poll.bind(DB);
+  DB.poll=async function(){const changed=await oldPollV6193();if(S.settings&&!S.settings.guestTicketsTabMigrationV6193)await migrateGuestTicketsTabV6193();return changed;};
 })();
 </script>
 </body>
