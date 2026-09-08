@@ -4136,7 +4136,7 @@ function wireLogin(){
       if(wiz.step===0){
         if(!wiz.room){ err.textContent=t("loginErr"); return; }
         const existing=S.accounts.find(a=>String(a.room)===String(wiz.room));
-        if(existing){ err.textContent=t("accountExists"); guestMode="signin"; setTimeout(render,1500); return; }
+        if(existing && existing.active!==false && !stayExpired(existing)){ err.textContent=t("accountExists"); guestMode="signin"; setTimeout(render,1500); return; }
       }
       if(wiz.step===1 && !wiz.nat){ err.textContent=t("loginErr"); return; }
       if(wiz.step===2){ wiz.name=$("#wz-in").value.trim(); if(!wiz.name){ err.textContent=t("loginErr"); return; } }
@@ -4154,12 +4154,13 @@ function wireLogin(){
       wiz.password=$("#wz-pass").value.trim();
       const cb=$("#cb-rem"); rememberMe=cb?cb.checked:true;
       if(wiz.username.length<3 || wiz.password.length<4){ err.textContent=t("loginErr"); return; }
-      const taken=S.accounts.some(a=>String(a.username||"").toLowerCase()===wiz.username.toLowerCase())
+      const recyclable=S.accounts.find(a=>String(a.room)===String(wiz.room) && (a.active===false || stayExpired(a)));
+      const taken=S.accounts.some(a=>a!==recyclable && String(a.username||"").toLowerCase()===wiz.username.toLowerCase())
         || (S.rooms.some(r=>String(r.room)===wiz.username) && wiz.username!==String(wiz.room));
       if(taken){ err.textContent=t("userExists"); return; }
       const rm=S.rooms.find(x=>String(x.room)===String(wiz.room));
       if(!rm || !rm.active){ err.textContent=t("roomNotFound"); return; }
-      if(S.accounts.some(a=>String(a.room)===String(wiz.room))){ err.textContent=t("accountExists"); guestMode="signin"; setTimeout(render,1500); return; }
+      if(S.accounts.some(a=>String(a.room)===String(wiz.room) && a.active!==false && !stayExpired(a))){ err.textContent=t("accountExists"); guestMode="signin"; setTimeout(render,1500); return; }
       let acc;
       try{ acc=await DB.addAccount({room:wiz.room,name:wiz.name,phone:wiz.phone,nationality:wiz.nat,
         arrival:wiz.arr,departure:wiz.dep,username:wiz.username,password:wiz.password}); }
@@ -5354,7 +5355,7 @@ function guestRecord(acc){
 }
 function guestCrmInner(){
   const q=(S.crmQuery||"").trim().toLowerCase();
-  let list=(S.accounts||[]).slice();
+  let list=(S.accounts||[]).filter(a=>a.active!==false && !stayExpired(a));
   if(q) list=list.filter(a=>[a.room,a.name,a.nationality].some(v=>String(v||"").toLowerCase().includes(q)));
   list.sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
   return `<input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
@@ -7781,14 +7782,15 @@ function managerView(){
     const sub=S.sub.guests;
     if(sub==="chat" && S.chatRoom) return chatThreadScreen();
     let inner="";
-    if(sub==="rooms") inner=roomsInner();
+    if(sub==="history") inner=guestHistoryInnerV619();
+    else if(sub==="rooms") inner=roomsInner();
     else if(sub==="crm") inner=guestCrmInner();
     else if(sub==="bookings") inner=bookingsInner();
     else if(sub==="chat") inner=chatInboxInner();
     else if(sub==="feedback") inner=feedbackInner();
     else inner=requestsInner();
     const gTabs=[["crm",t("guestCrm")],["rooms",t("rooms")],["bookings",t("bookings")],
-                 ["chat",t("guestChatTab")],["requests",t("requests")],["feedback",t("feedback")]];
+                 ["chat",t("guestChatTab")],["requests",t("requests")],["feedback",t("feedback")],["history","Guest history"]];
     return `<div class="screen fadein">
       ${topBar(t("guestsTab"),S.session.name)}
       ${arrangeBtn("guests")}
@@ -8331,7 +8333,7 @@ function roomsInner(){
     <input id="rooms-filter" placeholder="..." style="margin-bottom:10px">
     <div class="card roomgrid">
       ${S.rooms.length?S.rooms.map(r=>{
-        const acc=S.accounts.find(a=>a.room===r.room);
+        const acc=S.accounts.find(a=>a.room===r.room && a.active!==false && !stayExpired(a));
         return `<div class="booking-line roomline" data-room="${esc(r.room)}">
           <span style="min-width:0"><b>${esc(r.room)}</b>${acc?` · ${esc(acc.name)}`:""}</span>
           <span style="display:flex;gap:6px;align-items:center;flex:none">
@@ -11560,8 +11562,9 @@ function startRealtime(){
   if(S.session){
     if(S.session.role==="guest"){
       const rm=S.rooms.find(x=>String(x.room)===String(S.session.room));
-      const acc=S.accounts.find(a=>String(a.room)===String(S.session.room));
-      if(!rm || !rm.active || !acc) S.session=null;
+      const acc=S.accounts.find(a=>a.id===S.session.accountId) || S.accounts.find(a=>String(a.room)===String(S.session.room));
+      const sameStay=!!acc && String(S.session.arrival||"")===String(acc.arrival||"") && String(S.session.departure||"")===String(acc.departure||"");
+      if(!rm || !rm.active || !acc || !sameStay || acc.active===false || stayExpired(acc)) S.session=null;
       else S.session={role:"guest",room:acc.room,name:acc.name,phone:acc.phone||"",
         nationality:acc.nationality||"",arrival:acc.arrival,departure:acc.departure,
         accountId:acc.id,username:acc.username||acc.room};
@@ -13386,7 +13389,7 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
     return Array.from(map.values()).sort((a,b)=>a.name.localeCompare(b.name));
   };
 
-  function guestPhotoKeyV612(){const g=S.session||{};return 'aurea_guest_photo_'+String(g.accountId||g.room||g.username||'guest');}
+  function guestPhotoKeyV612(){const g=S.session||{};return 'aurea_guest_photo_'+String(g.accountId||g.room||g.username||'guest')+'_'+String(g.arrival||'stay').replace(/[^0-9A-Za-z_-]/g,'');}
   function guestPhotoV612(){try{return localStorage.getItem(guestPhotoKeyV612())||'';}catch(e){return '';}}
   function setGuestPhotoV612(v){try{if(v)localStorage.setItem(guestPhotoKeyV612(),v);else localStorage.removeItem(guestPhotoKeyV612());}catch(e){} if(S.session)S.session.guestPhoto=v||'';}
   function resizeGuestPhotoV612(file,cb){
@@ -14180,6 +14183,402 @@ label{font-size:11px;font-weight:750;letter-spacing:.14em;color:var(--muted);mar
   const prevWireCommon618=window.wireCommon;
   window.wireCommon=function(){prevWireCommon618();const p=document.querySelector('#rq-purchase');if(p)p.onclick=()=>window.openPurchaseRequestV617();document.querySelectorAll('[data-rqopen]').forEach(el=>{const id=el.getAttribute('data-rqopen'),sh=reqSheet(id);if(sh&&sh.kind==='purchase')el.onclick=()=>window.openPurchaseRequestV617(id);});};
   window.openPurchaseItemCatalog=openCatalogManager618;
+})();
+</script>
+<style id="aurea-guest-lifecycle-v619-style">
+/* V6.19 · Hotel guest lifecycle, privacy and data retention */
+.gh619-hero{padding:18px;border-radius:24px;background:linear-gradient(145deg,#2d1d16,#5a4032);color:#fff;margin-bottom:14px;box-shadow:0 22px 44px -30px rgba(40,25,17,.55)}
+.gh619-hero .k{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:#d9b88f;font-weight:800}.gh619-hero h3{font-family:var(--font-display);font-size:29px;line-height:1;margin:7px 0}.gh619-hero p{font-size:11px;line-height:1.55;color:rgba(255,255,255,.7);margin:0}
+.gh619-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 16px}.gh619-stat{padding:13px;border:1px solid var(--line);background:var(--card);border-radius:18px}.gh619-stat b{display:block;font-family:var(--font-display);font-size:24px}.gh619-stat span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.gh619-filter{padding:14px;border:1px solid var(--line);border-radius:20px;background:var(--card);margin-bottom:12px}.gh619-filter .row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.gh619-filter-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.gh619-list{display:grid;gap:9px}.gh619-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.gh619-row input[type=checkbox]{width:20px;height:20px}.gh619-row b{display:block;font-size:14px}.gh619-row p{font-size:10px;line-height:1.45;color:var(--muted);margin:4px 0 0}.gh619-tag{font-size:9px;font-weight:800;padding:6px 8px;border-radius:999px;background:var(--soft);white-space:nowrap}
+.gh619-cats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.gh619-cats label{display:flex;align-items:center;gap:7px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-size:10px;text-transform:none;letter-spacing:0;color:var(--ink)}.gh619-cats input{width:17px;height:17px}
+.gh619-danger{padding:14px;border:1px solid rgba(176,82,57,.22);border-radius:20px;background:rgba(176,82,57,.045);margin-top:14px}.gh619-danger h4{margin:0 0 5px;font-size:13px}.gh619-danger p{font-size:10px;color:var(--muted);line-height:1.5;margin:0 0 10px}.gh619-danger .btn{margin-top:7px}
+.gh619-empty{padding:24px 14px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px;font-size:11px;line-height:1.5}
+@media(max-width:390px){.gh619-stats{grid-template-columns:1fr 1fr}.gh619-filter .row,.gh619-filter-actions,.gh619-cats{grid-template-columns:1fr}}
+</style>
+<script id="aurea-guest-lifecycle-v619-script">
+(()=>{
+'use strict';
+if(window.__AUREA_GUEST_LIFECYCLE_V619) return;
+window.__AUREA_GUEST_LIFECYCLE_V619=true;
+
+const DATA_ARRAYS619=['bookings','orders','requests','messages'];
+const ARCHIVE_KEY619='guestStayArchive';
+
+const norm619=v=>String(v??'').trim().toLowerCase().replace(/\s+/g,' ');
+const date619=v=>String(v||'').slice(0,10);
+function currentAccounts619(){return (S.accounts||[]).filter(a=>a&&a.active!==false&&!stayExpired(a));}
+function currentAccountForRoom619(room){
+  const r=visibleRoom619(room);
+  return currentAccounts619().find(a=>String(a.room)===String(r))||null;
+}
+function stayToken619(acc){
+  if(!acc)return'';
+  const id=String(acc.id??'x').replace(/[^A-Za-z0-9_-]/g,'');
+  const ar=date619(acc.arrival).replace(/-/g,'')||'na';
+  const room=String(acc.room||'').replace(/[^A-Za-z0-9_-]/g,'');
+  return 'g$'+id+'$'+ar+'$'+room;
+}
+function visibleRoom619(room){
+  const s=String(room||'');
+  if(!s.startsWith('g$'))return s;
+  const p=s.split('$');return p.length>=4?p.slice(3).join('$'):s;
+}
+function accountFromChannel619(room){
+  const s=String(room||'');if(!s.startsWith('g$'))return null;
+  const p=s.split('$');if(p.length<4)return null;
+  const id=p[1],arr=p[2];
+  return (S.accounts||[]).find(a=>String(a.id)===id&&date619(a.arrival).replace(/-/g,'')===arr)||null;
+}
+function rowTime619(row){
+  for(const k of ['created_at','booked_at','updated_at']){
+    const v=row&&row[k];if(v){const ms=Date.parse(v);if(Number.isFinite(ms))return ms;}
+  }
+  return NaN;
+}
+function withinStay619(row,acc){
+  if(!acc)return false;
+  const st=date619(acc.arrival),en=date619(acc.departure);
+  const ms=rowTime619(row);
+  if(Number.isFinite(ms)&&st&&en){
+    const d=new Date(ms),key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(key<st||key>en)return false;
+  }
+  const gn=norm619(row&&(row.guest_name||row.who_name));
+  if(gn&&norm619(acc.name)&&gn!==norm619(acc.name))return false;
+  return true;
+}
+function rowBelongs619(row,acc,field='room'){
+  if(!row||!acc)return false;
+  const val=String(row[field]??'');
+  const tok=stayToken619(acc);
+  if(val===tok)return true;
+  if(visibleRoom619(val)!==String(acc.room))return false;
+  if(val.startsWith('g$'))return false;
+  return withinStay619(row,acc);
+}
+function archiveList619(){return Array.isArray(S.settings&&S.settings[ARCHIVE_KEY619])?S.settings[ARCHIVE_KEY619].slice():[];}
+function archiveId619(acc){return [String(acc.id??''),date619(acc.arrival),date619(acc.departure),String(acc.room||'')].join('|');}
+function snapshot619(acc){
+  return {archiveId:archiveId619(acc),accountId:acc.id,room:String(acc.room||''),name:String(acc.name||''),phone:String(acc.phone||''),nationality:String(acc.nationality||''),username:String(acc.username||''),arrival:date619(acc.arrival),departure:date619(acc.departure),active:false,stayToken:stayToken619(acc),archivedAt:new Date().toISOString()};
+}
+async function saveArchive619(list){
+  const next={...S.settings,[ARCHIVE_KEY619]:list};
+  await DB.saveSettings(next);S.settings=next;return list;
+}
+async function ensureArchived619(acc){
+  if(!acc)return null;
+  const list=archiveList619(),id=archiveId619(acc);
+  const old=list.find(x=>x.archiveId===id);if(old)return old;
+  const snap=snapshot619(acc);list.unshift(snap);await saveArchive619(list);return snap;
+}
+let sweepRunning619=false;
+async function lifecycleSweep619(){
+  if(sweepRunning619)return false;sweepRunning619=true;
+  let changed=false;
+  try{
+    const ended=(S.accounts||[]).filter(a=>a&&(stayExpired(a)||a.active===false));
+    for(const acc of ended){
+      const before=archiveList619().length;
+      await ensureArchived619(acc);
+      if(archiveList619().length!==before)changed=true;
+      if(stayExpired(acc)&&acc.active!==false){
+        await DB.updateAccount(acc.id,{active:false});
+        changed=true;
+      }
+    }
+  }catch(e){console.error('guest lifecycle sweep',e);}
+  finally{sweepRunning619=false;}
+  return changed;
+}
+
+/* Reuse a room safely: archive the previous stay, then recycle the one room-account row.
+   This remains compatible with databases where guest_accounts.room is unique. */
+const baseAddAccount619=DB.addAccount.bind(DB);
+DB.addAccount=async function(acc){
+  const prev=(S.accounts||[]).find(a=>String(a.room)===String(acc&&acc.room));
+  if(prev&&(prev.active===false||stayExpired(prev))){
+    await ensureArchived619(prev);
+    try{localStorage.removeItem('aurea_guest_photo_'+String(prev.id));}catch(e){}
+    const patch={...acc,active:true};
+    await DB.updateAccount(prev.id,patch);
+    return (S.accounts||[]).find(a=>a.id===prev.id)||{...prev,...patch};
+  }
+  return baseAddAccount619({...acc,active:acc&&acc.active!==false});
+};
+
+
+/* Local guest preferences are stay-specific too. This prevents a reused hotel
+   phone/tablet from carrying the previous guest's favourites into a new stay. */
+function localStayKey619(acc){
+  return acc ? 'aurea_guest_local_'+String(acc.id)+'_'+date619(acc.arrival).replace(/-/g,'')+'_'+date619(acc.departure).replace(/-/g,'') : '';
+}
+function loadStayLocal619(acc){
+  const k=localStayKey619(acc);if(!k)return;
+  try{const d=JSON.parse(localStorage.getItem(k)||'{}');S.favorites=Array.isArray(d.favorites)?d.favorites:[];}catch(e){S.favorites=[];}
+}
+function saveStayLocal619(){
+  const a=guestAcc619&&guestAcc619();if(!a)return;
+  try{localStorage.setItem(localStayKey619(a),JSON.stringify({favorites:Array.isArray(S.favorites)?S.favorites:[]}));}catch(e){}
+}
+const basePersist619=persist;
+persist=function(){if(S.session&&S.session.role==='guest')saveStayLocal619();return basePersist619();};
+const baseStartGuest619=startGuestSession;
+startGuestSession=function(acc){loadStayLocal619(acc);return baseStartGuest619(acc);};
+if(S.session&&S.session.role==='guest'){
+  const a0=(S.accounts||[]).find(a=>a.id===S.session.accountId);
+  if(a0)loadStayLocal619(a0);
+}
+
+/* Every new guest-origin write gets the stay-specific channel automatically.
+   No database schema change is required. */
+function guestAcc619(){if(!(S.session&&S.session.role==='guest'))return null;return (S.accounts||[]).find(a=>a.id===S.session.accountId)||null;}
+function guestChannel619(){const a=guestAcc619();return a?stayToken619(a):String(S.session&&S.session.room||'');}
+for(const name of ['addBooking','addOrder','addRequest','addMessage','addFeedback']){
+  if(typeof DB[name]!=='function')continue;
+  const old=DB[name].bind(DB);
+  DB[name]=async function(row,...rest){
+    if(S.session&&S.session.role==='guest'&&row&&typeof row==='object'){
+      row={...row,room:guestChannel619()};
+    }else if(name==='addMessage'&&S.session&&S.session.role==='manager'&&row&&row.room&&!isStaffRoom(row.room)){
+      const a=currentAccountForRoom619(row.room);if(a)row={...row,room:stayToken619(a)};
+    }
+    return old(row,...rest);
+  };
+}
+if(typeof DB.addQuizReply==='function'){
+  const old=DB.addQuizReply.bind(DB);
+  DB.addQuizReply=async function(row,...rest){
+    if(S.session&&S.session.role==='guest'&&row&&typeof row==='object')row={...row,who:guestChannel619()};
+    return old(row,...rest);
+  };
+}
+
+/* Read receipts must target only the current stay, never every historical chat from that room. */
+if(typeof DB.markRead==='function'){
+  const old=DB.markRead.bind(DB);
+  DB.markRead=async function(room,side){
+    if(!isStaffRoom(room)){
+      const a=(S.session&&S.session.role==='guest')?guestAcc619():currentAccountForRoom619(room);
+      if(a){
+        const flag=side==='team'?'read_by_team':'read_by_guest',sender=side==='team'?'guest':'team';
+        const rows=(S.messages||[]).filter(m=>rowBelongs619(m,a,'room')&&m.sender===sender&&!m[flag]);
+        for(const m of rows){
+          if(REMOTE)await sb('messages?id=eq.'+encodeURIComponent(m.id),{method:'PATCH',body:JSON.stringify({[flag]:true})});
+          m[flag]=true;
+        }
+        return;
+      }
+    }
+    return old(room,side);
+  };
+}
+
+/* Current operational data only. Historical stays remain in state/database but do not
+   affect today's capacities, ticket sales, badges or a replacement guest. */
+function currentRows619(arr,field='room'){
+  const accounts=currentAccounts619();
+  return (arr||[]).filter(row=>accounts.some(a=>rowBelongs619(row,a,field)));
+}
+function mappedRows619(arr,field='room'){
+  return currentRows619(arr,field).map(row=>{
+    const a=currentAccounts619().find(x=>rowBelongs619(row,x,field));
+    return a?{...row,[field]:String(a.room)}:{...row};
+  });
+}
+function withOperational619(fn){
+  const save={bookings:S.bookings,orders:S.orders,requests:S.requests,messages:S.messages};
+  try{
+    S.bookings=mappedRows619(save.bookings);
+    S.orders=mappedRows619(save.orders);
+    S.requests=mappedRows619(save.requests);
+    const staff=(save.messages||[]).filter(m=>isStaffRoom(m.room));
+    S.messages=staff.concat(mappedRows619((save.messages||[]).filter(m=>!isStaffRoom(m.room))));
+    return fn();
+  }finally{Object.assign(S,save);}
+}
+function withCurrentGuest619(fn){
+  const a=guestAcc619();if(!a)return fn();
+  const save={bookings:S.bookings,orders:S.orders,requests:S.requests,messages:S.messages,quizReplies:S.quizReplies};
+  try{
+    S.bookings=(save.bookings||[]).filter(x=>rowBelongs619(x,a)).map(x=>({...x,room:String(a.room)}));
+    S.orders=(save.orders||[]).filter(x=>rowBelongs619(x,a)).map(x=>({...x,room:String(a.room)}));
+    S.requests=(save.requests||[]).filter(x=>rowBelongs619(x,a)).map(x=>({...x,room:String(a.room)}));
+    S.messages=(save.messages||[]).filter(x=>rowBelongs619(x,a)).map(x=>({...x,room:String(a.room)}));
+    S.quizReplies=(save.quizReplies||[]).filter(x=>rowBelongs619(x,a,'who')).map(x=>({...x,who:String(a.room)}));
+    return fn();
+  }finally{Object.assign(S,save);}
+}
+
+const baseGuestView619=guestView;
+guestView=function(){
+  if(S.session&&S.session.role==='guest'){
+    const a=guestAcc619(),k=localStayKey619(a);
+    if(a&&S.__v619LocalLoaded!==k){loadStayLocal619(a);S.__v619LocalLoaded=k;}
+    return withCurrentGuest619(()=>baseGuestView619());
+  }
+  return baseGuestView619();
+};
+const baseManagerView619=managerView;
+managerView=function(){
+  if(S.tab==='guests'&&S.sub.guests==='history')return baseManagerView619();
+  return withOperational619(()=>baseManagerView619());
+};
+const baseStaffView619=staffView;
+staffView=function(){return withOperational619(()=>baseStaffView619());};
+
+const baseBookingsFor619=bookingsFor;
+bookingsFor=function(actId){return currentRows619(S.bookings).filter(b=>String(b.activity_id)===String(actId));};
+myBooking=function(actId){
+  const a=guestAcc619();if(!a)return null;
+  return (S.bookings||[]).find(b=>String(b.activity_id)===String(actId)&&rowBelongs619(b,a));
+};
+ordersFor=function(tkId){return currentRows619(S.orders).filter(o=>String(o.ticket_id)===String(tkId));};
+myOrders=function(){const a=guestAcc619();return a?(S.orders||[]).filter(o=>rowBelongs619(o,a)):[];};
+myRequestsList=function(){const a=guestAcc619();return a?(S.requests||[]).filter(r=>rowBelongs619(r,a)):[];};
+accountName=function(room){const a=currentAccountForRoom619(room)||accountFromChannel619(room);return a?a.name:visibleRoom619(room);};
+guestForRoom=function(room){return currentAccountForRoom619(room);};
+accountForRoom=function(room){return currentAccountForRoom619(room);};
+guestActivities=function(room){
+  const a=currentAccountForRoom619(room);if(!a)return[];
+  return (S.bookings||[]).filter(b=>rowBelongs619(b,a)).map(b=>{const x=S.activities.find(z=>z.id===b.activity_id);return x?x.name:null;}).filter(Boolean);
+};
+guestRecord=function(acc){
+  const bookings=(S.bookings||[]).filter(b=>rowBelongs619(b,acc)),actIds=bookings.map(b=>b.activity_id);
+  const acts=(S.activities||[]).filter(a=>actIds.includes(a.id));
+  const orders=(S.orders||[]).filter(o=>rowBelongs619(o,acc)),reqs=(S.requests||[]).filter(r=>rowBelongs619(r,acc));
+  const fb=(S.feedback||[]).filter(f=>rowBelongs619(f,acc)),msgs=(S.messages||[]).filter(m=>rowBelongs619(m,acc));
+  const quiz=(S.quizReplies||[]).filter(q=>rowBelongs619(q,acc,'who'));
+  const byCat={};acts.forEach(a=>{const k=catLabel(normCat(a));byCat[k]=(byCat[k]||0)+1;});
+  const favs=Object.keys(byCat).sort((x,y)=>byCat[y]-byCat[x]).slice(0,3),avg=fb.length?Math.round(fb.reduce((n,f)=>n+(+f.rate||0),0)/fb.length*10)/10:0;
+  return{acc,bookings,acts,orders,reqs,fb,msgs,quiz,favs,avg,nights:guestStayNights(acc),daysApp:guestDaysInApp(acc)};
+};
+guestFullInfo=function(room){
+  const acc=currentAccountForRoom619(room);if(!acc)return null;const r=guestRecord(acc);
+  return{room:acc.room,name:acc.name,username:acc.username||acc.room,phone:acc.phone||'',nationality:acc.nationality||'',arrival:acc.arrival||'',departure:acc.departure||'',days:guestDaysHere(acc),activities:r.acts.map(a=>a.name),tickets:r.orders.reduce((n,o)=>n+(+o.qty||0),0),requests:r.reqs.length};
+};
+const oldUnreadFor619=unreadFor;
+unreadFor=function(role){
+  if(role==='guest'){
+    const a=guestAcc619();return a?(S.messages||[]).filter(m=>rowBelongs619(m,a)&&m.sender==='team'&&!m.read_by_guest).length:0;
+  }
+  return oldUnreadFor619(role);
+};
+unreadGuests=function(){
+  return currentRows619((S.messages||[]).filter(m=>!isStaffRoom(m.room))).filter(m=>m.sender==='guest'&&!m.read_by_team).length;
+};
+
+/* History / retention centre */
+function archiveAcc619(x){return{id:x.accountId,room:x.room,name:x.name,phone:x.phone,nationality:x.nationality,username:x.username,arrival:x.arrival,departure:x.departure,active:false};}
+function historyRowsFor619(snap,kind){
+  const a=archiveAcc619(snap);
+  if(kind==='bookings')return(S.bookings||[]).filter(x=>rowBelongs619(x,a));
+  if(kind==='orders')return(S.orders||[]).filter(x=>rowBelongs619(x,a));
+  if(kind==='messages')return(S.messages||[]).filter(x=>rowBelongs619(x,a));
+  if(kind==='requests')return(S.requests||[]).filter(x=>rowBelongs619(x,a));
+  if(kind==='feedback')return(S.feedback||[]).filter(x=>rowBelongs619(x,a));
+  if(kind==='quiz')return(S.quizReplies||[]).filter(x=>rowBelongs619(x,a,'who'));
+  return[];
+}
+function historyCount619(s){return['bookings','orders','messages','requests','feedback','quiz'].reduce((n,k)=>n+historyRowsFor619(s,k).length,0);}
+function historyFiltered619(){
+  const from=(S.gh619From||''),to=(S.gh619To||'');
+  return archiveList619().filter(s=>{const d=date619(s.departure)||date619(s.archivedAt);return(!from||d>=from)&&(!to||d<=to);});
+}
+function guestHistoryInnerV619(){
+  const list=historyFiltered619(),active=currentAccounts619(),all=archiveList619();
+  return `<div class="gh619-hero"><div class="k">Guest lifecycle & privacy</div><h3>One stay. One private account.</h3><p>Guest access ends automatically after departure. A future guest using the same room receives a clean stay with no previous bookings, messages, tickets or requests. Historical records are kept for management until you choose to delete them.</p></div>
+    <div class="gh619-stats"><div class="gh619-stat"><b>${active.length}</b><span>Active stays</span></div><div class="gh619-stat"><b>${all.length}</b><span>Archived stays</span></div><div class="gh619-stat"><b>${all.reduce((n,s)=>n+historyCount619(s),0)}</b><span>Historical records</span></div></div>
+    <div class="gh619-filter"><label>Filter departed stays</label><div class="row"><div><label>From</label><input type="date" id="gh619-from" value="${esc(S.gh619From||'')}"></div><div><label>To</label><input type="date" id="gh619-to" value="${esc(S.gh619To||'')}"></div></div><div class="gh619-filter-actions"><button class="btn ghost sm" id="gh619-apply">Apply dates</button><button class="btn ghost sm" id="gh619-clear">Clear dates</button></div></div>
+    <div class="gh619-list">${list.length?list.map(s=>`<label class="gh619-row"><input type="checkbox" data-gh619-stay="${esc(s.archiveId)}"><span><b>${esc(s.name||'Guest')} · Room ${esc(s.room)}</b><p>${esc(s.arrival||'—')} → ${esc(s.departure||'—')} · ${historyCount619(s)} saved records${s.nationality?' · '+esc(s.nationality):''}</p></span><span class="gh619-tag">Archived</span></label>`).join(''):`<div class="gh619-empty">No departed guest stays match this date range.</div>`}</div>
+    <div class="gh619-danger"><h4>Data retention controls</h4><p>Nothing is deleted automatically. Choose the departed stays and exactly which information you want to remove. Active guests are never included here.</p>
+      <div class="gh619-cats">
+        <label><input type="checkbox" data-gh619-cat="bookings" checked> Bookings / activities</label>
+        <label><input type="checkbox" data-gh619-cat="orders" checked> Ticket orders</label>
+        <label><input type="checkbox" data-gh619-cat="messages" checked> Messages</label>
+        <label><input type="checkbox" data-gh619-cat="requests" checked> Guest requests</label>
+        <label><input type="checkbox" data-gh619-cat="feedback" checked> Feedback</label>
+        <label><input type="checkbox" data-gh619-cat="quiz" checked> Quiz answers</label>
+        <label><input type="checkbox" data-gh619-cat="profile"> Archived guest profile</label>
+      </div>
+      <button class="btn warn" id="gh619-delete-selected">Delete selected data</button>
+      <button class="btn ghost warn" id="gh619-delete-all">Delete ALL data in this date range</button>
+    </div>`;
+}
+
+window.guestHistoryInnerV619=guestHistoryInnerV619;
+
+async function deleteHistory619(stays,cats){
+  const unique=(arr)=>[...new Set(arr.map(x=>x.id).filter(x=>x!=null))];
+  const jobs=[];
+  if(cats.includes('bookings'))for(const id of unique(stays.flatMap(s=>historyRowsFor619(s,'bookings'))))jobs.push(()=>DB.deleteBooking(id));
+  if(cats.includes('orders'))for(const id of unique(stays.flatMap(s=>historyRowsFor619(s,'orders'))))jobs.push(()=>DB.deleteOrder(id));
+  if(cats.includes('messages'))for(const id of unique(stays.flatMap(s=>historyRowsFor619(s,'messages'))))jobs.push(()=>DB.deleteMessage(id));
+  if(cats.includes('requests'))for(const id of unique(stays.flatMap(s=>historyRowsFor619(s,'requests'))))jobs.push(()=>DB.deleteRequest(id));
+  if(cats.includes('feedback'))for(const id of unique(stays.flatMap(s=>historyRowsFor619(s,'feedback'))))jobs.push(()=>DB.deleteFeedback(id));
+  if(cats.includes('quiz')){
+    const ids=unique(stays.flatMap(s=>historyRowsFor619(s,'quiz')));
+    for(const id of ids)jobs.push(async()=>{if(REMOTE)await sb('quiz_replies?id=eq.'+encodeURIComponent(id),{method:'DELETE'});S.quizReplies=(S.quizReplies||[]).filter(x=>x.id!==id);});
+  }
+  for(const job of jobs)await job();
+  if(cats.includes('profile')){
+    const remove=new Set(stays.map(s=>s.archiveId));
+    await saveArchive619(archiveList619().filter(s=>!remove.has(s.archiveId)));
+    for(const s of stays){
+      const cur=(S.accounts||[]).find(a=>a.id===s.accountId&&date619(a.arrival)===date619(s.arrival)&&date619(a.departure)===date619(s.departure));
+      if(cur&&cur.active===false){
+        if(REMOTE)await sb('guest_accounts?id=eq.'+encodeURIComponent(cur.id),{method:'DELETE'});
+        S.accounts=S.accounts.filter(a=>a.id!==cur.id);
+      }
+    }
+  }
+}
+function selectedStays619(){
+  const ids=[...document.querySelectorAll('[data-gh619-stay]:checked')].map(x=>x.dataset.gh619Stay);
+  const map=new Map(archiveList619().map(s=>[s.archiveId,s]));return ids.map(id=>map.get(id)).filter(Boolean);
+}
+function selectedCats619(){return[...document.querySelectorAll('[data-gh619-cat]:checked')].map(x=>x.dataset.gh619Cat);}
+
+/* Run lifecycle after the first asynchronous boot load, and after future refreshes. */
+setTimeout(()=>lifecycleSweep619().then(c=>{if(c&&S.session&&safeToRender())render();}),500);
+const basePoll619=DB.poll.bind(DB);
+DB.poll=async function(){const c=await basePoll619();const l=await lifecycleSweep619();return c||l;};
+
+/* Fix manager chat actions after the normal render restores the full historical arrays. */
+const oldWire619=wireCommon;
+wireCommon=function(){
+  oldWire619();
+
+  if(S.session&&S.session.role==='manager'&&S.tab==='guests'&&S.sub.guests==='history'){
+    const from=document.querySelector('#gh619-from'),to=document.querySelector('#gh619-to');
+    const apply=document.querySelector('#gh619-apply');if(apply)apply.onclick=()=>{S.gh619From=from?from.value:'';S.gh619To=to?to.value:'';render();};
+    const clear=document.querySelector('#gh619-clear');if(clear)clear.onclick=()=>{S.gh619From='';S.gh619To='';render();};
+    const delSel=document.querySelector('#gh619-delete-selected');if(delSel)delSel.onclick=async()=>{
+      const stays=selectedStays619(),cats=selectedCats619();if(!stays.length){toastWarn('Select at least one departed stay.');return;}if(!cats.length){toastWarn('Select the data you want to delete.');return;}
+      if(!await confirmAction({question:'Delete selected historical guest data?',detail:`${stays.length} departed stay(s). This cannot be undone.`,confirmLabel:'Delete data',danger:true}))return;
+      delSel.disabled=true;try{await deleteHistory619(stays,cats);toastOk('Historical guest data updated');render();}catch(e){console.error(e);delSel.disabled=false;toastErr(t('errSave'));}};
+    const delAll=document.querySelector('#gh619-delete-all');if(delAll)delAll.onclick=async()=>{
+      const stays=historyFiltered619();if(!stays.length){toastWarn('No departed stays in this date range.');return;}
+      const cats=['bookings','orders','messages','requests','feedback','quiz','profile'];
+      if(!await confirmAction({question:'Delete ALL historical guest data in this date range?',detail:`${stays.length} departed stay(s), including archived profiles. This cannot be undone.`,confirmLabel:'Delete all',danger:true}))return;
+      delAll.disabled=true;try{await deleteHistory619(stays,cats);toastOk('Historical guest data deleted');render();}catch(e){console.error(e);delAll.disabled=false;toastErr(t('errSave'));}};
+  }
+
+  if(S.session&&S.session.role==='manager'&&S.chatRoom&&!isStaffRoom(S.chatRoom)){
+    const acc=currentAccountForRoom619(S.chatRoom);
+    const relevant=()=>acc?(S.messages||[]).filter(m=>rowBelongs619(m,acc)):[];
+    const all=document.querySelector('#ct-all');if(all)all.onclick=()=>{const ids=relevant().map(m=>m.id);S.chatSel=(S.chatSel||[]).length===ids.length?[]:ids;render();};
+    const clear=document.querySelector('#ct-clear');if(clear)clear.onclick=async()=>{const ids=relevant().map(m=>m.id);if(!ids.length)return;if(!await confirmAction({question:t('clearChatQ'),detail:t('clearChatHint').replace('{n}',ids.length),danger:true}))return;for(const id of ids)await DB.deleteMessage(id);S.chatSel=null;toastOk(t('saved'));render();};
+  }
+};
+
+/* Public diagnostics for regression tests. */
+window.AUREA_GUEST_LIFECYCLE={
+  version:'6.19',stayToken:stayToken619,visibleRoom:visibleRoom619,rowBelongs:rowBelongs619,
+  currentAccounts:currentAccounts619,archive:archiveList619,sweep:lifecycleSweep619
+};
 })();
 </script>
 </body>
