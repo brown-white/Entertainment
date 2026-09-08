@@ -7786,10 +7786,11 @@ function managerView(){
     else if(sub==="rooms") inner=roomsInner();
     else if(sub==="crm") inner=guestCrmInner();
     else if(sub==="bookings") inner=bookingsInner();
+    else if(sub==="tickets") inner=(typeof window.guestTicketsManagerInnerV620==="function" ? window.guestTicketsManagerInnerV620() : `<div class="empty">Tickets are loading…</div>`);
     else if(sub==="chat") inner=chatInboxInner();
     else if(sub==="feedback") inner=feedbackInner();
     else inner=requestsInner();
-    const gTabs=[["crm",t("guestCrm")],["rooms",t("rooms")],["bookings",t("bookings")],
+    const gTabs=[["crm",t("guestCrm")],["rooms",t("rooms")],["bookings",t("bookings")],["tickets",t("tickets")],
                  ["chat",t("guestChatTab")],["requests",t("requests")],["feedback",t("feedback")],["history","Guest history"]];
     return `<div class="screen fadein">
       ${topBar(t("guestsTab"),S.session.name)}
@@ -7869,7 +7870,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
 const PAGE_SECTIONS={
   dayplan: ["info","times","team","standards"],
   dash:    ["attention","tonight","live","export","stats","feedback","nations","activities","trends"],
-  guests:  ["crm","rooms","bookings","chat","requests","feedback","history"],
+  guests:  ["crm","rooms","bookings","tickets","chat","requests","feedback","history"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
   settings:["set:theme","set:brand","builder","set:features","set:notif","set:links",
@@ -7879,7 +7880,7 @@ const SECTION_LABELS={
   dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
   dash:    {attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
-  guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",chat:"guestChatTab",
+  guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",tickets:"tickets",chat:"guestChatTab",
             requests:"requests",feedback:"feedback",history:"Guest history"},
   team:    {accounts:"teamAccounts",chat:"teamChatTab",requests:"teamRequests",
             monthatt:"monthAtt",attendance:"attendance"},
@@ -7900,6 +7901,14 @@ function pageOrder(pageKey,withHidden){
   if(!saved && pageKey==="dayplan") saved=(S.settings && S.settings.dayPlanOrder);  // the older name
   const kept=(saved||[]).filter(k=>def.includes(k));
   let out=kept.concat(def.filter(k=>!kept.includes(k)));
+  // V6.19.2 migration: older saved Guest layouts did not know the Tickets tab.
+  // Insert it beside Bookings once; if the manager later arranges Tickets manually,
+  // the saved position is respected.
+  if(pageKey==="guests" && (!saved || !saved.includes("tickets")) && out.includes("tickets")){
+    out=out.filter(k=>k!=="tickets");
+    const bi=out.indexOf("bookings");
+    out.splice(bi>=0?bi+1:Math.min(3,out.length),0,"tickets");
+  }
   if(!withHidden){ const h=pageHidden(pageKey); out=out.filter(k=>!h.includes(k)); }
   return out.length?out:def.slice();
 }
@@ -14579,6 +14588,111 @@ window.AUREA_GUEST_LIFECYCLE={
   version:'6.19',stayToken:stayToken619,visibleRoom:visibleRoom619,rowBelongs:rowBelongs619,
   currentAccounts:currentAccounts619,archive:archiveList619,sweep:lifecycleSweep619
 };
+})();
+</script>
+<style id="aurea-guest-ticket-manager-v620-style">
+/* V6.19.2 · Manager → Guests → Tickets */
+.gt620-head{padding:17px;border-radius:23px;background:linear-gradient(145deg,#2f1e16,#5c4030);color:#fff;margin:0 0 13px;box-shadow:0 20px 45px -32px rgba(35,20,12,.6)}
+.gt620-head .k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#dfbd94;font-weight:850}.gt620-head h3{font-family:var(--font-display);font-size:27px;margin:5px 0 4px}.gt620-head p{font-size:10px;line-height:1.5;color:rgba(255,255,255,.7);margin:0}
+.gt620-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.gt620-stat{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:12px}.gt620-stat b{font-family:var(--font-display);font-size:24px;display:block}.gt620-stat span{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.gt620-tools{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px}.gt620-tools input{min-width:0}.gt620-filter{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px}.gt620-filter button{white-space:nowrap}
+.gt620-list{display:grid;gap:9px}.gt620-order{border:1px solid var(--line);border-radius:19px;background:var(--card);padding:13px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+.gt620-main b{display:block;font-size:14px;line-height:1.3}.gt620-main .event{margin-top:3px;font-size:11px;font-weight:750;color:var(--accent)}.gt620-main .meta{margin-top:6px;font-size:10px;color:var(--muted);line-height:1.5}.gt620-main .collect{margin-top:6px;padding:6px 8px;border-radius:11px;background:var(--soft);font-size:9px;color:var(--muted);display:inline-block}
+.gt620-side{display:grid;justify-items:end;gap:7px}.gt620-actions{display:flex;gap:5px}.gt620-actions .btn{width:auto!important;min-height:34px!important;padding:6px 9px!important}
+.gt620-status{font-size:9px;font-weight:850;padding:6px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}.gt620-status.paid{background:#e5efe2;color:#496849}.gt620-status.reserved{background:#f2e7d6;color:#745a3e}
+.gt620-empty{padding:25px 14px;text-align:center;border:1px dashed var(--line);border-radius:18px;color:var(--muted);font-size:11px}
+.gt620-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.gt620-identity{padding:11px 12px;border-radius:15px;background:var(--soft);margin-bottom:12px}.gt620-identity b{display:block}.gt620-identity span{font-size:10px;color:var(--muted)}
+@media(max-width:410px){.gt620-stats{grid-template-columns:1fr 1fr}.gt620-tools,.gt620-modal-grid{grid-template-columns:1fr}.gt620-order{grid-template-columns:1fr}.gt620-side{justify-items:start}.gt620-actions{width:100%}.gt620-actions .btn{flex:1}}
+</style>
+<script id="aurea-guest-ticket-manager-v620-script">
+(()=>{
+'use strict';
+if(window.__AUREA_GUEST_TICKET_MANAGER_V620)return;
+window.__AUREA_GUEST_TICKET_MANAGER_V620=true;
+
+const pending620=new Map();
+const esc620=v=>esc(String(v??''));
+const orderRoom620=o=>typeof window.AUREA_GUEST_LIFECYCLE?.visibleRoom==='function'?window.AUREA_GUEST_LIFECYCLE.visibleRoom(o.room):String(o.room||'');
+const ticket620=id=>(S.tickets||[]).find(x=>String(x.id)===String(id));
+const orderStatus620=o=>String(o.status||'reserved').toLowerCase()==='paid'?'paid':'reserved';
+function team620(){
+  return (S.users||[])
+    .filter(u=>u&&u.active!==false&&String(u.role||'').toLowerCase()!=='manager')
+    .map(u=>({id:u.id,name:String(u.display_name||u.name||u.username||'').trim()}))
+    .filter(x=>x.name)
+    .sort((a,b)=>a.name.localeCompare(b.name));
+}
+function currentOrders620(){
+  /* managerView's V6.19 operational wrapper already supplies only current-stay orders.
+     Keep this function simple so it follows that single source of truth. */
+  return (S.orders||[]).slice().sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+}
+function counts620(list){
+  return{all:list.length,reserved:list.filter(o=>orderStatus620(o)==='reserved').length,paid:list.filter(o=>orderStatus620(o)==='paid').length};
+}
+function guestTicketsManagerInnerV620(){
+  const all=currentOrders620(),mode=S.gt620Filter||'all',q=String(S.gt620Search||'').trim().toLowerCase(),c=counts620(all);
+  const list=all.filter(o=>{
+    if(mode!=='all'&&orderStatus620(o)!==mode)return false;
+    if(!q)return true;
+    const tk=ticket620(o.ticket_id);
+    return [o.guest_name,orderRoom620(o),o.collect_from,tk&&tk.name].some(v=>String(v||'').toLowerCase().includes(q));
+  });
+  return `<div class="gt620-head"><div class="k">Guest ticket orders</div><h3>Tickets</h3><p>Manage the guest's ticket order here. Ticket event setup remains in Program → Tickets.</p></div>
+    <div class="gt620-stats"><div class="gt620-stat"><b>${c.all}</b><span>Orders</span></div><div class="gt620-stat"><b>${c.reserved}</b><span>Pending payment</span></div><div class="gt620-stat"><b>${c.paid}</b><span>Paid / handed over</span></div></div>
+    <div class="gt620-tools"><input id="gt620-search" value="${esc620(S.gt620Search||'')}" placeholder="Search guest, room, ticket or entertainer"><button class="btn ghost sm" id="gt620-events">Manage ticket events</button></div>
+    <div class="gt620-filter"><button class="btn ${mode==='all'?'':'ghost'} sm" data-gt620-filter="all">All</button><button class="btn ${mode==='reserved'?'':'ghost'} sm" data-gt620-filter="reserved">Pending</button><button class="btn ${mode==='paid'?'':'ghost'} sm" data-gt620-filter="paid">Paid</button></div>
+    <div class="gt620-list">${list.length?list.map(o=>{
+      const tk=ticket620(o.ticket_id),status=orderStatus620(o);
+      return `<article class="gt620-order"><div class="gt620-main"><b>${esc620(o.guest_name||'Guest')} · Room ${esc620(orderRoom620(o)||'—')} · ×${Math.max(1,+o.qty||1)}</b><div class="event">${esc620(tk?tk.name:'Ticket event')}</div><div class="meta">${tk?`${esc620((t('days')||[])[tk.day]||'')} · ${esc620(tk.time||'')} · ${esc620(tk.location||'')}<br>`:''}${o.created_at?`Ordered ${esc620(whenLabel(o.created_at))}`:''}</div>${o.collect_from?`<span class="collect">${esc620(t('handTo'))}: ${esc620(o.collect_from)}</span>`:''}</div><div class="gt620-side"><span class="gt620-status ${status}">${status==='paid'?'Paid · ticket handed over':'Reserved · payment pending'}</span><div class="gt620-actions"><button class="btn ghost sm" data-gt620-edit="${esc620(o.id)}">${ic('pen',14)} Edit</button><button class="btn warn sm" data-gt620-del="${esc620(o.id)}">${ic('trash',14)}</button></div></div></article>`;
+    }).join(''):`<div class="gt620-empty">No ticket orders match this view.</div>`}</div>`;
+}
+window.guestTicketsManagerInnerV620=guestTicketsManagerInnerV620;
+
+async function saveOrder620(id,patch){
+  const key=String(id)+'|'+JSON.stringify(patch);
+  if(pending620.has(key))return pending620.get(key);
+  const job=(async()=>{
+    if(REMOTE)await sb('ticket_orders?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(patch)});
+    const o=(S.orders||[]).find(x=>String(x.id)===String(id));if(o)Object.assign(o,patch);
+    return o;
+  })().finally(()=>pending620.delete(key));
+  pending620.set(key,job);return job;
+}
+function openOrderEdit620(id){
+  const o=(S.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;
+  const teams=team620(),tickets=S.tickets||[];
+  const wrap=baseModal(`<h3>Edit ticket order</h3><div class="gt620-identity"><b>${esc620(o.guest_name||'Guest')} · Room ${esc620(orderRoom620(o)||'—')}</b><span>This edits the guest's existing ticket order. It does not create a new order.</span></div>
+    <label>Ticket event</label><select id="gt620-ticket">${tickets.map(tk=>`<option value="${esc620(tk.id)}" ${String(tk.id)===String(o.ticket_id)?'selected':''}>${esc620(tk.name)}</option>`).join('')}</select>
+    <div class="gt620-modal-grid"><div><label>Quantity</label><input type="number" min="1" id="gt620-qty" value="${Math.max(1,+o.qty||1)}"></div><div><label>Status</label><select id="gt620-status"><option value="reserved" ${orderStatus620(o)==='reserved'?'selected':''}>Reserved / payment pending</option><option value="paid" ${orderStatus620(o)==='paid'?'selected':''}>Paid / physical ticket handed over</option></select></div></div>
+    <label>Pay / collect ticket from</label><select id="gt620-member"><option value="">Entertainment Team</option>${teams.map(m=>`<option value="${esc620(m.name)}" ${String(m.name)===String(o.collect_from||'')?'selected':''}>${esc620(m.name)}</option>`).join('')}</select>
+    <button class="btn" id="gt620-save">Save changes</button><button class="btn ghost" id="gt620-close">Close</button>`);
+  wrap.querySelector('#gt620-close').onclick=()=>wrap.remove();
+  wrap.querySelector('#gt620-save').onclick=async()=>{
+    const btn=wrap.querySelector('#gt620-save');if(btn.disabled)return;
+    const qty=Math.max(1,parseInt(wrap.querySelector('#gt620-qty').value,10)||1);
+    const patch={ticket_id:wrap.querySelector('#gt620-ticket').value,qty,status:wrap.querySelector('#gt620-status').value,collect_from:wrap.querySelector('#gt620-member').value};
+    btn.disabled=true;btn.textContent='Saving…';
+    try{await saveOrder620(o.id,patch);wrap.remove();toastOk(t('saved'));render();}catch(e){console.error('ticket order edit',e);btn.disabled=false;btn.textContent='Save changes';toastErr(t('errSave'));}
+  };
+}
+async function deleteOrder620(id){
+  const o=(S.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;
+  const tk=ticket620(o.ticket_id);
+  if(!await confirmAction({question:'Delete this ticket order?',detail:`${o.guest_name||'Guest'} · Room ${orderRoom620(o)||'—'}${tk?' · '+tk.name:''}. This cannot be undone.`,confirmLabel:'Delete order',danger:true}))return;
+  await DB.deleteOrder(id);toastOk(t('deleted'));render();
+}
+const oldWire620=wireCommon;
+wireCommon=function(){
+  oldWire620();
+  if(!(S.session&&S.session.role==='manager'&&S.tab==='guests'&&S.sub.guests==='tickets'))return;
+  const search=document.querySelector('#gt620-search');if(search)search.oninput=()=>{S.gt620Search=search.value;clearTimeout(S._gt620SearchTimer);S._gt620SearchTimer=setTimeout(()=>render(),180);};
+  document.querySelectorAll('[data-gt620-filter]').forEach(b=>b.onclick=()=>{S.gt620Filter=b.dataset.gt620Filter;render();});
+  document.querySelectorAll('[data-gt620-edit]').forEach(b=>b.onclick=()=>openOrderEdit620(b.dataset.gt620Edit));
+  document.querySelectorAll('[data-gt620-del]').forEach(b=>b.onclick=()=>deleteOrder620(b.dataset.gt620Del));
+  const events=document.querySelector('#gt620-events');if(events)events.onclick=()=>{S.tab='program';S.sub.program='tickets';render();};
+};
+window.openGuestTicketOrderEditV620=openOrderEdit620;
 })();
 </script>
 </body>
