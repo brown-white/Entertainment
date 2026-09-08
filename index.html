@@ -15115,7 +15115,9 @@ function hardValidExisting622(a){
   const u=userFor622(a.entertainer);
   if(!hardAvailable622(u,a,a.day))return false;
   const clash=(S.activities||[]).some(b=>b!==a&&b.day===a.day&&activitySlot(b)!=="event"&&assignedTo622(b,u)&&windowsOverlap622(a,b));
-  return !clash;
+  if(clash)return false;
+  const sameOperation=(S.activities||[]).some(b=>b!==a&&b.day===a.day&&activitySlot(b)===activitySlot(a)&&assignedTo622(b,u));
+  return !sameOperation;
 }
 window.smartAssignmentValidV622=hardValidExisting622;
 
@@ -15153,7 +15155,14 @@ function clashesWithReserved622(u,a,reserved){
   return (reserved||[]).some(x=>x.activity&&x.activity.day===a.day&&uname622(x.user||userFor622(x.username||x.activity.entertainer))===uname622(u)&&windowsOverlap622(a,x.activity));
 }
 function choose622(pool,m,reserved,a,day,variant){
-  let candidates=(pool||[]).filter(u=>hardAvailable622(u,a,day)&&!clashesWithReserved622(u,a,reserved));
+  let candidates=(pool||[])
+    .filter(u=>+u.number!==DJ_NUMBER)
+    .filter(u=>hardAvailable622(u,a,day)&&!clashesWithReserved622(u,a,reserved))
+    .filter(u=>sameDaySlotCount622(m,u,a,day)===0)
+    .filter(u=>!(reserved||[]).some(x=>{
+      const xu=x.user||userFor622(x.username||x.activity&&x.activity.entertainer);
+      return xu&&uname622(xu)===uname622(u)&&x.activity&&x.activity.day===day&&activitySlot(x.activity)===activitySlot(a);
+    }));
   if(!candidates.length)return null;
 
   /* Strong rule 1: do not repeat the same activity if somebody else valid has not done it. */
@@ -15182,7 +15191,7 @@ window.pickFairest=function(pool,load,usedThisSlot,act,day){
   /* Compatibility for any older caller: use the new hard eligibility and fairness.
      `usedThisSlot` remains respected, but never overrides a hard safety rule. */
   const fake=metrics622([]);
-  let c=(pool||[]).filter(u=>hardAvailable622(u,act,day));
+  let c=(pool||[]).filter(u=>+u.number!==DJ_NUMBER&&hardAvailable622(u,act,day));
   const unused=c.filter(u=>!usedThisSlot||!usedThisSlot.has(u.username));if(unused.length)c=unused;
   return choose622(c,fake,[],act,day,0);
 };
@@ -15208,7 +15217,7 @@ function planDay622(day,opts,sharedMetrics,variant,targetOverride){
   const exclude=targetOverride?targets:((o.onlyEmpty)?[]:(S.activities||[]).filter(a=>a.day===day&&activitySlot(a)!=="event"));
   const m=sharedMetrics||metrics622(exclude);
   const reserved=preserved622(day,targets);
-  const pool=assignableStaff(day,dayDate622(day));
+  const pool=assignableStaff(day,dayDate622(day)).filter(u=>+u.number!==DJ_NUMBER);
   targets.forEach(a=>{
     const pick=choose622(pool,m,reserved,a,day,variant||0);
     if(!pick)return;
@@ -15253,7 +15262,7 @@ async function repairDay622(day){
   if(!invalid.length)return false;
   repairing622=true;
   try{
-    const m=metrics622(invalid),reserved=preserved622(day,invalid),pool=assignableStaff(day,dayDate622(day));
+    const m=metrics622(invalid),reserved=preserved622(day,invalid),pool=assignableStaff(day,dayDate622(day)).filter(u=>+u.number!==DJ_NUMBER);
     for(const a of invalid){
       const pick=choose622(pool,m,reserved,a,day,0);
       if(pick){
@@ -15312,9 +15321,23 @@ window.openEditModal=function(input){
 /* Manager assignment overview uses the same hard validity rules. */
 window.assignActsInner=function(day,ds,acts,openIgnored,working){
   const unresolved=acts.filter(a=>!hardValidExisting622(a));
+  const dj=(S.users||[]).find(u=>u&&u.role==="staff"&&+u.number===DJ_NUMBER&&u.active!==false&&!hasLeft(u));
+  const djState=()=>{
+    if(!dj)return "DJ account unavailable";
+    const st=(ds&&ds.length>=10)?attStatus(dj,ds.slice(0,7),+ds.slice(8,10)):"";
+    if(st==="V")return "Vacation";
+    if(st==="A")return "Absent";
+    if(st==="N")return "Not working";
+    if(dayPlanFor(day).off.includes(+DJ_NUMBER))return "Day off";
+    return "";
+  };
+  const djProblem=djState();
+  const djItems=(S.activities||[]).filter(a=>a.day===day&&activitySlot(a)==="event");
+  const djWarnings=djProblem&&djItems.length?`<div class="as622-rule-note" style="border:1px solid rgba(176,82,57,.22);background:rgba(176,82,57,.05)"><b>DJ operational warning:</b> ${djItems.map(a=>esc(a.name)).join(", ")} ${djItems.length===1?"is":"are"} DJ programme, but ${esc(dj?dj.display_name||dj.username:"DJ")} is on <b>${esc(djProblem)}</b>. The app will not assign these events/shows/parties to an entertainer. Management needs to arrange DJ coverage.</div>`:"";
   return `<div class="g3-stats" style="margin-top:12px"><div class="stat"><b>${acts.length}</b><span>${t("activities")}</span></div><div class="stat"><b>${unresolved.length}</b><span>Needs assignment</span></div><div class="stat"><b>${working.length}</b><span>${t("workingToday")}</span></div></div>
     <div class="card ent-card" id="asg-ent" style="margin-top:12px"><span class="ent-ic">${ic("door",20)}</span><span class="asg-mid"><b>${t("entranceDuty")}</b><span class="mini">${personTag(dayPlanFor(day).entrance)||t("noOneEntrance")}</span></span><span class="ent-go">${ic("pen",15)}</span></div>
-    <div class="as622-rule-note"><b>Smart assignment:</b> Day off, vacation, absence and Entrance Duty are hard blocks. Then the planner avoids repeated activities and repeated clock-times, balances active/relaxing workload and total assignments, respects Can/Can't, and applies gender only when configured.</div>
+    <div class="as622-rule-note"><b>Smart assignment:</b> Maximum <b>1 activity per entertainer per operation</b>. Day off, vacation, absence and Entrance Duty are hard blocks. Entrance Duty allows an activity only when it is fully finished by 16:00; 15:30–16:00 is valid, 15:45–16:15 is not. The planner avoids repeated activities and repeated start-times, balances active/relaxing workload and total assignments, respects Can/Can't, and applies gender only when configured. DJ #3 is excluded from normal activities.</div>
+    ${djWarnings}
     <div class="asg-actions-v5"><button class="btn" id="asg-auto">${ic("sparkle",18)} Generate plans</button><button class="btn ghost" id="asg-clearbad" title="Repair invalid assignments">↻</button></div>
     <div class="asg-status-v5 ${unresolved.length?"warn":""}">${unresolved.length?unresolved.length+" item(s) need a valid assignment":"All current assignments pass the hard availability checks"}</div>
     <div class="card" style="margin-top:12px">${acts.length?acts.map(a=>{const valid=hardValidExisting622(a),u=userFor622(a.entertainer),who=u?(u.display_name||u.username):String(a.entertainer||"").trim();return `<div class="asg-row" data-aopen="${a.id}"><span class="asg-t">${esc(a.time||"")}</span><span class="asg-mid"><b>${esc(a.name)}</b><span class="mini">${esc(whoCanRun(a))}${a.location?" · "+esc(a.location):""}</span><span class="asg-kind-v5">${activitySlot(a)==="event"?"DJ programme":type622(a)}</span></span>${valid?`<span class="asg-who">${esc(who)}</span>`:`<span class="asg-who none">Needs plan</span>`}</div>`}).join(""):`<p class="mini" style="padding:8px 2px">${t("noneToday")}</p>`}</div>`;
@@ -15330,7 +15353,9 @@ window.AUREA_SMART_ASSIGNMENT_V622={
   overlap:windowsOverlap622,
   repairDay:repairDay622,
   metrics:metrics622,
-  choose:choose622
+  choose:choose622,
+  maxOnePerOperation:true,
+  djExcludedFromActivities:true
 };
 })();
 </script>
