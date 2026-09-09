@@ -15371,6 +15371,11 @@ window.AUREA_SMART_ASSIGNMENT_V622={
 if(window.__AUREA_SMART_PLANS_V624)return;
 window.__AUREA_SMART_PLANS_V624=true;
 
+/* V6.24.1 integration fix:
+   Older q()/qa() helpers live inside private IIFEs, so this layer must own its DOM helpers. */
+const q624=(selector,root=document)=>root.querySelector(selector);
+const qa624=(selector,root=document)=>[...root.querySelectorAll(selector)];
+
 const api624=()=>window.AUREA_SMART_ASSIGNMENT_V622;
 const key624=u=>String(u&&u.username||'').trim().toLowerCase();
 const hash624=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;};
@@ -15545,16 +15550,16 @@ window.openAutoAssignModal=function(day){
       <button class="btn" id="v624-apply">${ic('check',16)} Apply Plan ${String.fromCharCode(65+variant)}</button>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No programme items for this selection.</div>`}
       <button class="btn ghost" id="v624-close">${t('close')}</button></div>`;
 
-    qa('[data-v624scope]',wrap).forEach(b=>b.onclick=()=>{scope=b.dataset.v624scope;regenerate();draw();});
-    qa('[data-v624mode]',wrap).forEach(b=>b.onclick=()=>{
+    qa624('[data-v624scope]',wrap).forEach(b=>b.onclick=()=>{scope=b.dataset.v624scope;regenerate();draw();});
+    qa624('[data-v624mode]',wrap).forEach(b=>b.onclick=()=>{
       const next=b.dataset.v624mode==='fill';
       if(next!==onlyEmpty){onlyEmpty=next;regenerate();}
       else if(!next){regenerate();} // clicking Build a new plan again creates a new set
       draw();
     });
-    qa('[data-v624plan]',wrap).forEach(b=>b.onclick=()=>{variant=+b.dataset.v624plan;draw();});
-    const fresh=q('#v624-newset',wrap);if(fresh)fresh.onclick=()=>{regenerate();draw();};
-    qa('[data-v624row]',wrap).forEach(s=>s.onchange=()=>{
+    qa624('[data-v624plan]',wrap).forEach(b=>b.onclick=()=>{variant=+b.dataset.v624plan;draw();});
+    const fresh=q624('#v624-newset',wrap);if(fresh)fresh.onclick=()=>{regenerate();draw();};
+    qa624('[data-v624row]',wrap).forEach(s=>s.onchange=()=>{
       const i=+s.dataset.v624row,u=(S.users||[]).find(x=>x.username===s.value),row=plan[i];
       if(u&&row&&row.slot!=='event'){
         const duplicate=plan.some((x,j)=>j!==i&&x.username===u.username&&x.activity.day===row.activity.day&&x.slot===row.slot);
@@ -15562,11 +15567,11 @@ window.openAutoAssignModal=function(day){
       }
       plan[i]={...row,username:s.value,name:u?(u.display_name||u.username):'',user:u||null};draw();
     });
-    const ap=q('#v624-apply',wrap);if(ap)ap.onclick=async()=>{
+    const ap=q624('#v624-apply',wrap);if(ap)ap.onclick=async()=>{
       const ok=await applyAssignments(plan.filter(x=>x.username));
       if(ok){wrap.remove();toastOk('Plan applied');render();}
     };
-    q('#v624-close',wrap).onclick=()=>wrap.remove();
+    q624('#v624-close',wrap).onclick=()=>wrap.remove();
   };
   draw();
 };
