@@ -2775,20 +2775,27 @@ function dayIsCustom(day){
   return !!ov;
 }
 /* Who is working and who is off on a given day, using the real team accounts */
+function dayDutyDate(day){
+  const now=hotelNow(), today=(now.getDay()+6)%7;
+  const d=new Date(now); d.setHours(12,0,0,0); d.setDate(d.getDate()-today+day);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
 function dayDutyStats(day){
-  const dp=dayPlanFor(day), ds=assignDateStr(day), mk=ds.slice(0,7), dd=+ds.slice(8,10);
+  const dp=dayPlanFor(day), ds=dayDutyDate(day), mk=ds.slice(0,7), dd=+ds.slice(8,10);
   const team=(S.users||[]).filter(u=>(u.role==="staff"||u.role==="manager") && u.active!==false && !hasLeft(u));
   const off=[], absent=[], vacation=[], working=[];
   team.forEach(u=>{
     let num=u.number; if(!num && u.role==="manager") num=1;
     const st=attStatus(u,mk,dd);
-    if(st==="A") absent.push(u);
-    else if(st==="V") vacation.push(u);
-    else if(num && dp.off.includes(num)) off.push(u);
+    if(st==="V") vacation.push(u);
+    else if(st==="A") absent.push(u);
+    else if(st==="N"){} // not employed on that exact date
+    else if(st==="O" || (num && dp.off.includes(num))) off.push(u);
     else working.push(u);
   });
-  return {total:team.length, off, absent, vacation, working, offCount:off.length,
-          absentCount:absent.length, vacationCount:vacation.length, workingCount:working.length, entrance:dp.entrance};
+  const employed=working.length+off.length+absent.length+vacation.length;
+  return {date:ds,total:employed,off,absent,vacation,working,offCount:off.length,
+          absentCount:absent.length,vacationCount:vacation.length,workingCount:working.length,entrance:dp.entrance};
 }
 /* Build a translated make-up-practice sentence: "#4 · off Monday — trains individually today" */
 function makeupText(mk){
@@ -7240,10 +7247,10 @@ function attNext(user, mk, day){
 }
 /* Totals across the whole team for the month */
 function attMonthTotals(mk){
-  const team=attTeam(); const sum={P:0,O:0,A:0};
-  team.forEach(u=>{ const t2=attTotals(u,mk); sum.P+=t2.P; sum.O+=t2.O; sum.A+=t2.A; });
+  const team=attTeamFor(mk); const sum={P:0,O:0,A:0,V:0,N:0};
+  team.forEach(u=>{ const x=attTotals(u,mk); sum.P+=x.P; sum.O+=x.O; sum.A+=x.A; sum.V+=x.V; sum.N+=x.N; });
   return {...sum, people:team.length, days:daysSoFar(mk),
-          avg: team.length ? Math.round(sum.P/team.length*10)/10 : 0};
+          working:sum.P, avg:team.length?Math.round(sum.P/team.length*10)/10:0};
 }
 /* The attendance sheet still lists people who left, so their record is kept.
    Everywhere else they are gone. */
@@ -7271,60 +7278,44 @@ function monthAttInner(){
     <button class="btn sm ghost" id="att-vac">${ic("sun",15)} ${t("setVacation")}</button>
     <button class="btn sm ghost" id="att-only">${ic("user",15)} ${t("addAttOnly")}</button>
   </div>`;
-  const mk=currentAttMonth(), n=monthDays(mk), team=attTeam();
+  const mk=currentAttMonth(), n=monthDays(mk), team=attTeamFor(mk);
   const todayMk=monthKey(hotelNow()), todayD=hotelNow().getDate();
   const head=Array.from({length:n},(_,i)=>{
-    const d=i+1, wd=weekdayOf(mk,d);
-    const isToday=(mk===todayMk && d===todayD);
+    const d=i+1,wd=weekdayOf(mk,d),isToday=(mk===todayMk&&d===todayD);
     return `<th class="${wd>=5?"we":""} ${isToday?"td":""}">${d}<span>${(t("daysShort")[wd]||"").slice(0,2)}</span></th>`;
   }).join("");
   const rows=team.map(u=>{
-    const tot=attTotals(u,mk);
-    const attTag=isAttOnly(u)?` <span class="att-only-tag">${t("attOnlyTag")}</span>`:"";
+    const tot=attTotals(u,mk),attTag=isAttOnly(u)?` <span class="att-only-tag">${t("attOnlyTag")}</span>`:"";
     const cells=Array.from({length:n},(_,i)=>{
       const d=i+1;
-      if(notYetHired(u,mk,d) || leftBefore(u,mk,d)) return `<td><span class="att-c notyet" title="${esc(t(leftBefore(u,mk,d)?"attLeft":"attN"))}">N</span></td>`;
+      if(notYetHired(u,mk,d)||leftBefore(u,mk,d))return `<td><span class="att-c notyet">N</span></td>`;
       if(isFutureDay(mk,d)){
         const st=attStatus(u,mk,d);
-        return st ? `<td><span class="att-c s-${st} planned" title="${esc(t("plannedAhead"))}">${st}</span></td>`
-                  : `<td><span class="att-c future" aria-hidden="true">·</span></td>`;
+        return st?`<td><span class="att-c s-${st} planned" title="${esc(t("plannedAhead"))}">${st}</span></td>`:`<td><span class="att-c future">·</span></td>`;
       }
-      const st=attStatus(u,mk,d), manual=attIsManual(u,mk,d);
-      return `<td><button class="att-c s-${st} ${manual?"man":"auto"}"
-        data-satt="${esc(u.username)}|${mk}|${d}" title="${esc(t("att"+st)||st)}">${st}</button></td>`;
+      const st=attStatus(u,mk,d),manual=attIsManual(u,mk,d);
+      return `<td><button class="att-c s-${st} ${manual?"man":"auto"}" data-satt="${esc(u.username)}|${mk}|${d}" title="${esc(t("att"+st)||st)}">${st}</button></td>`;
     }).join("");
-    return `<tr>
-      <th class="att-name${isAttOnly(u)?" tapname":""}"${isAttOnly(u)?` data-attedit="${u.id}"`:""}><b>${esc(u.display_name||u.username)}</b>
-        <span class="mini">${u.number?"#"+u.number:""}${attTag}</span></th>
-      ${cells}
-      <td class="att-tot"><span class="s-P">${tot.P}</span></td>
-      <td class="att-tot"><span class="s-O">${tot.O}</span></td>
-      <td class="att-tot"><span class="s-A">${tot.A}</span></td>
-    </tr>`;
+    return `<tr><th class="att-name${isAttOnly(u)?" tapname":""}"${isAttOnly(u)?` data-attedit="${u.id}"`:""}><b>${esc(u.display_name||u.username)}</b><span class="mini">${u.number?"#"+u.number:""}${attTag}</span></th>${cells}
+      <td class="att-tot"><span class="s-P">${tot.P}</span></td><td class="att-tot"><span class="s-O">${tot.O}</span></td><td class="att-tot"><span class="s-A">${tot.A}</span></td><td class="att-tot"><span class="s-V">${tot.V}</span></td></tr>`;
   }).join("");
   const mt=attMonthTotals(mk);
   return `${__vacBtn}<div class="att-head">
-      <button class="iconbtn" id="att-prev" aria-label="${t("prevMonth")}">${ic("back",18)}</button>
-      <b class="att-month">${esc(monthLabel(mk))}</b>
-      <button class="iconbtn att-next" id="att-next" aria-label="${t("nextMonth")}">${ic("back",18)}</button>
-    </div>
-    <p class="mini att-legend">${t("attLegend")} — ${t("attTapHint")}</p>
-    ${team.length?`<div class="card attsum">
-      <span class="type-meta">${t("monthTotals")}</span>
-      <div class="as-row">
-        <div class="as-n p"><b>${mt.P}</b><span class="mini">${t("teamWorkDays")}</span></div>
+    <button class="iconbtn" id="att-prev" aria-label="${t("prevMonth")}">${ic("back",18)}</button><b class="att-month">${esc(monthLabel(mk))}</b><button class="iconbtn att-next" id="att-next" aria-label="${t("nextMonth")}">${ic("back",18)}</button></div>
+    <p class="mini att-legend">P = present · O = day off · A = absent · V = vacation · N = not counted</p>
+    ${team.length?`<div class="card attsum"><span class="type-meta">${t("monthTotals")}</span>
+      <div class="as-row as-row-v625">
+        <div class="as-n total"><b>${mt.people}</b><span class="mini">${t("totalTeam")}</span></div>
+        <div class="as-n p"><b>${mt.working}</b><span class="mini">${t("workingToday")} days</span></div>
         <div class="as-n o"><b>${mt.O}</b><span class="mini">${t("attTotalsO")}</span></div>
         <div class="as-n a"><b>${mt.A}</b><span class="mini">${t("attTotalsA")}</span></div>
+        <div class="as-n vac"><b>${mt.V}</b><span class="mini">${t("attV")} days</span></div>
       </div>
-      <p class="mini" style="margin:10px 0 0">${t("avgPerPerson")}: <b>${mt.avg}</b> ${t("workDays").toLowerCase()} · ${t("countedDays")}: <b>${mt.days}</b>/${monthDays(mk)}</p>
-    </div>`:""}
-    ${team.length?`<div class="att-scroll"><table class="att-table">
-      <thead><tr><th class="att-name"></th>${head}
-        <th class="att-tot">P</th><th class="att-tot">O</th><th class="att-tot">A</th></tr></thead>
-      <tbody>${rows}</tbody></table></div>`
-      :`<div class="card"><p class="mini" style="padding:4px 2px">—</p></div>`}
+      <p class="mini" style="margin:10px 0 0">${t("avgPerPerson")}: <b>${mt.avg}</b> ${t("workDays").toLowerCase()} · ${t("countedDays")}: <b>${mt.days}</b>/${monthDays(mk)}</p></div>`:""}
+    ${team.length?`<div class="att-scroll"><table class="att-table"><thead><tr><th class="att-name"></th>${head}<th class="att-tot">P</th><th class="att-tot">O</th><th class="att-tot">A</th><th class="att-tot">V</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="card"><p class="mini">—</p></div>`}
     <button class="btn" id="att-export" style="margin-top:14px">${ic("download",16)} ${t("attExport")}</button>`;
 }
+
 /* ================= DAILY QUIZ ================= */
 /* one definition, on the hotel clock */
 function todayISO(){ return hotelDateStr(); }
@@ -7852,7 +7843,6 @@ function managerView(){
 /* Totals for the chosen day + the button to change duty */
 function dutyBar(day){
   const st=dayDutyStats(day);
-  const dp=dayPlanFor(day);
   const names=list=>(list||[]).map(u=>esc(u.display_name||u.username)).join(", ")||"—";
   return `<div class="card dutybar">
     <div class="db-nums db-nums-five">
@@ -7863,7 +7853,8 @@ function dutyBar(day){
       <div class="db-n vac"><b>${st.vacationCount}</b><span class="mini">${t("attV")}</span></div>
     </div>
     <div class="db-meta">
-      <span class="mini">${t("dayOff")}: ${personTags(dp.off)||t("noOneOff")}</span>
+      <span class="mini">${st.date}</span>
+      <span class="mini">${t("dayOff")}: ${names(st.off)}</span>
       ${st.absentCount?`<span class="mini">${t("attA")}: ${names(st.absent)}</span>`:""}
       ${st.vacationCount?`<span class="mini">${t("attV")}: ${names(st.vacation)}</span>`:""}
       ${dayIsCustom(day)?`<span class="db-tag">${t("customDay")}</span>`:""}
@@ -10365,40 +10356,48 @@ function openAttendanceModal(a){
 }
 function openTicketEditModal(tk){
   const isNew=!tk; tk=tk||{day:S.day,name:"",desc:"",location:"",time:"20:00",price:"",capacity:0,image:""};
+  let ticketImage=String(tk.image||""),uploading=false;
   const wrap=baseModal(`
     <h3>${isNew?t("addTicket"):t("editTicket")}</h3>
     <label>${t("actName")}</label><input id="k-name" value="${esc(tk.name)}">
     <label>${t("desc")}</label><textarea id="k-desc" rows="2">${esc(tk.desc)}</textarea>
-    <div class="row2">
-      <div><label>${t("day")}</label><select id="k-day">${t("days").map((d,i)=>`<option value="${i}" ${tk.day===i?"selected":""}>${d}</option>`).join("")}</select></div>
-      <div><label>${t("time")}</label><input id="k-time" type="time" value="${esc(tk.time)}"></div>
-    </div>
-    <div class="row2">
-      <div><label>${t("price")}</label><input id="k-price" value="${esc(tk.price)}" placeholder="5 €"></div>
-      <div><label>${t("capacity")} (0 = ∞)</label><input id="k-cap" type="number" min="0" value="${tk.capacity}"></div>
-    </div>
+    <div class="row2"><div><label>${t("day")}</label><select id="k-day">${t("days").map((d,i)=>`<option value="${i}" ${tk.day===i?"selected":""}>${d}</option>`).join("")}</select></div>
+    <div><label>${t("time")}</label><input id="k-time" type="time" value="${esc(tk.time)}"></div></div>
+    <div class="row2"><div><label>${t("price")}</label><input id="k-price" value="${esc(tk.price)}" placeholder="5 €"></div>
+    <div><label>${t("capacity")} (0 = ∞)</label><input id="k-cap" type="number" min="0" value="${tk.capacity}"></div></div>
     <label>${t("location")}</label><input id="k-loc" value="${esc(tk.location)}">
-    <label>${t("imageUrl")}</label><input id="k-img" value="${esc(tk.image)}" placeholder="https://...">
-    <button class="btn" id="k-save">${t("save")}</button>
-    ${isNew?"":`<button class="btn warn" id="k-del">${t("deleteActivity")}</button>`}
-    <button class="btn ghost" id="k-x">${t("close")}</button>`);
+    <label>${t("photo")}</label>
+    <div class="photo-pick" id="k-photo-pick"><div class="photo-box" id="k-photo-box"></div><div class="pp-txt"><b>${t("photo")}</b><span class="mini">Tap to choose a photo from your phone</span></div><input type="file" id="k-photo-file" accept="image/*" hidden></div>
+    <button class="btn ghost sm" id="k-photo-remove" style="${ticketImage?"":"display:none"}">Remove photo</button>
+    <p class="mini" id="k-photo-status"></p>
+    <button class="btn" id="k-save">${t("save")}</button>${isNew?"":`<button class="btn warn" id="k-del">${t("deleteActivity")}</button>`}<button class="btn ghost" id="k-x">${t("close")}</button>`);
+  const box=wrap.querySelector("#k-photo-box"),file=wrap.querySelector("#k-photo-file"),rm=wrap.querySelector("#k-photo-remove"),status=wrap.querySelector("#k-photo-status"),save=wrap.querySelector("#k-save");
+  const paint=()=>{box.innerHTML=ticketImage?`<img src="${esc(ticketImage)}" alt="">`:`<span>${ic("photo",26)}</span>`;rm.style.display=ticketImage?"":"none";};
+  paint(); box.onclick=()=>file.click();
+  file.onchange=async()=>{
+    const f=file.files&&file.files[0]; if(!f)return;
+    uploading=true;save.disabled=true;status.textContent="Uploading photo…";box.classList.add("uploading");
+    try{ticketImage=await uploadAvatar(f);paint();status.textContent="Photo ready";}
+    catch(e){console.error("ticket photo upload",e);status.textContent="Photo upload failed";toastErr(t("uploadErr"));}
+    finally{uploading=false;save.disabled=false;box.classList.remove("uploading");file.value="";}
+  };
+  rm.onclick=()=>{ticketImage="";paint();status.textContent="Photo removed";};
   wrap.querySelector("#k-x").onclick=()=>wrap.remove();
-  wrap.querySelector("#k-save").onclick=async ()=>{
-    const upd={...tk,
-      name:wrap.querySelector("#k-name").value.trim(),
-      desc:wrap.querySelector("#k-desc").value.trim(),
-      day:+wrap.querySelector("#k-day").value,
-      time:wrap.querySelector("#k-time").value||"20:00",
-      price:wrap.querySelector("#k-price").value.trim(),
-      capacity:+wrap.querySelector("#k-cap").value||0,
-      location:wrap.querySelector("#k-loc").value.trim(),
-      image:wrap.querySelector("#k-img").value.trim()};
-    if(!upd.name) return;
-    await DB.saveTicket(upd); wrap.remove(); toast(t("saved")); render();
+  save.onclick=async()=>{
+    if(uploading){toastWarn("Please wait for the photo upload.");return;}
+    const upd={...tk,name:wrap.querySelector("#k-name").value.trim(),desc:wrap.querySelector("#k-desc").value.trim(),
+      day:+wrap.querySelector("#k-day").value,time:wrap.querySelector("#k-time").value||"20:00",
+      price:wrap.querySelector("#k-price").value.trim(),capacity:+wrap.querySelector("#k-cap").value||0,
+      location:wrap.querySelector("#k-loc").value.trim(),image:ticketImage};
+    if(!upd.name)return;
+    save.disabled=true;
+    try{await DB.saveTicket(upd);wrap.remove();toast(t("saved"));render();}
+    catch(e){console.error("save ticket",e);save.disabled=false;toastErr(t("errSave"));}
   };
   const del=wrap.querySelector("#k-del");
-  if(del) del.onclick=async ()=>{ await DB.deleteTicket(tk.id); wrap.remove(); toast(t("deleted")); render(); };
+  if(del)del.onclick=async()=>{await DB.deleteTicket(tk.id);wrap.remove();toast(t("deleted"));render();};
 }
+
 function splitTime(tm){
   const p=String(tm||"").split(/\s*[–—-]\s*/);
   return {start:(p[0]||"").trim(),end:(p[1]||"").trim()};
@@ -15617,5 +15616,102 @@ window.AUREA_SMART_PLANS_V624={
 };
 })();
 </script>
+
+<style id="aurea-attendance-export-v625-style">
+.as-row-v625{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.as-row-v625 .as-n{min-width:0}.as-n.vac{background:rgba(85,120,180,.12);border-color:transparent}.as-n.total{background:var(--sand)}
+.att-c.s-V,.att-tot .s-V{color:#3f6eac}.att-c.man.s-V{background:rgba(85,120,180,.14)}
+.att-export-v625{display:grid;gap:12px}.att-export-card-v625{padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.att-export-card-v625 h4{margin:0 0 5px}.att-export-card-v625 p{font-size:10px;line-height:1.5;color:var(--muted);margin:0 0 10px}.att-export-actions-v625{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:500px){.as-row-v625{grid-template-columns:1fr 1fr}.att-export-actions-v625{grid-template-columns:1fr}}
+</style>
+<script id="aurea-attendance-export-v625-script">
+(()=>{
+'use strict';
+if(window.__AUREA_ATTENDANCE_EXPORT_V625)return;
+window.__AUREA_ATTENDANCE_EXPORT_V625=true;
+
+function attDetailedDatasetV625(mk){
+  const n=monthDays(mk),team=attTeamFor(mk);
+  const headers=[t("displayName")].concat(Array.from({length:n},(_,i)=>String(i+1))).concat(["P","O","A","V"]);
+  const rows=team.map(u=>{
+    const tot=attTotals(u,mk);
+    return [u.display_name||u.username].concat(Array.from({length:n},(_,i)=>{
+      const d=i+1; return isFutureDay(mk,d)?"":attStatus(u,mk,d);
+    })).concat([String(tot.P),String(tot.O),String(tot.A),String(tot.V)]);
+  });
+  return {title:"Detailed Monthly Attendance — "+monthLabel(mk),headers,rows,landscape:true,signatures:false,
+    sourceNote:"Manager copy: P = Present · O = Day Off · A = Absent · V = Vacation · N = not employed/not counted."};
+}
+function attHotelDatasetV625(mk){
+  const n=monthDays(mk),team=attTeamFor(mk);
+  const headers=[t("displayName")].concat(Array.from({length:n},(_,i)=>String(i+1))).concat(["Present total"]);
+  const rows=team.map(u=>{
+    const tot=attTotals(u,mk);
+    const days=Array.from({length:n},(_,i)=>{
+      const d=i+1;
+      if(isFutureDay(mk,d))return "";
+      const st=attStatus(u,mk,d);
+      if(st==="V"||st==="N")return "N";
+      if(st==="P"||st==="O")return "P";
+      return ""; // absence is not printed as a hotel attendance status
+    });
+    return [u.display_name||u.username].concat(days).concat([String(tot.P+tot.O)]);
+  });
+  const total=team.reduce((n,u)=>{const x=attTotals(u,mk);return n+x.P+x.O;},0);
+  if(team.length)rows.push([t("totalRow")].concat(Array.from({length:n},()=>"")).concat([String(total)]));
+  return {title:((S.settings&&(S.settings.hotelName||S.settings.name))||"Hotel")+" — Hotel Monthly Attendance — "+monthLabel(mk),
+    headers,rows,landscape:true,signatures:true,
+    sourceNote:"Hotel copy: Present and Day Off are printed as P and both count in Present total. Vacation is N and is not counted. Absence is left blank."};
+}
+window.buildHotelAttendanceV625=attHotelDatasetV625;
+window.buildDetailedAttendanceV625=attDetailedDatasetV625;
+
+window.openAttendanceExportV625=function(){
+  const mk=currentAttMonth();
+  const wrap=baseModal(`<h3>${ic("download",20)} Monthly attendance exports</h3>
+    <p class="mini">Month: <b>${esc(monthLabel(mk))}</b></p>
+    <div class="att-export-v625">
+      <div class="att-export-card-v625"><h4>Hotel attendance file</h4><p>Only the hotel attendance view. Present + Day Off are P and count as Present. Vacation is N and does not count. Absence is left blank.</p>
+        <div class="att-export-actions-v625"><button class="btn" id="a625-hotel-xlsx">Excel</button><button class="btn ghost" id="a625-hotel-pdf">PDF / Print</button></div></div>
+      <div class="att-export-card-v625"><h4>Detailed Manager attendance</h4><p>Your complete operational copy with P / O / A / V / N kept separately and individual totals.</p>
+        <div class="att-export-actions-v625"><button class="btn" id="a625-detail-xlsx">Excel</button><button class="btn ghost" id="a625-detail-pdf">PDF / Print</button></div></div>
+    </div><button class="btn ghost" id="a625-close">${t("close")}</button>`);
+  const fn="attendance-"+mk;
+  wrap.querySelector("#a625-close").onclick=()=>wrap.remove();
+  wrap.querySelector("#a625-hotel-xlsx").onclick=async()=>{await exportExcelSets([attHotelDatasetV625(mk)],fn+"-hotel");toastOk(t("saved"));};
+  wrap.querySelector("#a625-hotel-pdf").onclick=()=>exportPdfSets([attHotelDatasetV625(mk)],attHotelDatasetV625(mk).title);
+  wrap.querySelector("#a625-detail-xlsx").onclick=async()=>{await exportExcelSets([attDetailedDatasetV625(mk)],fn+"-detailed");toastOk(t("saved"));};
+  wrap.querySelector("#a625-detail-pdf").onclick=()=>exportPdfSets([attDetailedDatasetV625(mk)],attDetailedDatasetV625(mk).title);
+};
+
+/* Keep the central Smart Export's Monthly Attendance as the detailed manager version. */
+const buildBeforeV625=window.buildDataset;
+window.buildDataset=buildDataset=function(kind){
+  if(kind==="monthatt")return attDetailedDatasetV625(S.exportMonth||currentAttMonth());
+  return buildBeforeV625(kind);
+};
+
+/* UI cleanup/wiring without touching any other page. */
+const wireBeforeV625=window.wireCommon;
+window.wireCommon=wireCommon=function(){
+  wireBeforeV625();
+  const fb=document.querySelector("#btn-fbexport");
+  if(fb){
+    const row=fb.parentElement; fb.remove();
+    if(row)row.style.gridTemplateColumns="1fr";
+  }
+  const ax=document.querySelector("#att-export");
+  if(ax)ax.onclick=()=>window.openAttendanceExportV625();
+};
+
+window.AUREA_ATTENDANCE_V625={
+  dayDate:typeof dayDutyDate==="function"?dayDutyDate:null,
+  hotelDataset:attHotelDatasetV625,
+  detailedDataset:attDetailedDatasetV625
+};
+})();
+</script>
+
 </body>
 </html>
