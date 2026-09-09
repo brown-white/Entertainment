@@ -2806,8 +2806,13 @@ function makeupText(mk){
 /* What is this person's status today, by shirt number? */
 function personDayInfo(num,day){
   const dp=dayPlanFor(day);
-  const isOff=dp.off.includes(num);
-  const isEntrance=dp.entrance===num;
+  const u=(S.users||[]).find(x=>+x.number===+num) || (num===1?(S.users||[]).find(x=>x.role==="manager"):null);
+  const ds=typeof dayDutyDate==="function"?dayDutyDate(day):assignDateStr(day);
+  const mk=String(ds||"").slice(0,7), dd=+String(ds||"").slice(8,10);
+  const att=(u&&mk&&dd)?attStatus(u,mk,dd):"";
+  const isVacation=att==="V", isAbsent=att==="A";
+  const isOff=!isVacation&&!isAbsent&&(att==="O"||dp.off.includes(num));
+  const isEntrance=!isVacation&&!isAbsent&&!isOff&&dp.entrance===num;
   const isDJ=num===3;
   const isSocial=num===2;
   // DJ special schedule
@@ -2817,7 +2822,7 @@ function personDayInfo(num,day){
     else if(day===2) djNote=t("dj_wed");
     else djNote=t("dj_other");
   }
-  return {dp,isOff,isEntrance,isDJ,isSocial,djNote,
+  return {dp,u,date:ds,att,isOff,isVacation,isAbsent,isEntrance,isDJ,isSocial,djNote,
     entranceWindow:isEntrance?"Leaves 16:00 · returns 18:30":"",
     makeupForMe:(dp.makeup&&dp.makeup.num===num)?dp.makeup:null};
 }
@@ -3233,6 +3238,42 @@ function wirePhotoPicker(wrap, getUrl, setUrl){
     box.classList.remove("uploading");
   };
 }
+const SETTINGS_BACKUP_KEY_V626="entapp_settings_v626";
+function readSettingsBackupV626(){
+  try{
+    const x=JSON.parse(localStorage.getItem(SETTINGS_BACKUP_KEY_V626)||"null");
+    return x&&typeof x==="object"?x:null;
+  }catch(e){ return null; }
+}
+function writeSettingsBackupV626(st){
+  try{ localStorage.setItem(SETTINGS_BACKUP_KEY_V626,JSON.stringify(st||{})); }catch(e){}
+}
+function settingsRevisionV626(st){ return +(st&&st._settingsUpdatedAtV626||0)||0; }
+function reconcileSettingsV626(remoteSettings){
+  const remote={...DEFAULT_SETTINGS,...(remoteSettings||{})};
+  const local=readSettingsBackupV626();
+  if(local && settingsRevisionV626(local)>settingsRevisionV626(remote)){
+    const merged={...DEFAULT_SETTINGS,...local};
+    writeSettingsBackupV626(merged);
+    return {settings:merged,localNewer:true};
+  }
+  writeSettingsBackupV626(remote);
+  return {settings:remote,localNewer:false};
+}
+async function cloudUpsertSettingsV626(st){
+  if(!REMOTE)return null;
+  /* First try the normal PATCH. If the settings row does not exist, use a safe upsert. */
+  try{
+    const r=await sb("app_settings?id=eq.1",{method:"PATCH",body:JSON.stringify({data:st})});
+    if(r&&r.length)return r;
+  }catch(e){}
+  return await sb("app_settings?on_conflict=id",{
+    method:"POST",
+    headers:{"Prefer":"resolution=merge-duplicates,return=representation"},
+    body:JSON.stringify({id:1,data:st})
+  });
+}
+
 const DB = {
   async load(){
     if(REMOTE){
@@ -3253,7 +3294,13 @@ const DB = {
       S.rooms=rm||[]; S.accounts=ac||[]; S.messages=ms||[]; S.requests=rq||[];
       S.tasks=ts||[]; S.notes=nt||[]; S.attendance=at||[]; S.feedback=fb||[]; S.profiles=tp||[]; S.buses=bs||[];
       S.quizzes=qz||[]; S.quizReplies=qr||[]; S.staffAtt=sa||[]; S.photos=ph||[]; S.staffReqs=sr||[];
-      if(s && s[0] && s[0].data) S.settings={...DEFAULT_SETTINGS,...s[0].data};
+      {
+        const rr=reconcileSettingsV626((s&&s[0]&&s[0].data)?s[0].data:DEFAULT_SETTINGS);
+        S.settings=rr.settings;
+        if(rr.localNewer){
+          try{ await cloudUpsertSettingsV626(S.settings); }catch(e){ console.warn("settings cloud reconcile pending",e); }
+        }
+      }
     } else {
       S.activities=demoActivities(); S.bookings=demoBookings();
       S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
@@ -3261,6 +3308,7 @@ const DB = {
       S.requests=demoRequests(); S.tasks=demoTasks(); S.notes=demoNotes(); S.attendance=[]; S.feedback=demoFeedback(); S.profiles=demoProfiles();
       S.quizzes=[]; S.quizReplies=[]; S.staffAtt=[]; S.photos=[]; S.staffReqs=[];
       S.buses=[{id:1,direction:"toHotel",time:"08:00",note:"",sort:0},{id:2,direction:"toHotel",time:"15:00",note:"",sort:1},{id:3,direction:"toHouse",time:"00:30",note:"",sort:2},{id:4,direction:"toHouse",time:"13:15",note:"",sort:3}];
+      S.settings=reconcileSettingsV626(DEFAULT_SETTINGS).settings;
     }
   },
   async poll(){
@@ -3553,11 +3601,11 @@ const DB = {
     }
   },
   async saveSettings(st){
-    S.settings={...st};
-    if(REMOTE){
-      const r=await sb("app_settings?id=eq.1",{method:"PATCH",body:JSON.stringify({data:st})});
-      if(!r || !r.length) await sb("app_settings",{method:"POST",body:JSON.stringify({id:1,data:st})});
-    }
+    const next={...DEFAULT_SETTINGS,...st,_settingsUpdatedAtV626:Date.now()};
+    S.settings=next;
+    writeSettingsBackupV626(next);              // survives app/browser closing immediately
+    if(REMOTE) await cloudUpsertSettingsV626(next); // shared source for every device
+    return next;
   }
 };
 
@@ -7536,7 +7584,8 @@ function myWorkDayView(){
     </div>`;
   }
   const info=personDayInfo(num,day);
-  const myActs=S.activities.filter(a=>a.day===day && canSeeGuests(a)).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
+  const unavailableToday=info.isOff||info.isVacation||info.isAbsent;
+  const myActs=(unavailableToday?[]:S.activities.filter(a=>a.day===day && canSeeGuests(a))).sort((x,y)=>String(x.time).localeCompare(String(y.time)));
   const liveAct = isToday(day) ? (myActs.find(a=>activityStatus(a)==="live") || myActs.find(a=>activityStatus(a)==="todo") || myActs[myActs.length-1]) : null;
   const photoRing = liveAct ? statusRing(liveAct) : "";
   const photoBlock = `<div class="wd-photo">
@@ -7547,8 +7596,16 @@ function myWorkDayView(){
         ${liveAct?`<span style="margin-top:4px">${statusPill(liveAct)} <span class="mini">${esc(liveAct.name)}</span></span>`:""}</div>
     </div>`;
   let banner="";
-  if(info.isOff) banner=`<div class="wd-banner off">${ic("sun",22)} ${t("youAreOff")}</div>`;
-  else if(info.isEntrance) banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
+  if(info.isVacation){
+    banner=`<div class="wd-banner off">${ic("sun",22)} You are on vacation today — enjoy your holiday ☀️</div>`;
+  }else if(info.isAbsent){
+    banner=`<div class="wd-banner off">${ic("user",22)} You are marked absent today.</div>`;
+  }else if(info.isOff){
+    const nd=(day+1)%7, nu=info.u, tomorrowWorking=nu?availableOn(nu,nd,(typeof dayDutyDate==="function"?dayDutyDate(nd):assignDateStr(nd))):true;
+    banner=`<div class="wd-banner off">${ic("sun",22)} Have a nice day — today is your day off. Enjoy${tomorrowWorking?", but sleep early — you have work tomorrow :)":" your day off :)"}</div>`;
+  }else if(info.isEntrance){
+    banner=`<div class="wd-banner entrance">${ic("door",20)} ${t("youHaveEntrance")} · ${esc(info.entranceWindow)}</div>`;
+  }
   return `<div class="screen fadein workday-clean">
     ${topBar(t("myWorkDay"),"#"+num+" · "+S.session.name)}
     ${dayChips()}
@@ -7868,8 +7925,8 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
    Pages built from cards list their sections; pages built from pills list
    their sub-tabs. The same button and the same modal handle both. */
 const PAGE_SECTIONS={
-  dayplan: ["info","times","team","standards"],
-  dash:    ["attention","tonight","live","export","stats","feedback","nations","activities","trends"],
+  dayplan: ["team","standards"],
+  dash:    ["attention","dayinfo","wholeday","tonight","live","export","stats","feedback","nations","activities","trends"],
   guests:  ["crm","rooms","bookings","tickets","chat","requests","feedback","history"],
   team:    ["accounts","chat","requests","monthatt","attendance"],
   program: ["acts","tickets"],
@@ -7877,8 +7934,8 @@ const PAGE_SECTIONS={
             "bus","set:location","export","set:advanced"]
 };
 const SECTION_LABELS={
-  dayplan: {info:"dayInfoSec",times:"wholeDay",team:"teamAccounts",standards:"standardsHead"},
-  dash:    {attention:"attentionHead",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
+  dayplan: {team:"teamAccounts",standards:"standardsHead"},
+  dash:    {attention:"attentionHead",dayinfo:"dayInfoSec",wholeday:"wholeDay",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",tickets:"tickets",chat:"guestChatTab",
             requests:"requests",feedback:"feedback",history:"Guest history"},
@@ -7911,6 +7968,11 @@ function pageOrder(pageKey,withHidden){
     out=out.filter(k=>k!=="tickets");
     const bi=out.indexOf("bookings");
     out.splice(bi>=0?bi+1:Math.min(3,out.length),0,"tickets");
+  }
+  if(pageKey==="dash" && !(S.settings&&S.settings.dashboardDayOpsMigrationV626)){
+    out=out.filter(k=>k!=="dayinfo"&&k!=="wholeday");
+    const ai=out.indexOf("attention"),at=ai>=0?ai+1:0;
+    out.splice(at,0,"dayinfo","wholeday");
   }
   if(!withHidden){ const h=pageHidden(pageKey); out=out.filter(k=>!h.includes(k)); }
   return out.length?out:def.slice();
@@ -8067,8 +8129,6 @@ function managerDayPlanView(){
     roster.push({n,u,role:roleForNumber(n),status,cls,info});
   }
   const parts={
-    info:      ()=>dayPlanInfoCard(day),
-    times:     ()=>dayPlanTimes(day),
     team:      ()=>dayPlanTeamCard(day),
     standards: ()=>dayPlanStandards(day)
   };
@@ -8162,6 +8222,8 @@ function dashView(){
   const top=[...S.activities].map(a=>({a,n:seatsTaken(a.id)})).sort((x,y)=>y.n-x.n).slice(0,5).filter(x=>x.n>0);
   const parts={
     attention: ()=>attentionCard(),
+    dayinfo:   ()=>dayPlanInfoCard(todayIndex()),
+    wholeday:  ()=>dayPlanTimes(todayIndex()),
     tonight:   ()=>tonightCard(),
     live:      ()=>liveOpsCard(),
     export:    ()=>`<button class="btn ghost" id="btn-exportdata" style="margin:0 0 16px">${ic("download",16)} ${t("exportData")}</button>`,
@@ -15709,6 +15771,52 @@ window.AUREA_ATTENDANCE_V625={
   dayDate:typeof dayDutyDate==="function"?dayDutyDate:null,
   hotelDataset:attHotelDatasetV625,
   detailedDataset:attDetailedDatasetV625
+};
+})();
+</script>
+
+
+<style id="aurea-persistence-dayplan-v626-style">
+.wd-banner.off{line-height:1.45}
+</style>
+<script id="aurea-persistence-dayplan-v626-script">
+(()=>{
+'use strict';
+if(window.__AUREA_PERSISTENCE_DAYPLAN_V626)return;
+window.__AUREA_PERSISTENCE_DAYPLAN_V626=true;
+
+let migratingV626=false;
+async function migrateDashboardV626(){
+  if(migratingV626||!S.settings||S.settings.dashboardDayOpsMigrationV626)return false;
+  migratingV626=true;
+  try{
+    const po={...((S.settings&&S.settings.pageOrder)||{})};
+    let order=Array.isArray(po.dash)?po.dash.filter(k=>PAGE_SECTIONS.dash.includes(k)):PAGE_SECTIONS.dash.slice();
+    for(const k of PAGE_SECTIONS.dash)if(!order.includes(k))order.push(k);
+    order=order.filter(k=>k!=="dayinfo"&&k!=="wholeday");
+    const ai=order.indexOf("attention"),at=ai>=0?ai+1:0;
+    order.splice(at,0,"dayinfo","wholeday");
+    po.dash=order;
+
+    const ph={...((S.settings&&S.settings.pageHidden)||{})};
+    ph.dayplan=(Array.isArray(ph.dayplan)?ph.dayplan:[]).filter(k=>PAGE_SECTIONS.dayplan.includes(k));
+    ph.dash=(Array.isArray(ph.dash)?ph.dash:[]).filter(k=>PAGE_SECTIONS.dash.includes(k));
+
+    const next={...S.settings,pageOrder:po,pageHidden:ph,dashboardDayOpsMigrationV626:true};
+    await DB.saveSettings(next);
+    if(S.session&&S.session.role==="manager")render();
+    return true;
+  }catch(e){console.error("V6.26 dashboard migration",e);return false;}
+  finally{migratingV626=false;}
+}
+window.migrateDashboardV626=migrateDashboardV626;
+setTimeout(migrateDashboardV626,1700);
+
+window.AUREA_PERSISTENCE_V626={
+  version:"6.26",
+  readBackup:readSettingsBackupV626,
+  saveBackup:writeSettingsBackupV626,
+  migrateDashboard:migrateDashboardV626
 };
 })();
 </script>
