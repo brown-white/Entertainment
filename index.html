@@ -5354,14 +5354,13 @@ function guestRecord(acc){
     nights:guestStayNights(acc), daysApp:guestDaysInApp(acc)};
 }
 function guestCrmInner(){
-  const q=(S.crmQuery||"").trim().toLowerCase();
   let list=(S.accounts||[]).filter(a=>a.active!==false && !stayExpired(a));
-  if(q) list=list.filter(a=>[a.room,a.name,a.nationality].some(v=>String(v||"").toLowerCase().includes(q)));
   list.sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
-  return `<input id="crm-q" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
-    ${list.length?`<div class="card">${list.map(a=>{
+  return `<input id="crm-q" enterkeyhint="done" autocomplete="off" autocorrect="off" placeholder="${esc(t("crmSearch"))}" value="${esc(S.crmQuery||"")}" style="margin-bottom:12px">
+    ${list.length?`<div class="card" id="crm-results">${list.map(a=>{
       const r=guestRecord(a);
-      return `<div class="crm-row" data-crm="${a.id}">
+      const searchText=[a.room,a.name,a.nationality].map(v=>String(v||"").toLowerCase()).join(" ");
+      return `<div class="crm-row" data-crm="${a.id}" data-crm-search="${esc(searchText)}">
         <div class="crm-av">${esc(String(a.name||"?").trim().charAt(0).toUpperCase())}</div>
         <div class="crm-mid"><b>${esc(a.name||"")}</b>
           <span class="mini">${t("room")} ${esc(a.room)}${a.nationality?" · "+esc(a.nationality):""}</span>
@@ -5369,7 +5368,7 @@ function guestCrmInner(){
         </div>
         <span class="crm-go">${ic("back",15)}</span>
       </div>`;
-    }).join("")}</div>`:`<div class="empty"><div class="big">${ic("users",30)}</div>${t("noGuests")}</div>`}`;
+    }).join("")}</div><div class="empty" id="crm-search-empty" style="display:none"><div class="big">${ic("users",30)}</div>No matching guests</div>`:`<div class="empty"><div class="big">${ic("users",30)}</div>${t("noGuests")}</div>`}`;
 }
 function guest360View(id){
   const acc=(S.accounts||[]).find(a=>a.id==id);
@@ -10925,7 +10924,26 @@ function wireCommon(){
   document.querySelectorAll("[data-dutyedit]").forEach(b=>b.onclick=()=>openDutyModal(+b.dataset.dutyedit));
   const qrP=$("#qr-print"); if(qrP) qrP.onclick=openQrPrint;
   document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>{ S.tab=b.dataset.gotab; render(); });
-  const crmQ=$("#crm-q"); if(crmQ) crmQ.oninput=e=>{ S.crmQuery=e.target.value; render(); };
+  const crmQ=$("#crm-q"); if(crmQ && !crmQ.dataset.searchFixedV6242){
+    crmQ.dataset.searchFixedV6242="1";
+    const filterCrm=()=>{
+      S.crmQuery=crmQ.value;
+      const q=crmQ.value.trim().toLowerCase();
+      const rows=[...document.querySelectorAll("[data-crm-search]")];
+      let shown=0;
+      rows.forEach(row=>{
+        const ok=!q||String(row.dataset.crmSearch||"").includes(q);
+        row.style.display=ok?"":"none";
+        if(ok)shown++;
+      });
+      const empty=document.querySelector("#crm-search-empty");
+      if(empty)empty.style.display=(rows.length&&shown===0)?"":"none";
+    };
+    crmQ.oninput=filterCrm;
+    crmQ.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); filterCrm(); crmQ.blur(); } };
+    crmQ.onsearch=()=>{ filterCrm(); crmQ.blur(); };
+    filterCrm();
+  }
   document.querySelectorAll("[data-crm]").forEach(b=>b.onclick=()=>{ S.tab="g360:"+b.dataset.crm; render(); });
   const crumbCrm=$("#crumb-crm"); if(crumbCrm) crumbCrm.onclick=()=>{ S.tab="guests"; S.sub.guests="crm"; render(); };
   document.querySelectorAll("[data-uview]").forEach(b=>b.onclick=()=>{ S.tab="emp:"+b.dataset.uview; render(); });
@@ -14653,20 +14671,16 @@ function counts620(list){
 }
 function guestTicketsManagerInnerV620(){
   const all=currentOrders620(),mode=S.gt620Filter||'all',q=String(S.gt620Search||'').trim().toLowerCase(),c=counts620(all);
-  const list=all.filter(o=>{
-    if(mode!=='all'&&orderStatus620(o)!==mode)return false;
-    if(!q)return true;
-    const tk=ticket620(o.ticket_id);
-    return [o.guest_name,orderRoom620(o),o.collect_from,tk&&tk.name].some(v=>String(v||'').toLowerCase().includes(q));
-  });
+  const list=all.filter(o=>mode==='all'||orderStatus620(o)===mode);
   return `<div class="gt620-head"><div class="k">Guest ticket orders</div><h3>Tickets</h3><p>Manage the guest's ticket order here. Ticket event setup remains in Program → Tickets.</p></div>
     <div class="gt620-stats"><div class="gt620-stat"><b>${c.all}</b><span>Orders</span></div><div class="gt620-stat"><b>${c.reserved}</b><span>Pending payment</span></div><div class="gt620-stat"><b>${c.paid}</b><span>Paid / handed over</span></div></div>
-    <div class="gt620-tools"><input id="gt620-search" value="${esc620(S.gt620Search||'')}" placeholder="Search guest, room, ticket or entertainer"><button class="btn ghost sm" id="gt620-events">Manage ticket events</button></div>
+    <div class="gt620-tools"><input id="gt620-search" enterkeyhint="done" autocomplete="off" autocorrect="off" value="${esc620(S.gt620Search||'')}" placeholder="Search guest, room, ticket or entertainer"><button class="btn ghost sm" id="gt620-events">Manage ticket events</button></div>
     <div class="gt620-filter"><button class="btn ${mode==='all'?'':'ghost'} sm" data-gt620-filter="all">All</button><button class="btn ${mode==='reserved'?'':'ghost'} sm" data-gt620-filter="reserved">Pending</button><button class="btn ${mode==='paid'?'':'ghost'} sm" data-gt620-filter="paid">Paid</button></div>
     <div class="gt620-list">${list.length?list.map(o=>{
       const tk=ticket620(o.ticket_id),status=orderStatus620(o);
-      return `<article class="gt620-order"><div class="gt620-main"><b>${esc620(o.guest_name||'Guest')} · Room ${esc620(orderRoom620(o)||'—')} · ×${Math.max(1,+o.qty||1)}</b><div class="event">${esc620(tk?tk.name:'Ticket event')}</div><div class="meta">${tk?`${esc620((t('days')||[])[tk.day]||'')} · ${esc620(tk.time||'')} · ${esc620(tk.location||'')}<br>`:''}${o.created_at?`Ordered ${esc620(whenLabel(o.created_at))}`:''}</div>${o.collect_from?`<span class="collect">${esc620(t('handTo'))}: ${esc620(o.collect_from)}</span>`:''}</div><div class="gt620-side"><span class="gt620-status ${status}">${status==='paid'?'Paid · ticket handed over':'Reserved · payment pending'}</span><div class="gt620-actions"><button class="btn ghost sm" data-gt620-edit="${esc620(o.id)}">${ic('pen',14)} Edit</button><button class="btn warn sm" data-gt620-del="${esc620(o.id)}">${ic('trash',14)}</button></div></div></article>`;
-    }).join(''):`<div class="gt620-empty">No ticket orders match this view.</div>`}</div>`;
+      const searchText=[o.guest_name,orderRoom620(o),o.collect_from,tk&&tk.name].map(v=>String(v||'').toLowerCase()).join(' ');
+      return `<article class="gt620-order" data-gt620-searchtext="${esc620(searchText)}"><div class="gt620-main"><b>${esc620(o.guest_name||'Guest')} · Room ${esc620(orderRoom620(o)||'—')} · ×${Math.max(1,+o.qty||1)}</b><div class="event">${esc620(tk?tk.name:'Ticket event')}</div><div class="meta">${tk?`${esc620((t('days')||[])[tk.day]||'')} · ${esc620(tk.time||'')} · ${esc620(tk.location||'')}<br>`:''}${o.created_at?`Ordered ${esc620(whenLabel(o.created_at))}`:''}</div>${o.collect_from?`<span class="collect">${esc620(t('handTo'))}: ${esc620(o.collect_from)}</span>`:''}</div><div class="gt620-side"><span class="gt620-status ${status}">${status==='paid'?'Paid · ticket handed over':'Reserved · payment pending'}</span><div class="gt620-actions"><button class="btn ghost sm" data-gt620-edit="${esc620(o.id)}">${ic('pen',14)} Edit</button><button class="btn warn sm" data-gt620-del="${esc620(o.id)}">${ic('trash',14)}</button></div></div></article>`;
+    }).join(''):`<div class="gt620-empty">No ticket orders match this view.</div>`}<div class="gt620-empty" id="gt620-search-empty" style="display:none">No ticket orders match your search.</div></div>`;
 }
 window.guestTicketsManagerInnerV620=guestTicketsManagerInnerV620;
 
@@ -14707,7 +14721,26 @@ const oldWire620=wireCommon;
 wireCommon=function(){
   oldWire620();
   if(!(S.session&&S.session.role==='manager'&&S.tab==='guests'&&S.sub.guests==='tickets'))return;
-  const search=document.querySelector('#gt620-search');if(search)search.oninput=()=>{S.gt620Search=search.value;clearTimeout(S._gt620SearchTimer);S._gt620SearchTimer=setTimeout(()=>render(),180);};
+  const search=document.querySelector('#gt620-search');if(search && !search.dataset.searchFixedV6242){
+    search.dataset.searchFixedV6242='1';
+    const filterTickets=()=>{
+      S.gt620Search=search.value;
+      const q=search.value.trim().toLowerCase();
+      const rows=[...document.querySelectorAll('[data-gt620-searchtext]')];
+      let shown=0;
+      rows.forEach(row=>{
+        const ok=!q||String(row.dataset.gt620Searchtext||'').includes(q);
+        row.style.display=ok?'':'none';
+        if(ok)shown++;
+      });
+      const empty=document.querySelector('#gt620-search-empty');
+      if(empty)empty.style.display=(rows.length&&shown===0)?'':'none';
+    };
+    search.oninput=filterTickets;
+    search.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();filterTickets();search.blur();}};
+    search.onsearch=()=>{filterTickets();search.blur();};
+    filterTickets();
+  }
   document.querySelectorAll('[data-gt620-filter]').forEach(b=>b.onclick=()=>{S.gt620Filter=b.dataset.gt620Filter;render();});
   document.querySelectorAll('[data-gt620-edit]').forEach(b=>b.onclick=()=>openOrderEdit620(b.dataset.gt620Edit));
   document.querySelectorAll('[data-gt620-del]').forEach(b=>b.onclick=()=>deleteOrder620(b.dataset.gt620Del));
