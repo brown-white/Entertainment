@@ -15821,5 +15821,275 @@ window.AUREA_PERSISTENCE_V626={
 })();
 </script>
 
+
+<style id="aurea-manager-action-center-v627-style">
+/* V6.27 · Manager Action Center */
+.ac627{border:1px solid rgba(103,73,55,.10);border-radius:26px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(253,250,246,.94));box-shadow:0 18px 46px rgba(45,29,20,.055);overflow:hidden;margin-bottom:16px}
+.ac627-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:17px 17px 14px;border-bottom:1px solid var(--line)}
+.ac627-kicker{font-size:9px;letter-spacing:.17em;text-transform:uppercase;font-weight:850;color:#b1845b;margin-bottom:4px}
+.ac627-head h3{font-family:var(--font-display);font-size:25px;line-height:1;margin:0;color:var(--ink)}
+.ac627-head p{font-size:10px;line-height:1.5;color:var(--muted);margin:7px 0 0;max-width:410px}
+.ac627-count{flex:none;min-width:45px;height:45px;border-radius:16px;background:#3b271e;color:white;display:grid;place-items:center;font:600 21px/1 var(--font-display)}
+.ac627-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);background:rgba(241,234,224,.36)}
+.ac627-sum{padding:8px 9px;border-radius:13px;background:rgba(255,255,255,.72)}
+.ac627-sum b{display:block;font:600 18px/1 var(--font-display)}.ac627-sum span{font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ac627-g{padding:13px 14px 2px}.ac627-g:last-child{padding-bottom:14px}
+.ac627-gtitle{display:flex;align-items:center;gap:8px;margin:0 2px 8px;font-size:9px;letter-spacing:.13em;text-transform:uppercase;font-weight:850;color:var(--muted)}
+.ac627-dot{width:7px;height:7px;border-radius:50%;background:#b68b5f}.ac627-g.urgent .ac627-dot{background:#ae5545}.ac627-g.tomorrow .ac627-dot{background:#7184a7}
+.ac627-list{display:grid;gap:7px}
+.ac627-item{width:100%;border:1px solid rgba(102,72,53,.09);border-radius:17px;background:#fff;padding:11px 12px;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left}
+.ac627-item:active{transform:scale(.995)}
+.ac627-ico{width:34px;height:34px;border-radius:12px;background:#f3eadf;color:#a87a50;display:grid;place-items:center}
+.ac627-item.bad .ac627-ico{background:#f6e5e2;color:#9e4d43}.ac627-item.warn .ac627-ico{background:#f7efd8;color:#a77a31}.ac627-item.info .ac627-ico{background:#eaf0f6;color:#60799a}.ac627-item.ok .ac627-ico{background:#e7f0e8;color:#4c7455}
+.ac627-copy{min-width:0}.ac627-copy b{display:block;font-size:12px;line-height:1.35;color:var(--ink)}.ac627-copy span{display:block;font-size:9.5px;line-height:1.45;color:var(--muted);margin-top:2px}
+.ac627-pill{flex:none;padding:6px 8px;border-radius:999px;font-size:8px;font-weight:850;letter-spacing:.05em;text-transform:uppercase;background:var(--soft);color:var(--muted);white-space:nowrap}
+.ac627-empty{display:flex;align-items:center;gap:12px;padding:18px}.ac627-empty .ic{width:45px;height:45px;border-radius:16px;background:#e3f0e7;color:#47745a;display:grid;place-items:center}.ac627-empty b{display:block;font-size:13px}.ac627-empty span{display:block;font-size:10px;color:var(--muted);margin-top:3px;line-height:1.45}
+@media(max-width:390px){.ac627-summary{grid-template-columns:1fr 1fr 1fr}.ac627-item{grid-template-columns:32px minmax(0,1fr)}.ac627-pill{grid-column:2;justify-self:start}.ac627-ico{width:32px;height:32px}}
+</style>
+<script id="aurea-manager-action-center-v627-script">
+(()=>{
+'use strict';
+if(window.__AUREA_MANAGER_ACTION_CENTER_V627)return;
+window.__AUREA_MANAGER_ACTION_CENTER_V627=true;
+
+const iso627=d=>{
+  const x=new Date(d); if(isNaN(x))return "";
+  return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");
+};
+const addDays627=(iso,n)=>{const d=new Date(String(iso)+"T12:00:00");d.setDate(d.getDate()+n);return iso627(d);};
+const today627=()=>hotelDateStr();
+const tomorrow627=()=>addDays627(today627(),1);
+const dayIdx627=iso=>{const d=new Date(String(iso)+"T12:00:00");return isNaN(d)?null:(d.getDay()+6)%7;};
+const visibleRoom627=v=>{
+  const api=window.AUREA_GUEST_LIFECYCLE;
+  return api&&api.visibleRoom?api.visibleRoom(v):String(v||"");
+};
+function currentAccounts627(){
+  const api=window.AUREA_GUEST_LIFECYCLE;
+  if(api&&api.currentAccounts)return api.currentAccounts();
+  return (S.accounts||[]).filter(a=>a&&a.active!==false&&!(typeof stayExpired==="function"&&stayExpired(a)));
+}
+function currentGuestRows627(rows,field="room"){
+  const api=window.AUREA_GUEST_LIFECYCLE,acs=currentAccounts627();
+  if(!(api&&api.rowBelongs))return rows||[];
+  return (rows||[]).filter(r=>acs.some(a=>api.rowBelongs(r,a,field)));
+}
+function userFromAssignment627(raw){
+  const q=String(raw||"").trim().toLowerCase(); if(!q)return null;
+  return (S.users||[]).find(u=>String(u.username||"").toLowerCase()===q||String(u.display_name||"").toLowerCase()===q)||null;
+}
+function staffState627(u,iso){
+  if(!u)return"Unknown";
+  const mk=String(iso).slice(0,7),dd=+String(iso).slice(8,10),st=attStatus(u,mk,dd);
+  if(st==="V")return"Vacation";
+  if(st==="A")return"Absent";
+  if(st==="O")return"Day off";
+  if(st==="N")return"Not working";
+  return"Working";
+}
+function actEnd627(a){
+  const w=typeof activityWindows==="function"?activityWindows(a):[];
+  if(w.length)return w[w.length-1].e0;
+  const s=timeToMin(a&&a.time); return s==null?null:s+30;
+}
+function attendanceForBooking627(b,iso){
+  return (S.attendance||[]).some(x=>String(x.booking_id)===String(b.id)&&String(x.date||"").slice(0,10)===iso);
+}
+function requirementState627(a,iso){
+  const sh=typeof reqSheetForAct==="function"?reqSheetForAct(a):null;
+  if(!sh)return{status:"missing",detail:"No requirement sheet yet",sheet:null};
+  const rows=Array.isArray(sh.rows)?sh.rows:[],done=rows.filter(r=>r.done).length,total=rows.length;
+  if(!total)return{status:"missing",detail:"Requirement sheet has no checklist",sheet:sh};
+  if(done<total)return{status:"incomplete",detail:`Requirement sheet ${done}/${total} ready`,sheet:sh};
+  return{status:"ready",detail:`Requirement sheet ${done}/${total} ready`,sheet:sh};
+}
+function taskDate627(tk){
+  const v=String((tk&& (tk.due||tk.deadline))||""); return v.slice(0,10);
+}
+function isOpenTask627(tk){return !["completed","verified","done"].includes(String(tk&&tk.status||"").toLowerCase());}
+function nav627(tab,sub,extra){return{tab,sub:sub||"",extra:extra||{}};}
+function item627(group,tone,icon,title,detail,tag,nav,rank=50){
+  return{group,tone,icon,title,detail,tag,nav,rank};
+}
+
+function managerAttentionItems627(){
+  const items=[],today=today627(),tomorrow=tomorrow627(),td=dayIdx627(today),tm=dayIdx627(tomorrow),now=hotelNow(),nowMin=now.getHours()*60+now.getMinutes();
+
+  /* APPROVAL — guest ticket reservations awaiting payment / physical hand-over */
+  const pendingOrders=currentGuestRows627(S.orders||[]).filter(o=>String(o.status||"reserved").toLowerCase()!=="paid");
+  if(pendingOrders.length){
+    const qty=pendingOrders.reduce((n,o)=>n+(+o.qty||1),0);
+    items.push(item627("urgent","bad","ticket",
+      `${pendingOrders.length} ticket order${pendingOrders.length===1?"":"s"} waiting for confirmation`,
+      `${qty} ticket${qty===1?"":"s"} reserved · confirm payment and physical hand-over`,
+      "Approval",nav627("guests","tickets"),5));
+  }
+
+  /* GUEST REQUESTS / TEAM REQUESTS */
+  const guestReq=currentGuestRows627(S.requests||[]).filter(r=>String(r.status||"new").toLowerCase()==="new");
+  if(guestReq.length)items.push(item627("urgent","bad","bell",`${guestReq.length} guest request${guestReq.length===1?"":"s"} waiting`,`Open requests still need action`,"Action",nav627("guests","requests"),8));
+  const teamReq=(S.staffReqs||[]).filter(r=>String(r.status||"new").toLowerCase()==="new");
+  if(teamReq.length)items.push(item627("urgent","bad","users",`${teamReq.length} team request${teamReq.length===1?"":"s"} waiting`,`Entertainer requests need approval / reply`,"Approval",nav627("team","requests"),9));
+
+  /* NO-SHOW CHECK — only after activity ended and booking had no attendance mark */
+  const todayActs=(S.activities||[]).filter(a=>a&&a.day===td&&normCat(a)==="mAdult");
+  const endedActs=todayActs.filter(a=>{const e=actEnd627(a);return e!=null&&nowMin>=e+10;});
+  const endedIds=new Set(endedActs.map(a=>String(a.id)));
+  const noShows=currentGuestRows627(S.bookings||[]).filter(b=>String(b.status||"booked")==="booked"&&endedIds.has(String(b.activity_id))&&!attendanceForBooking627(b,today));
+  if(noShows.length){
+    const sample=noShows.slice(0,3).map(b=>{
+      const a=(S.activities||[]).find(x=>String(x.id)===String(b.activity_id));
+      return `${b.guest_name||"Guest"} · ${a?a.name:"Activity"}`;
+    }).join(" · ");
+    items.push(item627("urgent","warn","user",`${noShows.length} booked guest${noShows.length===1?"":"s"} not marked attended`,`${sample}${noShows.length>3?" · +"+(noShows.length-3)+" more":""}`,"Check",nav627("guests","bookings",{day:td}),12));
+  }
+
+  /* STAFF HARD CONFLICTS TODAY — absent / vacation / day off / entrance conflict but still assigned */
+  const staffProblems=[];
+  todayActs.filter(a=>String(a.entertainer||"").trim()).forEach(a=>{
+    const u=userFromAssignment627(a.entertainer); if(!u)return;
+    const state=staffState627(u,today);
+    const entrance=(typeof entranceConflict==="function"&&entranceConflict(u,td,a));
+    if(state!=="Working"||entrance)staffProblems.push({u,a,reason:entrance?"Entrance duty conflict":state});
+  });
+  staffProblems.forEach(x=>items.push(item627("urgent","bad","users",
+    `${x.u.display_name||x.u.username} cannot run ${x.a.name}`,
+    `${x.reason} · ${x.a.time||""}${x.a.location?" · "+x.a.location:""}`,
+    "Staff conflict",nav627("assign","",{day:td}),3)));
+
+  /* DJ conflicts today and tomorrow — programme always stays DJ-owned */
+  const dj=(S.users||[]).find(u=>u&&u.role==="staff"&&+u.number===DJ_NUMBER&&u.active!==false&&!(typeof hasLeft==="function"&&hasLeft(u)));
+  [ [today,td,"urgent","Today"], [tomorrow,tm,"tomorrow","Tomorrow"] ].forEach(([iso,day,group,word])=>{
+    const ev=(S.activities||[]).filter(a=>a&&a.day===day&&normCat(a)!=="mAdult");
+    if(!ev.length)return;
+    const state=dj?staffState627(dj,iso):"DJ account unavailable";
+    if(state!=="Working"){
+      items.push(item627(group,"bad","music",`DJ unavailable for ${word.toLowerCase()} programme`,
+        `${dj?(dj.display_name||dj.username):"DJ"} · ${state} · ${ev.map(a=>a.name).join(", ")}`,
+        "DJ conflict",nav627("assign","",{day}),2));
+    }
+  });
+
+  /* TODAY'S EVENT/SHOW READINESS */
+  const readinessCats=new Set(["mEvents","eShow","eParty","eLive","eBefore","eAfter"]);
+  (S.activities||[]).filter(a=>a&&a.day===td&&readinessCats.has(normCat(a))).forEach(a=>{
+    const rs=requirementState627(a,today);
+    if(rs.status!=="ready"){
+      items.push(item627("urgent",rs.status==="missing"?"bad":"warn","clipboard",
+        `${a.name} needs preparation check`,
+        `${a.time||""}${a.location?" · "+a.location:""} · ${rs.detail}`,
+        rs.status==="missing"?"Sheet missing":"Not ready",nav627("req","",{date:today,actId:a.id}),6));
+    }
+  });
+
+  /* TOMORROW PROGRAMME REMINDERS + requirements readiness */
+  (S.activities||[]).filter(a=>a&&a.day===tm&&readinessCats.has(normCat(a))).forEach(a=>{
+    const rs=requirementState627(a,tomorrow),kind=normCat(a)==="eShow"?"Show":normCat(a)==="eParty"?"Party":"Event";
+    items.push(item627("tomorrow",rs.status==="ready"?"ok":rs.status==="missing"?"bad":"warn","calendar",
+      `${kind} tomorrow · ${a.name}`,
+      `${a.time||""}${a.location?" · "+a.location:""} · ${rs.detail}`,
+      rs.status==="ready"?"Ready":"Prepare",nav627("req","",{date:tomorrow,actId:a.id}),25));
+  });
+
+  /* ACTIVE GUEST-STAY CHANGES */
+  const guests=currentAccounts627();
+  const checkedIn=guests.filter(a=>String(a.arrival||"").slice(0,10)===today);
+  if(checkedIn.length){
+    const names=checkedIn.slice(0,4).map(a=>`${a.name||"Guest"} · Room ${a.room}`).join(" · ");
+    items.push(item627("today","info","user",`${checkedIn.length} guest${checkedIn.length===1?"":"s"} checked in today`,`${names}${checkedIn.length>4?" · +"+(checkedIn.length-4)+" more":""}`,"New stay",nav627("guests","crm"),35));
+  }
+  const depTomorrow=guests.filter(a=>String(a.departure||"").slice(0,10)===tomorrow);
+  if(depTomorrow.length){
+    const names=depTomorrow.slice(0,4).map(a=>`${a.name||"Guest"} · Room ${a.room}`).join(" · ");
+    items.push(item627("tomorrow","info","user",`${depTomorrow.length} guest${depTomorrow.length===1?"":"s"} check out tomorrow`,`${names}${depTomorrow.length>4?" · +"+(depTomorrow.length-4)+" more":""} · final stay follow-up`,"Last day",nav627("guests","crm"),30));
+  }
+  const arrTomorrow=guests.filter(a=>String(a.arrival||"").slice(0,10)===tomorrow);
+  if(arrTomorrow.length){
+    items.push(item627("tomorrow","info","user",`${arrTomorrow.length} guest arrival${arrTomorrow.length===1?"":"s"} tomorrow`,`Accounts already prepared · verify welcome details`,"Arrival",nav627("guests","crm"),38));
+  }
+
+  /* TASKS DUE / OVERDUE */
+  const openTasks=(S.tasks||[]).filter(isOpenTask627);
+  const overdue=openTasks.filter(x=>taskDate627(x)&&taskDate627(x)<today);
+  if(overdue.length)items.push(item627("urgent","bad","clipboard",`${overdue.length} overdue task${overdue.length===1?"":"s"}`,`Manager follow-up required before they remain forgotten`,"Overdue",nav627("assign"),7));
+  const dueToday=openTasks.filter(x=>taskDate627(x)===today);
+  if(dueToday.length)items.push(item627("today","warn","clipboard",`${dueToday.length} task${dueToday.length===1?"":"s"} due today`,`Check completion / verification status`,"Due today",nav627("assign"),28));
+
+  /* LOW GUEST FEEDBACK */
+  const weekAgo=Date.now()-7*864e5;
+  const low=(S.feedback||[]).filter(f=>(+f.rate||5)<=3&&new Date(f.created_at).getTime()>weekAgo);
+  if(low.length)items.push(item627("today","warn","star",`${low.length} low guest rating${low.length===1?"":"s"} to review`,`Feedback from the last 7 days is 3★ or below`,"Guest care",nav627("guests","feedback"),32));
+
+  /* LOW / ZERO PARTICIPATION in upcoming bookable activities today — informational only */
+  const upcoming=todayActs.filter(a=>{const w=(typeof activityWindows==="function"?activityWindows(a):[]),s=w.length?w[0].s0:timeToMin(a.time);return s!=null&&s>nowMin&&(+a.capacity)>0&&seatsTaken(a.id)===0;});
+  if(upcoming.length)items.push(item627("today","info","grid",`${upcoming.length} upcoming activit${upcoming.length===1?"y has":"ies have"} no bookings`,`Useful reminder to promote them with guests before they start`,"Participation",nav627("program","acts"),45));
+
+  return items.sort((a,b)=>a.rank-b.rank||a.title.localeCompare(b.title));
+}
+window.managerAttentionItemsV627=managerAttentionItems627;
+window.attentionItems=attentionItems=managerAttentionItems627;
+
+function actionCenter627(){
+  const items=managerAttentionItems627();
+  if(!items.length)return `<section class="ac627"><div class="ac627-empty"><span class="ic">${ic("check",21)}</span><span><b>All good — nothing needs you right now</b><span>No pending approvals, staff conflicts, missed attendance, guest-stay alerts or tomorrow-preparation issues.</span></span></div></section>`;
+  const groups=[
+    ["urgent","Needs action now"],
+    ["today","Check today"],
+    ["tomorrow","Prepare tomorrow"]
+  ];
+  const counts={urgent:items.filter(x=>x.group==="urgent").length,today:items.filter(x=>x.group==="today").length,tomorrow:items.filter(x=>x.group==="tomorrow").length};
+  return `<section class="ac627">
+    <div class="ac627-head"><div><div class="ac627-kicker">Manager control center</div><h3>Needs your attention</h3><p>Live checks from tickets, bookings, attendance, assignments, guest stays, requirements, tasks and feedback.</p></div><span class="ac627-count">${items.length}</span></div>
+    <div class="ac627-summary"><div class="ac627-sum"><b>${counts.urgent}</b><span>Action now</span></div><div class="ac627-sum"><b>${counts.today}</b><span>Today</span></div><div class="ac627-sum"><b>${counts.tomorrow}</b><span>Tomorrow</span></div></div>
+    ${groups.map(([g,label])=>{
+      const list=items.filter(x=>x.group===g); if(!list.length)return"";
+      return `<div class="ac627-g ${g}"><div class="ac627-gtitle"><i class="ac627-dot"></i>${label}</div><div class="ac627-list">${list.map((x,i)=>`
+        <button class="ac627-item ${x.tone}" data-ac627="${g}|${i}">
+          <span class="ac627-ico">${ic(x.icon||"bell",16)}</span>
+          <span class="ac627-copy"><b>${esc(x.title)}</b><span>${esc(x.detail||"")}</span></span>
+          <span class="ac627-pill">${esc(x.tag||"Open")}</span>
+        </button>`).join("")}</div></div>`;
+    }).join("")}
+  </section>`;
+}
+window.attentionCard=attentionCard=actionCenter627;
+
+/* Navigation is resolved from a fresh data build, so indices never point at stale information. */
+const wireBefore627=window.wireCommon;
+window.wireCommon=wireCommon=function(){
+  wireBefore627();
+  const grouped={};
+  managerAttentionItems627().forEach(x=>(grouped[x.group]=grouped[x.group]||[]).push(x));
+  document.querySelectorAll("[data-ac627]").forEach(btn=>btn.onclick=()=>{
+    const [g,i]=String(btn.dataset.ac627||"").split("|"),it=(grouped[g]||[])[+i];
+    if(!it||!it.nav)return;
+    const n=it.nav;
+    if(n.extra&&Number.isInteger(n.extra.day))S.day=n.extra.day;
+    if(n.extra&&n.extra.date)S.reqDate=n.extra.date;
+    if(n.tab==="assign"&&n.extra&&Number.isInteger(n.extra.day))S.day=n.extra.day;
+    S.tab=n.tab;
+    if(n.sub){
+      S.sub=S.sub||{};
+      S.sub[n.tab]=n.sub;
+    }
+    render();
+    if(n.tab==="req"&&n.extra&&n.extra.actId){
+      setTimeout(()=>{
+        const sh=(typeof reqSheetForAct==="function")?reqSheetForAct((S.activities||[]).find(a=>String(a.id)===String(n.extra.actId))):null;
+        if(sh)openReqEditor(sh.id);
+      },80);
+    }
+  });
+};
+
+window.AUREA_ACTION_CENTER_V627={
+  version:"6.27",
+  items:managerAttentionItems627,
+  today:today627,
+  tomorrow:tomorrow627
+};
+})();
+</script>
+
 </body>
 </html>
