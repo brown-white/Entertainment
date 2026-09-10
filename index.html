@@ -16091,5 +16091,264 @@ window.AUREA_ACTION_CENTER_V627={
 })();
 </script>
 
+
+<style id="aurea-v628-style">
+/* ===== V6.28 · reviewed attention + staff programme + ticket actions ===== */
+.ac628-reviewed{opacity:.58}
+.ac628-review-note{padding:9px 14px 13px;font-size:9px;line-height:1.45;color:var(--muted);border-top:1px solid var(--line)}
+.gt628-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.gt628-statusbtn{min-height:38px!important;padding:8px 12px!important;border-radius:13px!important;font-size:10px!important}
+.gt628-statusbtn.paid{background:#e7f0e8!important;color:#456d50!important;border-color:rgba(69,109,80,.16)!important}
+.gt628-statusbtn.pending{background:#f6eadf!important;color:#855f42!important;border-color:rgba(133,95,66,.16)!important}
+
+/* entertainer programme — guest-level visual language with operational data */
+.sp628{padding-bottom:28px}
+.sp628-head{margin:2px 0 14px}
+.sp628-head .eyebrow{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#b1845b;font-weight:850}
+.sp628-head h2{font-family:var(--font-display);font-size:31px;line-height:1.02;margin:5px 0 4px;color:var(--ink)}
+.sp628-head p{font-size:10px;color:var(--muted);margin:0}
+.sp628-section{margin:18px 0}
+.sp628-label{display:flex;align-items:center;justify-content:space-between;margin:0 3px 9px}
+.sp628-label b{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sp628-label span{font-size:9px;color:var(--muted);background:var(--soft);border-radius:999px;padding:5px 8px}
+.sp628-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.sp628-act{border:1px solid rgba(93,65,49,.09);border-radius:19px;background:#fff;padding:13px;min-width:0;position:relative;box-shadow:0 10px 24px rgba(49,31,22,.04)}
+.sp628-act.mine{border-color:rgba(177,132,91,.34);box-shadow:0 12px 28px rgba(133,91,58,.08)}
+.sp628-act .time{font:600 18px/1 var(--font-display);color:#8e684b}
+.sp628-act h4{font-size:14px;line-height:1.25;margin:9px 0 5px;color:var(--ink)}
+.sp628-act p{font-size:9.5px;line-height:1.4;color:var(--muted);margin:0}
+.sp628-act .foot{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:10px}
+.sp628-mine{font-size:8px;font-weight:850;text-transform:uppercase;letter-spacing:.07em;border-radius:999px;padding:5px 7px;background:#f3e5d6;color:#966c46}
+.sp628-person{font-size:8.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:105px}
+.sp628-feature{position:relative;overflow:hidden;border-radius:23px;min-height:178px;background:#2f211b;margin-bottom:10px}
+.sp628-feature img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sp628-feature:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,18,14,.80),rgba(28,18,14,.20) 70%,rgba(28,18,14,.10))}
+.sp628-feature .copy{position:relative;z-index:1;padding:18px;min-height:178px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
+.sp628-feature .badge{align-self:flex-start;font-size:8px;letter-spacing:.12em;text-transform:uppercase;font-weight:850;background:rgba(255,255,255,.9);color:#553a2b;padding:6px 9px;border-radius:999px;margin-bottom:auto}
+.sp628-feature h4{font:600 27px/1.03 var(--font-display);margin:0 0 6px;color:#fff}
+.sp628-feature .meta{font-size:10px;line-height:1.45;color:rgba(255,255,255,.84)}
+.sp628-empty{padding:22px;border:1px dashed var(--line);border-radius:20px;text-align:center;color:var(--muted);font-size:11px}
+@media(max-width:390px){.sp628-acts{grid-template-columns:1fr}}
+[data-theme="dark"] .sp628-act{background:var(--card)}
+</style>
+
+<script id="aurea-v628-script">
+(()=>{
+'use strict';
+if(window.__AUREA_V628__)return;
+window.__AUREA_V628__=true;
+
+/* =========================================================
+   1. ACTION CENTER — reviewed informational items
+   ========================================================= */
+const ACK_KEY628='attentionReviewedV628';
+const today628=()=>typeof hotelDateStr==='function'?hotelDateStr():new Date().toISOString().slice(0,10);
+function fingerprint628(it){
+  const raw=[today628(),it.group||'',it.tag||'',it.title||'',it.detail||''].join('|');
+  let h=2166136261;
+  for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619);}
+  return 'a'+(h>>>0).toString(36);
+}
+function ackMap628(){return {...((S.settings&&S.settings[ACK_KEY628])||{})};}
+function reviewable628(it){
+  const tag=String(it&&it.tag||'').toLowerCase();
+  return ['new stay','last day','arrival','ready','participation'].includes(tag);
+}
+function baseAttention628(){
+  const fn=window.managerAttentionItemsV627;
+  return typeof fn==='function'?fn():[];
+}
+function attentionItems628(){
+  const ack=ackMap628(),today=today628();
+  /* prune old acknowledgement keys periodically so settings never grow forever */
+  const items=baseAttention628().map(it=>({...it,_ackId:fingerprint628(it)}));
+  return items.filter(it=>!(reviewable628(it)&&ack[it._ackId]===today));
+}
+async function acknowledge628(it){
+  if(!reviewable628(it))return;
+  const map=ackMap628(); map[it._ackId]=today628();
+  /* keep only current acknowledgement values */
+  const clean={};Object.keys(map).forEach(k=>{if(map[k]===today628())clean[k]=map[k];});
+  await DB.saveSettings({...S.settings,[ACK_KEY628]:clean});
+}
+window.managerAttentionItemsV628=attentionItems628;
+window.attentionItems=attentionItems628;
+
+function attentionCard628(){
+  const items=attentionItems628();
+  if(!items.length)return `<section class="ac627"><div class="ac627-empty"><span class="ic">${ic("check",21)}</span><span><b>All good — nothing needs you right now</b><span>No pending approvals, unresolved operational conflicts or unreviewed stay reminders.</span></span></div></section>`;
+  const groups=[["urgent","Needs action now"],["today","Check today"],["tomorrow","Prepare tomorrow"]];
+  const counts={urgent:items.filter(x=>x.group==="urgent").length,today:items.filter(x=>x.group==="today").length,tomorrow:items.filter(x=>x.group==="tomorrow").length};
+  return `<section class="ac627">
+    <div class="ac627-head"><div><div class="ac627-kicker">Manager control center</div><h3>Needs your attention</h3><p>Action items disappear when resolved. Informational reminders disappear after you review them.</p></div><span class="ac627-count">${items.length}</span></div>
+    <div class="ac627-summary"><div class="ac627-sum"><b>${counts.urgent}</b><span>Action now</span></div><div class="ac627-sum"><b>${counts.today}</b><span>Today</span></div><div class="ac627-sum"><b>${counts.tomorrow}</b><span>Tomorrow</span></div></div>
+    ${groups.map(([g,label])=>{
+      const list=items.filter(x=>x.group===g);if(!list.length)return"";
+      return `<div class="ac627-g ${g}"><div class="ac627-gtitle"><i class="ac627-dot"></i>${label}</div><div class="ac627-list">${list.map((x,i)=>`
+        <button class="ac627-item ${x.tone}" data-ac628="${g}|${i}">
+          <span class="ac627-ico">${ic(x.icon||"bell",16)}</span>
+          <span class="ac627-copy"><b>${esc(x.title)}</b><span>${esc(x.detail||"")}</span></span>
+          <span class="ac627-pill">${esc(x.tag||"Open")}</span>
+        </button>`).join("")}</div></div>`;
+    }).join("")}
+    <div class="ac628-review-note">Opening a stay reminder marks it reviewed. Tickets, requests, staff conflicts and preparation problems stay here until the underlying issue is actually fixed.</div>
+  </section>`;
+}
+window.attentionCard=attentionCard628;
+
+function navigateAttention628(it){
+  if(!it||!it.nav)return;
+  const n=it.nav;
+  if(n.extra&&Number.isInteger(n.extra.day))S.day=n.extra.day;
+  if(n.extra&&n.extra.date)S.reqDate=n.extra.date;
+
+  /* one check-in = open the actual guest 360 profile */
+  if(String(it.tag||'').toLowerCase()==='new stay'){
+    const today=today628();
+    const current=(typeof window.AUREA_GUEST_LIFECYCLE?.currentAccounts==='function'?window.AUREA_GUEST_LIFECYCLE.currentAccounts():(S.accounts||[]))
+      .filter(a=>String(a.arrival||'').slice(0,10)===today);
+    if(current.length===1){S.tab='g360:'+current[0].id;render();return;}
+  }
+
+  S.tab=n.tab;
+  if(n.sub){S.sub=S.sub||{};S.sub[n.tab]=n.sub;}
+  render();
+  if(n.tab==="req"&&n.extra&&n.extra.actId){
+    setTimeout(()=>{
+      const a=(S.activities||[]).find(x=>String(x.id)===String(n.extra.actId));
+      const sh=(typeof reqSheetForAct==="function"&&a)?reqSheetForAct(a):null;
+      if(sh)openReqEditor(sh.id);else if(a)openReqEditor(null,a.id);
+    },80);
+  }
+}
+
+/* =========================================================
+   2. ENTERTAINER PROGRAMME — modern guest-style presentation
+   ========================================================= */
+function kind628(a){
+  const c=normCat(a);
+  if(c==='mEvents')return'event';
+  if(c==='eShow'||c==='eKidsStage')return'show';
+  if(c==='eParty')return'party';
+  if(c==='eLive'||c==='eBefore'||c==='eAfter')return'live';
+  return'activity';
+}
+function assignee628(a){
+  const q=String(a.entertainer||'').trim().toLowerCase();
+  const u=(S.users||[]).find(x=>String(x.username||'').toLowerCase()===q||String(x.display_name||'').toLowerCase()===q);
+  return u?(u.display_name||u.username):(a.entertainer||'');
+}
+function staffAct628(a){
+  const mine=typeof canSeeGuests==='function'&&canSeeGuests(a);
+  return `<article class="sp628-act ${mine?'mine':''}" ${mine?`data-sp628-open="${esc(a.id)}"`:''}>
+    <span class="time">${esc(a.time||'')}</span>
+    <h4>${esc(a.name||'')}</h4>
+    <p>${esc(a.location||'')}${a.desc?' · '+esc(a.desc):''}</p>
+    <div class="foot">${mine?`<span class="sp628-mine">Your activity</span>`:`<span class="sp628-person">${esc(assignee628(a)||'Unassigned')}</span>`}<span class="sp628-person">${bookingsFor(a.id).length} guests</span></div>
+  </article>`;
+}
+function feature628(a,label){
+  return `<article class="sp628-feature">
+    <img src="${esc(a.image||IMG.show)}" alt="" loading="lazy">
+    <div class="copy"><span class="badge">${esc(label)}</span><h4>${esc(a.name||'')}</h4><div class="meta">${esc(a.time||'')}${a.location?' · '+esc(a.location):''}${assignee628(a)?' · '+esc(assignee628(a)):''}</div></div>
+  </article>`;
+}
+function staffProgrammeModern628(day,title){
+  const acts=(S.activities||[]).filter(a=>a&&a.day===day).slice().sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
+  const groups={activity:[],event:[],live:[],show:[],party:[]};acts.forEach(a=>groups[kind628(a)].push(a));
+  const theme=dayPlanFor(day)&&dayPlanFor(day).theme;
+  return `<div class="screen fadein sp628">
+    ${topBar(title,t("days")[day]+" · "+S.session.name)}
+    ${dayTabs()}
+    ${theme?`<div class="theme-banner"><span class="tb-l">${t("restaurantTheme")}</span><b class="serif">${esc(theme)}</b></div>`:""}
+    <div class="sp628-head"><div class="eyebrow">Entertainment programme</div><h2>${esc(t("days")[day])}</h2><p>Activities, events, live music, shows and parties in one clear schedule.</p></div>
+    ${groups.activity.length?`<section class="sp628-section"><div class="sp628-label"><b>Activities</b><span>${groups.activity.length}</span></div><div class="sp628-acts">${groups.activity.map(staffAct628).join("")}</div></section>`:""}
+    ${groups.event.length?`<section class="sp628-section"><div class="sp628-label"><b>Day events</b><span>${groups.event.length}</span></div>${groups.event.map(a=>feature628(a,"Day event")).join("")}</section>`:""}
+    ${groups.live.length?`<section class="sp628-section"><div class="sp628-label"><b>Live music</b><span>${groups.live.length}</span></div>${groups.live.map(a=>feature628(a,"Live music")).join("")}</section>`:""}
+    ${groups.show.length?`<section class="sp628-section"><div class="sp628-label"><b>Show time</b><span>${groups.show.length}</span></div>${groups.show.map(a=>feature628(a,"Show")).join("")}</section>`:""}
+    ${groups.party.length?`<section class="sp628-section"><div class="sp628-label"><b>Party & special</b><span>${groups.party.length}</span></div>${groups.party.map(a=>feature628(a,"Special event")).join("")}</section>`:""}
+    ${!acts.length?`<div class="sp628-empty">${esc(t("noneToday"))}</div>`:""}
+  </div>`;
+}
+const oldStaffView628=staffView;
+window.staffView=staffView=function(){
+  if(S.session&&S.session.role==='staff'){
+    if(S.tab==='today')return staffProgrammeModern628(todayIndex(),t("todayProgram"));
+    if(S.tab==='week')return staffProgrammeModern628(S.day,t("program"));
+  }
+  return oldStaffView628();
+};
+
+/* =========================================================
+   3. TICKET ORDERS — direct Paid / Pending action buttons
+   ========================================================= */
+const baseTicketsInner628=window.guestTicketsManagerInnerV620;
+window.guestTicketsManagerInnerV620=function(){
+  const html=baseTicketsInner628();
+  /* Inject direct action next to Edit/Delete without rewriting the ticket manager data model. */
+  const wrap=document.createElement('div');wrap.innerHTML=html;
+  wrap.querySelectorAll('.gt620-order').forEach(card=>{
+    const edit=card.querySelector('[data-gt620-edit]');
+    if(!edit)return;
+    const id=edit.getAttribute('data-gt620-edit');
+    const o=(S.orders||[]).find(x=>String(x.id)===String(id));if(!o)return;
+    const paid=String(o.status||'reserved').toLowerCase()==='paid';
+    const actions=card.querySelector('.gt620-actions');if(!actions)return;
+    const btn=document.createElement('button');
+    btn.className='btn ghost sm gt628-statusbtn '+(paid?'pending':'paid');
+    btn.setAttribute('data-gt628-status',id);
+    btn.setAttribute('data-gt628-next',paid?'reserved':'paid');
+    btn.innerHTML=paid?'Mark pending':('✓ Mark paid / handed over');
+    actions.insertBefore(btn,edit);
+  });
+  return wrap.innerHTML;
+};
+
+const wireBefore628=window.wireCommon;
+window.wireCommon=wireCommon=function(){
+  wireBefore628();
+
+  /* Action Center */
+  const grouped={};
+  attentionItems628().forEach(x=>(grouped[x.group]=grouped[x.group]||[]).push(x));
+  document.querySelectorAll('[data-ac628]').forEach(btn=>btn.onclick=async()=>{
+    const [g,i]=String(btn.dataset.ac628||'').split('|'),it=(grouped[g]||[])[+i];if(!it)return;
+    try{await acknowledge628(it);}catch(e){console.warn('attention review save',e);}
+    navigateAttention628(it);
+  });
+
+  /* Staff programme own activity opens attendance/guest list. */
+  document.querySelectorAll('[data-sp628-open]').forEach(el=>el.onclick=()=>{
+    const a=(S.activities||[]).find(x=>String(x.id)===String(el.dataset.sp628Open));
+    if(a)openAttendanceModal(a);
+  });
+
+  /* Direct ticket status action */
+  document.querySelectorAll('[data-gt628-status]').forEach(btn=>btn.onclick=async()=>{
+    if(btn.disabled)return;
+    const id=btn.dataset.gt628Status,next=btn.dataset.gt628Next;
+    btn.disabled=true;
+    const old=btn.textContent;btn.textContent='Saving…';
+    try{
+      await DB.setOrderStatus(isNaN(+id)?id:+id,next);
+      toastOk(next==='paid'?'Paid · ticket handed over':'Marked payment pending');
+      render();
+    }catch(e){
+      console.error('ticket direct status',e);
+      btn.disabled=false;btn.textContent=old;toastErr(t('errSave'));
+    }
+  });
+};
+
+window.AUREA_V628={
+  version:'6.28',
+  attentionItems:attentionItems628,
+  fingerprint:fingerprint628,
+  reviewable:reviewable628,
+  staffProgramme:staffProgrammeModern628
+};
+})();
+</script>
+
 </body>
 </html>
