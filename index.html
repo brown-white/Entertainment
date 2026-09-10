@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Payroll V6.30</title>
+<title>Entertainment · AUREA Payroll Fixed V6.31</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -16792,27 +16792,88 @@ if(window.__AUREA_PAYROLL_V630)return;
 window.__AUREA_PAYROLL_V630=true;
 
 const PAYKEY630='payrollByUserV630';
-function payKey630(u){return String(u&&u.id!=null?u.id:(u&&u.username)||'');}
-function payrollMap630(){return {...((S.settings&&S.settings[PAYKEY630])||{})};}
+const PAYLOCAL631='entapp_payroll_v631';
+
+function payKey630(u){
+  const name=String(u&&u.username||'').trim().toLowerCase();
+  return name || ('id:'+String(u&&u.id!=null?u.id:''));
+}
+function idPayKey631(u){ return 'id:'+String(u&&u.id!=null?u.id:''); }
+
+function readPayrollLocal631(){
+  try{
+    const x=JSON.parse(localStorage.getItem(PAYLOCAL631)||'{}');
+    return x&&typeof x==='object'?x:{};
+  }catch(e){ return {}; }
+}
+function writePayrollLocal631(map){
+  try{ localStorage.setItem(PAYLOCAL631,JSON.stringify(map||{})); }catch(e){}
+}
+function newerPayrollEntry631(a,b){
+  if(!a)return b||null;if(!b)return a;
+  return (+a._updatedAt||0)>=(+b._updatedAt||0)?a:b;
+}
+function payrollMap630(){
+  const remote={...((S.settings&&S.settings[PAYKEY630])||{})};
+  const local=readPayrollLocal631();
+  const merged={...remote};
+  Object.keys(local).forEach(k=>merged[k]=newerPayrollEntry631(local[k],merged[k]));
+  /* Keep a local copy of the merged truth immediately. */
+  writePayrollLocal631(merged);
+  return merged;
+}
+function rawPayrollConfig631(u){
+  const map=payrollMap630(),keys=[
+    payKey630(u),idPayKey631(u),String(u&&u.id!=null?u.id:'')
+  ].filter(Boolean);
+  for(const k of keys)if(map[k])return map[k];
+  return {};
+}
 function payrollConfig630(u){
-  const raw=payrollMap630()[payKey630(u)]||{};
+  const raw=rawPayrollConfig631(u);
   return {
     amount:Math.max(0,+raw.amount||0),
     currency:String(raw.currency||'EGP').toUpperCase()==='USD'?'USD':'EGP',
-    vacationPaid:raw.vacationPaid!==false
+    vacationPaid:raw.vacationPaid!==false,
+    _updatedAt:+raw._updatedAt||0
   };
 }
 async function savePayrollConfig630(u,cfg){
   if(!u)return;
   const map=payrollMap630();
-  map[payKey630(u)]={
+  const rec={
     amount:Math.max(0,+cfg.amount||0),
     currency:String(cfg.currency||'EGP').toUpperCase()==='USD'?'USD':'EGP',
-    vacationPaid:cfg.vacationPaid!==false
+    vacationPaid:cfg.vacationPaid!==false,
+    _updatedAt:Date.now()
   };
-  await DB.saveSettings({...S.settings,[PAYKEY630]:map});
+  /* Store by username AND stable id so a rename cannot lose payroll. */
+  map[payKey630(u)]=rec;
+  map[idPayKey631(u)]=rec;
+  writePayrollLocal631(map); // survives immediate refresh even if cloud is slow
+  try{
+    await DB.saveSettings({...S.settings,[PAYKEY630]:map});
+  }catch(e){
+    console.error('Payroll cloud save failed; local copy retained',e);
+    /* Do not lose the salary just because the network failed. */
+    S.settings={...S.settings,[PAYKEY630]:map};
+    S._payrollCloudPending631=true;
+    return rec;
+  }
+  S._payrollCloudPending631=false;
+  return rec;
 }
 window.savePayrollConfig630=savePayrollConfig630;
+
+async function syncPayroll631(){
+  try{
+    const merged=payrollMap630();
+    const current=(S.settings&&S.settings[PAYKEY630])||{};
+    if(JSON.stringify(current)!==JSON.stringify(merged)){
+      await DB.saveSettings({...S.settings,[PAYKEY630]:merged});
+    }
+  }catch(e){ console.warn('Payroll background sync pending',e); }
+}
 
 function money630(n,c){
   const v=Math.round((+n||0)*100)/100;
@@ -16875,13 +16936,28 @@ function payrollEditorHtml630(u){
 window.payrollEditorHtml630=payrollEditorHtml630;
 
 function payrollMonthOptions630(){
-  const now=hotelNow(),out=[];
-  for(let i=-8;i<=3;i++){
-    const d=new Date(now.getFullYear(),now.getMonth()+i,1);
-    const mk=monthKey630(d);
-    out.push([mk,monthLabel(mk)]);
-  }
-  return out;
+  return Array.from({length:12},(_,i)=>{
+    const mk='2000-'+String(i+1).padStart(2,'0');
+    return [i+1,monthLabel(mk).replace(/\s+2000$/,'')];
+  });
+}
+function payrollYears631(){
+  const now=hotelNow(),ys=new Set();
+  for(let y=now.getFullYear()-5;y<=now.getFullYear()+2;y++)ys.add(y);
+  (S.staffAtt||[]).forEach(x=>{const y=+String(x.date||'').slice(0,4);if(y)ys.add(y);});
+  (S.users||[]).forEach(u=>{
+    [u.hire_date,u.left_date].forEach(v=>{const y=+String(v||'').slice(0,4);if(y)ys.add(y);});
+  });
+  return [...ys].sort((a,b)=>a-b);
+}
+function payrollSelectedMonth631(){
+  return S.payrollMonth630||currentAttMonth()||monthKey630();
+}
+function payrollPeriodLabel631(mk){
+  const nowMk=monthKey630();
+  if(mk<nowMk)return 'Final salary';
+  if(mk===nowMk)return 'Salary to date';
+  return 'Planned salary';
 }
 function payrollTeam630(mk){
   return attTeamFor(mk).filter(u=>u.role==='staff'||u.role==='manager').map(u=>payrollCalc630(u,mk));
@@ -16925,58 +17001,103 @@ function payrollDataset630(mk){
 window.payrollDataset630=payrollDataset630;
 
 function payrollManagerInner630(){
-  const mk=S.payrollMonth630||monthKey630(),rows=payrollTeam630(mk);
-  const contract=currencyTotals630(rows,'contract'),earned=currencyTotals630(rows,'earned'),actual=currencyTotals630(rows,'fullMonthActual');
-  const configured=rows.filter(r=>r.contract>0);
-  return `<div class="pay630-hero"><div class="ey">Team payroll</div><h3>${esc(monthLabel(mk))}</h3><p>Salary is calculated directly from Monthly Attendance. EGP and USD stay separate — no fake currency conversion.</p></div>
-    <label>Payroll month</label><select id="pay630-month">${payrollMonthOptions630().map(([v,l])=>`<option value="${v}" ${v===mk?'selected':''}>${esc(l)}</option>`).join('')}</select>
+  const mk=payrollSelectedMonth631(),[yr,mo]=mk.split('-').map(Number),rows=payrollTeam630(mk);
+  const contract=currencyTotals630(rows,'contract'),
+        earned=currencyTotals630(rows,'earned'),
+        actual=currencyTotals630(rows,'fullMonthActual');
+  const deductions={EGP:0,USD:0};
+  rows.forEach(r=>deductions[r.cfg.currency]+=r.deductions.reduce((n,x)=>n+x.amount,0));
+  const configured=rows.filter(r=>r.contract>0),period=payrollPeriodLabel631(mk);
+  return `<div class="pay630-hero">
+      <div class="ey">Team payroll</div>
+      <h3>${esc(monthLabel(mk))}</h3>
+      <p>Monthly salary is calculated from the same attendance records used everywhere else in the app. Present + Day Off are paid, Absence is unpaid, Vacation follows each employee setting.</p>
+    </div>
+    <div class="row2">
+      <div><label>Month</label><select id="pay631-month">${payrollMonthOptions630().map(([v,l])=>`<option value="${v}" ${v===mo?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
+      <div><label>Year</label><select id="pay631-year">${payrollYears631().map(y=>`<option value="${y}" ${y===yr?'selected':''}>${y}</option>`).join('')}</select></div>
+    </div>
+    <div class="pay631-explain">
+      <b>${esc(period)} · ${esc(monthLabel(mk))}</b>
+      <span>Contract = full monthly salary. Earned = salary accumulated for paid days up to this date. Deductions = unpaid Absence / unpaid Vacation. Final/expected = contract minus known deductions.</span>
+    </div>
     <div class="pay630-totals">
-      <div class="pay630-total"><b>${money630(contract.EGP,'EGP')}</b><span>Contract total · EGP</span></div>
-      <div class="pay630-total"><b>${money630(contract.USD,'USD')}</b><span>Contract total · USD</span></div>
-      <div class="pay630-total"><b>${money630(earned.EGP,'EGP')}</b><span>Earned to date · EGP</span></div>
-      <div class="pay630-total"><b>${money630(earned.USD,'USD')}</b><span>Earned to date · USD</span></div>
-      <div class="pay630-total"><b>${money630(actual.EGP,'EGP')}</b><span>Month salary after deductions · EGP</span></div>
-      <div class="pay630-total"><b>${money630(actual.USD,'USD')}</b><span>Month salary after deductions · USD</span></div>
+      <div class="pay630-total"><b>${money630(contract.EGP,'EGP')}</b><span>Monthly contracts · EGP</span></div>
+      <div class="pay630-total"><b>${money630(contract.USD,'USD')}</b><span>Monthly contracts · USD</span></div>
+      <div class="pay630-total"><b>${money630(earned.EGP,'EGP')}</b><span>Earned ${mk===monthKey630()?'to date':'in period'} · EGP</span></div>
+      <div class="pay630-total"><b>${money630(earned.USD,'USD')}</b><span>Earned ${mk===monthKey630()?'to date':'in period'} · USD</span></div>
+      <div class="pay630-total"><b>${money630(deductions.EGP,'EGP')}</b><span>Deductions · EGP</span></div>
+      <div class="pay630-total"><b>${money630(deductions.USD,'USD')}</b><span>Deductions · USD</span></div>
+      <div class="pay630-total"><b>${money630(actual.EGP,'EGP')}</b><span>${mk<monthKey630()?'Final':'Expected'} pay · EGP</span></div>
+      <div class="pay630-total"><b>${money630(actual.USD,'USD')}</b><span>${mk<monthKey630()?'Final':'Expected'} pay · USD</span></div>
     </div>
     <div class="pay630-actions"><button class="btn" id="pay630-xlsx">${ic('download',16)} Export Excel</button><button class="btn ghost" id="pay630-pdf">${ic('download',16)} PDF / Print</button></div>
-    ${configured.length?`<div class="pay630-list">${configured.map(r=>payrollPerson630(r,true)).join('')}</div>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No salaries configured yet. Open Team accounts → Edit person → Salary.</div>`}`;
+    ${configured.length?`<div class="pay630-list">${configured.map(r=>payrollPerson631(r,true)).join('')}</div>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No salaries configured for this team yet. Open Team accounts → Edit person → Salary.</div>`}`;
 }
 window.payrollManagerInner630=payrollManagerInner630;
+window.payrollManagerInner630=payrollManagerInner630;
 
-function payrollPerson630(r,manager){
+function payrollPerson631(r,manager){
   const ded=r.deductions.reduce((n,x)=>n+x.amount,0);
+  const remaining=Math.max(0,r.fullMonthActual-r.earned);
+  const past=r.mk<monthKey630(),current=r.mk===monthKey630();
   return `<article class="pay630-person">
-    <div class="pay630-person-top"><div><b>${esc(r.user.display_name||r.user.username)}</b><div class="mini">${r.user.number?'#'+r.user.number+' · ':''}${esc(r.cfg.currency)} · ${r.cfg.vacationPaid?'Paid vacation':'Unpaid vacation'}</div></div>
-      <div class="pay630-money"><strong>${money630(r.earned,r.cfg.currency)}</strong><span>earned to date / ${money630(r.contract,r.cfg.currency)}</span></div></div>
+    <div class="pay630-person-top">
+      <div><b>${esc(r.user.display_name||r.user.username)}</b><div class="mini">${r.user.number?'#'+r.user.number+' · ':''}${esc(monthLabel(r.mk))} · ${esc(r.cfg.currency)} · ${r.cfg.vacationPaid?'Paid vacation':'Unpaid vacation'}</div></div>
+      <div class="pay630-money"><strong>${money630(r.earned,r.cfg.currency)}</strong><span>${past?'final earned':'earned so far'}</span></div>
+    </div>
     <div class="pay630-progress"><i style="width:${r.progress}%"></i></div>
+    <div class="pay631-summary">
+      <div><span>Monthly salary</span><b>${money630(r.contract,r.cfg.currency)}</b></div>
+      <div><span>${past?'Final salary':'Expected salary'}</span><b>${money630(r.fullMonthActual,r.cfg.currency)}</b></div>
+      <div><span>Deductions</span><b class="${ded?'pay630-minus':''}">${ded?'− ':''}${money630(ded,r.cfg.currency)}</b></div>
+      <div><span>${past?'Remaining':'Still to earn'}</span><b>${money630(remaining,r.cfg.currency)}</b></div>
+    </div>
     <div class="pay630-grid">
       <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate</span></div>
       <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days</span></div>
       <div class="pay630-cell"><b>${r.absent}</b><span>Absent</span></div>
-      <div class="pay630-cell"><b>${money630(ded,r.cfg.currency)}</b><span>Deductions</span></div>
+      <div class="pay630-cell"><b>${r.vacation}</b><span>Vacation</span></div>
     </div>
-    ${r.deductions.length?`<div class="pay630-deduct">${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:''}
+    ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Unpaid days</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:''}
     ${manager?`<button class="btn ghost sm" data-pay630-edit="${esc(r.user.id)}" style="margin-top:10px">${ic('pen',14)} Edit salary</button>`:''}
   </article>`;
 }
+function payrollPerson630(r,manager){ return payrollPerson631(r,manager); }
 
 function mySalaryCard630(){
   const u=(S.users||[]).find(x=>x.username===S.session.username);if(!u)return'';
-  const mk=monthKey630(),r=payrollCalc630(u,mk);if(!r.contract)return'';
-  const today=hotelDateStr(),todayRow=r.ledger.find(x=>x.date===today),ded=r.deductions.reduce((n,x)=>n+x.amount,0);
-  return `<section class="sec pay630-my"><h3>${ic('star',18)} My salary</h3><div class="card">
-    <div class="salarybig">${money630(r.earned,r.cfg.currency)}</div>
-    <div class="salarysub">Earned so far this month · Monthly salary ${money630(r.contract,r.cfg.currency)}</div>
-    <div class="pay630-progress"><i style="width:${r.progress}%"></i></div>
-    <div class="pay630-grid">
-      <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate</span></div>
-      <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days</span></div>
-      <div class="pay630-cell"><b>${r.absent}</b><span>Absent days</span></div>
-      <div class="pay630-cell"><b>${money630(ded,r.cfg.currency)}</b><span>Total minus</span></div>
+  /* IMPORTANT: follow the exact attendance month the entertainer is viewing. */
+  const mk=currentAttMonth(),r=payrollCalc630(u,mk);if(!r.contract)return'';
+  const nowMk=monthKey630(),isCurrent=mk===nowMk,isPast=mk<nowMk;
+  const today=hotelDateStr(),todayRow=isCurrent?r.ledger.find(x=>x.date===today):null;
+  const ded=r.deductions.reduce((n,x)=>n+x.amount,0),remaining=Math.max(0,r.fullMonthActual-r.earned);
+  return `<section class="sec pay630-my">
+    <h3>${ic('star',18)} My salary</h3>
+    <div class="card pay631-mycard">
+      <div class="pay631-readonly">Read only · managed by Entertainment Manager</div>
+      <div class="pay631-monthtitle">${esc(monthLabel(mk))}</div>
+      <div class="pay631-heroamount">
+        <span>${isPast?'Final earned':isCurrent?'Earned so far':'Planned'}</span>
+        <b>${money630(r.earned,r.cfg.currency)}</b>
+      </div>
+      <div class="pay630-progress"><i style="width:${r.progress}%"></i></div>
+      <div class="pay631-summary">
+        <div><span>Monthly salary</span><b>${money630(r.contract,r.cfg.currency)}</b></div>
+        <div><span>${isPast?'Final salary':'Expected salary'}</span><b>${money630(r.fullMonthActual,r.cfg.currency)}</b></div>
+        <div><span>Total deductions</span><b class="${ded?'pay630-minus':''}">${ded?'− ':''}${money630(ded,r.cfg.currency)}</b></div>
+        <div><span>${isPast?'Unpaid difference':'Still to earn'}</span><b>${money630(remaining,r.cfg.currency)}</b></div>
+      </div>
+      <div class="pay630-grid">
+        <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate</span></div>
+        <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days</span></div>
+        <div class="pay630-cell"><b>${r.absent}</b><span>Absent days</span></div>
+        <div class="pay630-cell"><b>${r.vacation}</b><span>Vacation days</span></div>
+      </div>
+      ${todayRow?`<div class="todayearn">${todayRow.paid?`Today · ${esc(todayRow.reason||'Paid')} · + ${money630(todayRow.amount,r.cfg.currency)}`:`Today · <span class="pay630-minus">${esc(todayRow.reason)} · − ${money630(r.daily,r.cfg.currency)}</span>`}</div>`:''}
+      ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Why money was deducted</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:`<div class="pay631-nodeduct">No salary deductions in ${esc(monthLabel(mk))}.</div>`}
     </div>
-    ${todayRow?`<div class="todayearn">${todayRow.paid?`Today · ${esc(todayRow.reason||'Paid')} · + ${money630(todayRow.amount,r.cfg.currency)}`:`Today · <span class="pay630-minus">${esc(todayRow.reason)} · − ${money630(r.daily,r.cfg.currency)}</span>`}</div>`:''}
-    ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Deductions / unpaid days</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:''}
-  </div></section>`;
+  </section>`;
 }
 
 /* Add salary to entertainer My Attendance and My Work Day without replacing their existing content. */
@@ -17004,8 +17125,14 @@ window.buildDataset=buildDataset=function(kind){
 const wireBefore630=window.wireCommon;
 window.wireCommon=wireCommon=function(){
   wireBefore630();
-  const m=document.querySelector('#pay630-month');
-  if(m)m.onchange=()=>{S.payrollMonth630=m.value;render();};
+  const pm=document.querySelector('#pay631-month'),py=document.querySelector('#pay631-year');
+  const setPayrollPeriod631=()=>{
+    if(!pm||!py)return;
+    S.payrollMonth630=String(py.value)+'-'+String(pm.value).padStart(2,'0');
+    render();
+  };
+  if(pm)pm.onchange=setPayrollPeriod631;
+  if(py)py.onchange=setPayrollPeriod631;
   document.querySelectorAll('[data-pay630-edit]').forEach(b=>b.onclick=()=>{
     const u=(S.users||[]).find(x=>String(x.id)===String(b.dataset.pay630Edit));
     if(u)openUserEditModal(u);
@@ -17022,12 +17149,30 @@ window.wireCommon=wireCommon=function(){
   };
 };
 
+setTimeout(syncPayroll631,1900);
+
 window.AUREA_PAYROLL_V630={
-  version:'6.30',config:payrollConfig630,save:savePayrollConfig630,
-  calculate:payrollCalc630,dataset:payrollDataset630,team:payrollTeam630
+  version:'6.31',config:payrollConfig630,save:savePayrollConfig630,
+  calculate:payrollCalc630,dataset:payrollDataset630,team:payrollTeam630,sync:syncPayroll631,years:payrollYears631
 };
 })();
 </script>
+
+
+<style id="aurea-payroll-v631-fix-style">
+.pay631-explain{margin:10px 0 14px;padding:12px 13px;border-radius:16px;background:var(--theme-soft,var(--soft));color:var(--theme-muted,var(--muted));font-size:9.5px;line-height:1.5}
+.pay631-explain b{display:block;color:var(--theme-text,var(--ink));font-size:11px;margin-bottom:3px}
+.pay631-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.pay631-summary>div{padding:11px;border-radius:14px;background:var(--theme-soft,var(--soft));min-width:0}
+.pay631-summary span{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:var(--theme-muted,var(--muted))}
+.pay631-summary b{display:block;font-size:13px;color:var(--theme-text,var(--ink));margin-top:4px}
+.pay631-readonly{display:inline-flex;padding:6px 8px;border-radius:999px;background:var(--theme-soft,var(--soft));font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--theme-muted,var(--muted));margin-bottom:9px}
+.pay631-monthtitle{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--theme-muted,var(--muted));margin-bottom:5px}
+.pay631-heroamount span{display:block;font-size:9px;color:var(--theme-muted,var(--muted));text-transform:uppercase;letter-spacing:.08em}
+.pay631-heroamount b{display:block;font:600 34px/1.05 var(--font-display);color:var(--theme-text,var(--ink));margin-top:5px}
+.pay631-nodeduct{margin-top:10px;padding:10px;border-radius:14px;background:var(--theme-soft,var(--soft));font-size:9.5px;color:var(--theme-muted,var(--muted))}
+@media(max-width:390px){.pay631-summary{grid-template-columns:1fr 1fr}}
+</style>
 
 </body>
 </html>
