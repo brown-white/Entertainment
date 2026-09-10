@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Signature Luxury V6.13</title>
+<title>Entertainment · AUREA Theme Studio V6.29</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -16346,6 +16346,383 @@ window.AUREA_V628={
   fingerprint:fingerprint628,
   reviewable:reviewable628,
   staffProgramme:staffProgrammeModern628
+};
+})();
+</script>
+
+
+<style id="aurea-theme-studio-v629-style">
+/* ===========================================================
+   AUREA V6.29 · FINAL THEME AUTHORITY
+   All roles: Guest / Entertainer / Manager
+   =========================================================== */
+:root{
+  --theme-bg:var(--bg);
+  --theme-card:var(--card);
+  --theme-soft:var(--sand);
+  --theme-text:var(--ink);
+  --theme-muted:var(--muted);
+  --theme-line:var(--line);
+  --theme-primary:var(--espresso);
+  --theme-accent:var(--bronze);
+  --theme-button-bg:var(--espresso);
+  --theme-button-text:#fff;
+  --theme-input-bg:var(--card);
+  --theme-inverse-bg:var(--espresso);
+  --theme-inverse-text:#fff;
+}
+
+/* Generic elements must always inherit the active theme. */
+body,.app,.screen{color:var(--theme-text)}
+.card,.modal,.modal>*,input,select,textarea{
+  color:var(--theme-text);
+}
+input,select,textarea{background:var(--theme-input-bg)!important;border-color:var(--theme-line)!important}
+::placeholder{color:var(--theme-muted)!important;opacity:.72}
+.btn:not(.warn):not(.ghost){background:var(--theme-button-bg)!important;color:var(--theme-button-text)!important}
+.btn.ghost{background:transparent!important;color:var(--theme-text)!important;border-color:var(--theme-line)!important}
+.iconbtn{background:var(--theme-card)!important;color:var(--theme-text)!important;border-color:var(--theme-line)!important}
+.daytabs button,.pills button,.tabs button,.bd-role,.plan-tabs-v5 button,.plan-mode-v5 button{
+  color:var(--theme-muted)!important;border-color:var(--theme-line)!important;
+}
+.daytabs button.on,.pills button.on,.tabs button.on,.bd-role.on,.plan-tabs-v5 button.on,.plan-mode-v5 button.on{
+  background:var(--nav-on)!important;color:var(--theme-button-text)!important;border-color:var(--nav-on)!important;
+}
+
+/* Guest — quick actions / stay / booking / tickets / chat. */
+[data-approle="guest"] .guest-weather,
+[data-approle="guest"] .gqa,
+[data-approle="guest"] .guest-welcome-msg,
+[data-approle="guest"] .quickrow button,
+.g611-today-card,
+.g611-stay-action,
+.g611-res-card,
+.g611-ticket-card,
+.g612-act,
+.g612-tool,
+.g612-res,
+.g612-ticket,
+.ticket-buy-modern .memb,
+.v614-next,
+.v614-ticket-buy .handover-box,
+.v614-ticket-success .assigned,
+.v614-staff-order,
+.v614-manager-ticket-summary>div{
+  background:var(--theme-card)!important;
+  color:var(--theme-text)!important;
+  border-color:var(--theme-line)!important;
+}
+[data-approle="guest"] .guest-welcome-msg{
+  background:linear-gradient(145deg,var(--theme-card),var(--theme-soft))!important;
+}
+[data-approle="guest"] .gqa .gqa-ic,
+.g612-tool .tool-icon,
+.g612-act .act-ico,
+.g611-empty .g611-empty-ic{
+  background:var(--theme-soft)!important;color:var(--theme-accent)!important;
+}
+.g612-act{background:linear-gradient(145deg,var(--theme-card),var(--theme-soft))!important}
+.g612-act .time,.g612-act h4,.g612-tool b,.g612-res h4,
+.g611-today-copy h4,.g611-stay-action b,.g611-res-card h4,
+.g611-ticket-body h4,.g611-ticket-price,.g612-ticket .body,
+.g612-ticket .body h4{color:var(--theme-text)!important}
+.g612-act p,.g612-res p,.g611-ticket-desc,.g611-today-meta,
+.g612-ticket .meta,.g612-ticket .desc,.g612-tool span{
+  color:var(--theme-muted)!important;
+}
+.g612-event{background:var(--theme-card)!important;border-color:var(--theme-line)!important}
+.g612-event .copy{background:linear-gradient(145deg,var(--theme-soft),var(--theme-card))!important}
+.g612-event h4{color:var(--theme-text)!important}.g612-event .meta{color:var(--theme-muted)!important}
+.g612-today .sig-count,.g611-section-title .count,.g611-time-pill{
+  background:var(--theme-soft)!important;color:var(--theme-text)!important;border-color:var(--theme-line)!important;
+}
+.g612-tickets .ticket-note{
+  background:var(--theme-soft)!important;color:var(--theme-text)!important;border:1px solid var(--theme-line)!important;
+}
+.g612-tickets .ticket-note .ico{background:var(--theme-card)!important;color:var(--theme-accent)!important}
+.g611-chat .thread>.empty,.g611-chat .bub.them{
+  background:var(--theme-card)!important;color:var(--theme-text)!important;border-color:var(--theme-line)!important;
+}
+.g611-chat .chatbar{
+  background:color-mix(in srgb,var(--theme-card) 94%,transparent)!important;
+  border-color:var(--theme-line)!important;
+}
+.g611-chat .chatbar input{background:transparent!important;color:var(--theme-text)!important}
+
+/* Deliberately cinematic/inverse components must always have readable text. */
+.g611-chat .g611-chat-person,
+.v614-ticket-explain,
+.gh619-hero,
+.gt620-head,
+.g612-stay .stay-passport{
+  background:linear-gradient(145deg,var(--theme-inverse-bg),color-mix(in srgb,var(--theme-inverse-bg) 76%,var(--theme-accent)))!important;
+  color:var(--theme-inverse-text)!important;
+}
+.gh619-hero h3,.gh619-hero p,.gt620-head h3,.gt620-head p,
+.v614-ticket-explain b,.v614-ticket-explain p,
+.g611-chat .g611-chat-person b,.g611-chat .g611-chat-person span{
+  color:var(--theme-inverse-text)!important;
+}
+.gh619-hero p,.gt620-head p,.v614-ticket-explain p,.g611-chat .g611-chat-person span{opacity:.76}
+
+/* Manager surfaces and action center. */
+.ac627,.ac627-item,.ac627-sum,.gt620-order,.gt620-stat,.gh619-stat,.gh619-filter,.gh619-row,
+.att-export-card-v625,.sp628-act,.wd-fb-head{
+  background:var(--theme-card)!important;color:var(--theme-text)!important;border-color:var(--theme-line)!important;
+}
+.ac627-head,.ac627-summary{border-color:var(--theme-line)!important}
+.ac627-summary{background:var(--theme-soft)!important}
+.ac627-copy b,.gt620-main b,.gh619-row b,.sp628-act h4{color:var(--theme-text)!important}
+.ac627-copy span,.gt620-main .meta,.gh619-row p,.sp628-act p{color:var(--theme-muted)!important}
+.gt620-main .collect,.gh619-tag,.ac627-pill{background:var(--theme-soft)!important;color:var(--theme-muted)!important}
+
+/* Entertainer V6.28 programme. */
+.sp628-head h2{color:var(--theme-text)!important}
+.sp628-label b,.sp628-label span{color:var(--theme-muted)!important}
+.sp628-label span{background:var(--theme-soft)!important}
+.sp628-act .time{color:var(--theme-accent)!important}
+.sp628-mine{background:var(--theme-soft)!important;color:var(--theme-primary)!important}
+
+/* Navigation/drawer. */
+.drawer{background:var(--theme-card)!important;color:var(--theme-text)!important}
+.dr-it{color:var(--theme-text)!important}.dr-it.on{background:var(--nav-on)!important;color:var(--theme-button-text)!important}
+.bottomnav,.nav{background:var(--nav-bg)!important;border-color:var(--theme-line)!important}
+.bottomnav button,.nav button{color:var(--theme-muted)!important}
+.bottomnav button.on,.nav button.on{color:var(--nav-on)!important}
+
+/* Fix text aliases used by older guest layers. */
+.g612 .sig-heading,.g612-today .sig-today-head h2,.g612-program-head h2,
+.g611-section-title h3{color:var(--theme-text)!important}
+.g612 .sig-muted,.g612-sec-label span,.g612-today .sig-today-head p{color:var(--theme-muted)!important}
+
+/* Theme Studio */
+.ts629{margin-top:18px;border-top:1px solid var(--theme-line);padding-top:16px}
+.ts629-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.ts629-head h3{font:600 23px/1 var(--font-display);margin:0;color:var(--theme-text)}
+.ts629-head p{font-size:10px;line-height:1.5;color:var(--theme-muted);margin:6px 0 0}
+.ts629-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.ts629-mode button{padding:11px;border:1px solid var(--theme-line);border-radius:15px;background:var(--theme-card);font-weight:700;color:var(--theme-muted)}
+.ts629-mode button.on{background:var(--theme-primary);color:var(--theme-button-text);border-color:var(--theme-primary)}
+.ts629-panel{display:none}.ts629-panel.on{display:block}
+.ts629-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ts629-color{padding:10px;border:1px solid var(--theme-line);border-radius:16px;background:var(--theme-card)}
+.ts629-color label{margin:0 0 6px;font-size:9px}
+.ts629-color input{height:44px;padding:4px}
+.ts629-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.ts629-health{margin:12px 0 0;padding:11px 12px;border-radius:15px;background:var(--theme-soft);font-size:10px;line-height:1.5;color:var(--theme-muted)}
+.ts629-health b{color:var(--theme-text)}
+@media(max-width:390px){.ts629-grid{grid-template-columns:1fr}.ts629-actions{grid-template-columns:1fr}}
+</style>
+
+
+<script id="aurea-theme-studio-v629-script">
+(()=>{
+'use strict';
+if(window.__AUREA_THEME_STUDIO_V629)return;
+window.__AUREA_THEME_STUDIO_V629=true;
+
+const TSKEY629='themeStudioV629';
+const FIELDS629=[
+ ['primary','Primary / brand'],['accent','Accent'],
+ ['bg','Page background'],['card','Cards / surfaces'],
+ ['soft','Soft surface'],['text','Primary text'],
+ ['muted','Secondary text'],['line','Borders'],
+ ['navBg','Menu background'],['navActive','Active menu'],
+ ['buttonBg','Primary button'],['buttonText','Button text'],
+ ['inputBg','Input background'],['inverseBg','Dark feature panel'],
+ ['inverseText','Feature panel text']
+];
+
+function validHex629(v){return /^#[0-9a-f]{6}$/i.test(String(v||''));}
+function hex629(v,fb){return validHex629(v)?String(v).toUpperCase():fb;}
+function rgb629(h){h=hex629(h,'#000000').slice(1);return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+function lum629(h){
+  const a=rgb629(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});
+  return .2126*a[0]+.7152*a[1]+.0722*a[2];
+}
+function contrast629(a,b){const x=lum629(a),y=lum629(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+function bestText629(bg){return contrast629(bg,'#FFFFFF')>=contrast629(bg,'#17120E')?'#FFFFFF':'#17120E';}
+function mix629(a,b,p){
+  const A=rgb629(a),B=rgb629(b),q=Math.max(0,Math.min(1,p));
+  return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*q).toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+function presetMode629(mode){
+  const st=S.settings||{},pal=PALETTES[st.palette];
+  let c;
+  if(pal&&pal[mode]) c=pal[mode];
+  else if(mode==='light') c={
+    primary:st.primary||'#3E2A1E',accent:st.accent||'#B98A5C',bg:st.bg||'#F7F2EA',
+    text:st.textColor||'#2B1F16',card:'#FFFFFF',sand:'#EFE6D8',line:'#E2D6C4'
+  };
+  else c={primary:'#D9B47F',accent:'#C9A26B',bg:'#17110C',text:'#F2E7D8',card:'#221913',sand:'#2C211A',line:'#3A2C22'};
+  const primary=hex629(c.primary,'#3E2A1E'),accent=hex629(c.accent,'#B98A5C'),bg=hex629(c.bg,mode==='dark'?'#17110C':'#F7F2EA');
+  const card=hex629(c.card,mode==='dark'?'#221913':'#FFFFFF'),text=hex629(c.text,mode==='dark'?'#F2E7D8':'#2B1F16');
+  const soft=hex629(c.sand,mix629(card,bg,.35)),line=hex629(c.line,mix629(text,bg,.82));
+  return {
+    primary,accent,bg,card,soft,text,
+    muted:mix629(text,bg,mode==='dark'?.38:.48),
+    line,navBg:card,navActive:primary,
+    buttonBg:primary,buttonText:bestText629(primary),
+    inputBg:card,
+    inverseBg:mode==='dark'?mix629(bg,'#000000',.24):primary,
+    inverseText:bestText629(mode==='dark'?mix629(bg,'#000000',.24):primary)
+  };
+}
+function studio629(){
+  const raw=(S.settings&&S.settings[TSKEY629])||{};
+  return {enabled:raw.enabled===true,light:{...presetMode629('light'),...(raw.light||{})},dark:{...presetMode629('dark'),...(raw.dark||{})}};
+}
+function active629(mode){
+  const s=studio629(),base=presetMode629(mode);
+  return s.enabled?{...base,...s[mode]}:base;
+}
+function ensureContrast629(c){
+  const o={...c};
+  if(contrast629(o.text,o.bg)<4.5)o.text=bestText629(o.bg);
+  if(contrast629(o.text,o.card)<4.5)o.text=bestText629(o.card);
+  if(contrast629(o.muted,o.bg)<3)o.muted=mix629(o.text,o.bg,.32);
+  if(contrast629(o.muted,o.card)<3)o.muted=mix629(o.text,o.card,.34);
+  if(contrast629(o.buttonText,o.buttonBg)<4.5)o.buttonText=bestText629(o.buttonBg);
+  if(contrast629(o.inverseText,o.inverseBg)<4.5)o.inverseText=bestText629(o.inverseBg);
+  if(contrast629(o.text,o.inputBg)<4.5)o.inputBg=o.card;
+  return o;
+}
+function applyTheme629(){
+  const st=S.settings||{};
+  applyAutoDark();
+  const mode=S.theme==='dark'?'dark':'light';
+  let c=ensureContrast629(active629(mode));
+  const light=ensureContrast629(active629('light')),dark=ensureContrast629(active629('dark'));
+  const root=document.documentElement.style;
+  const set=(k,v)=>root.setProperty(k,v);
+
+  set('--theme-bg',c.bg);set('--theme-card',c.card);set('--theme-soft',c.soft);
+  set('--theme-text',c.text);set('--theme-muted',c.muted);set('--theme-line',c.line);
+  set('--theme-primary',c.primary);set('--theme-accent',c.accent);
+  set('--theme-button-bg',c.buttonBg);set('--theme-button-text',c.buttonText);
+  set('--theme-input-bg',c.inputBg);set('--theme-inverse-bg',c.inverseBg);set('--theme-inverse-text',c.inverseText);
+
+  /* Legacy + modern aliases: every historical design layer reads the same current palette. */
+  set('--bg',c.bg);set('--card',c.card);set('--surface',c.card);set('--surface-1',c.card);set('--surface-2',c.soft);
+  set('--soft',c.soft);set('--sand',c.soft);set('--cream',c.bg);
+  set('--ink',c.text);set('--text',c.text);set('--text-strong',c.text);set('--muted',c.muted);set('--text-soft',c.muted);
+  set('--line',c.line);set('--hairline',c.line);
+  set('--espresso',c.primary);set('--cacao',mix629(c.primary,c.text,.18));set('--bronze',c.accent);set('--accent',c.accent);set('--accent-strong',c.primary);
+  set('--nav-bg',c.navBg);set('--nav-on',c.navActive);
+  set('--bg-light',light.bg);set('--ink-light',light.text);set('--bg-dark',dark.bg);set('--ink-dark',dark.text);
+
+  const f=FONTS[st.fontStyle]||FONTS[(PALETTES[st.palette]||{}).font]||FONTS.elegant;
+  set('--font-display',f[0]);set('--font-body',f[1]);
+  const br=BTN_R[st.buttonStyle]||BTN_R[(PALETTES[st.palette]||{}).btn]||BTN_R.rounded;
+  set('--btn-radius',br[0]);set('--btn-radius-sm',br[1]);
+  applyFontScale();
+  document.documentElement.setAttribute('data-theme',mode);
+  const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',c.bg);
+  document.title=st.name||'Entertainment';
+}
+window.applySettings=applySettings=applyTheme629;
+
+function field629(mode,k,label,val){
+  return `<div class="ts629-color"><label>${esc(label)}</label><input type="color" data-ts629="${mode}.${k}" value="${esc(hex629(val,'#000000'))}"></div>`;
+}
+function themeStudioHtml629(){
+  const s=studio629(),mode=S._ts629Mode||'light';
+  return `<section class="ts629">
+    <div class="ts629-head"><div><h3>Theme Studio</h3><p>Edit Light and Dark Mode independently. These controls override old hard-coded colours across Guest, Entertainer and Manager screens.</p></div></div>
+    <div class="ts629-mode"><button type="button" data-ts629mode="light" class="${mode==='light'?'on':''}">☀ Light mode</button><button type="button" data-ts629mode="dark" class="${mode==='dark'?'on':''}">☾ Dark mode</button></div>
+    ${['light','dark'].map(m=>`<div class="ts629-panel ${mode===m?'on':''}" data-ts629panel="${m}"><div class="ts629-grid">${FIELDS629.map(([k,l])=>field629(m,k,l,s[m][k])).join('')}</div></div>`).join('')}
+    <div class="ts629-health" id="ts629-health"></div>
+    <div class="ts629-actions"><button type="button" class="btn ghost sm" id="ts629-autofix">Auto-fix contrast</button><button type="button" class="btn ghost sm" id="ts629-reset">Reset selected mode</button></div>
+  </section>`;
+}
+
+const oldSetThemeView629=setThemeView;
+window.setThemeView=setThemeView=function(){
+  let html=oldSetThemeView629();
+  const marker=`<label>${t("styleHead")}</label>`;
+  if(html.includes(marker))html=html.replace(marker,themeStudioHtml629()+marker);
+  else html=html.replace('<button class="btn" id="btn-savesettings">',themeStudioHtml629()+'<button class="btn" id="btn-savesettings">');
+  return html;
+};
+
+function readPanels629(){
+  const s=studio629();
+  document.querySelectorAll('[data-ts629]').forEach(el=>{
+    const [m,k]=String(el.dataset.ts629||'').split('.');
+    if(s[m]&&k)s[m][k]=hex629(el.value,s[m][k]);
+  });
+  s.enabled=true;
+  return s;
+}
+function paintHealth629(){
+  const el=document.querySelector('#ts629-health');if(!el)return;
+  const s=readPanels629(),m=S._ts629Mode||'light',c=s[m];
+  const a=contrast629(c.text,c.bg),b=contrast629(c.text,c.card),bt=contrast629(c.buttonText,c.buttonBg),inv=contrast629(c.inverseText,c.inverseBg);
+  const ok=a>=4.5&&b>=4.5&&bt>=4.5&&inv>=4.5;
+  el.innerHTML=`<b>${ok?'✓ Contrast looks safe':'⚠ Contrast needs attention'}</b><br>Page ${a.toFixed(1)}:1 · Card ${b.toFixed(1)}:1 · Button ${bt.toFixed(1)}:1 · Feature panel ${inv.toFixed(1)}:1`;
+}
+function writePanels629(s){
+  document.querySelectorAll('[data-ts629]').forEach(el=>{
+    const [m,k]=String(el.dataset.ts629||'').split('.');
+    if(s[m]&&s[m][k])el.value=s[m][k];
+  });paintHealth629();
+}
+
+const oldWire629=window.wireCommon;
+window.wireCommon=wireCommon=function(){
+  oldWire629();
+
+  if(!document.querySelector('[data-ts629]'))return;
+
+  document.querySelectorAll('[data-ts629mode]').forEach(b=>b.onclick=()=>{
+    S._ts629Mode=b.dataset.ts629mode;
+    document.querySelectorAll('[data-ts629mode]').forEach(x=>x.classList.toggle('on',x.dataset.ts629mode===S._ts629Mode));
+    document.querySelectorAll('[data-ts629panel]').forEach(x=>x.classList.toggle('on',x.dataset.ts629panel===S._ts629Mode));
+    paintHealth629();
+  });
+  document.querySelectorAll('[data-ts629]').forEach(el=>el.oninput=paintHealth629);
+
+  const af=document.querySelector('#ts629-autofix');
+  if(af)af.onclick=()=>{
+    const s=readPanels629(),m=S._ts629Mode||'light';
+    s[m]=ensureContrast629(s[m]);writePanels629(s);toastOk('Contrast corrected');
+  };
+  const rs=document.querySelector('#ts629-reset');
+  if(rs)rs.onclick=()=>{
+    const s=readPanels629(),m=S._ts629Mode||'light';s[m]=presetMode629(m);writePanels629(s);toastOk(`${m==='dark'?'Dark':'Light'} mode reset`);
+  };
+
+  /* Replace only the Theme page save handler. Other Settings pages keep their original save logic. */
+  const save=document.querySelector('#btn-savesettings');
+  if(save)save.onclick=async()=>{
+    if(save.disabled)return;
+    save.disabled=true;
+    try{
+      const v=(sel,fb)=>{const el=document.querySelector(sel);return el?el.value:fb};
+      const st={...S.settings};
+      if(document.querySelector('#s-primary')){
+        st.primary=v('#s-primary',st.primary);st.accent=v('#s-accent',st.accent);
+        st.bg=v('#s-bg',st.bg);st.textColor=v('#s-text',st.textColor);
+        st.navBg=v('#s-navbg',st.navBg);st.navActive=v('#s-navon',st.navActive);
+      }
+      if(document.querySelector('#s-font'))st.fontStyle=v('#s-font',st.fontStyle);
+      if(document.querySelector('#s-btn'))st.buttonStyle=v('#s-btn',st.buttonStyle);
+      if(document.querySelector('#s-fs'))st.fontScale=v('#s-fs',st.fontScale);
+      if(document.querySelector('#s-autodark'))st.autoDark=document.querySelector('#s-autodark').checked;
+      st[TSKEY629]=readPanels629();
+      await DB.saveSettings(st);
+      applyTheme629();toastOk(t('saved'));render();
+    }catch(e){console.error('Theme Studio save',e);toastErr(t('errSave'));save.disabled=false;}
+  };
+  paintHealth629();
+};
+
+/* Ensure the corrected theme is active after boot and after the first data load. */
+setTimeout(()=>{try{applyTheme629();if(typeof safeToRender==='function'&&safeToRender())render();}catch(e){console.error('V6.29 theme apply',e)}},750);
+
+window.AUREA_THEME_STUDIO_V629={
+  version:'6.29',studio:studio629,active:active629,contrast:contrast629,
+  ensureContrast:ensureContrast629,apply:applyTheme629,preset:presetMode629
 };
 })();
 </script>
