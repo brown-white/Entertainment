@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Payroll Fixed V6.31</title>
+<title>Entertainment · AUREA Payroll Corrected V6.32</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -16891,32 +16891,84 @@ function employmentDays630(u,mk){
   return out;
 }
 function payrollCalc630(u,mk){
-  const cfg=payrollConfig630(u),eligible=employmentDays630(u,mk),den=eligible.length||1;
-  const daily=cfg.amount/den;
+  const cfg=payrollConfig630(u);
+  const calendarDays=daysMonth630(mk);
+  const eligible=employmentDays630(u,mk);
+
+  /* Monthly salary means salary for the whole calendar month.
+     Never divide by only the days somebody happened to be employed. */
+  const daily=calendarDays>0 ? cfg.amount/calendarDays : 0;
+
   const today=hotelDateStr(),monthNow=today.slice(0,7),todayD=+today.slice(8,10);
   const happened=eligible.filter(d=>mk<monthNow||(mk===monthNow&&d<=todayD));
-  let earned=0,paidDays=0,absent=0,vacation=0,off=0,present=0;
-  const deductions=[],ledger=[];
-  happened.forEach(d=>{
-    const status=attStatus(u,mk,d)||attAuto(u,mk,d),date=dateStr(mk,d);
-    let paid=false,reason='';
-    if(status==='P'){paid=true;present++;}
-    else if(status==='O'){paid=true;off++;reason='Day off · paid';}
-    else if(status==='A'){absent++;reason='Absent';}
-    else if(status==='V'){vacation++;paid=cfg.vacationPaid;reason=cfg.vacationPaid?'Vacation · paid':'Vacation · unpaid';}
-    else reason='Not counted';
-    if(paid){earned+=daily;paidDays++;}
-    else if(status==='A'||(status==='V'&&!cfg.vacationPaid)){
-      deductions.push({date,status,reason,amount:daily});
-    }
-    ledger.push({date,status,paid,amount:paid?daily:0,reason});
+
+  const statusFor=(d,projection=false)=>{
+    let st=attStatus(u,mk,d);
+    if(!st && projection) st=attAuto(u,mk,d);
+    return st||"";
+  };
+  const evaluate=(d,projection=false)=>{
+    const status=statusFor(d,projection),date=dateStr(mk,d);
+    let paid=false,reason="";
+    if(status==="P"){paid=true;reason="Present · paid";}
+    else if(status==="O"){paid=true;reason="Day off · paid";}
+    else if(status==="A"){reason="Absent · unpaid";}
+    else if(status==="V"){paid=cfg.vacationPaid;reason=cfg.vacationPaid?"Vacation · paid":"Vacation · unpaid";}
+    else if(status==="N"){reason="Not employed / not payable";}
+    else {paid=projection;reason=projection?"Planned paid day":"Not counted yet";}
+    return {date,status,paid,reason,amount:paid?daily:0};
+  };
+
+  const ledger=happened.map(d=>evaluate(d,false));
+  const projectedLedger=eligible.map(d=>evaluate(d,true));
+
+  const counts={present:0,off:0,absent:0,vacation:0,paidDays:0};
+  ledger.forEach(x=>{
+    if(x.status==="P")counts.present++;
+    if(x.status==="O")counts.off++;
+    if(x.status==="A")counts.absent++;
+    if(x.status==="V")counts.vacation++;
+    if(x.paid)counts.paidDays++;
   });
-  const fullMonthActual=Math.max(0,cfg.amount-deductions.reduce((n,x)=>n+x.amount,0));
+
+  const earned=ledger.reduce((n,x)=>n+x.amount,0);
+  const deductions=ledger
+    .filter(x=>x.status==="A"||(x.status==="V"&&!cfg.vacationPaid))
+    .map(x=>({...x,amount:daily}));
+
+  const projectedDeductions=projectedLedger
+    .filter(x=>x.status==="A"||(x.status==="V"&&!cfg.vacationPaid))
+    .map(x=>({...x,amount:daily}));
+
+  /* Proration is separate from attendance deductions:
+     joining/leaving mid-month reduces the payable base automatically. */
+  const proratedBase=daily*eligible.length;
+  const employmentProration=Math.max(0,cfg.amount-proratedBase);
+  const projectedPay=Math.max(0,proratedBase-projectedDeductions.reduce((n,x)=>n+x.amount,0));
+  const remaining=Math.max(0,projectedPay-earned);
+
   return {
-    user:u,mk,cfg,daily,eligibleDays:eligible.length,elapsedDays:happened.length,
-    paidDays,present,off,absent,vacation,earned:Math.min(cfg.amount,earned),
-    deductions,fullMonthActual,contract:cfg.amount,
-    progress:cfg.amount?Math.min(100,Math.round(earned/cfg.amount*100)):0,ledger
+    user:u,mk,cfg,
+    calendarDays,
+    daily,
+    eligibleDays:eligible.length,
+    elapsedDays:happened.length,
+    paidDays:counts.paidDays,
+    present:counts.present,
+    off:counts.off,
+    absent:counts.absent,
+    vacation:counts.vacation,
+    earned:Math.max(0,earned),
+    deductions,
+    projectedDeductions,
+    contract:cfg.amount,
+    proratedBase,
+    employmentProration,
+    fullMonthActual:projectedPay,
+    remaining,
+    progress:projectedPay>0?Math.min(100,Math.round(earned/projectedPay*100)):0,
+    ledger,
+    projectedLedger
   };
 }
 window.payrollCalc630=payrollCalc630;
@@ -16970,132 +17022,186 @@ function currencyTotals630(rows,field){
 function payrollDataset630(mk){
   const rows=payrollTeam630(mk);
   const data=rows.map(r=>[
-    r.user.number?('#'+r.user.number):'',
+    r.user.number?("#"+r.user.number):"",
     r.user.display_name||r.user.username,
     r.cfg.currency,
     r.contract.toFixed(2),
+    r.calendarDays,
     r.eligibleDays,
     r.daily.toFixed(2),
+    r.proratedBase.toFixed(2),
     r.present,
     r.off,
     r.absent,
     r.vacation,
-    r.cfg.vacationPaid?'Paid':'Unpaid',
+    r.cfg.vacationPaid?"Paid":"Unpaid",
     r.paidDays,
     r.earned.toFixed(2),
     r.deductions.reduce((n,x)=>n+x.amount,0).toFixed(2),
+    r.employmentProration.toFixed(2),
     r.fullMonthActual.toFixed(2),
-    r.deductions.map(x=>`${x.date}: ${x.reason} -${money630(x.amount,r.cfg.currency)}`).join(' | ')
+    r.deductions.map(x=>`${x.date}: ${x.reason} -${money630(x.amount,r.cfg.currency)}`).join(" | ")
   ]);
-  const contract=currencyTotals630(rows,'contract'),earned=currencyTotals630(rows,'earned'),actual=currencyTotals630(rows,'fullMonthActual');
+
+  const contract=currencyTotals630(rows,"contract"),
+        prorated=currencyTotals630(rows,"proratedBase"),
+        earned=currencyTotals630(rows,"earned"),
+        actual=currencyTotals630(rows,"fullMonthActual");
+
   data.push([]);
-  data.push(['','','EGP','Contract total',contract.EGP.toFixed(2),'','','','','','','','Earned to date',earned.EGP.toFixed(2),'Month actual',actual.EGP.toFixed(2)]);
-  data.push(['','','USD','Contract total',contract.USD.toFixed(2),'','','','','','','','Earned to date',earned.USD.toFixed(2),'Month actual',actual.USD.toFixed(2)]);
+  data.push(["","","EGP","Contract",contract.EGP.toFixed(2),"","","Prorated base",prorated.EGP.toFixed(2),"","","","","","Earned",earned.EGP.toFixed(2),"","Final / expected",actual.EGP.toFixed(2)]);
+  data.push(["","","USD","Contract",contract.USD.toFixed(2),"","","Prorated base",prorated.USD.toFixed(2),"","","","","","Earned",earned.USD.toFixed(2),"","Final / expected",actual.USD.toFixed(2)]);
+
   return {
-    title:'Team Payroll — '+monthLabel(mk),
-    headers:['#','Team member','Currency','Monthly salary','Employment days','Daily rate','Present','Day off','Absent','Vacation','Vacation salary','Paid days elapsed','Earned to date','Deductions','Projected/actual month salary','Deduction details'],
-    rows:data,landscape:true,
-    sourceNote:'Attendance source: Monthly Attendance. Present and Day Off are paid. Absence is unpaid. Vacation follows each employee payroll setting. EGP and USD totals are kept separate.'
+    title:"Team Payroll — "+monthLabel(mk),
+    headers:[
+      "#","Team member","Currency","Monthly salary","Calendar days","Employment days",
+      "Daily rate","Prorated salary base","Present","Day off","Absent","Vacation",
+      "Vacation salary","Paid days elapsed","Earned to date","Attendance deductions",
+      "Employment proration","Final / expected pay","Deduction details"
+    ],
+    rows:data,
+    landscape:true,
+    sourceNote:"Payroll rule: monthly salary ÷ calendar days in the month = daily rate. Only employed dates can earn salary. Present and Day Off are paid. Absence is unpaid. Vacation follows each employee setting. Mid-month joining/leaving is prorated automatically. EGP and USD remain separate."
   };
 }
 window.payrollDataset630=payrollDataset630;
 
 function payrollManagerInner630(){
-  const mk=payrollSelectedMonth631(),[yr,mo]=mk.split('-').map(Number),rows=payrollTeam630(mk);
-  const contract=currencyTotals630(rows,'contract'),
-        earned=currencyTotals630(rows,'earned'),
-        actual=currencyTotals630(rows,'fullMonthActual');
-  const deductions={EGP:0,USD:0};
-  rows.forEach(r=>deductions[r.cfg.currency]+=r.deductions.reduce((n,x)=>n+x.amount,0));
+  const mk=payrollSelectedMonth631(),[yr,mo]=mk.split("-").map(Number),rows=payrollTeam630(mk);
+  const contract=currencyTotals630(rows,"contract"),
+        prorated=currencyTotals630(rows,"proratedBase"),
+        earned=currencyTotals630(rows,"earned"),
+        actual=currencyTotals630(rows,"fullMonthActual");
+
+  const attendanceDed={EGP:0,USD:0},employmentProration={EGP:0,USD:0};
+  rows.forEach(r=>{
+    attendanceDed[r.cfg.currency]+=r.deductions.reduce((n,x)=>n+x.amount,0);
+    employmentProration[r.cfg.currency]+=r.employmentProration||0;
+  });
+
   const configured=rows.filter(r=>r.contract>0),period=payrollPeriodLabel631(mk);
   return `<div class="pay630-hero">
       <div class="ey">Team payroll</div>
       <h3>${esc(monthLabel(mk))}</h3>
-      <p>Monthly salary is calculated from the same attendance records used everywhere else in the app. Present + Day Off are paid, Absence is unpaid, Vacation follows each employee setting.</p>
+      <p>Correct monthly payroll: monthly salary is divided by the calendar days of this month. Joining/leaving mid-month is prorated. Present + Day Off are paid. Absence is unpaid. Vacation follows each employee setting.</p>
     </div>
+
     <div class="row2">
-      <div><label>Month</label><select id="pay631-month">${payrollMonthOptions630().map(([v,l])=>`<option value="${v}" ${v===mo?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
-      <div><label>Year</label><select id="pay631-year">${payrollYears631().map(y=>`<option value="${y}" ${y===yr?'selected':''}>${y}</option>`).join('')}</select></div>
+      <div><label>Month</label><select id="pay631-month">${payrollMonthOptions630().map(([v,l])=>`<option value="${v}" ${v===mo?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
+      <div><label>Year</label><select id="pay631-year">${payrollYears631().map(y=>`<option value="${y}" ${y===yr?"selected":""}>${y}</option>`).join("")}</select></div>
     </div>
+
     <div class="pay631-explain">
       <b>${esc(period)} · ${esc(monthLabel(mk))}</b>
-      <span>Contract = full monthly salary. Earned = salary accumulated for paid days up to this date. Deductions = unpaid Absence / unpaid Vacation. Final/expected = contract minus known deductions.</span>
+      <span><strong>Monthly contract</strong> is the full-month salary. <strong>Prorated base</strong> is what the employee can earn for the dates they were employed. <strong>Earned</strong> is what has actually accumulated so far. <strong>Final / expected pay</strong> is the prorated base minus absence or unpaid-vacation deductions.</span>
     </div>
+
     <div class="pay630-totals">
-      <div class="pay630-total"><b>${money630(contract.EGP,'EGP')}</b><span>Monthly contracts · EGP</span></div>
-      <div class="pay630-total"><b>${money630(contract.USD,'USD')}</b><span>Monthly contracts · USD</span></div>
-      <div class="pay630-total"><b>${money630(earned.EGP,'EGP')}</b><span>Earned ${mk===monthKey630()?'to date':'in period'} · EGP</span></div>
-      <div class="pay630-total"><b>${money630(earned.USD,'USD')}</b><span>Earned ${mk===monthKey630()?'to date':'in period'} · USD</span></div>
-      <div class="pay630-total"><b>${money630(deductions.EGP,'EGP')}</b><span>Deductions · EGP</span></div>
-      <div class="pay630-total"><b>${money630(deductions.USD,'USD')}</b><span>Deductions · USD</span></div>
-      <div class="pay630-total"><b>${money630(actual.EGP,'EGP')}</b><span>${mk<monthKey630()?'Final':'Expected'} pay · EGP</span></div>
-      <div class="pay630-total"><b>${money630(actual.USD,'USD')}</b><span>${mk<monthKey630()?'Final':'Expected'} pay · USD</span></div>
+      <div class="pay630-total"><b>${money630(contract.EGP,"EGP")}</b><span>Full monthly contracts · EGP</span></div>
+      <div class="pay630-total"><b>${money630(contract.USD,"USD")}</b><span>Full monthly contracts · USD</span></div>
+
+      <div class="pay630-total"><b>${money630(prorated.EGP,"EGP")}</b><span>Prorated salary base · EGP</span></div>
+      <div class="pay630-total"><b>${money630(prorated.USD,"USD")}</b><span>Prorated salary base · USD</span></div>
+
+      <div class="pay630-total"><b>${money630(earned.EGP,"EGP")}</b><span>Earned ${mk===monthKey630()?"to date":"in period"} · EGP</span></div>
+      <div class="pay630-total"><b>${money630(earned.USD,"USD")}</b><span>Earned ${mk===monthKey630()?"to date":"in period"} · USD</span></div>
+
+      <div class="pay630-total"><b>${money630(attendanceDed.EGP,"EGP")}</b><span>Attendance deductions · EGP</span></div>
+      <div class="pay630-total"><b>${money630(attendanceDed.USD,"USD")}</b><span>Attendance deductions · USD</span></div>
+
+      <div class="pay630-total"><b>${money630(actual.EGP,"EGP")}</b><span>${mk<monthKey630()?"Final":"Expected"} pay · EGP</span></div>
+      <div class="pay630-total"><b>${money630(actual.USD,"USD")}</b><span>${mk<monthKey630()?"Final":"Expected"} pay · USD</span></div>
     </div>
-    <div class="pay630-actions"><button class="btn" id="pay630-xlsx">${ic('download',16)} Export Excel</button><button class="btn ghost" id="pay630-pdf">${ic('download',16)} PDF / Print</button></div>
-    ${configured.length?`<div class="pay630-list">${configured.map(r=>payrollPerson631(r,true)).join('')}</div>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No salaries configured for this team yet. Open Team accounts → Edit person → Salary.</div>`}`;
+
+    ${(employmentProration.EGP||employmentProration.USD)?`<div class="pay632-proration-note"><b>Employment proration</b><span>Not a penalty: this is salary outside the employee's employment dates in this month.</span><div>${employmentProration.EGP?money630(employmentProration.EGP,"EGP"):""}${employmentProration.EGP&&employmentProration.USD?" · ":""}${employmentProration.USD?money630(employmentProration.USD,"USD"):""}</div></div>`:""}
+
+    <div class="pay630-actions"><button class="btn" id="pay630-xlsx">${ic("download",16)} Export Excel</button><button class="btn ghost" id="pay630-pdf">${ic("download",16)} PDF / Print</button></div>
+
+    ${configured.length?`<div class="pay630-list">${configured.map(r=>payrollPerson631(r,true)).join("")}</div>`:`<div class="empty"><div class="big">${ic("users",28)}</div>No salaries configured for this team yet. Open Team accounts → Edit person → Salary.</div>`}`;
 }
 window.payrollManagerInner630=payrollManagerInner630;
 window.payrollManagerInner630=payrollManagerInner630;
 
 function payrollPerson631(r,manager){
   const ded=r.deductions.reduce((n,x)=>n+x.amount,0);
-  const remaining=Math.max(0,r.fullMonthActual-r.earned);
-  const past=r.mk<monthKey630(),current=r.mk===monthKey630();
+  const remaining=r.remaining!=null?r.remaining:Math.max(0,r.fullMonthActual-r.earned);
+  const past=r.mk<monthKey630();
   return `<article class="pay630-person">
     <div class="pay630-person-top">
-      <div><b>${esc(r.user.display_name||r.user.username)}</b><div class="mini">${r.user.number?'#'+r.user.number+' · ':''}${esc(monthLabel(r.mk))} · ${esc(r.cfg.currency)} · ${r.cfg.vacationPaid?'Paid vacation':'Unpaid vacation'}</div></div>
-      <div class="pay630-money"><strong>${money630(r.earned,r.cfg.currency)}</strong><span>${past?'final earned':'earned so far'}</span></div>
+      <div>
+        <b>${esc(r.user.display_name||r.user.username)}</b>
+        <div class="mini">${r.user.number?"#"+r.user.number+" · ":""}${esc(monthLabel(r.mk))} · ${esc(r.cfg.currency)} · ${r.cfg.vacationPaid?"Paid vacation":"Unpaid vacation"}</div>
+      </div>
+      <div class="pay630-money"><strong>${money630(r.earned,r.cfg.currency)}</strong><span>${past?"earned in month":"earned so far"}</span></div>
     </div>
+
     <div class="pay630-progress"><i style="width:${r.progress}%"></i></div>
+
     <div class="pay631-summary">
-      <div><span>Monthly salary</span><b>${money630(r.contract,r.cfg.currency)}</b></div>
-      <div><span>${past?'Final salary':'Expected salary'}</span><b>${money630(r.fullMonthActual,r.cfg.currency)}</b></div>
-      <div><span>Deductions</span><b class="${ded?'pay630-minus':''}">${ded?'− ':''}${money630(ded,r.cfg.currency)}</b></div>
-      <div><span>${past?'Remaining':'Still to earn'}</span><b>${money630(remaining,r.cfg.currency)}</b></div>
+      <div><span>Full monthly salary</span><b>${money630(r.contract,r.cfg.currency)}</b></div>
+      <div><span>Prorated salary base</span><b>${money630(r.proratedBase,r.cfg.currency)}</b></div>
+      <div><span>${past?"Final pay":"Expected pay"}</span><b>${money630(r.fullMonthActual,r.cfg.currency)}</b></div>
+      <div><span>${past?"Difference":"Still to earn"}</span><b>${money630(remaining,r.cfg.currency)}</b></div>
     </div>
+
     <div class="pay630-grid">
-      <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate</span></div>
-      <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days</span></div>
-      <div class="pay630-cell"><b>${r.absent}</b><span>Absent</span></div>
-      <div class="pay630-cell"><b>${r.vacation}</b><span>Vacation</span></div>
+      <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate · ${r.calendarDays} days</span></div>
+      <div class="pay630-cell"><b>${r.eligibleDays}</b><span>Employment days</span></div>
+      <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days elapsed</span></div>
+      <div class="pay630-cell"><b class="${ded?"pay630-minus":""}">${ded?"− ":""}${money630(ded,r.cfg.currency)}</b><span>Attendance deductions</span></div>
     </div>
-    ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Unpaid days</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:''}
-    ${manager?`<button class="btn ghost sm" data-pay630-edit="${esc(r.user.id)}" style="margin-top:10px">${ic('pen',14)} Edit salary</button>`:''}
+
+    ${r.employmentProration>0?`<div class="pay632-proration"><span>Employment proration</span><b>− ${money630(r.employmentProration,r.cfg.currency)}</b><small>${r.eligibleDays} of ${r.calendarDays} calendar days employed. This is not an absence penalty.</small></div>`:""}
+
+    ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Unpaid attendance days</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join("")}</div>`:""}
+
+    ${manager?`<button class="btn ghost sm" data-pay630-edit="${esc(r.user.id)}" style="margin-top:10px">${ic("pen",14)} Edit salary</button>`:""}
   </article>`;
 }
 function payrollPerson630(r,manager){ return payrollPerson631(r,manager); }
 
 function mySalaryCard630(){
-  const u=(S.users||[]).find(x=>x.username===S.session.username);if(!u)return'';
-  /* IMPORTANT: follow the exact attendance month the entertainer is viewing. */
-  const mk=currentAttMonth(),r=payrollCalc630(u,mk);if(!r.contract)return'';
+  const u=(S.users||[]).find(x=>x.username===S.session.username);if(!u)return"";
+  const mk=currentAttMonth(),r=payrollCalc630(u,mk);if(!r.contract)return"";
+
   const nowMk=monthKey630(),isCurrent=mk===nowMk,isPast=mk<nowMk;
   const today=hotelDateStr(),todayRow=isCurrent?r.ledger.find(x=>x.date===today):null;
-  const ded=r.deductions.reduce((n,x)=>n+x.amount,0),remaining=Math.max(0,r.fullMonthActual-r.earned);
+  const ded=r.deductions.reduce((n,x)=>n+x.amount,0);
+  const remaining=r.remaining!=null?r.remaining:Math.max(0,r.fullMonthActual-r.earned);
+
   return `<section class="sec pay630-my">
-    <h3>${ic('star',18)} My salary</h3>
+    <h3>${ic("star",18)} My salary</h3>
     <div class="card pay631-mycard">
       <div class="pay631-readonly">Read only · managed by Entertainment Manager</div>
       <div class="pay631-monthtitle">${esc(monthLabel(mk))}</div>
+
       <div class="pay631-heroamount">
-        <span>${isPast?'Final earned':isCurrent?'Earned so far':'Planned'}</span>
+        <span>${isPast?"Final earned":isCurrent?"Earned so far":"Planned"}</span>
         <b>${money630(r.earned,r.cfg.currency)}</b>
       </div>
+
       <div class="pay630-progress"><i style="width:${r.progress}%"></i></div>
+
       <div class="pay631-summary">
-        <div><span>Monthly salary</span><b>${money630(r.contract,r.cfg.currency)}</b></div>
-        <div><span>${isPast?'Final salary':'Expected salary'}</span><b>${money630(r.fullMonthActual,r.cfg.currency)}</b></div>
-        <div><span>Total deductions</span><b class="${ded?'pay630-minus':''}">${ded?'− ':''}${money630(ded,r.cfg.currency)}</b></div>
-        <div><span>${isPast?'Unpaid difference':'Still to earn'}</span><b>${money630(remaining,r.cfg.currency)}</b></div>
+        <div><span>Full monthly salary</span><b>${money630(r.contract,r.cfg.currency)}</b></div>
+        <div><span>Salary for your employment dates</span><b>${money630(r.proratedBase,r.cfg.currency)}</b></div>
+        <div><span>${isPast?"Final pay":"Expected pay"}</span><b>${money630(r.fullMonthActual,r.cfg.currency)}</b></div>
+        <div><span>${isPast?"Difference":"Still to earn"}</span><b>${money630(remaining,r.cfg.currency)}</b></div>
       </div>
+
       <div class="pay630-grid">
-        <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate</span></div>
-        <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days</span></div>
-        <div class="pay630-cell"><b>${r.absent}</b><span>Absent days</span></div>
-        <div class="pay630-cell"><b>${r.vacation}</b><span>Vacation days</span></div>
+        <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate · ${r.calendarDays} days</span></div>
+        <div class="pay630-cell"><b>${r.eligibleDays}</b><span>Employment days</span></div>
+        <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days elapsed</span></div>
+        <div class="pay630-cell"><b class="${ded?"pay630-minus":""}">${ded?"− ":""}${money630(ded,r.cfg.currency)}</b><span>Attendance deductions</span></div>
       </div>
-      ${todayRow?`<div class="todayearn">${todayRow.paid?`Today · ${esc(todayRow.reason||'Paid')} · + ${money630(todayRow.amount,r.cfg.currency)}`:`Today · <span class="pay630-minus">${esc(todayRow.reason)} · − ${money630(r.daily,r.cfg.currency)}</span>`}</div>`:''}
-      ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Why money was deducted</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:`<div class="pay631-nodeduct">No salary deductions in ${esc(monthLabel(mk))}.</div>`}
+
+      ${r.employmentProration>0?`<div class="pay632-proration"><span>Employment proration</span><b>− ${money630(r.employmentProration,r.cfg.currency)}</b><small>You were employed for ${r.eligibleDays} of ${r.calendarDays} calendar days in ${esc(monthLabel(mk))}. This is not an absence deduction.</small></div>`:""}
+
+      ${todayRow?`<div class="todayearn">${todayRow.paid?`Today · ${esc(todayRow.reason)} · + ${money630(todayRow.amount,r.cfg.currency)}`:`Today · <span class="pay630-minus">${esc(todayRow.reason)} · − ${money630(r.daily,r.cfg.currency)}</span>`}</div>`:""}
+
+      ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Why attendance money was deducted</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join("")}</div>`:`<div class="pay631-nodeduct">No attendance deductions in ${esc(monthLabel(mk))}.</div>`}
     </div>
   </section>`;
 }
@@ -17152,7 +17258,7 @@ window.wireCommon=wireCommon=function(){
 setTimeout(syncPayroll631,1900);
 
 window.AUREA_PAYROLL_V630={
-  version:'6.31',config:payrollConfig630,save:savePayrollConfig630,
+  version:'6.32',config:payrollConfig630,save:savePayrollConfig630,
   calculate:payrollCalc630,dataset:payrollDataset630,team:payrollTeam630,sync:syncPayroll631,years:payrollYears631
 };
 })();
@@ -17172,6 +17278,17 @@ window.AUREA_PAYROLL_V630={
 .pay631-heroamount b{display:block;font:600 34px/1.05 var(--font-display);color:var(--theme-text,var(--ink));margin-top:5px}
 .pay631-nodeduct{margin-top:10px;padding:10px;border-radius:14px;background:var(--theme-soft,var(--soft));font-size:9.5px;color:var(--theme-muted,var(--muted))}
 @media(max-width:390px){.pay631-summary{grid-template-columns:1fr 1fr}}
+</style>
+
+
+<style id="aurea-payroll-v632-corrected-style">
+.pay632-proration,.pay632-proration-note{margin-top:10px;padding:11px 12px;border-radius:15px;background:var(--theme-soft,var(--soft));border:1px solid var(--theme-line,var(--line))}
+.pay632-proration{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.pay632-proration span,.pay632-proration-note span{font-size:8.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--theme-muted,var(--muted))}
+.pay632-proration b{font-size:12px;color:var(--theme-text,var(--ink))}
+.pay632-proration small{grid-column:1/-1;font-size:9px;line-height:1.45;color:var(--theme-muted,var(--muted))}
+.pay632-proration-note b{display:block;font-size:11px;color:var(--theme-text,var(--ink));margin-bottom:3px}
+.pay632-proration-note div{font:600 18px/1.2 var(--font-display);color:var(--theme-text,var(--ink));margin-top:6px}
 </style>
 
 </body>
