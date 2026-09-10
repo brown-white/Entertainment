@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Theme Studio V6.29</title>
+<title>Entertainment · AUREA Payroll V6.30</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -7886,11 +7886,11 @@ function managerView(){
     if(["tasks","profiles"].includes(sub)) sub=S.sub.team="accounts";  // moved to Assignments
     if(sub==="chat" && S.chatRoom) return chatThreadScreen();
     const inner = sub==="requests" ? teamRequestsInner() : sub==="monthatt" ? monthAttInner() : sub==="attendance" ? attendanceInner()
-      : sub==="chat" ? staffChatInbox() : accountsInner();
+      : sub==="payroll" ? payrollManagerInner630() : sub==="chat" ? staffChatInbox() : accountsInner();
     return `<div class="screen fadein">
       ${topBar(t("teamTab"),S.session.name)}
       ${arrangeBtn("team")}
-      ${subTabs("team",[["accounts",t("teamAccounts")],["chat",t("teamChatTab")],["requests",t("teamRequests")],["monthatt",t("monthAtt")],["attendance",t("attendance")]])}
+      ${subTabs("team",[["accounts",t("teamAccounts")],["chat",t("teamChatTab")],["requests",t("teamRequests")],["monthatt",t("monthAtt")],["attendance",t("attendance")],["payroll","Payroll"]])}
       ${inner}
     </div>`;
   }
@@ -7928,7 +7928,7 @@ const PAGE_SECTIONS={
   dayplan: ["team","standards"],
   dash:    ["attention","dayinfo","wholeday","tonight","live","export","stats","feedback","nations","activities","trends"],
   guests:  ["crm","rooms","bookings","tickets","chat","requests","feedback","history"],
-  team:    ["accounts","chat","requests","monthatt","attendance"],
+  team:    ["accounts","chat","requests","monthatt","attendance","payroll"],
   program: ["acts","tickets"],
   settings:["set:theme","set:brand","builder","set:features","set:notif","set:links",
             "bus","set:location","export","set:advanced"]
@@ -10601,6 +10601,15 @@ function openUserModal(){
     <label>${t("shirtNumber")} (2–10)</label><input id="u-num" type="number" min="2" max="10" placeholder="e.g. 4">
     <label>${t("nationality")}</label>${nationField("u-nat","u-natx","")}
     <label>${t("genderLbl")}</label><select id="u-gen">${genderOptions("")}</select>
+    <div class="pay630-editbox">
+      <div class="pay630-edithead"><b>Salary</b><span>Monthly payroll</span></div>
+      <div class="row2">
+        <div><label>Monthly salary</label><input id="u-salary" type="number" min="0" step="0.01" inputmode="decimal" placeholder="10000"></div>
+        <div><label>Currency</label><select id="u-currency"><option value="EGP">EGP</option><option value="USD">USD</option></select></div>
+      </div>
+      <label class="pay630-toggle"><input id="u-vacpaid" type="checkbox" checked> Paid vacation</label>
+      <p class="mini">Present and Day Off are paid. Absence is deducted automatically.</p>
+    </div>
     <button class="btn" id="u-save">${t("save")}</button>
     <div class="err" id="u-err"></div>
     <button class="btn ghost" id="u-x">${t("close")}</button>`);
@@ -10621,6 +10630,12 @@ function openUserModal(){
     await DB.addUser({username,password,role,display_name,number,photo:uPhoto,
       nationality:readNatField(wrap,"u-nat","u-natx"),
       gender:wrap.querySelector("#u-gen").value});
+    const created=(S.users||[]).find(x=>String(x.username).toLowerCase()===String(username).toLowerCase());
+    if(created){
+      const amount=Math.max(0,+wrap.querySelector("#u-salary").value||0);
+      const currency=wrap.querySelector("#u-currency").value==="USD"?"USD":"EGP";
+      await savePayrollConfig630(created,{amount,currency,vacationPaid:!!wrap.querySelector("#u-vacpaid").checked});
+    }
     wrap.remove(); toast(t("saved")); render();
   };
 }
@@ -10688,6 +10703,7 @@ function openUserEditModal(u){
     ${photoListEditor("uep", (()=>{try{return Array.isArray(u.photos)?u.photos:JSON.parse(u.photos||"[]");}catch(e){return [];}})())}
     <label>${t("nationality")}</label>${nationField("ue-nat","ue-natx",u.nationality||"")}
     <label>${t("genderLbl")}</label><select id="ue-gen">${genderOptions(u.gender||"")}</select>
+    ${payrollEditorHtml630(u)}
     <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:15px;color:var(--ink);margin-top:10px">
       <input id="ue-active" type="checkbox" style="width:auto" ${u.active!==false?"checked":""}> ${t("activeAcc")}</label>
     <button class="btn ghost" id="ue-reset" style="margin-top:8px">${ic("bell",15)} ${t("resetPass")}</button>
@@ -10730,6 +10746,11 @@ function openUserEditModal(u){
     }
     if(!patch.password){ return; }
     await DB.updateUser(u.id,patch);
+    await savePayrollConfig630(u,{
+      amount:Math.max(0,+wrap.querySelector("#ue-salary").value||0),
+      currency:wrap.querySelector("#ue-currency").value==="USD"?"USD":"EGP",
+      vacationPaid:!!wrap.querySelector("#ue-vacpaid").checked
+    });
     wrap.remove(); toast(t("saved")); render();
   };
 }
@@ -15029,7 +15050,7 @@ const GROUPS620=[
   ]],
   ["Management",[
     ["tasks","Tasks"],["requirements","Requirements"],["purchases","Purchase requests"],["notifications","Announcements"],["quiz","Daily quiz"],
-    ["buses","Bus schedule"],["users","Team accounts"]
+    ["buses","Bus schedule"],["users","Team accounts"],["payroll","Team payroll"]
   ]]
 ];
 const SMART_KINDS620=GROUPS620.flatMap(g=>g[1].map(x=>x[0]));
@@ -15075,7 +15096,7 @@ function openSmartExport620(){
     <div id="ex620-monthwrap" style="display:none"><label>${t("whichMonth")}</label><select id="ex620-month">${exportMonthOptions().map(([mk,lb])=>`<option value="${mk}" ${mk===(S.exportMonth||currentAttMonth())?"selected":""}>${esc(lb)}</option>`).join("")}</select></div>
     <div class="ex620-actions"><button class="btn" id="ex620-xlsx">${ic("download",16)} Professional Excel</button><button class="btn ghost" id="ex620-pdf">${ic("download",16)} PDF / Print</button></div><button class="btn ghost" id="ex620-close">${t("close")}</button>`);
   const boxes=[...wrap.querySelectorAll("[data-ex620]")],monthWrap=wrap.querySelector("#ex620-monthwrap");
-  const sync=()=>{monthWrap.style.display=boxes.some(b=>b.checked&&b.dataset.ex620==="monthatt")?"":"none";};
+  const sync=()=>{monthWrap.style.display=boxes.some(b=>b.checked&&["monthatt","payroll"].includes(b.dataset.ex620))?"":"none";};
   boxes.forEach(b=>b.onchange=sync);sync();
   wrap.querySelector("#ex620-close").onclick=()=>wrap.remove();
   const gather=()=>{
@@ -16723,6 +16744,287 @@ setTimeout(()=>{try{applyTheme629();if(typeof safeToRender==='function'&&safeToR
 window.AUREA_THEME_STUDIO_V629={
   version:'6.29',studio:studio629,active:active629,contrast:contrast629,
   ensureContrast:ensureContrast629,apply:applyTheme629,preset:presetMode629
+};
+})();
+</script>
+
+
+<style id="aurea-payroll-v630-style">
+.pay630-editbox{margin:16px 0 8px;padding:14px;border:1px solid var(--theme-line,var(--line));border-radius:18px;background:var(--theme-soft,var(--soft))}
+.pay630-edithead{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:4px}
+.pay630-edithead b{font-size:14px;color:var(--theme-text,var(--ink))}.pay630-edithead span{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--theme-muted,var(--muted))}
+.pay630-toggle{display:flex!important;align-items:center;gap:9px;text-transform:none!important;letter-spacing:0!important;font-size:13px!important;color:var(--theme-text,var(--ink))!important}
+.pay630-toggle input{width:22px!important;height:22px!important;min-height:22px!important}
+.pay630-hero{border-radius:25px;padding:19px;background:linear-gradient(145deg,var(--theme-inverse-bg,var(--espresso)),color-mix(in srgb,var(--theme-inverse-bg,var(--espresso)) 74%,var(--theme-accent,var(--bronze))));color:var(--theme-inverse-text,#fff);margin-bottom:14px}
+.pay630-hero .ey{font-size:9px;text-transform:uppercase;letter-spacing:.16em;opacity:.68;font-weight:800}
+.pay630-hero h3{font:600 29px/1.05 var(--font-display);margin:7px 0;color:inherit}
+.pay630-hero p{font-size:10px;line-height:1.5;margin:0;opacity:.72}
+.pay630-totals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 16px}
+.pay630-total{padding:14px;border:1px solid var(--theme-line,var(--line));border-radius:18px;background:var(--theme-card,var(--card))}
+.pay630-total b{display:block;font:600 23px/1 var(--font-display);color:var(--theme-text,var(--ink))}
+.pay630-total span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--theme-muted,var(--muted))}
+.pay630-list{display:grid;gap:9px}
+.pay630-person{padding:14px;border:1px solid var(--theme-line,var(--line));border-radius:20px;background:var(--theme-card,var(--card))}
+.pay630-person-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.pay630-person-top b{font-size:13px}.pay630-money{text-align:right}.pay630-money strong{display:block;font:600 20px/1 var(--font-display)}.pay630-money span{font-size:9px;color:var(--theme-muted,var(--muted))}
+.pay630-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:12px}
+.pay630-cell{padding:9px;border-radius:13px;background:var(--theme-soft,var(--soft));min-width:0}
+.pay630-cell b{display:block;font-size:12px}.pay630-cell span{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:var(--theme-muted,var(--muted));margin-top:2px}
+.pay630-deduct{margin-top:10px;border-top:1px solid var(--theme-line,var(--line));padding-top:9px}
+.pay630-deduct-row{display:flex;justify-content:space-between;gap:10px;font-size:9.5px;padding:5px 0;color:var(--theme-muted,var(--muted))}
+.pay630-deduct-row strong{color:#a45144;white-space:nowrap}
+.pay630-progress{height:7px;border-radius:999px;background:var(--theme-soft,var(--soft));overflow:hidden;margin-top:11px}
+.pay630-progress i{display:block;height:100%;background:var(--theme-accent,var(--bronze));border-radius:inherit}
+.pay630-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.pay630-my{margin:14px 0}
+.pay630-my .salarybig{font:600 32px/1 var(--font-display);color:var(--theme-text,var(--ink))}
+.pay630-my .salarysub{font-size:10px;color:var(--theme-muted,var(--muted));margin-top:4px}
+.pay630-my .todayearn{margin-top:12px;padding:11px 12px;border-radius:15px;background:var(--theme-soft,var(--soft));font-size:10px}
+.pay630-minus{color:#a45144;font-weight:800}
+@media(max-width:430px){.pay630-grid{grid-template-columns:1fr 1fr}.pay630-actions{grid-template-columns:1fr}}
+</style>
+
+
+<script id="aurea-payroll-v630-script">
+(()=>{
+'use strict';
+if(window.__AUREA_PAYROLL_V630)return;
+window.__AUREA_PAYROLL_V630=true;
+
+const PAYKEY630='payrollByUserV630';
+function payKey630(u){return String(u&&u.id!=null?u.id:(u&&u.username)||'');}
+function payrollMap630(){return {...((S.settings&&S.settings[PAYKEY630])||{})};}
+function payrollConfig630(u){
+  const raw=payrollMap630()[payKey630(u)]||{};
+  return {
+    amount:Math.max(0,+raw.amount||0),
+    currency:String(raw.currency||'EGP').toUpperCase()==='USD'?'USD':'EGP',
+    vacationPaid:raw.vacationPaid!==false
+  };
+}
+async function savePayrollConfig630(u,cfg){
+  if(!u)return;
+  const map=payrollMap630();
+  map[payKey630(u)]={
+    amount:Math.max(0,+cfg.amount||0),
+    currency:String(cfg.currency||'EGP').toUpperCase()==='USD'?'USD':'EGP',
+    vacationPaid:cfg.vacationPaid!==false
+  };
+  await DB.saveSettings({...S.settings,[PAYKEY630]:map});
+}
+window.savePayrollConfig630=savePayrollConfig630;
+
+function money630(n,c){
+  const v=Math.round((+n||0)*100)/100;
+  try{return new Intl.NumberFormat('en-US',{minimumFractionDigits:v%1?2:0,maximumFractionDigits:2}).format(v)+' '+c;}
+  catch(e){return v.toFixed(v%1?2:0)+' '+c;}
+}
+function monthKey630(d=hotelNow()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function daysMonth630(mk){return monthDays(mk);}
+function employmentDays630(u,mk){
+  const n=daysMonth630(mk),out=[];
+  for(let d=1;d<=n;d++){
+    if(notYetHired(u,mk,d)||leftBefore(u,mk,d))continue;
+    out.push(d);
+  }
+  return out;
+}
+function payrollCalc630(u,mk){
+  const cfg=payrollConfig630(u),eligible=employmentDays630(u,mk),den=eligible.length||1;
+  const daily=cfg.amount/den;
+  const today=hotelDateStr(),monthNow=today.slice(0,7),todayD=+today.slice(8,10);
+  const happened=eligible.filter(d=>mk<monthNow||(mk===monthNow&&d<=todayD));
+  let earned=0,paidDays=0,absent=0,vacation=0,off=0,present=0;
+  const deductions=[],ledger=[];
+  happened.forEach(d=>{
+    const status=attStatus(u,mk,d)||attAuto(u,mk,d),date=dateStr(mk,d);
+    let paid=false,reason='';
+    if(status==='P'){paid=true;present++;}
+    else if(status==='O'){paid=true;off++;reason='Day off · paid';}
+    else if(status==='A'){absent++;reason='Absent';}
+    else if(status==='V'){vacation++;paid=cfg.vacationPaid;reason=cfg.vacationPaid?'Vacation · paid':'Vacation · unpaid';}
+    else reason='Not counted';
+    if(paid){earned+=daily;paidDays++;}
+    else if(status==='A'||(status==='V'&&!cfg.vacationPaid)){
+      deductions.push({date,status,reason,amount:daily});
+    }
+    ledger.push({date,status,paid,amount:paid?daily:0,reason});
+  });
+  const fullMonthActual=Math.max(0,cfg.amount-deductions.reduce((n,x)=>n+x.amount,0));
+  return {
+    user:u,mk,cfg,daily,eligibleDays:eligible.length,elapsedDays:happened.length,
+    paidDays,present,off,absent,vacation,earned:Math.min(cfg.amount,earned),
+    deductions,fullMonthActual,contract:cfg.amount,
+    progress:cfg.amount?Math.min(100,Math.round(earned/cfg.amount*100)):0,ledger
+  };
+}
+window.payrollCalc630=payrollCalc630;
+
+function payrollEditorHtml630(u){
+  const c=payrollConfig630(u);
+  return `<div class="pay630-editbox">
+    <div class="pay630-edithead"><b>Salary</b><span>Monthly payroll</span></div>
+    <div class="row2">
+      <div><label>Monthly salary</label><input id="ue-salary" type="number" min="0" step="0.01" inputmode="decimal" value="${c.amount||''}" placeholder="10000"></div>
+      <div><label>Currency</label><select id="ue-currency"><option value="EGP" ${c.currency==='EGP'?'selected':''}>EGP</option><option value="USD" ${c.currency==='USD'?'selected':''}>USD</option></select></div>
+    </div>
+    <label class="pay630-toggle"><input id="ue-vacpaid" type="checkbox" ${c.vacationPaid?'checked':''}> Paid vacation</label>
+    <p class="mini">Present + Day Off are paid. Absence is deducted automatically. Vacation follows the setting above.</p>
+  </div>`;
+}
+window.payrollEditorHtml630=payrollEditorHtml630;
+
+function payrollMonthOptions630(){
+  const now=hotelNow(),out=[];
+  for(let i=-8;i<=3;i++){
+    const d=new Date(now.getFullYear(),now.getMonth()+i,1);
+    const mk=monthKey630(d);
+    out.push([mk,monthLabel(mk)]);
+  }
+  return out;
+}
+function payrollTeam630(mk){
+  return attTeamFor(mk).filter(u=>u.role==='staff'||u.role==='manager').map(u=>payrollCalc630(u,mk));
+}
+function currencyTotals630(rows,field){
+  const out={EGP:0,USD:0};
+  rows.forEach(r=>out[r.cfg.currency]+=+r[field]||0);
+  return out;
+}
+function payrollDataset630(mk){
+  const rows=payrollTeam630(mk);
+  const data=rows.map(r=>[
+    r.user.number?('#'+r.user.number):'',
+    r.user.display_name||r.user.username,
+    r.cfg.currency,
+    r.contract.toFixed(2),
+    r.eligibleDays,
+    r.daily.toFixed(2),
+    r.present,
+    r.off,
+    r.absent,
+    r.vacation,
+    r.cfg.vacationPaid?'Paid':'Unpaid',
+    r.paidDays,
+    r.earned.toFixed(2),
+    r.deductions.reduce((n,x)=>n+x.amount,0).toFixed(2),
+    r.fullMonthActual.toFixed(2),
+    r.deductions.map(x=>`${x.date}: ${x.reason} -${money630(x.amount,r.cfg.currency)}`).join(' | ')
+  ]);
+  const contract=currencyTotals630(rows,'contract'),earned=currencyTotals630(rows,'earned'),actual=currencyTotals630(rows,'fullMonthActual');
+  data.push([]);
+  data.push(['','','EGP','Contract total',contract.EGP.toFixed(2),'','','','','','','','Earned to date',earned.EGP.toFixed(2),'Month actual',actual.EGP.toFixed(2)]);
+  data.push(['','','USD','Contract total',contract.USD.toFixed(2),'','','','','','','','Earned to date',earned.USD.toFixed(2),'Month actual',actual.USD.toFixed(2)]);
+  return {
+    title:'Team Payroll — '+monthLabel(mk),
+    headers:['#','Team member','Currency','Monthly salary','Employment days','Daily rate','Present','Day off','Absent','Vacation','Vacation salary','Paid days elapsed','Earned to date','Deductions','Projected/actual month salary','Deduction details'],
+    rows:data,landscape:true,
+    sourceNote:'Attendance source: Monthly Attendance. Present and Day Off are paid. Absence is unpaid. Vacation follows each employee payroll setting. EGP and USD totals are kept separate.'
+  };
+}
+window.payrollDataset630=payrollDataset630;
+
+function payrollManagerInner630(){
+  const mk=S.payrollMonth630||monthKey630(),rows=payrollTeam630(mk);
+  const contract=currencyTotals630(rows,'contract'),earned=currencyTotals630(rows,'earned'),actual=currencyTotals630(rows,'fullMonthActual');
+  const configured=rows.filter(r=>r.contract>0);
+  return `<div class="pay630-hero"><div class="ey">Team payroll</div><h3>${esc(monthLabel(mk))}</h3><p>Salary is calculated directly from Monthly Attendance. EGP and USD stay separate — no fake currency conversion.</p></div>
+    <label>Payroll month</label><select id="pay630-month">${payrollMonthOptions630().map(([v,l])=>`<option value="${v}" ${v===mk?'selected':''}>${esc(l)}</option>`).join('')}</select>
+    <div class="pay630-totals">
+      <div class="pay630-total"><b>${money630(contract.EGP,'EGP')}</b><span>Contract total · EGP</span></div>
+      <div class="pay630-total"><b>${money630(contract.USD,'USD')}</b><span>Contract total · USD</span></div>
+      <div class="pay630-total"><b>${money630(earned.EGP,'EGP')}</b><span>Earned to date · EGP</span></div>
+      <div class="pay630-total"><b>${money630(earned.USD,'USD')}</b><span>Earned to date · USD</span></div>
+      <div class="pay630-total"><b>${money630(actual.EGP,'EGP')}</b><span>Month salary after deductions · EGP</span></div>
+      <div class="pay630-total"><b>${money630(actual.USD,'USD')}</b><span>Month salary after deductions · USD</span></div>
+    </div>
+    <div class="pay630-actions"><button class="btn" id="pay630-xlsx">${ic('download',16)} Export Excel</button><button class="btn ghost" id="pay630-pdf">${ic('download',16)} PDF / Print</button></div>
+    ${configured.length?`<div class="pay630-list">${configured.map(r=>payrollPerson630(r,true)).join('')}</div>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No salaries configured yet. Open Team accounts → Edit person → Salary.</div>`}`;
+}
+window.payrollManagerInner630=payrollManagerInner630;
+
+function payrollPerson630(r,manager){
+  const ded=r.deductions.reduce((n,x)=>n+x.amount,0);
+  return `<article class="pay630-person">
+    <div class="pay630-person-top"><div><b>${esc(r.user.display_name||r.user.username)}</b><div class="mini">${r.user.number?'#'+r.user.number+' · ':''}${esc(r.cfg.currency)} · ${r.cfg.vacationPaid?'Paid vacation':'Unpaid vacation'}</div></div>
+      <div class="pay630-money"><strong>${money630(r.earned,r.cfg.currency)}</strong><span>earned to date / ${money630(r.contract,r.cfg.currency)}</span></div></div>
+    <div class="pay630-progress"><i style="width:${r.progress}%"></i></div>
+    <div class="pay630-grid">
+      <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate</span></div>
+      <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days</span></div>
+      <div class="pay630-cell"><b>${r.absent}</b><span>Absent</span></div>
+      <div class="pay630-cell"><b>${money630(ded,r.cfg.currency)}</b><span>Deductions</span></div>
+    </div>
+    ${r.deductions.length?`<div class="pay630-deduct">${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:''}
+    ${manager?`<button class="btn ghost sm" data-pay630-edit="${esc(r.user.id)}" style="margin-top:10px">${ic('pen',14)} Edit salary</button>`:''}
+  </article>`;
+}
+
+function mySalaryCard630(){
+  const u=(S.users||[]).find(x=>x.username===S.session.username);if(!u)return'';
+  const mk=monthKey630(),r=payrollCalc630(u,mk);if(!r.contract)return'';
+  const today=hotelDateStr(),todayRow=r.ledger.find(x=>x.date===today),ded=r.deductions.reduce((n,x)=>n+x.amount,0);
+  return `<section class="sec pay630-my"><h3>${ic('star',18)} My salary</h3><div class="card">
+    <div class="salarybig">${money630(r.earned,r.cfg.currency)}</div>
+    <div class="salarysub">Earned so far this month · Monthly salary ${money630(r.contract,r.cfg.currency)}</div>
+    <div class="pay630-progress"><i style="width:${r.progress}%"></i></div>
+    <div class="pay630-grid">
+      <div class="pay630-cell"><b>${money630(r.daily,r.cfg.currency)}</b><span>Daily rate</span></div>
+      <div class="pay630-cell"><b>${r.paidDays}</b><span>Paid days</span></div>
+      <div class="pay630-cell"><b>${r.absent}</b><span>Absent days</span></div>
+      <div class="pay630-cell"><b>${money630(ded,r.cfg.currency)}</b><span>Total minus</span></div>
+    </div>
+    ${todayRow?`<div class="todayearn">${todayRow.paid?`Today · ${esc(todayRow.reason||'Paid')} · + ${money630(todayRow.amount,r.cfg.currency)}`:`Today · <span class="pay630-minus">${esc(todayRow.reason)} · − ${money630(r.daily,r.cfg.currency)}</span>`}</div>`:''}
+    ${r.deductions.length?`<div class="pay630-deduct"><b style="font-size:10px">Deductions / unpaid days</b>${r.deductions.map(x=>`<div class="pay630-deduct-row"><span>${esc(x.date)} · ${esc(x.reason)}</span><strong>− ${money630(x.amount,r.cfg.currency)}</strong></div>`).join('')}</div>`:''}
+  </div></section>`;
+}
+
+/* Add salary to entertainer My Attendance and My Work Day without replacing their existing content. */
+const oldMyPage630=window.myPageView;
+window.myPageView=myPageView=function(){
+  const html=oldMyPage630();
+  const card=mySalaryCard630();
+  return card?html.replace(/<\/div>\s*$/i,card+'</div>'):html;
+};
+const oldWorkday630=window.myWorkDayView;
+window.myWorkDayView=myWorkDayView=function(){
+  const html=oldWorkday630();
+  const card=mySalaryCard630();
+  return card?html.replace(/<\/div>\s*$/i,card+'</div>'):html;
+};
+
+/* Smart Export dataset */
+const buildBefore630=window.buildDataset;
+window.buildDataset=buildDataset=function(kind){
+  if(kind==='payroll')return payrollDataset630(S.exportMonth||monthKey630());
+  return buildBefore630(kind);
+};
+
+/* Payroll interactions */
+const wireBefore630=window.wireCommon;
+window.wireCommon=wireCommon=function(){
+  wireBefore630();
+  const m=document.querySelector('#pay630-month');
+  if(m)m.onchange=()=>{S.payrollMonth630=m.value;render();};
+  document.querySelectorAll('[data-pay630-edit]').forEach(b=>b.onclick=()=>{
+    const u=(S.users||[]).find(x=>String(x.id)===String(b.dataset.pay630Edit));
+    if(u)openUserEditModal(u);
+  });
+  const x=document.querySelector('#pay630-xlsx');
+  if(x)x.onclick=async()=>{
+    const mk=S.payrollMonth630||monthKey630();
+    try{await smartExportExcel620([payrollDataset630(mk)],'team-payroll-'+mk);toastOk(t('saved'));}catch(e){console.error('payroll excel',e);toastErr(t('errSave'));}
+  };
+  const p=document.querySelector('#pay630-pdf');
+  if(p)p.onclick=()=>{
+    const mk=S.payrollMonth630||monthKey630();
+    exportPdfSets([payrollDataset630(mk)],((S.settings&&(S.settings.hotelName||S.settings.name))||'Hotel')+' — Team Payroll '+monthLabel(mk));
+  };
+};
+
+window.AUREA_PAYROLL_V630={
+  version:'6.30',config:payrollConfig630,save:savePayrollConfig630,
+  calculate:payrollCalc630,dataset:payrollDataset630,team:payrollTeam630
 };
 })();
 </script>
