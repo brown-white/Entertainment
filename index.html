@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Payroll Corrected V6.32</title>
+<title>Entertainment · AUREA Purchase Request V6.33</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -17290,6 +17290,325 @@ window.AUREA_PAYROLL_V630={
 .pay632-proration-note b{display:block;font-size:11px;color:var(--theme-text,var(--ink));margin-bottom:3px}
 .pay632-proration-note div{font:600 18px/1.2 var(--font-display);color:var(--theme-text,var(--ink));margin-top:6px}
 </style>
+
+
+<style id="aurea-v633-modal-purchase-style">
+/* =========================================================
+   V6.33 · Modal integrity + Entertainment Purchase Request
+   ========================================================= */
+
+/* Fix the overlapping Edit Day footer shown in Dark Mode. */
+.mdb613-savebar{
+  position:static!important;
+  bottom:auto!important;
+  z-index:auto!important;
+  margin-top:18px!important;
+  padding:0!important;
+  background:transparent!important;
+  display:grid!important;
+  gap:9px!important;
+}
+.modal{
+  background:var(--theme-bg,var(--bg))!important;
+  color:var(--theme-text,var(--ink))!important;
+  overscroll-behavior:contain;
+}
+.modal label,.modal h3,.modal h4,.modal b{color:var(--theme-text,var(--ink))}
+.modal .mini,.modal .mdb613-help{color:var(--theme-muted,var(--muted))!important}
+.mdb613-summary,.mdb613-section{
+  background:var(--theme-card,var(--card))!important;
+  border-color:var(--theme-line,var(--line))!important;
+}
+.mdb613-summary b{color:var(--theme-text,var(--ink))!important}
+.mdb613-cover{
+  background:var(--theme-card,var(--card))!important;
+  border-color:var(--theme-line,var(--line))!important;
+}
+.mdb613-cover-preview{background:var(--theme-soft,var(--soft))!important;border-color:var(--theme-line,var(--line))!important}
+[data-theme="dark"] .mdb613-savebar{background:transparent!important}
+
+/* New Purchase Request */
+.pr633{display:grid;gap:14px;padding-bottom:4px}
+.pr633-head{
+  padding:18px;border:1px solid var(--theme-line,var(--line));border-radius:23px;
+  background:linear-gradient(145deg,var(--theme-card,var(--card)),var(--theme-soft,var(--soft)));
+}
+.pr633-kicker{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:900;color:var(--theme-accent,var(--bronze))}
+.pr633-title{font:600 29px/1.05 var(--font-display);color:var(--theme-text,var(--ink));margin:6px 0}
+.pr633-by{font-size:10px;line-height:1.45;color:var(--theme-muted,var(--muted))}
+.pr633-by b{color:var(--theme-text,var(--ink))}
+.pr633-meta{display:grid;grid-template-columns:1fr 1.45fr;gap:9px;margin-top:13px}
+.pr633-section{border:1px solid var(--theme-line,var(--line));border-radius:21px;background:var(--theme-card,var(--card));padding:14px}
+.pr633-section-title{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:11px}
+.pr633-section-title h4{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--theme-muted,var(--muted))}
+.pr633-section-title span{font-size:9px;color:var(--theme-muted,var(--muted))}
+.pr633-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px}
+.pr633-row{border:1px solid var(--theme-line,var(--line));border-radius:18px;background:var(--theme-soft,var(--soft));padding:12px;margin-top:10px}
+.pr633-row:first-child{margin-top:0}
+.pr633-rowhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.pr633-no{width:30px;height:30px;border-radius:10px;background:var(--theme-primary,var(--espresso));color:var(--theme-button-text,#fff);display:grid;place-items:center;font-weight:900;font-size:11px}
+.pr633-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:9px}
+.pr633-grid .wide{grid-column:1/-1}
+.pr633-brands{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pr633-note{font-size:9.5px;line-height:1.45;color:var(--theme-muted,var(--muted));margin:-2px 0 9px}
+.pr633-price-wrap{position:relative}
+.pr633-actions{display:grid;gap:9px}
+.pr633-actions.two{grid-template-columns:1fr 1fr}
+.pr633-listpick{display:grid;gap:8px;max-height:55dvh;overflow:auto}
+.pr633-pick{
+  width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;
+  padding:12px;border:1px solid var(--theme-line,var(--line));border-radius:16px;background:var(--theme-card,var(--card));text-align:left;color:var(--theme-text,var(--ink))
+}
+.pr633-pick b{display:block;font-size:12px}.pr633-pick span{display:block;font-size:9px;color:var(--theme-muted,var(--muted));margin-top:3px}
+.pr633-empty{padding:18px;border:1px dashed var(--theme-line,var(--line));border-radius:16px;text-align:center;color:var(--theme-muted,var(--muted));font-size:10px}
+@media(max-width:430px){
+  .pr633-meta,.pr633-grid,.pr633-tools,.pr633-actions.two{grid-template-columns:1fr}
+  .pr633-brands{grid-template-columns:1fr}
+}
+</style>
+
+
+<script id="aurea-v633-purchase-script">
+(()=>{
+'use strict';
+if(window.__AUREA_PURCHASE_V633)return;
+window.__AUREA_PURCHASE_V633=true;
+
+const MANAGER633='Mr. Hassan Amer';
+const esc633=v=>esc(String(v??''));
+const clean633=v=>String(v??'').trim();
+
+function row633(r={}){
+  const oldDesc=clean633(r.description||r.details||r.need);
+  return {
+    item:clean633(r.item||r.name||r.need||oldDesc.split(/ — | - /)[0]),
+    reason:clean633(r.reason||''),
+    quantity:clean633(r.quantity||r.wantedQty||r.qty||r.orderedQty||'1'),
+    details:clean633(r.details||r.description||''),
+    price:clean633(r.price||r.orderedUnitPrice||r.lastUnitPrice||''),
+    brand1:clean633(r.brand1||''),
+    brand2:clean633(r.brand2||''),
+    brand3:clean633(r.brand3||''),
+    brandDifference:clean633(r.brandDifference||r.qualityDifference||''),
+    note:clean633(r.note||'')
+  };
+}
+function normalize633(ex){
+  const old=ex?JSON.parse(JSON.stringify(ex)):{id:'pr'+Date.now(),kind:'purchase'};
+  const sh={
+    ...old,
+    id:old.id||('pr'+Date.now()),
+    kind:'purchase',
+    dateIssued:old.dateIssued||old.date||todayISO(),
+    title:clean633(old.title||old.wantedFor||'Purchase Request'),
+    generalNote:clean633(old.generalNote||old.remarks||old.note||''),
+    preparedBy:MANAGER633,
+    rows:(Array.isArray(old.rows)&&old.rows.length?old.rows:[{}]).map(row633)
+  };
+  return sh;
+}
+function syncLegacy633(sh){
+  sh.kind='purchase';
+  sh.date=sh.dateIssued||todayISO();
+  sh.note=sh.generalNote||'';
+  sh.wantedFor=sh.title||'Purchase Request';
+  sh.department='Entertainment';
+  sh.preparedBy=MANAGER633;
+  sh.rows=sh.rows.map(r=>({
+    ...r,
+    need:r.item,
+    qty:r.quantity,
+    wantedQty:r.quantity,
+    description:[r.item,r.details].filter(Boolean).join(' — '),
+    details:r.details
+  }));
+  return sh;
+}
+function catalog633(){
+  const list=S.settings&&S.settings.purchaseItemCatalog;
+  return Array.isArray(list)?list:[];
+}
+function pickPurchaseItem633(onPick){
+  const wrap=baseModal(`<h3>${ic('grid',19)} Select purchase item</h3>
+    <p class="mini">Choose a saved item. Name, description and default quantity are copied into the new line.</p>
+    <input id="pr633-search" placeholder="Search saved items…">
+    <div class="pr633-listpick" id="pr633-list"></div>
+    <button class="btn ghost" id="pr633-manage">${ic('pen',14)} Manage item list</button>
+    <button class="btn ghost" id="pr633-pickclose">${t('close')}</button>`);
+  const box=wrap.querySelector('#pr633-list'),search=wrap.querySelector('#pr633-search');
+  const paint=()=>{
+    const q=search.value.trim().toLowerCase();
+    const list=catalog633().filter(x=>!q||(`${x.name||''} ${x.description||''}`).toLowerCase().includes(q));
+    box.innerHTML=list.length?list.map(x=>`<button type="button" class="pr633-pick" data-pr633-pick="${esc633(x.id)}"><span><b>${esc633(x.name)}</b><span>${esc633(x.description||'')}${x.quantity?` · Qty ${esc633(x.quantity)}`:''}</span></span>${ic('back',15)}</button>`).join(''):`<div class="pr633-empty">No saved purchase items match this search.</div>`;
+    box.querySelectorAll('[data-pr633-pick]').forEach(b=>b.onclick=()=>{
+      const x=catalog633().find(y=>String(y.id)===String(b.dataset.pr633Pick));
+      if(x){wrap.remove();onPick(x);}
+    });
+  };
+  search.oninput=paint;paint();
+  wrap.querySelector('#pr633-pickclose').onclick=()=>wrap.remove();
+  wrap.querySelector('#pr633-manage').onclick=()=>{wrap.remove();if(typeof window.openPurchaseItemCatalog==='function')window.openPurchaseItemCatalog();};
+}
+
+function purchaseFileName633(sh){
+  const s=(sh.title||'purchase-request').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,42)||'purchase-request';
+  return s+'-'+String(sh.dateIssued||todayISO()).replace(/[^0-9-]/g,'');
+}
+function pdfHtml633(sh){
+  const e=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const rows=sh.rows.map((r,i)=>`<tr>
+    <td>${i+1}</td><td><b>${e(r.item)}</b></td><td>${e(r.reason)}</td><td>${e(r.quantity)}</td>
+    <td>${e(r.details)}</td><td>${e(r.price)}</td><td>${e(r.brand1)}</td><td>${e(r.brand2)}</td><td>${e(r.brand3)}</td>
+    <td>${e(r.brandDifference)}</td><td>${e(r.note)}</td></tr>`).join('');
+  return `<div class="head"><div><div class="k">ENTERTAINMENT DEPARTMENT</div><h1>PURCHASE REQUEST</h1></div><div class="meta"><b>Date</b>${e(sh.dateIssued)}</div></div>
+    <div class="prepared"><span>Prepared by</span><b>Entertainment Manager · ${e(MANAGER633)}</b></div>
+    ${sh.title&&sh.title!=='Purchase Request'?`<div class="purpose"><b>Request / purpose</b>${e(sh.title)}</div>`:''}
+    <table><thead><tr><th>#</th><th>Item</th><th>Reason</th><th>Qty</th><th>Details / Specification</th><th>Price</th><th>Brand 1</th><th>Brand 2</th><th>Brand 3</th><th>Difference: Brand / Quality</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table>
+    ${sh.generalNote?`<div class="notes"><b>General note</b><p>${e(sh.generalNote)}</p></div>`:''}`;
+}
+function exportPdf633(sh){
+  syncLegacy633(sh);
+  const w=window.open('','_blank');if(!w){toastErr('Could not open the print window.');return;}
+  const css=`@page{size:A4 landscape;margin:8mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#241c17;margin:0;font-size:8px}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:2px solid #4b3426;padding-bottom:7px;margin-bottom:7px}.k{font-size:8px;letter-spacing:.16em;color:#8f6748;font-weight:800}.head h1{font-size:19px;margin:2px 0 0;letter-spacing:.04em}.meta{text-align:right;border:1px solid #bda995;padding:5px 8px;min-width:90px}.meta b,.prepared span,.purpose b,.notes b{display:block;font-size:7px;text-transform:uppercase;letter-spacing:.1em;color:#7b695d;margin-bottom:3px}.prepared,.purpose,.notes{border:1px solid #bda995;padding:6px 8px;margin-bottom:7px}.prepared b{font-size:10px}table{border-collapse:collapse;width:100%;table-layout:fixed}th,td{border:1px solid #8f7c6f;padding:4px;vertical-align:top;overflow-wrap:anywhere}th{background:#eee6dd;font-size:6.8px;text-transform:uppercase;letter-spacing:.03em}tbody td{height:30px}.notes{margin-top:7px}.notes p{margin:0;white-space:pre-wrap}`;
+  w.document.write('<html><head><title>Purchase Request</title><meta charset="utf-8"><style>'+css+'</style></head><body>'+pdfHtml633(sh)+'<scr'+'ipt>setTimeout(function(){window.print();},350);<\/scr'+'ipt></body></html>');
+  w.document.close();
+}
+async function exportExcel633(sh){
+  syncLegacy633(sh);
+  const ok=await loadXLSX();if(!ok||!window.XLSX)throw new Error('Excel library unavailable');
+  const aoa=[
+    ['PURCHASE REQUEST'],
+    ['Prepared by','Entertainment Manager · '+MANAGER633],
+    ['Date',sh.dateIssued],
+    ['Request / purpose',sh.title||''],
+    [],
+    ['#','Item','Reason','Quantity','Details / Specification','Price','Brand 1','Brand 2','Brand 3','Difference: Brand / Quality','Note']
+  ];
+  sh.rows.forEach((r,i)=>aoa.push([i+1,r.item,r.reason,r.quantity,r.details,r.price,r.brand1,r.brand2,r.brand3,r.brandDifference,r.note]));
+  if(sh.generalNote)aoa.push([],['General note',sh.generalNote]);
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:5},{wch:22},{wch:22},{wch:10},{wch:36},{wch:14},{wch:18},{wch:18},{wch:18},{wch:30},{wch:28}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Purchase Request');
+  XLSX.writeFile(wb,purchaseFileName633(sh)+'.xlsx');
+}
+
+function openPurchaseRequest633(id){
+  const ex=id?reqSheet(id):null,sh=normalize633(ex);
+  const wrap=baseModal(`<div class="pr633">
+    <div class="pr633-head">
+      <div class="pr633-kicker">Entertainment Department</div>
+      <div class="pr633-title">Purchase Request</div>
+      <div class="pr633-by">Prepared by <b>Entertainment Manager · ${esc633(MANAGER633)}</b></div>
+      <div class="pr633-meta">
+        <div><label>Date</label><input type="date" id="pr633-date" value="${esc633(sh.dateIssued)}"></div>
+        <div><label>Request / purpose</label><input id="pr633-title" value="${esc633(sh.title==='Purchase Request'?'':sh.title)}" placeholder="e.g. Beach Party equipment"></div>
+      </div>
+    </div>
+
+    <div class="pr633-section">
+      <div class="pr633-section-title"><h4>Purchase list</h4><span id="pr633-count"></span></div>
+      <p class="pr633-note">Keep each line simple: what we need, why we need it, quantity, specification, price and the brand/quality comparison.</p>
+      <div class="pr633-tools">
+        <button type="button" class="btn" id="pr633-pick">${ic('grid',14)} Add from item list</button>
+        <button type="button" class="btn ghost" id="pr633-manage">${ic('pen',14)} Manage item list</button>
+      </div>
+      <div id="pr633-rows"></div>
+      <button type="button" class="btn ghost sm" id="pr633-add">＋ Add empty item</button>
+    </div>
+
+    <div class="pr633-section">
+      <h4>General note</h4>
+      <textarea id="pr633-general" rows="4" placeholder="Anything management or purchasing should know about this request…">${esc633(sh.generalNote)}</textarea>
+    </div>
+
+    <div class="pr633-actions">
+      <button class="btn" id="pr633-save">${t('save')}</button>
+      ${ex?`<div class="pr633-actions two"><button class="btn ghost" id="pr633-pdf">${ic('download',16)} PDF / Print</button><button class="btn ghost" id="pr633-xlsx">${ic('download',16)} Export Excel</button></div><button class="btn ghost warn" id="pr633-delete">${ic('trash',16)} ${t('reqDelete')}</button>`:''}
+      <button class="btn ghost" id="pr633-close">${t('close')}</button>
+    </div>
+  </div>`);
+
+  const box=wrap.querySelector('#pr633-rows'),count=wrap.querySelector('#pr633-count');
+  const paint=()=>{
+    count.textContent=`${sh.rows.length} item${sh.rows.length===1?'':'s'}`;
+    box.innerHTML=sh.rows.map((r,i)=>`<div class="pr633-row">
+      <div class="pr633-rowhead"><span class="pr633-no">${i+1}</span><button type="button" class="btn ghost warn sm" data-pr633-del="${i}" ${sh.rows.length===1?'disabled':''}>Remove</button></div>
+      <div class="pr633-grid">
+        <div><label>Item</label><input data-pr633-f="item" data-i="${i}" value="${esc633(r.item)}" placeholder="e.g. Wireless microphone"></div>
+        <div><label>Quantity</label><input data-pr633-f="quantity" data-i="${i}" value="${esc633(r.quantity)}" placeholder="1"></div>
+        <div class="wide"><label>Reason</label><input data-pr633-f="reason" data-i="${i}" value="${esc633(r.reason)}" placeholder="Why do we need this item?"></div>
+        <div class="wide"><label>Details / specification</label><textarea data-pr633-f="details" data-i="${i}" rows="3" placeholder="Size, material, colour, technical specification, use…">${esc633(r.details)}</textarea></div>
+        <div class="wide"><label>Price / budget</label><input data-pr633-f="price" data-i="${i}" value="${esc633(r.price)}" placeholder="e.g. 2,500 EGP"></div>
+        <div class="wide"><label>Brand options</label><div class="pr633-brands">
+          <input data-pr633-f="brand1" data-i="${i}" value="${esc633(r.brand1)}" placeholder="Brand 1">
+          <input data-pr633-f="brand2" data-i="${i}" value="${esc633(r.brand2)}" placeholder="Brand 2">
+          <input data-pr633-f="brand3" data-i="${i}" value="${esc633(r.brand3)}" placeholder="Brand 3">
+        </div></div>
+        <div class="wide"><label>Difference between brand & quality</label><textarea data-pr633-f="brandDifference" data-i="${i}" rows="3" placeholder="Explain quality, durability, warranty or why one brand is better…">${esc633(r.brandDifference)}</textarea></div>
+        <div class="wide"><label>Note</label><textarea data-pr633-f="note" data-i="${i}" rows="2" placeholder="Optional note for this item">${esc633(r.note)}</textarea></div>
+      </div>
+    </div>`).join('');
+    box.querySelectorAll('[data-pr633-f]').forEach(el=>el.oninput=()=>{sh.rows[+el.dataset.i][el.dataset.pr633F]=el.value;});
+    box.querySelectorAll('[data-pr633-del]').forEach(b=>b.onclick=()=>{if(sh.rows.length>1){sh.rows.splice(+b.dataset.pr633Del,1);paint();}});
+  };
+  paint();
+
+  const addSaved=x=>{
+    sh.rows.push(row633({item:x.name,details:x.description,quantity:x.quantity||'1'}));
+    paint();
+    setTimeout(()=>{const rows=box.querySelectorAll('.pr633-row');rows[rows.length-1]?.scrollIntoView({behavior:'smooth',block:'center'});},30);
+  };
+
+  wrap.querySelector('#pr633-add').onclick=()=>{sh.rows.push(row633({}));paint();};
+  wrap.querySelector('#pr633-pick').onclick=()=>pickPurchaseItem633(addSaved);
+  wrap.querySelector('#pr633-manage').onclick=()=>{if(typeof window.openPurchaseItemCatalog==='function')window.openPurchaseItemCatalog();};
+  wrap.querySelector('#pr633-close').onclick=()=>wrap.remove();
+
+  const sync=()=>{
+    sh.dateIssued=wrap.querySelector('#pr633-date').value||todayISO();
+    sh.title=clean633(wrap.querySelector('#pr633-title').value)||'Purchase Request';
+    sh.generalNote=clean633(wrap.querySelector('#pr633-general').value);
+    syncLegacy633(sh);
+  };
+
+  wrap.querySelector('#pr633-save').onclick=async()=>{
+    sync();
+    if(!sh.rows.some(r=>clean633(r.item))){toastErr('Please add at least one item.');return;}
+    if(sh.rows.some(r=>clean633(r.item)&&!clean633(r.reason))){toastErr('Please add a reason for every item.');return;}
+    const list=reqSheets().filter(x=>String(x.id)!==String(sh.id));list.push(sh);
+    try{await reqSave(list);wrap.remove();toastOk(t('saved'));render();}catch(e){console.error('purchase v6.33 save',e);toastErr(t('errSave'));}
+  };
+  const pdf=wrap.querySelector('#pr633-pdf');if(pdf)pdf.onclick=()=>{try{sync();exportPdf633(sh);}catch(e){console.error(e);toastErr('Could not export PDF.');}};
+  const xls=wrap.querySelector('#pr633-xlsx');if(xls)xls.onclick=async()=>{try{sync();await exportExcel633(sh);toastOk(t('saved'));}catch(e){console.error(e);toastErr('Could not export Excel.');}};
+  const del=wrap.querySelector('#pr633-delete');if(del)del.onclick=async()=>{
+    if(!await confirmAction({question:sh.title||'Purchase request',note:t('cannotUndo'),danger:true}))return;
+    try{await reqSave(reqSheets().filter(x=>String(x.id)!==String(sh.id)));wrap.remove();toastOk(t('deleted'));render();}catch(e){toastErr(t('errSave'));}
+  };
+}
+window.openPurchaseRequestV633=openPurchaseRequest633;
+window.openPurchaseRequestV617=openPurchaseRequest633;
+window.openPurchaseRequestV65=openPurchaseRequest633;
+
+/* Final routing override: purchase sheets always use V6.33. */
+const prevReq633=window.openReqEditor;
+window.openReqEditor=function(id,prefillActId){
+  const ex=id?reqSheet(id):null;
+  if(ex&&ex.kind==='purchase')return openPurchaseRequest633(id);
+  return prevReq633(id,prefillActId);
+};
+const prevWire633=window.wireCommon;
+window.wireCommon=function(){
+  prevWire633();
+  const p=document.querySelector('#rq-purchase');if(p)p.onclick=()=>openPurchaseRequest633();
+  document.querySelectorAll('[data-rqopen]').forEach(el=>{
+    const id=el.getAttribute('data-rqopen'),sh=reqSheet(id);
+    if(sh&&sh.kind==='purchase')el.onclick=()=>openPurchaseRequest633(id);
+  });
+};
+
+window.AUREA_PURCHASE_V633={version:'6.33',normalize:normalize633,row:row633,exportExcel:exportExcel633,exportPdf:exportPdf633};
+})();
+</script>
 
 </body>
 </html>
