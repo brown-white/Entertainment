@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Public Explore V6.37</title>
+<title>Entertainment · AUREA Experience V6.38</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -18050,6 +18050,162 @@ function wireVisitorExplore637(){
 }
 window.wireVisitorExplore637=wireVisitorExplore637;
 window.AUREA_PUBLIC_EXPLORE_V637={version:'6.37',view:visitorExploreView637,dayData:vxActs637,type:vxType637};
+})();
+</script>
+
+
+<style id="aurea-experience-audit-v638-style">
+/* =========================================================
+   V6.38 · Sign-in + Public Explore experience repair
+   ========================================================= */
+
+/* ---------- Sign in ---------- */
+.login-wrap.login638{
+  min-height:100dvh!important;display:block!important;
+  padding:calc(18px + env(safe-area-inset-top)) 18px calc(34px + env(safe-area-inset-bottom))!important;
+  background:
+    radial-gradient(80% 48% at 82% 5%,rgba(204,157,104,.24),transparent 70%),
+    radial-gradient(70% 55% at 0% 100%,rgba(152,102,66,.18),transparent 72%),
+    linear-gradient(160deg,#2c1d15 0%,#1d130e 56%,#120c09 100%)!important;
+  color:#f8f1e8;overflow-x:hidden;
+}
+.login638-shell{width:min(100%,520px);margin:0 auto;display:grid;gap:14px}
+.login638-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.login638-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.login638-mark{width:58px;height:58px;border-radius:19px;display:grid;place-items:center;overflow:hidden;
+  border:1px solid rgba(235,207,171,.34);background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 7px rgba(255,255,255,.025);
+  font:600 28px/1 var(--font-display);color:#dfbc87;flex:none}
+.login638-mark img{width:100%;height:100%;object-fit:cover}
+.login638-brandtxt b{display:block;font:600 24px/1 var(--font-display);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.login638-brandtxt span{display:block;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.52);margin-top:4px}
+.login638-teamtop{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#f5e8da;border-radius:999px;
+  min-height:40px;padding:8px 12px;font-size:9px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.login638-teamtop svg{color:#d7ae77}
+.login638-copy{padding:9px 2px 2px}
+.login638-copy .ey{font-size:8px;letter-spacing:.19em;text-transform:uppercase;color:#c99b66;font-weight:900;margin-bottom:7px}
+.login638-copy h1{font:600 clamp(34px,9vw,48px)/.94 var(--font-display);letter-spacing:-.02em;color:#fff;margin:0;max-width:430px}
+.login638-copy p{font-size:10px;line-height:1.5;color:rgba(255,255,255,.58);margin:9px 0 0;max-width:400px}
+.login638-langs{display:flex;gap:5px;overflow-x:auto;padding:1px 1px 4px;scrollbar-width:none}.login638-langs::-webkit-scrollbar{display:none}
+.login638-langs button{flex:0 0 auto;min-height:34px;padding:7px 10px;border:0;border-radius:999px;background:transparent;color:rgba(255,255,255,.55);font-size:9px;font-weight:700}
+.login638-langs button.on{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.11)}
+.login638-tabs{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:17px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11)}
+.login638-tabs button{min-height:44px;border:0;border-radius:13px;background:transparent;color:rgba(255,255,255,.62);font-size:11px;font-weight:850}
+.login638-tabs button.on{background:#f8f3eb;color:#2b1b12;box-shadow:0 10px 26px -18px #000}
+.login638-card{padding:18px;border-radius:25px;background:rgba(255,253,249,.985);border:1px solid rgba(255,255,255,.65);box-shadow:0 34px 70px -34px rgba(0,0,0,.86);color:#302219}
+.login638-card label{color:#7c6e64!important;font-size:9px!important;letter-spacing:.13em!important;margin-top:12px!important}
+.login638-card label:first-child{margin-top:0!important}
+.login638-card input,.login638-card select,.login638-card .pickfield{background:#fff!important;color:#302219!important;border:1px solid #e7d9c9!important;min-height:52px!important;border-radius:16px!important;box-shadow:none!important}
+.login638-card .btn{min-height:52px!important;margin-top:15px;border-radius:16px!important;background:#3a2519!important;color:#fff!important}
+.login638-card .remrow{display:flex!important;align-items:center;gap:8px;text-transform:none!important;letter-spacing:0!important;font-size:10px!important;color:#7d6f65!important}
+.login638-card .remrow input{width:20px!important;height:20px!important;min-height:20px!important}
+.login638-card .wz-dots{margin:0 0 15px}.login638-card .wz-back{color:#765d4a}
+.login638-explore{position:relative;overflow:hidden;width:100%;min-height:91px;border-radius:23px;border:1px solid rgba(255,255,255,.14);padding:16px 17px;
+  background:linear-gradient(115deg,rgba(185,138,92,.19),rgba(255,255,255,.055));color:#fff;text-align:left;display:grid;grid-template-columns:45px 1fr auto;align-items:center;gap:12px}
+.login638-explore:after{content:"";position:absolute;width:160px;height:160px;border-radius:50%;right:-70px;top:-95px;border:1px solid rgba(222,179,126,.18);box-shadow:0 0 0 24px rgba(222,179,126,.035),0 0 0 48px rgba(222,179,126,.025)}
+.login638-explore .ico{width:45px;height:45px;border-radius:15px;background:rgba(211,164,108,.14);display:grid;place-items:center;color:#ddb77f;position:relative;z-index:1}
+.login638-explore .txt{position:relative;z-index:1}.login638-explore b{display:block;font-size:13px}.login638-explore small{display:block;font-size:9px;color:rgba(255,255,255,.56);margin-top:3px;line-height:1.35}
+.login638-explore .go{position:relative;z-index:1;color:#d9b27d}
+.login638-trust{text-align:center;font-size:8px;color:rgba(255,255,255,.38);padding:1px 10px 0;line-height:1.5}
+.login638 .err{margin-top:8px}
+
+/* ---------- Public Explore ---------- */
+.vx638{min-height:100dvh;background:var(--theme-bg,var(--bg));color:var(--theme-text,var(--ink));padding:calc(16px + env(safe-area-inset-top)) 17px calc(38px + env(safe-area-inset-bottom));overflow-x:hidden}
+.vx638-shell{width:min(100%,560px);margin:auto}
+.vx638-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.vx638-brand{display:flex;align-items:center;gap:10px;min-width:0}.vx638-logo{width:43px;height:43px;border-radius:15px;border:1px solid var(--theme-line,var(--line));background:var(--theme-card,var(--card));display:grid;place-items:center;overflow:hidden;font:600 20px/1 var(--font-display);color:var(--theme-accent,var(--bronze))}.vx638-logo img{width:100%;height:100%;object-fit:cover}.vx638-brand b{display:block;font-size:11px}.vx638-brand span{display:block;font-size:7.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--theme-muted,var(--muted));margin-top:2px}
+.vx638-sign{min-height:40px;border:1px solid var(--theme-line,var(--line));border-radius:999px;padding:8px 13px;background:var(--theme-card,var(--card));color:var(--theme-text,var(--ink));font-size:9.5px;font-weight:850}
+.vx638-intro{padding:6px 1px 14px}.vx638-intro .ey{font-size:8px;letter-spacing:.19em;text-transform:uppercase;font-weight:900;color:var(--theme-accent,var(--bronze));margin-bottom:7px}.vx638-intro h1{font:600 clamp(36px,10vw,51px)/.92 var(--font-display);letter-spacing:-.025em;margin:0;max-width:440px}.vx638-intro p{font-size:10.5px;line-height:1.55;color:var(--theme-muted,var(--muted));margin:10px 0 0;max-width:440px}
+.vx638-days{display:flex;gap:7px;overflow-x:auto;padding:2px 0 13px;scrollbar-width:none}.vx638-days::-webkit-scrollbar{display:none}.vx638-day{flex:0 0 auto;min-width:58px;min-height:43px;border-radius:15px;border:1px solid var(--theme-line,var(--line));background:var(--theme-card,var(--card));color:var(--theme-muted,var(--muted));font-size:9.5px;font-weight:850}.vx638-day.on{background:var(--theme-primary,var(--espresso));border-color:var(--theme-primary,var(--espresso));color:var(--theme-button-text,#fff)}
+.vx638-identity{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--theme-line,var(--line));background:linear-gradient(135deg,var(--theme-card,var(--card)),var(--theme-soft,var(--soft)));border-radius:20px;padding:13px 15px;margin-bottom:12px}.vx638-identity small{display:block;font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:var(--theme-muted,var(--muted));margin-bottom:3px}.vx638-identity b{font:600 20px/1.05 var(--font-display)}.vx638-rest{text-align:right;font-size:8px;color:var(--theme-muted,var(--muted))}.vx638-rest strong{display:block;color:var(--theme-text,var(--ink));font-size:9.5px;margin-top:3px}
+.vx638-feature{position:relative;width:100%;min-height:315px;border:0;border-radius:29px;overflow:hidden;background:linear-gradient(145deg,#4b3324,#1d130e);padding:0;text-align:left;color:#fff;box-shadow:0 24px 55px -38px rgba(0,0,0,.66);margin-bottom:16px}.vx638-feature img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.vx638-feature .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,7,5,.06) 20%,rgba(10,7,5,.28) 52%,rgba(10,7,5,.9) 100%)}.vx638-feature .content{position:absolute;z-index:2;left:19px;right:19px;bottom:18px}.vx638-feature .badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:#332218;font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px}.vx638-feature h2{font:600 clamp(33px,9vw,44px)/.93 var(--font-display);margin:0;color:#fff}.vx638-feature .meta{display:flex;flex-wrap:wrap;gap:8px 13px;margin-top:9px;font-size:9.5px;color:rgba(255,255,255,.8)}
+.vx638-feature.empty{display:grid;place-items:center;padding:25px;min-height:190px}.vx638-feature.empty .content{position:static;text-align:center}.vx638-feature.empty h2{font-size:28px}.vx638-feature.empty p{font-size:10px;line-height:1.5;color:rgba(255,255,255,.7)}
+.vx638-now{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:20px}.vx638-moment{padding:10px;border:1px solid var(--theme-line,var(--line));border-radius:15px;background:var(--theme-card,var(--card));min-width:0}.vx638-moment span{display:block;font-size:7px;text-transform:uppercase;letter-spacing:.09em;color:var(--theme-muted,var(--muted))}.vx638-moment b{display:block;font-size:9.5px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vx638-moment em{display:block;font-size:8px;color:var(--theme-accent,var(--bronze));font-style:normal;margin-top:2px}
+.vx638-section{margin:23px 0}.vx638-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:10px}.vx638-head small{display:block;font-size:7px;text-transform:uppercase;letter-spacing:.16em;color:var(--theme-accent,var(--bronze));font-weight:900}.vx638-head h3{font:600 28px/1 var(--font-display);margin:4px 0 0}.vx638-head>span{font-size:8px;color:var(--theme-muted,var(--muted))}
+.vx638-scroll{display:flex;gap:10px;overflow-x:auto;padding:2px 1px 7px;scrollbar-width:none}.vx638-scroll::-webkit-scrollbar{display:none}.vx638-card{flex:0 0 74%;max-width:285px;border:1px solid var(--theme-line,var(--line));border-radius:22px;overflow:hidden;background:var(--theme-card,var(--card));color:var(--theme-text,var(--ink));padding:0;text-align:left}.vx638-card.event{flex-basis:83%;max-width:320px}.vx638-img{height:145px;position:relative;overflow:hidden;background:linear-gradient(145deg,var(--theme-soft,var(--soft)),var(--theme-card,var(--card)))}.vx638-card.event .vx638-img{height:178px}.vx638-img img{width:100%;height:100%;object-fit:cover}.vx638-type{position:absolute;left:10px;bottom:9px;padding:5px 8px;border-radius:999px;background:rgba(27,18,13,.78);color:#fff;font-size:6.8px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;backdrop-filter:blur(8px)}.vx638-body{padding:12px 13px 13px}.vx638-body h4{font:600 22px/1.04 var(--font-display);margin:0}.vx638-body p{font-size:9px;color:var(--theme-muted,var(--muted));margin:7px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vx638-unlock{margin-top:25px;border-radius:27px;padding:18px;background:linear-gradient(145deg,var(--theme-inverse-bg,var(--espresso)),color-mix(in srgb,var(--theme-inverse-bg,var(--espresso)) 72%,var(--theme-accent,var(--bronze))));color:var(--theme-inverse-text,#fff)}.vx638-unlock .ey{font-size:7px;text-transform:uppercase;letter-spacing:.16em;opacity:.62}.vx638-unlock h3{font:600 31px/.98 var(--font-display);margin:7px 0;color:inherit}.vx638-unlock p{font-size:9.5px;line-height:1.5;opacity:.74;margin:0}.vx638-perks{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:13px 0}.vx638-perks span{padding:9px;border-radius:12px;background:rgba(255,255,255,.075);font-size:8.2px}.vx638-unlock button{width:100%;min-height:48px;border:0;border-radius:15px;background:var(--theme-accent,var(--bronze));color:#17110c;font-size:10.5px;font-weight:900}.vx638-privacy{text-align:center;font-size:7.8px;line-height:1.45;color:var(--theme-muted,var(--muted));padding:12px 22px 0}.vx638-empty{padding:18px;border:1px dashed var(--theme-line,var(--line));border-radius:18px;text-align:center;color:var(--theme-muted,var(--muted));font-size:9.5px}
+@media(max-width:390px){.vx638-now{grid-template-columns:1fr 1fr}.vx638-moment:nth-child(3){grid-column:1/-1}.login638-copy h1{font-size:37px}}
+</style>
+
+
+<script id="aurea-experience-audit-v638-script">
+(()=>{
+'use strict';
+if(window.__AUREA_EXPERIENCE_V638)return;
+window.__AUREA_EXPERIENCE_V638=true;
+
+function loginView638(){
+  const st=S.settings||{};
+  const logo=st.logo?`<img src="${esc(st.logo)}" alt="">`:esc(String(st.name||'E').trim().charAt(0).toUpperCase());
+  const languages=`<div class="login638-langs">${LANGS.map(([l,label])=>`<button type="button" data-lang="${l}" class="${S.lang===l?'on':''}">${label}</button>`).join('')}</div>`;
+
+  if(loginMode==='guest'){
+    const remRow=`<label class="remrow"><input type="checkbox" id="cb-rem" ${rememberMe?'checked':''}> ${t('rememberMe')}</label>`;
+    const dots=`<div class="wz-dots">${[0,1,2,3,4,5,6].map(i=>`<span class="wz-dot ${wiz.step===i?'on':wiz.step>i?'done':''}"></span>`).join('')}</div>`;
+    const backLink=wiz.step>0?`<button class="wz-back" id="wz-back">${ic('back',14)} ${t('backStep')}</button>`:'';
+    let stepHtml='';
+    if(wiz.step===0) stepHtml=`<label>${t('room')}</label><button class="pickfield" id="wz-pick">${wiz.room?`<b>${esc(wiz.room)}</b>`:t('chooseRoom')}<span class="pf-ch">${ic('back',16)}</span></button>`;
+    else if(wiz.step===1) stepHtml=`<label>${t('nationality')}</label><button class="pickfield" id="wz-pick">${wiz.nat?`<b>${esc(wiz.nat)}</b>`:t('chooseNat')}<span class="pf-ch">${ic('back',16)}</span></button>`;
+    else if(wiz.step===2) stepHtml=`<label>${t('name')}</label><input id="wz-in" value="${esc(wiz.name)}" placeholder="${t('name')}">`;
+    else if(wiz.step===3) stepHtml=`<label>${t('phone')}</label><input id="wz-in" inputmode="tel" value="${esc(wiz.phone)}" placeholder="+49 ...">`;
+    else if(wiz.step===4) stepHtml=`<label>${t('arrival')}</label><input id="wz-in" type="date" value="${esc(wiz.arr)}">`;
+    else if(wiz.step===5) stepHtml=`<label>${t('departure')}</label><input id="wz-in" type="date" value="${esc(wiz.dep)}" min="${esc(wiz.arr)}">`;
+    else stepHtml=`<label>${t('user')}</label><input id="wz-user" autocapitalize="none" value="${esc(wiz.username||wiz.room)}"><label>${t('pass')}</label><input id="wz-pass" autocapitalize="none" value="${esc(wiz.password)}" placeholder="••••••">${remRow}`;
+    const fields=guestMode==='new'
+      ?`${dots}${stepHtml}${wiz.step<6?`<button class="btn" id="wz-next">${t('nextStep')}</button>`:`<button class="btn" id="wz-create">${t('createAccount')}</button>`}${backLink}`
+      :`<label>${t('user')} · ${t('room')}</label><input id="f-room" inputmode="numeric" value="${esc(wiz.room)}" placeholder="4215"><label>${t('pass')}</label><input id="f-gpass" type="password" placeholder="••••••">${remRow}`;
+
+    return `<div class="login-wrap login638 fadein"><div class="login638-shell">
+      <div class="login638-top">
+        <div class="login638-brand"><div class="login638-mark">${logo}</div><div class="login638-brandtxt"><b>${esc(st.name||'Entertainment')}</b><span>${esc(st.subtitle||t('appSub'))}</span></div></div>
+        <button type="button" class="login638-teamtop" id="btn-teamlink">${ic('users',14)} ${t('otherUsers')}</button>
+      </div>
+      <section class="login638-copy"><div class="ey">Your hotel entertainment</div><h1>${guestMode==='new'?'Create your holiday access.':'Welcome to your stay.'}</h1><p>${guestMode==='new'?'Set up your private guest access in a few simple steps. Your stay, bookings and messages remain connected only to you.':'Sign in for the complete programme, bookings, tickets, chat and everything connected to your stay.'}</p></section>
+      ${languages}
+      <div class="login638-tabs"><button data-gmode="signin" class="${guestMode==='signin'?'on':''}">${t('signin')}</button><button data-gmode="new" class="${guestMode==='new'?'on':''}">${t('firstVisit')}</button></div>
+      <div class="login638-card">${fields}${guestMode==='signin'?`<button class="btn" id="btn-login">${t('signin')}</button>`:''}<div class="err" id="login-err"></div>${!REMOTE?`<p class="hint">${t('demoNote')}</p>`:''}</div>
+      <button type="button" class="login638-explore" id="btn-public-explore"><span class="ico">${ic('sparkle',18)}</span><span class="txt"><b>Explore the entertainment</b><small>See a curated programme preview before signing in</small></span><span class="go">${ic('back',17)}</span></button>
+      <div class="login638-trust">Public Explore never shows room, booking, ticket, message or guest-account information.</div>
+    </div></div>`;
+  }
+
+  return `<div class="login-wrap login638 fadein"><div class="login638-shell">
+    <div class="login638-top"><div class="login638-brand"><div class="login638-mark">${logo}</div><div class="login638-brandtxt"><b>${esc(st.name||'Entertainment')}</b><span>${esc(st.subtitle||t('appSub'))}</span></div></div><button type="button" class="login638-teamtop" id="btn-guestlink">${ic('back',13)} ${t('backToGuest')}</button></div>
+    <section class="login638-copy"><div class="ey">Team workspace</div><h1>Run the day with clarity.</h1><p>Secure access for the Entertainment Team and Manager.</p></section>
+    ${languages}
+    <div class="login638-tabs">${['staff','manager'].map(r=>`<button data-role="${r}" class="${loginRole===r?'on':''}">${t(r)}</button>`).join('')}</div>
+    <div class="login638-card"><label>${t('user')}</label><input id="f-user" autocapitalize="none" placeholder="${loginRole}"><label>${t('pass')}</label><input id="f-pass" type="password" placeholder="••••"><button class="btn" id="btn-login">${t('signin')}</button><div class="err" id="login-err"></div></div>
+    <button type="button" class="login638-explore" id="btn-public-explore"><span class="ico">${ic('sparkle',18)}</span><span class="txt"><b>Open public Explore</b><small>Preview exactly what visitors can see without an account</small></span><span class="go">${ic('back',17)}</span></button>
+  </div></div>`;
+}
+window.loginView=loginView638;
+try{loginView=loginView638;}catch(e){}
+
+function vxCard638(a,event=false){
+  return `<button type="button" class="vx638-card ${event?'event':''}" data-vx637-id="${esc(String(a.id))}"><div class="vx638-img"><img src="${esc(vxImage637(a))}" alt="" loading="lazy"><span class="vx638-type">${esc(vxType637(a))}</span></div><div class="vx638-body"><h4>${esc(a.name||'')}</h4><p>${esc(a.time||'')}${a.location?' · '+esc(a.location):''}</p></div></button>`;
+}
+function visitorExploreView638(){
+  const day=Number.isInteger(window.__PUBLIC_EXPLORE_DAY_V637)?window.__PUBLIC_EXPLORE_DAY_V637:todayIndex();
+  const acts=vxActs637(day),normal=acts.filter(a=>normCat(a)==='mAdult').slice(0,4),special=acts.filter(a=>normCat(a)!=='mAdult').slice(0,4);
+  const hero=acts.find(a=>a.highlight)||special[0]||normal[0]||acts[0]||null;
+  const dd=vxDayDesign637(day),days=t('days')||['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const shorts=t('daysShort')||['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],weekday=days[day]||'';
+  const st=S.settings||{};
+  const moments=acts.slice(0,3);
+  return `<main class="vx638 fadein"><div class="vx638-shell">
+    <header class="vx638-top"><div class="vx638-brand"><div class="vx638-logo">${st.logo?`<img src="${esc(st.logo)}" alt="">`:esc(String(st.name||'E').trim().charAt(0).toUpperCase())}</div><div><b>${esc(st.name||'Entertainment')}</b><span>Public programme preview</span></div></div><button type="button" class="vx638-sign" id="vx637-signin-top">Sign in</button></header>
+    <section class="vx638-intro"><div class="ey">Discover your holiday</div><h1>Find your next moment.</h1><p>A curated look at what is happening around the hotel. Sign in to unlock the full programme and your personal guest experience.</p></section>
+    <nav class="vx638-days" aria-label="Programme days">${shorts.map((d,i)=>`<button type="button" class="vx638-day ${i===day?'on':''}" data-vx637-day="${i}">${esc(d)}</button>`).join('')}</nav>
+    <section class="vx638-identity"><div><small>${esc(weekday)} identity</small><b>${esc(dd.identity||weekday)}</b></div>${dd.theme?`<div class="vx638-rest">Restaurant theme<strong>${esc(dd.theme)}</strong></div>`:'<div></div>'}</section>
+    ${hero?`<button type="button" class="vx638-feature" data-vx637-id="${esc(String(hero.id))}"><img src="${esc(vxImage637(hero))}" alt="" loading="eager"><span class="veil"></span><div class="content"><span class="badge">${esc(hero.highlight?'Highlight of the day':vxType637(hero))}</span><h2>${esc(hero.name||'')}</h2><div class="meta"><span>${ic('clock',13)} ${esc(hero.time||'')}</span>${hero.location?`<span>${ic('pin',13)} ${esc(hero.location)}</span>`:''}</div></div></button>`:`<div class="vx638-feature empty"><div class="content"><span class="badge">Programme preview</span><h2>${esc(weekday)}</h2><p>The public programme for this day is still being prepared. Choose another day or sign in for your complete stay experience.</p></div></div>`}
+    ${moments.length?`<div class="vx638-now">${moments.map(a=>`<div class="vx638-moment"><span>${esc(vxType637(a))}</span><b>${esc(a.name||'')}</b><em>${esc(a.time||'')}</em></div>`).join('')}</div>`:''}
+    <section class="vx638-section"><div class="vx638-head"><div><small>Move & play</small><h3>Activities</h3></div><span>${normal.length} preview${normal.length===1?'':'s'}</span></div>${normal.length?`<div class="vx638-scroll">${normal.map(a=>vxCard638(a)).join('')}</div>`:`<div class="vx638-empty">No daytime activity preview is published for ${esc(weekday)} yet.</div>`}</section>
+    <section class="vx638-section"><div class="vx638-head"><div><small>After-hours moments</small><h3>Events & entertainment</h3></div><span>${special.length} preview${special.length===1?'':'s'}</span></div>${special.length?`<div class="vx638-scroll">${special.map(a=>vxCard638(a,true)).join('')}</div>`:`<div class="vx638-empty">No event, live music or show preview is published for ${esc(weekday)} yet.</div>`}</section>
+    <section class="vx638-unlock"><div class="ey">Your private guest account</div><h3>Unlock the whole holiday.</h3><p>Explore is intentionally only a preview. Your guest account opens everything connected to your actual stay.</p><div class="vx638-perks"><span>✓ Full weekly programme</span><span>✓ Activity booking</span><span>✓ Event tickets</span><span>✓ Chat with the team</span><span>✓ My bookings</span><span>✓ Personal stay</span></div><button type="button" id="vx637-signin">Sign in / First visit</button></section>
+    <div class="vx638-privacy">Public Explore uses programme information only. Private guest, room, booking, ticket and message data never appears here.</div>
+  </div></main>`;
+}
+window.visitorExploreView637=visitorExploreView638;
+window.AUREA_EXPERIENCE_V638={version:'6.38',login:loginView638,explore:visitorExploreView638};
 })();
 </script>
 
