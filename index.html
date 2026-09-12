@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Public First Stable V6.39</title>
+<title>Entertainment · AUREA Stability Guest Access V6.40</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -18366,6 +18366,219 @@ window.wireCommon=wireCommon=function(){
 if(!S.session && window.__PUBLIC_EXPLORE_EXITED_V639!==true){window.__PUBLIC_EXPLORE_V637=true;window.__PUBLIC_EXPLORE_DAY_V637=Number.isInteger(window.__PUBLIC_EXPLORE_DAY_V637)?window.__PUBLIC_EXPLORE_DAY_V637:todayIndex();setTimeout(()=>{try{if(!S.session)render();}catch(e){console.error('V6.39 public-first render',e)}},0);}
 
 window.AUREA_PUBLIC_FIRST_V639={version:'6.39',view:visitorExploreView639,text:pubText639,settingsKey:PUBKEY639};
+})();
+</script>
+
+
+<style id="aurea-v640-stability-style">
+/* V6.40 — guest access, manager badges, chat keyboard + theme repair */
+
+/* Ticket explainer used the global .top class and inherited the sticky app header. */
+.v614-ticket-explain>.top{
+  position:static!important; inset:auto!important; min-height:0!important; height:auto!important;
+  padding:0!important; margin:0!important; background:transparent!important; border:0!important;
+  box-shadow:none!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+  display:flex!important; align-items:center!important; justify-content:flex-start!important; gap:11px!important;
+  color:var(--theme-inverse-text,#fff)!important;
+}
+.v614-ticket-explain>.top:before,.v614-ticket-explain>.top:after{display:none!important}
+.v614-ticket-explain>.top .ico{flex:none!important}
+.v614-ticket-explain>.top b{color:var(--theme-inverse-text,#fff)!important}
+.v614-ticket-explain p{color:var(--theme-inverse-text,#fff)!important;opacity:.74}
+.v614-step span{color:var(--theme-inverse-text,#fff)!important;opacity:.67}
+
+/* Guest chat: prevent the iOS keyboard/focus state from making the input overflow. */
+.g611-chat .chatbar{
+  display:grid!important; grid-template-columns:minmax(0,1fr) 48px!important; align-items:center!important;
+  gap:8px!important; box-sizing:border-box!important; overflow:hidden!important;
+  width:min(calc(100vw - 24px),514px)!important; max-width:514px!important;
+  left:50%!important; right:auto!important; transform:translateX(-50%)!important;
+  padding:7px!important;
+}
+.g611-chat .chatbar input{
+  width:100%!important; min-width:0!important; max-width:100%!important; height:48px!important; min-height:48px!important;
+  margin:0!important; padding:0 14px!important; border:1px solid var(--theme-line,var(--line))!important;
+  border-radius:999px!important; background:var(--theme-card,var(--card))!important; color:var(--theme-text,var(--ink))!important;
+  box-shadow:none!important; outline:none!important; font-size:16px!important; -webkit-appearance:none!important;
+}
+.g611-chat .chatbar input:focus{
+  border-color:var(--theme-accent,var(--bronze))!important;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-accent,var(--bronze)) 22%,transparent)!important;
+}
+.g611-chat .chatbar button{
+  width:48px!important;height:48px!important;min-width:48px!important;margin:0!important;display:grid!important;place-items:center!important;
+}
+@media(max-height:560px){
+  .g611-chat .thread{min-height:180px!important;padding-bottom:86px!important}
+  .g611-chat .chatbar{bottom:calc(4px + env(safe-area-inset-bottom))!important}
+}
+
+/* First Visit — direct room entry + international phone. */
+.v640-room-help,.v640-phone-help{font-size:9px;line-height:1.45;color:#85776c;margin:7px 2px 0}
+.v640-phone{display:grid;grid-template-columns:132px minmax(0,1fr);gap:8px}
+.v640-phone select,.v640-phone input{min-width:0!important;width:100%!important}
+.v640-valid{display:flex;gap:7px;align-items:flex-start;padding:9px 10px;border-radius:13px;background:#f4eee6;color:#6f6258;font-size:9px;line-height:1.4;margin-top:8px}
+[data-theme="dark"] .login638-card .v640-valid{background:#241a14;color:#c8bbb0}
+@media(max-width:390px){.v640-phone{grid-template-columns:112px minmax(0,1fr)}}
+
+/* Numeric red notification badge directly on manager sub-tabs. */
+.pills button{position:relative}
+.v640-tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 5px;margin-inline-start:6px;
+  border-radius:999px;background:#c94d3d;color:#fff;font-size:9px;font-weight:900;line-height:1;
+  box-shadow:0 4px 10px -5px rgba(145,35,24,.8);vertical-align:middle
+}
+.pills button.on .v640-tab-badge{background:#fff;color:#b83e31}
+
+/* General nested-theme protection for interactive surfaces. */
+.modal input,.modal select,.modal textarea,.card input,.card select,.card textarea{
+  color:var(--theme-text,var(--ink));
+}
+[data-theme="dark"] .modal input,[data-theme="dark"] .modal select,[data-theme="dark"] .modal textarea{
+  background:var(--theme-card,var(--card))!important;border-color:var(--theme-line,var(--line))!important;color:var(--theme-text,var(--ink))!important;
+}
+</style>
+
+
+<script id="aurea-v640-stability-script">
+(()=>{
+'use strict';
+if(window.__AUREA_V640)return; window.__AUREA_V640=true;
+
+/* ---------- Guest First Visit: typed room + country calling code ---------- */
+const PHONE_CODES640=[
+ ['+20','Egypt'],['+49','Germany'],['+44','United Kingdom'],['+31','Netherlands'],['+48','Poland'],['+420','Czechia'],
+ ['+33','France'],['+39','Italy'],['+34','Spain'],['+32','Belgium'],['+41','Switzerland'],['+43','Austria'],['+40','Romania'],
+ ['+30','Greece'],['+90','Turkey'],['+971','UAE'],['+966','Saudi Arabia'],['+965','Kuwait'],['+974','Qatar'],['+962','Jordan'],
+ ['+961','Lebanon'],['+212','Morocco'],['+213','Algeria'],['+216','Tunisia'],['+46','Sweden'],['+47','Norway'],['+45','Denmark'],
+ ['+358','Finland'],['+36','Hungary'],['+1','USA / Canada'],['+7','Russia / Kazakhstan'],['+380','Ukraine']
+];
+let phoneKey640='+20';
+function phoneParts640(){
+  const raw=String(wiz.phone||'').trim();
+  const found=PHONE_CODES640.slice().sort((a,b)=>b[0].length-a[0].length).find(([c])=>raw.startsWith(c));
+  if(found){phoneKey640=found[0];return {key:found[0],local:raw.slice(found[0].length).replace(/\D/g,'')};}
+  return {key:phoneKey640,local:raw.replace(/\D/g,'')};
+}
+function validatePhone640(key,local){
+  let digits=String(local||'').replace(/\D/g,'');
+  if(digits.startsWith('0'))digits=digits.replace(/^0+/,'');
+  if(digits.length<6||digits.length>12)return {ok:false,msg:'Please enter a valid phone number.'};
+  if(/^([0-9])\1+$/.test(digits))return {ok:false,msg:'Please enter a valid phone number, not repeated digits.'};
+  return {ok:true,value:String(key)+digits};
+}
+function activeRoom640(room){return (S.rooms||[]).find(r=>String(r.room)===String(room)&&r.active!==false);}
+function publicText640(){return window.AUREA_PUBLIC_FIRST_V639&&window.AUREA_PUBLIC_FIRST_V639.text?window.AUREA_PUBLIC_FIRST_V639.text():{};}
+
+function loginView640(){
+  if(loginMode!=='guest') return loginViewBefore640();
+  const st=S.settings||{},tx=publicText640();
+  const logo=st.logo?`<img src="${esc(st.logo)}" alt="">`:esc(String(st.name||'E').trim().charAt(0).toUpperCase());
+  const languages=`<div class="login638-langs">${LANGS.map(([l,label])=>`<button type="button" data-lang="${l}" class="${S.lang===l?'on':''}">${label}</button>`).join('')}</div>`;
+  const remRow=`<label class="remrow"><input type="checkbox" id="cb-rem" ${rememberMe?'checked':''}> ${t('rememberMe')}</label>`;
+  const dots=`<div class="wz-dots">${[0,1,2,3,4,5,6].map(i=>`<span class="wz-dot ${wiz.step===i?'on':wiz.step>i?'done':''}"></span>`).join('')}</div>`;
+  const backLink=wiz.step>0?`<button class="wz-back" id="wz-back">${ic('back',14)} ${t('backStep')}</button>`:'';
+  let stepHtml='';
+  if(wiz.step===0){
+    stepHtml=`<label>${t('room')}</label><input id="wz-room-direct" inputmode="numeric" autocomplete="off" enterkeyhint="next" value="${esc(wiz.room)}" placeholder="Enter your room number"><p class="v640-room-help">Your room number is checked against the hotel room list. Other room numbers cannot continue.</p>`;
+  } else if(wiz.step===1){
+    stepHtml=`<label>${t('nationality')}</label><button class="pickfield" id="wz-pick">${wiz.nat?`<b>${esc(wiz.nat)}</b>`:t('chooseNat')}<span class="pf-ch">${ic('back',16)}</span></button>`;
+  } else if(wiz.step===2){
+    stepHtml=`<label>${t('name')}</label><input id="wz-in" value="${esc(wiz.name)}" placeholder="${t('name')}">`;
+  } else if(wiz.step===3){
+    const p=phoneParts640();
+    stepHtml=`<label>${t('phone')}</label><div class="v640-phone"><select id="wz-phone-key" aria-label="Country calling code">${PHONE_CODES640.map(([c,n])=>`<option value="${c}" ${p.key===c?'selected':''}>${c} · ${esc(n)}</option>`).join('')}</select><input id="wz-phone-local" inputmode="tel" autocomplete="tel-national" enterkeyhint="next" value="${esc(p.local)}" placeholder="Phone number"></div><div class="v640-valid">${ic('phone',14)} <span>Choose the international calling code and enter your real mobile number. The app validates the number format; ownership would require SMS verification.</span></div>`;
+  } else if(wiz.step===4){
+    stepHtml=`<label>${t('arrival')}</label><input id="wz-in" type="date" value="${esc(wiz.arr)}">`;
+  } else if(wiz.step===5){
+    stepHtml=`<label>${t('departure')}</label><input id="wz-in" type="date" value="${esc(wiz.dep)}" min="${esc(wiz.arr)}">`;
+  } else {
+    stepHtml=`<label>${t('user')}</label><input id="wz-user" autocapitalize="none" value="${esc(wiz.username||wiz.room)}"><label>${t('pass')}</label><input id="wz-pass" type="password" autocapitalize="none" value="${esc(wiz.password)}" placeholder="••••••">${remRow}`;
+  }
+  const fields=guestMode==='new'?`${dots}${stepHtml}${wiz.step<6?`<button class="btn" id="wz-next">${t('nextStep')}</button>`:`<button class="btn" id="wz-create">${t('createAccount')}</button>`}${backLink}`:`<label>${t('user')} · ${t('room')}</label><input id="f-room" inputmode="numeric" value="${esc(wiz.room)}" placeholder="Room number"><label>${t('pass')}</label><input id="f-gpass" type="password" placeholder="••••••">${remRow}`;
+  const ey=guestMode==='new'?(tx.firstEyebrow||'First visit'):(tx.signinEyebrow||'Welcome back');
+  const title=guestMode==='new'?(tx.firstTitle||'Create your stay'):(tx.signinTitle||'Your holiday, one tap away.');
+  const desc=guestMode==='new'?(tx.firstText||'Create your private guest account for this stay.'):(tx.signinText||'Sign in to your private stay.');
+  return `<div class="login-wrap login638 fadein"><div class="login638-shell"><div class="login638-top"><div class="login638-brand"><div class="login638-mark">${logo}</div><div class="login638-brandtxt"><b>${esc(st.name||'Entertainment')}</b><span>${esc(st.subtitle||t('appSub'))}</span></div></div><button type="button" class="login638-teamtop" id="btn-teamlink">${ic('users',14)} ${t('otherUsers')}</button></div><section class="login638-copy"><div class="ey">${esc(ey)}</div><h1>${esc(title)}</h1><p>${esc(desc)}</p></section>${languages}<div class="login638-tabs"><button data-gmode="signin" class="${guestMode==='signin'?'on':''}">${t('signin')}</button><button data-gmode="new" class="${guestMode==='new'?'on':''}">${t('firstVisit')}</button></div><div class="login638-card">${fields}${guestMode==='signin'?`<button class="btn" id="btn-login">${t('signin')}</button>`:''}<div class="err" id="login-err"></div>${!REMOTE?`<p class="hint">${t('demoNote')}</p>`:''}</div><button type="button" class="login638-explore" id="btn-public-explore"><span class="ico">${ic('sparkle',18)}</span><span class="txt"><b>${esc(tx.exploreCtaTitle||'Explore the entertainment')}</b><small>${esc(tx.exploreCtaText||'No account needed')}</small></span><span class="go">${ic('back',17)}</span></button><div class="login638-trust">Your stay is private. A room number only works when it exists in the active hotel room list.</div></div></div>`;
+}
+window.loginView640=loginView640;window.loginView=loginView640;try{loginView=loginView640}catch(e){}
+
+const loginViewBefore640=window.loginView||loginView;
+const wireLoginBefore640=window.wireLogin||wireLogin;
+window.wireLogin=wireLogin=function(){
+  wireLoginBefore640();
+  if(loginMode!=='guest'||guestMode!=='new')return;
+  const err=document.querySelector('#login-err'),next=document.querySelector('#wz-next');
+  if(!next)return;
+  if(wiz.step===0){
+    const input=document.querySelector('#wz-room-direct');
+    if(input){input.oninput=()=>{wiz.room=input.value.replace(/\D/g,'').slice(0,8);input.value=wiz.room;};setTimeout(()=>input.focus(),40);}
+    next.onclick=()=>{
+      const room=String(input?input.value:wiz.room).replace(/\D/g,'').trim();wiz.room=room;
+      if(!room){err.textContent='Please enter your room number.';return;}
+      if(!activeRoom640(room)){err.textContent=t('roomNotFound');return;}
+      const existing=(S.accounts||[]).find(a=>String(a.room)===room&&a.active!==false&&!stayExpired(a));
+      if(existing){err.textContent=t('accountExists');guestMode='signin';setTimeout(render,1000);return;}
+      wiz.step=1;render();
+    };
+  }
+  if(wiz.step===3){
+    const key=document.querySelector('#wz-phone-key'),local=document.querySelector('#wz-phone-local');
+    if(key)key.onchange=()=>{phoneKey640=key.value;};
+    if(local)local.oninput=()=>{local.value=local.value.replace(/[^0-9 ()-]/g,'').slice(0,18);};
+    next.onclick=()=>{
+      const v=validatePhone640(key?key.value:phoneKey640,local?local.value:'');
+      if(!v.ok){err.textContent=v.msg;return;}
+      wiz.phone=v.value;wiz.step=4;render();
+    };
+  }
+};
+
+/* ---------- Manager: new-item badges directly on Guest sub-tabs ---------- */
+const SEENKEY640='managerGuestSeenV640';
+function seen640(){try{return JSON.parse(localStorage.getItem(SEENKEY640)||'{}')||{}}catch(e){return{}}}
+function saveSeen640(x){try{localStorage.setItem(SEENKEY640,JSON.stringify(x||{}))}catch(e){}}
+function time640(v){const n=Date.parse(v||'');return Number.isFinite(n)?n:0;}
+function dayKey640(v){return String(v||'').slice(0,10);}
+function newGuestCount640(){
+  const s=seen640(),seenIds=new Set((s.crmIds||[]).map(String)),today=hotelDateStr();
+  return (S.accounts||[]).filter(a=>a.active!==false&&!stayExpired(a)&&dayKey640(a.arrival)===today&&!seenIds.has(String(a.id))).length;
+}
+function newFeedbackCount640(){
+  const s=seen640(),seenIds=new Set((s.feedbackIds||[]).map(String));
+  return (S.feedback||[]).filter(f=>!seenIds.has(String(f.id))).length;
+}
+function newRequestCount640(){return (S.requests||[]).filter(r=>r.status!=='done').length;}
+function newMessageCount640(){return (S.messages||[]).filter(m=>!String(m.room||'').startsWith('staff:')&&m.sender==='guest'&&!m.read_by_team).length;}
+function guestBadge640(id){return id==='crm'?newGuestCount640():id==='chat'?newMessageCount640():id==='requests'?newRequestCount640():id==='feedback'?newFeedbackCount640():0;}
+function markGuestSeen640(id){
+  const s=seen640();
+  if(id==='crm')s.crmIds=(S.accounts||[]).filter(a=>a.active!==false&&!stayExpired(a)).map(a=>String(a.id));
+  if(id==='feedback')s.feedbackIds=(S.feedback||[]).map(f=>String(f.id));
+  saveSeen640(s);
+}
+const subTabsBefore640=window.subTabs||subTabs;
+window.subTabs=subTabs=function(group,items){
+  if(group!=='guests')return subTabsBefore640(group,items);
+  const decorated=items.map(it=>{
+    const n=guestBadge640(it[0]);
+    return [it[0],n?`${it[1]} <span class="v640-tab-badge">${n>99?'99+':n}</span>`:it[1]];
+  });
+  return subTabsBefore640(group,decorated);
+};
+const managerViewBefore640=window.managerView||managerView;
+window.managerView=managerView=function(){
+  if(S.tab==='guests'&&(S.sub.guests==='crm'||S.sub.guests==='feedback'))markGuestSeen640(S.sub.guests);
+  return managerViewBefore640();
+};
+
+/* Ensure badge HTML is rendered, not escaped: current subTabs inserts labels as raw HTML. */
+
+/* ---------- Global defensive guards found during audit ---------- */
+window.addEventListener('error',e=>{if(e&&e.error)console.error('AUREA runtime error',e.error);});
+window.addEventListener('unhandledrejection',e=>console.error('AUREA unhandled promise',e.reason));
+
+window.AUREA_V640={version:'6.40',validatePhone:validatePhone640,guestBadge:guestBadge640,markSeen:markGuestSeen640};
 })();
 </script>
 
