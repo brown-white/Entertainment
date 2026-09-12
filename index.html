@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Experience V6.38</title>
+<title>Entertainment · AUREA Public First Stable V6.39</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -4048,7 +4048,9 @@ function render(){
   document.documentElement.setAttribute("data-approle", S.session?S.session.role:"none");
   if(S.loadError){ app.innerHTML=errorView(); const r=$("#btn-retry"); if(r) r.onclick=()=>location.reload(); return; }
   if(!S.session){
-    if(window.__PUBLIC_EXPLORE_V637 && typeof window.visitorExploreView637==="function"){
+    const __publicFirst639 = window.__PUBLIC_EXPLORE_EXITED_V639!==true;
+    if((window.__PUBLIC_EXPLORE_V637 || __publicFirst639) && typeof window.visitorExploreView637==="function"){
+      window.__PUBLIC_EXPLORE_V637=true;
       document.documentElement.setAttribute("data-approle","visitor");
       app.innerHTML=window.visitorExploreView637();
       if(typeof window.wireVisitorExplore637==="function") window.wireVisitorExplore637();
@@ -7874,6 +7876,7 @@ function managerView(){
   if(String(S.tab||"").startsWith("set:")){
     const k=S.tab.slice(4);
     if(k==="theme")    return setThemeView();
+    if(k==="publictext") return setPublicExperienceView639();
     if(k==="brand")    return setBrandView();
     if(k==="features") return setFeaturesView();
     if(k==="location") return setLocationView();
@@ -7930,8 +7933,8 @@ const PAGE_SECTIONS={
   dash:    ["attention","dayinfo","wholeday","tonight","live","export","stats","feedback","nations","activities","trends"],
   guests:  ["crm","rooms","bookings","tickets","chat","requests","feedback","history"],
   team:    ["accounts","chat","requests","monthatt","attendance","payroll"],
-  program: ["acts","tickets"],
-  settings:["set:theme","set:brand","builder","set:features","set:notif","set:links",
+  program: ["acts","tickets","performance"],
+  settings:["set:theme","set:publictext","set:brand","builder","set:features","set:notif","set:links",
             "bus","set:location","export","set:advanced"]
 };
 const SECTION_LABELS={
@@ -7941,9 +7944,9 @@ const SECTION_LABELS={
   guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",tickets:"tickets",chat:"guestChatTab",
             requests:"requests",feedback:"feedback",history:"Guest history"},
   team:    {accounts:"teamAccounts",chat:"teamChatTab",requests:"teamRequests",
-            monthatt:"monthAtt",attendance:"attendance"},
-  program: {acts:"activities",tickets:"tickets"},
-  settings:{"set:theme":"setTheme","set:brand":"setBrand","builder":"setMenus",
+            monthatt:"monthAtt",attendance:"attendance",payroll:"Payroll"},
+  program: {acts:"activities",tickets:"tickets",performance:"Shows / Events Attendance"},
+  settings:{"set:theme":"setTheme","set:publictext":"Public experience","set:brand":"setBrand","builder":"setMenus",
             "set:features":"setFeatures","set:notif":"setNotif","set:links":"setLinksT",
             "bus":"busItem","set:location":"setLocation","export":"setData","set:advanced":"setAdvanced"}
 };
@@ -9087,6 +9090,7 @@ function attendanceInner(){
 const SETTINGS_GROUPS=[
   {head:"secLook", items:[
     ["set:theme","palette","setTheme","setThemeSub"],
+    ["set:publictext","sparkle","Public experience","Explore & sign-in text"],
     ["set:brand","sparkle","setBrand","setBrandSub"],
     ["builder","grid","setMenus","setMenusSub"]]},
   {head:"secManage", items:[
@@ -18049,7 +18053,7 @@ function wireVisitorExplore637(){
   document.querySelectorAll('[data-vx637-id]').forEach(b=>b.onclick=()=>{const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.vx637Id));vxOpenDetail637(a);});
 }
 window.wireVisitorExplore637=wireVisitorExplore637;
-window.AUREA_PUBLIC_EXPLORE_V637={version:'6.37',view:visitorExploreView637,dayData:vxActs637,type:vxType637};
+window.AUREA_PUBLIC_EXPLORE_V637={version:'6.37',view:visitorExploreView637,dayData:vxActs637,type:vxType637,image:vxImage637,dayDesign:vxDayDesign637};
 })();
 </script>
 
@@ -18181,13 +18185,17 @@ window.loginView=loginView638;
 try{loginView=loginView638;}catch(e){}
 
 function vxCard638(a,event=false){
-  return `<button type="button" class="vx638-card ${event?'event':''}" data-vx637-id="${esc(String(a.id))}"><div class="vx638-img"><img src="${esc(vxImage637(a))}" alt="" loading="lazy"><span class="vx638-type">${esc(vxType637(a))}</span></div><div class="vx638-body"><h4>${esc(a.name||'')}</h4><p>${esc(a.time||'')}${a.location?' · '+esc(a.location):''}</p></div></button>`;
+  const api=window.AUREA_PUBLIC_EXPLORE_V637||{};
+  const img=typeof api.image==='function'?api.image(a):(a&&a.image)||'';
+  const type=typeof api.type==='function'?api.type(a):'Entertainment';
+  return `<button type="button" class="vx638-card ${event?'event':''}" data-vx637-id="${esc(String(a.id))}"><div class="vx638-img"><img src="${esc(img)}" alt="" loading="lazy"><span class="vx638-type">${esc(type)}</span></div><div class="vx638-body"><h4>${esc(a.name||'')}</h4><p>${esc(a.time||'')}${a.location?' · '+esc(a.location):''}</p></div></button>`;
 }
 function visitorExploreView638(){
   const day=Number.isInteger(window.__PUBLIC_EXPLORE_DAY_V637)?window.__PUBLIC_EXPLORE_DAY_V637:todayIndex();
-  const acts=vxActs637(day),normal=acts.filter(a=>normCat(a)==='mAdult').slice(0,4),special=acts.filter(a=>normCat(a)!=='mAdult').slice(0,4);
+  const api=window.AUREA_PUBLIC_EXPLORE_V637||{};
+  const acts=typeof api.dayData==='function'?api.dayData(day):[],normal=acts.filter(a=>normCat(a)==='mAdult').slice(0,4),special=acts.filter(a=>normCat(a)!=='mAdult').slice(0,4);
   const hero=acts.find(a=>a.highlight)||special[0]||normal[0]||acts[0]||null;
-  const dd=vxDayDesign637(day),days=t('days')||['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dd=typeof api.dayDesign==='function'?api.dayDesign(day):{identity:'',theme:''},days=t('days')||['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   const shorts=t('daysShort')||['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],weekday=days[day]||'';
   const st=S.settings||{};
   const moments=acts.slice(0,3);
@@ -18196,8 +18204,8 @@ function visitorExploreView638(){
     <section class="vx638-intro"><div class="ey">Discover your holiday</div><h1>Find your next moment.</h1><p>A curated look at what is happening around the hotel. Sign in to unlock the full programme and your personal guest experience.</p></section>
     <nav class="vx638-days" aria-label="Programme days">${shorts.map((d,i)=>`<button type="button" class="vx638-day ${i===day?'on':''}" data-vx637-day="${i}">${esc(d)}</button>`).join('')}</nav>
     <section class="vx638-identity"><div><small>${esc(weekday)} identity</small><b>${esc(dd.identity||weekday)}</b></div>${dd.theme?`<div class="vx638-rest">Restaurant theme<strong>${esc(dd.theme)}</strong></div>`:'<div></div>'}</section>
-    ${hero?`<button type="button" class="vx638-feature" data-vx637-id="${esc(String(hero.id))}"><img src="${esc(vxImage637(hero))}" alt="" loading="eager"><span class="veil"></span><div class="content"><span class="badge">${esc(hero.highlight?'Highlight of the day':vxType637(hero))}</span><h2>${esc(hero.name||'')}</h2><div class="meta"><span>${ic('clock',13)} ${esc(hero.time||'')}</span>${hero.location?`<span>${ic('pin',13)} ${esc(hero.location)}</span>`:''}</div></div></button>`:`<div class="vx638-feature empty"><div class="content"><span class="badge">Programme preview</span><h2>${esc(weekday)}</h2><p>The public programme for this day is still being prepared. Choose another day or sign in for your complete stay experience.</p></div></div>`}
-    ${moments.length?`<div class="vx638-now">${moments.map(a=>`<div class="vx638-moment"><span>${esc(vxType637(a))}</span><b>${esc(a.name||'')}</b><em>${esc(a.time||'')}</em></div>`).join('')}</div>`:''}
+    ${hero?`<button type="button" class="vx638-feature" data-vx637-id="${esc(String(hero.id))}"><img src="${esc(typeof api.image==='function'?api.image(hero):(hero.image||''))}" alt="" loading="eager"><span class="veil"></span><div class="content"><span class="badge">${esc(hero.highlight?'Highlight of the day':(typeof api.type==='function'?api.type(hero):'Entertainment'))}</span><h2>${esc(hero.name||'')}</h2><div class="meta"><span>${ic('clock',13)} ${esc(hero.time||'')}</span>${hero.location?`<span>${ic('pin',13)} ${esc(hero.location)}</span>`:''}</div></div></button>`:`<div class="vx638-feature empty"><div class="content"><span class="badge">Programme preview</span><h2>${esc(weekday)}</h2><p>The public programme for this day is still being prepared. Choose another day or sign in for your complete stay experience.</p></div></div>`}
+    ${moments.length?`<div class="vx638-now">${moments.map(a=>`<div class="vx638-moment"><span>${esc(typeof api.type==='function'?api.type(a):'Entertainment')}</span><b>${esc(a.name||'')}</b><em>${esc(a.time||'')}</em></div>`).join('')}</div>`:''}
     <section class="vx638-section"><div class="vx638-head"><div><small>Move & play</small><h3>Activities</h3></div><span>${normal.length} preview${normal.length===1?'':'s'}</span></div>${normal.length?`<div class="vx638-scroll">${normal.map(a=>vxCard638(a)).join('')}</div>`:`<div class="vx638-empty">No daytime activity preview is published for ${esc(weekday)} yet.</div>`}</section>
     <section class="vx638-section"><div class="vx638-head"><div><small>After-hours moments</small><h3>Events & entertainment</h3></div><span>${special.length} preview${special.length===1?'':'s'}</span></div>${special.length?`<div class="vx638-scroll">${special.map(a=>vxCard638(a,true)).join('')}</div>`:`<div class="vx638-empty">No event, live music or show preview is published for ${esc(weekday)} yet.</div>`}</section>
     <section class="vx638-unlock"><div class="ey">Your private guest account</div><h3>Unlock the whole holiday.</h3><p>Explore is intentionally only a preview. Your guest account opens everything connected to your actual stay.</p><div class="vx638-perks"><span>✓ Full weekly programme</span><span>✓ Activity booking</span><span>✓ Event tickets</span><span>✓ Chat with the team</span><span>✓ My bookings</span><span>✓ Personal stay</span></div><button type="button" id="vx637-signin">Sign in / First visit</button></section>
@@ -18206,6 +18214,158 @@ function visitorExploreView638(){
 }
 window.visitorExploreView637=visitorExploreView638;
 window.AUREA_EXPERIENCE_V638={version:'6.38',login:loginView638,explore:visitorExploreView638};
+})();
+</script>
+
+
+<style id="aurea-public-first-v639-style">
+/* V6.39 — stable public-first entry + editable public experience */
+.vx639 .vx638-shell{padding-bottom:max(38px,calc(env(safe-area-inset-bottom) + 24px))}
+.vx639-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.vx639-brand{display:flex;align-items:center;gap:11px;min-width:0}.vx639-mark{width:43px;height:43px;border-radius:15px;border:1px solid var(--theme-line,var(--line));background:var(--theme-card,var(--card));display:grid;place-items:center;overflow:hidden;font:600 21px/1 var(--font-display);color:var(--theme-accent,var(--bronze))}.vx639-mark img{width:100%;height:100%;object-fit:cover}.vx639-brand b{display:block;font-size:12px;color:var(--theme-text,var(--ink))}.vx639-brand span{display:block;font-size:8px;color:var(--theme-muted,var(--muted));margin-top:2px;text-transform:uppercase;letter-spacing:.09em}
+.vx639-signin{border:1px solid var(--theme-line,var(--line));background:var(--theme-card,var(--card));color:var(--theme-text,var(--ink));border-radius:999px;padding:10px 14px;font-size:10px;font-weight:850}
+.vx639-intro{margin:7px 0 19px}.vx639-intro .ey{font-size:8px;letter-spacing:.17em;text-transform:uppercase;color:var(--theme-accent,var(--bronze));font-weight:900}.vx639-intro h1{font:600 clamp(36px,9vw,54px)/.94 var(--font-display);letter-spacing:-.035em;margin:8px 0 11px;color:var(--theme-text,var(--ink));max-width:480px}.vx639-intro p{font-size:11px;line-height:1.6;color:var(--theme-muted,var(--muted));max-width:500px}
+.vx639-days{display:flex;gap:8px;overflow:auto;padding:1px 0 13px;scrollbar-width:none}.vx639-days::-webkit-scrollbar{display:none}.vx639-day{flex:0 0 61px;height:53px;border-radius:17px;border:1px solid var(--theme-line,var(--line));background:var(--theme-card,var(--card));color:var(--theme-muted,var(--muted));font-size:10px;font-weight:850}.vx639-day.on{background:var(--theme-primary,var(--espresso));border-color:var(--theme-primary,var(--espresso));color:var(--theme-button-text,#fff)}
+.vx639-identity{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:15px 16px;border-radius:20px;border:1px solid var(--theme-line,var(--line));background:var(--theme-soft,var(--soft));margin-bottom:14px}.vx639-identity small,.vx639-identity span{display:block;font-size:7.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--theme-muted,var(--muted))}.vx639-identity b{display:block;font:600 23px/1 var(--font-display);margin-top:4px}.vx639-identity .rest{text-align:right}.vx639-identity .rest strong{display:block;font-size:10px;margin-top:4px}
+.vx639-feature{position:relative;width:100%;height:330px;border:0;border-radius:27px;overflow:hidden;background:var(--theme-inverse-bg,var(--espresso));padding:0;text-align:left;margin:0 0 18px}.vx639-feature img{width:100%;height:100%;object-fit:cover}.vx639-feature .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,10,7,.03) 20%,rgba(16,10,7,.78) 100%)}.vx639-feature .copy{position:absolute;left:18px;right:18px;bottom:18px;color:#fff}.vx639-feature .badge{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.91);color:#31231a;font-size:7.5px;text-transform:uppercase;letter-spacing:.12em;font-weight:900}.vx639-feature h2{font:600 38px/1 var(--font-display);margin:10px 0 7px;color:#fff}.vx639-feature .meta{display:flex;gap:13px;flex-wrap:wrap;font-size:10px;opacity:.9}.vx639-feature.empty{height:auto;min-height:145px;padding:20px;background:var(--theme-soft,var(--soft));border:1px solid var(--theme-line,var(--line));display:flex;align-items:end}.vx639-feature.empty .copy{position:static;color:var(--theme-text,var(--ink))}.vx639-feature.empty h2{color:inherit}.vx639-feature.empty p{font-size:10px;color:var(--theme-muted,var(--muted));line-height:1.5;margin:7px 0 0}
+.vx639-ribbon{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:23px}.vx639-ribbon div{padding:11px;border-radius:15px;background:var(--theme-card,var(--card));border:1px solid var(--theme-line,var(--line));min-width:0}.vx639-ribbon span{display:block;font-size:7px;text-transform:uppercase;letter-spacing:.08em;color:var(--theme-muted,var(--muted))}.vx639-ribbon b{display:block;font-size:10px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vx639-ribbon em{display:block;font-style:normal;font-size:8px;color:var(--theme-accent,var(--bronze));margin-top:2px}
+.vx639-section{margin:23px 0}.vx639-sechead{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:11px}.vx639-sechead small{display:block;font-size:7.5px;text-transform:uppercase;letter-spacing:.15em;color:var(--theme-accent,var(--bronze));font-weight:900}.vx639-sechead h3{font:600 29px/1 var(--font-display);margin:5px 0 0}.vx639-sechead>span{font-size:8px;color:var(--theme-muted,var(--muted))}
+.vx639-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.vx639-card{border:1px solid var(--theme-line,var(--line));border-radius:20px;background:var(--theme-card,var(--card));overflow:hidden;text-align:left;padding:0;color:var(--theme-text,var(--ink));min-width:0}.vx639-card:first-child:nth-last-child(odd){grid-column:1/-1}.vx639-img{height:135px;position:relative;background:var(--theme-soft,var(--soft))}.vx639-img img{width:100%;height:100%;object-fit:cover}.vx639-type{position:absolute;left:9px;bottom:9px;padding:5px 7px;border-radius:999px;background:rgba(32,22,16,.82);color:#fff;font-size:6.5px;text-transform:uppercase;letter-spacing:.09em;font-weight:900}.vx639-body{padding:11px}.vx639-body h4{font:600 20px/1.05 var(--font-display);margin:0;color:var(--theme-text,var(--ink))}.vx639-body p{font-size:8.5px;color:var(--theme-muted,var(--muted));margin:6px 0 0;line-height:1.4}.vx639-empty{padding:16px;border:1px dashed var(--theme-line,var(--line));border-radius:18px;color:var(--theme-muted,var(--muted));font-size:10px;line-height:1.5}
+.vx639-unlock{margin:28px 0 8px;padding:21px;border-radius:26px;background:linear-gradient(145deg,var(--theme-inverse-bg,var(--espresso)),color-mix(in srgb,var(--theme-inverse-bg,var(--espresso)) 78%,var(--theme-accent,var(--bronze))));color:var(--theme-inverse-text,#fff)}.vx639-unlock .ey{font-size:7.5px;text-transform:uppercase;letter-spacing:.15em;opacity:.65}.vx639-unlock h3{font:600 31px/1 var(--font-display);margin:7px 0;color:inherit}.vx639-unlock p{font-size:10px;line-height:1.55;opacity:.72}.vx639-perks{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:14px 0}.vx639-perks span{font-size:8.5px;padding:8px 9px;border:1px solid rgba(255,255,255,.12);border-radius:12px}.vx639-unlock button{width:100%;min-height:47px;border:0;border-radius:15px;background:var(--theme-accent,var(--bronze));color:#1d140e;font-weight:900}.vx639-privacy{text-align:center;font-size:7.5px;color:var(--theme-muted,var(--muted));line-height:1.5;padding:7px 13px 0}
+/* Manager public-copy editor */
+.pub639-preview{padding:16px;border-radius:21px;background:var(--theme-soft,var(--soft));border:1px solid var(--theme-line,var(--line));margin-bottom:14px}.pub639-preview small{display:block;text-transform:uppercase;letter-spacing:.12em;font-size:8px;color:var(--theme-accent,var(--bronze));font-weight:900}.pub639-preview h3{font:600 28px/1.05 var(--font-display);margin:7px 0}.pub639-preview p{font-size:10px;color:var(--theme-muted,var(--muted));line-height:1.5;margin:0}.pub639-group{margin-top:14px;padding-top:14px;border-top:1px solid var(--theme-line,var(--line))}.pub639-group h4{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--theme-muted,var(--muted));margin:0 0 8px}.pub639-group textarea{min-height:88px}
+@media(max-width:390px){.vx639-feature{height:285px}.vx639-grid{grid-template-columns:1fr 1fr}.vx639-img{height:116px}.vx639-perks{grid-template-columns:1fr}.vx639-ribbon{grid-template-columns:1fr}}
+</style>
+
+
+<script id="aurea-public-first-v639-script">
+(()=>{
+'use strict';
+if(window.__AUREA_PUBLIC_FIRST_V639)return;
+window.__AUREA_PUBLIC_FIRST_V639=true;
+
+const PUBKEY639='publicExperienceV639';
+const PUBDEFAULT639={
+  exploreEyebrow:'Discover your holiday',
+  exploreTitle:'Find your next moment.',
+  exploreIntro:'A curated look at what is happening around the hotel. Sign in to unlock the full programme and your personal guest experience.',
+  activitiesEyebrow:'Move & play',activitiesTitle:'Activities',
+  eventsEyebrow:'After-hours moments',eventsTitle:'Events & entertainment',
+  unlockEyebrow:'Your private guest account',unlockTitle:'Unlock the whole holiday.',
+  unlockText:'Explore is intentionally only a preview. Your guest account opens everything connected to your actual stay.',
+  signinEyebrow:'Your hotel entertainment',signinTitle:'Welcome to your stay.',
+  signinText:'Sign in for the complete programme, bookings, tickets, chat and everything connected to your stay.',
+  firstEyebrow:'Your hotel entertainment',firstTitle:'Create your holiday access.',
+  firstText:'Set up your private guest access in a few simple steps. Your stay, bookings and messages remain connected only to you.',
+  exploreCtaTitle:'Explore the entertainment',exploreCtaText:'See a curated programme preview before signing in',
+  teamEyebrow:'Team workspace',teamTitle:'Run the day with clarity.',teamText:'Secure access for the Entertainment Team and Manager.'
+};
+function pubText639(){return {...PUBDEFAULT639,...((S.settings&&S.settings[PUBKEY639])||{})};}
+function img639(a){
+  const api=window.AUREA_PUBLIC_EXPLORE_V637||{};
+  if(typeof api.image==='function')return api.image(a);
+  if(a&&a.image)return a.image;
+  try{const c=normCat(a||{});if(c==='mEvents'||c==='eParty')return IMG.party||IMG.show;if(c==='eLive'||c==='eBefore'||c==='eAfter')return IMG.live||IMG.show;if(c==='eShow'||c==='eKidsStage')return IMG.show;return IMG.activity||IMG.yoga||IMG.show;}catch(e){return'';}
+}
+function type639(a){const api=window.AUREA_PUBLIC_EXPLORE_V637||{};if(typeof api.type==='function')return api.type(a);try{const c=normCat(a||{});if(c==='mAdult')return'Activity';if(c==='mEvents')return'Day Event';if(c==='eLive'||c==='eBefore'||c==='eAfter')return'Live Music';if(c==='eShow'||c==='eKidsStage')return'Show';if(c==='eParty')return'Party';}catch(e){}return'Entertainment';}
+function acts639(day){const api=window.AUREA_PUBLIC_EXPLORE_V637||{};if(typeof api.dayData==='function')return api.dayData(day);return(S.activities||[]).filter(a=>a&&+a.day===+day).slice().sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));}
+function design639(day){const api=window.AUREA_PUBLIC_EXPLORE_V637||{};if(typeof api.dayDesign==='function')return api.dayDesign(day);let identity='',theme='';try{const raw=S.settings&&S.settings.guestProgramDays&&S.settings.guestProgramDays[String(day)];if(raw){identity=String(raw.dayName||raw.identity||'').trim();theme=String(raw.restaurantTheme||raw.theme||'').trim();}}catch(e){}return{identity,theme};}
+function card639(a){return `<button type="button" class="vx639-card" data-vx637-id="${esc(String(a.id))}"><div class="vx639-img">${img639(a)?`<img src="${esc(img639(a))}" alt="" loading="lazy">`:''}<span class="vx639-type">${esc(type639(a))}</span></div><div class="vx639-body"><h4>${esc(a.name||'')}</h4><p>${esc(a.time||'')}${a.location?' · '+esc(a.location):''}</p></div></button>`;}
+
+function visitorExploreView639(){
+  const tx=pubText639(),day=Number.isInteger(window.__PUBLIC_EXPLORE_DAY_V637)?window.__PUBLIC_EXPLORE_DAY_V637:todayIndex();
+  const all=acts639(day),normal=all.filter(a=>normCat(a)==='mAdult').slice(0,4),special=all.filter(a=>normCat(a)!=='mAdult').slice(0,4);
+  const hero=all.find(a=>a.highlight)||special[0]||normal[0]||all[0]||null;
+  const dd=design639(day),days=t('days')||['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],shorts=t('daysShort')||['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],weekday=days[day]||'';
+  const st=S.settings||{},moments=all.slice(0,3);
+  return `<main class="vx638 vx639 fadein"><div class="vx638-shell">
+    <div class="vx639-topline"><div class="vx639-brand"><div class="vx639-mark">${st.logo?`<img src="${esc(st.logo)}" alt="">`:esc(String(st.name||'E').trim().charAt(0).toUpperCase())}</div><div><b>${esc(st.name||'Entertainment')}</b><span>Public programme preview</span></div></div><button type="button" class="vx639-signin" id="vx637-signin-top">Sign in</button></div>
+    <section class="vx639-intro"><div class="ey">${esc(tx.exploreEyebrow)}</div><h1>${esc(tx.exploreTitle)}</h1><p>${esc(tx.exploreIntro)}</p></section>
+    <nav class="vx639-days" aria-label="Programme days">${shorts.map((d,i)=>`<button type="button" class="vx639-day ${i===day?'on':''}" data-vx637-day="${i}">${esc(d)}</button>`).join('')}</nav>
+    ${(dd.identity||dd.theme)?`<section class="vx639-identity"><div><small>${esc(weekday)} identity</small><b>${esc(dd.identity||weekday)}</b></div>${dd.theme?`<div class="rest"><span>Restaurant theme</span><strong>${esc(dd.theme)}</strong></div>`:''}</section>`:''}
+    ${hero?`<button type="button" class="vx639-feature" data-vx637-id="${esc(String(hero.id))}">${img639(hero)?`<img src="${esc(img639(hero))}" alt="" loading="eager">`:''}<span class="veil"></span><div class="copy"><span class="badge">${esc(hero.highlight?'Highlight of the day':type639(hero))}</span><h2>${esc(hero.name||'')}</h2><div class="meta"><span>${ic('clock',13)} ${esc(hero.time||'')}</span>${hero.location?`<span>${ic('pin',13)} ${esc(hero.location)}</span>`:''}</div></div></button>`:`<div class="vx639-feature empty"><div class="copy"><span class="badge">Programme preview</span><h2>${esc(weekday)}</h2><p>The public programme for this day is still being prepared. Choose another day or sign in for your complete stay experience.</p></div></div>`}
+    ${moments.length?`<div class="vx639-ribbon">${moments.map(a=>`<div><span>${esc(type639(a))}</span><b>${esc(a.name||'')}</b><em>${esc(a.time||'')}</em></div>`).join('')}</div>`:''}
+    <section class="vx639-section"><div class="vx639-sechead"><div><small>${esc(tx.activitiesEyebrow)}</small><h3>${esc(tx.activitiesTitle)}</h3></div><span>${normal.length} preview${normal.length===1?'':'s'}</span></div>${normal.length?`<div class="vx639-grid">${normal.map(card639).join('')}</div>`:`<div class="vx639-empty">No daytime activity preview is published for ${esc(weekday)} yet.</div>`}</section>
+    <section class="vx639-section"><div class="vx639-sechead"><div><small>${esc(tx.eventsEyebrow)}</small><h3>${esc(tx.eventsTitle)}</h3></div><span>${special.length} preview${special.length===1?'':'s'}</span></div>${special.length?`<div class="vx639-grid">${special.map(card639).join('')}</div>`:`<div class="vx639-empty">No event, live music or show preview is published for ${esc(weekday)} yet.</div>`}</section>
+    <section class="vx639-unlock"><div class="ey">${esc(tx.unlockEyebrow)}</div><h3>${esc(tx.unlockTitle)}</h3><p>${esc(tx.unlockText)}</p><div class="vx639-perks"><span>✓ Full weekly programme</span><span>✓ Activity booking</span><span>✓ Event tickets</span><span>✓ Chat with the team</span><span>✓ My bookings</span><span>✓ Personal stay</span></div><button type="button" id="vx637-signin">Sign in / First visit</button></section>
+    <div class="vx639-privacy">Public Explore uses programme information only. Private guest, room, booking, ticket and message data never appears here.</div>
+  </div></main>`;
+}
+window.visitorExploreView637=visitorExploreView639;
+
+/* Keep the old detail behavior, but make leaving Explore explicit so render() does not send the user back. */
+function openDetail639(a){
+  if(!a)return;
+  const wrap=baseModal(`<div class="vx637-detail">${img639(a)?`<div class="vx637-detail-photo"><img src="${esc(img639(a))}" alt=""></div>`:''}<span class="vx637-cardtype" style="position:static;display:inline-flex">${esc(type639(a))}</span><h3>${esc(a.name||'')}</h3><div class="meta">${ic('clock',13)} ${esc(a.time||'')}${a.location?' · '+ic('pin',13)+' '+esc(a.location):''}</div>${a.desc?`<p>${esc(a.desc)}</p>`:''}<div class="vx637-detail-lock">Sign in to see the complete programme and booking options for your stay.</div><button class="btn" id="vx639-detail-signin">Sign in to continue</button><button class="btn ghost" id="vx639-detail-close">Close</button></div>`);
+  wrap.querySelector('#vx639-detail-close').onclick=()=>wrap.remove();
+  wrap.querySelector('#vx639-detail-signin').onclick=()=>{wrap.remove();window.__PUBLIC_EXPLORE_EXITED_V639=true;window.__PUBLIC_EXPLORE_V637=false;loginMode='guest';guestMode='signin';render();};
+}
+function wireExplore639(){
+  const leave=mode=>{window.__PUBLIC_EXPLORE_EXITED_V639=true;window.__PUBLIC_EXPLORE_V637=false;loginMode='guest';guestMode=mode;render();};
+  const a=document.querySelector('#vx637-signin-top');if(a)a.onclick=()=>leave('signin');
+  const b=document.querySelector('#vx637-signin');if(b)b.onclick=()=>leave('new');
+  document.querySelectorAll('[data-vx637-day]').forEach(x=>x.onclick=()=>{window.__PUBLIC_EXPLORE_DAY_V637=+x.dataset.vx637Day;render();});
+  document.querySelectorAll('[data-vx637-id]').forEach(x=>x.onclick=()=>openDetail639((S.activities||[]).find(a=>String(a.id)===String(x.dataset.vx637Id))));
+}
+window.wireVisitorExplore637=wireExplore639;
+
+/* Login view: same authentication controls/IDs, public text comes from Manager settings. */
+function loginView639(){
+  const st=S.settings||{},tx=pubText639();
+  const logo=st.logo?`<img src="${esc(st.logo)}" alt="">`:esc(String(st.name||'E').trim().charAt(0).toUpperCase());
+  const languages=`<div class="login638-langs">${LANGS.map(([l,label])=>`<button type="button" data-lang="${l}" class="${S.lang===l?'on':''}">${label}</button>`).join('')}</div>`;
+  if(loginMode==='guest'){
+    const remRow=`<label class="remrow"><input type="checkbox" id="cb-rem" ${rememberMe?'checked':''}> ${t('rememberMe')}</label>`;
+    const dots=`<div class="wz-dots">${[0,1,2,3,4,5,6].map(i=>`<span class="wz-dot ${wiz.step===i?'on':wiz.step>i?'done':''}"></span>`).join('')}</div>`;
+    const backLink=wiz.step>0?`<button class="wz-back" id="wz-back">${ic('back',14)} ${t('backStep')}</button>`:'';
+    let stepHtml='';
+    if(wiz.step===0) stepHtml=`<label>${t('room')}</label><button class="pickfield" id="wz-pick">${wiz.room?`<b>${esc(wiz.room)}</b>`:t('chooseRoom')}<span class="pf-ch">${ic('back',16)}</span></button>`;
+    else if(wiz.step===1) stepHtml=`<label>${t('nationality')}</label><button class="pickfield" id="wz-pick">${wiz.nat?`<b>${esc(wiz.nat)}</b>`:t('chooseNat')}<span class="pf-ch">${ic('back',16)}</span></button>`;
+    else if(wiz.step===2) stepHtml=`<label>${t('name')}</label><input id="wz-in" value="${esc(wiz.name)}" placeholder="${t('name')}">`;
+    else if(wiz.step===3) stepHtml=`<label>${t('phone')}</label><input id="wz-in" inputmode="tel" value="${esc(wiz.phone)}" placeholder="+49 ...">`;
+    else if(wiz.step===4) stepHtml=`<label>${t('arrival')}</label><input id="wz-in" type="date" value="${esc(wiz.arr)}">`;
+    else if(wiz.step===5) stepHtml=`<label>${t('departure')}</label><input id="wz-in" type="date" value="${esc(wiz.dep)}" min="${esc(wiz.arr)}">`;
+    else stepHtml=`<label>${t('user')}</label><input id="wz-user" autocapitalize="none" value="${esc(wiz.username||wiz.room)}"><label>${t('pass')}</label><input id="wz-pass" autocapitalize="none" value="${esc(wiz.password)}" placeholder="••••••">${remRow}`;
+    const fields=guestMode==='new'?`${dots}${stepHtml}${wiz.step<6?`<button class="btn" id="wz-next">${t('nextStep')}</button>`:`<button class="btn" id="wz-create">${t('createAccount')}</button>`}${backLink}`:`<label>${t('user')} · ${t('room')}</label><input id="f-room" inputmode="numeric" value="${esc(wiz.room)}" placeholder="4215"><label>${t('pass')}</label><input id="f-gpass" type="password" placeholder="••••••">${remRow}`;
+    const ey=guestMode==='new'?tx.firstEyebrow:tx.signinEyebrow,title=guestMode==='new'?tx.firstTitle:tx.signinTitle,desc=guestMode==='new'?tx.firstText:tx.signinText;
+    return `<div class="login-wrap login638 fadein"><div class="login638-shell"><div class="login638-top"><div class="login638-brand"><div class="login638-mark">${logo}</div><div class="login638-brandtxt"><b>${esc(st.name||'Entertainment')}</b><span>${esc(st.subtitle||t('appSub'))}</span></div></div><button type="button" class="login638-teamtop" id="btn-teamlink">${ic('users',14)} ${t('otherUsers')}</button></div><section class="login638-copy"><div class="ey">${esc(ey)}</div><h1>${esc(title)}</h1><p>${esc(desc)}</p></section>${languages}<div class="login638-tabs"><button data-gmode="signin" class="${guestMode==='signin'?'on':''}">${t('signin')}</button><button data-gmode="new" class="${guestMode==='new'?'on':''}">${t('firstVisit')}</button></div><div class="login638-card">${fields}${guestMode==='signin'?`<button class="btn" id="btn-login">${t('signin')}</button>`:''}<div class="err" id="login-err"></div>${!REMOTE?`<p class="hint">${t('demoNote')}</p>`:''}</div><button type="button" class="login638-explore" id="btn-public-explore"><span class="ico">${ic('sparkle',18)}</span><span class="txt"><b>${esc(tx.exploreCtaTitle)}</b><small>${esc(tx.exploreCtaText)}</small></span><span class="go">${ic('back',17)}</span></button><div class="login638-trust">Public Explore never shows room, booking, ticket, message or guest-account information.</div></div></div>`;
+  }
+  return `<div class="login-wrap login638 fadein"><div class="login638-shell"><div class="login638-top"><div class="login638-brand"><div class="login638-mark">${logo}</div><div class="login638-brandtxt"><b>${esc(st.name||'Entertainment')}</b><span>${esc(st.subtitle||t('appSub'))}</span></div></div><button type="button" class="login638-teamtop" id="btn-guestlink">${ic('back',13)} ${t('backToGuest')}</button></div><section class="login638-copy"><div class="ey">${esc(tx.teamEyebrow)}</div><h1>${esc(tx.teamTitle)}</h1><p>${esc(tx.teamText)}</p></section>${languages}<div class="login638-tabs">${['staff','manager'].map(r=>`<button data-role="${r}" class="${loginRole===r?'on':''}">${t(r)}</button>`).join('')}</div><div class="login638-card"><label>${t('user')}</label><input id="f-user" autocapitalize="none" placeholder="${loginRole}"><label>${t('pass')}</label><input id="f-pass" type="password" placeholder="••••"><button class="btn" id="btn-login">${t('signin')}</button><div class="err" id="login-err"></div></div><button type="button" class="login638-explore" id="btn-public-explore"><span class="ico">${ic('sparkle',18)}</span><span class="txt"><b>${esc(tx.exploreCtaTitle)}</b><small>${esc(tx.exploreCtaText)}</small></span><span class="go">${ic('back',17)}</span></button></div></div>`;
+}
+window.loginView=loginView639;try{loginView=loginView639;}catch(e){}
+
+/* Override login wiring only to remember whether the visitor deliberately left Explore. */
+const wireLoginBefore639=window.wireLogin||wireLogin;
+window.wireLogin=wireLogin=function(){
+  wireLoginBefore639();
+  const px=document.querySelector('#btn-public-explore');if(px)px.onclick=()=>{window.__PUBLIC_EXPLORE_EXITED_V639=false;window.__PUBLIC_EXPLORE_V637=true;window.__PUBLIC_EXPLORE_DAY_V637=todayIndex();render();};
+};
+
+function setPublicExperienceView639(){
+  const x=pubText639();
+  const f=(id,label,val,area=false)=>`<label>${esc(label)}</label>${area?`<textarea id="${id}" rows="3">${esc(val)}</textarea>`:`<input id="${id}" value="${esc(val)}">`}`;
+  return `<div class="screen fadein">${topBar('Public experience',S.session.name)}${hubBack()}<div class="card" style="padding:16px"><div class="pub639-preview"><small>Live public copy</small><h3>${esc(x.exploreTitle)}</h3><p>${esc(x.exploreIntro)}</p></div><div class="pub639-group"><h4>Explore page</h4>${f('pub-eey','Eyebrow',x.exploreEyebrow)}${f('pub-et','Main headline',x.exploreTitle)}${f('pub-ei','Introduction',x.exploreIntro,true)}${f('pub-aey','Activities eyebrow',x.activitiesEyebrow)}${f('pub-at','Activities title',x.activitiesTitle)}${f('pub-ve','Events eyebrow',x.eventsEyebrow)}${f('pub-vt','Events title',x.eventsTitle)}${f('pub-ue','Unlock eyebrow',x.unlockEyebrow)}${f('pub-ut','Unlock headline',x.unlockTitle)}${f('pub-ui','Unlock message',x.unlockText,true)}</div><div class="pub639-group"><h4>Guest sign in</h4>${f('pub-se','Sign-in eyebrow',x.signinEyebrow)}${f('pub-st','Sign-in headline',x.signinTitle)}${f('pub-si','Sign-in description',x.signinText,true)}${f('pub-fe','First visit eyebrow',x.firstEyebrow)}${f('pub-ft','First visit headline',x.firstTitle)}${f('pub-fi','First visit description',x.firstText,true)}${f('pub-ct','Explore button title',x.exploreCtaTitle)}${f('pub-ci','Explore button text',x.exploreCtaText,true)}</div><div class="pub639-group"><h4>Team access</h4>${f('pub-te','Eyebrow',x.teamEyebrow)}${f('pub-tt','Headline',x.teamTitle)}${f('pub-ti','Description',x.teamText,true)}</div><button class="btn" id="pub639-save" style="margin-top:16px">${t('save')}</button><button class="btn ghost" id="pub639-reset" style="margin-top:8px">Reset default text</button></div></div>`;
+}
+window.setPublicExperienceView639=setPublicExperienceView639;
+
+const wireBefore639=window.wireCommon;
+window.wireCommon=wireCommon=function(){
+  wireBefore639();
+  const save=document.querySelector('#pub639-save');if(save)save.onclick=async()=>{
+    if(save.disabled)return;save.disabled=true;
+    const val=id=>String((document.querySelector('#'+id)||{}).value||'').trim();
+    const next={
+      exploreEyebrow:val('pub-eey'),exploreTitle:val('pub-et'),exploreIntro:val('pub-ei'),activitiesEyebrow:val('pub-aey'),activitiesTitle:val('pub-at'),eventsEyebrow:val('pub-ve'),eventsTitle:val('pub-vt'),unlockEyebrow:val('pub-ue'),unlockTitle:val('pub-ut'),unlockText:val('pub-ui'),signinEyebrow:val('pub-se'),signinTitle:val('pub-st'),signinText:val('pub-si'),firstEyebrow:val('pub-fe'),firstTitle:val('pub-ft'),firstText:val('pub-fi'),exploreCtaTitle:val('pub-ct'),exploreCtaText:val('pub-ci'),teamEyebrow:val('pub-te'),teamTitle:val('pub-tt'),teamText:val('pub-ti')
+    };
+    try{await DB.saveSettings({...S.settings,[PUBKEY639]:next});toastOk(t('saved'));render();}catch(e){console.error('public text save',e);save.disabled=false;toastErr(t('errSave'));}
+  };
+  const reset=document.querySelector('#pub639-reset');if(reset)reset.onclick=async()=>{try{await DB.saveSettings({...S.settings,[PUBKEY639]:{...PUBDEFAULT639}});toastOk(t('saved'));render();}catch(e){toastErr(t('errSave'));}};
+};
+
+/* If the parser reached V6.39 before the asynchronous DB startup has painted, Explore becomes first screen. If it painted Login already, repaint once. */
+if(!S.session && window.__PUBLIC_EXPLORE_EXITED_V639!==true){window.__PUBLIC_EXPLORE_V637=true;window.__PUBLIC_EXPLORE_DAY_V637=Number.isInteger(window.__PUBLIC_EXPLORE_DAY_V637)?window.__PUBLIC_EXPLORE_DAY_V637:todayIndex();setTimeout(()=>{try{if(!S.session)render();}catch(e){console.error('V6.39 public-first render',e)}},0);}
+
+window.AUREA_PUBLIC_FIRST_V639={version:'6.39',view:visitorExploreView639,text:pubText639,settingsKey:PUBKEY639};
 })();
 </script>
 
