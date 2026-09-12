@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Stability Guest Access V6.40</title>
+<title>Entertainment · AUREA Auth Stability V6.41</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -18470,8 +18470,18 @@ function validatePhone640(key,local){
 function activeRoom640(room){return (S.rooms||[]).find(r=>String(r.room)===String(room)&&r.active!==false);}
 function publicText640(){return window.AUREA_PUBLIC_FIRST_V639&&window.AUREA_PUBLIC_FIRST_V639.text?window.AUREA_PUBLIC_FIRST_V639.text():{};}
 
+/* V6.41 AUTH FIX: capture the working V6.39 login BEFORE replacing it.
+   V6.40 captured this after assigning loginView640, which made Team/Manager
+   login recurse into itself forever. */
+const loginViewBefore640=window.loginView||loginView;
+const wireLoginBefore640=window.wireLogin||wireLogin;
+
 function loginView640(){
-  if(loginMode!=='guest') return loginViewBefore640();
+  if(loginMode!=='guest'){
+    if(typeof loginViewBefore640==='function' && loginViewBefore640!==loginView640) return loginViewBefore640();
+    console.error('Team login fallback: previous login renderer unavailable');
+    return `<div class="login-wrap fadein"><div class="login-card"><h3>Team access</h3><label>${t('user')}</label><input id="f-user" autocapitalize="none"><label>${t('pass')}</label><input id="f-pass" type="password"><button class="btn" id="btn-login">${t('signin')}</button><div class="err" id="login-err"></div><button class="btn ghost" id="btn-guestlink">${t('backToGuest')}</button></div></div>`;
+  }
   const st=S.settings||{},tx=publicText640();
   const logo=st.logo?`<img src="${esc(st.logo)}" alt="">`:esc(String(st.name||'E').trim().charAt(0).toUpperCase());
   const languages=`<div class="login638-langs">${LANGS.map(([l,label])=>`<button type="button" data-lang="${l}" class="${S.lang===l?'on':''}">${label}</button>`).join('')}</div>`;
@@ -18503,8 +18513,6 @@ function loginView640(){
 }
 window.loginView640=loginView640;window.loginView=loginView640;try{loginView=loginView640}catch(e){}
 
-const loginViewBefore640=window.loginView||loginView;
-const wireLoginBefore640=window.wireLogin||wireLogin;
 window.wireLogin=wireLogin=function(){
   wireLoginBefore640();
   if(loginMode!=='guest'||guestMode!=='new')return;
@@ -18578,7 +18586,7 @@ window.managerView=managerView=function(){
 window.addEventListener('error',e=>{if(e&&e.error)console.error('AUREA runtime error',e.error);});
 window.addEventListener('unhandledrejection',e=>console.error('AUREA unhandled promise',e.reason));
 
-window.AUREA_V640={version:'6.40',validatePhone:validatePhone640,guestBadge:guestBadge640,markSeen:markGuestSeen640};
+window.AUREA_V640={version:'6.41',validatePhone:validatePhone640,guestBadge:guestBadge640,markSeen:markGuestSeen640};
 })();
 </script>
 
