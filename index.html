@@ -7842,7 +7842,7 @@ function managerView(){
   if(S.tab==="req") return requirementsView();
   if(S.tab==="program"){
     const inner = S.sub.program==="tickets" ? managerTicketsInner()
-      : S.sub.program==="performance" ? performanceAttendanceInner636()
+      : S.sub.program==="performance" ? ((typeof window.performanceAttendanceInner636==="function") ? window.performanceAttendanceInner636() : performanceAttendanceInner636())
       : managerActsInner();
     return `<div class="screen fadein">
       ${topBar(t("manage"),S.session.name)}
@@ -10833,7 +10833,7 @@ function wireCommon(){
   const c2=$("#crumb-cats"); if(c2) c2.onclick=()=>{S.cat=null;render();};
   document.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{S.day=+b.dataset.day;render();});
   document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{
-    const [g,v]=b.dataset.sub.split(":"); S.sub[g]=v; S.chatRoom=null; render();
+    const [g,v]=b.dataset.sub.split(":"); S.sub[g]=v; if(g==="program") S.tab="program"; else if(g==="team") S.tab="team"; else if(g==="guests") S.tab="guests"; S.chatRoom=null; render();
   });
   const mn=$("#btn-menu"); if(mn) mn.onclick=openMenuDrawer;
   const nb=$("#btn-notes"); if(nb) nb.onclick=openNotesModal;
@@ -18742,5 +18742,18 @@ window.AUREA_PERFORMANCE_OPERATIONS_V643={version:'6.43',rows,dataset,print,meta
 })();
 </script>
 
+
+<script id="aurea-attendance-route-v645">
+(()=>{
+'use strict';
+if(window.__AUREA_ATTENDANCE_ROUTE_V645)return; window.__AUREA_ATTENDANCE_ROUTE_V645=true;
+/* Direct navigation guard: the performance tab must always remain inside Program. */
+document.addEventListener('click',function(e){
+  const b=e.target&&e.target.closest?e.target.closest('[data-sub="program:performance"]'):null;
+  if(!b)return;
+  if(typeof S==='object'&&S){ S.tab='program'; S.sub=S.sub||{}; S.sub.program='performance'; S.chatRoom=null; }
+},true);
+})();
+</script>
 </body>
 </html>
