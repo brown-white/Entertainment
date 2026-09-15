@@ -18958,5 +18958,104 @@ window.AUREA_PERFORMANCE_V646={version:'6.46',componentStatus:cstatus,exportData
 })();
 </script>
 
+
+<style id="aurea-performance-v647-style">
+.pf647-suppliers{margin:12px 0;padding:16px;border:1px solid var(--theme-line,var(--line));border-radius:22px;background:var(--theme-card,var(--card))}
+.pf647-suppliers-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}
+.pf647-suppliers-head h4{margin:0;font-family:var(--font-head,Georgia,serif);font-size:20px}.pf647-suppliers-head p{margin:4px 0 0;font-size:9px;color:var(--theme-muted,var(--muted));line-height:1.45}
+.pf647-addrow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px}.pf647-addrow input{min-height:46px}
+.pf647-supplier-list{display:grid;gap:8px}.pf647-supplier-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 12px;border:1px solid var(--theme-line,var(--line));border-radius:15px;background:var(--theme-soft,var(--soft))}
+.pf647-supplier-row b{display:block;font-size:11px}.pf647-supplier-row span{font-size:8px;color:var(--theme-muted,var(--muted))}
+.pf647-supplier-actions{display:flex;gap:6px}.pf647-supplier-actions button{min-height:34px;padding:7px 10px;border-radius:10px}
+.pf647-provider-select{margin-top:9px}.pf647-provider-select label{display:block;font-size:7px;text-transform:uppercase;letter-spacing:.11em;font-weight:900;color:var(--theme-muted,var(--muted));margin-bottom:5px}
+.pf647-provider-select select{width:100%;min-height:42px;border:1px solid var(--theme-line,var(--line));border-radius:12px;background:var(--theme-card,var(--card));color:var(--theme-text,var(--ink));padding:8px 10px}
+.pf647-unsaved{font-size:8px;color:var(--theme-accent,var(--accent));margin-top:7px;font-weight:800}
+@media(max-width:430px){.pf647-addrow{grid-template-columns:1fr}.pf647-suppliers-head{display:block}}
+</style>
+<script id="aurea-performance-v647-script">
+(()=>{'use strict';
+if(window.__AUREA_PERFORMANCE_V647)return;window.__AUREA_PERFORMANCE_V647=true;
+
+const REGKEY='performanceSupplierRegistryV647', REGLOCAL='entapp_performance_supplier_registry_v647';
+const CTRLKEY='performanceControlV643', CTRLLOCAL='entapp_performance_control_v643';
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=x=>String(x||'').trim().replace(/\s+/g,' ');
+const readJSON=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+const registry=()=>{
+ const remote=(S.settings&&S.settings[REGKEY])||{}, local=readJSON(REGLOCAL)||{};
+ const x=(+local._updatedAt||0)>(+remote._updatedAt||0)?local:remote;
+ let names=Array.isArray(x.names)?x.names.map(norm).filter(Boolean):[];
+ // Import supplier names already used in existing performance records, so nothing is lost.
+ try{
+  const ctl=(S.settings&&S.settings[CTRLKEY])||readJSON(CTRLLOCAL)||{};
+  Object.values(ctl.meta||{}).forEach(m=>{const n=norm(m&&m.supplier);if(n&&!m.teamMade)names.push(n)});
+ }catch(e){}
+ return {_updatedAt:+x._updatedAt||0,names:[...new Set(names)].sort((a,b)=>a.localeCompare(b))};
+};
+const saveRegistry=async r=>{
+ r={_updatedAt:Date.now(),names:[...new Set((r.names||[]).map(norm).filter(Boolean))].sort((a,b)=>a.localeCompare(b))};
+ localStorage.setItem(REGLOCAL,JSON.stringify(r)); S.settings={...(S.settings||{}),[REGKEY]:r}; await DB.saveSettings(S.settings); return r;
+};
+const perfActs=()=> (S.activities||[]).filter(a=>a&&['eShow','eKidsStage','eLive','eBefore','eAfter','mEvents','eParty'].includes(normCat(a)));
+const pid=a=>String(a&&a.id!=null?a.id:[normCat(a),String(a.name||'').toLowerCase(),a.day,a.time,a.location].join('|'));
+const ctlState=()=>{
+ const r=(S.settings&&S.settings[CTRLKEY])||{},l=readJSON(CTRLLOCAL)||{},x=(+l._updatedAt||0)>(+r._updatedAt||0)?l:r;
+ return {_updatedAt:+x._updatedAt||0,meta:{...(x.meta||{})},attendance:{...(x.attendance||{})},componentAttendance:{...(x.componentAttendance||{})}};
+};
+const saveCtl=async x=>{x._updatedAt=Date.now();localStorage.setItem(CTRLLOCAL,JSON.stringify(x));S.settings={...(S.settings||{}),[CTRLKEY]:x};await DB.saveSettings(S.settings)};
+const assignedCount=name=>{const x=ctlState();return perfActs().filter(a=>{const m=x.meta[pid(a)]||{};return !m.teamMade&&norm(m.supplier)===name}).length};
+const supplierOptions=current=>{
+ const names=registry().names, cur=norm(current);
+ if(cur&&!names.includes(cur))names.push(cur);
+ return `<option value="">Not assigned</option>`+names.sort((a,b)=>a.localeCompare(b)).map(n=>`<option value="${esc(n)}" ${n===cur?'selected':''}>${esc(n)}</option>`).join('');
+};
+const supplierPanel=()=>{
+ const r=registry();
+ return `<section class="pf647-suppliers">
+  <div class="pf647-suppliers-head"><div><h4>Supplier management</h4><p>Add each supplier once. Then assign that supplier to its Shows, Events and Live Music from the performance cards below.</p></div></div>
+  <div class="pf647-addrow"><input id="pf647-new-supplier" placeholder="Supplier / company name" autocomplete="off"><button type="button" class="btn" id="pf647-add-supplier">+ Add supplier</button></div>
+  <div class="pf647-supplier-list">${r.names.length?r.names.map((n,i)=>`<div class="pf647-supplier-row"><div><b>${esc(n)}</b><span>${assignedCount(n)} assigned performance${assignedCount(n)===1?'':'s'}</span></div><div class="pf647-supplier-actions"><button type="button" class="btn ghost" data-pf647-rename="${i}">Rename</button><button type="button" class="btn ghost" data-pf647-delete="${i}">Delete</button></div></div>`).join(''):'<div class="pf645-empty">No suppliers added yet.</div>'}</div>
+ </section>`;
+};
+function enhance(){
+ const root=document.querySelector('.pf645'); if(!root)return;
+ if(!root.querySelector('.pf647-suppliers')){
+   const hero=root.querySelector('.pf645-hero'); if(hero)hero.insertAdjacentHTML('afterend',supplierPanel());
+ }
+ const ctl=ctlState();
+ document.querySelectorAll('.pf645-card').forEach(card=>{
+   const a=perfActs().find(x=>pid(x)===card.dataset.pf645Id); if(!a)return;
+   const m=ctl.meta[pid(a)]||{}, oldInput=card.querySelector('[data-pf645-supplier]');
+   if(oldInput && oldInput.tagName!=='SELECT'){
+     const sel=document.createElement('select'); sel.setAttribute('data-pf645-supplier',''); sel.innerHTML=supplierOptions(m.supplier||oldInput.value); oldInput.replaceWith(sel);
+   } else if(oldInput && oldInput.tagName==='SELECT') oldInput.innerHTML=supplierOptions(oldInput.value||m.supplier);
+   const provider=card.querySelector('.pf645-provider');
+   if(provider && !provider.nextElementSibling?.classList.contains('pf647-provider-select')){
+     provider.insertAdjacentHTML('afterend',`<div class="pf647-provider-select"><label>Assigned provider</label><select data-pf647-quick-provider>${supplierOptions(m.teamMade?'':m.supplier)}</select></div>`);
+   }
+ });
+ // Critical fix: all action buttons are explicitly non-submit buttons.
+ document.querySelectorAll('[data-pf645-add],[data-pf645-remove],[data-pf645-save],[data-pf645-open],[data-pf645-status],[data-pf646-cstatus],#pf645-xlsx,#pf645-pdf').forEach(b=>b.type='button');
+}
+const blankComponentHTML=i=>`<div class="pf645-component" data-pf645-component="${i}">
+ <div class="pf645-component-title"><b>#${i+1}</b><button type="button" class="btn ghost" data-pf645-remove="${i}">Remove</button></div>
+ <div class="pf645-component-grid"><div><label>Service / component</label><input data-c="name" value="" placeholder="e.g. Sound system"></div><div><label>Quantity</label><input data-c="quantity" value="1" placeholder="1"></div><div><label>Price / date</label><input data-c="price" type="number" min="0" step=".01" value="" placeholder="0"></div><div class="wide"><label>Operational details / note</label><textarea data-c="details" placeholder="What is included or any important specification"></textarea></div></div>
+ <div class="pf647-unsaved">New included service · save the performance setup when finished.</div></div>`;
+function wire647(){
+ enhance();
+ const add=document.querySelector('#pf647-add-supplier');
+ if(add)add.onclick=async e=>{e.preventDefault();e.stopPropagation();const inp=document.querySelector('#pf647-new-supplier'),name=norm(inp?.value);if(!name)return toastErr('Enter a supplier name.');const r=registry();if(r.names.some(x=>x.toLowerCase()===name.toLowerCase()))return toastErr('This supplier already exists.');r.names.push(name);try{await saveRegistry(r);toastOk('Supplier added');render()}catch(err){toastErr(t('errSave'))}};
+ document.querySelectorAll('[data-pf647-rename]').forEach(b=>b.onclick=async e=>{e.preventDefault();e.stopPropagation();const r=registry(),old=r.names[+b.dataset.pf647Rename];if(!old)return;const nn=norm(prompt('Rename supplier',old));if(!nn||nn===old)return;const c=ctlState();Object.values(c.meta).forEach(m=>{if(!m.teamMade&&norm(m.supplier)===old)m.supplier=nn});r.names=r.names.map(x=>x===old?nn:x);try{await saveCtl(c);await saveRegistry(r);toastOk('Supplier renamed');render()}catch(err){toastErr(t('errSave'))}});
+ document.querySelectorAll('[data-pf647-delete]').forEach(b=>b.onclick=async e=>{e.preventDefault();e.stopPropagation();const r=registry(),name=r.names[+b.dataset.pf647Delete];if(!name)return;const n=assignedCount(name);if(n)return toastErr(`Supplier is assigned to ${n} performance${n===1?'':'s'}. Reassign them first.`);r.names=r.names.filter(x=>x!==name);try{await saveRegistry(r);toastOk('Supplier removed');render()}catch(err){toastErr(t('errSave'))}});
+ document.querySelectorAll('[data-pf647-quick-provider]').forEach(sel=>sel.onchange=async e=>{const card=sel.closest('.pf645-card'),a=perfActs().find(x=>pid(x)===card?.dataset.pf645Id);if(!a)return;const c=ctlState(),m={...(c.meta[pid(a)]||{})};m.supplier=norm(sel.value);m.teamMade=false;c.meta[pid(a)]=m;try{await saveCtl(c);toastOk('Supplier assigned');render()}catch(err){toastErr(t('errSave'))}});
+ // Fix Add service: never submit/reload and do not redraw the page while editing.
+ document.querySelectorAll('[data-pf645-add]').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();const card=b.closest('.pf645-card'),box=card?.querySelector('.pf645-components');if(!box)return;const count=box.querySelectorAll('.pf645-component').length;box.insertAdjacentHTML('beforeend',blankComponentHTML(count));wire647();});
+ document.querySelectorAll('[data-pf645-remove]').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();const item=b.closest('.pf645-component');if(!item)return;item.remove();const card=b.closest('.pf645-card');card?.querySelectorAll('.pf645-component').forEach((x,i)=>{x.dataset.pf645Component=i;const title=x.querySelector('.pf645-component-title b');if(title)title.textContent='#'+(i+1);const rm=x.querySelector('[data-pf645-remove]');if(rm)rm.dataset.pf645Remove=i});wire647();});
+}
+const previousWire=window.wireCommon; window.wireCommon=function(){previousWire();wire647()};
+window.AUREA_PERFORMANCE_V647={version:'6.47',registry,enhance:wire647};
+})();
+</script>
+
 </body>
 </html>
