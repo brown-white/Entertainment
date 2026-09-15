@@ -18590,5 +18590,100 @@ window.AUREA_V640={version:'6.41',validatePhone:validatePhone640,guestBadge:gues
 })();
 </script>
 
+
+
+<script id="aurea-info-board-v642-script">
+(()=>{
+'use strict';
+if(window.__AUREA_INFO_BOARD_V642)return;
+window.__AUREA_INFO_BOARD_V642=true;
+
+/* V6.42 only replaces the printed information-board layout. Programme data is untouched. */
+function slot642(a){
+  const m=timeToMin(a&&a.time);
+  if(m==null)return 'morning';
+  if(m<14*60)return 'morning';
+  if(m<18*60)return 'afternoon';
+  if(m<22*60+30)return 'evening';
+  return 'after';
+}
+function slotLabel642(k){return {morning:'Morning',afternoon:'Afternoon',evening:'Evening',after:'After Evening'}[k]||'Programme';}
+function slotRange642(k){return {morning:'Morning programme',afternoon:'Afternoon programme',evening:'Evening programme',after:'Late programme'}[k]||'';}
+function type642(a){
+  const c=normCat(a);
+  if(c==='mEvents')return'event';
+  if(c==='eLive'||c==='eBefore'||c==='eAfter')return'live';
+  if(c==='eShow'||c==='eKidsStage')return'show';
+  if(c==='eParty')return'party';
+  return'activity';
+}
+function typeLabel642(k){return {activity:'Activity',event:'Event',live:'Live Music',show:'Show',party:'Party / Special'}[k]||'Programme';}
+function esc642(x){return String(x??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c));}
+function who642(a){
+  const raw=String(a&&a.entertainer||'').trim();
+  return raw?(typeof entertainerName==='function'?entertainerName(raw):raw):'';
+}
+function items642(day){
+  return (S.activities||[]).filter(a=>a&&a.day===day).slice().sort((a,b)=>{
+    const am=timeToMin(a.time),bm=timeToMin(b.time);
+    return (am==null?9999:am)-(bm==null?9999:bm)||String(a.name||'').localeCompare(String(b.name||''));
+  });
+}
+function info642(day){
+  try{return typeof info635==='function'?info635(day):{identity:'',theme:''};}catch(e){return {identity:'',theme:''};}
+}
+function printDate642(d){
+  try{return dateLabel635(d);}catch(e){return d.toLocaleDateString();}
+}
+function shortDate642(d){return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');}
+function boardDate642(v){const d=new Date(String(v||todayISO())+'T12:00:00');return isNaN(d.getTime())?new Date():d;}
+function monday642(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()),diff=(x.getDay()+6)%7;x.setDate(x.getDate()-diff);return x;}
+function dayIndex642(d){return(d.getDay()+6)%7;}
+function cleanTime642(v){return String(v||'').replace(/\s+/g,' ').trim();}
+
+function css642(scope){return `@page{size:${scope==='week'?'A3 landscape':'A4 portrait'};margin:7mm}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:#2c211a;font-family:Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{width:100%}
+.top642{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding:0 0 8px;border-bottom:2px solid #b88a54;margin-bottom:10px}.ey642{font-size:7px;font-weight:900;letter-spacing:.19em;text-transform:uppercase;color:#9a744d}.title642{font:600 ${scope==='week'?'26px':'31px'}/1 Georgia,serif;margin-top:3px}.date642{font-size:9px;color:#75685e;text-align:right}
+.legend642{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 9px}.tag642{display:inline-flex;align-items:center;padding:3px 6px;border-radius:999px;font-size:6.3px;font-weight:900;letter-spacing:.065em;text-transform:uppercase}.tag642.activity{background:#eee8e0;color:#62564c}.tag642.event{background:#c89b58;color:#2f2118}.tag642.live,.tag642.show{background:#6f4b28;color:#fff}.tag642.party{background:#3b291d;color:#e9c98e}
+.identity642{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 9px}.identity642 span{padding:4px 7px;border:1px solid #e1d5c7;border-radius:999px;background:#faf7f2;font-size:7px;font-weight:700}
+.day642{border:1px solid #d9ccbd;border-radius:10px;overflow:hidden;background:#fff;break-inside:avoid}.dayhead642{background:#30251f;color:#fff;padding:7px 8px}.dayhead642 b{font:600 14px/1 Georgia,serif}.dayhead642 span{display:block;font-size:6px;opacity:.72;margin-top:2px}.dayid642{padding:4px 7px;background:#f6f0e7;border-bottom:1px solid #e4d8cb;font-size:5.8px;color:#6e5d50}
+.week642{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.body642{padding:5px}.section642{margin:0 0 7px;break-inside:avoid}.section642:last-child{margin-bottom:0}.sectionhead642{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:4px 5px;margin-bottom:2px;border-radius:5px;background:#f2ede6;border-left:3px solid #b88a54}.sectionhead642 b{font-size:6.3px;letter-spacing:.09em;text-transform:uppercase}.sectionhead642 span{font-size:5.4px;color:#8a7b70}.section642.evening .sectionhead642{background:#eee6db;border-left-color:#86613b}.section642.after .sectionhead642{background:#e7ded2;border-left-color:#493326}
+.wi642{position:relative;padding:4px 3px 5px;border-bottom:1px solid #eee7df;break-inside:avoid}.wi642:last-child{border-bottom:0}.wi642.event{background:#fff9ef;border-left:2px solid #c89b58;padding-left:5px}.wi642.live,.wi642.show{background:#fbf6ee;border-left:2px solid #6f4b28;padding-left:5px}.wi642.party{background:#f5eee4;border-left:2px solid #3b291d;padding-left:5px}.tm642{font-size:6px;font-weight:900;color:#87633f}.nm642{font-size:7.2px;font-weight:850;line-height:1.18;margin:1px 0}.loc642,.wh642{font-size:5.5px;color:#776a60;line-height:1.2}.wh642{font-weight:700;color:#4d4037;margin-top:1px}.wi642 .tag642{margin-top:3px}.empty642{font-size:5.7px;color:#93877d;padding:4px 2px;font-style:italic}
+.daypage642 .section642{margin-top:11px}.daypage642 .sectionhead642{padding:7px 9px;border-radius:8px}.daypage642 .sectionhead642 b{font-size:9px}.daypage642 .sectionhead642 span{font-size:7px}.rows642{display:grid;gap:5px}.row642{display:grid;grid-template-columns:72px minmax(0,1.5fr) minmax(90px,.7fr) ${scope==='week'?'0':'130px'};gap:8px;align-items:start;padding:7px 8px;border:1px solid #e4d9ce;border-radius:9px;break-inside:avoid}.row642.event{border-left:5px solid #c89b58;background:#fff9ef}.row642.live,.row642.show{border-left:5px solid #6f4b28;background:#fbf6ee}.row642.party{border-left:5px solid #3b291d;background:#f5eee4}.row642 .tm642{font-size:9px}.row642 .nm642{font-size:9px}.row642 .loc642,.row642 .wh642{font-size:7px}.row642 .tag642{font-size:6px}.foot642{margin-top:9px;text-align:center;font-size:6px;color:#8c7e72}`;}
+
+function sectionWeek642(k,list,includeWho){
+  return `<section class="section642 ${k}"><div class="sectionhead642"><b>${slotLabel642(k)}</b><span>${list.length}</span></div>${list.length?list.map(a=>{const ty=type642(a);return `<div class="wi642 ${ty}"><div class="tm642">${esc642(cleanTime642(a.time))}</div><div class="nm642">${esc642(a.name||'')}</div><div class="loc642">${esc642(a.location||'')}</div>${includeWho&&who642(a)?`<div class="wh642">${esc642(who642(a))}</div>`:''}<span class="tag642 ${ty}">${typeLabel642(ty)}</span></div>`}).join(''):`<div class="empty642">—</div>`}</section>`;
+}
+function weekHtml642(base,includeWho){
+  const mon=monday642(base),dates=Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
+  return `<div class="page"><div class="top642"><div><div class="ey642">Entertainment Programme</div><div class="title642">Weekly Programme</div></div><div class="date642">${shortDate642(dates[0])} – ${shortDate642(dates[6])} · ${dates[0].getFullYear()}</div></div><div class="legend642"><span class="tag642 activity">Activity</span><span class="tag642 event">Event · Gold</span><span class="tag642 live">Live Music · Dark Gold</span><span class="tag642 show">Show · Dark Gold</span><span class="tag642 party">Party / Special</span></div><div class="week642">${dates.map(d=>{const day=dayIndex642(d),all=items642(day),di=info642(day);return `<article class="day642"><header class="dayhead642"><b>${esc642(t('days')[day])}</b><span>${shortDate642(d)}</span></header>${(di.identity||di.theme)?`<div class="dayid642">${di.identity?esc642(di.identity):''}${di.identity&&di.theme?' · ':''}${di.theme?'Restaurant: '+esc642(di.theme):''}</div>`:''}<div class="body642">${['morning','afternoon','evening','after'].map(k=>sectionWeek642(k,all.filter(a=>slot642(a)===k),includeWho)).join('')}</div></article>`}).join('')}</div><div class="foot642">Times and locations may change when required by hotel operations.</div></div>`;
+}
+function dayHtml642(d,includeWho){
+  const day=dayIndex642(d),all=items642(day),di=info642(day);
+  const section=k=>{const list=all.filter(a=>slot642(a)===k);return `<section class="section642 ${k}"><div class="sectionhead642"><b>${slotLabel642(k)}</b><span>${slotRange642(k)} · ${list.length} item${list.length===1?'':'s'}</span></div><div class="rows642">${list.length?list.map(a=>{const ty=type642(a);return `<div class="row642 ${ty}"><div class="tm642">${esc642(cleanTime642(a.time))}</div><div><span class="tag642 ${ty}">${typeLabel642(ty)}</span><div class="nm642">${esc642(a.name||'')}</div></div><div><div class="nm642">${esc642(a.location||'—')}</div><div class="loc642">Location</div></div>${includeWho?`<div class="wh642">${esc642(who642(a)||'—')}<br><span>Entertainment Team</span></div>`:'<div></div>'}</div>`}).join(''):`<div class="empty642">No programme in this period.</div>`}</div></section>`};
+  return `<div class="page daypage642"><div class="top642"><div><div class="ey642">Entertainment Programme</div><div class="title642">${esc642(di.identity||t('days')[day])}</div></div><div class="date642">${esc642(printDate642(d))}</div></div>${(di.theme||di.identity)?`<div class="identity642">${di.theme?`<span>Restaurant theme · ${esc642(di.theme)}</span>`:''}${di.identity&&di.identity!==t('days')[day]?`<span>Day name · ${esc642(di.identity)}</span>`:''}</div>`:''}<div class="legend642"><span class="tag642 activity">Activity</span><span class="tag642 event">Event · Gold</span><span class="tag642 live">Live Music · Dark Gold</span><span class="tag642 show">Show · Dark Gold</span><span class="tag642 party">Party / Special</span></div>${['morning','afternoon','evening','after'].map(section).join('')}<div class="foot642">Times and locations may change when required by hotel operations.</div></div>`;
+}
+function print642({scope='day',date=todayISO(),includeWho=false}={}){
+  const d=boardDate642(date),html=scope==='week'?weekHtml642(d,includeWho):dayHtml642(d,includeWho);
+  const w=window.open('','_blank');if(!w){toastErr('Could not open the print window.');return;}
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Entertainment Programme</title><style>'+css642(scope)+'</style></head><body>'+html+'<scr'+'ipt>setTimeout(function(){window.print();},350);<\/scr'+'ipt></body></html>');w.document.close();
+}
+window.printInfoBoardProgram635=print642;
+window.AUREA_INFO_BOARD_V642={version:'6.42',print:print642,weekHtml:weekHtml642,dayHtml:dayHtml642,slot:slot642};
+/* Existing export modal calls its local V6.35 function. Route its buttons to V6.42 without touching the modal UI. */
+const oldOpen642=window.openInfoBoardExport635;
+window.openInfoBoardExport635=function(){
+  oldOpen642();
+  setTimeout(()=>{
+    const modal=[...document.querySelectorAll('.modal,.sheet,.overlay')].find(x=>x.querySelector&&x.querySelector('#ib635-date'))||document;
+    const date=modal.querySelector('#ib635-date');
+    const guest=modal.querySelector('#ib635-guest'),team=modal.querySelector('#ib635-team');
+    const args=inc=>({scope:S._ib635Scope||'day',date:(date&&date.value)||todayISO(),includeWho:inc});
+    if(guest)guest.onclick=()=>print642(args(false));
+    if(team)team.onclick=()=>print642(args(true));
+  },0);
+};
+})();
+</script>
 </body>
 </html>
