@@ -18685,50 +18685,5 @@ window.openInfoBoardExport635=function(){
 };
 })();
 </script>
-
-<script id="aurea-info-board-v643-routing-fix">
-(()=>{
-'use strict';
-if(window.__AUREA_INFO_BOARD_V643)return;
-window.__AUREA_INFO_BOARD_V643=true;
-
-/*
- V6.43 routing repair:
- V6.42 added the redesigned renderer, but legacy export buttons still owned
- direct onclick closures pointing to printBoard635(). Intercept those exact
- export actions before the legacy handlers run and route them to V6.42.
-*/
-document.addEventListener('click',function(e){
-  const btn=e.target&&e.target.closest?e.target.closest('#ib635-guest,#ib635-team,#ib635-quick'):null;
-  if(!btn || typeof window.printInfoBoardProgram635!=='function') return;
-
-  e.preventDefault();
-  e.stopImmediatePropagation();
-
-  let scope='day', date=(typeof todayISO==='function'?todayISO():new Date().toISOString().slice(0,10)), includeWho=false;
-
-  if(btn.id==='ib635-team') includeWho=true;
-
-  if(btn.id==='ib635-guest' || btn.id==='ib635-team'){
-    try{
-      scope=(window.S&&S._ib635Scope)||'day';
-      const root=btn.closest('.modal,.sheet,.overlay')||document;
-      const input=root.querySelector('#ib635-date')||document.querySelector('#ib635-date');
-      if(input&&input.value) date=input.value;
-    }catch(err){}
-  } else if(btn.id==='ib635-quick'){
-    scope='day';
-  }
-
-  window.printInfoBoardProgram635({scope,date,includeWho});
-},true);
-
-window.AUREA_INFO_BOARD_V643={
-  version:'6.43',
-  routing:'legacy export buttons -> redesigned segmented renderer'
-};
-})();
-</script>
-
 </body>
 </html>
