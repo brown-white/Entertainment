@@ -19057,5 +19057,59 @@ window.AUREA_PERFORMANCE_V647={version:'6.47',registry,enhance:wire647};
 })();
 </script>
 
+
+<style id="aurea-performance-v648-style">
+.pf648-period{margin:0 0 12px;padding:12px 14px;border-radius:16px;background:var(--theme-soft,var(--soft));border:1px solid var(--theme-line,var(--line));display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pf648-period span{font-size:7px;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:var(--theme-muted,var(--muted))}
+.pf648-period b{font-family:var(--font-head,Georgia,serif);font-size:18px}
+</style>
+<script id="aurea-performance-v648-script">
+(()=>{'use strict';
+if(window.__AUREA_PERFORMANCE_V648)return;window.__AUREA_PERFORMANCE_V648=true;
+const KEY='entapp_performance_selected_month_v648';
+const validMonth=x=>/^\d{4}-(0[1-9]|1[0-2])$/.test(String(x||''));
+const monthLabel=x=>{if(!validMonth(x))return String(x||'');const [y,m]=x.split('-').map(Number);return new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,1)))};
+const selected=()=>validMonth(S.performanceMonth636)?S.performanceMonth636:(validMonth(localStorage.getItem(KEY))?localStorage.getItem(KEY):(validMonth(S.exportMonth)?S.exportMonth:currentAttMonth()));
+function setMonth(v){
+ if(!validMonth(v))return;
+ S.performanceMonth636=v; S.exportMonth=v; localStorage.setItem(KEY,v);
+ // A date range from another month must never make the selected month look wrong.
+ if(S.pf645DateFrom && !String(S.pf645DateFrom).startsWith(v)) S.pf645DateFrom='';
+ if(S.pf645DateTo && !String(S.pf645DateTo).startsWith(v)) S.pf645DateTo='';
+}
+function repaint(){
+ const host=document.querySelector('.pf645')?.parentElement;
+ if(!host)return render();
+ host.innerHTML=window.performanceAttendanceInner636();
+ if(typeof window.wireCommon==='function')window.wireCommon();
+}
+const oldView=window.performanceAttendanceInner636;
+window.performanceAttendanceInner636=function(){
+ setMonth(selected());
+ let html=oldView();
+ const label=monthLabel(selected());
+ html=html.replace('<div class="pf645-filter"><div class="pf645-filter-title">View & export filters</div>',
+ `<div class="pf645-filter"><div class="pf648-period"><span>Currently viewing</span><b>${label}</b></div><div class="pf645-filter-title">View & export filters</div>`);
+ return html;
+};
+const oldWire=window.wireCommon;
+window.wireCommon=function(){
+ oldWire();
+ const el=document.querySelector('#pf645-month');
+ if(el){
+   el.value=selected();
+   el.onchange=e=>{
+     e.preventDefault();
+     const v=e.target.value;
+     setMonth(v);
+     repaint();
+   };
+ }
+};
+setMonth(selected());
+window.AUREA_PERFORMANCE_V648={version:'6.48',selectedMonth:selected,setMonth};
+})();
+</script>
+
 </body>
 </html>
