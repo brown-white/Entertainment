@@ -18726,5 +18726,71 @@ window.AUREA_PERFORMANCE_CONTROL_V643={version:'6.43',dataset,print:print643,sta
 })();
 </script>
 
+
+<style id="aurea-performance-v644-style">
+.pf644-exportbox{margin:12px 0 16px;padding:14px;border:1px solid var(--theme-line,var(--line));border-radius:18px;background:var(--theme-soft,var(--soft))}
+.pf644-exportbox label{display:block;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:var(--theme-muted,var(--muted));margin:0 0 6px}
+.pf644-exportbox select{width:100%;min-height:46px;border:1px solid var(--theme-line,var(--line));border-radius:14px;background:var(--theme-card,var(--card));color:var(--theme-text,var(--ink));padding:10px 12px;font:inherit}
+.pf644-exporthint{font-size:9px;line-height:1.5;color:var(--theme-muted,var(--muted));margin-top:7px}
+.pf643-items{border-top:1px solid var(--theme-line,var(--line));padding-top:15px}
+.pf643-items>.pf643-item-head b{font-family:var(--font-head,Georgia,serif);font-size:17px}
+.pf644-included-note{padding:10px 12px;border-radius:13px;background:rgba(185,138,92,.10);font-size:9px;line-height:1.5;margin:8px 0 12px}
+.pf643-item{position:relative}
+.pf643-item:before{content:"INCLUDED SERVICE";display:inline-block;font-size:7px;font-weight:900;letter-spacing:.12em;color:var(--theme-accent,var(--accent));margin-bottom:7px}
+</style>
+<script id="aurea-performance-v644-script">
+(()=>{'use strict';
+if(window.__AUREA_PERFORMANCE_V644)return; window.__AUREA_PERFORMANCE_V644=true;
+const PC=()=>window.AUREA_PERFORMANCE_CONTROL_V643;
+const allActs=()=> (S.activities||[]).filter(a=>a&&['eShow','eKidsStage','eLive','eBefore','eAfter','mEvents','eParty'].includes(normCat(a)));
+const aid=a=>String(a&&a.id!=null?a.id:[normCat(a),String(a.name||'').toLowerCase(),a.day,a.time,a.location].join('|'));
+const state=()=>{try{return JSON.parse(localStorage.getItem('entapp_performance_control_v643')||'{}')||{}}catch(e){return{}}};
+const ameta=a=>{const x=(S.settings?.performanceControlV643?.meta||{})[aid(a)]||(state().meta||{})[aid(a)]||{};return {supplier:String(x.supplier||'').trim(),teamMade:!!x.teamMade,price:Math.max(0,+x.price||0),currency:String(x.currency||'EGP').toUpperCase()==='USD'?'USD':'EGP',items:Array.isArray(x.items)?x.items:[]}};
+const supplierName=a=>{const m=ameta(a);return m.teamMade?'Entertainment Team':(m.supplier||'Not assigned')};
+const suppliers=()=>[...new Set(allActs().map(supplierName).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+const esc2=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function exportSelector(){
+ const cur=S.pf644Supplier||'all';
+ return `<div class="pf644-exportbox"><label>Export supplier</label><select id="pf644-supplier"><option value="all">All suppliers / Entertainment Team</option>${suppliers().map(x=>`<option value="${esc2(x)}" ${cur===x?'selected':''}>${esc2(x)}</option>`).join('')}</select><div class="pf644-exporthint">Choose one supplier to export only that supplier’s Shows, Events, Live Music and included services. Choose All for the complete operation.</div></div>`;
+}
+function filteredDataset(){
+ const ds=PC().dataset(S.performanceMonth636||S.exportMonth||currentAttMonth());
+ const sup=S.pf644Supplier||'all';
+ if(sup!=='all') ds.rows=ds.rows.filter(r=>String(r[2]||'')===sup);
+ ds.title+=(sup==='all'?' · All suppliers':' · Supplier: '+sup);
+ return ds;
+}
+async function excel(){
+ const ds=filteredDataset(), sup=S.pf644Supplier||'all';
+ await smartExportExcel620([ds],'performance-'+String(sup).replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()+'-'+(S.performanceMonth636||currentAttMonth()));
+}
+function print(){
+ const ds=filteredDataset(),e=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const h=ds.headers.map(x=>`<th>${e(x)}</th>`).join('');
+ const b=ds.rows.map(r=>`<tr>${r.map((x,i)=>`<td class="${x==='P'?'p':x==='A'?'a':x==='X'?'x':''} ${i<4?'left':''}">${e(x)}</td>`).join('')}</tr>`).join('');
+ const css='@page{size:A3 landscape;margin:7mm}*{box-sizing:border-box}body{font-family:Arial;color:#281d16}h1{font-size:20px;margin:0 0 4px}.sub{font-size:8px;color:#75685f;margin-bottom:10px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:5.7px}th,td{border:1px solid #cbbdaf;padding:3px 2px;text-align:center}th{background:#eee4d7}.left{text-align:left}.p{background:#dfeee3;color:#315d3e;font-weight:800}.a{background:#f2ddda;color:#98483f;font-weight:800}.x{background:#fff0cf;color:#855900;font-weight:800}';
+ const w=window.open('','_blank');if(!w)return toastErr('Could not open print window.');
+ w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Supplier Performance Schedule</title><style>'+css+'</style></head><body><h1>'+e(ds.title)+'</h1><div class="sub">P = Present · A = Absent · X = Problem · Included services follow their parent performance schedule.</div><table><thead><tr>'+h+'</tr></thead><tbody>'+b+'</tbody></table><scr'+'ipt>setTimeout(function(){window.print()},350);<\/scr'+'ipt></body></html>');w.document.close();
+}
+const oldRender=window.performanceAttendanceInner636;
+window.performanceAttendanceInner636=function(){
+ let html=oldRender();
+ html=html.replace('<div class="pf643-actions"><button class="btn" id="pf643-xlsx">',exportSelector()+'<div class="pf643-actions"><button class="btn" id="pf643-xlsx">');
+ html=html.replace(/Included \/ linked items/g,'Included services / components')
+          .replace(/Linked items automatically follow the parent schedule and attendance\. Example: Beach Party → Sound system, Light system, Fire show\./g,'These are components included in this show or event — not purchase-request items. They automatically follow the same dates and attendance as the parent. Example: Beach Party → Sound system · Light system · Fire show.')
+          .replace(/<div class="pf643-mini">These are components included/g,'<div class="pf644-included-note">These are components included');
+ return html;
+};
+const oldWire=window.wireCommon;
+window.wireCommon=function(){
+ oldWire();
+ const sel=document.querySelector('#pf644-supplier'); if(sel) sel.onchange=()=>{S.pf644Supplier=sel.value};
+ const x=document.querySelector('#pf643-xlsx'); if(x)x.onclick=async()=>{try{await excel()}catch(e){toastErr(t('errSave'))}};
+ const p=document.querySelector('#pf643-pdf'); if(p)p.onclick=()=>print();
+};
+window.AUREA_PERFORMANCE_CONTROL_V644={version:'6.44',filteredDataset,excel,print};
+})();
+</script>
+
 </body>
 </html>
