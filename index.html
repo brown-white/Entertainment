@@ -18685,5 +18685,209 @@ window.openInfoBoardExport635=function(){
 };
 })();
 </script>
+
+<style id="aurea-performance-control-v643-style">
+/* =========================================================
+   V6.43 · Professional Performance Attendance Control
+   Separate Shows / Events / Live Music + linked cost items
+   ========================================================= */
+.pf643-filter{display:flex;gap:7px;overflow-x:auto;padding:2px 0 3px;scrollbar-width:none}
+.pf643-filter::-webkit-scrollbar{display:none}
+.pf643-filter button{flex:0 0 auto;min-height:38px;padding:0 13px;border:1px solid var(--theme-line,var(--line));border-radius:999px;background:var(--theme-card,var(--card));color:var(--theme-muted,var(--muted));font-size:9px;font-weight:850;letter-spacing:.04em}
+.pf643-filter button.on{background:var(--theme-main,var(--espresso));color:var(--theme-inverse-text,#fff);border-color:var(--theme-main,var(--espresso))}
+.pf643-section{display:grid;gap:10px}
+.pf643-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 2px 1px}
+.pf643-section-title h4{margin:0;font:600 23px/1 var(--font-display);color:var(--theme-text,var(--ink))}
+.pf643-section-title span{font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:var(--theme-muted,var(--muted))}
+.pf643-card{padding:15px;border:1px solid var(--theme-line,var(--line));border-radius:22px;background:var(--theme-card,var(--card));overflow:hidden}
+.pf643-card.show{border-top:3px solid #8d672f}.pf643-card.event{border-top:3px solid #c49a58}.pf643-card.live{border-top:3px solid #6f542b}
+.pf643-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(170px,230px);gap:12px;align-items:start}
+.pf643-tag{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+.pf643-card.show .pf643-tag{background:#eee3cf;color:#76551f}.pf643-card.event .pf643-tag{background:#f4e8d1;color:#8b6427}.pf643-card.live .pf643-tag{background:#e7ddc8;color:#5f4723}
+[data-theme="dark"] .pf643-tag{filter:brightness(.78) saturate(.9)}
+.pf643-name{font-size:15px;font-weight:900;margin-top:7px;color:var(--theme-text,var(--ink))}
+.pf643-meta{font-size:9px;line-height:1.5;color:var(--theme-muted,var(--muted));margin-top:3px}
+.pf643-price{display:grid;grid-template-columns:1fr 78px;gap:6px}.pf643-price label{font-size:7px}
+.pf643-price input,.pf643-price select{min-height:40px!important;height:40px!important;padding:7px 9px!important}
+.pf643-occ{display:flex;gap:6px;overflow-x:auto;padding:12px 0 7px;scrollbar-width:none}.pf643-occ::-webkit-scrollbar{display:none}
+.pf643-day{flex:0 0 48px;min-height:55px;border:1px solid var(--theme-line,var(--line));border-radius:13px;background:var(--theme-soft,var(--soft));display:grid;place-items:center;align-content:center;gap:2px;color:var(--theme-muted,var(--muted))}
+.pf643-day b{font-size:10px}.pf643-day span{font-size:9px;font-weight:900}.pf643-day.p{background:#e3f0e6!important;color:#356344!important;border-color:#c6dccb!important}.pf643-day.a{background:#f5e2df!important;color:#9d493f!important;border-color:#e8c7c2!important}.pf643-day.x{background:#fff0cf!important;color:#8a5a12!important;border-color:#e5c98d!important}.pf643-day.future{opacity:.42}
+[data-theme="dark"] .pf643-day.p{background:#203a2a!important;color:#a8d8b7!important;border-color:#355d43!important}
+[data-theme="dark"] .pf643-day.a{background:#452724!important;color:#efb0a8!important;border-color:#70403a!important}
+[data-theme="dark"] .pf643-day.x{background:#463719!important;color:#f0ca78!important;border-color:#6f5625!important}
+.pf643-legend{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 8px}.pf643-legend span{font-size:8px;padding:5px 8px;border-radius:999px;background:var(--theme-soft,var(--soft));color:var(--theme-muted,var(--muted))}
+.pf643-totals{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.pf643-total{padding:9px;border-radius:13px;background:var(--theme-soft,var(--soft));min-width:0}.pf643-total b{display:block;font-size:11px;color:var(--theme-text,var(--ink))}.pf643-total span{display:block;font-size:7px;text-transform:uppercase;letter-spacing:.055em;color:var(--theme-muted,var(--muted));margin-top:2px}
+.pf643-items{margin-top:13px;padding-top:12px;border-top:1px solid var(--theme-line,var(--line))}
+.pf643-items-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.pf643-items-head b{font-size:10px;color:var(--theme-text,var(--ink))}.pf643-items-head small{font-size:8px;color:var(--theme-muted,var(--muted))}
+.pf643-add{min-height:34px!important;height:34px!important;width:auto!important;padding:0 11px!important;font-size:8px!important}
+.pf643-item{border:1px solid var(--theme-line,var(--line));border-radius:16px;background:var(--theme-soft,var(--soft));padding:10px;margin-top:7px}
+.pf643-item-top{display:grid;grid-template-columns:minmax(110px,1fr) 88px 72px 34px;gap:6px;align-items:end}
+.pf643-item input,.pf643-item select{min-height:37px!important;height:37px!important;padding:6px 8px!important;font-size:10px!important;background:var(--theme-card,var(--card))!important}
+.pf643-item label{font-size:6.5px}.pf643-del{height:37px;width:34px;border-radius:11px;background:#f3e0dc;color:#9d493f;display:grid;place-items:center;font-size:15px}
+.pf643-item .pf643-occ{padding:8px 0 2px}.pf643-item .pf643-day{flex-basis:43px;min-height:48px}
+.pf643-item-note{font-size:7.5px;color:var(--theme-muted,var(--muted));margin-top:6px;line-height:1.45}
+.pf643-grand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pf643-grand .pf636-stat{background:var(--theme-soft,var(--soft))}
+@media(max-width:520px){
+ .pf643-head{grid-template-columns:1fr}.pf643-price{grid-template-columns:1fr 88px}
+ .pf643-totals{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .pf643-item-top{grid-template-columns:1fr 78px 68px 34px}
+ .pf643-grand{grid-template-columns:1fr 1fr}
+}
+</style>
+
+<script id="aurea-performance-control-v643-script">
+(()=>{
+'use strict';
+if(window.__AUREA_PERFORMANCE_CONTROL_V643)return;
+window.__AUREA_PERFORMANCE_CONTROL_V643=true;
+
+const KEY643='performanceControlV643', LOCAL643='entapp_performance_control_v643';
+const esc643=x=>typeof esc==='function'?esc(String(x??'')):String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function local643(){try{const x=JSON.parse(localStorage.getItem(LOCAL643)||'{}');return x&&typeof x==='object'?x:{}}catch(e){return{}}}
+function write643(x){try{localStorage.setItem(LOCAL643,JSON.stringify(x||{}))}catch(e){}}
+function store643(){
+ const remote=(S.settings&&S.settings[KEY643])||{},local=local643();
+ const out=(+local._updatedAt||0)>(+remote._updatedAt||0)?local:remote;
+ const clean={_updatedAt:+out._updatedAt||0,items:{...(out.items||{})},attendance:{...(out.attendance||{})}};
+ if(Object.keys(out).length)write643(clean);return clean;
+}
+async function save643(st){st._updatedAt=Date.now();write643(st);S.settings={...(S.settings||{}),[KEY643]:st};await DB.saveSettings(S.settings)}
+function filter643(){return S.performanceFilter643||'all'}
+function setFilter643(v){S.performanceFilter643=['all','show','event','live'].includes(v)?v:'all'}
+function parentId643(a){return perfId636(a)}
+function items643(a){return Array.isArray(store643().items[parentId643(a)])?store643().items[parentId643(a)]:[]}
+function itemId643(){return 'cost_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function statusKey643(kind,id,mk,d){return [kind,id,mk,d].join('|')}
+function parentStatus643(a,mk,d){
+ const st=store643(),v=st.attendance[statusKey643('parent',parentId643(a),mk,d)];
+ if(['P','A','X'].includes(v))return v;
+ const old=perfStatus636(a,mk,d);return old||'';
+}
+function itemStatus643(a,it,mk,d){
+ const st=store643(),v=st.attendance[statusKey643('item',it.id,mk,d)];
+ return ['P','A','X'].includes(v)?v:parentStatus643(a,mk,d);
+}
+async function status643(kind,a,it,mk,d,v){
+ const st=store643(),id=kind==='parent'?parentId643(a):it.id,k=statusKey643(kind,id,mk,d);
+ if(['P','A','X'].includes(v))st.attendance[k]=v;else delete st.attendance[k];
+ await save643(st);
+}
+function next643(v){return v==='P'?'A':v==='A'?'X':v==='X'?'P':'P'}
+function calcStatus643(list){return list.reduce((o,v)=>{if(v==='P')o.P++;else if(v==='A')o.A++;else if(v==='X')o.X++;return o},{P:0,A:0,X:0})}
+function itemCalc643(a,it,mk){
+ const dates=scheduledDates636(a,mk),sts=dates.map(d=>({d,status:itemStatus643(a,it,mk,d),future:isFuturePerf636(mk,d)})),c=calcStatus643(sts.map(x=>x.status));
+ return {...c,scheduled:dates.length,pay:c.P*(+it.price||0),occurrences:sts}
+}
+function parentCalc643(a,mk){
+ const dates=scheduledDates636(a,mk),sts=dates.map(d=>({d,status:parentStatus643(a,mk,d),future:isFuturePerf636(mk,d)})),c=calcStatus643(sts.map(x=>x.status)),f=fee636(a);
+ return {a,mk,fee:f,...c,scheduled:dates.length,pay:c.P*f.amount,occurrences:sts,items:items643(a).map(it=>({...it,calc:itemCalc643(a,it,mk)}))}
+}
+function rows643(mk=perfMonth636(),flt=filter643()){return performanceItems636().filter(a=>flt==='all'||perfType636(a)===flt).map(a=>parentCalc643(a,mk))}
+function totals643(rows){
+ const x={scheduled:0,P:0,A:0,X:0,EGP:0,USD:0,items:0};
+ rows.forEach(r=>{x.scheduled+=r.scheduled;x.P+=r.P;x.A+=r.A;x.X+=r.X;x[r.fee.currency]+=r.pay;r.items.forEach(it=>{x.items++;x[it.currency==='USD'?'USD':'EGP']+=it.calc.pay})});return x
+}
+function section643(type,rows){
+ const names={show:'Shows',event:'Events',live:'Live Music'},list=rows.filter(r=>perfType636(r.a)===type);
+ if(!list.length)return'';
+ return `<section class="pf643-section"><div class="pf643-section-title"><h4>${names[type]}</h4><span>${list.length} programme ${list.length===1?'entry':'entries'}</span></div>${list.map(card643).join('')}</section>`
+}
+function days643(a,mk,kind,it){
+ const occ=kind==='parent'?parentCalc643(a,mk).occurrences:itemCalc643(a,it,mk).occurrences;
+ return `<div class="pf643-occ">${occ.map(o=>`<button type="button" class="pf643-day ${o.status?o.status.toLowerCase():'future'}" data-pf643-status="${kind}|${esc643(parentId643(a))}|${it?esc643(it.id):''}|${mk}|${o.d}" ${o.future?'disabled':''}><b>${o.d}</b><span>${o.status||'·'}</span></button>`).join('')}</div>`
+}
+function card643(r){
+ const a=r.a,type=perfType636(a),f=r.fee;
+ return `<article class="pf643-card ${type}">
+ <div class="pf643-head"><div><span class="pf643-tag">${esc643(perfTypeLabel636(type))}</span><div class="pf643-name">${esc643(a.name||'')}</div><div class="pf643-meta">${esc643(weekdayName636(a))} · ${esc643(a.time||'')}${a.location?' · '+esc643(a.location):''}</div></div>
+ <div class="pf643-price"><div><label>Performance price</label><input type="number" min="0" step=".01" inputmode="decimal" data-pf643-parent-price="${esc643(parentId643(a))}" value="${f.amount||''}" placeholder="0"></div><div><label>Currency</label><select data-pf643-parent-curr="${esc643(parentId643(a))}"><option ${f.currency==='EGP'?'selected':''}>EGP</option><option ${f.currency==='USD'?'selected':''}>USD</option></select></div></div></div>
+ ${days643(a,r.mk,'parent',null)}
+ <div class="pf643-legend"><span>P · Present / completed</span><span>A · Absent / cancelled</span><span>X · Problem / review</span><span>Tap a date to change status</span></div>
+ <div class="pf643-totals"><div class="pf643-total"><b>${r.P}</b><span>Present</span></div><div class="pf643-total"><b>${r.A}</b><span>Absent</span></div><div class="pf643-total"><b>${r.X}</b><span>Problems</span></div><div class="pf643-total"><b>${money636(f.amount,f.currency)}</b><span>Price each</span></div><div class="pf643-total"><b>${money636(r.pay,f.currency)}</b><span>Performance pay</span></div></div>
+ <div class="pf643-items"><div class="pf643-items-head"><div><b>Linked items / suppliers</b><small>Same scheduled dates as ${esc643(a.name||'this programme item')}</small></div><button class="btn ghost pf643-add" data-pf643-add="${esc643(parentId643(a))}">+ Add item</button></div>
+ ${r.items.length?r.items.map(it=>item643(a,it,r.mk)).join(''):`<div class="pf643-item-note">No linked items yet. Add Sound System, Light System, Fire Show or any other cost that follows this schedule.</div>`}
+ </div></article>`
+}
+function item643(a,it,mk){
+ const c=it.calc,cur=it.currency==='USD'?'USD':'EGP';
+ return `<div class="pf643-item"><div class="pf643-item-top">
+ <div><label>Item</label><input data-pf643-item-name="${esc643(it.id)}" data-parent="${esc643(parentId643(a))}" value="${esc643(it.name||'')}" placeholder="e.g. Sound System"></div>
+ <div><label>Price / date</label><input type="number" min="0" step=".01" inputmode="decimal" data-pf643-item-price="${esc643(it.id)}" data-parent="${esc643(parentId643(a))}" value="${+it.price||''}" placeholder="0"></div>
+ <div><label>Currency</label><select data-pf643-item-curr="${esc643(it.id)}" data-parent="${esc643(parentId643(a))}"><option ${cur==='EGP'?'selected':''}>EGP</option><option ${cur==='USD'?'selected':''}>USD</option></select></div>
+ <button class="pf643-del" data-pf643-del="${esc643(it.id)}" data-parent="${esc643(parentId643(a))}" aria-label="Delete item">×</button></div>
+ ${days643(a,mk,'item',it)}
+ <div class="pf643-item-note">${c.P} P · ${c.A} A · ${c.X} X · payable ${money636(c.pay,cur)}. Item dates follow the parent schedule; its status can be controlled separately.</div></div>`
+}
+function performanceAttendanceInner643(){
+ const mk=perfMonth636(),all=rows643(mk,'all'),shown=rows643(mk,filter643()),tot=totals643(all),flt=filter643();
+ return `<div class="pf636">
+ <div class="pf636-hero"><div class="ey">Monthly performance control</div><h3>Shows · Events · Live Music</h3><p>Separate attendance and cost control. Add linked items such as Sound System, Light System and Fire Show; each item follows the same scheduled dates and keeps its own price and P / A / X status.</p></div>
+ <label>Attendance month</label><select id="pf636-month">${exportMonthOptions().map(([v,l])=>`<option value="${v}" ${v===mk?'selected':''}>${esc643(l)}</option>`).join('')}</select>
+ <div class="pf643-filter">${[['all','All'],['show','Shows'],['event','Events'],['live','Live Music']].map(([v,l])=>`<button class="${flt===v?'on':''}" data-pf643-filter="${v}">${l}</button>`).join('')}</div>
+ <div class="pf636-summary"><div class="pf636-stat"><b>${tot.scheduled}</b><span>Scheduled performances</span></div><div class="pf636-stat"><b>${tot.P}</b><span>Present · P</span></div><div class="pf636-stat"><b>${tot.A}</b><span>Absent · A</span></div><div class="pf636-stat"><b>${tot.X}</b><span>Problems · X</span></div></div>
+ <div class="pf643-grand"><div class="pf636-stat"><b>${tot.items}</b><span>Linked cost items</span></div><div class="pf636-stat"><b>${money636(tot.EGP,'EGP')}</b><span>Total payable · EGP</span></div><div class="pf636-stat"><b>${money636(tot.USD,'USD')}</b><span>Total payable · USD</span></div></div>
+ <div class="pf636-help"><b>Status rule:</b> P is completed and included in payment. A is absent/cancelled and not paid. X means a problem requiring review and is not included in payment until changed to P. Linked items inherit the parent status until you change that item separately.</div>
+ <div class="pf636-actions"><button class="btn" id="pf636-xlsx">${ic('download',16)} Export current view</button><button class="btn ghost" id="pf636-pdf">${ic('download',16)} PDF / Print current view</button></div>
+ ${flt==='all'?['show','event','live'].map(type=>section643(type,all)).join(''):section643(flt,shown)}
+ </div>`
+}
+performanceAttendanceInner636=performanceAttendanceInner643;
+window.performanceAttendanceInner636=performanceAttendanceInner643;
+
+async function saveItem643(parent,id,field,value){
+ const st=store643(),arr=Array.isArray(st.items[parent])?[...st.items[parent]]:[],i=arr.findIndex(x=>x.id===id);if(i<0)return;
+ arr[i]={...arr[i],[field]:field==='price'?Math.max(0,+value||0):String(value||'')};st.items[parent]=arr;await save643(st)
+}
+async function addItem643(parent){
+ const st=store643(),arr=Array.isArray(st.items[parent])?[...st.items[parent]]:[];
+ arr.push({id:itemId643(),name:'New item',price:0,currency:'EGP'});st.items[parent]=arr;await save643(st)
+}
+async function delItem643(parent,id){const st=store643();st.items[parent]=(st.items[parent]||[]).filter(x=>x.id!==id);await save643(st)}
+
+function dataset643(mk=perfMonth636(),flt=filter643()){
+ const rows=rows643(mk,flt),n=monthDays(mk),headers=['Type','Performance / linked item','Weekly schedule','Location','Price','Currency'].concat(Array.from({length:n},(_,i)=>String(i+1))).concat(['P','A','X','Scheduled','Amount']);
+ const out=[];
+ rows.forEach(r=>{
+   const by={};r.occurrences.forEach(o=>by[o.d]=o.status);
+   out.push([perfTypeLabel636(perfType636(r.a)),r.a.name||'',weekdayName636(r.a)+' · '+(r.a.time||''),r.a.location||'',r.fee.amount.toFixed(2),r.fee.currency].concat(Array.from({length:n},(_,i)=>by[i+1]||'')).concat([r.P,r.A,r.X,r.scheduled,r.pay.toFixed(2)]));
+   r.items.forEach(it=>{const bi={};it.calc.occurrences.forEach(o=>bi[o.d]=o.status);out.push(['↳ Item',it.name||'', 'Follows '+(r.a.name||''),r.a.location||'',(+it.price||0).toFixed(2),it.currency||'EGP'].concat(Array.from({length:n},(_,i)=>bi[i+1]||'')).concat([it.calc.P,it.calc.A,it.calc.X,it.calc.scheduled,it.calc.pay.toFixed(2)]))})
+ });
+ return {title:(flt==='all'?'All Performances':perfTypeLabel636(flt))+' Attendance — '+monthLabel(mk),landscape:true,headers,rows:out,sourceNote:'P = Present/completed · A = Absent/cancelled · X = Problem/review. Only P is included in payable totals. Linked items follow the parent programme schedule and can have independent status.'}
+}
+performanceDataset636=dataset643;window.performanceDataset636=dataset643;
+
+function print643(mk=perfMonth636(),flt=filter643()){
+ const rows=rows643(mk,flt),n=monthDays(mk),tot=totals643(rows),E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),days=Array.from({length:n},(_,i)=>`<th>${i+1}</th>`).join('');
+ const tr=(label,meta,price,cur,occ,P,A,X,total,cls='')=>{const by={};occ.forEach(o=>by[o.d]=o.status);return `<tr class="${cls}"><td class="left"><b>${E(label)}</b><small>${E(meta)}</small></td><td>${E(money636(price,cur))}</td>${Array.from({length:n},(_,i)=>{const s=by[i+1]||'';return `<td class="${s==='P'?'p':s==='A'?'a':s==='X'?'x':''}">${s}</td>`}).join('')}<td class="sum">${P}</td><td class="sum">${A}</td><td class="sum">${X}</td><td class="money">${E(money636(total,cur))}</td></tr>`};
+ let body='',last='';
+ rows.forEach(r=>{const type=perfType636(r.a);if(type!==last){body+=`<tr class="section"><td colspan="${n+6}">${E(type==='show'?'SHOWS':type==='event'?'EVENTS':'LIVE MUSIC')}</td></tr>`;last=type}body+=tr(r.a.name,weekdayName636(r.a)+' · '+(r.a.time||'')+' · '+(r.a.location||''),r.fee.amount,r.fee.currency,r.occurrences,r.P,r.A,r.X,r.pay,'parent');r.items.forEach(it=>body+=tr('↳ '+it.name,'Linked item · follows '+r.a.name,+it.price||0,it.currency||'EGP',it.calc.occurrences,it.calc.P,it.calc.A,it.calc.X,it.calc.pay,'item'))});
+ const title=flt==='all'?'MONTHLY PERFORMANCE ATTENDANCE':('MONTHLY '+(flt==='show'?'SHOW':flt==='event'?'EVENT':'LIVE MUSIC')+' ATTENDANCE');
+ const html=`<div class="head"><div><div class="ey">ENTERTAINMENT DEPARTMENT</div><h1>${title}</h1><p>${E(monthLabel(mk))} · P = Present · A = Absent · X = Problem</p></div><div class="tot"><b>${tot.P} P</b><b>${tot.A} A</b><b>${tot.X} X</b></div></div><table><thead><tr><th class="left">Performance / linked item</th><th>Price</th>${days}<th>P</th><th>A</th><th>X</th><th>Amount</th></tr></thead><tbody>${body}</tbody></table><div class="footer"><div><span>Total payable · EGP</span><b>${E(money636(tot.EGP,'EGP'))}</b></div><div><span>Total payable · USD</span><b>${E(money636(tot.USD,'USD'))}</b></div></div>`;
+ const css=`@page{size:A3 landscape;margin:7mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#291e17;margin:0}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:3px solid #9d7441;padding-bottom:7px;margin-bottom:8px}.ey{font-size:7px;letter-spacing:.16em;color:#9b6d48;font-weight:800}.head h1{margin:2px 0;font-size:20px}.head p{margin:0;font-size:8px;color:#786b62}.tot{display:flex;gap:6px}.tot b{border:1px solid #d8caba;border-radius:8px;padding:6px 8px;font-size:8px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:6px}th,td{border:1px solid #c9bbad;text-align:center;padding:3px 1px;height:19px}th{background:#eee5da;font-size:5.8px}.left{text-align:left;width:165px;padding-left:5px}.left small{display:block;color:#80736a;font-size:5.3px;margin-top:2px}.item .left{padding-left:12px;background:#faf7f2}.item td{background:#faf7f2}.p{background:#e0efe4!important;color:#356344;font-weight:800}.a{background:#f3dfdc!important;color:#9d493f;font-weight:800}.x{background:#fff0cf!important;color:#8a5a12;font-weight:800}.sum{font-weight:800;background:#f6f0e8;width:20px}.money{font-weight:800;width:48px}.section td{text-align:left;background:#8d672f;color:#fff;font-weight:800;letter-spacing:.12em;padding:4px 6px}.footer{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}.footer div{border:1px solid #c9bbad;border-radius:8px;padding:6px 10px}.footer span{display:block;font-size:6px;color:#75685f}.footer b{font-size:11px}`;
+ const w=window.open('','_blank');if(!w){toastErr('Could not open the print window.');return}w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Monthly Performance Attendance</title><style>'+css+'</style></head><body>'+html+'<scr'+'ipt>setTimeout(function(){window.print();},350);<\/scr'+'ipt></body></html>');w.document.close()
+}
+printPerformance636=print643;
+
+const wire643=window.wireCommon;
+window.wireCommon=wireCommon=function(){
+ wire643();
+ document.querySelectorAll('[data-pf643-filter]').forEach(b=>b.onclick=()=>{setFilter643(b.dataset.pf643Filter);render()});
+ document.querySelectorAll('[data-pf643-parent-price]').forEach(el=>el.onchange=async()=>{const a=performanceItems636().find(x=>parentId643(x)===el.dataset.pf643ParentPrice),cur=document.querySelector(`[data-pf643-parent-curr="${CSS.escape(el.dataset.pf643ParentPrice)}"]`);if(a){await saveFee636(a,el.value,cur?cur.value:'EGP');render()}});
+ document.querySelectorAll('[data-pf643-parent-curr]').forEach(el=>el.onchange=async()=>{const a=performanceItems636().find(x=>parentId643(x)===el.dataset.pf643ParentCurr),pr=document.querySelector(`[data-pf643-parent-price="${CSS.escape(el.dataset.pf643ParentCurr)}"]`);if(a){await saveFee636(a,pr?pr.value:0,el.value);render()}});
+ document.querySelectorAll('[data-pf643-status]').forEach(btn=>btn.onclick=async()=>{if(btn.disabled)return;const [kind,pid,iid,mk,ds]=btn.dataset.pf643Status.split('|'),a=performanceItems636().find(x=>parentId643(x)===pid);if(!a)return;const it=kind==='item'?items643(a).find(x=>x.id===iid):null,now=kind==='parent'?parentStatus643(a,mk,+ds):itemStatus643(a,it,mk,+ds);btn.disabled=true;try{await status643(kind,a,it,mk,+ds,next643(now));render()}catch(e){console.error(e);btn.disabled=false;toastErr(t('errSave'))}});
+ document.querySelectorAll('[data-pf643-add]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await addItem643(b.dataset.pf643Add);render();toastOk('Linked item added')}catch(e){console.error(e);b.disabled=false;toastErr(t('errSave'))}});
+ document.querySelectorAll('[data-pf643-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this linked item?'))return;await delItem643(b.dataset.parent,b.dataset.pf643Del);render()});
+ document.querySelectorAll('[data-pf643-item-name]').forEach(el=>el.onchange=async()=>{await saveItem643(el.dataset.parent,el.dataset.pf643ItemName,'name',el.value);render()});
+ document.querySelectorAll('[data-pf643-item-price]').forEach(el=>el.onchange=async()=>{await saveItem643(el.dataset.parent,el.dataset.pf643ItemPrice,'price',el.value);render()});
+ document.querySelectorAll('[data-pf643-item-curr]').forEach(el=>el.onchange=async()=>{await saveItem643(el.dataset.parent,el.dataset.pf643ItemCurr,'currency',el.value);render()});
+ const x=document.querySelector('#pf636-xlsx');if(x)x.onclick=async()=>{try{await smartExportExcel620([dataset643(perfMonth636(),filter643())],'performance-attendance-'+filter643()+'-'+perfMonth636());toastOk(t('saved'))}catch(e){console.error(e);toastErr(t('errSave'))}};
+ const p=document.querySelector('#pf636-pdf');if(p)p.onclick=()=>print643(perfMonth636(),filter643());
+};
+setTimeout(()=>{try{const l=local643(),r=(S.settings&&S.settings[KEY643])||{};if((+l._updatedAt||0)>(+r._updatedAt||0))DB.saveSettings({...S.settings,[KEY643]:l}).catch(()=>{})}catch(e){}},1900);
+window.AUREA_PERFORMANCE_CONTROL_V643={version:'6.43',rows:rows643,store:store643,print:print643,dataset:dataset643};
+})();
+</script>
+
 </body>
 </html>
