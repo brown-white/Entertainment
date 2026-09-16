@@ -19191,5 +19191,105 @@ window.AUREA_PERFORMANCE_V649={version:'6.49',dataset,printProfessional,componen
 })();
 </script>
 
+
+<style id="aurea-performance-v650-style">
+.pf650-command{margin:14px 0 16px;padding:18px;border:1px solid var(--theme-line,var(--line));border-radius:24px;background:linear-gradient(145deg,var(--theme-card,var(--card)),var(--theme-soft,var(--soft)));box-shadow:0 12px 30px rgba(50,34,25,.06)}
+.pf650-command-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin-bottom:14px}
+.pf650-command .eyebrow{font-size:7px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:var(--theme-accent,var(--accent))}
+.pf650-command h3{margin:3px 0 0;font-family:var(--font-head,Georgia,serif);font-size:23px}
+.pf650-command p{margin:4px 0 0;font-size:9px;color:var(--theme-muted,var(--muted));line-height:1.5}
+.pf650-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pf650-kpi{padding:11px;border:1px solid var(--theme-line,var(--line));border-radius:16px;background:var(--theme-card,var(--card))}
+.pf650-kpi b{display:block;font-family:var(--font-head,Georgia,serif);font-size:20px}.pf650-kpi span{font-size:6.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--theme-muted,var(--muted))}
+.pf650-save-state{margin-top:10px;padding:9px 11px;border-radius:13px;background:#e4efe6;color:#315d3e;font-size:8px;font-weight:800}
+.pf650-save-state.bad{background:#f3dfdc;color:#98483f}
+.pf646-status-day{cursor:pointer;position:relative}.pf646-status-day:active{transform:scale(.96)}
+.pf646-status-day.p{box-shadow:inset 0 0 0 1px rgba(49,93,62,.16)}.pf646-status-day.a{box-shadow:inset 0 0 0 1px rgba(152,72,63,.16)}.pf646-status-day.x{box-shadow:inset 0 0 0 1px rgba(138,90,0,.18)}
+.pf645-card{overflow:hidden}.pf645-card.open{box-shadow:0 16px 38px rgba(50,34,25,.09)}
+@media(max-width:430px){.pf650-kpis{grid-template-columns:repeat(2,1fr)}.pf650-command-head{display:block}}
+</style>
+<script id="aurea-performance-v650-script">
+(()=>{'use strict';
+if(window.__AUREA_PERFORMANCE_V650)return;window.__AUREA_PERFORMANCE_V650=true;
+
+const CTRL='performanceControlV643', CTRLLOCAL='entapp_performance_control_v643';
+const OVKEY='performanceServiceAttendanceV650', OVLOCAL='entapp_performance_service_attendance_v650';
+const MANAGER='Mr. Hassan Amer';
+const read=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return{}}};
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const perf=()=> (S.activities||[]).filter(a=>a&&['eShow','eKidsStage','eLive','eBefore','eAfter','mEvents','eParty'].includes(normCat(a)));
+const aid=a=>String(a&&a.id!=null?a.id:[normCat(a),String(a.name||'').toLowerCase(),a.day,a.time,a.location].join('|'));
+const month=()=>S.performanceMonth636||S.exportMonth||currentAttMonth();
+const ctrl=()=>{const r=(S.settings&&S.settings[CTRL])||{},l=read(CTRLLOCAL),x=(+l._updatedAt||0)>(+r._updatedAt||0)?l:r;return{...x,meta:{...(x.meta||{})},attendance:{...(x.attendance||{})},componentAttendance:{...(x.componentAttendance||{})}}};
+const ov=()=>{const r=(S.settings&&S.settings[OVKEY])||{},l=read(OVLOCAL),x=(+l._updatedAt||0)>(+r._updatedAt||0)?l:r;return{_updatedAt:+x._updatedAt||0,records:{...(x.records||{})}}};
+const saveOv=async x=>{x._updatedAt=Date.now();localStorage.setItem(OVLOCAL,JSON.stringify(x));S.settings={...(S.settings||{}),[OVKEY]:x};try{await DB.saveSettings(S.settings)}catch(e){throw e}};
+const meta=a=>{const m=ctrl().meta[aid(a)]||{};return{...m,components:Array.isArray(m.components)?m.components:(Array.isArray(m.items)?m.items:[])}};
+const componentToken=(a,i)=>{const c=meta(a).components[i]||{};return encodeURIComponent(String(c.name||('service-'+i)).trim().toLowerCase())+'#'+i};
+const key=(a,i,m,d)=>[m,encodeURIComponent(aid(a)),componentToken(a,i),d].join('::');
+const legacyKey=(a,i,m,d)=>m+'|'+aid(a)+'|component|'+i+'|'+d;
+const parent=(a,m,d)=>{const v=ctrl().attendance[m+'|'+aid(a)+'|'+d];return ['P','A','X'].includes(v)?v:((m+'-'+String(d).padStart(2,'0')<=hotelDateStr())?'P':'')};
+const status=(a,i,m,d)=>{
+ const x=ov().records[key(a,i,m,d)];
+ if(['P','A','X'].includes(x))return x;
+ const old=ctrl().componentAttendance[legacyKey(a,i,m,d)];
+ return ['P','A','X'].includes(old)?old:parent(a,m,d);
+};
+const saveStatus=async(a,i,m,d,v)=>{
+ // Dedicated status store is the source of truth. Also mirror to legacy state for backward compatibility.
+ const o=ov();o.records[key(a,i,m,d)]=v;
+ localStorage.setItem(OVLOCAL,JSON.stringify({...o,_updatedAt:Date.now()})); // immediate durable write before any async call
+ const c=ctrl();c.componentAttendance[legacyKey(a,i,m,d)]=v;c._updatedAt=Date.now();
+ localStorage.setItem(CTRLLOCAL,JSON.stringify(c));S.settings={...(S.settings||{}),[CTRL]:c};
+ await saveOv(o);
+};
+const days=(a,m)=>{const z=[],md=meta(a);for(let d=1;d<=monthDays(m);d++){if(weekdayOf(m,d)!==+a.day)continue;const iso=m+'-'+String(d).padStart(2,'0');if(md.startDate&&iso<md.startDate)continue;if(S.pf645DateFrom&&iso<S.pf645DateFrom)continue;if(S.pf645DateTo&&iso>S.pf645DateTo)continue;z.push(d)}return z};
+const provider=a=>{const m=meta(a);return m.teamMade?'Entertainment Team':(m.supplier||'Not assigned')};
+const kind=a=>{const c=normCat(a);return(c==='eShow'||c==='eKidsStage')?'Show':(c==='eLive'||c==='eBefore'||c==='eAfter')?'Live Music':'Event'};
+const filtered=()=>perf().filter(a=>(!S.pf645Type||S.pf645Type==='all'||kind(a).toLowerCase().replace(' music','')===S.pf645Type)&&( !S.pf645Supplier||S.pf645Supplier==='all'||provider(a)===S.pf645Supplier));
+
+function dataset(){
+ const m=month(),n=monthDays(m),rows=[];
+ filtered().forEach(a=>{
+   const md=meta(a),ds=days(a,m);if(!ds.length)return;
+   const main={};let P=0,A=0,X=0;ds.forEach(d=>{const v=parent(a,m,d);main[d]=v;v==='P'?P++:v==='A'?A++:v==='X'&&X++});
+   rows.push([provider(a),kind(a),a.name||'','Main performance',+md.price||0,md.currency||'EGP',...Array.from({length:n},(_,i)=>main[i+1]||''),P,A,X,(+md.price||0)*P]);
+   md.components.forEach((c,i)=>{
+     let p=0,ab=0,x=0;const map={};ds.forEach(d=>{const v=status(a,i,m,d);map[d]=v;v==='P'?p++:v==='A'?ab++:v==='X'&&x++});
+     rows.push([provider(a),kind(a),a.name||'',`Included service · ${c.name||('Service '+(i+1))}${c.quantity?' × '+c.quantity:''}`,+c.price||0,md.currency||'EGP',...Array.from({length:n},(_,j)=>map[j+1]||''),p,ab,x,(+c.price||0)*p]);
+   });
+ });
+ const egp=rows.filter(r=>r[5]==='EGP').reduce((t,r)=>t+(+r[r.length-1]||0),0),usd=rows.filter(r=>r[5]==='USD').reduce((t,r)=>t+(+r[r.length-1]||0),0);
+ return{title:'Performance Operations & Attendance — '+monthLabel(m),landscape:true,headers:['Supplier','Type','Performance','Operational line','Unit price','Currency',...Array.from({length:n},(_,i)=>String(i+1)),'P','A','X','Payable'],rows:[...rows,[],['TOTAL','','','','','EGP',...Array(n).fill(''),'','','',egp],['TOTAL','','','','','USD',...Array(n).fill(''),'','','',usd]],sourceNote:`Prepared by ${MANAGER} · P = Present · A = Absent · X = Problem`};
+}
+function dashboard(){
+ const root=document.querySelector('.pf645');if(!root||root.querySelector('.pf650-command'))return;
+ const m=month(),all=perf(),services=all.reduce((n,a)=>n+meta(a).components.length,0),sup=new Set(all.map(provider).filter(x=>x&&x!=='Not assigned')).size;
+ const html=`<section class="pf650-command"><div class="pf650-command-head"><div><div class="eyebrow">Performance operations</div><h3>Show, Event & Live Music Control</h3><p>One operational system for suppliers, included services, attendance, problems, pricing and exports.</p></div></div><div class="pf650-kpis"><div class="pf650-kpi"><b>${all.length}</b><span>Performances</span></div><div class="pf650-kpi"><b>${services}</b><span>Included services</span></div><div class="pf650-kpi"><b>${sup}</b><span>Providers</span></div><div class="pf650-kpi"><b>${esc(monthLabel(m))}</b><span>Control period</span></div></div><div class="pf650-save-state" id="pf650-save-state">Attendance changes save immediately and exports read the same saved record.</div></section>`;
+ const hero=root.querySelector('.pf645-hero');if(hero)hero.insertAdjacentHTML('afterend',html);
+}
+function wire(){
+ dashboard();
+ document.querySelectorAll('[data-pf646-cstatus]').forEach(b=>{
+   b.type='button';
+   b.onclick=async e=>{
+     e.preventDefault();e.stopPropagation();
+     const q=b.dataset.pf646Cstatus.split('|'),d=+q.pop(),m=q.pop(),i=+q.pop(),id=q.join('|'),a=perf().find(x=>aid(x)===id);if(!a)return;
+     const cur=status(a,i,m,d),nx=cur==='P'?'A':cur==='A'?'X':'P';
+     // Update UI immediately, then persist.
+     b.className='pf646-status-day '+nx.toLowerCase();const sp=b.querySelector('span');if(sp)sp.textContent=nx;
+     const state=document.querySelector('#pf650-save-state');if(state){state.classList.remove('bad');state.textContent='Saving '+(meta(a).components[i]?.name||'included service')+' · '+d+' '+monthLabel(m)+' as '+nx+'…'}
+     try{await saveStatus(a,i,m,d,nx);if(state)state.textContent='Saved · '+(meta(a).components[i]?.name||'Included service')+' · '+d+' '+monthLabel(m)+' = '+nx}
+     catch(err){if(state){state.classList.add('bad');state.textContent='Could not sync to database. The change is saved on this device.'}toastErr(t('errSave'))}
+   };
+ });
+ const x=document.querySelector('#pf645-xlsx');if(x){x.type='button';x.onclick=async e=>{e.preventDefault();await smartExportExcel620([dataset()],'performance-operations-'+month())}};
+}
+const prev=window.wireCommon;window.wireCommon=function(){prev();wire()};
+const prevBuild=window.buildDataset;window.buildDataset=function(k){if(k==='performanceatt')return dataset();return prevBuild(k)};
+if(window.AUREA_PERFORMANCE_V645)window.AUREA_PERFORMANCE_V645.exportData=dataset;
+window.AUREA_PERFORMANCE_V650={version:'6.50',dataset,status,saveStatus};
+})();
+</script>
+
 </body>
 </html>
