@@ -19111,5 +19111,85 @@ window.AUREA_PERFORMANCE_V648={version:'6.48',selectedMonth:selected,setMonth};
 })();
 </script>
 
+
+<style id="aurea-performance-v649-style">
+.pf649-export-note{margin-top:9px;padding:10px 12px;border:1px solid var(--theme-line,var(--line));border-radius:14px;background:var(--theme-soft,var(--soft));font-size:8px;line-height:1.5;color:var(--theme-muted,var(--muted))}
+</style>
+<script id="aurea-performance-v649-script">
+(()=>{'use strict';
+if(window.__AUREA_PERFORMANCE_V649)return;window.__AUREA_PERFORMANCE_V649=true;
+const KEY='performanceControlV643',LOCAL='entapp_performance_control_v643',MANAGER='Mr. Hassan Amer';
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const readLocal=()=>{try{return JSON.parse(localStorage.getItem(LOCAL)||'{}')||{}}catch(e){return{}}};
+const fullState=()=>{const r=(S.settings&&S.settings[KEY])||{},l=readLocal(),x=(+l._updatedAt||0)>(+r._updatedAt||0)?l:r;return{...x,_updatedAt:+x._updatedAt||0,meta:{...(x.meta||{})},attendance:{...(x.attendance||{})},componentAttendance:{...(x.componentAttendance||{})}}};
+const saveFull=async x=>{x._updatedAt=Date.now();localStorage.setItem(LOCAL,JSON.stringify(x));S.settings={...(S.settings||{}),[KEY]:x};await DB.saveSettings(S.settings)};
+const kind=a=>{const c=normCat(a);if(c==='eShow'||c==='eKidsStage')return'show';if(c==='eLive'||c==='eBefore'||c==='eAfter')return'live';if(c==='mEvents'||c==='eParty')return'event';return''};
+const klabel=k=>({show:'Show',event:'Event',live:'Live Music'}[k]||'Performance');
+const acts=()=> (S.activities||[]).filter(a=>a&&kind(a));
+const aid=a=>String(a&&a.id!=null?a.id:[kind(a),String(a.name||'').toLowerCase(),a.day,a.time,a.location].join('|'));
+const meta=a=>{const m=fullState().meta[aid(a)]||{};return{...m,supplier:String(m.supplier||'').trim(),teamMade:!!m.teamMade,price:Math.max(0,+m.price||0),currency:String(m.currency||'EGP').toUpperCase()==='USD'?'USD':'EGP',startDate:String(m.startDate||''),components:Array.isArray(m.components)?m.components:(Array.isArray(m.items)?m.items:[])}};
+const provider=a=>meta(a).teamMade?'Entertainment Team':(meta(a).supplier||'Not assigned');
+const month=()=>S.performanceMonth636||S.exportMonth||currentAttMonth();
+const selectedSupplier=()=>S.pf645Supplier||'all', selectedType=()=>S.pf645Type||S.pf643Filter||'all';
+const from=()=>S.pf645DateFrom||'',to=()=>S.pf645DateTo||'';
+const activeDays=(a,m)=>{const z=[],md=meta(a);for(let d=1;d<=monthDays(m);d++){if(weekdayOf(m,d)!==+a.day)continue;const iso=m+'-'+String(d).padStart(2,'0');if(md.startDate&&iso<md.startDate)continue;if(from()&&iso<from())continue;if(to()&&iso>to())continue;z.push(d)}return z};
+const parent=(a,m,d)=>{const v=fullState().attendance[m+'|'+aid(a)+'|'+d];if(['P','A','X'].includes(v))return v;return(m+'-'+String(d).padStart(2,'0')<=hotelDateStr())?'P':''};
+const ckey=(a,i,m,d)=>m+'|'+aid(a)+'|component|'+i+'|'+d;
+const cstatus=(a,i,m,d)=>{const v=fullState().componentAttendance[ckey(a,i,m,d)];return ['P','A','X'].includes(v)?v:parent(a,m,d)};
+const filtered=()=>acts().filter(a=>(selectedType()==='all'||kind(a)===selectedType())&&(selectedSupplier()==='all'||provider(a)===selectedSupplier()));
+
+function dataset(){
+ const m=month(),n=monthDays(m),rows=[];
+ filtered().forEach(a=>{
+   const md=meta(a),ds=activeDays(a,m);if(!ds.length)return;
+   const pmap={};let P=0,A=0,X=0;ds.forEach(d=>{const v=parent(a,m,d);pmap[d]=v;if(v==='P')P++;else if(v==='A')A++;else if(v==='X')X++});
+   const mainTotal=md.teamMade?0:md.price*P;
+   rows.push([provider(a),klabel(kind(a)),a.name||'','Main performance',md.teamMade?0:md.price,md.currency].concat(Array.from({length:n},(_,i)=>pmap[i+1]||'')).concat([P,A,X,mainTotal]));
+   md.components.forEach((c,i)=>{
+     const cmap={};let cP=0,cA=0,cX=0;ds.forEach(d=>{const v=cstatus(a,i,m,d);cmap[d]=v;if(v==='P')cP++;else if(v==='A')cA++;else if(v==='X')cX++});
+     rows.push([provider(a),klabel(kind(a)),a.name||'','Included service · '+(c.name||('Service '+(i+1)))+(c.quantity?' × '+c.quantity:''),Math.max(0,+c.price||0),md.currency].concat(Array.from({length:n},(_,j)=>cmap[j+1]||'')).concat([cP,cA,cX,(Math.max(0,+c.price||0))*cP]));
+   });
+ });
+ const egp=rows.filter(r=>r[5]==='EGP').reduce((a,r)=>a+(+r[r.length-1]||0),0),usd=rows.filter(r=>r[5]==='USD').reduce((a,r)=>a+(+r[r.length-1]||0),0);
+ const sup=selectedSupplier()==='all'?'All suppliers / Entertainment Team':selectedSupplier(),typ=selectedType()==='all'?'All performances':klabel(selectedType());
+ return{title:'Performance Attendance & Supplier Control — '+monthLabel(m),landscape:true,
+ headers:['Supplier','Type','Performance','Line / Included service','Unit price','Currency'].concat(Array.from({length:n},(_,i)=>String(i+1))).concat(['P','A','X','Payable']),
+ rows:rows.concat([[],['TOTAL','','','','','EGP'].concat(Array(n).fill('')).concat(['','','',egp]),['TOTAL','','','','','USD'].concat(Array(n).fill('')).concat(['','','',usd])]),
+ sourceNote:`Entertainment Manager: ${MANAGER} · Supplier: ${sup} · Type: ${typ} · Period: ${from()||m+'-01'} to ${to()||m+'-'+String(n).padStart(2,'0')} · P = Present · A = Absent · X = Problem`};
+}
+function printProfessional(){
+ const ds=dataset(),m=month(),n=monthDays(m),data=ds.rows.filter(r=>r.length&&r[0]!=='TOTAL'),totals=ds.rows.filter(r=>r.length&&r[0]==='TOTAL');
+ const e=esc,dayheads=Array.from({length:n},(_,i)=>`<th class="day">${i+1}</th>`).join('');
+ let last='';
+ const body=data.map(r=>{
+   const isService=String(r[3]).startsWith('Included service');
+   const showSupplier=r[0]!==last;last=r[0];
+   return `${showSupplier?`<tr class="supplier"><td colspan="${10+n}"><span>SUPPLIER / PROVIDER</span><b>${e(r[0])}</b></td></tr>`:''}<tr class="${isService?'service':'performance'}"><td>${e(r[1])}</td><td class="perf">${e(r[2])}</td><td class="line">${e(r[3])}</td><td>${e(r[4])}</td><td>${e(r[5])}</td>${r.slice(6,6+n).map(v=>`<td class="${v==='P'?'p':v==='A'?'a':v==='X'?'x':''}">${e(v)}</td>`).join('')}<td>${e(r[6+n])}</td><td>${e(r[7+n])}</td><td>${e(r[8+n])}</td><td class="pay">${e(r[9+n])}</td></tr>`;
+ }).join('');
+ const totalHtml=totals.map(r=>`<div class="total"><span>Total payable · ${e(r[5])}</span><b>${e(r[r.length-1])} ${e(r[5])}</b></div>`).join('');
+ const signatures=['Entertainment Manager','F&B Manager','Security Manager','General Manager'].map((x,i)=>`<div class="sig"><div class="line"></div><b>${x}</b>${i===0?`<span>${MANAGER}</span>`:'<span>Name / Signature</span>'}</div>`).join('');
+ const css=`@page{size:A3 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;color:#2d211a;font-family:Arial,sans-serif}.head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;border-bottom:4px solid #a87948;padding:0 0 10px}.ey{font-size:8px;letter-spacing:.2em;font-weight:800;color:#9a6a3e}.title{font:700 25px Georgia,serif;margin:4px 0 2px}.sub{font-size:8px;color:#75685f}.mgr{text-align:right;font-size:8px;line-height:1.5}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.meta div{border:1px solid #d1c4b6;padding:6px 8px}.meta span{display:block;font-size:5.5px;text-transform:uppercase;letter-spacing:.1em;color:#81736a}.meta b{font-size:8px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:5.5px}th,td{border:1px solid #c9bcad;padding:3px;text-align:center;vertical-align:middle}th{background:#eee5d8;font-size:5.2px;text-transform:uppercase}.day{width:17px}.supplier td{background:#3d291f;color:#fff;text-align:left;padding:5px 7px}.supplier span{font-size:5px;letter-spacing:.14em;margin-right:10px;color:#dbc4a9}.supplier b{font-size:7px}.performance .perf{font-weight:800;text-align:left}.service td{background:#fbf7f0}.service .line{text-align:left;border-left:4px solid #b98958;font-weight:700}.p{background:#dfede2!important;color:#315d3e!important;font-weight:900}.a{background:#f2ddda!important;color:#98483f!important;font-weight:900}.x{background:#fff0cf!important;color:#855900!important;font-weight:900}.pay{font-weight:900}.totals{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}.total{min-width:170px;border:1px solid #c9bcad;padding:8px 10px}.total span{display:block;font-size:6px;text-transform:uppercase;color:#75685f}.total b{font:700 16px Georgia,serif}.legend{margin-top:7px;font-size:6px;color:#75685f}.signatures{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px;page-break-inside:avoid}.sig{text-align:center;padding-top:22px}.sig .line{border-top:1px solid #4c4038;margin-bottom:6px}.sig b{display:block;font-size:7px}.sig span{display:block;font-size:6px;color:#7a6d64;margin-top:3px}`;
+ const sup=selectedSupplier()==='all'?'All suppliers / Entertainment Team':selectedSupplier(),typ=selectedType()==='all'?'All performances':klabel(selectedType());
+ const w=window.open('','_blank');if(!w)return toastErr('Could not open print window.');
+ w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Performance Attendance</title><style>'+css+'</style></head><body><div class="head"><div><div class="ey">ENTERTAINMENT DEPARTMENT · OFFICIAL CONTROL SHEET</div><div class="title">Performance Attendance & Supplier Control</div><div class="sub">Shows · Events · Live Music · Included Services</div></div><div class="mgr"><b>Prepared by</b><br>'+e(MANAGER)+'<br>Entertainment Manager</div></div><div class="meta"><div><span>Month</span><b>'+e(monthLabel(m))+'</b></div><div><span>Supplier</span><b>'+e(sup)+'</b></div><div><span>Performance type</span><b>'+e(typ)+'</b></div><div><span>Status key</span><b>P Present · A Absent · X Problem</b></div></div><table><thead><tr><th>Type</th><th>Performance</th><th>Line / Included service</th><th>Unit price</th><th>Curr.</th>'+dayheads+'<th>P</th><th>A</th><th>X</th><th>Payable</th></tr></thead><tbody>'+body+'</tbody></table><div class="totals">'+totalHtml+'</div><div class="legend">Each included service has its own P / A / X record. Its payable total is calculated from that service’s own Present days, independently of the parent performance.</div><div class="signatures">'+signatures+'</div><scr'+'ipt>setTimeout(function(){window.print()},400);<\/scr'+'ipt></body></html>');w.document.close();
+}
+function rewire(){
+ const note=document.querySelector('.pf645-filter');if(note&&!note.querySelector('.pf649-export-note'))note.insertAdjacentHTML('beforeend','<div class="pf649-export-note">Exports use the selected month, supplier, performance type and date range. Included services keep their own P / A / X attendance and totals.</div>');
+ document.querySelectorAll('[data-pf646-cstatus]').forEach(b=>b.onclick=async e=>{
+   e.preventDefault();e.stopPropagation();
+   const q=b.dataset.pf646Cstatus.split('|'),d=+q.pop(),m=q.pop(),i=+q.pop(),id=q.join('|'),a=acts().find(x=>aid(x)===id);if(!a)return;
+   const cur=cstatus(a,i,m,d),nx=cur==='P'?'A':cur==='A'?'X':'P',st=fullState();st.componentAttendance[ckey(a,i,m,d)]=nx;
+   try{await saveFull(st);b.className='pf646-status-day '+(nx==='P'?'p':nx==='A'?'a':'x');const sp=b.querySelector('span');if(sp)sp.textContent=nx;toastOk('Included service attendance saved')}catch(err){toastErr(t('errSave'))}
+ });
+ const pdf=document.querySelector('#pf645-pdf');if(pdf){pdf.type='button';pdf.onclick=e=>{e.preventDefault();printProfessional()}};
+ const xls=document.querySelector('#pf645-xlsx');if(xls){xls.type='button';xls.textContent='Export Excel (.xlsx)';xls.onclick=async e=>{e.preventDefault();try{await smartExportExcel620([dataset()],'performance-attendance-'+month())}catch(err){toastErr(t('errSave'))}}};
+}
+const oldWire=window.wireCommon;window.wireCommon=function(){oldWire();rewire()};
+if(window.AUREA_PERFORMANCE_V645){window.AUREA_PERFORMANCE_V645.exportData=dataset;window.AUREA_PERFORMANCE_V645.printExport=printProfessional}
+const oldBuild=window.buildDataset;window.buildDataset=function(k){if(k==='performanceatt')return dataset();return oldBuild(k)};
+window.AUREA_PERFORMANCE_V649={version:'6.49',dataset,printProfessional,componentStatus:cstatus};
+})();
+</script>
+
 </body>
 </html>
