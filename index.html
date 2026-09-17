@@ -19388,5 +19388,101 @@ window.AUREA_PERFORMANCE_V651={version:'6.51',monthOptions:robustMonthOptions,at
 })();
 </script>
 
+
+<style id="aurea-performance-v652-style">
+.pf651-grid td[data-pf652-main],.pf651-grid td[data-pf652-service]{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
+.pf651-grid td[data-pf652-main]:active,.pf651-grid td[data-pf652-service]:active{transform:scale(.93)}
+.pf651-grid td.p,.pf651-grid td.a,.pf651-grid td.x{box-shadow:inset 0 0 0 1px rgba(80,60,45,.07)}
+.pf652-hint{display:inline-flex;align-items:center;gap:5px;margin-left:8px;padding:4px 7px;border:1px solid var(--theme-line,var(--line));border-radius:999px;background:var(--theme-card,var(--card));font-size:6.5px;font-weight:850;color:var(--theme-text,var(--ink))}
+</style>
+<script id="aurea-performance-v652-script">
+(()=>{'use strict';
+if(window.__AUREA_PERFORMANCE_V652)return; window.__AUREA_PERFORMANCE_V652=true;
+
+const API=()=>window.AUREA_PERFORMANCE_V650;
+const cats=['eShow','eKidsStage','eLive','eBefore','eAfter','mEvents','eParty'];
+const kind=a=>{const c=normCat(a);return(c==='eShow'||c==='eKidsStage')?'Show':(c==='eLive'||c==='eBefore'||c==='eAfter')?'Live Music':'Event'};
+const findPerf=(name,type)=>(S.activities||[]).find(a=>a&&cats.includes(normCat(a))&&String(a.name||'')===String(name||'')&&kind(a)===type);
+const next=v=>v==='P'?'A':v==='A'?'X':'P';
+const mk=()=>S.performanceMonth636||S.exportMonth||currentAttMonth();
+
+function correctCardMoney(){
+ const api=API(); if(!api||typeof api.dataset!=='function')return;
+ const ds=api.dataset(), rows=(ds.rows||[]).filter(r=>r&&r.length&&r[0]!=='TOTAL');
+ document.querySelectorAll('.pf645-card').forEach(card=>{
+   const name=card.querySelector('.pf645-name')?.textContent?.trim(); if(!name)return;
+   const mine=rows.filter(r=>String(r[2]||'')===name);
+   if(!mine.length)return;
+   const by={};
+   mine.forEach(r=>{const cur=String(r[5]||'EGP');by[cur]=(by[cur]||0)+(+r[r.length-1]||0)});
+   const stat=card.querySelector('.pf645-stats .pf645-stat:last-child b');
+   if(stat){
+     const parts=Object.entries(by).filter(([,v])=>v!==0).map(([c,v])=>typeof money==='function'?money(v,c):(v+' '+c));
+     stat.textContent=parts.length?parts.join(' + '):(typeof money==='function'?money(0,(mine[0]&&mine[0][5])||'EGP'):'0');
+   }
+ });
+}
+
+function makeTableInteractive(){
+ const table=document.querySelector('.pf651-grid'); if(!table)return;
+ const ds=API()?.dataset?.(); if(!ds)return;
+ const rows=(ds.rows||[]).filter(r=>r&&r.length&&r[0]!=='TOTAL');
+ const trs=[...table.querySelectorAll('tbody tr')];
+ let currentPerf='', serviceIndex=-1;
+ rows.forEach((r,ri)=>{
+   const tr=trs[ri]; if(!tr)return;
+   const line=String(r[3]||''), isService=/^Included service/i.test(line);
+   if(!isService){currentPerf=String(r[2]||'');serviceIndex=-1}else serviceIndex++;
+   const type=String(r[1]||''), perfName=String(r[2]||currentPerf);
+   const n=monthDays(mk()), vals=r.slice(6,6+n);
+   const cells=[...tr.querySelectorAll('td.pf651-day')];
+   cells.forEach((td,i)=>{
+     if(!vals[i])return; // only scheduled dates are editable
+     const day=i+1;
+     if(isService){
+       td.dataset.pf652Service=[encodeURIComponent(perfName),encodeURIComponent(type),serviceIndex,mk(),day].join('|');
+       td.title='Tap to change P → A → X';
+     }else{
+       td.dataset.pf652Main=[encodeURIComponent(perfName),encodeURIComponent(type),mk(),day].join('|');
+       td.title='Tap to change P → A → X';
+     }
+   });
+ });
+ const legend=table.closest('.pf651-attendance')?.querySelector('.pf651-legend');
+ if(legend&&!legend.querySelector('.pf652-hint'))legend.insertAdjacentHTML('beforeend','<span class="pf652-hint">Tap P / A / X to change</span>');
+}
+
+async function changeCell(td){
+ if(td.dataset.pf652Service){
+   const [nn,tt,ii,month,dd]=td.dataset.pf652Service.split('|'),a=findPerf(decodeURIComponent(nn),decodeURIComponent(tt));
+   if(!a)return;
+   const i=+ii,d=+dd,api=API(),cur=api.status(a,i,month,d),nv=next(cur);
+   td.textContent=nv;td.className='pf651-day '+nv.toLowerCase();td.dataset.pf652Service=[nn,tt,ii,month,dd].join('|');
+   try{await api.saveStatus(a,i,month,d,nv);render()}catch(e){toastErr(t('errSave'));render()}
+   return;
+ }
+ if(td.dataset.pf652Main){
+   const [nn,tt,month,dd]=td.dataset.pf652Main.split('|'),name=decodeURIComponent(nn),type=decodeURIComponent(tt),d=+dd;
+   const a=findPerf(name,type);if(!a)return;
+   const card=[...document.querySelectorAll('.pf645-card')].find(c=>c.querySelector('.pf645-name')?.textContent?.trim()===name);
+   const btn=card?.querySelector(`[data-pf645-status$="|${month}|${d}"]`);
+   if(btn){btn.click();return}
+ }
+}
+
+document.addEventListener('click',e=>{
+ const td=e.target.closest?.('td[data-pf652-service],td[data-pf652-main]');
+ if(!td)return;e.preventDefault();e.stopPropagation();changeCell(td);
+},true);
+
+function enhance(){makeTableInteractive();correctCardMoney()}
+const prevWire=window.wireCommon;
+window.wireCommon=function(){prevWire();enhance()};
+setTimeout(enhance,0);
+
+window.AUREA_PERFORMANCE_V652={version:'6.52',enhance,correctCardMoney};
+})();
+</script>
+
 </body>
 </html>
