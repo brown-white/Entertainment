@@ -19856,5 +19856,57 @@ window.AUREA_BINGO90_V658={card90,verify90};
 })();
 </script>
 
+
+<style id="ticket-v659">
+.t659-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:9px 0 10px;font-size:9px;color:#6d6259}
+.t659-info div{padding:7px 8px;background:#f7f3ec;border-radius:8px}.t659-info b{display:block;color:#352319;font-size:10px;margin-top:2px}
+.t659-price{margin:9px auto 2px;max-width:180px;padding:7px 12px;border:1px solid #b98a5c;border-radius:999px;text-align:center;font-weight:900;color:#352319;background:#efe3d1}
+</style>
+<script id="ticket-v659-script">
+(()=>{'use strict';if(window.__T659)return;window.__T659=1;
+const E=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),P=n=>String(n).padStart(4,'0');
+function modal(){return document.querySelector('.tk655-modal[data-v658="1"]')||document.querySelector('.tk655-modal')}
+function read(w){
+ return {type:w.querySelector('#rtype')?.value||'',batch:(w.querySelector('#rbatch')?.value||'A').trim()||'A',start:Math.max(1,+w.querySelector('#rstart')?.value||1),count:Math.max(1,Math.min(1000,+w.querySelector('#rcount')?.value||1)),title:(w.querySelector('#rtitle')?.value||'').trim(),time:(w.querySelector('#rtime')?.value||'').trim(),place:(w.querySelector('#rplace')?.value||'').trim(),seed:+w.querySelector('#rseed')?.value||8260,price:(w.querySelector('#rbingoprice')?.value||'').trim(),currency:w.querySelector('#rbingocur')?.value||'EUR'}
+}
+function sig(g){return g.flat().join('|')}
+function build(o,n){return window.AUREA_BINGO90_V658.card90(o.seed,n)}
+function valid(o){let z=new Set;for(let i=0;i<o.count;i++){let q=sig(build(o,o.start+i));if(z.has(q))return false;z.add(q)}return true}
+function info(o){
+ return `<div class="info"><div><span>EVENT</span><b>${E(o.title||'Bingo')}</b></div><div><span>TIME</span><b>${E(o.time||'—')}</b></div><div><span>LOCATION</span><b>${E(o.place||'—')}</b></div><div><span>TICKET PRICE</span><b>${E(o.price?o.price+' '+o.currency:'—')}</b></div></div>`
+}
+function card(o,n){
+ let g=build(o,n),cells=g.flat().map(v=>`<i class="${v===''?'blank':''}">${v===''?'&nbsp;':v}</i>`).join('');
+ return `<article class="b90"><header><strong>BINGO</strong><small>BIN-${E(o.batch.toUpperCase())}-${P(n)}</small></header>${info(o)}<div class="g90">${cells}</div>${o.price?`<div class="price">${E(o.price)} ${E(o.currency)}</div>`:''}<footer>90-ball Bingo · 15 numbers · ${E(o.title||'Bingo')}</footer></article>`
+}
+function css(){return `@page{size:A4 portrait;margin:7mm}*{box-sizing:border-box}body{margin:0;font-family:Arial;color:#2b2019;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.b90{break-inside:avoid;border:1px solid #b98a5c;border-radius:4mm;padding:5mm;background:white;min-height:83mm}header{display:flex;align-items:end;justify-content:space-between;margin-bottom:2.5mm}header strong{font:700 19pt Georgia}header small{font-size:6pt}.info{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;margin-bottom:2.5mm}.info div{background:#f6f1e9;padding:1.6mm;border-radius:1.5mm;min-height:9mm}.info span{display:block;font-size:4.5pt;letter-spacing:.12em;color:#8a7869}.info b{font-size:6.5pt}.g90{display:grid;grid-template-columns:repeat(9,1fr);border-left:.3mm solid #71685f;border-top:.3mm solid #71685f}.g90 i{height:9mm;border-right:.3mm solid #71685f;border-bottom:.3mm solid #71685f;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:9pt}.g90 .blank{background:#f7f4ee;color:transparent}.price{width:max-content;min-width:34mm;margin:-1.5mm auto 1.5mm;padding:1.4mm 4mm;border:1px solid #b98a5c;border-radius:99mm;background:#efe3d1;text-align:center;font-size:8pt;font-weight:900;position:relative}footer{text-align:center;font-size:5pt;color:#75685f;margin-top:1.5mm}`}
+function print90(o){
+ if(!valid(o)){toastErr('Duplicate Bingo ticket detected. Printing stopped.');return}
+ let cards='';for(let i=0;i<o.count;i++)cards+=card(o,o.start+i);
+ let x=window.open('','_blank');if(!x){toastErr('Could not open print window.');return}
+ x.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Bingo Tickets</title><style>'+css()+'</style></head><body><div class="sheet">'+cards+'</div><scr'+'ipt>setTimeout(function(){window.print()},350);<\/scr'+'ipt></body></html>');x.document.close()
+}
+async function excel90(o){
+ if(!valid(o)){toastErr('Duplicate Bingo ticket detected. Export stopped.');return}
+ let rows=[['Serial','Event','Time','Location','Ticket price','Currency','90-ball card signature']];
+ for(let i=0;i<o.count;i++){let n=o.start+i;rows.push([`BIN-${o.batch.toUpperCase()}-${P(n)}`,o.title,o.time,o.place,o.price,o.currency,sig(build(o,n))])}
+ try{await loadXLSX();let wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:20},{wch:24},{wch:14},{wch:22},{wch:14},{wch:10},{wch:100}];XLSX.utils.book_append_sheet(wb,ws,'Bingo Control');XLSX.writeFile(wb,'Bingo_Control_'+o.batch+'.xlsx')}catch(e){toastErr('Excel export could not be created.')}
+}
+document.addEventListener('click',e=>{
+ let b=e.target.closest('#rprint,#rexcel');if(!b)return;let w=modal();if(!w||w.querySelector('#rtype')?.value!=='bingo')return;
+ e.preventDefault();e.stopImmediatePropagation();let o=read(w);
+ try{localStorage.setItem('aurea.tickets.v657',JSON.stringify({...JSON.parse(localStorage.getItem('aurea.tickets.v657')||'{}'),...o}))}catch(_){}
+ if(b.id==='rprint')print90(o);else excel90(o)
+},true);
+function updatePreview(){
+ let w=modal();if(!w||w.querySelector('#rtype')?.value!=='bingo')return;let o=read(w),p=w.querySelector('#rpreview');if(!p)return;let g=build(o,o.start);
+ p.innerHTML=`<div class="tp-bin658"><div class="top"><strong>BINGO</strong><span>BIN-${E(o.batch.toUpperCase())}-${P(o.start)}</span></div><div class="t659-info"><div>EVENT<b>${E(o.title||'Bingo')}</b></div><div>TIME<b>${E(o.time||'—')}</b></div><div>LOCATION<b>${E(o.place||'—')}</b></div><div>TICKET PRICE<b>${E(o.price?o.price+' '+o.currency:'—')}</b></div></div><div class="tp90">${g.flat().map(v=>`<span class="${v===''?'blank':''}">${v||'&nbsp;'}</span>`).join('')}</div>${o.price?`<div class="t659-price">${E(o.price)} ${E(o.currency)}</div>`:''}<div class="tp-small" style="text-align:center">90-ball Bingo · 15 numbers · ${E(o.title||'Bingo')}</div></div>`
+}
+document.addEventListener('input',e=>{if(e.target.closest('.tk655-modal'))setTimeout(updatePreview,1)},true);
+document.addEventListener('change',e=>{if(e.target.closest('.tk655-modal'))setTimeout(updatePreview,1)},true);
+new MutationObserver(()=>setTimeout(updatePreview,1)).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
+
 </body>
 </html>
