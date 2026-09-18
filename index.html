@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA Auth Stability V6.41</title>
+<title>Entertainment · AUREA Ticket Studio V6.60</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -19867,7 +19867,7 @@ window.AUREA_BINGO90_V658={card90,verify90};
 const E=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),P=n=>String(n).padStart(4,'0');
 function modal(){return document.querySelector('.tk655-modal[data-v658="1"]')||document.querySelector('.tk655-modal')}
 function read(w){
- return {type:w.querySelector('#rtype')?.value||'',batch:(w.querySelector('#rbatch')?.value||'A').trim()||'A',start:Math.max(1,+w.querySelector('#rstart')?.value||1),count:Math.max(1,Math.min(1000,+w.querySelector('#rcount')?.value||1)),title:(w.querySelector('#rtitle')?.value||'').trim(),time:(w.querySelector('#rtime')?.value||'').trim(),place:(w.querySelector('#rplace')?.value||'').trim(),seed:+w.querySelector('#rseed')?.value||8260,price:(w.querySelector('#rbingoprice')?.value||'').trim(),currency:w.querySelector('#rbingocur')?.value||'EUR'}
+ return {type:w.querySelector('#rtype')?.value||'',batch:(w.querySelector('#rbatch')?.value||'A').trim()||'A',start:Math.max(1,+w.querySelector('#rstart')?.value||1),count:Math.max(1,Math.min(1000,+w.querySelector('#rcount')?.value||1)),title:(w.querySelector('#rtitle')?.value||'').trim(),time:(w.querySelector('#rtime')?.value||'').trim(),place:(w.querySelector('#rplace')?.value||'').trim(),seed:+w.querySelector('#rseed')?.value||8260,price:(w.querySelector('#rbingoprice')?.value||'').trim(),currency:w.querySelector('#rbingocur')?.value||'EUR',color:w.querySelector('#rbingocolor')?.value||'#E9D06B'}
 }
 function sig(g){return g.flat().join('|')}
 function build(o,n){return window.AUREA_BINGO90_V658.card90(o.seed,n)}
@@ -19877,9 +19877,9 @@ function info(o){
 }
 function card(o,n){
  let g=build(o,n),cells=g.flat().map(v=>`<i class="${v===''?'blank':''}">${v===''?'&nbsp;':v}</i>`).join('');
- return `<article class="b90"><header><strong>BINGO</strong><small>BIN-${E(o.batch.toUpperCase())}-${P(n)}</small></header>${info(o)}<div class="g90">${cells}</div>${o.price?`<div class="price">${E(o.price)} ${E(o.currency)}</div>`:''}<footer>90-ball Bingo · 15 numbers · ${E(o.title||'Bingo')}</footer></article>`
+ return `<article class="b90" style="--ticket:${E(o.color||'#E9D06B')}"><header><strong>BINGO</strong><small>BIN-${E(o.batch.toUpperCase())}-${P(n)}</small></header>${info(o)}<div class="g90">${cells}</div></article>`
 }
-function css(){return `@page{size:A4 portrait;margin:7mm}*{box-sizing:border-box}body{margin:0;font-family:Arial;color:#2b2019;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.b90{break-inside:avoid;border:1px solid #b98a5c;border-radius:4mm;padding:5mm;background:white;min-height:83mm}header{display:flex;align-items:end;justify-content:space-between;margin-bottom:2.5mm}header strong{font:700 19pt Georgia}header small{font-size:6pt}.info{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;margin-bottom:2.5mm}.info div{background:#f6f1e9;padding:1.6mm;border-radius:1.5mm;min-height:9mm}.info span{display:block;font-size:4.5pt;letter-spacing:.12em;color:#8a7869}.info b{font-size:6.5pt}.g90{display:grid;grid-template-columns:repeat(9,1fr);border-left:.3mm solid #71685f;border-top:.3mm solid #71685f}.g90 i{height:9mm;border-right:.3mm solid #71685f;border-bottom:.3mm solid #71685f;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:9pt}.g90 .blank{background:#f7f4ee;color:transparent}.price{width:max-content;min-width:34mm;margin:-1.5mm auto 1.5mm;padding:1.4mm 4mm;border:1px solid #b98a5c;border-radius:99mm;background:#efe3d1;text-align:center;font-size:8pt;font-weight:900;position:relative}footer{text-align:center;font-size:5pt;color:#75685f;margin-top:1.5mm}`}
+function css(){return `@page{size:A4 portrait;margin:7mm}*{box-sizing:border-box}body{margin:0;font-family:Arial;color:#2b2019;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.b90{--ticket:#E9D06B;break-inside:avoid;border:1.2px solid color-mix(in srgb,var(--ticket) 75%,#6b4a32);border-radius:3mm;padding:4mm;background:white;min-height:72mm;overflow:hidden;position:relative}.b90:before{content:"";position:absolute;left:0;right:0;top:0;height:3.2mm;background:var(--ticket)}header{display:flex;align-items:end;justify-content:space-between;margin:2.5mm 0 2mm;padding-bottom:1.5mm;border-bottom:.8mm solid var(--ticket)}header strong{font:700 18pt Georgia}header small{font-size:6.5pt;font-weight:700}.info{display:grid;grid-template-columns:1.35fr .65fr 1.35fr .65fr;gap:1.2mm;margin-bottom:2.2mm}.info div{background:color-mix(in srgb,var(--ticket) 18%,white);padding:1.5mm;border-radius:1.3mm;min-height:9mm;border:.25mm solid color-mix(in srgb,var(--ticket) 38%,#ddd)}.info span{display:block;font-size:4.2pt;letter-spacing:.12em;color:#75685f}.info b{font-size:6.5pt;line-height:1.15;display:block;margin-top:.8mm}.g90{display:grid;grid-template-columns:repeat(9,1fr);border-left:.35mm solid #5f574f;border-top:.35mm solid #5f574f}.g90 i{height:9.3mm;border-right:.35mm solid #5f574f;border-bottom:.35mm solid #5f574f;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:9.5pt}.g90 .blank{background:color-mix(in srgb,var(--ticket) 13%,white);color:transparent}@media print{.b90{box-shadow:none}}`}
 function print90(o){
  if(!valid(o)){toastErr('Duplicate Bingo ticket detected. Printing stopped.');return}
  let cards='';for(let i=0;i<o.count;i++)cards+=card(o,o.start+i);
@@ -19900,7 +19900,7 @@ document.addEventListener('click',e=>{
 },true);
 function updatePreview(){
  let w=modal();if(!w||w.querySelector('#rtype')?.value!=='bingo')return;let o=read(w),p=w.querySelector('#rpreview');if(!p)return;let g=build(o,o.start);
- p.innerHTML=`<div class="tp-bin658"><div class="top"><strong>BINGO</strong><span>BIN-${E(o.batch.toUpperCase())}-${P(o.start)}</span></div><div class="t659-info"><div>EVENT<b>${E(o.title||'Bingo')}</b></div><div>TIME<b>${E(o.time||'—')}</b></div><div>LOCATION<b>${E(o.place||'—')}</b></div><div>TICKET PRICE<b>${E(o.price?o.price+' '+o.currency:'—')}</b></div></div><div class="tp90">${g.flat().map(v=>`<span class="${v===''?'blank':''}">${v||'&nbsp;'}</span>`).join('')}</div>${o.price?`<div class="t659-price">${E(o.price)} ${E(o.currency)}</div>`:''}<div class="tp-small" style="text-align:center">90-ball Bingo · 15 numbers · ${E(o.title||'Bingo')}</div></div>`
+ p.innerHTML=`<div class="tp-bin658 t660-ticket" style="--ticket:${E(o.color||'#E9D06B')}"><div class="top"><strong>BINGO</strong><span>BIN-${E(o.batch.toUpperCase())}-${P(o.start)}</span></div><div class="t659-info"><div>EVENT<b>${E(o.title||'Bingo')}</b></div><div>TIME<b>${E(o.time||'—')}</b></div><div>LOCATION<b>${E(o.place||'—')}</b></div><div>TICKET PRICE<b>${E(o.price?o.price+' '+o.currency:'—')}</b></div></div><div class="tp90">${g.flat().map(v=>`<span class="${v===''?'blank':''}">${v||'&nbsp;'}</span>`).join('')}</div></div>`
 }
 document.addEventListener('input',e=>{if(e.target.closest('.tk655-modal'))setTimeout(updatePreview,1)},true);
 document.addEventListener('change',e=>{if(e.target.closest('.tk655-modal'))setTimeout(updatePreview,1)},true);
@@ -19908,5 +19908,30 @@ new MutationObserver(()=>setTimeout(updatePreview,1)).observe(document.documentE
 })();
 </script>
 
+
+<style id="ticket-v660">
+/* V6.60 — clean Bingo ticket + selectable print colour */
+.t660-color-wrap{margin-top:14px}
+.t660-colors{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:7px}
+.t660-color{height:46px;border:1px solid var(--line);border-radius:13px;background:var(--sw);position:relative;box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+.t660-color.on{outline:2px solid var(--espresso);outline-offset:2px}
+.t660-color span{position:absolute;inset:auto 5px 5px;background:rgba(255,255,255,.88);border-radius:999px;padding:2px 4px;font-size:9px;font-weight:700;color:#352319;text-align:center}
+.t660-ticket{border:1.5px solid color-mix(in srgb,var(--ticket) 78%,#6b4a32)!important;overflow:hidden;position:relative;padding-top:8px!important}
+.t660-ticket:before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:var(--ticket)}
+.t660-ticket .top{padding-bottom:8px!important;border-bottom:4px solid var(--ticket);margin-bottom:9px!important}
+.t660-ticket .t659-info{grid-template-columns:1.35fr .65fr 1.35fr .65fr;gap:5px}
+.t660-ticket .t659-info div{background:color-mix(in srgb,var(--ticket) 18%,white);border:1px solid color-mix(in srgb,var(--ticket) 38%,#ddd)}
+.t660-ticket .tp90 .blank{background:color-mix(in srgb,var(--ticket) 13%,white)!important}
+@media(max-width:430px){.t660-ticket .t659-info{grid-template-columns:1fr 1fr}.t660-colors{grid-template-columns:repeat(4,1fr)}}
+</style>
+<script id="ticket-v660-script">
+(()=>{'use strict';if(window.__T660)return;window.__T660=1;
+const COLORS=[['Yellow','#E9D06B'],['Blue','#78B7D0'],['Green','#8CCB91'],['Pink','#E8A7B7'],['Orange','#E8A05D'],['Red','#D9786D'],['Purple','#B49AD1'],['Ivory','#E9E0CF']];
+function enhance(){let w=document.querySelector('.tk655-modal');if(!w||w.querySelector('#rbingocolor'))return;let bin=w.querySelector('#rbin');if(!bin)return;let note=bin.querySelector('.tk655-note:last-child');let saved='#E9D06B';try{saved=JSON.parse(localStorage.getItem('aurea.tickets.v657')||'{}').color||saved}catch(_){}
+let box=document.createElement('div');box.className='t660-color-wrap';box.innerHTML='<label>Ticket color</label><input type="hidden" id="rbingocolor" value="'+saved+'"><div class="t660-colors">'+COLORS.map(c=>'<button type="button" class="t660-color '+(c[1]===saved?'on':'')+'" data-color="'+c[1]+'" style="--sw:'+c[1]+'"><span>'+c[0]+'</span></button>').join('')+'</div><p class="tk655-note">The selected colour is used on the preview and on every printed ticket in this batch.</p>';
+(note||bin.lastElementChild)?.after(box);box.querySelectorAll('.t660-color').forEach(b=>b.onclick=()=>{box.querySelectorAll('.t660-color').forEach(x=>x.classList.remove('on'));b.classList.add('on');box.querySelector('#rbingocolor').value=b.dataset.color;box.querySelector('#rbingocolor').dispatchEvent(new Event('input',{bubbles:true}))})}
+new MutationObserver(()=>enhance()).observe(document.documentElement,{childList:true,subtree:true});enhance();
+})();
+</script>
 </body>
 </html>
