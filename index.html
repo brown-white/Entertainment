@@ -19584,5 +19584,136 @@ window.AUREA_PROGRAM_PRINT_V653={version:'6.53',print:print653,weekHtml:week653,
 })();
 </script>
 
+
+<script id="aurea-program-print-v654-manager-route">
+(()=>{'use strict';
+if(window.__AUREA_PROGRAM_PRINT_V654)return;window.__AUREA_PROGRAM_PRINT_V654=true;
+
+function managerPrintDialog654(){
+  const api=window.AUREA_PROGRAM_PRINT_V653;
+  if(!api||typeof api.print!=='function'){toastErr('Programme print system is not ready.');return}
+  S._ib654Scope=S._ib654Scope||'week';
+  const wrap=baseModal(`<div class="ib635-modal">
+    <div class="ib635-intro">
+      <div class="ib635-kicker">Hotel information board</div>
+      <h3>Print Entertainment Programme</h3>
+      <p>Reusable programme layout. Calendar dates are intentionally hidden from the printed file.</p>
+    </div>
+    <label>Programme format</label>
+    <div class="ib635-choice">
+      <button type="button" data-ib654-scope="day" class="${S._ib654Scope==='day'?'on':''}">Selected day</button>
+      <button type="button" data-ib654-scope="week" class="${S._ib654Scope==='week'?'on':''}">Full week</button>
+    </div>
+    <div class="ib635-note">Guest copy: no entertainer names. Team copy: includes the responsible entertainer. Neither printed version contains calendar dates.</div>
+    <div class="ib635-actions">
+      <button class="btn" id="ib654-guest">${ic('download',16)} Print without entertainer</button>
+      <button class="btn ghost" id="ib654-team">${ic('users',16)} Print with entertainer</button>
+    </div>
+    <button class="btn ghost" id="ib654-close">${t('close')}</button>
+  </div>`);
+  const bs=[...wrap.querySelectorAll('[data-ib654-scope]')];
+  bs.forEach(b=>b.onclick=()=>{S._ib654Scope=b.dataset.ib654Scope;bs.forEach(x=>x.classList.toggle('on',x===b));});
+  wrap.querySelector('#ib654-close').onclick=()=>wrap.remove();
+  wrap.querySelector('#ib654-guest').onclick=()=>api.print({scope:S._ib654Scope,includeWho:false,day:S.day});
+  wrap.querySelector('#ib654-team').onclick=()=>api.print({scope:S._ib654Scope,includeWho:true,day:S.day});
+}
+window.openInfoBoardExport635=managerPrintDialog654;
+
+/* The original manager page wired the old exporter through a lexical function.
+   Rewire those buttons after every render so the legacy dated exporter cannot open. */
+function route654(){
+  const open=document.querySelector('#ib635-open');
+  if(open)open.onclick=managerPrintDialog654;
+  const quick=document.querySelector('#ib635-quick');
+  if(quick)quick.onclick=()=>window.AUREA_PROGRAM_PRINT_V653.print({scope:'day',includeWho:false,day:S.day});
+}
+const previousWire654=window.wireCommon;
+window.wireCommon=function(){previousWire654();route654()};
+setTimeout(route654,0);
+
+/* Capture phase is a final guard against any older click handler left by prior patches. */
+document.addEventListener('click',e=>{
+  const b=e.target.closest?.('#ib635-open,#ib635-quick');
+  if(!b)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  if(b.id==='ib635-open')managerPrintDialog654();
+  else window.AUREA_PROGRAM_PRINT_V653.print({scope:'day',includeWho:false,day:S.day});
+},true);
+
+window.AUREA_PROGRAM_PRINT_V654={version:'6.54',openManager:managerPrintDialog654,route:route654};
+})();
+</script>
+
+
+<style id="aurea-ticket-studio-v655-style">
+.tk655-modal{padding:4px 0 8px}.tk655-head{padding:4px 2px 15px;border-bottom:1px solid var(--theme-line,var(--line));margin-bottom:14px}
+.tk655-k{font-size:8px;font-weight:900;letter-spacing:.17em;text-transform:uppercase;color:var(--theme-accent,var(--bronze));margin-bottom:6px}.tk655-head h3{margin:0 0 5px;font-family:var(--serif);font-size:27px}.tk655-head p{margin:0;color:var(--theme-muted,var(--muted));font-size:10px;line-height:1.5}
+.tk655-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tk655-preview{margin:14px 0;padding:15px;border-radius:22px;background:#352319;color:#fff;position:relative;overflow:hidden;box-shadow:0 16px 38px rgba(53,35,25,.18)}
+.tk655-preview:after{content:"";position:absolute;width:150px;height:150px;border:1px solid rgba(211,169,112,.35);border-radius:50%;right:-55px;top:-65px}.tk655-preview .k{font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:#d9b783;font-weight:900}.tk655-preview .n{font-family:var(--serif);font-size:28px;margin:4px 0}.tk655-preview .meta{font-size:9px;color:#e8ded6}.tk655-preview .serial{margin-top:18px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.28);font:800 12px/1.2 monospace;letter-spacing:.08em}
+.tk655-actions{display:grid;gap:9px;margin-top:12px}.tk655-note{font-size:8px;color:var(--theme-muted,var(--muted));line-height:1.45;margin:8px 2px}
+@media(max-width:390px){.tk655-grid{grid-template-columns:1fr}}
+</style>
+<script id="aurea-ticket-studio-v655-script">
+(()=>{'use strict';
+if(window.__AUREA_TICKET_STUDIO_V655)return;window.__AUREA_TICKET_STUDIO_V655=true;
+const KEY='aurea.ticketStudio.v655';
+const esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cfg=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}};
+const save=o=>localStorage.setItem(KEY,JSON.stringify(o));
+const pad=(n,l=4)=>String(n).padStart(l,'0');
+const code=t=>({bingo:'BIN',tombola:'TOM',disco:'DSC'}[t]||'TKT');
+const name=t=>({bingo:'Bingo',tombola:'Tombola',disco:'Disco'}[t]||'Ticket');
+function serial(type,batch,n){return `${code(type)}-${String(batch||'A').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8)||'A'}-${pad(n,4)}`}
+function ticketHtml(o,n){
+ const sn=serial(o.type,o.batch,n), title=name(o.type);
+ return `<article class="t"><div class="cut">ADMIT ONE</div><div class="main"><div class="brand">ENTERTAINMENT</div><h1>${esc(title)}</h1><div class="rule"></div><div class="info">${o.subtitle?`<b>${esc(o.subtitle)}</b><br>`:''}${o.time?`Time · ${esc(o.time)}<br>`:''}${o.location?`Location · ${esc(o.location)}<br>`:''}${o.price?`Price · ${esc(o.price)} ${esc(o.currency)}`:''}</div><div class="serial">SERIAL · ${esc(sn)}</div></div><div class="stub"><div>${esc(code(o.type))}</div><b>${pad(n,4)}</b><small>${esc(sn)}</small></div></article>`;
+}
+function printTickets(o){
+ const count=Math.max(1,Math.min(500,+o.count||1)),start=Math.max(1,+o.start||1);
+ let cards='';for(let i=0;i<count;i++)cards+=ticketHtml(o,start+i);
+ const w=window.open('','_blank');if(!w){toastErr('Could not open ticket print window.');return}
+ const css=`@page{size:A4 portrait;margin:8mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#302219;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{display:grid;grid-template-columns:1fr 1fr;gap:7mm}.t{height:57mm;border:1px solid #b99a77;border-radius:5mm;overflow:hidden;display:grid;grid-template-columns:14mm 1fr 25mm;break-inside:avoid;background:#fff}.cut{writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;background:#352319;color:#d9b783;font-size:6pt;font-weight:900;letter-spacing:.18em}.main{padding:7mm 5mm}.brand{font-size:6pt;font-weight:900;letter-spacing:.22em;color:#a87d4d}h1{font:600 24pt/1 Georgia,serif;margin:2mm 0 2mm}.rule{height:1px;background:#d6c3ad;margin-bottom:3mm}.info{font-size:7pt;line-height:1.55;color:#67584e}.serial{font:800 7pt monospace;margin-top:4mm;letter-spacing:.07em}.stub{border-left:1px dashed #b99a77;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3mm;color:#6e5238}.stub div{font-size:6pt;font-weight:900;letter-spacing:.14em}.stub b{font:600 18pt Georgia,serif}.stub small{font:700 5pt monospace;writing-mode:vertical-rl}@media print{.t{page-break-inside:avoid}}`;
+ w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Ticket Batch</title><style>'+css+'</style></head><body><div class="sheet">'+cards+'</div><scr'+'ipt>setTimeout(function(){window.print()},350);<\/scr'+'ipt></body></html>');w.document.close();
+}
+async function excelTickets(o){
+ const count=Math.max(1,Math.min(500,+o.count||1)),start=Math.max(1,+o.start||1);
+ const rows=[['Ticket Type','Serial Number','Batch','Number','Title / Note','Time','Location','Price','Currency','Status']];
+ for(let i=0;i<count;i++){const n=start+i;rows.push([name(o.type),serial(o.type,o.batch,n),o.batch||'A',n,o.subtitle||'',o.time||'',o.location||'',o.price||'',o.currency||'', 'Available'])}
+ try{await loadXLSX();const wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:14},{wch:20},{wch:12},{wch:9},{wch:24},{wch:12},{wch:20},{wch:10},{wch:10},{wch:12}];XLSX.utils.book_append_sheet(wb,ws,'Tickets');XLSX.writeFile(wb,`Tickets_${code(o.type)}_${String(o.batch||'A')}.xlsx`)}catch(e){toastErr('Excel export could not be created.')}
+}
+function formData(w){
+ return {type:w.querySelector('#tk655-type').value,batch:w.querySelector('#tk655-batch').value.trim()||'A',start:+w.querySelector('#tk655-start').value||1,count:+w.querySelector('#tk655-count').value||1,subtitle:w.querySelector('#tk655-subtitle').value.trim(),time:w.querySelector('#tk655-time').value.trim(),location:w.querySelector('#tk655-location').value.trim(),price:w.querySelector('#tk655-price').value.trim(),currency:w.querySelector('#tk655-currency').value};
+}
+function preview(w){
+ const o=formData(w),n=Math.max(1,+o.start||1),p=w.querySelector('#tk655-preview');
+ p.innerHTML=`<div class="k">Entertainment ticket · ${esc(code(o.type))}</div><div class="n">${esc(name(o.type))}</div><div class="meta">${o.subtitle?esc(o.subtitle)+' · ':''}${o.time?esc(o.time)+' · ':''}${esc(o.location||'Location')}</div><div class="serial">${esc(serial(o.type,o.batch,n))}</div>`;
+}
+function open(){
+ const c=cfg(),w=baseModal(`<div class="tk655-modal"><div class="tk655-head"><div class="tk655-k">Manager · Ticket Studio</div><h3>Print ticket batch</h3><p>Create numbered Bingo, Tombola or Disco tickets directly from the app. Every ticket receives a unique serial number inside the selected batch.</p></div>
+ <div class="tk655-grid"><div><label>Ticket type</label><select id="tk655-type"><option value="bingo">Bingo</option><option value="tombola">Tombola</option><option value="disco">Disco</option></select></div><div><label>Batch / series</label><input id="tk655-batch" maxlength="8" value="${esc(c.batch||'A')}" placeholder="A"></div><div><label>Starting number</label><input id="tk655-start" type="number" min="1" value="${+c.start||1}"></div><div><label>Number of tickets</label><input id="tk655-count" type="number" min="1" max="500" value="${+c.count||20}"></div></div>
+ <label>Title / note</label><input id="tk655-subtitle" value="${esc(c.subtitle||'')}" placeholder="e.g. Sunday Tombola">
+ <div class="tk655-grid"><div><label>Time</label><input id="tk655-time" value="${esc(c.time||'')}" placeholder="20:00"></div><div><label>Location</label><input id="tk655-location" value="${esc(c.location||'')}" placeholder="Amphitheatre"></div><div><label>Price</label><input id="tk655-price" inputmode="decimal" value="${esc(c.price||'')}"></div><div><label>Currency</label><select id="tk655-currency"><option>EUR</option><option>USD</option><option>EGP</option></select></div></div>
+ <div class="tk655-preview" id="tk655-preview"></div><div class="tk655-note">Serial format: ticket type + batch + sequential number. Example: TOM-A-0001. Use a new batch code when starting a new ticket run.</div>
+ <div class="tk655-actions"><button class="btn" id="tk655-print">${ic('download',16)} Print / PDF tickets</button><button class="btn ghost" id="tk655-xlsx">${ic('download',16)} Export serial list to Excel</button><button class="btn ghost" id="tk655-close">Close</button></div></div>`);
+ w.querySelector('#tk655-type').value=c.type||'tombola';w.querySelector('#tk655-currency').value=c.currency||'EUR';
+ [...w.querySelectorAll('input,select')].forEach(el=>el.addEventListener('input',()=>preview(w)));preview(w);
+ w.querySelector('#tk655-close').onclick=()=>w.remove();
+ w.querySelector('#tk655-print').onclick=()=>{const o=formData(w);save(o);printTickets(o)};
+ w.querySelector('#tk655-xlsx').onclick=()=>{const o=formData(w);save(o);excelTickets(o)};
+}
+window.openTicketStudio655=open;
+
+function addButton(){
+ if(S.session?.role!=='manager'||S.tab!=='guests')return;
+ const tabs=[...document.querySelectorAll('button')].find(b=>/tickets/i.test(b.textContent||''));
+ if(!tabs)return;
+ const host=tabs.parentElement?.parentElement||tabs.parentElement;if(!host||host.querySelector('#tk655-open'))return;
+ const b=document.createElement('button');b.id='tk655-open';b.className='btn ghost';b.style.margin='10px 0 4px';b.innerHTML=`${ic('download',16)} Ticket Print Studio`;b.onclick=open;host.appendChild(b);
+}
+const prev=window.wireCommon;window.wireCommon=function(){prev();addButton()};setTimeout(addButton,0);
+window.AUREA_TICKET_STUDIO_V655={version:'6.55',open,printTickets,excelTickets,serial};
+})();
+</script>
+
 </body>
 </html>
