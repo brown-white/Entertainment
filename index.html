@@ -7852,12 +7852,14 @@ function managerView(){
     if(sub==="history") inner=(typeof window.guestHistoryInnerV619==="function" ? window.guestHistoryInnerV619() : `<div class="empty">Guest history is loading…</div>`);
     else if(sub==="rooms") inner=roomsInner();
     else if(sub==="crm") inner=guestCrmInner();
+    else if(sub==="arrivals") inner=window.guestArrivalListV666();
+    else if(sub==="departures") inner=window.guestDepartureListV666();
     else if(sub==="bookings") inner=bookingsInner();
     else if(sub==="tickets") inner=(typeof window.guestTicketsManagerInnerV620==="function" ? window.guestTicketsManagerInnerV620() : `<div class="empty">Tickets are loading…</div>`);
     else if(sub==="chat") inner=chatInboxInner();
     else if(sub==="feedback") inner=feedbackInner();
     else inner=requestsInner();
-    const gTabs=[["crm",t("guestCrm")],["rooms",t("rooms")],["bookings",t("bookings")],["tickets",t("tickets")],
+    const gTabs=[["crm",t("guestCrm")],["arrivals","New arrived list"],["departures","Departure list"],["rooms",t("rooms")],["bookings",t("bookings")],["tickets",t("tickets")],
                  ["chat",t("guestChatTab")],["requests",t("requests")],["feedback",t("feedback")],["history","Guest history"]];
     return `<div class="screen fadein">
       ${topBar(t("guestsTab"),S.session.name)}
@@ -7938,7 +7940,7 @@ const DAYPLAN_SECTIONS=["info","times","team","standards"];
 const PAGE_SECTIONS={
   dayplan: ["team","standards"],
   dash:    ["attention","dayinfo","wholeday","tonight","live","export","stats","feedback","nations","activities","trends"],
-  guests:  ["crm","rooms","bookings","tickets","chat","requests","feedback","history"],
+  guests:  ["crm","arrivals","departures","rooms","bookings","tickets","chat","requests","feedback","history"],
   team:    ["accounts","chat","requests","monthatt","attendance","payroll"],
   program: ["acts","scores","tickets","performance"],
   settings:["set:theme","set:publictext","set:brand","builder","set:features","set:notif","set:links",
@@ -7948,7 +7950,7 @@ const SECTION_LABELS={
   dayplan: {team:"teamAccounts",standards:"standardsHead"},
   dash:    {attention:"attentionHead",dayinfo:"dayInfoSec",wholeday:"wholeDay",tonight:"tonightLbl",live:"liveOps",export:"exportData",stats:"overview",feedback:"fbAnalytics",
             nations:"natStats",activities:"activities",trends:"trendsHead"},
-  guests:  {crm:"guestCrm",rooms:"rooms",bookings:"bookings",tickets:"tickets",chat:"guestChatTab",
+  guests:  {crm:"guestCrm",arrivals:"New arrived list",departures:"Departure list",rooms:"rooms",bookings:"bookings",tickets:"tickets",chat:"guestChatTab",
             requests:"requests",feedback:"feedback",history:"Guest history"},
   team:    {accounts:"teamAccounts",chat:"teamChatTab",requests:"teamRequests",
             monthatt:"monthAtt",attendance:"attendance",payroll:"Payroll"},
@@ -19978,5 +19980,31 @@ document.addEventListener('click',e=>{let n=e.target.closest('#as665-new,#as662-
 })();
 </script>
 
+<style id="guest-lifecycle-v666">
+.gl666-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin:18px 0}.gl666-head h2{font-family:var(--serif);font-size:30px;margin:2px 0 4px}.gl666-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin:14px 0}.gl666-list{display:grid;gap:10px}.gl666-row{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:14px;box-shadow:var(--shadow)}.gl666-main{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center}.gl666-room{width:70px;height:58px;border-radius:15px;background:var(--soft);display:grid;place-items:center;text-align:center}.gl666-room b{font-size:19px}.gl666-name b{font-size:17px}.gl666-meta{font-size:12px;color:var(--muted);margin-top:4px}.gl666-checks{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}.gl666-check{display:flex;gap:6px;align-items:center;border:1px solid var(--line);padding:8px 10px;border-radius:999px;font-size:12px;font-weight:750;background:var(--card)}.gl666-check input{width:17px;height:17px;margin:0}.gl666-stars{display:flex;gap:4px}.gl666-star{border:0;background:transparent;font-size:25px;line-height:1;color:#c7b9aa;padding:2px}.gl666-star.on{color:#b88958}.gl666-empty{padding:34px 18px;text-align:center;border:1px dashed var(--line);border-radius:20px;color:var(--muted)}.gl666-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}.gl666-badge{display:inline-flex;padding:5px 9px;border-radius:999px;background:#efe4d5;color:#79563d;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+@media(max-width:460px){.gl666-controls,.gl666-actions{grid-template-columns:1fr}.gl666-main{grid-template-columns:62px 1fr}.gl666-main>.gl666-stars{grid-column:1/-1}.gl666-room{width:62px}}
+</style>
+<script id="guest-lifecycle-v666-script">
+(()=>{'use strict';if(window.__GL666)return;window.__GL666=1;
+const E=v=>String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c));
+const key='aurea.guest.lifecycle.v666';
+function state(){try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(_){return{}}}function put(x){localStorage.setItem(key,JSON.stringify(x))}
+function today(){let d=typeof hotelNow==='function'?hotelNow():new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function plus(iso,n){let d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function selected(type){let st=state(),v=st[type+'Date'];return /^\d{4}-\d{2}-\d{2}$/.test(v||'')?v:today()}
+function accounts(type,workDate){let target=type==='departure'?plus(workDate,1):workDate;return (S.accounts||[]).filter(a=>String(type==='departure'?a.departure:a.arrival||'').slice(0,10)===target).sort((a,b)=>String(a.room||'').localeCompare(String(b.room||''),undefined,{numeric:true}))}
+function rec(type,a,date){let st=state(),id=type+'|'+date+'|'+String(a.id||a.room);return st[id]||{rating:0,hotel:false,entertainment:false,general:false}}
+window.gl666SetDate=(type,v)=>{let st=state();st[type+'Date']=v;put(st);render()};
+window.gl666Toggle=(type,date,id,field,val)=>{let st=state(),k=type+'|'+date+'|'+id,r=st[k]||{};r[field]=!!val;st[k]=r;put(st)};
+window.gl666Rate=(date,id,n)=>{let st=state(),k='departure|'+date+'|'+id,r=st[k]||{};r.rating=n;st[k]=r;put(st);render()};
+function stars(date,a){let r=rec('departure',a,date);return `<div class="gl666-stars" aria-label="Final feedback rating">${[1,2,3,4,5].map(n=>`<button type="button" class="gl666-star ${n<=r.rating?'on':''}" onclick="gl666Rate('${date}','${E(a.id||a.room)}',${n})">★</button>`).join('')}</div>`}
+function row(type,a,date){let r=rec(type,a,date);return `<div class="gl666-row"><div class="gl666-main"><div class="gl666-room"><span class="mini">ROOM</span><b>${E(a.room||'—')}</b></div><div class="gl666-name"><b>${E(a.name||'Guest')}</b><div class="gl666-meta">${E(a.nationality||'Nationality —')} · ${type==='departure'?'Departure '+E(a.departure||''):'Arrival '+E(a.arrival||'')}</div></div>${type==='departure'?stars(date,a):'<span class="gl666-badge">Welcome</span>'}</div>${type==='arrival'?`<div class="gl666-checks"><label class="gl666-check"><input type="checkbox" ${r.hotel?'checked':''} onchange="gl666Toggle('arrival','${date}','${E(a.id||a.room)}','hotel',this.checked)"> Hotel</label><label class="gl666-check"><input type="checkbox" ${r.entertainment?'checked':''} onchange="gl666Toggle('arrival','${date}','${E(a.id||a.room)}','entertainment',this.checked)"> Entertainment</label><label class="gl666-check"><input type="checkbox" ${r.general?'checked':''} onchange="gl666Toggle('arrival','${date}','${E(a.id||a.room)}','general',this.checked)"> General info</label></div>`:''}</div>`}
+function view(type){let date=selected(type),list=accounts(type,date),isD=type==='departure',target=isD?plus(date,1):date;return `<div class="gl666-head"><div><span class="gl666-badge">Guest relations operation</span><h2>${isD?'Departure list':'New arrived list'}</h2><p class="mini">${isD?'Guests leaving tomorrow — meet them today for final feedback.':'Guests arriving on the selected date — welcome them and complete the information briefing.'}</p></div></div><div class="gl666-controls"><label><span class="mini">WORK DATE</span><input type="date" value="${date}" onchange="gl666SetDate('${type}',this.value)"></label><div class="pill">${list.length} guests</div></div><div class="card" style="padding:12px;margin-bottom:13px"><b>${isD?'Departure date':'Arrival date'}: ${E(target)}</b><div class="mini">${isD?'Final feedback: 1–5 stars':'Information checklist: Hotel · Entertainment · General info'}</div></div><div class="gl666-list">${list.length?list.map(a=>row(type,a,date)).join(''):`<div class="gl666-empty">No ${isD?'departures':'arrivals'} for this date.</div>`}</div><div class="gl666-actions"><button class="btn" onclick="gl666Print('${type}')">Print / PDF</button><button class="btn ghost" onclick="gl666Excel('${type}')">Export Excel</button></div>`}
+window.guestArrivalListV666=()=>view('arrival');window.guestDepartureListV666=()=>view('departure');
+function data(type){let date=selected(type),list=accounts(type,date),st=state();return{date,target:type==='departure'?plus(date,1):date,list,rows:list.map(a=>{let r=rec(type,a,date);return type==='departure'?{Room:a.room||'',Nationality:a.nationality||'',Guest:a.name||'',Date:a.departure||'',Feedback:r.rating?String(r.rating)+'/5':''}:{Room:a.room||'',Nationality:a.nationality||'',Guest:a.name||'',Date:a.arrival||'',Hotel:r.hotel?'✓':'',Entertainment:r.entertainment?'✓':'','General info':r.general?'✓':''}})}}
+window.gl666Print=type=>{let d=data(type),dep=type==='departure',title=dep?'DEPARTURE FOLLOW-UP LIST':'NEW ARRIVAL WELCOME LIST';let cols=dep?['Room','Nationality','Guest','Date','Feedback']:['Room','Nationality','Guest','Date','Hotel','Entertainment','General info'];let rows=d.rows.map(r=>`<tr>${cols.map(c=>`<td>${E(r[c])}</td>`).join('')}</tr>`).join('');let w=open('','_blank');w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>@page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#30231c;margin:0}.head{border-bottom:4px solid #a77a50;padding-bottom:12px;margin-bottom:18px}.ey{font-size:10px;letter-spacing:2px;color:#a77a50;font-weight:700}.head h1{font-family:Georgia,serif;font-size:28px;margin:5px 0}.meta{display:flex;justify-content:space-between;font-size:12px;color:#6f645d}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#3b271c;color:white;text-align:left;padding:10px 8px}td{border:1px solid #d4c8bb;padding:10px 8px;height:38px}tr:nth-child(even) td{background:#faf7f2}.foot{margin-top:18px;display:flex;justify-content:space-between;font-size:11px;color:#776b63}.sign{margin-top:34px;width:250px;border-top:1px solid #49362b;padding-top:6px}</style></head><body><div class="head"><div class="ey">ENTERTAINMENT DEPARTMENT · GUEST RELATIONS</div><h1>${title}</h1><div class="meta"><span>${dep?'Guests departing':'Guests arriving'}: ${E(d.target)}</span><span>${d.list.length} guests</span></div></div><table><thead><tr>${cols.map(c=>`<th>${E(c)}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${cols.length}">No guests for this date.</td></tr>`}</tbody></table><div class="foot"><span>${dep?'Purpose: final guest feedback before departure.':'Purpose: welcome briefing and guest information handover.'}</span><span>Entertainment Department</span></div><div class="sign">Entertainer / Signature</div><script>setTimeout(()=>window.print(),400)<\/script></body></html>`);w.document.close()}
+window.gl666Excel=async type=>{let d=data(type),dep=type==='departure';try{if(typeof loadXLSX==='function')await loadXLSX();if(!window.XLSX)throw Error('Excel library unavailable');let title=dep?'Departure List':'New Arrived List',sample=d.rows[0]||(dep?{Room:'',Nationality:'',Guest:'',Date:'',Feedback:''}:{Room:'',Nationality:'',Guest:'',Date:'',Hotel:'',Entertainment:'','General info':''}),aoa=[[title],[dep?'Departure date':'Arrival date',d.target],['Entertainment Department'],[],Object.keys(sample),...d.rows.map(r=>Object.keys(sample).map(k=>r[k]??''))];let ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:10},{wch:18},{wch:28},{wch:14},{wch:15},{wch:18},{wch:18}];let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,dep?'Departures':'Arrivals');XLSX.writeFile(wb,(dep?'Departure_List_':'New_Arrived_List_')+d.target+'.xlsx')}catch(e){alert('Excel export could not start: '+e.message)}};
+})();
+</script>
 </body>
 </html>
