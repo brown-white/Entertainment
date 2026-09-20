@@ -20123,5 +20123,51 @@ window.AUREA_ACTIVITY_CATEGORIES_V674={version:'6.74',list:cats,open:openManager
 })();
 </script>
 
+<style id="aurea-activity-categories-v675-style">
+/* V6.75 reliability repair: category manager + editor save bridge */
+.v675-save-note{font-size:11px;color:var(--muted);margin-top:6px}
+</style>
+<script id="aurea-activity-categories-v675-script">
+(()=>{'use strict';
+if(window.__AUREA_ACTIVITY_CATEGORIES_V675)return;window.__AUREA_ACTIVITY_CATEGORIES_V675=1;
+const KEY='aurea.activity.categories.v675';
+const E=v=>String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c));
+const norm=x=>({id:String(x?.id||('ac_'+Date.now()+'_'+Math.random().toString(36).slice(2,7))),name:String(x?.name||'').trim(),icon:String(x?.icon||''),base:'mAdult'});
+function localRead(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a.map(norm).filter(x=>x.name):[]}catch(_){return[]}}
+function clean(list){const seen=new Set();return (list||[]).map(norm).filter(x=>x.name&&!seen.has(x.name.toLowerCase())&&seen.add(x.name.toLowerCase()))}
+function list(){const settings=Array.isArray(S.settings?.programCustomCategories)?S.settings.programCustomCategories:[];const a=clean(settings);return a.length?a:clean(localRead())}
+function commitLocal(a){a=clean(a);try{localStorage.setItem(KEY,JSON.stringify(a))}catch(_){}S.settings={...(S.settings||{}),programCustomCategories:a};return a}
+async function commit(a){a=commitLocal(a);try{await DB.saveSettings(S.settings)}catch(err){console.warn('V6.75 cloud category save failed; local copy kept',err)}return a}
+const catOf=a=>String(a?.customCategory||'').trim();
+const iconOf=n=>list().find(x=>x.name.toLowerCase()===String(n).toLowerCase())?.icon||'';
+const ICONS=['🎯','🏆','🧘','💃','🎵','🧠','🗣️','🎨','🏖️','💪','🎲','♟️','🏐','⚽','🌿','✨'];
+function manager(onDone){let data=list().map(x=>({...x})),chosen='';const w=baseModal(`<div class="v674-manager"><h3>Activity categories</h3><p class="mini">Guest-friendly categories for Activities only. Activity / Event / Show / Before Show / After Show / Special Event remain unchanged.</p><label>Category name</label><div class="name-row"><input id="v675-name" autocomplete="off" placeholder="e.g. Chilling & Relaxing"><button type="button" class="btn" id="v675-add">+ Add</button></div><label style="margin-top:12px">Icon <span class="mini">(optional)</span></label><div class="v674-icons"><button type="button" class="noicon on" data-v675-icon="">No icon</button>${ICONS.map(i=>`<button type="button" data-v675-icon="${E(i)}">${E(i)}</button>`).join('')}</div><div id="v675-list" class="v674-list"></div><div class="v675-save-note">Categories save immediately when you add, rename or delete them.</div><button type="button" class="btn ghost" id="v675-close">Close</button></div>`);
+ const paint=()=>{const h=w.querySelector('#v675-list');if(!h)return;h.innerHTML=data.length?data.map((c,i)=>`<div class="v674-row"><span class="ico">${c.icon?E(c.icon):'—'}</span><span><b>${E(c.name)}</b><small>${c.icon?'With icon':'Without icon'}</small></span><span class="v674-actions"><button type="button" data-v675-ren="${i}">Rename</button><button type="button" data-v675-del="${i}">Delete</button></span></div>`).join(''):'<p class="mini">No categories yet.</p>'};
+ w.addEventListener('click',async ev=>{const ib=ev.target.closest?.('[data-v675-icon]');if(ib){ev.preventDefault();chosen=ib.dataset.v675Icon||'';w.querySelectorAll('[data-v675-icon]').forEach(x=>x.classList.toggle('on',x===ib));return}
+ const rb=ev.target.closest?.('[data-v675-ren]');if(rb){ev.preventDefault();const i=+rb.dataset.v675Ren,old=data[i]?.name,n=prompt('Category name',old||'');if(!n||!n.trim())return;const name=n.trim();if(data.some((x,j)=>j!==i&&x.name.toLowerCase()===name.toLowerCase()))return toastErr('This category already exists.');data[i].name=name;(S.activities||[]).forEach(a=>{if(String(a.category||'mAdult')==='mAdult'&&catOf(a).toLowerCase()===String(old).toLowerCase())a.customCategory=name});await commit(data);paint();onDone?.();toastOk('Category renamed');return}
+ const db=ev.target.closest?.('[data-v675-del]');if(db){ev.preventDefault();const i=+db.dataset.v675Del,old=data[i]?.name;if(!await confirmAction({question:'Delete this activity category? Activities using it will return to no activity category.',danger:true}))return;data.splice(i,1);(S.activities||[]).forEach(a=>{if(String(a.category||'mAdult')==='mAdult'&&catOf(a).toLowerCase()===String(old).toLowerCase())a.customCategory=''});await commit(data);paint();onDone?.();toastOk('Category deleted');return}});
+ const add=w.querySelector('#v675-add'),input=w.querySelector('#v675-name');
+ const doAdd=async()=>{const name=String(input?.value||'').trim();if(!name)return toastErr('Enter a category name.');if(data.some(x=>x.name.toLowerCase()===name.toLowerCase()))return toastErr('This category already exists.');data.push({id:'ac_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name,icon:chosen,base:'mAdult'});await commit(data);if(input)input.value='';paint();onDone?.();toastOk('Category added')};
+ if(add)add.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();doAdd()});
+ if(input)input.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();doAdd()}});
+ w.querySelector('#v675-close').onclick=()=>w.remove();paint();return w}
+ window.openProgramCategoryManager667=manager;if(window.AUREA_PROGRAM_V667)window.AUREA_PROGRAM_V667.openCategories=manager;
+ /* Replace V6.74 public manager too, so every entry point uses the reliable manager. */
+ if(window.AUREA_ACTIVITY_CATEGORIES_V674){window.AUREA_ACTIVITY_CATEGORIES_V674.open=manager;window.AUREA_ACTIVITY_CATEGORIES_V674.list=list}
+
+ /* Editor bridge: always rebuild the visible selector from the current category store and copy it into the field used by the tested base save routine. */
+ const prev=window.openEditModal;window.openEditModal=function(input){prev(input);setTimeout(()=>{const modals=[...document.querySelectorAll('.modal-bg')],w=modals[modals.length-1];if(!w)return;const save=w.querySelector('#e-save'),op=w.querySelector('#e-cat');if(!save||!op)return;let legacy=w.querySelector('#e-custom-cat');if(!legacy){legacy=document.createElement('select');legacy.id='e-custom-cat';legacy.style.display='none';save.insertAdjacentElement('beforebegin',legacy)}else{const holder=legacy.closest('.v667-catbox')||legacy.parentElement;if(holder)holder.style.display='none'}
+ let box=w.querySelector('#v674-editor');if(box)box.remove();box=document.createElement('div');box.id='v675-editor';box.className='v674-editor';save.insertAdjacentElement('beforebegin',box);
+ const a=(typeof input==='string'||typeof input==='number')?(S.activities||[]).find(x=>String(x.id)===String(input)):input;let selected=catOf(a);
+ const draw=()=>{const isAct=op.value==='mAdult';box.style.display=isAct?'':'none';if(!isAct)selected='';const cs=list();box.innerHTML=`<label>Activity category <span class="mini">(optional)</span></label><div class="row"><select id="v675-select"><option value="">No activity category</option>${cs.map(c=>`<option value="${E(c.name)}" ${c.name===selected?'selected':''}>${c.icon?E(c.icon)+' ':''}${E(c.name)}</option>`).join('')}</select><button type="button" class="btn ghost" id="v675-manage">Manage</button></div><p class="mini">Saved directly with this Activity. It does not change the programme type.</p>`;const sel=box.querySelector('#v675-select');if(sel)sel.onchange=()=>{selected=sel.value;legacy.value=selected};box.querySelector('#v675-manage').onclick=()=>manager(()=>{selected=sel?.value||selected;draw()});legacy.innerHTML=`<option value=""></option>${cs.map(c=>`<option value="${E(c.name)}">${E(c.name)}</option>`).join('')}`;legacy.value=selected};
+ op.addEventListener('change',()=>{if(op.value!=='mAdult')selected='';draw()});
+ save.addEventListener('click',()=>{const sel=box.querySelector('#v675-select');selected=(op.value==='mAdult'&&sel)?sel.value:'';legacy.value=selected},true);
+ draw();
+ },120)};
+
+ /* Category cards/filter read the same reliable store. */
+ window.AUREA_ACTIVITY_CATEGORIES_V675={version:'6.75',list,open:manager};
+})();
+</script>
 </body>
 </html>
