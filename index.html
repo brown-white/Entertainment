@@ -20169,5 +20169,39 @@ function manager(onDone){let data=list().map(x=>({...x})),chosen='';const w=base
  window.AUREA_ACTIVITY_CATEGORIES_V675={version:'6.75',list,open:manager};
 })();
 </script>
+
+<style id="aurea-activity-categories-v676-style"></style>
+<script id="aurea-activity-categories-v676-script">
+(()=>{'use strict';
+if(window.__AUREA_ACTIVITY_CATEGORIES_V676)return;window.__AUREA_ACTIVITY_CATEGORIES_V676=1;
+const MAPKEY='activityCategoryAssignments';
+const LOCAL='aurea.activity.category.assignments.v676';
+function localMap(){try{const x=JSON.parse(localStorage.getItem(LOCAL)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch(_){return{}}}
+function map(){return {...localMap(),...((S.settings&&S.settings[MAPKEY])||{})}}
+function putLocal(m){try{localStorage.setItem(LOCAL,JSON.stringify(m))}catch(_){} S.settings={...(S.settings||{}),[MAPKEY]:m}}
+async function saveMap(m){putLocal(m);try{await DB.saveSettings(S.settings)}catch(e){console.warn('V6.76 category assignment cloud sync failed; local assignment kept',e)}}
+function assigned(a){if(!a)return'';const direct=String(a.customCategory||'').trim();if(direct)return direct;const id=a.id==null?'':String(a.id);return id?String(map()[id]||'').trim():''}
+function hydrate(){const m=map();(S.activities||[]).forEach(a=>{if(a&&a.id!=null){const v=String(m[String(a.id)]||'').trim();if(v)a.customCategory=v;else if(Object.prototype.hasOwnProperty.call(m,String(a.id)))a.customCategory=''}})}
+/* The remote activities table predates customCategory. Persist category assignments in settings,
+   and never require a new activities-table column. This keeps old databases compatible. */
+const rawSave=DB.saveActivity.bind(DB);
+DB.saveActivity=async function(act){
+ const wanted=String(act?.customCategory||'').trim();
+ const clean={...act}; delete clean.customCategory; delete clean.interestCategory; delete clean.activityInterestCategory;
+ const before=new Set((S.activities||[]).map(x=>String(x.id)));
+ await rawSave(clean);
+ let id=clean.id!=null?clean.id:null;
+ if(id==null){const fresh=[...(S.activities||[])].reverse().find(x=>x&&x.id!=null&&!before.has(String(x.id))&&String(x.name||'')===String(clean.name||'')&&+x.day===+clean.day);if(fresh)id=fresh.id}
+ if(id!=null){const m=map();m[String(id)]=wanted;putLocal(m);const found=(S.activities||[]).find(x=>String(x.id)===String(id));if(found)found.customCategory=wanted;await saveMap(m)}
+ return id;
+};
+/* Hydrate assignments before every render and before opening an editor. */
+const r0=window.render||render;try{render=function(){hydrate();return r0.apply(this,arguments)}}catch(_){}
+const e0=window.openEditModal;window.openEditModal=function(input){hydrate();if(input&&typeof input==='object')input.customCategory=assigned(input);else if(input!=null){const a=(S.activities||[]).find(x=>String(x.id)===String(input));if(a)a.customCategory=assigned(a)}return e0.apply(this,arguments)};
+/* Make existing V6.74/V6.75 card/filter readers see the assignment after reload. */
+hydrate();
+window.AUREA_ACTIVITY_CATEGORIES_V676={version:'6.76',assignments:map,hydrate};
+})();
+</script>
 </body>
 </html>
