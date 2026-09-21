@@ -20732,5 +20732,149 @@ window.AUREA_LIVE_SCORE_V688={version:'6.88',configs,sessions,openEditor:editor,
 })();
 </script>
 
+
+<script id="day-off-history-v691">
+/* ============================================================
+   V6.91 — Effective-date Day Off history
+   A weekly Day Plan change must never rewrite old attendance.
+   Current/future rota uses the new plan; past automatic attendance
+   keeps the plan that was effective on that date.
+   ============================================================ */
+(()=>{
+'use strict';
+if(window.__DAY_OFF_HISTORY_V691)return;
+window.__DAY_OFF_HISTORY_V691=1;
+
+const HISTKEY691='dayOffHistoryV691';
+const STARTKEY691='dayOffHistoryStartV691';
+const LOCALSTART691='aurea_dayoff_history_start_v691';
+
+function iso691(v){
+  v=String(v||'').slice(0,10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(v)?v:'';
+}
+function today691(){
+  try{return hotelDateStr()}catch(_){return new Date().toISOString().slice(0,10)}
+}
+function start691(){
+  let v=iso691(S.settings&&S.settings[STARTKEY691]);
+  if(v)return v;
+  try{v=iso691(localStorage.getItem(LOCALSTART691))}catch(_){}
+  if(!v)v=today691();
+  try{localStorage.setItem(LOCALSTART691,v)}catch(_){}
+  /* Keep it in memory immediately. The next settings save carries it to cloud. */
+  S.settings={...(S.settings||{}),[STARTKEY691]:v};
+  return v;
+}
+function basePlan691(day){
+  const base=(DAY_PLAN||[]).find(d=>+d.day===+day)||(DAY_PLAN||[])[0]||{day:+day,off:[],entrance:null};
+  return {...base,off:Array.isArray(base.off)?base.off.slice():[]};
+}
+function normalizeOff691(v){
+  return [...new Set((Array.isArray(v)?v:[]).map(Number).filter(Number.isFinite))].sort((a,b)=>a-b);
+}
+function currentPlanFromOverrides691(overrides,day){
+  const base=basePlan691(day),ov=overrides&&overrides[String(day)];
+  if(!ov)return base;
+  return {...base,
+    off:Array.isArray(ov.off)?normalizeOff691(ov.off):base.off.slice(),
+    entrance:typeof ov.entrance==='number'?ov.entrance:base.entrance,
+    custom:true
+  };
+}
+function history691(){
+  const raw=S.settings&&S.settings[HISTKEY691];
+  return Array.isArray(raw)?raw.slice():[];
+}
+function recordForDate691(day,date){
+  const d=iso691(date);if(!d)return null;
+  return history691()
+    .filter(x=>+x.day===+day&&iso691(x.effectiveFrom)&&iso691(x.effectiveFrom)<=d)
+    .sort((a,b)=>iso691(b.effectiveFrom).localeCompare(iso691(a.effectiveFrom)))[0]||null;
+}
+/* Public resolver: the exact Day Plan that was valid on a calendar date. */
+function dayPlanForDate691(day,date){
+  const d=iso691(date),base=basePlan691(day);
+  if(!d)return typeof dayPlanFor==='function'?dayPlanFor(day):base;
+
+  const rec=recordForDate691(day,d);
+  if(rec){
+    return {...base,
+      off:Array.isArray(rec.off)?normalizeOff691(rec.off):base.off.slice(),
+      entrance:typeof rec.entrance==='number'?rec.entrance:base.entrance,
+      custom:rec.custom!==false,
+      effectiveFrom:rec.effectiveFrom
+    };
+  }
+
+  /* Migration rule for installations that already have a current override:
+     everything before V6.91's first effective date remains the STANDARD
+     historical rota; the current custom rota starts from the migration date.
+     This repairs the old retroactive-attendance behaviour. */
+  if(d<start691())return base;
+  return currentPlanFromOverrides691((S.settings&&S.settings.dayOverrides)||{},day);
+}
+window.dayPlanForDateV691=dayPlanForDate691;
+
+/* Attendance is the place where the old bug happened. Manual P/O/A/V always
+   wins in attStatus; this function only supplies the automatic plan value. */
+attAuto=function(user,mk,day){
+  if(notYetHired(user,mk,day)||leftBefore(user,mk,day))return 'N';
+  if(isAttOnly(user))return 'P';
+  let num=user.number;if(!num&&user.role==='manager')num=1;
+  if(!num)return 'P';
+  const ds=dateStr(mk,day),wd=weekdayOf(mk,day),dp=dayPlanForDate691(wd,ds);
+  return dp.off.includes(num)?'O':'P';
+};
+
+/* Capture every future Day Off change regardless of which old/new modal writes
+   dayOverrides. This avoids another patch-order problem: the history is added
+   at the database boundary, not only to one button. Entrance-only changes do
+   not create a Day Off history record. */
+const saveSettingsBefore691=DB.saveSettings.bind(DB);
+DB.saveSettings=async function(next){
+  next=next||{};
+  const beforeOverrides=(S.settings&&S.settings.dayOverrides)||{};
+  const afterOverrides=next.dayOverrides!==undefined?(next.dayOverrides||{}):beforeOverrides;
+  let hist=history691(),changed=false;
+  const effective=today691(),start=start691();
+
+  for(let day=0;day<7;day++){
+    const beforePlan=currentPlanFromOverrides691(beforeOverrides,day);
+    const afterPlan=currentPlanFromOverrides691(afterOverrides,day);
+    const beforeOff=normalizeOff691(beforePlan.off);
+    const afterOff=normalizeOff691(afterPlan.off);
+    if(JSON.stringify(beforeOff)===JSON.stringify(afterOff))continue;
+
+    /* One authoritative record per weekday per effective date. If the manager
+       edits the same weekday twice today, the second save replaces today's
+       record rather than creating conflicting duplicates. */
+    hist=hist.filter(x=>!(+x.day===day&&iso691(x.effectiveFrom)===effective));
+    hist.push({
+      day,
+      effectiveFrom:effective,
+      off:afterOff,
+      entrance:typeof afterPlan.entrance==='number'?afterPlan.entrance:null,
+      custom:!!afterOverrides[String(day)],
+      updatedAt:new Date().toISOString()
+    });
+    changed=true;
+  }
+
+  if(changed||!iso691(next[STARTKEY691])){
+    next={...next,[STARTKEY691]:start,[HISTKEY691]:hist};
+  }
+  return saveSettingsBefore691(next);
+};
+
+window.AUREA_DAY_OFF_HISTORY_V691={
+  version:'6.91',
+  dayPlanForDate:dayPlanForDate691,
+  history:history691,
+  start:start691
+};
+})();
+</script>
+
 </body>
 </html>
