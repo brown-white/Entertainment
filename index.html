@@ -20241,109 +20241,150 @@ window.AUREA_EXPORT_V682={version:'6.82',print:print681,open:window.openInfoBoar
 </script>
 
 
-<style id="aurea-live-score-v685-style">
-/* V6.85 · Professional Live Game Scoring — single authoritative score layer */
-.as685-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px}
-.as685-head h2{margin:4px 0 3px;font-size:34px;letter-spacing:-.03em}
-.as685-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:850}
-.as685-actions{display:flex;gap:8px;flex-wrap:wrap}
-.as685-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.as685-card{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:17px;text-align:left;color:var(--text);box-shadow:var(--shadow-sm);display:block;width:100%}
-.as685-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.as685-card h3{font-size:20px;margin:6px 0 5px}
-.as685-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:var(--sand);font-size:10px;font-weight:850;color:var(--accent);white-space:nowrap}
-.as685-pill.ready{background:#edf4ef;color:#416b55}
-.as685-pill.draft{background:#f6eee5;color:#8a643c}
-.as685-meta{font-size:12px;color:var(--muted);line-height:1.55}
-.as685-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
-.as685-tools button{min-height:36px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);font-weight:750;font-size:11px}
-.as685-tools button.primary{background:var(--espresso);color:#fff;border-color:var(--espresso)}
-.as685-tools button.danger{color:#a44c3d}
-.as685-empty{border:1px dashed var(--line);border-radius:22px;padding:25px;text-align:center;color:var(--muted)}
-.as685-history{margin-top:26px}
-.as685-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
-.as685-history-row:last-child{border-bottom:0}
-.as685-history-row b{display:block}
-.as685-history-row span{font-size:11px;color:var(--muted)}
-.as685-rank{font-family:var(--font-display);font-size:18px;color:var(--accent);text-align:right}
 
-.as685-editor{padding-bottom:4px}
-.as685-editor-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:15px}
-.as685-editor-head h3{font-size:28px;margin:3px 0 4px}
-.as685-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.as685-formgrid .wide{grid-column:1/-1}
-.as685-section{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}
-.as685-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
-.as685-section-title b{font-size:13px}
-.as685-help{font-size:11px;line-height:1.45;color:var(--muted);margin-top:5px}
-.as685-linkrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
-.as685-linkrow button{height:48px;white-space:nowrap}
-.as685-switch{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:12px;border-radius:15px}
-.as685-switch input{width:auto;margin:0}
-.as685-switch b{display:block}
-.as685-hidden{display:none!important}
-.as685-validation{display:none;margin-top:10px;padding:10px 12px;border-radius:13px;background:#f8eee9;color:#9a4e3e;font-size:12px;font-weight:700}
-.as685-validation.show{display:block}
+<style id="aurea-live-score-v686-style">
+/* V6.86 · Professional individual + two-team live scoring */
+.as686-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px}
+.as686-head h2{margin:4px 0 3px;font-size:34px;letter-spacing:-.03em}
+.as686-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:850}
+.as686-actions{display:flex;gap:8px;flex-wrap:wrap}
+.as686-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.as686-card{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:17px;text-align:left;color:var(--text);box-shadow:var(--shadow-sm);display:block;width:100%}
+.as686-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.as686-card h3{font-size:20px;margin:6px 0 5px}
+.as686-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:var(--sand);font-size:10px;font-weight:850;color:var(--accent);white-space:nowrap}
+.as686-pill.ready{background:#edf4ef;color:#416b55}
+.as686-pill.draft{background:#f6eee5;color:#8a643c}
+.as686-meta{font-size:12px;color:var(--muted);line-height:1.55}
+.as686-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.as686-tools button{min-height:36px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);font-weight:750;font-size:11px}
+.as686-tools button.primary{background:var(--espresso);color:#fff;border-color:var(--espresso)}
+.as686-tools button.danger{color:#a44c3d}
+.as686-empty{border:1px dashed var(--line);border-radius:22px;padding:25px;text-align:center;color:var(--muted)}
+.as686-history{margin-top:26px}
+.as686-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.as686-history-row:last-child{border-bottom:0}
+.as686-history-row b{display:block}
+.as686-history-row span{font-size:11px;color:var(--muted)}
+.as686-rank{font-family:var(--font-display);font-size:18px;color:var(--accent);text-align:right}
 
-.as685-preview{margin-top:18px;border:1px solid var(--line);border-radius:22px;padding:14px;background:linear-gradient(160deg,var(--card),var(--sand))}
-.as685-preview-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
-.as685-phone{max-width:430px;margin:auto;border:1px solid var(--line);background:var(--card);border-radius:24px;padding:15px;box-shadow:0 12px 28px rgba(0,0,0,.07)}
-.as685-assigned{border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:10px}
-.as685-assigned b{display:block;font-size:15px}
-.as685-assigned small{display:block;color:var(--muted);margin-top:3px}
-.as685-preview-btn{margin-top:10px;width:100%;border:0;border-radius:999px;padding:11px 14px;background:var(--espresso);color:#fff;font-weight:850}
-.as685-livepanel{border:1px solid var(--line);border-radius:18px;padding:13px}
-.as685-livepanel-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.as685-livepanel-head b{display:block;font-size:16px}
-.as685-livepanel-head span{font-size:10px;color:#a04d3e;font-weight:850;letter-spacing:.1em}
-.as685-preview-player{display:grid;grid-template-columns:25px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
-.as685-preview-player:last-child{border-bottom:0}
-.as685-preview-player i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-style:normal;font-size:10px;font-weight:850}
-.as685-preview-player strong{font-size:13px}
-.as685-preview-player em{font-style:normal;font-weight:850;color:var(--accent)}
+.as686-editor{padding-bottom:4px}
+.as686-editor-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:15px}
+.as686-editor-head h3{font-size:28px;margin:3px 0 4px}
+.as686-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.as686-formgrid .wide{grid-column:1/-1}
+.as686-section{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}
+.as686-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.as686-section-title b{font-size:13px}
+.as686-help{font-size:11px;line-height:1.45;color:var(--muted);margin-top:5px}
+.as686-linkrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.as686-linkrow button{height:48px;white-space:nowrap}
+.as686-switch{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:12px;border-radius:15px}
+.as686-switch input{width:auto;margin:0}
+.as686-switch b{display:block}
+.as686-hidden{display:none!important}
+.as686-validation{display:none;margin-top:10px;padding:10px 12px;border-radius:13px;background:#f8eee9;color:#9a4e3e;font-size:12px;font-weight:700}
+.as686-validation.show{display:block}
+.as686-segment{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;border:1px solid var(--line);border-radius:16px;background:var(--sand)}
+.as686-segment button{border:0;border-radius:12px;padding:11px 10px;background:transparent;color:var(--muted);font-weight:800}
+.as686-segment button.active{background:var(--card);color:var(--text);box-shadow:var(--shadow-sm)}
+.as686-teamnames{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}
+.as686-teamname{border:1px solid var(--line);border-radius:16px;padding:11px;background:var(--card)}
+.as686-teamname label{font-size:9px;margin-bottom:6px}
+.as686-teamname input{margin:0!important}
 
-.as685-scorebtn{margin-top:8px!important;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:34px!important;padding:7px 11px!important;border-radius:999px!important;background:var(--espresso)!important;color:#fff!important;border:0!important;font-size:11px!important;font-weight:850!important;position:relative;z-index:4}
-.as685-scorebtn.done{background:#6d725e!important}
+.as686-preview{margin-top:18px;border:1px solid var(--line);border-radius:22px;padding:14px;background:linear-gradient(160deg,var(--card),var(--sand))}
+.as686-preview-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.as686-phone{max-width:450px;margin:auto;border:1px solid var(--line);background:var(--card);border-radius:24px;padding:15px;box-shadow:0 12px 28px rgba(0,0,0,.07)}
+.as686-assigned{border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:10px}
+.as686-assigned b{display:block;font-size:15px}
+.as686-assigned small{display:block;color:var(--muted);margin-top:3px}
+.as686-preview-btn{margin-top:10px;width:100%;border:0;border-radius:999px;padding:11px 14px;background:var(--espresso);color:#fff;font-weight:850}
+.as686-livepanel{border:1px solid var(--line);border-radius:18px;padding:13px}
+.as686-livepanel-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.as686-livepanel-head b{display:block;font-size:16px}
+.as686-livepanel-head span{font-size:10px;color:#a04d3e;font-weight:850;letter-spacing:.1em}
+.as686-preview-player{display:grid;grid-template-columns:25px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.as686-preview-player:last-child{border-bottom:0}
+.as686-preview-player i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-style:normal;font-size:10px;font-weight:850}
+.as686-preview-player strong{font-size:13px}
+.as686-preview-player em{font-style:normal;font-weight:850;color:var(--accent)}
+.as686-preview-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:stretch}
+.as686-preview-team{border:1px solid var(--line);border-radius:15px;padding:10px}
+.as686-preview-team strong{display:block;font-size:13px}
+.as686-preview-team .score{font-family:var(--font-display);font-size:26px;margin:4px 0}
+.as686-preview-team small{display:block;color:var(--muted);font-size:10px;line-height:1.4}
+.as686-vs{display:grid;place-items:center;font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.08em}
 
-.as685-game{padding-bottom:4px}
-.as685-gamehead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
-.as685-gamehead h3{font-size:27px;margin:2px 0 4px}
-.as685-live{display:inline-flex;gap:6px;align-items:center;font-size:10px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:#a04d3e}
-.as685-live:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-.as685-statbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-.as685-stat{border:1px solid var(--line);border-radius:15px;padding:10px;text-align:center}
-.as685-stat b{display:block;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.as685-stat span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.as685-scoretable{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
-.as685-scorehead,.as685-player{display:grid;gap:7px;align-items:center;min-width:460px}
-.as685-scorehead{font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 0 5px}
-.as685-player{margin:7px 0}
-.as685-player .rank{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-weight:850;font-size:12px}
-.as685-player input{margin:0!important;min-width:0}
-.as685-player input[type=number]{text-align:center;font-weight:800}
-.as685-player button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted)}
-.as685-total{height:44px;border:1px solid var(--line);border-radius:13px;display:grid;place-items:center;font-weight:900;background:var(--sand)}
-.as685-room{max-width:90px}
-.as685-winner{border:1px solid rgba(174,132,79,.35);background:linear-gradient(145deg,rgba(247,237,216,.95),rgba(255,255,255,.75));border-radius:22px;padding:18px;margin:14px 0}
-.as685-winner .cup{font-size:31px}
-.as685-winner b{font-family:var(--font-display);font-size:25px;display:block;margin:3px 0}
-.as685-bottom{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.as685-bottom .btn{flex:1;min-width:130px}
-.as685-note{padding:10px 12px;border-radius:14px;background:var(--sand);font-size:12px;color:var(--muted);margin:10px 0}
+.as686-scorebtn{margin-top:8px!important;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:34px!important;padding:7px 11px!important;border-radius:999px!important;background:var(--espresso)!important;color:#fff!important;border:0!important;font-size:11px!important;font-weight:850!important;position:relative;z-index:4}
+.as686-scorebtn.done{background:#6d725e!important}
+
+.as686-game{padding-bottom:4px}
+.as686-gamehead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+.as686-gamehead h3{font-size:27px;margin:2px 0 4px}
+.as686-live{display:inline-flex;gap:6px;align-items:center;font-size:10px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:#a04d3e}
+.as686-live:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.as686-statbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.as686-stat{border:1px solid var(--line);border-radius:15px;padding:10px;text-align:center}
+.as686-stat b{display:block;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as686-stat span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.as686-scoretable{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
+.as686-scorehead,.as686-player{display:grid;gap:7px;align-items:center;min-width:460px}
+.as686-scorehead{font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 0 5px}
+.as686-player{margin:7px 0}
+.as686-player .rank{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-weight:850;font-size:12px}
+.as686-player input{margin:0!important;min-width:0}
+.as686-player input[type=number]{text-align:center;font-weight:800}
+.as686-player button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.as686-total{height:44px;border:1px solid var(--line);border-radius:13px;display:grid;place-items:center;font-weight:900;background:var(--sand)}
+.as686-room{max-width:90px}
+.as686-note{padding:10px 12px;border-radius:14px;background:var(--sand);font-size:12px;color:var(--muted);margin:10px 0}
+.as686-winner{border:1px solid rgba(174,132,79,.35);background:linear-gradient(145deg,rgba(247,237,216,.95),rgba(255,255,255,.75));border-radius:22px;padding:18px;margin:14px 0}
+.as686-winner .cup{font-size:31px}
+.as686-winner b{font-family:var(--font-display);font-size:25px;display:block;margin:3px 0}
+.as686-bottom{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.as686-bottom .btn{flex:1;min-width:130px}
+
+.as686-teamscoreboard{display:grid;grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);gap:10px;align-items:stretch;margin:12px 0 14px}
+.as686-teamhero{border:1px solid var(--line);border-radius:20px;padding:14px;background:var(--card);text-align:center}
+.as686-teamhero.leading{background:linear-gradient(145deg,var(--sand),var(--card));border-color:rgba(174,132,79,.38)}
+.as686-teamhero span{display:block;font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.as686-teamhero b{display:block;font-size:18px;margin:3px 0}
+.as686-teamhero strong{font-family:var(--font-display);font-size:30px;color:var(--accent)}
+.as686-teamsection{border:1px solid var(--line);border-radius:21px;padding:13px;margin:12px 0;background:var(--card)}
+.as686-teamsection-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
+.as686-teamsection-head b{font-size:18px}
+.as686-teamsection-head strong{font-family:var(--font-display);font-size:23px;color:var(--accent)}
+.as686-teamsection-head small{display:block;color:var(--muted);font-size:10px}
+.as686-addteam{width:100%;margin-top:10px;border:1px dashed var(--line);background:transparent;color:var(--text);border-radius:14px;padding:9px;font-weight:800}
+.as686-team-result{border:1px solid var(--line);border-radius:18px;padding:12px;margin:10px 0}
+.as686-team-result.winner{border-color:rgba(174,132,79,.45);background:var(--sand)}
+.as686-team-result-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.as686-team-result-head b{font-size:18px}
+.as686-team-result-head strong{font-family:var(--font-display);font-size:24px;color:var(--accent)}
+.as686-memberresult{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:12px}
+.as686-memberresult:first-of-type{margin-top:8px}
+.as686-memberresult span{color:var(--muted)}
+
 @media(max-width:620px){
- .as685-grid{grid-template-columns:1fr}
- .as685-head{align-items:flex-start;flex-direction:column}
- .as685-formgrid{grid-template-columns:1fr}
- .as685-formgrid .wide{grid-column:auto}
- .as685-linkrow{grid-template-columns:1fr}
- .as685-linkrow button{height:auto}
- .as685-editor-head{flex-direction:column}
+ .as686-grid{grid-template-columns:1fr}
+ .as686-head{align-items:flex-start;flex-direction:column}
+ .as686-formgrid{grid-template-columns:1fr}
+ .as686-formgrid .wide{grid-column:auto}
+ .as686-linkrow{grid-template-columns:1fr}
+ .as686-linkrow button{height:auto}
+ .as686-editor-head{flex-direction:column}
+ .as686-teamnames{grid-template-columns:1fr}
+ .as686-preview-vs{grid-template-columns:1fr}
+ .as686-preview-vs .as686-vs{min-height:22px}
+ .as686-teamscoreboard{grid-template-columns:1fr}
+ .as686-teamscoreboard .as686-vs{min-height:22px}
 }
 </style>
 
-<script id="aurea-live-score-v685-script">
+<script id="aurea-live-score-v686-script">
 (()=>{
-if(window.__AUREA_LIVE_SCORE_V685)return; window.__AUREA_LIVE_SCORE_V685=1;
+if(window.__AUREA_LIVE_SCORE_V686)return; window.__AUREA_LIVE_SCORE_V686=1;
 
 const KEYC='activityScoreGameConfigs', KEYS='activityScoreGameSessions';
 const $=(s,r=document)=>r.querySelector(s);
@@ -20365,12 +20406,16 @@ function migrateConfig(c,i){
    else if(/time|second/.test(oldLabel))format='time';
    else format='points';
  }
+ const teamNames=Array.isArray(c.teamNames)&&c.teamNames.length>=2
+   ? [String(c.teamNames[0]||'Team A'),String(c.teamNames[1]||'Team B')]
+   : [String(c.team1Name||'Team A'),String(c.team2Name||'Team B')];
  return {
    id:c.id||ID(), name:c.name||c.activity||'', activity:c.activity||'',
    enabled:c.enabled!==false, format, customUnit:c.customUnit||((format==='custom'&&c.scoreLabel)||''),
    rule:c.rule==='low'?'low':'high', structure:c.structure||((+c.rounds||1)>1?'rounds':'single'),
    rounds:Math.max(1,Math.min(12,+c.rounds||1)), guestDetails:c.guestDetails||'name',
-   allowTies:c.allowTies!==false, instructions:c.instructions||'', order:Number.isFinite(+c.order)?+c.order:i
+   allowTies:c.allowTies!==false, instructions:c.instructions||'', order:Number.isFinite(+c.order)?+c.order:i,
+   playMode:c.playMode==='teams'?'teams':'individual', teamNames
  };
 }
 function configs(){return configsRaw().map(migrateConfig).sort((a,b)=>(+a.order||0)-(+b.order||0))}
@@ -20411,7 +20456,7 @@ async function persist(key,val){
    await DB.saveSettings(next);
    return true;
  }catch(err){
-   console.error('V6.85 live score save failed',err);
+   console.error('V6.86 live score save failed',err);
    toastErr(typeof t==='function'?t('errSave'):'Could not save. Please try again.');
    return false;
  }
@@ -20420,162 +20465,227 @@ function totalFor(p,c){
  if(c.structure==='rounds')return (p.rounds||[]).slice(0,c.rounds).reduce((sum,v)=>sum+num(v),0);
  return num(p.score);
 }
-function ranked(g,c){
- const ps=(g.players||[]).map((p,i)=>({...p,_i:i,total:totalFor(p,c)}));
+function rankedPlayers(players,c){
+ const ps=(players||[]).map((p,i)=>({...p,_i:i,total:totalFor(p,c)}));
  ps.sort((a,b)=>c.rule==='low'?(a.total-b.total||a._i-b._i):(b.total-a.total||a._i-b._i));
  return ps;
 }
-function winners(g,c){
+function ranked(g,c){return rankedPlayers(g.players||[],c)}
+function individualWinners(g,c){
  const r=ranked(g,c); if(!r.length)return[];
+ const best=r[0].total;
+ return r.filter(x=>x.total===best);
+}
+function teamName(c,key){return key==='team2'?(c.teamNames[1]||'Team B'):(c.teamNames[0]||'Team A')}
+function teamPlayers(g,key){return (g.players||[]).filter(p=>(p.team||'team1')===key)}
+function teamTotal(g,c,key){return teamPlayers(g,key).reduce((sum,p)=>sum+totalFor(p,c),0)}
+function teamResults(g,c){
+ const rows=['team1','team2'].map((key,i)=>({key,name:teamName(c,key),total:teamTotal(g,c,key),players:rankedPlayers(teamPlayers(g,key),c),_i:i}));
+ rows.sort((a,b)=>c.rule==='low'?(a.total-b.total||a._i-b._i):(b.total-a.total||a._i-b._i));
+ return rows;
+}
+function winningTeams(g,c){
+ const r=teamResults(g,c); if(!r.length)return[];
  const best=r[0].total;
  return r.filter(x=>x.total===best);
 }
 function statusFor(c){return c.activity&&c.enabled!==false?'ready':'draft'}
 
 function editor(existing){
- const start=existing?migrateConfig(existing,0):migrateConfig({id:ID(),enabled:true,format:'points',rule:'high',structure:'rounds',rounds:3,guestDetails:'name-room',allowTies:true},configs().length);
+ const start=existing?migrateConfig(existing,0):migrateConfig({
+   id:ID(),enabled:true,format:'points',rule:'high',structure:'rounds',rounds:3,
+   guestDetails:'name-room',allowTies:true,playMode:'individual',teamNames:['Team A','Team B']
+ },configs().length);
  const acts=activityNames();
- const w=baseModal(`<div class="as685-editor">
-  <div class="as685-editor-head"><div><div class="as685-kicker">LIVE GAME BUILDER</div><h3>${existing?'Edit score game':'Create score game'}</h3><p class="mini">Build the scoring screen visually. Save as a draft anytime; connect an activity when you are ready to give it to entertainers.</p></div><span class="as685-pill ${statusFor(start)}" id="as685-status">${statusFor(start)==='ready'?'READY':'DRAFT'}</span></div>
 
-  <div class="as685-formgrid">
-   <div class="wide"><label>Game name</label><input id="as685-name" value="${E(start.name)}" placeholder="e.g. Darts"></div>
+ const w=baseModal(`<div class="as686-editor">
+  <div class="as686-editor-head"><div><div class="as686-kicker">LIVE GAME BUILDER</div><h3>${existing?'Edit score game':'Create score game'}</h3><p class="mini">Build the scoring screen visually. Use individual scoring or switch the game to two teams.</p></div><span class="as686-pill ${statusFor(start)}" id="as686-status">${statusFor(start)==='ready'?'READY':'DRAFT'}</span></div>
+
+  <div class="as686-formgrid">
+   <div class="wide"><label>Game name</label><input id="as686-name" value="${E(start.name)}" placeholder="e.g. Darts"></div>
 
    <div class="wide">
     <label>Connected programme activity</label>
-    <div class="as685-linkrow">
-     <select id="as685-act"><option value="">Not connected yet</option>${acts.map(n=>`<option value="${E(n)}" ${N(n)===N(start.activity)?'selected':''}>${E(n)}</option>`).join('')}</select>
-     <button type="button" class="btn ghost" id="as685-auto">Auto connect</button>
+    <div class="as686-linkrow">
+     <select id="as686-act"><option value="">Not connected yet</option>${acts.map(n=>`<option value="${E(n)}" ${N(n)===N(start.activity)?'selected':''}>${E(n)}</option>`).join('')}</select>
+     <button type="button" class="btn ghost" id="as686-auto">Auto connect</button>
     </div>
-    <p class="as685-help">This connection is what makes the Start Game button appear on the entertainer's assigned activity. You can still save without it as a draft.</p>
+    <p class="as686-help">The connected activity is where the entertainer receives the Start Game button. You can still save without a connection as a draft.</p>
    </div>
   </div>
 
-  <div class="as685-section">
-   <div class="as685-section-title"><b>Scoring system</b><span class="mini">What the entertainer enters</span></div>
-   <div class="as685-formgrid">
-    <div><label>Scoring format</label><select id="as685-format">
+  <div class="as686-section">
+   <div class="as686-section-title"><b>Competition format</b><span class="mini">Individual or two teams</span></div>
+   <div class="as686-segment">
+    <button type="button" id="as686-mode-ind" class="${start.playMode!=='teams'?'active':''}">👤 Individual</button>
+    <button type="button" id="as686-mode-team" class="${start.playMode==='teams'?'active':''}">👥 2 Teams</button>
+   </div>
+   <div id="as686-team-settings" class="${start.playMode==='teams'?'':'as686-hidden'}">
+    <div class="as686-teamnames">
+     <div class="as686-teamname"><label>TEAM 1 NAME</label><input id="as686-team1" value="${E(start.teamNames[0])}" placeholder="e.g. Banana"></div>
+     <div class="as686-teamname"><label>TEAM 2 NAME</label><input id="as686-team2" value="${E(start.teamNames[1])}" placeholder="e.g. Coca"></div>
+    </div>
+    <p class="as686-help">Every guest keeps their own score. The app adds all player totals inside each team and calculates the final team score automatically.</p>
+   </div>
+  </div>
+
+  <div class="as686-section">
+   <div class="as686-section-title"><b>Scoring system</b><span class="mini">What the entertainer enters</span></div>
+   <div class="as686-formgrid">
+    <div><label>Scoring format</label><select id="as686-format">
       <option value="points" ${start.format==='points'?'selected':''}>Points</option>
       <option value="wins" ${start.format==='wins'?'selected':''}>Wins</option>
       <option value="time" ${start.format==='time'?'selected':''}>Time (seconds)</option>
       <option value="custom" ${start.format==='custom'?'selected':''}>Custom unit</option>
     </select></div>
-    <div id="as685-custom-wrap" class="${start.format==='custom'?'':'as685-hidden'}"><label>Custom unit</label><input id="as685-custom" value="${E(start.customUnit)}" placeholder="e.g. Targets"></div>
-    <div><label>Winner logic</label><select id="as685-rule">
+    <div id="as686-custom-wrap" class="${start.format==='custom'?'':'as686-hidden'}"><label>Custom unit</label><input id="as686-custom" value="${E(start.customUnit)}" placeholder="e.g. Targets"></div>
+    <div><label>Winner logic</label><select id="as686-rule">
       <option value="high" ${start.rule==='high'?'selected':''}>Highest total wins</option>
       <option value="low" ${start.rule==='low'?'selected':''}>Lowest total wins</option>
     </select></div>
-    <div><label>Game structure</label><select id="as685-structure">
+    <div><label>Game structure</label><select id="as686-structure">
       <option value="single" ${start.structure==='single'?'selected':''}>One final score</option>
       <option value="rounds" ${start.structure==='rounds'?'selected':''}>Multiple rounds / sets</option>
     </select></div>
-    <div id="as685-rounds-wrap" class="${start.structure==='rounds'?'':'as685-hidden'}"><label>Number of rounds</label><input id="as685-rounds" type="number" min="1" max="12" value="${start.rounds}"></div>
-    <div><label>Guest information</label><select id="as685-guest">
+    <div id="as686-rounds-wrap" class="${start.structure==='rounds'?'':'as686-hidden'}"><label>Number of rounds</label><input id="as686-rounds" type="number" min="1" max="12" value="${start.rounds}"></div>
+    <div><label>Guest information</label><select id="as686-guest">
       <option value="name" ${start.guestDetails==='name'?'selected':''}>Guest name</option>
       <option value="name-room" ${start.guestDetails==='name-room'?'selected':''}>Guest name + room number</option>
     </select></div>
    </div>
-   <label class="as685-switch" style="margin-top:12px"><input id="as685-ties" type="checkbox" ${start.allowTies?'checked':''}><span><b>Allow joint winners</b><span class="mini">If off, the game cannot finish while first place is tied.</span></span></label>
+   <label class="as686-switch" style="margin-top:12px"><input id="as686-ties" type="checkbox" ${start.allowTies?'checked':''}><span><b>Allow a tied result</b><span class="mini">In team mode this means both teams can finish with the same final score. Turn it off to require a tiebreak.</span></span></label>
   </div>
 
-  <div class="as685-section">
-   <div class="as685-section-title"><b>Entertainer instructions</b><span class="mini">Optional</span></div>
-   <textarea id="as685-instructions" rows="3" placeholder="Example: 3 throws per guest. Enter every round, then finish the game.">${E(start.instructions)}</textarea>
+  <div class="as686-section">
+   <div class="as686-section-title"><b>Entertainer instructions</b><span class="mini">Optional</span></div>
+   <textarea id="as686-instructions" rows="3" placeholder="Example: Split the guests into two teams. Enter every player's score after each round.">${E(start.instructions)}</textarea>
   </div>
 
-  <label class="as685-switch" style="margin-top:15px"><input id="as685-enabled" type="checkbox" ${start.enabled!==false?'checked':''}><span><b>Available to entertainers</b><span class="mini">Requires a connected programme activity.</span></span></label>
-  <div class="as685-validation" id="as685-validation"></div>
+  <label class="as686-switch" style="margin-top:15px"><input id="as686-enabled" type="checkbox" ${start.enabled!==false?'checked':''}><span><b>Available to entertainers</b><span class="mini">Requires a connected programme activity.</span></span></label>
+  <div class="as686-validation" id="as686-validation"></div>
 
-  <div class="as685-preview">
-   <div class="as685-preview-top"><div><div class="as685-kicker">LIVE PREVIEW</div><b>How the entertainer will see it</b></div><button type="button" class="btn ghost" id="as685-full-preview">Open full preview</button></div>
-   <div id="as685-preview-body"></div>
+  <div class="as686-preview">
+   <div class="as686-preview-top"><div><div class="as686-kicker">LIVE PREVIEW</div><b>How the entertainer will see it</b></div><button type="button" class="btn ghost" id="as686-full-preview">Open full preview</button></div>
+   <div id="as686-preview-body"></div>
   </div>
 
-  <div class="as685-bottom"><button class="btn" id="as685-save">Save setup</button><button class="btn ghost" id="as685-close">${typeof t==='function'?t('close'):'Close'}</button></div>
+  <div class="as686-bottom"><button class="btn" id="as686-save">Save setup</button><button class="btn ghost" id="as686-close">${typeof t==='function'?t('close'):'Close'}</button></div>
  </div>`);
 
  const q=s=>$(s,w);
+ let mode=start.playMode;
+
  const values=()=>({
    ...start,
-   name:q('#as685-name').value.trim(),
-   activity:q('#as685-act').value.trim(),
-   format:q('#as685-format').value,
-   customUnit:q('#as685-custom').value.trim(),
-   rule:q('#as685-rule').value,
-   structure:q('#as685-structure').value,
-   rounds:Math.max(1,Math.min(12,+q('#as685-rounds').value||1)),
-   guestDetails:q('#as685-guest').value,
-   allowTies:q('#as685-ties').checked,
-   instructions:q('#as685-instructions').value.trim(),
-   enabled:q('#as685-enabled').checked
+   name:q('#as686-name').value.trim(),
+   activity:q('#as686-act').value.trim(),
+   format:q('#as686-format').value,
+   customUnit:q('#as686-custom').value.trim(),
+   rule:q('#as686-rule').value,
+   structure:q('#as686-structure').value,
+   rounds:Math.max(1,Math.min(12,+q('#as686-rounds').value||1)),
+   guestDetails:q('#as686-guest').value,
+   allowTies:q('#as686-ties').checked,
+   instructions:q('#as686-instructions').value.trim(),
+   enabled:q('#as686-enabled').checked,
+   playMode:mode,
+   teamNames:[
+     q('#as686-team1').value.trim()||'Team A',
+     q('#as686-team2').value.trim()||'Team B'
+   ]
  });
 
- function sync(){
-   const v=values();
-   q('#as685-custom-wrap').classList.toggle('as685-hidden',v.format!=='custom');
-   q('#as685-rounds-wrap').classList.toggle('as685-hidden',v.structure!=='rounds');
-   if(v.format==='time' && q('#as685-rule').dataset.autoset!=='no'){
-     q('#as685-rule').value='low';
-   }
-   const connected=!!q('#as685-act').value;
-   q('#as685-status').textContent=connected&&q('#as685-enabled').checked?'READY':'DRAFT';
-   q('#as685-status').className='as685-pill '+(connected&&q('#as685-enabled').checked?'ready':'draft');
+ function setMode(next){
+   mode=next==='teams'?'teams':'individual';
+   q('#as686-mode-ind').classList.toggle('active',mode==='individual');
+   q('#as686-mode-team').classList.toggle('active',mode==='teams');
+   q('#as686-team-settings').classList.toggle('as686-hidden',mode!=='teams');
    drawPreview();
  }
- function sampleUnit(v){return unit(v)}
- function drawPreview(){
-   const v=values(), u=sampleUnit(v), rounds=v.structure==='rounds'?v.rounds:1;
-   const nm=v.name||'Darts';
-   const rows=[
-    {name:'Anna',room:'214',vals:[18,22,20,17,19]},
-    {name:'Michael',room:'318',vals:[16,19,21,18,17]},
-    {name:'Sara',room:'507',vals:[20,24,23,21,22]}
+ function sync(){
+   const v=values();
+   q('#as686-custom-wrap').classList.toggle('as686-hidden',v.format!=='custom');
+   q('#as686-rounds-wrap').classList.toggle('as686-hidden',v.structure!=='rounds');
+   if(v.format==='time' && q('#as686-rule').dataset.autoset!=='no')q('#as686-rule').value='low';
+   const connected=!!q('#as686-act').value;
+   q('#as686-status').textContent=connected&&q('#as686-enabled').checked?'READY':'DRAFT';
+   q('#as686-status').className='as686-pill '+(connected&&q('#as686-enabled').checked?'ready':'draft');
+   drawPreview();
+ }
+ function samplePlayers(){
+   return [
+     {name:'Anna',room:'214',vals:[18,22,20,17,19],team:'team1'},
+     {name:'Michael',room:'318',vals:[16,19,21,18,17],team:'team1'},
+     {name:'Sara',room:'507',vals:[20,24,23,21,22],team:'team2'},
+     {name:'Omar',room:'405',vals:[17,18,19,22,20],team:'team2'}
    ];
-   const calc=r=>v.structure==='rounds'?r.vals.slice(0,rounds).reduce((a,b)=>a+b,0):r.vals[0];
-   rows.sort((a,b)=>v.rule==='low'?calc(a)-calc(b):calc(b)-calc(a));
-   q('#as685-preview-body').innerHTML=`<div class="as685-phone">
-    <div class="as685-assigned"><b>${E(nm)}</b><small>15:30 · Pool Area · Assigned to you</small><button class="as685-preview-btn" type="button">🏆 Start game</button></div>
-    <div class="as685-livepanel">
-     <div class="as685-livepanel-head"><div><b>${E(nm)}</b><small class="mini">${v.structure==='rounds'?rounds+' rounds · ':''}${E(u)} · ${v.rule==='low'?'lowest':'highest'} total wins</small></div><span>● LIVE</span></div>
-     ${rows.map((r,i)=>`<div class="as685-preview-player"><i>${i+1}</i><div><strong>${E(r.name)}</strong>${v.guestDetails==='name-room'?`<small class="mini">Room ${E(r.room)}</small>`:''}</div><em>${calc(r)} ${E(u)}</em></div>`).join('')}
+ }
+ function sampleTotal(r,v){
+   const count=v.structure==='rounds'?v.rounds:1;
+   return v.structure==='rounds'?r.vals.slice(0,count).reduce((a,b)=>a+b,0):r.vals[0];
+ }
+ function drawPreview(){
+   const v=values(), u=unit(v), nm=v.name||'Darts', rows=samplePlayers();
+   let content='';
+   if(v.playMode==='teams'){
+     const a=rows.filter(x=>x.team==='team1'),b=rows.filter(x=>x.team==='team2');
+     const ta=a.reduce((s,x)=>s+sampleTotal(x,v),0),tb=b.reduce((s,x)=>s+sampleTotal(x,v),0);
+     content=`<div class="as686-preview-vs">
+       <div class="as686-preview-team"><strong>${E(v.teamNames[0])}</strong><div class="score">${ta}</div><small>${a.map(x=>E(x.name)+' '+sampleTotal(x,v)).join(' · ')}</small></div>
+       <div class="as686-vs">VS</div>
+       <div class="as686-preview-team"><strong>${E(v.teamNames[1])}</strong><div class="score">${tb}</div><small>${b.map(x=>E(x.name)+' '+sampleTotal(x,v)).join(' · ')}</small></div>
+      </div>`;
+   }else{
+     rows.sort((a,b)=>v.rule==='low'?sampleTotal(a,v)-sampleTotal(b,v):sampleTotal(b,v)-sampleTotal(a,v));
+     content=rows.slice(0,3).map((r,i)=>`<div class="as686-preview-player"><i>${i+1}</i><div><strong>${E(r.name)}</strong>${v.guestDetails==='name-room'?`<small class="mini">Room ${E(r.room)}</small>`:''}</div><em>${sampleTotal(r,v)} ${E(u)}</em></div>`).join('');
+   }
+   q('#as686-preview-body').innerHTML=`<div class="as686-phone">
+    <div class="as686-assigned"><b>${E(nm)}</b><small>15:30 · Pool Area · Assigned to you</small><button class="as686-preview-btn" type="button">🏆 Start game</button></div>
+    <div class="as686-livepanel">
+     <div class="as686-livepanel-head"><div><b>${E(nm)}</b><small class="mini">${v.playMode==='teams'?'2 teams · ':''}${v.structure==='rounds'?v.rounds+' rounds · ':''}${E(u)} · ${v.rule==='low'?'lowest':'highest'} total wins</small></div><span>● LIVE</span></div>
+     ${content}
     </div></div>`;
  }
  function tryAuto(silent=false){
-   const name=q('#as685-name').value.trim(), hit=bestActivity(name);
-   if(hit){q('#as685-act').value=hit;if(!silent)toastOk('Connected to '+hit);sync();return true}
+   const name=q('#as686-name').value.trim(),hit=bestActivity(name);
+   if(hit){q('#as686-act').value=hit;if(!silent)toastOk('Connected to '+hit);sync();return true}
    if(!silent)toastWarn('No matching programme activity found yet. You can still save this as a draft.');
    sync();return false;
  }
 
- ['#as685-name','#as685-act','#as685-format','#as685-custom','#as685-rule','#as685-structure','#as685-rounds','#as685-guest','#as685-ties','#as685-instructions','#as685-enabled']
- .forEach(sel=>{const el=q(sel);if(el){el.addEventListener('input',sync);el.addEventListener('change',()=>{if(sel==='#as685-rule')el.dataset.autoset='no';sync()})}});
- q('#as685-auto').onclick=()=>tryAuto(false);
- q('#as685-close').onclick=()=>w.remove();
- q('#as685-full-preview').onclick=()=>{
-   let v=values();
-   if(!v.activity)v.activity=v.name||'Preview Activity';
+ q('#as686-mode-ind').onclick=()=>setMode('individual');
+ q('#as686-mode-team').onclick=()=>setMode('teams');
+
+ ['#as686-name','#as686-act','#as686-format','#as686-custom','#as686-rule','#as686-structure','#as686-rounds','#as686-guest','#as686-ties','#as686-instructions','#as686-enabled','#as686-team1','#as686-team2']
+ .forEach(sel=>{const el=q(sel);if(el){el.addEventListener('input',sync);el.addEventListener('change',()=>{if(sel==='#as686-rule')el.dataset.autoset='no';sync()})}});
+
+ q('#as686-auto').onclick=()=>tryAuto(false);
+ q('#as686-close').onclick=()=>w.remove();
+ q('#as686-full-preview').onclick=()=>{
+   let v=values(); if(!v.activity)v.activity=v.name||'Preview Activity';
    gameModal({id:'preview-'+v.id,name:v.activity,time:'15:30',location:'Pool Area',day:typeof todayIndex==='function'?todayIndex():0},v,true);
  };
- q('#as685-save').onclick=async()=>{
-   let v=values();
-   const validation=q('#as685-validation');
+ q('#as686-save').onclick=async()=>{
+   let v=values(),validation=q('#as686-validation');
    validation.classList.remove('show');validation.textContent='';
-   if(!v.name){validation.textContent='Add a game name before saving.';validation.classList.add('show');q('#as685-name').focus();return}
+   if(!v.name){validation.textContent='Add a game name before saving.';validation.classList.add('show');q('#as686-name').focus();return}
+   if(v.playMode==='teams' && (!v.teamNames[0]||!v.teamNames[1])){validation.textContent='Add a name for both teams.';validation.classList.add('show');return}
+   if(v.playMode==='teams' && N(v.teamNames[0])===N(v.teamNames[1])){validation.textContent='The two teams need different names.';validation.classList.add('show');return}
    if(!v.activity){
      const hit=bestActivity(v.name);
-     if(hit){q('#as685-act').value=hit;v=values()}
+     if(hit){q('#as686-act').value=hit;v=values()}
    }
-   if(v.format==='custom'&&!v.customUnit){validation.textContent='Add the custom scoring unit, or choose Points / Wins / Time.';validation.classList.add('show');q('#as685-custom').focus();return}
-   if(!v.activity)v.enabled=false; // save safely as draft rather than refusing to save
-   let all=configs().filter(c=>c.id!==v.id); all.push(v);
+   if(v.format==='custom'&&!v.customUnit){validation.textContent='Add the custom scoring unit, or choose Points / Wins / Time.';validation.classList.add('show');q('#as686-custom').focus();return}
+   if(!v.activity)v.enabled=false;
+   let all=configs().filter(c=>c.id!==v.id);all.push(v);
    all.sort((a,b)=>(+a.order||0)-(+b.order||0)).forEach((c,i)=>c.order=i);
-   const ok=await persist(KEYC,all);
-   if(!ok)return;
+   if(!await persist(KEYC,all))return;
    w.remove();render();
    if(v.activity)toastOk('Score game saved');
    else toastWarn('Saved as draft. Connect it to a programme activity before entertainers can use it.');
  };
  if(!start.activity&&start.name)tryAuto(true);
+ setMode(start.playMode);
  sync();
 }
 
@@ -20592,23 +20702,30 @@ async function deleteConfig(id){
 function managerInner(){
  const cs=configs();
  const hist=sessionsRaw().filter(x=>x.status==='finished').slice().sort((a,b)=>String(b.finishedAt||'').localeCompare(String(a.finishedAt||''))).slice(0,50);
- return `<div class="as685-head"><div><div class="as685-kicker">LIVE OPERATIONS</div><h2>Activities Score</h2><p class="mini">Build, preview and manage live game scoring. No paper and no code.</p></div><div class="as685-actions"><button class="btn" id="as685-new">+ Create score game</button></div></div>
- ${cs.length?`<div class="as685-grid">${cs.map((c,i)=>`<div class="as685-card">
-  <div class="as685-cardtop"><div><span class="as685-pill ${statusFor(c)}">${statusFor(c)==='ready'?'READY':'DRAFT'}</span><h3>${E(c.name||'Untitled game')}</h3></div><div style="display:flex;gap:5px"><button class="iconbtn" data-as685-up="${E(c.id)}" ${i===0?'disabled':''}>↑</button><button class="iconbtn" data-as685-down="${E(c.id)}" ${i===cs.length-1?'disabled':''}>↓</button></div></div>
-  <div class="as685-meta">${c.activity?`Connected: <b>${E(c.activity)}</b>`:'Not connected to a programme activity'}<br>${E(unit(c))} · ${c.structure==='rounds'?c.rounds+' rounds':'one final score'} · ${c.rule==='low'?'lowest':'highest'} total wins${c.guestDetails==='name-room'?' · room number':''}</div>
-  <div class="as685-tools"><button class="primary" data-as685-edit="${E(c.id)}">Edit</button><button data-as685-preview="${E(c.id)}">Preview</button><button class="danger" data-as685-del="${E(c.id)}">Delete</button></div>
- </div>`).join('')}</div>`:`<div class="as685-empty"><b>No live score games yet.</b><br>Create Darts, Boccia, Bean Bags or any competition you want.</div>`}
- <div class="as685-history"><div class="as685-kicker">COMPLETED GAMES</div><h3>Results history</h3>${hist.length?`<div class="card">${hist.map(g=>`<div class="as685-history-row" data-as685-history="${E(g.id)}"><div><b>${E(g.activityName||'Game')}</b><span>${E(g.date||'')} · ${E(g.entertainerName||'')} · ${(g.players||[]).length} participants</span></div><div class="as685-rank">🏆 ${E(g.winner||'—')}</div></div>`).join('')}</div>`:`<p class="mini">Finished games will appear here automatically.</p>`}</div>`;
+ return `<div class="as686-head"><div><div class="as686-kicker">LIVE OPERATIONS</div><h2>Activities Score</h2><p class="mini">Build, preview and manage individual or two-team live scoring. No paper and no code.</p></div><div class="as686-actions"><button class="btn" id="as686-new">+ Create score game</button></div></div>
+ ${cs.length?`<div class="as686-grid">${cs.map((c,i)=>`<div class="as686-card">
+  <div class="as686-cardtop"><div><span class="as686-pill ${statusFor(c)}">${statusFor(c)==='ready'?'READY':'DRAFT'}</span><h3>${E(c.name||'Untitled game')}</h3></div><div style="display:flex;gap:5px"><button class="iconbtn" data-as686-up="${E(c.id)}" ${i===0?'disabled':''}>↑</button><button class="iconbtn" data-as686-down="${E(c.id)}" ${i===cs.length-1?'disabled':''}>↓</button></div></div>
+  <div class="as686-meta">${c.activity?`Connected: <b>${E(c.activity)}</b>`:'Not connected to a programme activity'}<br>${c.playMode==='teams'?`2 teams · <b>${E(c.teamNames[0])}</b> vs <b>${E(c.teamNames[1])}</b>`:'Individual ranking'} · ${E(unit(c))} · ${c.structure==='rounds'?c.rounds+' rounds':'one final score'} · ${c.rule==='low'?'lowest':'highest'} total wins</div>
+  <div class="as686-tools"><button class="primary" data-as686-edit="${E(c.id)}">Edit</button><button data-as686-preview="${E(c.id)}">Preview</button><button class="danger" data-as686-del="${E(c.id)}">Delete</button></div>
+ </div>`).join('')}</div>`:`<div class="as686-empty"><b>No live score games yet.</b><br>Create Darts, Boccia, Bean Bags or any competition you want.</div>`}
+ <div class="as686-history"><div class="as686-kicker">COMPLETED GAMES</div><h3>Results history</h3>${hist.length?`<div class="card">${hist.map(g=>`<div class="as686-history-row" data-as686-history="${E(g.id)}"><div><b>${E(g.activityName||'Game')}</b><span>${E(g.date||'')} · ${E(g.entertainerName||'')} · ${(g.players||[]).length} participants</span></div><div class="as686-rank">🏆 ${E(g.winner||'—')}</div></div>`).join('')}</div>`:`<p class="mini">Finished games will appear here automatically.</p>`}</div>`;
 }
 window.activityScoresInner662=managerInner;
 window.openActivityScore662=()=>{if(S.session&&S.session.role==='manager')editor()};
 
 function blankGame(a,c){
- return {id:ID(),configId:c.id,activityId:a.id,activityName:a.name,date:sessionDate(),time:a.time||'',location:a.location||'',entertainer:S.session&&S.session.username||'',entertainerName:S.session&&S.session.display_name||S.session&&S.session.name||S.session&&S.session.username||'',status:'live',startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),players:[]};
+ return {
+   id:ID(),configId:c.id,activityId:a.id,activityName:a.name,date:sessionDate(),time:a.time||'',location:a.location||'',
+   entertainer:S.session&&S.session.username||'',
+   entertainerName:S.session&&S.session.display_name||S.session&&S.session.name||S.session&&S.session.username||'',
+   status:'live',startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),players:[],
+   playMode:c.playMode,teamNames:[...c.teamNames]
+ };
 }
-function normalizePlayer(p,c){
- p=p||{}; p.id=p.id||ID(); p.name=p.name||''; p.room=p.room||'';
- if(c.structure==='rounds'){p.rounds=Array.from({length:c.rounds},(_,i)=>p.rounds&&p.rounds[i]!=null?p.rounds[i]:'')}
+function normalizePlayer(p,c,defaultTeam='team1'){
+ p=p||{};p.id=p.id||ID();p.name=p.name||'';p.room=p.room||'';
+ p.team=(p.team==='team2'?'team2':(p.team==='team1'?'team1':defaultTeam));
+ if(c.structure==='rounds')p.rounds=Array.from({length:c.rounds},(_,i)=>p.rounds&&p.rounds[i]!=null?p.rounds[i]:'');
  else p.score=p.score!=null?p.score:'';
  return p;
 }
@@ -20617,73 +20734,144 @@ async function saveGame(g){
  if(all.length>500)all=all.slice(-500);
  return persist(KEYS,all);
 }
+function scoreGrid(c,includeRank=true){
+ const cols=[];
+ if(includeRank)cols.push('30px');
+ cols.push('minmax(120px,1fr)');
+ if(c.guestDetails==='name-room')cols.push('78px');
+ if(c.structure==='rounds')for(let i=0;i<c.rounds;i++)cols.push('68px');
+ else cols.push('82px');
+ if(c.structure==='rounds')cols.push('74px');
+ cols.push('36px');
+ return cols.join(' ');
+}
+function tableHeader(c,includeRank=true){
+ const h=[];
+ if(includeRank)h.push('');
+ h.push('Guest');
+ if(c.guestDetails==='name-room')h.push('Room');
+ if(c.structure==='rounds'){for(let i=0;i<c.rounds;i++)h.push('R'+(i+1));h.push('Total')}
+ else h.push(unit(c));
+ h.push('');
+ return h;
+}
+function playerRows(players,c,rankMap,teamKey){
+ const grid=scoreGrid(c,true);
+ return `<div class="as686-scoretable"><div class="as686-scorehead" style="grid-template-columns:${grid}">${tableHeader(c,true).map(x=>`<span>${E(x)}</span>`).join('')}</div>
+ ${players.length?players.map(p=>`<div class="as686-player" style="grid-template-columns:${grid}">
+   <span class="rank">${rankMap[p.id]||'—'}</span>
+   <input data-as686-name="${E(p.id)}" value="${E(p.name)}" placeholder="Guest name">
+   ${c.guestDetails==='name-room'?`<input class="as686-room" data-as686-room="${E(p.id)}" value="${E(p.room)}" placeholder="Room">`:''}
+   ${c.structure==='rounds'?(p.rounds||[]).map((v,i)=>`<input data-as686-round="${E(p.id)}" data-round="${i}" type="number" step="any" inputmode="decimal" value="${E(v)}" placeholder="0">`).join(''):`<input data-as686-score="${E(p.id)}" type="number" step="any" inputmode="decimal" value="${E(p.score)}" placeholder="0">`}
+   ${c.structure==='rounds'?`<span class="as686-total">${E(totalFor(p,c))}</span>`:''}
+   <button data-as686-remove="${E(p.id)}">×</button>
+ </div>`).join(''):`<div class="as686-empty">No players in this team yet.</div>`}</div>
+ ${teamKey?`<button type="button" class="as686-addteam" data-as686-addteam="${teamKey}">+ Add player to ${E(teamName(c,teamKey))}</button>`:''}`;
+}
+function bindPlayerInputs(body,g,c,draw){
+ $$('[data-as686-name]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Name);if(p)p.name=el.value});
+ $$('[data-as686-room]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Room);if(p)p.room=el.value});
+ $$('[data-as686-score]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Score);if(p){p.score=el.value;draw()}});
+ $$('[data-as686-round]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Round);if(p){p.rounds=p.rounds||[];p.rounds[+el.dataset.round]=el.value;draw()}});
+ $$('[data-as686-remove]',body).forEach(el=>el.onclick=()=>{g.players=g.players.filter(x=>x.id!==el.dataset.as686Remove);draw()});
+}
+
 function gameModal(a,c,preview=false){
  c=migrateConfig(c,0);
  const old=!preview?latestSession(a):null;
  let g=(old&&old.status!=='finished')?JSON.parse(JSON.stringify(old)):blankGame(a,c);
- g.players=(g.players||[]).map(p=>normalizePlayer(p,c));
- const w=baseModal(`<div class="as685-game">
-  <div class="as685-gamehead"><div><span class="as685-live">Live scoring</span><h3>${E(a.name)}</h3><p class="mini">${E(a.time||'')}${a.location?' · '+E(a.location):''} · ${c.structure==='rounds'?c.rounds+' rounds · ':''}${E(unit(c))} · ${c.rule==='low'?'lowest':'highest'} total wins</p></div><span class="as685-pill">${preview?'PREVIEW':'LIVE'}</span></div>
-  ${c.instructions?`<div class="as685-note"><b>Instructions</b><br>${E(c.instructions)}</div>`:''}
-  <div id="as685-livebody"></div>
-  <div class="as685-bottom"><button class="btn ghost" id="as685-add">+ Add guest</button><button class="btn" id="as685-finish">${preview?'Show winner':'Finish game'}</button><button class="btn ghost" id="as685-close">Close</button></div>
- </div>`);
- const body=$('#as685-livebody',w);
+ g.playMode=c.playMode;g.teamNames=[...c.teamNames];
+ g.players=(g.players||[]).map(p=>normalizePlayer(p,c,p.team||'team1'));
 
- function draw(){
-  g.players=g.players.map(p=>normalizePlayer(p,c));
-  const r=ranked(g,c),rankMap={};r.forEach((p,i)=>rankMap[p.id]=i+1);
-  const lead=r[0], cols=[];
-  cols.push('30px','minmax(120px,1fr)');
-  if(c.guestDetails==='name-room')cols.push('78px');
-  if(c.structure==='rounds')for(let i=0;i<c.rounds;i++)cols.push('68px');
-  else cols.push('82px');
-  if(c.structure==='rounds')cols.push('74px');
-  cols.push('36px');
-  const grid=cols.join(' ');
-  const headCells=['','Guest'];
-  if(c.guestDetails==='name-room')headCells.push('Room');
-  if(c.structure==='rounds'){for(let i=0;i<c.rounds;i++)headCells.push('R'+(i+1));headCells.push('Total')}
-  else headCells.push(unit(c));
-  headCells.push('');
-  body.innerHTML=`<div class="as685-statbar">
-    <div class="as685-stat"><b>${g.players.length}</b><span>Participants</span></div>
-    <div class="as685-stat"><b>${lead?E(lead.total):'—'}</b><span>Leading ${E(unit(c))}</span></div>
-    <div class="as685-stat"><b>${lead?E(lead.name||'Guest'):'—'}</b><span>Leader</span></div>
-   </div>
-   <div class="as685-scoretable">
-    <div class="as685-scorehead" style="grid-template-columns:${grid}">${headCells.map(x=>`<span>${E(x)}</span>`).join('')}</div>
-    ${g.players.length?g.players.map(p=>`<div class="as685-player" style="grid-template-columns:${grid}">
-      <span class="rank">${rankMap[p.id]||'—'}</span>
-      <input data-as685-name="${E(p.id)}" value="${E(p.name)}" placeholder="Guest name">
-      ${c.guestDetails==='name-room'?`<input class="as685-room" data-as685-room="${E(p.id)}" value="${E(p.room)}" placeholder="Room">`:''}
-      ${c.structure==='rounds'?(p.rounds||[]).map((v,i)=>`<input data-as685-round="${E(p.id)}" data-round="${i}" type="number" step="any" inputmode="decimal" value="${E(v)}" placeholder="0">`).join(''):`<input data-as685-score="${E(p.id)}" type="number" step="any" inputmode="decimal" value="${E(p.score)}" placeholder="0">`}
-      ${c.structure==='rounds'?`<span class="as685-total">${E(totalFor(p,c))}</span>`:''}
-      <button data-as685-remove="${E(p.id)}">×</button>
-    </div>`).join(''):`<div class="as685-empty">Add the guests playing this game, then enter the scores.</div>`}
-   </div>`;
-  $$('[data-as685-name]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as685Name);if(p)p.name=el.value});
-  $$('[data-as685-room]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as685Room);if(p)p.room=el.value});
-  $$('[data-as685-score]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as685Score);if(p){p.score=el.value;draw()}});
-  $$('[data-as685-round]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as685Round);if(p){p.rounds=p.rounds||[];p.rounds[+el.dataset.round]=el.value;draw()}});
-  $$('[data-as685-remove]',body).forEach(el=>el.onclick=()=>{g.players=g.players.filter(x=>x.id!==el.dataset.as685Remove);draw()});
+ const w=baseModal(`<div class="as686-game">
+  <div class="as686-gamehead"><div><span class="as686-live">Live scoring</span><h3>${E(a.name)}</h3><p class="mini">${E(a.time||'')}${a.location?' · '+E(a.location):''} · ${c.playMode==='teams'?`${E(c.teamNames[0])} vs ${E(c.teamNames[1])} · `:''}${c.structure==='rounds'?c.rounds+' rounds · ':''}${E(unit(c))} · ${c.rule==='low'?'lowest':'highest'} total wins</p></div><span class="as686-pill">${preview?'PREVIEW':'LIVE'}</span></div>
+  ${c.instructions?`<div class="as686-note"><b>Instructions</b><br>${E(c.instructions)}</div>`:''}
+  <div id="as686-livebody"></div>
+  <div class="as686-bottom">
+   ${c.playMode==='individual'?`<button class="btn ghost" id="as686-add">+ Add guest</button>`:''}
+   <button class="btn" id="as686-finish">${preview?'Show winner':'Finish game'}</button>
+   <button class="btn ghost" id="as686-close">Close</button>
+  </div>
+ </div>`);
+ const body=$('#as686-livebody',w);
+
+ function drawIndividual(){
+   const r=ranked(g,c),rankMap={};r.forEach((p,i)=>rankMap[p.id]=i+1);
+   const lead=r[0];
+   body.innerHTML=`<div class="as686-statbar">
+    <div class="as686-stat"><b>${g.players.length}</b><span>Participants</span></div>
+    <div class="as686-stat"><b>${lead?E(lead.total):'—'}</b><span>Leading ${E(unit(c))}</span></div>
+    <div class="as686-stat"><b>${lead?E(lead.name||'Guest'):'—'}</b><span>Leader</span></div>
+   </div>${playerRows(g.players,c,rankMap,'')}`;
  }
- $('#as685-add',w).onclick=()=>{g.players.push(normalizePlayer({id:ID()},c));draw();setTimeout(()=>{const z=$$('[data-as685-name]',body);if(z.length)z[z.length-1].focus()},20)};
- $('#as685-close',w).onclick=async()=>{if(!preview){g.updatedAt=new Date().toISOString();await saveGame(g)}w.remove()};
- $('#as685-finish',w).onclick=async()=>{
+ function drawTeams(){
+   const tr=teamResults(g,c),lead=tr[0],rankMap={};
+   ['team1','team2'].forEach(key=>rankedPlayers(teamPlayers(g,key),c).forEach((p,i)=>rankMap[p.id]=i+1));
+   const t1=teamTotal(g,c,'team1'),t2=teamTotal(g,c,'team2');
+   const n1=teamPlayers(g,'team1').length,n2=teamPlayers(g,'team2').length;
+   body.innerHTML=`<div class="as686-teamscoreboard">
+    <div class="as686-teamhero ${lead&&lead.key==='team1'&&t1!==t2?'leading':''}"><span>Team</span><b>${E(c.teamNames[0])}</b><strong>${E(t1)}</strong><span>${E(unit(c))} · ${n1} player${n1===1?'':'s'}</span></div>
+    <div class="as686-vs">VS</div>
+    <div class="as686-teamhero ${lead&&lead.key==='team2'&&t1!==t2?'leading':''}"><span>Team</span><b>${E(c.teamNames[1])}</b><strong>${E(t2)}</strong><span>${E(unit(c))} · ${n2} player${n2===1?'':'s'}</span></div>
+   </div>
+   <div class="as686-teamsection">
+    <div class="as686-teamsection-head"><div><small>TEAM 1</small><b>${E(c.teamNames[0])}</b></div><strong>${E(t1)} ${E(unit(c))}</strong></div>
+    ${playerRows(teamPlayers(g,'team1'),c,rankMap,'team1')}
+   </div>
+   <div class="as686-teamsection">
+    <div class="as686-teamsection-head"><div><small>TEAM 2</small><b>${E(c.teamNames[1])}</b></div><strong>${E(t2)} ${E(unit(c))}</strong></div>
+    ${playerRows(teamPlayers(g,'team2'),c,rankMap,'team2')}
+   </div>`;
+ }
+ function draw(){
+   g.players=g.players.map(p=>normalizePlayer(p,c,p.team||'team1'));
+   if(c.playMode==='teams')drawTeams();else drawIndividual();
+   bindPlayerInputs(body,g,c,draw);
+   $$('[data-as686-addteam]',body).forEach(b=>b.onclick=()=>{
+     const key=b.dataset.as686Addteam==='team2'?'team2':'team1';
+     g.players.push(normalizePlayer({id:ID(),team:key},c,key));draw();
+     setTimeout(()=>{const z=$$(`[data-as686-name]`,body);if(z.length)z[z.length-1].focus()},20);
+   });
+ }
+
+ if(c.playMode==='individual'){
+   $('#as686-add',w).onclick=()=>{g.players.push(normalizePlayer({id:ID()},c));draw();setTimeout(()=>{const z=$$('[data-as686-name]',body);if(z.length)z[z.length-1].focus()},20)};
+ }
+ $('#as686-close',w).onclick=async()=>{if(!preview){g.updatedAt=new Date().toISOString();await saveGame(g)}w.remove()};
+ $('#as686-finish',w).onclick=async()=>{
    g.players=g.players.filter(p=>String(p.name||'').trim());
-   if(!g.players.length){toastWarn('Add at least one guest before finishing.');return}
-   const win=winners(g,c);
-   if(!c.allowTies&&win.length>1){toastWarn('First place is tied. Enter the tiebreak result before finishing.');return}
-   const winnerNames=win.map(x=>x.name||'Guest').join(' & ');
-   if(!preview){
-     if(!await confirmAction({question:`Finish ${a.name}? Winner: ${winnerNames}`}))return;
-     g.status='finished';g.finishedAt=new Date().toISOString();g.updatedAt=g.finishedAt;g.winner=winnerNames;g.configSnapshot=c;
-     if(!await saveGame(g))return;
+   if(c.playMode==='teams'){
+     if(!teamPlayers(g,'team1').length||!teamPlayers(g,'team2').length){toastWarn('Add at least one guest to each team before finishing.');return}
+     const win=winningTeams(g,c);
+     if(!c.allowTies&&win.length>1){toastWarn('The team score is tied. Enter the tiebreak result before finishing.');return}
+     const winnerNames=win.map(x=>x.name).join(' & ');
+     if(!preview){
+       if(!await confirmAction({question:`Finish ${a.name}? Winning team: ${winnerNames}`}))return;
+       g.status='finished';g.finishedAt=new Date().toISOString();g.updatedAt=g.finishedAt;g.winner=winnerNames;g.winnerType='team';g.configSnapshot=c;
+       if(!await saveGame(g))return;
+     }
+     const results=teamResults(g,c);
+     body.innerHTML=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">${win.length>1?'TIED TEAMS':'WINNING TEAM'}</span><b>${E(winnerNames)}</b><span>Final team score: ${E(results[0]?.total??'—')} ${E(unit(c))} · ${g.players.length} participants</span></div>
+      ${results.map((tr,i)=>`<div class="as686-team-result ${i===0?'winner':''}">
+       <div class="as686-team-result-head"><div><span class="mini">${i===0?'1ST':'2ND'} TEAM</span><b>${E(tr.name)}</b></div><strong>${E(tr.total)} ${E(unit(c))}</strong></div>
+       ${tr.players.map(p=>`<div class="as686-memberresult"><div><b>${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><strong>${E(p.total)} ${E(unit(c))}</strong></div>`).join('')}
+      </div>`).join('')}`;
+   }else{
+     if(!g.players.length){toastWarn('Add at least one guest before finishing.');return}
+     const win=individualWinners(g,c);
+     if(!c.allowTies&&win.length>1){toastWarn('First place is tied. Enter the tiebreak result before finishing.');return}
+     const winnerNames=win.map(x=>x.name||'Guest').join(' & ');
+     if(!preview){
+       if(!await confirmAction({question:`Finish ${a.name}? Winner: ${winnerNames}`}))return;
+       g.status='finished';g.finishedAt=new Date().toISOString();g.updatedAt=g.finishedAt;g.winner=winnerNames;g.winnerType='individual';g.configSnapshot=c;
+       if(!await saveGame(g))return;
+     }
+     const r=ranked(g,c);
+     body.innerHTML=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">${win.length>1?'JOINT WINNERS':'WINNER'}</span><b>${E(winnerNames)}</b><span>${E(unit(c))}: ${E(r[0]?.total??'—')} · ${g.players.length} participants</span></div><div class="card">${r.map((p,i)=>`<div class="as686-history-row"><div><b>${i+1}. ${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><div class="as686-rank">${E(p.total)} ${E(unit(c))}</div></div>`).join('')}</div>`;
    }
-   const r=ranked(g,c);
-   body.innerHTML=`<div class="as685-winner"><span class="cup">🏆</span><span class="mini">${win.length>1?'JOINT WINNERS':'WINNER'}</span><b>${E(winnerNames)}</b><span>${E(unit(c))}: ${E(r[0]?.total??'—')} · ${g.players.length} participants</span></div><div class="card">${r.map((p,i)=>`<div class="as685-history-row"><div><b>${i+1}. ${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><div class="as685-rank">${E(p.total)} ${E(unit(c))}</div></div>`).join('')}</div>`;
-   $('#as685-add',w).style.display='none';$('#as685-finish',w).style.display='none';
+   if($('#as686-add',w))$('#as686-add',w).style.display='none';
+   $('#as686-finish',w).style.display='none';
+   $$('.as686-addteam',body).forEach(x=>x.style.display='none');
    if(!preview)toastOk('Game finished and result saved');
  };
  draw();
@@ -20691,55 +20879,68 @@ function gameModal(a,c,preview=false){
 
 function historyModal(g){
  const c=migrateConfig(g.configSnapshot||configs().find(x=>x.id===g.configId)||{},0);
- const r=ranked(g,c),win=g.winner||winners(g,c).map(x=>x.name).join(' & ');
- const w=baseModal(`<div class="as685-game"><div class="as685-kicker">COMPLETED GAME</div><h3>${E(g.activityName||'Game')}</h3><div class="as685-winner"><span class="cup">🏆</span><span class="mini">WINNER</span><b>${E(win||'—')}</b><span>${(g.players||[]).length} participants · ${E(g.entertainerName||'')}</span></div><div class="card">${r.map((p,i)=>`<div class="as685-history-row"><div><b>${i+1}. ${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><div class="as685-rank">${E(p.total)} ${E(unit(c))}</div></div>`).join('')}</div><button class="btn ghost" id="as685-hx">Close</button></div>`);
- $('#as685-hx',w).onclick=()=>w.remove();
+ let content='';
+ if(c.playMode==='teams'||g.winnerType==='team'){
+   const results=teamResults(g,c);
+   content=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">WINNING TEAM</span><b>${E(g.winner||results[0]?.name||'—')}</b><span>${(g.players||[]).length} participants · ${E(g.entertainerName||'')}</span></div>
+   ${results.map((tr,i)=>`<div class="as686-team-result ${i===0?'winner':''}">
+    <div class="as686-team-result-head"><div><span class="mini">${i===0?'1ST':'2ND'} TEAM</span><b>${E(tr.name)}</b></div><strong>${E(tr.total)} ${E(unit(c))}</strong></div>
+    ${tr.players.map(p=>`<div class="as686-memberresult"><div><b>${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><strong>${E(p.total)} ${E(unit(c))}</strong></div>`).join('')}
+   </div>`).join('')}`;
+ }else{
+   const r=ranked(g,c);
+   content=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">WINNER</span><b>${E(g.winner||individualWinners(g,c).map(x=>x.name).join(' & ')||'—')}</b><span>${(g.players||[]).length} participants · ${E(g.entertainerName||'')}</span></div><div class="card">${r.map((p,i)=>`<div class="as686-history-row"><div><b>${i+1}. ${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><div class="as686-rank">${E(p.total)} ${E(unit(c))}</div></div>`).join('')}</div>`;
+ }
+ const w=baseModal(`<div class="as686-game"><div class="as686-kicker">COMPLETED GAME</div><h3>${E(g.activityName||'Game')}</h3>${content}<button class="btn ghost" id="as686-hx">Close</button></div>`);
+ $('#as686-hx',w).onclick=()=>w.remove();
 }
 
 function injectStaffButtons(root=document){
  if(!S.session||S.session.role!=='staff')return;
  $$('.tlx-body[data-actopen]',root).forEach(box=>{
-   if(box.querySelector('.as685-scorebtn'))return;
+   if(box.querySelector('.as686-scorebtn'))return;
    const a=(S.activities||[]).find(x=>String(x.id)===String(box.dataset.actopen)),c=a&&linkedCfg(a);if(!a||!c)return;
    const old=latestSession(a),done=old&&old.status==='finished';
-   const b=document.createElement('button');b.type='button';b.className='as685-scorebtn'+(done?' done':'');b.dataset.as685Start=String(a.id);
+   const b=document.createElement('button');b.type='button';b.className='as686-scorebtn'+(done?' done':'');b.dataset.as686Start=String(a.id);
    b.textContent=done?'✓ View result':'🏆 '+(old?'Continue game':'Start game');box.appendChild(b);
  });
 }
 
 document.addEventListener('click',e=>{
- const b=e.target.closest&&e.target.closest('[data-as685-start],[data-as685-edit],[data-as685-preview],[data-as685-del],[data-as685-up],[data-as685-down],[data-as685-history],#as685-new');
+ const b=e.target.closest&&e.target.closest('[data-as686-start],[data-as686-edit],[data-as686-preview],[data-as686-del],[data-as686-up],[data-as686-down],[data-as686-history],#as686-new');
  if(!b)return;
- if(b.matches('[data-as685-start]')){
+ if(b.matches('[data-as686-start]')){
    e.preventDefault();e.stopImmediatePropagation();
-   const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.as685Start)),c=a&&linkedCfg(a),g=a&&latestSession(a);
+   const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.as686Start)),c=a&&linkedCfg(a),g=a&&latestSession(a);
    if(g&&g.status==='finished')historyModal(g);else if(a&&c)gameModal(a,c);
    return;
  }
- if(b.id==='as685-new'){e.preventDefault();editor();return}
- if(b.dataset.as685Edit){e.preventDefault();editor(configs().find(x=>x.id===b.dataset.as685Edit));return}
- if(b.dataset.as685Preview){
+ if(b.id==='as686-new'){e.preventDefault();editor();return}
+ if(b.dataset.as686Edit){e.preventDefault();editor(configs().find(x=>x.id===b.dataset.as686Edit));return}
+ if(b.dataset.as686Preview){
    e.preventDefault();
-   const c=configs().find(x=>x.id===b.dataset.as685Preview);if(c)gameModal({id:'preview-'+c.id,name:c.activity||c.name,time:'15:30',location:'Pool Area',day:typeof todayIndex==='function'?todayIndex():0},c,true);return
+   const c=configs().find(x=>x.id===b.dataset.as686Preview);if(c)gameModal({id:'preview-'+c.id,name:c.activity||c.name,time:'15:30',location:'Pool Area',day:typeof todayIndex==='function'?todayIndex():0},c,true);return
  }
- if(b.dataset.as685Del){e.preventDefault();deleteConfig(b.dataset.as685Del);return}
- if(b.dataset.as685Up){e.preventDefault();moveConfig(b.dataset.as685Up,-1);return}
- if(b.dataset.as685Down){e.preventDefault();moveConfig(b.dataset.as685Down,1);return}
- if(b.dataset.as685History){e.preventDefault();const g=sessionsRaw().find(x=>x.id===b.dataset.as685History);if(g)historyModal(g);return}
+ if(b.dataset.as686Del){e.preventDefault();deleteConfig(b.dataset.as686Del);return}
+ if(b.dataset.as686Up){e.preventDefault();moveConfig(b.dataset.as686Up,-1);return}
+ if(b.dataset.as686Down){e.preventDefault();moveConfig(b.dataset.as686Down,1);return}
+ if(b.dataset.as686History){e.preventDefault();const g=sessionsRaw().find(x=>x.id===b.dataset.as686History);if(g)historyModal(g);return}
 },true);
 
 const observer=new MutationObserver(()=>injectStaffButtons());
 observer.observe(document.body,{childList:true,subtree:true});
 setTimeout(()=>injectStaffButtons(),100);
 
-window.AUREA_LIVE_SCORE_V685={
- version:'6.85',
+window.AUREA_LIVE_SCORE_V686={
+ version:'6.86',
  configs,
  sessions:sessionsRaw,
  openEditor:editor,
  openGame:gameModal,
  manager:managerInner,
- activityNames
+ activityNames,
+ teamTotal,
+ teamResults
 };
 })();
 </script>
