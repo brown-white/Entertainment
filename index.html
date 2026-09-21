@@ -20206,10 +20206,10 @@ window.AUREA_ACTIVITY_CATEGORIES_V676={version:'6.76',assignments:map,hydrate};
 })();
 </script>
 
-<style id="aurea-export-v681-style"></style>
-<script id="aurea-export-v681-script">
+<style id="aurea-export-v682-style"></style>
+<script id="aurea-export-v682-script">
 (()=>{'use strict';
-if(window.__AUREA_EXPORT_V681)return;window.__AUREA_EXPORT_V681=1;
+if(window.__AUREA_EXPORT_V682)return;window.__AUREA_EXPORT_V682=1;
 const E681=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const days681=()=>{try{return t('days')}catch(_){return ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']}};
 const kind681=a=>{const c=String(a?.category||'mAdult');if(c==='mEvents')return'event';if(c==='eBefore')return'before';if(c==='eLive')return'live';if(c==='eShow'||c==='eKidsStage')return'show';if(c==='eAfter')return'aftershow';if(c==='eParty')return'special';return'activity'};
@@ -20231,7 +20231,46 @@ window.openInfoBoardExport635=function(){S._ib635Scope=S._ib635Scope||'week';con
 window.printInfoBoardProgram635=print681;
 if(window.AUREA_PROGRAM_V667)window.AUREA_PROGRAM_V667.print=print681;
 if(window.AUREA_INFO_BOARD_V642)window.AUREA_INFO_BOARD_V642.print=print681;
-window.AUREA_EXPORT_V681={version:'6.81',print:print681,open:window.openInfoBoardExport635};
+
+/* V6.82 — one authoritative programme export engine.
+   Older patches created several complete print engines. Some manager routes still
+   dereferenced AUREA_PROGRAM_PRINT_V653.print, so styling a newer global function
+   could not affect the export actually opened. Point every surviving public API
+   and legacy object at the same final function. */
+window.printInfoBoardProgram635=print681;
+if(window.AUREA_INFO_BOARD_V635) window.AUREA_INFO_BOARD_V635.print=print681;
+if(window.AUREA_INFO_BOARD_V642) window.AUREA_INFO_BOARD_V642.print=print681;
+if(window.AUREA_PROGRAM_PRINT_V653) {
+  window.AUREA_PROGRAM_PRINT_V653.print=print681;
+  window.AUREA_PROGRAM_PRINT_V653.weekHtml=(who)=>week681(!!who);
+  window.AUREA_PROGRAM_PRINT_V653.dayHtml=(day,who)=>day681(day==null?(typeof todayIndex==='function'?todayIndex():0):+day,!!who);
+}
+if(window.AUREA_PROGRAM_V667) window.AUREA_PROGRAM_V667.print=print681;
+
+/* Rewire the concrete manager controls after every render. This also covers the
+   old V6.35 lexical handlers without deleting unrelated programme functionality. */
+function route682(){
+  const open=document.querySelector('#ib635-open');
+  const quick=document.querySelector('#ib635-quick');
+  if(open) open.onclick=(e)=>{e&&e.preventDefault();window.openInfoBoardExport635();};
+  if(quick) quick.onclick=(e)=>{e&&e.preventDefault();print681({scope:'day',includeWho:false,day:S.day});};
+}
+const wire682=window.wireCommon;
+if(typeof wire682==='function'){
+  window.wireCommon=function(){const r=wire682.apply(this,arguments);route682();return r;};
+}
+document.addEventListener('click',function(e){
+  const b=e.target&&e.target.closest&&e.target.closest('#ib635-open,#ib635-quick');
+  if(!b)return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if(b.id==='ib635-open') window.openInfoBoardExport635();
+  else print681({scope:'day',includeWho:false,day:S.day});
+},true);
+setTimeout(route682,0);
+
+window.AUREA_EXPORT_V682={version:'6.82',print:print681,open:window.openInfoBoardExport635};
+
 })();
 </script>
 </body>
