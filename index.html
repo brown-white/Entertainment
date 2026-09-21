@@ -19716,11 +19716,39 @@ function open(){
 window.openTicketStudio655=open;
 
 function addButton(){
- if(S.session?.role!=='manager'||S.tab!=='guests')return;
- const tabs=[...document.querySelectorAll('button')].find(b=>/tickets/i.test(b.textContent||''));
- if(!tabs)return;
- const host=tabs.parentElement?.parentElement||tabs.parentElement;if(!host||host.querySelector('#tk655-open'))return;
- const b=document.createElement('button');b.id='tk655-open';b.className='btn ghost';b.style.margin='10px 0 4px';b.innerHTML=`${ic('download',16)} Ticket Print Studio`;b.onclick=open;host.appendChild(b);
+ const manager=!!(S.session&&S.session.role==='manager');
+ const guestTickets=manager&&S.tab==='guests'&&S.sub&&S.sub.guests==='tickets';
+ const programTickets=manager&&S.tab==='program'&&S.sub&&S.sub.program==='tickets';
+ const allowed=guestTickets||programTickets;
+
+ /* V6.89: Ticket Studio belongs ONLY to the two ticket pages.
+    Older code searched for any button containing the word "Tickets", which made
+    the studio attach to the Guests page container and remain visible on CRM,
+    Arrivals and Departures. Remove every stale copy before deciding placement. */
+ const existing=[...document.querySelectorAll('#tk655-open')];
+ if(!allowed){existing.forEach(x=>x.remove());return;}
+ existing.slice(1).forEach(x=>x.remove());
+
+ const screen=document.querySelector('.screen.fadein')||document.querySelector('.screen');
+ if(!screen)return;
+ let b=screen.querySelector('#tk655-open')||existing[0];
+ if(!b){
+   b=document.createElement('button');
+   b.id='tk655-open';
+   b.className='btn ghost';
+   b.style.margin='14px 0 4px';
+ }
+ b.innerHTML=`${ic('download',16)} Ticket Production Studio`;
+ b.onclick=window.openTicketStudio657||window.openTicketStudio656||window.openTicketStudio655||open;
+
+ if(guestTickets){
+   const list=screen.querySelector('.gt620-list');
+   if(list)list.insertAdjacentElement('afterend',b);
+   else screen.appendChild(b);
+ }else{
+   /* Program → Tickets: keep the production tool after the ticket-event list. */
+   screen.appendChild(b);
+ }
 }
 const prev=window.wireCommon;window.wireCommon=function(){prev();addButton()};setTimeout(addButton,0);
 window.AUREA_TICKET_STUDIO_V655={version:'6.55',open,printTickets,excelTickets,serial};
@@ -19816,6 +19844,40 @@ window.openTicketStudio655=open;window.openTicketStudio656=open;window.openTicke
 let old=window.wireCommon;window.wireCommon=function(){old();let b=document.querySelector('#tk655-open');if(b){b.innerHTML=`${ic('download',16)} Ticket Production Studio`;b.onclick=open}};
 setTimeout(()=>{let b=document.querySelector('#tk655-open');if(b){b.innerHTML=`${ic('download',16)} Ticket Production Studio`;b.onclick=open}},0);
 window.AUREA_BINGO_V657={bingoCard,verifyBatch};
+})();
+</script>
+<script id="ticket-studio-scope-v689">
+(()=>{'use strict';if(window.__TICKET_SCOPE_V689)return;window.__TICKET_SCOPE_V689=1;
+ function reconcileTicketStudioV689(){
+   const manager=!!(window.S&&S.session&&S.session.role==='manager');
+   const guestTickets=manager&&S.tab==='guests'&&S.sub&&S.sub.guests==='tickets';
+   const programTickets=manager&&S.tab==='program'&&S.sub&&S.sub.program==='tickets';
+   const allowed=guestTickets||programTickets;
+   const buttons=[...document.querySelectorAll('#tk655-open')];
+   if(!allowed){buttons.forEach(b=>b.remove());return;}
+   buttons.slice(1).forEach(b=>b.remove());
+   let b=buttons[0];
+   const screen=document.querySelector('.screen.fadein')||document.querySelector('.screen');
+   if(!screen)return;
+   if(!b){
+     b=document.createElement('button');b.id='tk655-open';b.className='btn ghost';b.style.margin='14px 0 4px';
+   }
+   b.innerHTML=`${ic('download',16)} Ticket Production Studio`;
+   b.onclick=window.openTicketStudio657||window.openTicketStudio656||window.openTicketStudio655;
+   if(guestTickets){
+     const list=screen.querySelector('.gt620-list');
+     if(list)list.insertAdjacentElement('afterend',b);
+     else screen.appendChild(b);
+   }else{
+     screen.appendChild(b);
+   }
+ }
+ const prev=window.wireCommon;
+ window.wireCommon=function(){const r=prev.apply(this,arguments);reconcileTicketStudioV689();return r};
+ const mo=new MutationObserver(()=>reconcileTicketStudioV689());
+ mo.observe(document.body,{childList:true,subtree:true});
+ setTimeout(reconcileTicketStudioV689,0);
+ window.reconcileTicketStudioV689=reconcileTicketStudioV689;
 })();
 </script>
 
