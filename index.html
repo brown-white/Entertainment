@@ -19946,40 +19946,6 @@ new MutationObserver(()=>enhance()).observe(document.documentElement,{childList:
 })();
 </script>
 
-<style id="activity-score-v665">
-.as665-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin:18px 0}.as665-head h2{font-family:var(--serif);font-size:30px;margin:2px 0 4px}.as665-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.as665-card{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:17px;text-align:left;box-shadow:var(--shadow);min-height:112px}.as665-card b{display:block;font-size:18px;margin:5px 0}.as665-card span{display:block;color:var(--muted);font-size:13px;line-height:1.4}.as665-tag{font-size:10px!important;text-transform:uppercase;letter-spacing:.13em;color:#a87549!important;font-weight:800}.as665-modal{padding-bottom:8px}.as665-modal>h3{font-family:var(--serif);font-size:29px;margin:0 0 5px}.as665-section{border:1px solid var(--line);background:rgba(255,255,255,.58);border-radius:20px;padding:15px;margin:14px 0}.as665-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px}.as665-section-title b{font-size:12px;text-transform:uppercase;letter-spacing:.13em}.as665-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}.as665-field label,.as665-modal>label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.13em;font-weight:800;margin:8px 0 7px}.as665-preset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.as665-preset{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px;font-weight:750;text-align:left}.as665-preset.on{background:#3b271c;color:#fff;border-color:#3b271c}.as665-cols{display:grid;gap:8px}.as665-col{display:grid;grid-template-columns:32px 1fr 42px;gap:8px;align-items:center}.as665-grip{width:32px;height:42px;border-radius:11px;background:var(--soft);display:grid;place-items:center;color:var(--muted);font-weight:900}.as665-col input{margin:0}.as665-remove{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:transparent;font-size:20px}.as665-addbar{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.as665-addbar button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 12px;font-weight:750;font-size:12px}.as665-switches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.as665-switch{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:14px;padding:11px;background:var(--card);font-weight:700;font-size:13px}.as665-switch input{width:19px;height:19px;margin:0}.as665-preview{overflow:auto;border:1px solid var(--line);border-radius:20px;background:#fff;padding:14px;margin-top:14px}.as665-sheet{min-width:620px;background:#fff;color:#2d2119;padding:18px;border:1px solid #d8c8b6;border-radius:14px}.as665-sheethead{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #b9895b;padding-bottom:10px;margin-bottom:11px}.as665-sheet h3{font-family:Georgia,serif;font-size:27px;margin:2px 0}.as665-sub{font-size:12px;color:#74675e;max-width:470px;line-height:1.45}.as665-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;color:#75685f;margin:10px 0}.as665-table{width:100%;border-collapse:collapse;font-size:12px}.as665-table th{background:#3b271c;color:#fff;padding:9px 6px;border:1px solid #6e5849}.as665-table td{height:38px;border:1px solid #c8baaa;padding:6px}.as665-total{background:#f3eadc;font-weight:800}.as665-footergrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px}.as665-box{border:1px solid #c8baaa;border-radius:10px;padding:10px;min-height:62px}.as665-box b{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8c725e;margin-bottom:7px}.as665-sign{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:22px;font-size:11px}.as665-sign span{border-top:1px solid #6e5849;padding-top:5px}.as665-tools{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.as665-help{font-size:12px;color:var(--muted);line-height:1.5;margin:5px 0}.as665-kind{display:inline-flex;padding:5px 9px;border-radius:999px;background:#f1e7d8;color:#7d5739;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
-@media(max-width:520px){.as665-grid,.as665-row,.as665-preset-grid,.as665-tools{grid-template-columns:1fr}.as665-switches{grid-template-columns:1fr 1fr}.as665-head{align-items:stretch;flex-direction:column}.as665-section{padding:12px}.as665-sheet{min-width:600px}}
-</style>
-<script id="activity-score-v665-script">
-(()=>{'use strict';if(window.__AS665)return;window.__AS665=1;
-const PRESETS={
- Darts:{label:'Darts',desc:'Individual darts scoring with start score, rounds, checkout and final total.',rows:12,orientation:'landscape',cols:['Player','Start score','R1','R2','R3','R4','R5','Checkout','Final'],instructions:'Record every player round clearly. Use Checkout for the finishing combination.'},
- Boccia:{label:'Boccia',desc:'Team-versus-team end scoring with six ends and match result.',rows:8,orientation:'landscape',cols:['Team','End 1','End 2','End 3','End 4','End 5','End 6','Total','Result'],instructions:'One line per team. Record each end, then the total and final result.'},
- 'Bean Bag':{label:'Bean Bag',desc:'Player or team points by round with a final ranking.',rows:12,orientation:'portrait',cols:['Player / Team','R1','R2','R3','R4','R5','Total','Rank'],instructions:'Enter points for every round and calculate the final ranking.'},
- Shuffleboard:{label:'Shuffleboard',desc:'Frame-by-frame team or player scoring.',rows:10,orientation:'landscape',cols:['Player / Team','F1','F2','F3','F4','F5','F6','F7','F8','Total'],instructions:'Record the score after every frame and calculate the match total.'},
- 'Arabic Lesson':{label:'Arabic Lesson',desc:'Learning worksheet for attendance, vocabulary and participation — not a game score.',rows:16,orientation:'portrait',cols:['Guest / Team','Attendance','Words / Phrases','Pronunciation','Participation','Result / Note'],instructions:'Use this sheet to follow guest participation and lesson progress.'},
- General:{label:'Custom',desc:'Build a completely custom activity paper.',rows:12,orientation:'portrait',cols:['Player / Team','Round 1','Round 2','Round 3','Total'],instructions:''}
-};
-const E=x=>String(x??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
-function saved(){return(S.settings&&Array.isArray(S.settings.activityScoreTemplates))?S.settings.activityScoreTemplates:[]}
-function programActivities(){let m=new Map;(S.activities||[]).filter(a=>normCat(a)==='mAdult').forEach(a=>{let k=String(a.name||'').trim();if(k&&!m.has(k))m.set(k,a)});return[...m.values()].sort((a,b)=>String(a.name).localeCompare(String(b.name)))}
-function presetKey(name){let n=String(name||'').toLowerCase();if(n.includes('dart'))return'Darts';if(n.includes('boccia'))return'Boccia';if(n.includes('bean'))return'Bean Bag';if(n.includes('shuffle'))return'Shuffleboard';if(n.includes('arabic'))return'Arabic Lesson';return'General'}
-function normalized(initial={}){let key=initial.presetKey||presetKey(initial.name),p=PRESETS[key]||PRESETS.General;return{name:initial.name||'',location:initial.location||'',time:initial.time||'',presetKey:key,rows:+initial.rows||p.rows,cols:[...(initial.cols||p.cols)],orientation:initial.orientation||p.orientation,instructions:initial.instructions!==undefined?initial.instructions:p.instructions,showDate:initial.showDate!==false,showTime:initial.showTime!==false,showLocation:initial.showLocation!==false,showHost:initial.showHost!==false,showInstructions:initial.showInstructions!==false,showWinner:initial.showWinner!==false,showNotes:initial.showNotes!==false,showSignatures:!!initial.showSignatures}}
-window.activityScoresInner662=function(){let acts=programActivities(),custom=saved();return`<div class="as665-head"><div><div class="sig-kicker">PRINTABLE OPERATIONS</div><h2>Activities Score</h2><p class="mini">Each activity gets the right paper for the way it is actually played or managed.</p></div><button class="btn" id="as665-new">+ Create custom paper</button></div><div class="as665-grid">${acts.map(a=>{let k=presetKey(a.name),p=PRESETS[k];return`<button class="as665-card" data-as665-act="${E(a.name)}"><span class="as665-tag">${E(k==='General'?'Custom activity':k+' format')}</span><b>${E(a.name)}</b><span>${E(p.desc)}</span></button>`}).join('')}${custom.map((x,i)=>`<button class="as665-card" data-as665-custom="${i}"><span class="as665-tag">Saved template</span><b>${E(x.name||'Custom activity')}</b><span>${E((x.cols||[]).length)} fields · ${E(x.orientation||'portrait')}</span></button>`).join('')}</div>`}
-function sheet(o){let cols=(o.cols||[]).filter(Boolean),rows=Math.max(2,Math.min(50,+o.rows||12));let meta=[];if(o.showDate)meta.push('<span><b>Date:</b> __________________</span>');if(o.showTime)meta.push('<span><b>Time:</b> '+E(o.time||'________________')+'</span>');if(o.showLocation)meta.push('<span><b>Location:</b> '+E(o.location||'________________')+'</span>');if(o.showHost)meta.push('<span><b>Entertainer:</b> __________________</span>');return`<div class="as665-sheet"><div class="as665-sheethead"><div><div class="sig-kicker">ENTERTAINMENT DEPARTMENT · ACTIVITY PAPER</div><h3>${E(o.name||'Activity')}</h3><div class="as665-sub">${o.showInstructions?E(o.instructions||'Professional activity record and score sheet.'):''}</div></div><span class="as665-kind">${E((PRESETS[o.presetKey]||PRESETS.General).label)}</span></div><div class="as665-meta">${meta.join('')}</div><table class="as665-table"><thead><tr><th>#</th>${cols.map(c=>`<th>${E(c)}</th>`).join('')}</tr></thead><tbody>${Array.from({length:rows},(_,i)=>`<tr><td>${i+1}</td>${cols.map(c=>`<td class="${/total|final|result|rank/i.test(c)?'as665-total':''}"></td>`).join('')}</tr>`).join('')}</tbody></table>${(o.showWinner||o.showNotes)?`<div class="as665-footergrid">${o.showWinner?'<div class="as665-box"><b>Winner / final result</b></div>':''}${o.showNotes?'<div class="as665-box"><b>Notes / incidents</b></div>':''}</div>`:''}${o.showSignatures?'<div class="as665-sign"><span>Entertainer signature</span><span>Entertainment Manager</span></div>':''}</div>`}
-function open(initial={}){let o=normalized(initial);let w=baseModal(`<div class="as665-modal"><h3>Activity paper studio</h3><p class="mini">Choose the correct game format or build a reusable paper with professional controls.</p><div class="as665-section"><div class="as665-section-title"><b>1 · Activity & format</b><span class="mini">Smart presets</span></div><div class="as665-preset-grid" id="as665-presets">${Object.keys(PRESETS).map(k=>`<button type="button" class="as665-preset ${k===o.presetKey?'on':''}" data-as665-preset="${E(k)}">${E(PRESETS[k].label)}</button>`).join('')}</div><div class="as665-row"><div class="as665-field"><label>Activity name</label><input id="as665-name" value="${E(o.name)}" placeholder="Activity name"></div><div class="as665-field"><label>Player / team lines</label><input id="as665-rows" type="number" min="2" max="50" value="${o.rows}"></div><div class="as665-field"><label>Location</label><input id="as665-location" value="${E(o.location)}" placeholder="e.g. Pool / Beach"></div><div class="as665-field"><label>Time</label><input id="as665-time" value="${E(o.time)}" placeholder="e.g. 15:30 – 16:00"></div><div class="as665-field"><label>Paper orientation</label><select id="as665-orientation"><option value="portrait" ${o.orientation==='portrait'?'selected':''}>Portrait</option><option value="landscape" ${o.orientation==='landscape'?'selected':''}>Landscape</option></select></div></div></div><div class="as665-section"><div class="as665-section-title"><b>2 · Table builder</b><span class="mini">Add, rename or remove fields</span></div><p class="as665-help">Build the table visually. You do not need to type comma-separated columns.</p><div class="as665-cols" id="as665-cols"></div><div class="as665-addbar"><button type="button" data-addcol="Round">+ Score round</button><button type="button" data-addcol="Text">+ Text field</button><button type="button" data-addcol="Total">+ Total</button><button type="button" data-addcol="Result">+ Result</button><button type="button" data-addcol="Notes">+ Notes</button></div></div><div class="as665-section"><div class="as665-section-title"><b>3 · Paper details</b><span class="mini">Optional information</span></div><div class="as665-field"><label>Instructions / purpose</label><textarea id="as665-instructions" rows="3" placeholder="Explain how this paper should be used">${E(o.instructions)}</textarea></div><div class="as665-switches"><label class="as665-switch"><input id="as665-date" type="checkbox" ${o.showDate?'checked':''}> Date</label><label class="as665-switch"><input id="as665-showtime" type="checkbox" ${o.showTime?'checked':''}> Time</label><label class="as665-switch"><input id="as665-showlocation" type="checkbox" ${o.showLocation?'checked':''}> Location</label><label class="as665-switch"><input id="as665-host" type="checkbox" ${o.showHost?'checked':''}> Entertainer</label><label class="as665-switch"><input id="as665-showinstructions" type="checkbox" ${o.showInstructions?'checked':''}> Instructions</label><label class="as665-switch"><input id="as665-winner" type="checkbox" ${o.showWinner?'checked':''}> Winner / result box</label><label class="as665-switch"><input id="as665-notes" type="checkbox" ${o.showNotes?'checked':''}> Notes / incidents</label><label class="as665-switch"><input id="as665-signatures" type="checkbox" ${o.showSignatures?'checked':''}> Signatures</label></div></div><div class="as665-section"><div class="as665-section-title"><b>4 · Live preview</b><span class="mini">Exactly what will print</span></div><div class="as665-preview" id="as665-preview"></div></div><div class="as665-tools"><button class="btn" id="as665-print">Print / PDF</button><button class="btn ghost" id="as665-save">Save reusable template</button><button class="btn ghost" id="as665-reset">Reset to activity format</button><button class="btn ghost" id="as665-close">Close</button></div></div>`);
-let q=s=>w.querySelector(s),state={...o,cols:[...o.cols]};
-function renderCols(){q('#as665-cols').innerHTML=state.cols.map((c,i)=>`<div class="as665-col"><span class="as665-grip">${i+1}</span><input data-colidx="${i}" value="${E(c)}" aria-label="Column ${i+1}"><button type="button" class="as665-remove" data-remcol="${i}" aria-label="Remove column">×</button></div>`).join('')}
-function read(){state.name=q('#as665-name').value.trim()||'Activity';state.location=q('#as665-location').value.trim();state.time=q('#as665-time').value.trim();state.rows=Math.max(2,Math.min(50,+q('#as665-rows').value||12));state.orientation=q('#as665-orientation').value;state.instructions=q('#as665-instructions').value.trim();state.showDate=q('#as665-date').checked;state.showTime=q('#as665-showtime').checked;state.showLocation=q('#as665-showlocation').checked;state.showHost=q('#as665-host').checked;state.showInstructions=q('#as665-showinstructions').checked;state.showWinner=q('#as665-winner').checked;state.showNotes=q('#as665-notes').checked;state.showSignatures=q('#as665-signatures').checked;return state}
-function preview(){q('#as665-preview').innerHTML=sheet(read())}
-function applyPreset(k,keepName=true){let p=PRESETS[k]||PRESETS.General;state.presetKey=k;state.cols=[...p.cols];state.rows=p.rows;state.orientation=p.orientation;state.instructions=p.instructions;q('#as665-rows').value=state.rows;q('#as665-orientation').value=state.orientation;q('#as665-instructions').value=state.instructions;q('#as665-presets').querySelectorAll('.as665-preset').forEach(b=>b.classList.toggle('on',b.dataset.as665Preset===k));renderCols();preview()}
-renderCols();preview();w.addEventListener('input',e=>{if(e.target.matches('[data-colidx]'))state.cols[+e.target.dataset.colidx]=e.target.value;preview()});w.addEventListener('change',preview);w.addEventListener('click',e=>{let p=e.target.closest('[data-as665-preset]');if(p){e.preventDefault();applyPreset(p.dataset.as665Preset);return}let r=e.target.closest('[data-remcol]');if(r){e.preventDefault();if(state.cols.length<=1){toastErr('Keep at least one table field');return}state.cols.splice(+r.dataset.remcol,1);renderCols();preview();return}let a=e.target.closest('[data-addcol]');if(a){e.preventDefault();let type=a.dataset.addcol,name=type==='Round'?'Round '+(state.cols.filter(x=>/^Round|^R\d|^End|^F\d/i.test(x)).length+1):type;state.cols.push(name);renderCols();preview();return}},true);
-q('#as665-close').onclick=()=>w.remove();q('#as665-reset').onclick=()=>applyPreset(presetKey(q('#as665-name').value));q('#as665-save').onclick=async()=>{let x={...read(),cols:[...state.cols]},all=saved().filter(y=>String(y.name).toLowerCase()!==x.name.toLowerCase());all.push(x);S.settings.activityScoreTemplates=all;try{await DB.saveSettings({...S.settings,activityScoreTemplates:all});toastOk('Activity paper saved');w.remove();render()}catch(e){toastErr('Could not save activity paper')}};q('#as665-print').onclick=()=>{let x={...read(),cols:[...state.cols]},win=window.open('','_blank');if(!win){toastErr('Could not open print window');return}let css=`@page{size:A4 ${x.orientation};margin:10mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#2d2119;margin:0}.as665-sheet{width:100%;background:#fff}.as665-sheethead{display:flex;justify-content:space-between;gap:15mm;border-bottom:2px solid #b9895b;padding-bottom:3mm;margin-bottom:3mm}.sig-kicker{font-size:7pt;letter-spacing:.16em;color:#9a704b;font-weight:700}.as665-sheet h3{font-family:Georgia,serif;font-size:22pt;margin:1mm 0}.as665-sub{font-size:8.5pt;color:#74675e;line-height:1.35}.as665-kind{font-size:7pt;font-weight:700;text-transform:uppercase}.as665-meta{display:flex;gap:6mm;flex-wrap:wrap;font-size:8.5pt;color:#75685f;margin:3mm 0}.as665-table{width:100%;border-collapse:collapse;font-size:${x.cols.length>8?'7.5':'9'}pt}.as665-table th{background:#3b271c;color:#fff;padding:2.2mm 1.5mm;border:1px solid #6e5849}.as665-table td{height:${x.orientation==='landscape'?'7':'9'}mm;border:1px solid #b9aa99;padding:1.5mm}.as665-total{background:#f3eadc;font-weight:800}.as665-footergrid{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:4mm}.as665-box{border:1px solid #b9aa99;border-radius:2mm;padding:3mm;min-height:16mm}.as665-box b{font-size:7pt;text-transform:uppercase;letter-spacing:.1em}.as665-sign{display:grid;grid-template-columns:1fr 1fr;gap:12mm;margin-top:10mm;font-size:8pt}.as665-sign span{border-top:1px solid #6e5849;padding-top:2mm}`;win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+E(x.name)+' Activity Paper</title><style>'+css+'</style></head><body>'+sheet(x)+'<scr'+'ipt>setTimeout(function(){window.print()},350);<\/scr'+'ipt></body></html>');win.document.close()}}
-window.openActivityScore662=open;
-document.addEventListener('click',e=>{let n=e.target.closest('#as665-new,#as662-new');if(n){e.preventDefault();open({presetKey:'General'});return}let a=e.target.closest('[data-as665-act],[data-as662-act]');if(a){e.preventDefault();let name=a.dataset.as665Act||a.dataset.as662Act,x=programActivities().find(z=>z.name===name);open(x||{name});return}let c=e.target.closest('[data-as665-custom],[data-as662-custom]');if(c){e.preventDefault();let i=+(c.dataset.as665Custom??c.dataset.as662Custom);open(saved()[i]||{})}},true)
-})();
-</script>
-
 <style id="guest-lifecycle-v666">
 .gl666-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin:18px 0}.gl666-head h2{font-family:var(--serif);font-size:30px;margin:2px 0 4px}.gl666-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin:14px 0}.gl666-list{display:grid;gap:10px}.gl666-row{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:14px;box-shadow:var(--shadow)}.gl666-main{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center}.gl666-room{width:70px;height:58px;border-radius:15px;background:var(--soft);display:grid;place-items:center;text-align:center}.gl666-room b{font-size:19px}.gl666-name b{font-size:17px}.gl666-meta{font-size:12px;color:var(--muted);margin-top:4px}.gl666-checks{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}.gl666-check{display:flex;gap:6px;align-items:center;border:1px solid var(--line);padding:8px 10px;border-radius:999px;font-size:12px;font-weight:750;background:var(--card)}.gl666-check input{width:17px;height:17px;margin:0}.gl666-stars{display:flex;gap:4px}.gl666-star{border:0;background:transparent;font-size:25px;line-height:1;color:#c7b9aa;padding:2px}.gl666-star.on{color:#b88958}.gl666-empty{padding:34px 18px;text-align:center;border:1px dashed var(--line);border-radius:20px;color:var(--muted)}.gl666-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}.gl666-badge{display:inline-flex;padding:5px 9px;border-radius:999px;background:#efe4d5;color:#79563d;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
 @media(max-width:460px){.gl666-controls,.gl666-actions{grid-template-columns:1fr}.gl666-main{grid-template-columns:62px 1fr}.gl666-main>.gl666-stars{grid-column:1/-1}.gl666-room{width:62px}}
@@ -20273,30 +20239,201 @@ window.AUREA_EXPORT_V682={version:'6.82',print:print681,open:window.openInfoBoar
 
 })();
 </script>
-<style id="aurea-game683-style">
-.g683{margin:12px 0;padding:14px;border:1px solid #e1d4c7;border-radius:18px;background:#fff;box-shadow:0 8px 26px #38271912}.g683 h3{margin:0;font:700 19px Georgia;color:#2d2119}.g683 small{color:#826f61}.g683-row{display:grid;grid-template-columns:32px 1fr 86px 34px;gap:7px;align-items:center;margin:8px 0}.g683 input,.g683 select{width:100%;padding:10px;border:1px solid #ddd0c3;border-radius:11px;background:#fff;color:#2d2119}.g683 button{border:0;border-radius:11px;padding:10px 12px;font-weight:700;background:#2d2119;color:#fff}.g683 .ghost{background:#fff;color:#513d2e;border:1px solid #ddcfc1}.g683 .gold{background:#b18459}.g683 .danger{background:#fff1ef;color:#9c332b}.g683-rank{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#f2e7dc;font-weight:800}.g683-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #eee5dc}.g683-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.g683-win{padding:12px;margin:10px 0;border-radius:12px;background:#f6eadb;color:#513b29}.g683-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}@media(max-width:430px){.g683-fields{grid-template-columns:1fr}.g683-row{grid-template-columns:28px 1fr 72px 32px}}
+
+<style id="aurea-live-score-v683-style">
+/* V6.84 · Live Activity Score — replaces the old printable-paper workflow */
+.as683-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:16px}
+.as683-head h2{margin:4px 0 3px;font-size:34px;letter-spacing:-.03em}
+.as683-kicker{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--accent);font-weight:800}
+.as683-actions{display:flex;gap:8px;flex-wrap:wrap}
+.as683-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.as683-card{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:17px;text-align:left;color:var(--text);box-shadow:var(--shadow-sm);display:block;width:100%}
+.as683-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.as683-card h3{font-size:19px;margin:4px 0 5px}
+.as683-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:var(--sand);font-size:10px;font-weight:800;color:var(--accent);white-space:nowrap}
+.as683-meta{font-size:12px;color:var(--muted);line-height:1.5}
+.as683-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.as683-tools button{min-height:36px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);font-weight:700;font-size:11px}
+.as683-tools button.primary{background:var(--espresso);color:#fff;border-color:var(--espresso)}
+.as683-tools button.danger{color:#a44c3d}
+.as683-empty{border:1px dashed var(--line);border-radius:22px;padding:25px;text-align:center;color:var(--muted)}
+.as683-history{margin-top:24px}
+.as683-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.as683-history-row:last-child{border-bottom:0}
+.as683-history-row b{display:block}
+.as683-history-row span{font-size:11px;color:var(--muted)}
+.as683-rank{font-family:var(--font-display);font-size:18px;color:var(--accent)}
+.as683-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.as683-formgrid .wide{grid-column:1/-1}
+.as683-switch{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:12px;border-radius:15px}
+.as683-switch input{width:auto;margin:0}
+.as683-order{display:flex;gap:6px}
+.as683-scorebtn{margin-top:8px!important;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:34px!important;padding:7px 11px!important;border-radius:999px!important;background:var(--espresso)!important;color:#fff!important;border:0!important;font-size:11px!important;font-weight:800!important;position:relative;z-index:4}
+.as683-scorebtn.done{background:#6d725e!important}
+.as683-game{padding-bottom:4px}
+.as683-gamehead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+.as683-gamehead h3{font-size:27px;margin:2px 0 4px}
+.as683-live{display:inline-flex;gap:6px;align-items:center;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#a04d3e}
+.as683-live:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.as683-player{display:grid;grid-template-columns:34px minmax(0,1fr) 84px 38px;gap:7px;align-items:center;margin:8px 0}
+.as683-player .rank{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-weight:800;font-size:12px}
+.as683-player input{margin:0!important;min-width:0}
+.as683-player input[type=number]{text-align:center;font-weight:800}
+.as683-player button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.as683-winner{border:1px solid rgba(174,132,79,.35);background:linear-gradient(145deg,rgba(247,237,216,.95),rgba(255,255,255,.75));border-radius:22px;padding:18px;margin:14px 0}
+.as683-winner .cup{font-size:31px}.as683-winner b{font-family:var(--font-display);font-size:25px;display:block;margin:3px 0}
+.as683-bottom{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.as683-bottom .btn{flex:1;min-width:130px}
+.as683-statbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.as683-stat{border:1px solid var(--line);border-radius:15px;padding:10px;text-align:center}.as683-stat b{display:block;font-size:18px}.as683-stat span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+@media(max-width:620px){.as683-grid{grid-template-columns:1fr}.as683-head{align-items:flex-start;flex-direction:column}.as683-formgrid{grid-template-columns:1fr}.as683-formgrid .wide{grid-column:auto}.as683-player{grid-template-columns:30px minmax(0,1fr) 72px 34px}}
 </style>
-<script id="aurea-game683-script">
-(()=>{'use strict';if(window.__AUREA_GAME683)return;window.__AUREA_GAME683=1;
-const CK='aurea_game_cfg_683',RK='aurea_game_runs_683',E=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])),id=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(_){return d}},wr=(k,v)=>{localStorage.setItem(k,JSON.stringify(v));try{S.settings={...(S.settings||{}),[k]:v};DB.saveSettings(S.settings).catch(()=>{})}catch(_){}};let cfg=()=>rd(CK,[]),runs=()=>rd(RK,[]);
-const aid=a=>String(a?.id??a?.name??''), cf=a=>cfg().find(x=>x.enabled&&(x.activityId===aid(a)||(!x.activityId&&x.activityName===a.name))), ru=a=>runs().find(x=>x.activityId===aid(a)&&+x.day===+a.day&&x.status!=='archived');
-const assigned=a=>{if(S.session?.role==='manager')return true;let u=String(S.session?.username||S.session?.name||'').toLowerCase(),r=[a.entertainer,a.assigned_to,a.staff,a.who].filter(Boolean).join(' ').toLowerCase();return !r||r.includes(u)};
-const saveRun=x=>{let z=runs(),i=z.findIndex(y=>y.id===x.id);i<0?z.push(x):z[i]=x;wr(RK,z)},rank=(r,c)=>[...(r.players||[])].sort((a,b)=>c.win==='low'?(+a.score||0)-(+b.score||0):(+b.score||0)-(+a.score||0));
-const modal=b=>typeof baseModal==='function'?baseModal(b):null;
-function game(a){let c=cf(a);if(!c)return;let r=ru(a)||{id:id(),activityId:aid(a),activityName:a.name,day:+a.day,time:a.time||'',location:a.location||'',entertainer:S.session?.name||S.session?.username||'',status:'open',players:[],startedAt:new Date().toISOString()};if(!ru(a))saveRun(r);let w=modal('<div id="g683game"></div>'),q=w.querySelector('#g683game');
- const draw=()=>{let z=rank(r,c),win=r.status==='finished'&&z[0];q.innerHTML=`<div class="g683"><h3>${E(a.name)} · Game scoring</h3><small>${E(a.time||'')} ${a.location?'· '+E(a.location):''} · ${r.players.length} participants</small>${win?`<div class="g683-win">🏆 <b>Winner: ${E(win.name||'Guest')}</b> · ${E(win.score)} ${E(c.unit||'points')}</div>`:''}<div>${r.players.length?z.map((p,i)=>`<div class="g683-row"><span class="g683-rank">${i+1}</span><input data-n="${p.id}" value="${E(p.name)}" placeholder="Guest name" ${r.status==='finished'?'disabled':''}><input data-s="${p.id}" type="number" value="${E(p.score)}" placeholder="Score" ${r.status==='finished'?'disabled':''}><button class="danger" data-d="${p.id}" ${r.status==='finished'?'disabled':''}>×</button></div>`).join(''):'<p><small>Add guests to start the game.</small></p>'}</div><div class="g683-actions">${r.status==='open'?'<button class="ghost" id="gadd">+ Add guest</button><button class="gold" id="gfinish">Finish game</button>':'<button class="ghost" id="greopen">Reopen</button>'}<button class="ghost" id="gclose">Close</button></div></div>`;
- q.querySelectorAll('[data-n]').forEach(x=>x.oninput=()=>{let p=r.players.find(y=>y.id===x.dataset.n);p.name=x.value;saveRun(r)});q.querySelectorAll('[data-s]').forEach(x=>x.oninput=()=>{let p=r.players.find(y=>y.id===x.dataset.s);p.score=x.value;saveRun(r)});q.querySelectorAll('[data-d]').forEach(x=>x.onclick=()=>{r.players=r.players.filter(y=>y.id!==x.dataset.d);saveRun(r);draw()});
- let b=q.querySelector('#gadd');if(b)b.onclick=()=>{r.players.push({id:id(),name:'',score:''});saveRun(r);draw()};b=q.querySelector('#gfinish');if(b)b.onclick=async()=>{if(!r.players.some(p=>p.name.trim()))return toastErr('Add at least one guest name.');let ok=typeof confirmAction==='function'?await confirmAction({question:'Finish game and save the winner?'}):confirm('Finish game?');if(!ok)return;r.status='finished';r.finishedAt=new Date().toISOString();r.participantCount=r.players.filter(p=>p.name.trim()).length;let z=rank(r,c);r.winner=z[0]?{name:z[0].name,score:z[0].score}:null;saveRun(r);draw();try{render()}catch(_){}};b=q.querySelector('#greopen');if(b)b.onclick=()=>{r.status='open';saveRun(r);draw()};q.querySelector('#gclose').onclick=()=>w.remove()};draw()}
-function manage(){let list=cfg(),acts=(S.activities||[]).filter(a=>String(a.category||'mAdult')==='mAdult'),unique=[...new Map(acts.map(a=>[aid(a),a])).values()],w=modal('<div id="g683m"></div>'),q=w.querySelector('#g683m');
- const draw=()=>{q.innerHTML=`<div class="g683"><h3>Game scoring setup</h3><small>Manager can create, edit, delete and arrange scoring activities without code.</small><div class="g683-fields"><select id="ga"><option value="">Choose Activity…</option>${unique.map(a=>`<option value="${E(aid(a))}">${E(a.name)}</option>`).join('')}</select><select id="gw"><option value="high">Highest score wins</option><option value="low">Lowest score wins</option></select><input id="gu" value="points" placeholder="Score label"><button class="gold" id="gc">Add scoring game</button></div><div>${list.map((x,i)=>`<div class="g683-item"><div><b>${E(x.activityName)}</b><br><small>${x.win==='low'?'Lowest':'Highest'} wins · ${E(x.unit)}</small></div><div class="g683-actions"><button class="ghost" data-up="${i}">↑</button><button class="ghost" data-dn="${i}">↓</button><button class="ghost" data-ed="${i}">Edit</button><button class="danger" data-rm="${i}">Delete</button></div></div>`).join('')}</div><div class="g683-actions"><button class="ghost" id="gmclose">Close</button></div></div>`;
- q.querySelector('#gc').onclick=()=>{let k=q.querySelector('#ga').value,a=unique.find(x=>aid(x)===k);if(!a)return toastErr('Choose an Activity.');if(list.some(x=>x.activityId===k))return toastErr('Already configured.');list.push({id:id(),activityId:k,activityName:a.name,enabled:true,win:q.querySelector('#gw').value,unit:q.querySelector('#gu').value||'points'});wr(CK,list);draw()};q.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{list.splice(+b.dataset.rm,1);wr(CK,list);draw()});q.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{let i=+b.dataset.up;if(i){[list[i-1],list[i]]=[list[i],list[i-1]];wr(CK,list);draw()}});q.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{let i=+b.dataset.dn;if(i<list.length-1){[list[i+1],list[i]]=[list[i],list[i+1]];wr(CK,list);draw()}});q.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{let x=list[+b.dataset.ed],u=prompt('Score label',x.unit);if(u!==null&&u.trim())x.unit=u.trim();x.win=confirm('OK = highest score wins. Cancel = lowest score wins.')?'high':'low';wr(CK,list);draw()});q.querySelector('#gmclose').onclick=()=>w.remove()};draw()}
-function history(){let z=runs().filter(x=>x.status==='finished').sort((a,b)=>String(b.finishedAt).localeCompare(String(a.finishedAt))),w=modal(`<div class="g683"><h3>Game results history</h3>${z.length?z.map(x=>`<div class="g683-item"><div><b>${E(x.activityName)}</b><br><small>${x.participantCount||0} participants · ${E(x.entertainer||'')}</small></div><div>🏆 ${E(x.winner?.name||'—')} ${E(x.winner?.score??'')}</div></div>`).join(''):'<p><small>No finished games yet.</small></p>'}<div class="g683-actions"><button class="ghost" id="ghc">Close</button></div></div>`);w.querySelector('#ghc').onclick=()=>w.remove()}
-function inject(){let role=S.session?.role;if(!['staff','entertainer','manager'].includes(role))return;let a=(S.activities||[]).filter(x=>+x.day===+S.day&&cf(x)&&assigned(x)),host=document.querySelector('.screen');if(!host||host.querySelector('[data-g683]'))return;if(role!=='manager'&&!a.length)return;let n=document.createElement('section');n.className='g683';n.dataset.g683='1';n.innerHTML=`<div class="g683-item"><div><h3>Game scoring</h3><small>${role==='manager'?'Manage competitions and results.':'Your scoring activities today.'}</small></div>${role==='manager'?'<button class="ghost" data-gmanage>Manage</button>':''}</div>${a.map(x=>{let r=ru(x);return `<div class="g683-item"><div><b>${E(x.name)}</b><br><small>${E(x.time||'')} ${x.location?'· '+E(x.location):''}</small></div><button class="${r?.status==='finished'?'ghost':'gold'}" data-gopen="${E(aid(x))}">${r?.status==='finished'?'Results':'Start game'}</button></div>`}).join('')}${role==='manager'?'<div class="g683-actions"><button class="ghost" data-ghistory>Results history</button></div>':''}`;let d=host.querySelector('.daytabs');d?d.insertAdjacentElement('afterend',n):host.prepend(n)}
-document.addEventListener('click',e=>{let b=e.target.closest?.('[data-gmanage]');if(b)return manage();b=e.target.closest?.('[data-ghistory]');if(b)return history();b=e.target.closest?.('[data-gopen]');if(b){let a=(S.activities||[]).find(x=>aid(x)===b.dataset.gopen);if(a)return game(a)}});
-const R=window.render||render;try{render=function(){let x=R.apply(this,arguments);setTimeout(inject,0);return x}}catch(_){}setTimeout(inject,60);
-window.AUREA_GAME_SCORING_V683={version:'6.83',manage,history,open:game};
+<script id="aurea-live-score-v683-script">
+(()=>{
+if(window.__AUREA_LIVE_SCORE_V684)return; window.__AUREA_LIVE_SCORE_V684=1;
+const KEYC='activityScoreGameConfigs', KEYS='activityScoreGameSessions';
+const E=s=>typeof esc==='function'?esc(String(s??'')):String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const norm=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function cfgs(){
+ let a=(S.settings&&Array.isArray(S.settings[KEYC]))?S.settings[KEYC]:[];
+ if(!a.length){
+   const acts=(S.activities||[]).map(x=>x.name).filter(Boolean);
+   const defaults=[['Darts','Highest score wins'],['Boccia','Highest score wins'],['Bean Bags','Highest score wins']];
+   a=defaults.filter(d=>acts.some(n=>norm(n).includes(norm(d[0])))).map((d,i)=>({id:'auto-'+i,name:d[0],activity:d[0],enabled:true,rule:'high',scoreLabel:'Score',rounds:1,order:i}));
+ }
+ return a.slice().sort((a,b)=>(+a.order||0)-(+b.order||0));
+}
+function sessions(){return(S.settings&&Array.isArray(S.settings[KEYS]))?S.settings[KEYS]:[]}
+function matchCfg(a){return cfgs().find(c=>c.enabled!==false&&(norm(c.activity)===norm(a.name)||norm(c.name)===norm(a.name)))||null}
+async function saveSettingsPart(key,val){
+ S.settings={...(S.settings||{}),[key]:val};
+ try{await DB.saveSettings({...S.settings});return true}catch(e){console.error('V6.83 save',e);toastErr(t('errSave'));return false}
+}
+function activeSession(a){
+ const all=sessions().filter(x=>String(x.activityId)===String(a.id));
+ return all.sort((x,y)=>String(y.updatedAt||y.startedAt||'').localeCompare(String(x.updatedAt||x.startedAt||'')))[0]||null;
+}
+function scoreNum(v){const n=Number(v);return Number.isFinite(n)?n:0}
+function ranked(g,c){
+ const ps=(g.players||[]).map((p,i)=>({...p,_i:i,score:scoreNum(p.score)}));
+ ps.sort((a,b)=>c.rule==='low'?(a.score-b.score||a._i-b._i):(b.score-a.score||a._i-b._i));
+ return ps;
+}
+function winnerText(g,c){const r=ranked(g,c);if(!r.length)return'';const best=r[0].score,w=r.filter(x=>x.score===best);return w.map(x=>x.name||'Guest').join(' & ')}
+function configModal(existing){
+ const x=existing?{...existing}:{id:uid(),name:'',activity:'',enabled:true,rule:'high',scoreLabel:'Score',rounds:1,order:cfgs().length};
+ const acts=[...new Set((S.activities||[]).map(a=>a.name).filter(Boolean))].sort();
+ const w=baseModal(`<div class="as683-game"><div class="as683-kicker">LIVE GAME SETUP</div><h3>${existing?'Edit score game':'Create score game'}</h3><p class="mini">Configure it here once. Entertainers will automatically receive the scoring tool when this activity is assigned to them.</p>
+ <div class="as683-formgrid">
+  <div class="wide"><label>Game name</label><input id="as683-c-name" value="${E(x.name)}" placeholder="e.g. Darts"></div>
+  <div class="wide"><label>Connect to activity</label><select id="as683-c-act"><option value="">Choose activity</option>${acts.map(n=>`<option ${norm(n)===norm(x.activity)?'selected':''}>${E(n)}</option>`).join('')}</select></div>
+  <div><label>Winner rule</label><select id="as683-c-rule"><option value="high" ${x.rule!=='low'?'selected':''}>Highest score wins</option><option value="low" ${x.rule==='low'?'selected':''}>Lowest score wins</option></select></div>
+  <div><label>Score label</label><input id="as683-c-label" value="${E(x.scoreLabel||'Score')}" placeholder="Score / Points / Wins"></div>
+  <div><label>Rounds / sets</label><input id="as683-c-rounds" type="number" min="1" max="20" value="${Math.max(1,+x.rounds||1)}"></div>
+  <label class="as683-switch"><input id="as683-c-enabled" type="checkbox" ${x.enabled!==false?'checked':''}><span><b>Available to entertainers</b><br><span class="mini">Show Start Game on assigned activity</span></span></label>
+ </div>
+ <div class="as683-bottom"><button class="btn" id="as683-c-save">Save game</button><button class="btn ghost" id="as683-c-x">${t('close')}</button></div></div>`);
+ q('#as683-c-x',w).onclick=()=>w.remove();
+ q('#as683-c-save',w).onclick=async()=>{
+   const name=q('#as683-c-name',w).value.trim(),activity=q('#as683-c-act',w).value.trim();
+   if(!name||!activity){toastWarn('Add a game name and connect an activity.');return}
+   const rec={...x,name,activity,rule:q('#as683-c-rule',w).value,scoreLabel:q('#as683-c-label',w).value.trim()||'Score',rounds:Math.max(1,Math.min(20,+q('#as683-c-rounds',w).value||1)),enabled:q('#as683-c-enabled',w).checked};
+   let all=cfgs().filter(c=>c.id!==rec.id);all.push(rec);all.sort((a,b)=>(+a.order||0)-(+b.order||0)).forEach((c,i)=>c.order=i);
+   if(await saveSettingsPart(KEYC,all)){w.remove();toastOk('Score game saved');render()}
+ };
+}
+async function moveCfg(id,dir){
+ let all=cfgs(),i=all.findIndex(x=>x.id===id),j=i+dir;if(i<0||j<0||j>=all.length)return;
+ [all[i],all[j]]=[all[j],all[i]];all.forEach((c,k)=>c.order=k);if(await saveSettingsPart(KEYC,all))render();
+}
+async function delCfg(id){
+ if(!await confirmAction({question:'Delete this score game setup?',danger:true}))return;
+ if(await saveSettingsPart(KEYC,cfgs().filter(x=>x.id!==id)))render();
+}
+function managerInner(){
+ const cs=cfgs(), ss=sessions().filter(x=>x.status==='finished').slice().sort((a,b)=>String(b.finishedAt||'').localeCompare(String(a.finishedAt||''))).slice(0,30);
+ return `<div class="as683-head"><div><div class="as683-kicker">LIVE OPERATIONS</div><h2>Activities Score</h2><p class="mini">Create and manage live score games. No paper and no code.</p></div><div class="as683-actions"><button class="btn" id="as683-new">+ Create score game</button></div></div>
+ ${cs.length?`<div class="as683-grid">${cs.map((c,i)=>`<div class="as683-card"><div class="as683-cardtop"><div><span class="as683-pill">${c.enabled!==false?'LIVE':'HIDDEN'}</span><h3>${E(c.name)}</h3></div><div class="as683-order"><button class="iconbtn" data-as683-up="${E(c.id)}" ${i===0?'disabled':''}>↑</button><button class="iconbtn" data-as683-down="${E(c.id)}" ${i===cs.length-1?'disabled':''}>↓</button></div></div><div class="as683-meta">Activity: <b>${E(c.activity)}</b><br>${c.rule==='low'?'Lowest':'Highest'} ${E(c.scoreLabel||'score')} wins · ${Math.max(1,+c.rounds||1)} round${+c.rounds===1?'':'s'}</div><div class="as683-tools"><button class="primary" data-as683-edit="${E(c.id)}">Edit</button><button data-as683-test="${E(c.id)}">Open test</button><button class="danger" data-as683-del="${E(c.id)}">Delete</button></div></div>`).join('')}</div>`:`<div class="as683-empty"><b>No live score games yet.</b><br>Create Darts, Boccia, Bean Bags or any competition you want.</div>`}
+ <div class="as683-history"><div class="as683-kicker">COMPLETED GAMES</div><h3>Results history</h3>${ss.length?`<div class="card">${ss.map(g=>{const c=cs.find(x=>x.id===g.configId)||{rule:g.rule||'high'};return`<div class="as683-history-row" data-as683-history="${E(g.id)}"><div><b>${E(g.activityName)}</b><span>${E(g.date||'')} · ${E(g.entertainerName||'')} · ${(g.players||[]).length} participants</span></div><div class="as683-rank">🏆 ${E(g.winner||winnerText(g,c)||'—')}</div></div>`}).join('')}</div>`:`<p class="mini">Finished games will appear here automatically.</p>`}</div>`;
+}
+window.activityScoresInner662=managerInner;
+window.openActivityScore662=function(){ if(S.session&&S.session.role==='manager')configModal(); };
+function gameModal(a,c,preview=false){
+ let old=activeSession(a),g=(old&&old.status!=='finished')?JSON.parse(JSON.stringify(old)):{id:uid(),configId:c.id,activityId:a.id,activityName:a.name,date:(typeof assignDateStr==='function'?assignDateStr(a.day):new Date().toISOString().slice(0,10)),time:a.time||'',location:a.location||'',entertainer:S.session&&S.session.username||'',entertainerName:S.session&&S.session.name||'',status:'live',startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),players:[]};
+ const w=baseModal(`<div class="as683-game"><div class="as683-gamehead"><div><span class="as683-live">Live scoring</span><h3>${E(a.name)}</h3><p class="mini">${E(a.time||'')}${a.location?' · '+E(a.location):''} · ${c.rule==='low'?'Lowest':'Highest'} ${E(c.scoreLabel||'score')} wins</p></div><span class="as683-pill">${Math.max(1,+c.rounds||1)} round${+c.rounds===1?'':'s'}</span></div><div id="as683-livebody"></div><div class="as683-bottom"><button class="btn ghost" id="as683-add">+ Add guest</button><button class="btn" id="as683-finish">Finish game</button><button class="btn ghost" id="as683-close">Close</button></div></div>`);
+ const body=q('#as683-livebody',w);
+ function draw(){
+  const r=ranked(g,c),rankMap={};r.forEach((p,i)=>rankMap[p.id]=i+1);
+  body.innerHTML=`<div class="as683-statbar"><div class="as683-stat"><b>${g.players.length}</b><span>Guests</span></div><div class="as683-stat"><b>${g.players.length?E(r[0].score):'—'}</b><span>Leading ${E(c.scoreLabel||'score')}</span></div><div class="as683-stat"><b>${g.players.length?E(r[0].name||'Guest'):'—'}</b><span>Leader</span></div></div>${g.players.length?g.players.map(p=>`<div class="as683-player"><span class="rank">${rankMap[p.id]||'—'}</span><input data-as683-name="${E(p.id)}" value="${E(p.name||'')}" placeholder="Guest name"><input data-as683-score="${E(p.id)}" type="number" step="any" value="${E(p.score??'')}" placeholder="${E(c.scoreLabel||'Score')}"><button data-as683-remove="${E(p.id)}">×</button></div>`).join(''):`<div class="as683-empty">Add the guests playing this game, then enter their scores.</div>`}`;
+  qa('[data-as683-name]',body).forEach(el=>el.oninput=()=>{let p=g.players.find(x=>x.id===el.dataset.as683Name);if(p)p.name=el.value});
+  qa('[data-as683-score]',body).forEach(el=>el.oninput=()=>{let p=g.players.find(x=>x.id===el.dataset.as683Score);if(p){p.score=el.value;draw()}});
+  qa('[data-as683-remove]',body).forEach(el=>el.onclick=()=>{g.players=g.players.filter(x=>x.id!==el.dataset.as683Remove);draw()});
+ }
+ q('#as683-add',w).onclick=()=>{g.players.push({id:uid(),name:'',score:''});draw();setTimeout(()=>{const z=qa('[data-as683-name]',body);if(z.length)z[z.length-1].focus()},20)};
+ q('#as683-close',w).onclick=async()=>{if(!preview){g.updatedAt=new Date().toISOString();let all=sessions().filter(x=>x.id!==g.id);all.push(g);await saveSettingsPart(KEYS,all)}w.remove()};
+ q('#as683-finish',w).onclick=async()=>{
+   if(!g.players.length||!g.players.some(p=>String(p.name||'').trim())){toastWarn('Add at least one guest.');return}
+   const win=winnerText(g,c)||'Guest';
+   if(!await confirmAction({question:`Finish ${a.name}? Winner: ${win}`}))return;
+   g.players=g.players.filter(p=>String(p.name||'').trim());g.status='finished';g.finishedAt=new Date().toISOString();g.updatedAt=g.finishedAt;g.winner=winnerText(g,c);g.rule=c.rule;g.scoreLabel=c.scoreLabel;
+   if(!preview){let all=sessions().filter(x=>x.id!==g.id);all.push(g);if(!await saveSettingsPart(KEYS,all))return}
+   body.innerHTML=`<div class="as683-winner"><span class="cup">🏆</span><span class="mini">WINNER</span><b>${E(g.winner)}</b><span>${E(c.scoreLabel||'Score')}: ${E(ranked(g,c)[0]?.score??'—')} · ${g.players.length} participants</span></div><div class="card">${ranked(g,c).map((p,i)=>`<div class="as683-history-row"><div><b>${i+1}. ${E(p.name)}</b></div><div class="as683-rank">${E(p.score)}</div></div>`).join('')}</div>`;
+   q('#as683-add',w).style.display='none';q('#as683-finish',w).style.display='none';toastOk('Game finished and result saved');
+ };
+ draw();
+}
+function historyModal(g){
+ const c=cfgs().find(x=>x.id===g.configId)||{rule:g.rule||'high',scoreLabel:g.scoreLabel||'Score'};
+ const r=ranked(g,c),w=baseModal(`<div class="as683-game"><div class="as683-kicker">COMPLETED GAME</div><h3>${E(g.activityName)}</h3><div class="as683-winner"><span class="cup">🏆</span><span class="mini">WINNER</span><b>${E(g.winner||winnerText(g,c)||'—')}</b><span>${(g.players||[]).length} participants · ${E(g.entertainerName||'')}</span></div><div class="card">${r.map((p,i)=>`<div class="as683-history-row"><div><b>${i+1}. ${E(p.name)}</b></div><div class="as683-rank">${E(p.score)}</div></div>`).join('')}</div><button class="btn ghost" id="as683-hx">${t('close')}</button></div>`);q('#as683-hx',w).onclick=()=>w.remove();
+}
+function injectStaffButtons(root=document){
+ if(!S.session||S.session.role!=='staff')return;
+ qa('.tlx-body[data-actopen]',root).forEach(box=>{
+  if(box.querySelector('.as683-scorebtn'))return;
+  const a=(S.activities||[]).find(x=>String(x.id)===String(box.dataset.actopen)),c=a&&matchCfg(a);if(!a||!c)return;
+  const old=activeSession(a),done=old&&old.status==='finished';
+  const b=document.createElement('button');b.type='button';b.className='as683-scorebtn'+(done?' done':'');b.dataset.as683Start=String(a.id);b.textContent=done?'✓ View result':'🏆 '+(old?'Continue game':'Start game');box.appendChild(b);
+ });
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest&&e.target.closest('[data-as683-start],[data-as683-edit],[data-as683-test],[data-as683-del],[data-as683-up],[data-as683-down],[data-as683-history],#as683-new');
+ if(!b)return;
+ if(b.matches('[data-as683-start]')){e.preventDefault();e.stopImmediatePropagation();const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.as683Start)),c=a&&matchCfg(a),g=a&&activeSession(a);if(g&&g.status==='finished')historyModal(g);else if(a&&c)gameModal(a,c);return}
+ if(b.id==='as683-new'){e.preventDefault();configModal();return}
+ if(b.dataset.as683Edit){e.preventDefault();configModal(cfgs().find(x=>x.id===b.dataset.as683Edit));return}
+ if(b.dataset.as683Test){e.preventDefault();const c=cfgs().find(x=>x.id===b.dataset.as683Test);if(c)gameModal({id:'preview-'+c.id,name:c.activity,time:'Preview',location:'',day:typeof todayIndex==='function'?todayIndex():0},c,true);return}
+ if(b.dataset.as683Del){e.preventDefault();delCfg(b.dataset.as683Del);return}
+ if(b.dataset.as683Up){e.preventDefault();moveCfg(b.dataset.as683Up,-1);return}
+ if(b.dataset.as683Down){e.preventDefault();moveCfg(b.dataset.as683Down,1);return}
+ if(b.dataset.as683History){e.preventDefault();const g=sessions().find(x=>x.id===b.dataset.as683History);if(g)historyModal(g);return}
+},true);
+const mo=new MutationObserver(()=>injectStaffButtons());mo.observe(document.body,{childList:true,subtree:true});setTimeout(()=>injectStaffButtons(),100);
+
+/* Final activity-editor integration. This wrapper is intentionally last so older
+   edit-modal patches cannot remove the live-score controls. */
+const prevEdit683=window.openEditModal;
+if(typeof prevEdit683==='function')window.openEditModal=function(input){
+ prevEdit683(input);
+ setTimeout(()=>{
+  const sheet=document.querySelector('.modal-wrap:last-of-type .modal, .modal-back:last-of-type .modal')||document.querySelector('.modal:last-of-type');
+  if(!sheet||q('#as683-editor',sheet))return;
+  const name=q('#e-name',sheet),save=q('#e-save',sheet);if(!name||!save)return;
+  let current=cfgs().find(c=>norm(c.activity)===norm(name.value));
+  const box=document.createElement('div');box.id='as683-editor';box.className='as683-switch';box.style.margin='12px 0';
+  box.innerHTML=`<input id="as683-ed-on" type="checkbox" ${current&&current.enabled!==false?'checked':''}><span><b>Live game scoring</b><br><span class="mini">Assigned entertainer can enter guest names, scores and finish the game with an automatic winner.</span></span>`;
+  save.parentNode.insertBefore(box,save);
+  save.addEventListener('click',async()=>{
+    const on=q('#as683-ed-on',sheet).checked,nm=name.value.trim();let all=cfgs(),c=all.find(x=>norm(x.activity)===norm(nm));
+    if(on&&!c){all.push({id:uid(),name:nm,activity:nm,enabled:true,rule:'high',scoreLabel:'Score',rounds:1,order:all.length})}
+    else if(c){c={...c,activity:nm,name:c.name||nm,enabled:on};all=all.map(x=>x.id===c.id?c:x)}
+    await saveSettingsPart(KEYC,all);
+  },true);
+ },60);
+};
+window.AUREA_LIVE_SCORE_V683={version:'6.84',configs:cfgs,sessions,openGame:gameModal,manager:managerInner};
 })();
 </script>
+
 </body>
 </html>
