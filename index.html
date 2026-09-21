@@ -20242,706 +20242,454 @@ window.AUREA_EXPORT_V682={version:'6.82',print:print681,open:window.openInfoBoar
 
 
 
-<style id="aurea-live-score-v686-style">
-/* V6.86 · Professional individual + two-team live scoring */
-.as686-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px}
-.as686-head h2{margin:4px 0 3px;font-size:34px;letter-spacing:-.03em}
-.as686-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:850}
-.as686-actions{display:flex;gap:8px;flex-wrap:wrap}
-.as686-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.as686-card{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:17px;text-align:left;color:var(--text);box-shadow:var(--shadow-sm);display:block;width:100%}
-.as686-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.as686-card h3{font-size:20px;margin:6px 0 5px}
-.as686-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:var(--sand);font-size:10px;font-weight:850;color:var(--accent);white-space:nowrap}
-.as686-pill.ready{background:#edf4ef;color:#416b55}
-.as686-pill.draft{background:#f6eee5;color:#8a643c}
-.as686-meta{font-size:12px;color:var(--muted);line-height:1.55}
-.as686-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
-.as686-tools button{min-height:36px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);font-weight:750;font-size:11px}
-.as686-tools button.primary{background:var(--espresso);color:#fff;border-color:var(--espresso)}
-.as686-tools button.danger{color:#a44c3d}
-.as686-empty{border:1px dashed var(--line);border-radius:22px;padding:25px;text-align:center;color:var(--muted)}
-.as686-history{margin-top:26px}
-.as686-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
-.as686-history-row:last-child{border-bottom:0}
-.as686-history-row b{display:block}
-.as686-history-row span{font-size:11px;color:var(--muted)}
-.as686-rank{font-family:var(--font-display);font-size:18px;color:var(--accent);text-align:right}
 
-.as686-editor{padding-bottom:4px}
-.as686-editor-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:15px}
-.as686-editor-head h3{font-size:28px;margin:3px 0 4px}
-.as686-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.as686-formgrid .wide{grid-column:1/-1}
-.as686-section{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}
-.as686-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
-.as686-section-title b{font-size:13px}
-.as686-help{font-size:11px;line-height:1.45;color:var(--muted);margin-top:5px}
-.as686-linkrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
-.as686-linkrow button{height:48px;white-space:nowrap}
-.as686-switch{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:12px;border-radius:15px}
-.as686-switch input{width:auto;margin:0}
-.as686-switch b{display:block}
-.as686-hidden{display:none!important}
-.as686-validation{display:none;margin-top:10px;padding:10px 12px;border-radius:13px;background:#f8eee9;color:#9a4e3e;font-size:12px;font-weight:700}
-.as686-validation.show{display:block}
-.as686-segment{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;border:1px solid var(--line);border-radius:16px;background:var(--sand)}
-.as686-segment button{border:0;border-radius:12px;padding:11px 10px;background:transparent;color:var(--muted);font-weight:800}
-.as686-segment button.active{background:var(--card);color:var(--text);box-shadow:var(--shadow-sm)}
-.as686-teamnames{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}
-.as686-teamname{border:1px solid var(--line);border-radius:16px;padding:11px;background:var(--card)}
-.as686-teamname label{font-size:9px;margin-bottom:6px}
-.as686-teamname input{margin:0!important}
+<style id="aurea-live-score-v688-style">
+/* V6.87 — Smart Game Engine. Single authoritative activity-score layer. */
+.gs87-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px}
+.gs87-head h2{margin:4px 0 3px;font-size:34px;letter-spacing:-.03em}
+.gs87-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:850}
+.gs87-actions{display:flex;gap:8px;flex-wrap:wrap}
+.gs87-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.gs87-card{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:17px;color:var(--text);box-shadow:var(--shadow-sm)}
+.gs87-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.gs87-card h3{font-size:20px;margin:6px 0 5px}
+.gs87-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:var(--sand);font-size:10px;font-weight:850;color:var(--accent);white-space:nowrap}
+.gs87-pill.ready{background:#edf4ef;color:#416b55}.gs87-pill.draft{background:#f6eee5;color:#8a643c}
+.gs87-meta{font-size:12px;color:var(--muted);line-height:1.55}
+.gs87-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.gs87-tools button{min-height:36px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);font-weight:750;font-size:11px}
+.gs87-tools button.primary{background:var(--espresso);color:#fff;border-color:var(--espresso)}
+.gs87-tools button.danger{color:#a44c3d}
+.gs87-empty{border:1px dashed var(--line);border-radius:22px;padding:25px;text-align:center;color:var(--muted)}
+.gs87-history{margin-top:26px}.gs87-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.gs87-history-row:last-child{border-bottom:0}.gs87-history-row b{display:block}.gs87-history-row span{font-size:11px;color:var(--muted)}.gs87-rank{font-family:var(--font-display);font-size:18px;color:var(--accent);text-align:right}
 
-.as686-preview{margin-top:18px;border:1px solid var(--line);border-radius:22px;padding:14px;background:linear-gradient(160deg,var(--card),var(--sand))}
-.as686-preview-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
-.as686-phone{max-width:450px;margin:auto;border:1px solid var(--line);background:var(--card);border-radius:24px;padding:15px;box-shadow:0 12px 28px rgba(0,0,0,.07)}
-.as686-assigned{border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:10px}
-.as686-assigned b{display:block;font-size:15px}
-.as686-assigned small{display:block;color:var(--muted);margin-top:3px}
-.as686-preview-btn{margin-top:10px;width:100%;border:0;border-radius:999px;padding:11px 14px;background:var(--espresso);color:#fff;font-weight:850}
-.as686-livepanel{border:1px solid var(--line);border-radius:18px;padding:13px}
-.as686-livepanel-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.as686-livepanel-head b{display:block;font-size:16px}
-.as686-livepanel-head span{font-size:10px;color:#a04d3e;font-weight:850;letter-spacing:.1em}
-.as686-preview-player{display:grid;grid-template-columns:25px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
-.as686-preview-player:last-child{border-bottom:0}
-.as686-preview-player i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-style:normal;font-size:10px;font-weight:850}
-.as686-preview-player strong{font-size:13px}
-.as686-preview-player em{font-style:normal;font-weight:850;color:var(--accent)}
-.as686-preview-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:stretch}
-.as686-preview-team{border:1px solid var(--line);border-radius:15px;padding:10px}
-.as686-preview-team strong{display:block;font-size:13px}
-.as686-preview-team .score{font-family:var(--font-display);font-size:26px;margin:4px 0}
-.as686-preview-team small{display:block;color:var(--muted);font-size:10px;line-height:1.4}
-.as686-vs{display:grid;place-items:center;font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.08em}
+.gs87-editor{padding-bottom:4px}.gs87-editor-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:15px}.gs87-editor-head h3{font-size:28px;margin:3px 0 4px}
+.gs87-section{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}.gs87-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.gs87-section-title b{font-size:13px}
+.gs87-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.gs87-formgrid .wide{grid-column:1/-1}
+.gs87-help{font-size:11px;line-height:1.45;color:var(--muted);margin-top:5px}.gs87-hidden{display:none!important}
+.gs87-linkrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}.gs87-linkrow button{height:48px;white-space:nowrap}
+.gs87-switch{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:12px;border-radius:15px}.gs87-switch input{width:auto;margin:0}.gs87-switch b{display:block}
+.gs87-segment{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;border:1px solid var(--line);border-radius:16px;background:var(--sand)}
+.gs87-segment button{border:0;border-radius:12px;padding:11px 10px;background:transparent;color:var(--muted);font-weight:800}.gs87-segment button.active{background:var(--card);color:var(--text);box-shadow:var(--shadow-sm)}
+.gs87-teamnames{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}
+.gs87-rulebox{border:1px solid var(--line);border-radius:18px;padding:13px;background:var(--sand);font-size:12px;line-height:1.55;color:var(--muted)}
+.gs87-rulebox b{display:block;color:var(--text);margin-bottom:4px}
+.gs87-validation{display:none;margin-top:10px;padding:10px 12px;border-radius:13px;background:#f8eee9;color:#9a4e3e;font-size:12px;font-weight:700}.gs87-validation.show{display:block}
+.gs87-preview{margin-top:18px;border:1px solid var(--line);border-radius:22px;padding:14px;background:linear-gradient(160deg,var(--card),var(--sand))}
+.gs87-preview-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.gs87-preview-empty{border:1px dashed var(--line);border-radius:18px;padding:16px;margin-top:10px;background:var(--card)}
+.gs87-preview-empty b{display:block;margin-bottom:4px}
+.gs87-preview-empty span{font-size:11px;color:var(--muted);line-height:1.45}
+.gs87-bottom{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.gs87-bottom .btn{flex:1;min-width:130px}
 
-.as686-scorebtn{margin-top:8px!important;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:34px!important;padding:7px 11px!important;border-radius:999px!important;background:var(--espresso)!important;color:#fff!important;border:0!important;font-size:11px!important;font-weight:850!important;position:relative;z-index:4}
-.as686-scorebtn.done{background:#6d725e!important}
+.gs87-scorebtn{margin-top:8px!important;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:34px!important;padding:7px 11px!important;border-radius:999px!important;background:var(--espresso)!important;color:#fff!important;border:0!important;font-size:11px!important;font-weight:850!important;position:relative;z-index:4}.gs87-scorebtn.done{background:#6d725e!important}
 
-.as686-game{padding-bottom:4px}
-.as686-gamehead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
-.as686-gamehead h3{font-size:27px;margin:2px 0 4px}
-.as686-live{display:inline-flex;gap:6px;align-items:center;font-size:10px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:#a04d3e}
-.as686-live:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-.as686-statbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-.as686-stat{border:1px solid var(--line);border-radius:15px;padding:10px;text-align:center}
-.as686-stat b{display:block;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.as686-stat span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.as686-scoretable{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
-.as686-scorehead,.as686-player{display:grid;gap:7px;align-items:center;min-width:460px}
-.as686-scorehead{font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 0 5px}
-.as686-player{margin:7px 0}
-.as686-player .rank{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-weight:850;font-size:12px}
-.as686-player input{margin:0!important;min-width:0}
-.as686-player input[type=number]{text-align:center;font-weight:800}
-.as686-player button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted)}
-.as686-total{height:44px;border:1px solid var(--line);border-radius:13px;display:grid;place-items:center;font-weight:900;background:var(--sand)}
-.as686-room{max-width:90px}
-.as686-note{padding:10px 12px;border-radius:14px;background:var(--sand);font-size:12px;color:var(--muted);margin:10px 0}
-.as686-winner{border:1px solid rgba(174,132,79,.35);background:linear-gradient(145deg,rgba(247,237,216,.95),rgba(255,255,255,.75));border-radius:22px;padding:18px;margin:14px 0}
-.as686-winner .cup{font-size:31px}
-.as686-winner b{font-family:var(--font-display);font-size:25px;display:block;margin:3px 0}
-.as686-bottom{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.as686-bottom .btn{flex:1;min-width:130px}
+.gs87-game{padding-bottom:4px}.gs87-gamehead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}.gs87-gamehead h3{font-size:27px;margin:2px 0 4px}
+.gs87-live{display:inline-flex;gap:6px;align-items:center;font-size:10px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:#a04d3e}.gs87-live:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.gs87-note{padding:10px 12px;border-radius:14px;background:var(--sand);font-size:12px;color:var(--muted);margin:10px 0}
+.gs87-statbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.gs87-stat{border:1px solid var(--line);border-radius:15px;padding:10px;text-align:center}.gs87-stat b{display:block;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gs87-stat span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.gs87-scoretable{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}.gs87-scorehead,.gs87-player{display:grid;gap:7px;align-items:center;min-width:460px}.gs87-scorehead{font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 0 5px}.gs87-player{margin:7px 0}.gs87-player input{margin:0!important;min-width:0}.gs87-player input[type=number]{text-align:center;font-weight:800}.gs87-player button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.gs87-rankdot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-weight:850;font-size:12px}
+.gs87-total{height:44px;border:1px solid var(--line);border-radius:13px;display:grid;place-items:center;font-weight:900;background:var(--sand)}
+.gs87-add{width:100%;margin-top:10px;border:1px dashed var(--line);background:transparent;color:var(--text);border-radius:14px;padding:9px;font-weight:800}
+.gs87-teamboard{display:grid;grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);gap:10px;align-items:stretch;margin:12px 0}.gs87-teamhero{border:1px solid var(--line);border-radius:20px;padding:14px;background:var(--card);text-align:center}.gs87-teamhero.leading{background:linear-gradient(145deg,var(--sand),var(--card));border-color:rgba(174,132,79,.38)}.gs87-teamhero span{display:block;font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:800}.gs87-teamhero b{display:block;font-size:18px;margin:3px 0}.gs87-teamhero strong{font-family:var(--font-display);font-size:30px;color:var(--accent)}.gs87-vs{display:grid;place-items:center;font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.08em}
+.gs87-teamsection{border:1px solid var(--line);border-radius:21px;padding:13px;margin:12px 0;background:var(--card)}.gs87-teamsection-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}.gs87-teamsection-head b{font-size:18px}.gs87-teamsection-head strong{font-family:var(--font-display);font-size:23px;color:var(--accent)}
 
-.as686-teamscoreboard{display:grid;grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);gap:10px;align-items:stretch;margin:12px 0 14px}
-.as686-teamhero{border:1px solid var(--line);border-radius:20px;padding:14px;background:var(--card);text-align:center}
-.as686-teamhero.leading{background:linear-gradient(145deg,var(--sand),var(--card));border-color:rgba(174,132,79,.38)}
-.as686-teamhero span{display:block;font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:800}
-.as686-teamhero b{display:block;font-size:18px;margin:3px 0}
-.as686-teamhero strong{font-family:var(--font-display);font-size:30px;color:var(--accent)}
-.as686-teamsection{border:1px solid var(--line);border-radius:21px;padding:13px;margin:12px 0;background:var(--card)}
-.as686-teamsection-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
-.as686-teamsection-head b{font-size:18px}
-.as686-teamsection-head strong{font-family:var(--font-display);font-size:23px;color:var(--accent)}
-.as686-teamsection-head small{display:block;color:var(--muted);font-size:10px}
-.as686-addteam{width:100%;margin-top:10px;border:1px dashed var(--line);background:transparent;color:var(--text);border-radius:14px;padding:9px;font-weight:800}
-.as686-team-result{border:1px solid var(--line);border-radius:18px;padding:12px;margin:10px 0}
-.as686-team-result.winner{border-color:rgba(174,132,79,.45);background:var(--sand)}
-.as686-team-result-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.as686-team-result-head b{font-size:18px}
-.as686-team-result-head strong{font-family:var(--font-display);font-size:24px;color:var(--accent)}
-.as686-memberresult{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:12px}
-.as686-memberresult:first-of-type{margin-top:8px}
-.as686-memberresult span{color:var(--muted)}
+.gs87-timer{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:11px 13px;background:var(--card);margin:10px 0}.gs87-clock{font-family:var(--font-display);font-size:30px;letter-spacing:.04em}.gs87-timerbtns{display:flex;gap:6px}.gs87-timerbtns button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:800}
+
+.gs87-turn{border:1px solid var(--line);border-radius:20px;padding:13px;margin:10px 0}.gs87-turn-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.gs87-turn-head b{font-size:18px}.gs87-remain{font-family:var(--font-display);font-size:26px;color:var(--accent)}.gs87-turn-controls{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}.gs87-turn-controls input{margin:0!important}.gs87-turn-controls button{border:0;border-radius:14px;background:var(--espresso);color:#fff;padding:0 14px;font-weight:800}.gs87-log{margin-top:8px;font-size:11px;color:var(--muted);line-height:1.45}
+
+.gs87-killerrow{display:grid;grid-template-columns:minmax(0,1fr) 70px 64px auto;gap:7px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.gs87-killerrow:last-child{border-bottom:0}.gs87-killerrow input{margin:0!important}.gs87-lives{font-weight:900;text-align:center}.gs87-killbtn{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 9px;font-size:10px;font-weight:800}.gs87-killbtn.on{background:var(--espresso);color:#fff}
+.gs87-seqrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.gs87-seqrow:last-child{border-bottom:0}.gs87-target{font-family:var(--font-display);font-size:22px}.gs87-seqrow button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:800}
+
+.gs87-endrow{display:grid;grid-template-columns:52px 1fr 1fr;gap:8px;align-items:center;margin:8px 0}.gs87-endrow input{margin:0!important;text-align:center;font-weight:800}.gs87-endrow b{font-size:11px;color:var(--muted)}
+.gs87-winner{border:1px solid rgba(174,132,79,.35);background:linear-gradient(145deg,rgba(247,237,216,.95),rgba(255,255,255,.75));border-radius:22px;padding:18px;margin:14px 0}.gs87-winner .cup{font-size:31px}.gs87-winner b{font-family:var(--font-display);font-size:25px;display:block;margin:3px 0}
+.gs87-resultteam{border:1px solid var(--line);border-radius:18px;padding:12px;margin:10px 0}.gs87-resultteam.winner{border-color:rgba(174,132,79,.45);background:var(--sand)}.gs87-member{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:12px}
 
 @media(max-width:620px){
- .as686-grid{grid-template-columns:1fr}
- .as686-head{align-items:flex-start;flex-direction:column}
- .as686-formgrid{grid-template-columns:1fr}
- .as686-formgrid .wide{grid-column:auto}
- .as686-linkrow{grid-template-columns:1fr}
- .as686-linkrow button{height:auto}
- .as686-editor-head{flex-direction:column}
- .as686-teamnames{grid-template-columns:1fr}
- .as686-preview-vs{grid-template-columns:1fr}
- .as686-preview-vs .as686-vs{min-height:22px}
- .as686-teamscoreboard{grid-template-columns:1fr}
- .as686-teamscoreboard .as686-vs{min-height:22px}
+ .gs87-grid{grid-template-columns:1fr}.gs87-head{align-items:flex-start;flex-direction:column}.gs87-formgrid{grid-template-columns:1fr}.gs87-formgrid .wide{grid-column:auto}.gs87-linkrow{grid-template-columns:1fr}.gs87-linkrow button{height:auto}.gs87-editor-head{flex-direction:column}.gs87-teamnames{grid-template-columns:1fr}.gs87-teamboard{grid-template-columns:1fr}.gs87-teamboard .gs87-vs{min-height:20px}.gs87-killerrow{grid-template-columns:minmax(0,1fr) 62px 58px}.gs87-killerrow .killer-actions{grid-column:1/-1}
 }
 </style>
 
-<script id="aurea-live-score-v686-script">
+<script id="aurea-live-score-v688-script">
 (()=>{
-if(window.__AUREA_LIVE_SCORE_V686)return; window.__AUREA_LIVE_SCORE_V686=1;
+if(window.__AUREA_LIVE_SCORE_V688)return;window.__AUREA_LIVE_SCORE_V688=1;
 
-const KEYC='activityScoreGameConfigs', KEYS='activityScoreGameSessions';
-const $=(s,r=document)=>r.querySelector(s);
-const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const KEYC='activityScoreGameConfigs',KEYS='activityScoreGameSessions',KEYR='activityScoreGameRevisionV687';
+const LOCAL='aurea_live_score_store_v687';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const E=v=>typeof esc==='function'?esc(String(v??'')):String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const N=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
 const ID=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
 
-function configsRaw(){return(S.settings&&Array.isArray(S.settings[KEYC]))?S.settings[KEYC]:[]}
-function sessionsRaw(){return(S.settings&&Array.isArray(S.settings[KEYS]))?S.settings[KEYS]:[]}
+const TEMPLATES={
+ custom:{label:'Custom game',source:'Your own hotel rules',engine:'points',playMode:'individual',format:'points',rule:'high',structure:'single',rounds:1,timerMode:'none',timerSeconds:0,scoreLimit:0,allowTies:true,rules:'Create your own scoring format, timer, score limit, teams and instructions.'},
+ points:{label:'Points race',source:'General competition',engine:'points',playMode:'individual',format:'points',rule:'high',structure:'rounds',rounds:3,timerMode:'none',timerSeconds:0,scoreLimit:0,allowTies:true,rules:'Players or teams collect points. The highest total wins unless you change the winner logic. You can use rounds and an optional score limit.'},
+ timed:{label:'Timed challenge',source:'General timed competition',engine:'points',playMode:'individual',format:'points',rule:'high',structure:'single',rounds:1,timerMode:'countdown',timerSeconds:300,scoreLimit:0,allowTies:true,rules:'Run the game against a countdown timer. Record each player or team score before time expires. Highest total wins unless changed.'},
+ darts501:{label:'Darts — 501',source:'WDF 501 format',engine:'countdown01',playMode:'individual',format:'points',rule:'low',structure:'single',rounds:1,timerMode:'none',timerSeconds:0,startScore:501,outRule:'double',dartsPerTurn:3,allowTies:false,rules:'Start at 501. Subtract the score of each turn. The winner reaches exactly zero. Standard WDF ranked format is straight in, double out.'},
+ darts301:{label:'Darts — 301',source:'01 darts format',engine:'countdown01',playMode:'individual',format:'points',rule:'low',structure:'single',rounds:1,timerMode:'none',timerSeconds:0,startScore:301,outRule:'open',dartsPerTurn:3,allowTies:false,rules:'Start at 301 and subtract each turn. The winner reaches exactly zero. The checkout option can be configured as open out or double out.'},
+ cricket:{label:'Darts — Standard Cricket',source:'DARTSLIVE Standard Cricket',engine:'cricket',playMode:'individual',format:'marks',rule:'high',structure:'single',rounds:1,timerMode:'none',timerSeconds:0,roundLimit:15,allowTies:false,rules:'Targets are 20, 19, 18, 17, 16, 15 and Bull. Three marks close a target. A player can score on a closed target until the opponent also closes it. Close all targets and have the higher score to win.'},
+ killer:{label:'Darts — Killer',source:'Common pub-game rules (variations exist)',engine:'killer',playMode:'individual',format:'lives',rule:'high',structure:'single',rounds:1,timerMode:'none',timerSeconds:0,lives:3,killerHits:1,dartsPerTurn:3,allowTies:false,rules:'Each player has a unique number. A player becomes a Killer by hitting the required double on their own number. Killers remove lives by hitting an opponent’s double. The last player with lives remaining wins. Killer rules vary by venue, so lives and the Killer requirement are editable.'},
+ around:{label:'Darts — Around the Clock',source:'Common darts practice game',engine:'sequence',playMode:'individual',format:'targets',rule:'high',structure:'single',rounds:1,timerMode:'none',timerSeconds:0,sequenceEnd:20,includeBull:true,allowTies:false,rules:'Players progress through targets in order from 1 to 20. A target must be hit before moving to the next. You may include Bull as the final target. First player to complete the sequence wins.'},
+ boccia:{label:'Boccia — official team format',source:'World Boccia team rules',engine:'ends',playMode:'teams',format:'points',rule:'high',structure:'ends',rounds:6,timerMode:'none',timerSeconds:0,allowTies:false,teamNames:['Red','Blue'],endMode:'boccia',rules:'World Boccia team matches use six ends and six coloured balls per side per end. After all balls are played, the side with the ball closest to the jack scores one point for each ball closer than the opponent’s closest ball. Match points are added across ends; a tied match uses a tie-break end.'},
+ cornhole:{label:'Bean Bags / Cornhole — Traditional 21',source:'ACO official scoring',engine:'ends',playMode:'teams',format:'points',rule:'high',structure:'ends',rounds:0,timerMode:'none',timerSeconds:0,allowTies:false,scoreLimit:21,teamNames:['Team A','Team B'],endMode:'cornhole',rules:'Cornhole uses cancellation scoring: a bag on the board is 1 point and a bag through the hole is 3. Opposing frame points cancel; only one side scores the difference in a frame. The first player/team to reach or exceed 21 at the end of a frame wins.'}
+};
 
-function migrateConfig(c,i){
- c=c||{};
- const oldLabel=String(c.scoreLabel||'').trim().toLowerCase();
- let format=c.format;
- if(!format){
-   if(/win/.test(oldLabel))format='wins';
-   else if(/time|second/.test(oldLabel))format='time';
-   else format='points';
+function template(k){return TEMPLATES[k]||TEMPLATES.custom}
+function localRead(){try{const x=JSON.parse(localStorage.getItem(LOCAL)||'null');return x&&typeof x==='object'?x:null}catch(_){return null}}
+function localWrite(configs,sessions,rev){try{localStorage.setItem(LOCAL,JSON.stringify({rev:+rev||Date.now(),configs:configs||[],sessions:sessions||[]}))}catch(e){console.warn('score local backup failed',e)}}
+function cloudSnapshot(){return{rev:+(S.settings&&S.settings[KEYR]||0)||0,configs:(S.settings&&Array.isArray(S.settings[KEYC]))?S.settings[KEYC]:[],sessions:(S.settings&&Array.isArray(S.settings[KEYS]))?S.settings[KEYS]:[]}}
+function hydrate(){
+ const cloud=cloudSnapshot(),local=localRead();
+ if(local&&(+local.rev||0)>cloud.rev){
+   S.settings={...(S.settings||{}),[KEYR]:+local.rev||0,[KEYC]:Array.isArray(local.configs)?local.configs:[],[KEYS]:Array.isArray(local.sessions)?local.sessions:[]};
+   return{rev:+local.rev||0,configs:S.settings[KEYC],sessions:S.settings[KEYS],localNewer:true};
  }
- const teamNames=Array.isArray(c.teamNames)&&c.teamNames.length>=2
-   ? [String(c.teamNames[0]||'Team A'),String(c.teamNames[1]||'Team B')]
-   : [String(c.team1Name||'Team A'),String(c.team2Name||'Team B')];
- return {
-   id:c.id||ID(), name:c.name||c.activity||'', activity:c.activity||'',
-   enabled:c.enabled!==false, format, customUnit:c.customUnit||((format==='custom'&&c.scoreLabel)||''),
-   rule:c.rule==='low'?'low':'high', structure:c.structure||((+c.rounds||1)>1?'rounds':'single'),
-   rounds:Math.max(1,Math.min(12,+c.rounds||1)), guestDetails:c.guestDetails||'name',
-   allowTies:c.allowTies!==false, instructions:c.instructions||'', order:Number.isFinite(+c.order)?+c.order:i,
-   playMode:c.playMode==='teams'?'teams':'individual', teamNames
- };
+ if(cloud.rev>0)localWrite(cloud.configs,cloud.sessions,cloud.rev);
+ return{...cloud,localNewer:false};
 }
-function configs(){return configsRaw().map(migrateConfig).sort((a,b)=>(+a.order||0)-(+b.order||0))}
-function unit(c){
- if(c.format==='wins')return'Wins';
- if(c.format==='time')return'Seconds';
- if(c.format==='custom')return String(c.customUnit||'Score').trim()||'Score';
- return'Points';
-}
-function activityNames(){
- const map=new Map();
- const add=n=>{n=String(n||'').trim();if(n&&!map.has(N(n)))map.set(N(n),n)};
- try{ if(typeof programActivities==='function') programActivities().forEach(x=>add(Array.isArray(x)?x[1]:x)); }catch(_){}
- (S.activities||[]).forEach(a=>add(a&&a.name));
- configsRaw().forEach(c=>add(c&&c.activity));
- return [...map.values()].sort((a,b)=>a.localeCompare(b));
-}
-function bestActivity(name){
- const key=N(name); if(!key)return'';
- const arr=activityNames();
- const exact=arr.find(n=>N(n)===key); if(exact)return exact;
- const starts=arr.find(n=>N(n).startsWith(key)||key.startsWith(N(n))); if(starts)return starts;
- const contains=arr.find(n=>N(n).includes(key)||key.includes(N(n))); return contains||'';
-}
-function linkedCfg(a){
- const ak=N(a&&a.name);
- return configs().find(c=>c.enabled!==false&&c.activity&&N(c.activity)===ak)||null;
-}
-function sessionDate(){try{return typeof hotelDateStr==='function'?hotelDateStr():new Date().toISOString().slice(0,10)}catch(_){return new Date().toISOString().slice(0,10)}}
-function latestSession(a,date=sessionDate()){
- return sessionsRaw().filter(x=>String(x.activityId)===String(a.id)&&String(x.date||'')===String(date||''))
-   .sort((x,y)=>String(y.updatedAt||y.startedAt||'').localeCompare(String(x.updatedAt||x.startedAt||'')))[0]||null;
-}
-async function persist(key,val){
+async function persistBoth(configs,sessions){
+ const rev=Date.now(),cc=Array.isArray(configs)?configs:[],ss=Array.isArray(sessions)?sessions:[];
+ localWrite(cc,ss,rev); // first: refresh-safe even if network fails
+ S.settings={...(S.settings||{}),[KEYR]:rev,[KEYC]:cc,[KEYS]:ss};
  try{
-   const next={...(S.settings||{}),[key]:val};
-   S.settings=next;
-   await DB.saveSettings(next);
+   await DB.saveSettings(S.settings);
    return true;
  }catch(err){
-   console.error('V6.86 live score save failed',err);
-   toastErr(typeof t==='function'?t('errSave'):'Could not save. Please try again.');
-   return false;
+   console.warn('Score cloud sync pending; local copy retained',err);
+   S.settings={...(S.settings||{}),[KEYR]:rev,[KEYC]:cc,[KEYS]:ss};
+   return true;
  }
 }
-function totalFor(p,c){
- if(c.structure==='rounds')return (p.rounds||[]).slice(0,c.rounds).reduce((sum,v)=>sum+num(v),0);
- return num(p.score);
+async function syncLocalToCloud(){
+ const h=hydrate();if(!h.localNewer)return;
+ try{await DB.saveSettings({...S.settings,[KEYR]:h.rev,[KEYC]:h.configs,[KEYS]:h.sessions})}catch(e){console.warn('score background sync pending',e)}
 }
-function rankedPlayers(players,c){
- const ps=(players||[]).map((p,i)=>({...p,_i:i,total:totalFor(p,c)}));
- ps.sort((a,b)=>c.rule==='low'?(a.total-b.total||a._i-b._i):(b.total-a.total||a._i-b._i));
- return ps;
+setTimeout(syncLocalToCloud,1800);
+window.addEventListener('focus',()=>setTimeout(syncLocalToCloud,200));
+
+function migrateConfig(c,i){
+ c=c||{};const base=template(c.templateKey||'custom');
+ const oldTeam=Array.isArray(c.teamNames)&&c.teamNames.length>=2?c.teamNames:[c.team1Name||base.teamNames?.[0]||'Team A',c.team2Name||base.teamNames?.[1]||'Team B'];
+ return{
+   ...base,...c,
+   id:c.id||ID(),templateKey:c.templateKey||'custom',name:c.name||c.activity||'',activity:c.activity||'',enabled:c.enabled!==false,
+   playMode:c.playMode==='teams'?'teams':'individual',teamNames:[String(oldTeam[0]||'Team A'),String(oldTeam[1]||'Team B')],
+   rounds:(c.engine||base.engine)==='ends'?Math.max(0,Math.min(30,Number.isFinite(+c.rounds)?+c.rounds:(+base.rounds||0))):Math.max(1,Math.min(20,+c.rounds||+base.rounds||1)),
+   timerSeconds:Math.max(0,+c.timerSeconds||0),scoreLimit:Math.max(0,+c.scoreLimit||0),
+   startScore:Math.max(1,+c.startScore||+base.startScore||501),lives:Math.max(1,+c.lives||+base.lives||3),
+   killerHits:Math.max(1,+c.killerHits||+base.killerHits||1),roundLimit:Math.max(1,+c.roundLimit||+base.roundLimit||15),
+   sequenceEnd:Math.max(1,Math.min(20,+c.sequenceEnd||20)),includeBull:c.includeBull!==false,
+   guestDetails:c.guestDetails||'name',allowTies:c.allowTies!==false,
+   instructions:c.instructions||'',rules:c.rules||base.rules,order:Number.isFinite(+c.order)?+c.order:i
+ };
 }
-function ranked(g,c){return rankedPlayers(g.players||[],c)}
-function individualWinners(g,c){
- const r=ranked(g,c); if(!r.length)return[];
- const best=r[0].total;
- return r.filter(x=>x.total===best);
+function configs(){const h=hydrate();return(h.configs||[]).map(migrateConfig).sort((a,b)=>(+a.order||0)-(+b.order||0))}
+function sessions(){return hydrate().sessions||[]}
+function activityNames(){
+ const map=new Map(),add=n=>{n=String(n||'').trim();if(n&&!map.has(N(n)))map.set(N(n),n)};
+ try{if(typeof programActivities==='function')programActivities().forEach(x=>add(Array.isArray(x)?x[1]:x))}catch(_){}
+ (S.activities||[]).forEach(a=>add(a&&a.name));configs().forEach(c=>add(c.activity));return[...map.values()].sort((a,b)=>a.localeCompare(b))
 }
-function teamName(c,key){return key==='team2'?(c.teamNames[1]||'Team B'):(c.teamNames[0]||'Team A')}
-function teamPlayers(g,key){return (g.players||[]).filter(p=>(p.team||'team1')===key)}
-function teamTotal(g,c,key){return teamPlayers(g,key).reduce((sum,p)=>sum+totalFor(p,c),0)}
-function teamResults(g,c){
- const rows=['team1','team2'].map((key,i)=>({key,name:teamName(c,key),total:teamTotal(g,c,key),players:rankedPlayers(teamPlayers(g,key),c),_i:i}));
- rows.sort((a,b)=>c.rule==='low'?(a.total-b.total||a._i-b._i):(b.total-a.total||a._i-b._i));
- return rows;
-}
-function winningTeams(g,c){
- const r=teamResults(g,c); if(!r.length)return[];
- const best=r[0].total;
- return r.filter(x=>x.total===best);
-}
-function statusFor(c){return c.activity&&c.enabled!==false?'ready':'draft'}
+function bestActivity(name){const k=N(name),arr=activityNames();return arr.find(n=>N(n)===k)||arr.find(n=>N(n).includes(k)||k.includes(N(n)))||''}
+function linkedCfg(a){const k=N(a&&a.name);return configs().find(c=>c.enabled!==false&&c.activity&&N(c.activity)===k)||null}
+function sessionDate(){try{return typeof hotelDateStr==='function'?hotelDateStr():new Date().toISOString().slice(0,10)}catch(_){return new Date().toISOString().slice(0,10)}}
+function latestSession(a){return sessions().filter(x=>String(x.activityId)===String(a.id)&&String(x.date||'')===sessionDate()).sort((x,y)=>String(y.updatedAt||'').localeCompare(String(x.updatedAt||'')))[0]||null}
+function unit(c){return c.format==='wins'?'Wins':c.format==='time'?'Seconds':c.format==='marks'?'Marks':c.format==='lives'?'Lives':c.format==='targets'?'Targets':'Points'}
+function playerTotal(p,c){return c.structure==='rounds'?(p.rounds||[]).slice(0,c.rounds).reduce((a,v)=>a+num(v),0):num(p.score)}
+function rankedPlayers(players,c){return(players||[]).map((p,i)=>({...p,total:playerTotal(p,c),_i:i})).sort((a,b)=>c.rule==='low'?(a.total-b.total||a._i-b._i):(b.total-a.total||a._i-b._i))}
+function teamPlayers(g,key){return(g.players||[]).filter(p=>(p.team||'team1')===key)}
+function teamTotal(g,c,key){return teamPlayers(g,key).reduce((a,p)=>a+playerTotal(p,c),0)}
+function status(c){return c.activity&&c.enabled!==false?'ready':'draft'}
+function modeAllowed(c){return !['killer','sequence','cricket'].includes(c.engine)}
+function templateOptions(){return Object.entries(TEMPLATES).map(([k,v])=>`<option value="${k}">${E(v.label)}</option>`).join('')}
 
 function editor(existing){
- const start=existing?migrateConfig(existing,0):migrateConfig({
-   id:ID(),enabled:true,format:'points',rule:'high',structure:'rounds',rounds:3,
-   guestDetails:'name-room',allowTies:true,playMode:'individual',teamNames:['Team A','Team B']
- },configs().length);
+ let start=existing?migrateConfig(existing,0):migrateConfig({id:ID(),templateKey:'custom',name:'',activity:'',enabled:true},configs().length);
  const acts=activityNames();
+ const w=baseModal(`<div class="gs87-editor">
+  <div class="gs87-editor-head"><div><div class="gs87-kicker">SMART GAME BUILDER</div><h3>${existing?'Edit game':'Create game'}</h3><p class="mini">Choose a real game template or build your own. The preview opens the exact live scoring screen with your current settings.</p></div><span class="gs87-pill ${status(start)}" id="gs87-status">${status(start)==='ready'?'READY':'DRAFT'}</span></div>
+  <div class="gs87-formgrid">
+   <div><label>Game template</label><select id="gs87-template">${templateOptions()}</select></div>
+   <div><label>Game name</label><input id="gs87-name" value="${E(start.name)}" placeholder="e.g. Darts Killer"></div>
+   <div class="wide"><label>Connected programme activity</label><div class="gs87-linkrow"><select id="gs87-act"><option value="">Not connected yet</option>${acts.map(n=>`<option value="${E(n)}" ${N(n)===N(start.activity)?'selected':''}>${E(n)}</option>`).join('')}</select><button type="button" class="btn ghost" id="gs87-auto">Auto connect</button></div><p class="gs87-help">You can save without a connection as a draft. Connection is required before entertainers receive Start Game.</p></div>
+  </div>
 
- const w=baseModal(`<div class="as686-editor">
-  <div class="as686-editor-head"><div><div class="as686-kicker">LIVE GAME BUILDER</div><h3>${existing?'Edit score game':'Create score game'}</h3><p class="mini">Build the scoring screen visually. Use individual scoring or switch the game to two teams.</p></div><span class="as686-pill ${statusFor(start)}" id="as686-status">${statusFor(start)==='ready'?'READY':'DRAFT'}</span></div>
+  <div class="gs87-section">
+   <div class="gs87-section-title"><b>Competition format</b><span class="mini">Players or teams</span></div>
+   <div class="gs87-segment"><button type="button" id="gs87-ind">👤 Individual</button><button type="button" id="gs87-team">👥 2 Teams</button></div>
+   <div id="gs87-teamnames" class="gs87-teamnames"><div><label>Team 1</label><input id="gs87-t1"></div><div><label>Team 2</label><input id="gs87-t2"></div></div>
+  </div>
 
-  <div class="as686-formgrid">
-   <div class="wide"><label>Game name</label><input id="as686-name" value="${E(start.name)}" placeholder="e.g. Darts"></div>
-
-   <div class="wide">
-    <label>Connected programme activity</label>
-    <div class="as686-linkrow">
-     <select id="as686-act"><option value="">Not connected yet</option>${acts.map(n=>`<option value="${E(n)}" ${N(n)===N(start.activity)?'selected':''}>${E(n)}</option>`).join('')}</select>
-     <button type="button" class="btn ghost" id="as686-auto">Auto connect</button>
-    </div>
-    <p class="as686-help">The connected activity is where the entertainer receives the Start Game button. You can still save without a connection as a draft.</p>
+  <div class="gs87-section" id="gs87-generic">
+   <div class="gs87-section-title"><b>Score setup</b><span class="mini">Flexible game controls</span></div>
+   <div class="gs87-formgrid">
+    <div><label>Winner logic</label><select id="gs87-rule"><option value="high">Highest score wins</option><option value="low">Lowest score wins</option></select></div>
+    <div><label>Score structure</label><select id="gs87-structure"><option value="single">One final score</option><option value="rounds">Rounds / sets</option></select></div>
+    <div id="gs87-round-wrap"><label>Rounds / sets</label><input id="gs87-rounds" type="number" min="1" max="20"></div>
+    <div><label>Score limit</label><input id="gs87-limit" type="number" min="0" placeholder="0 = no limit"><p class="gs87-help">Example: first team to 21 points.</p></div>
    </div>
   </div>
 
-  <div class="as686-section">
-   <div class="as686-section-title"><b>Competition format</b><span class="mini">Individual or two teams</span></div>
-   <div class="as686-segment">
-    <button type="button" id="as686-mode-ind" class="${start.playMode!=='teams'?'active':''}">👤 Individual</button>
-    <button type="button" id="as686-mode-team" class="${start.playMode==='teams'?'active':''}">👥 2 Teams</button>
-   </div>
-   <div id="as686-team-settings" class="${start.playMode==='teams'?'':'as686-hidden'}">
-    <div class="as686-teamnames">
-     <div class="as686-teamname"><label>TEAM 1 NAME</label><input id="as686-team1" value="${E(start.teamNames[0])}" placeholder="e.g. Banana"></div>
-     <div class="as686-teamname"><label>TEAM 2 NAME</label><input id="as686-team2" value="${E(start.teamNames[1])}" placeholder="e.g. Coca"></div>
-    </div>
-    <p class="as686-help">Every guest keeps their own score. The app adds all player totals inside each team and calculates the final team score automatically.</p>
-   </div>
+  <div class="gs87-section" id="gs87-01">
+   <div class="gs87-section-title"><b>Darts 01 settings</b><span class="mini">301 / 501</span></div>
+   <div class="gs87-formgrid"><div><label>Starting score</label><input id="gs87-startscore" type="number" min="1"></div><div><label>Checkout rule</label><select id="gs87-out"><option value="open">Open out</option><option value="double">Double out</option></select></div></div>
   </div>
 
-  <div class="as686-section">
-   <div class="as686-section-title"><b>Scoring system</b><span class="mini">What the entertainer enters</span></div>
-   <div class="as686-formgrid">
-    <div><label>Scoring format</label><select id="as686-format">
-      <option value="points" ${start.format==='points'?'selected':''}>Points</option>
-      <option value="wins" ${start.format==='wins'?'selected':''}>Wins</option>
-      <option value="time" ${start.format==='time'?'selected':''}>Time (seconds)</option>
-      <option value="custom" ${start.format==='custom'?'selected':''}>Custom unit</option>
-    </select></div>
-    <div id="as686-custom-wrap" class="${start.format==='custom'?'':'as686-hidden'}"><label>Custom unit</label><input id="as686-custom" value="${E(start.customUnit)}" placeholder="e.g. Targets"></div>
-    <div><label>Winner logic</label><select id="as686-rule">
-      <option value="high" ${start.rule==='high'?'selected':''}>Highest total wins</option>
-      <option value="low" ${start.rule==='low'?'selected':''}>Lowest total wins</option>
-    </select></div>
-    <div><label>Game structure</label><select id="as686-structure">
-      <option value="single" ${start.structure==='single'?'selected':''}>One final score</option>
-      <option value="rounds" ${start.structure==='rounds'?'selected':''}>Multiple rounds / sets</option>
-    </select></div>
-    <div id="as686-rounds-wrap" class="${start.structure==='rounds'?'':'as686-hidden'}"><label>Number of rounds</label><input id="as686-rounds" type="number" min="1" max="12" value="${start.rounds}"></div>
-    <div><label>Guest information</label><select id="as686-guest">
-      <option value="name" ${start.guestDetails==='name'?'selected':''}>Guest name</option>
-      <option value="name-room" ${start.guestDetails==='name-room'?'selected':''}>Guest name + room number</option>
-    </select></div>
-   </div>
-   <label class="as686-switch" style="margin-top:12px"><input id="as686-ties" type="checkbox" ${start.allowTies?'checked':''}><span><b>Allow a tied result</b><span class="mini">In team mode this means both teams can finish with the same final score. Turn it off to require a tiebreak.</span></span></label>
+  <div class="gs87-section" id="gs87-killer">
+   <div class="gs87-section-title"><b>Killer settings</b><span class="mini">Common pub-game format</span></div>
+   <div class="gs87-formgrid"><div><label>Starting lives</label><input id="gs87-lives" type="number" min="1" max="20"></div><div><label>Double hits to become Killer</label><input id="gs87-khits" type="number" min="1" max="5"></div></div>
   </div>
 
-  <div class="as686-section">
-   <div class="as686-section-title"><b>Entertainer instructions</b><span class="mini">Optional</span></div>
-   <textarea id="as686-instructions" rows="3" placeholder="Example: Split the guests into two teams. Enter every player's score after each round.">${E(start.instructions)}</textarea>
+  <div class="gs87-section" id="gs87-cricket">
+   <div class="gs87-section-title"><b>Cricket settings</b><span class="mini">15–20 + Bull</span></div>
+   <div class="gs87-formgrid"><div><label>Round limit</label><input id="gs87-roundlimit" type="number" min="1" max="30"></div></div>
   </div>
 
-  <label class="as686-switch" style="margin-top:15px"><input id="as686-enabled" type="checkbox" ${start.enabled!==false?'checked':''}><span><b>Available to entertainers</b><span class="mini">Requires a connected programme activity.</span></span></label>
-  <div class="as686-validation" id="as686-validation"></div>
-
-  <div class="as686-preview">
-   <div class="as686-preview-top"><div><div class="as686-kicker">LIVE PREVIEW</div><b>How the entertainer will see it</b></div><button type="button" class="btn ghost" id="as686-full-preview">Open full preview</button></div>
-   <div id="as686-preview-body"></div>
+  <div class="gs87-section" id="gs87-sequence">
+   <div class="gs87-section-title"><b>Around the Clock</b><span class="mini">Target sequence</span></div>
+   <div class="gs87-formgrid"><div><label>Last number</label><input id="gs87-seqend" type="number" min="1" max="20"></div><label class="gs87-switch"><input id="gs87-bull" type="checkbox"><span><b>Finish on Bull</b><span class="mini">Bull becomes the final target.</span></span></label></div>
   </div>
 
-  <div class="as686-bottom"><button class="btn" id="as686-save">Save setup</button><button class="btn ghost" id="as686-close">${typeof t==='function'?t('close'):'Close'}</button></div>
+  <div class="gs87-section" id="gs87-ends">
+   <div class="gs87-section-title"><b>Ends / frames</b><span class="mini">Boccia / Cornhole</span></div>
+   <div class="gs87-formgrid"><div><label>Number of ends</label><input id="gs87-endsnum" type="number" min="0" max="30"><p class="gs87-help">0 = continue until score limit / manual finish.</p></div></div>
+  </div>
+
+  <div class="gs87-section">
+   <div class="gs87-section-title"><b>Timer</b><span class="mini">Optional for any game</span></div>
+   <div class="gs87-formgrid"><div><label>Timer mode</label><select id="gs87-timermode"><option value="none">No timer</option><option value="countdown">Countdown</option><option value="countup">Count up</option></select></div><div id="gs87-time-wrap"><label>Minutes</label><input id="gs87-minutes" type="number" min="1" max="180"></div></div>
+  </div>
+
+  <div class="gs87-section">
+   <div class="gs87-section-title"><b>Rules shown to entertainer</b><button class="btn ghost" type="button" id="gs87-reset-rules">Reset template rules</button></div>
+   <div class="gs87-rulebox" id="gs87-source"></div>
+   <textarea id="gs87-rules" rows="6" style="margin-top:10px"></textarea>
+   <label style="margin-top:12px">Extra instructions</label><textarea id="gs87-instructions" rows="3" placeholder="Hotel-specific instructions, equipment, meeting point, etc."></textarea>
+  </div>
+
+  <label class="gs87-switch" style="margin-top:15px"><input id="gs87-enabled" type="checkbox"><span><b>Available to entertainers</b><span class="mini">Only active when connected to a programme activity.</span></span></label>
+  <div class="gs87-validation" id="gs87-validation"></div>
+
+  <div class="gs87-preview"><div class="gs87-preview-top"><div><div class="gs87-kicker">REAL LIVE PREVIEW</div><b>Test the exact game screen</b></div><button type="button" class="btn" id="gs87-preview">Open interactive preview</button></div><div class="gs87-preview-empty" id="gs87-preview-summary"></div></div>
+  <div class="gs87-bottom"><button class="btn" id="gs87-save">Save setup</button><button class="btn ghost" id="gs87-close">Close</button></div>
  </div>`);
 
- const q=s=>$(s,w);
- let mode=start.playMode;
+ const q=s=>$(s,w);let mode=start.playMode,currentTemplate=start.templateKey;
 
- const values=()=>({
-   ...start,
-   name:q('#as686-name').value.trim(),
-   activity:q('#as686-act').value.trim(),
-   format:q('#as686-format').value,
-   customUnit:q('#as686-custom').value.trim(),
-   rule:q('#as686-rule').value,
-   structure:q('#as686-structure').value,
-   rounds:Math.max(1,Math.min(12,+q('#as686-rounds').value||1)),
-   guestDetails:q('#as686-guest').value,
-   allowTies:q('#as686-ties').checked,
-   instructions:q('#as686-instructions').value.trim(),
-   enabled:q('#as686-enabled').checked,
-   playMode:mode,
-   teamNames:[
-     q('#as686-team1').value.trim()||'Team A',
-     q('#as686-team2').value.trim()||'Team B'
-   ]
- });
-
- function setMode(next){
-   mode=next==='teams'?'teams':'individual';
-   q('#as686-mode-ind').classList.toggle('active',mode==='individual');
-   q('#as686-mode-team').classList.toggle('active',mode==='teams');
-   q('#as686-team-settings').classList.toggle('as686-hidden',mode!=='teams');
-   drawPreview();
+ function setValues(c){
+   q('#gs87-template').value=c.templateKey||'custom';q('#gs87-name').value=c.name||'';
+   q('#gs87-rule').value=c.rule||'high';q('#gs87-structure').value=c.structure||'single';q('#gs87-rounds').value=c.rounds||1;q('#gs87-limit').value=c.scoreLimit||0;
+   q('#gs87-startscore').value=c.startScore||501;q('#gs87-out').value=c.outRule||'open';
+   q('#gs87-lives').value=c.lives||3;q('#gs87-khits').value=c.killerHits||1;q('#gs87-roundlimit').value=c.roundLimit||15;
+   q('#gs87-seqend').value=c.sequenceEnd||20;q('#gs87-bull').checked=c.includeBull!==false;
+   q('#gs87-endsnum').value=c.engine==='ends'?(+c.rounds||0):(+c.rounds||1);
+   q('#gs87-timermode').value=c.timerMode||'none';q('#gs87-minutes').value=Math.max(1,Math.round((+c.timerSeconds||300)/60));
+   q('#gs87-rules').value=c.rules||'';q('#gs87-instructions').value=c.instructions||'';
+   q('#gs87-enabled').checked=c.enabled!==false;q('#gs87-t1').value=c.teamNames?.[0]||'Team A';q('#gs87-t2').value=c.teamNames?.[1]||'Team B';
+   setMode(c.playMode||'individual',true);sync();
+ }
+ function values(){
+   const tpl=template(currentTemplate),engine=tpl.engine;
+   return migrateConfig({
+     ...start,templateKey:currentTemplate,engine,
+     name:q('#gs87-name').value.trim(),activity:q('#gs87-act').value.trim(),enabled:q('#gs87-enabled').checked,
+     playMode:mode,teamNames:[q('#gs87-t1').value.trim()||'Team A',q('#gs87-t2').value.trim()||'Team B'],
+     rule:q('#gs87-rule').value,structure:q('#gs87-structure').value,rounds:engine==='ends'?Math.max(0,+q('#gs87-endsnum').value||0):Math.max(1,+q('#gs87-rounds').value||1),
+     scoreLimit:Math.max(0,+q('#gs87-limit').value||0),startScore:Math.max(1,+q('#gs87-startscore').value||501),outRule:q('#gs87-out').value,
+     lives:Math.max(1,+q('#gs87-lives').value||3),killerHits:Math.max(1,+q('#gs87-khits').value||1),roundLimit:Math.max(1,+q('#gs87-roundlimit').value||15),
+     sequenceEnd:Math.max(1,Math.min(20,+q('#gs87-seqend').value||20)),includeBull:q('#gs87-bull').checked,
+     timerMode:q('#gs87-timermode').value,timerSeconds:q('#gs87-timermode').value==='none'?0:Math.max(60,(+q('#gs87-minutes').value||5)*60),
+     rules:q('#gs87-rules').value.trim(),instructions:q('#gs87-instructions').value.trim()
+   },start.order||0)
+ }
+ function setMode(m,silent=false){
+   mode=m==='teams'?'teams':'individual';q('#gs87-ind').classList.toggle('active',mode==='individual');q('#gs87-team').classList.toggle('active',mode==='teams');q('#gs87-teamnames').classList.toggle('gs87-hidden',mode!=='teams');if(!silent)sync()
+ }
+ function applyTemplate(k){
+   currentTemplate=k;const tpl=template(k),name=q('#gs87-name').value.trim(),act=q('#gs87-act').value;
+   const c=migrateConfig({...tpl,id:start.id,templateKey:k,name:name||tpl.label.replace(/^.*?—\s*/,'').replace(/\s*\(.*/,'')||tpl.label,activity:act,enabled:true,teamNames:tpl.teamNames||['Team A','Team B'],rules:tpl.rules,order:start.order},start.order||0);
+   setValues(c)
  }
  function sync(){
-   const v=values();
-   q('#as686-custom-wrap').classList.toggle('as686-hidden',v.format!=='custom');
-   q('#as686-rounds-wrap').classList.toggle('as686-hidden',v.structure!=='rounds');
-   if(v.format==='time' && q('#as686-rule').dataset.autoset!=='no')q('#as686-rule').value='low';
-   const connected=!!q('#as686-act').value;
-   q('#as686-status').textContent=connected&&q('#as686-enabled').checked?'READY':'DRAFT';
-   q('#as686-status').className='as686-pill '+(connected&&q('#as686-enabled').checked?'ready':'draft');
-   drawPreview();
+   const c=values(),eng=c.engine;
+   q('#gs87-generic').classList.toggle('gs87-hidden',!['points'].includes(eng));
+   q('#gs87-01').classList.toggle('gs87-hidden',eng!=='countdown01');
+   q('#gs87-killer').classList.toggle('gs87-hidden',eng!=='killer');
+   q('#gs87-cricket').classList.toggle('gs87-hidden',eng!=='cricket');
+   q('#gs87-sequence').classList.toggle('gs87-hidden',eng!=='sequence');
+   q('#gs87-ends').classList.toggle('gs87-hidden',eng!=='ends');
+   q('#gs87-round-wrap').classList.toggle('gs87-hidden',q('#gs87-structure').value!=='rounds');
+   q('#gs87-time-wrap').classList.toggle('gs87-hidden',q('#gs87-timermode').value==='none');
+   const allowMode=modeAllowed(c);q('#gs87-ind').disabled=!allowMode;q('#gs87-team').disabled=!allowMode;
+   if(!allowMode&&mode!=='individual')setMode('individual',true);
+   if(eng==='ends'&&mode!=='teams')setMode('teams',true);
+   q('#gs87-status').textContent=c.activity&&c.enabled?'READY':'DRAFT';q('#gs87-status').className='gs87-pill '+(c.activity&&c.enabled?'ready':'draft');
+   q('#gs87-source').innerHTML=`<b>${E(template(currentTemplate).source)}</b>${E(template(currentTemplate).label)}`;
+   const summary=eng==='countdown01'?`${c.startScore} start · ${c.outRule==='double'?'double out':'open out'}`:eng==='killer'?`${c.lives} lives · ${c.killerHits} double hit${c.killerHits===1?'':'s'} to become Killer`:eng==='sequence'?`Targets 1–${c.sequenceEnd}${c.includeBull?' + Bull':''}`:eng==='ends'?`${c.rounds?c.rounds+' ends / frames':'open number of ends'}${c.scoreLimit?' · target '+c.scoreLimit:''}`:`${c.structure==='rounds'?c.rounds+' rounds':'one score'}${c.scoreLimit?' · target '+c.scoreLimit:''}`;
+   q('#gs87-preview-summary').innerHTML=`<b>${E(c.name||'Untitled game')} · ${c.playMode==='teams'?E(c.teamNames[0])+' vs '+E(c.teamNames[1]):'Individual'}</b><span>${E(template(currentTemplate).label)} · ${E(summary)}${c.timerMode!=='none'?' · '+E(c.timerMode)+' timer '+Math.round(c.timerSeconds/60)+' min':''}<br>The button above opens the same live engine the entertainer will use — no sample scores.</span>`;
  }
- function samplePlayers(){
-   return [
-     {name:'Anna',room:'214',vals:[18,22,20,17,19],team:'team1'},
-     {name:'Michael',room:'318',vals:[16,19,21,18,17],team:'team1'},
-     {name:'Sara',room:'507',vals:[20,24,23,21,22],team:'team2'},
-     {name:'Omar',room:'405',vals:[17,18,19,22,20],team:'team2'}
-   ];
- }
- function sampleTotal(r,v){
-   const count=v.structure==='rounds'?v.rounds:1;
-   return v.structure==='rounds'?r.vals.slice(0,count).reduce((a,b)=>a+b,0):r.vals[0];
- }
- function drawPreview(){
-   const v=values(), u=unit(v), nm=v.name||'Darts', rows=samplePlayers();
-   let content='';
-   if(v.playMode==='teams'){
-     const a=rows.filter(x=>x.team==='team1'),b=rows.filter(x=>x.team==='team2');
-     const ta=a.reduce((s,x)=>s+sampleTotal(x,v),0),tb=b.reduce((s,x)=>s+sampleTotal(x,v),0);
-     content=`<div class="as686-preview-vs">
-       <div class="as686-preview-team"><strong>${E(v.teamNames[0])}</strong><div class="score">${ta}</div><small>${a.map(x=>E(x.name)+' '+sampleTotal(x,v)).join(' · ')}</small></div>
-       <div class="as686-vs">VS</div>
-       <div class="as686-preview-team"><strong>${E(v.teamNames[1])}</strong><div class="score">${tb}</div><small>${b.map(x=>E(x.name)+' '+sampleTotal(x,v)).join(' · ')}</small></div>
-      </div>`;
-   }else{
-     rows.sort((a,b)=>v.rule==='low'?sampleTotal(a,v)-sampleTotal(b,v):sampleTotal(b,v)-sampleTotal(a,v));
-     content=rows.slice(0,3).map((r,i)=>`<div class="as686-preview-player"><i>${i+1}</i><div><strong>${E(r.name)}</strong>${v.guestDetails==='name-room'?`<small class="mini">Room ${E(r.room)}</small>`:''}</div><em>${sampleTotal(r,v)} ${E(u)}</em></div>`).join('');
-   }
-   q('#as686-preview-body').innerHTML=`<div class="as686-phone">
-    <div class="as686-assigned"><b>${E(nm)}</b><small>15:30 · Pool Area · Assigned to you</small><button class="as686-preview-btn" type="button">🏆 Start game</button></div>
-    <div class="as686-livepanel">
-     <div class="as686-livepanel-head"><div><b>${E(nm)}</b><small class="mini">${v.playMode==='teams'?'2 teams · ':''}${v.structure==='rounds'?v.rounds+' rounds · ':''}${E(u)} · ${v.rule==='low'?'lowest':'highest'} total wins</small></div><span>● LIVE</span></div>
-     ${content}
-    </div></div>`;
- }
- function tryAuto(silent=false){
-   const name=q('#as686-name').value.trim(),hit=bestActivity(name);
-   if(hit){q('#as686-act').value=hit;if(!silent)toastOk('Connected to '+hit);sync();return true}
-   if(!silent)toastWarn('No matching programme activity found yet. You can still save this as a draft.');
-   sync();return false;
- }
-
- q('#as686-mode-ind').onclick=()=>setMode('individual');
- q('#as686-mode-team').onclick=()=>setMode('teams');
-
- ['#as686-name','#as686-act','#as686-format','#as686-custom','#as686-rule','#as686-structure','#as686-rounds','#as686-guest','#as686-ties','#as686-instructions','#as686-enabled','#as686-team1','#as686-team2']
- .forEach(sel=>{const el=q(sel);if(el){el.addEventListener('input',sync);el.addEventListener('change',()=>{if(sel==='#as686-rule')el.dataset.autoset='no';sync()})}});
-
- q('#as686-auto').onclick=()=>tryAuto(false);
- q('#as686-close').onclick=()=>w.remove();
- q('#as686-full-preview').onclick=()=>{
-   let v=values(); if(!v.activity)v.activity=v.name||'Preview Activity';
-   gameModal({id:'preview-'+v.id,name:v.activity,time:'15:30',location:'Pool Area',day:typeof todayIndex==='function'?todayIndex():0},v,true);
+ q('#gs87-template').value=currentTemplate;
+ q('#gs87-ind').onclick=()=>setMode('individual');q('#gs87-team').onclick=()=>setMode('teams');
+ q('#gs87-template').onchange=()=>applyTemplate(q('#gs87-template').value);
+ q('#gs87-reset-rules').onclick=()=>{q('#gs87-rules').value=template(currentTemplate).rules;sync()};
+ q('#gs87-auto').onclick=()=>{const hit=bestActivity(q('#gs87-name').value);if(hit){q('#gs87-act').value=hit;toastOk('Connected to '+hit)}else toastWarn('No matching programme activity found.');sync()};
+ ['#gs87-name','#gs87-act','#gs87-rule','#gs87-structure','#gs87-rounds','#gs87-limit','#gs87-startscore','#gs87-out','#gs87-lives','#gs87-khits','#gs87-roundlimit','#gs87-seqend','#gs87-bull','#gs87-endsnum','#gs87-timermode','#gs87-minutes','#gs87-rules','#gs87-instructions','#gs87-enabled','#gs87-t1','#gs87-t2'].forEach(sel=>{const el=q(sel);el&&['input','change'].forEach(ev=>el.addEventListener(ev,sync))});
+ q('#gs87-preview').onclick=()=>{const c=values();gameModal({id:'preview-'+c.id,name:c.activity||c.name||'Preview',time:'15:30',location:'Pool Area',day:typeof todayIndex==='function'?todayIndex():0},c,true)};
+ q('#gs87-close').onclick=()=>w.remove();
+ q('#gs87-save').onclick=async()=>{
+   let c=values(),v=q('#gs87-validation');v.classList.remove('show');v.textContent='';
+   if(!c.name){v.textContent='Add a game name.';v.classList.add('show');return}
+   if(c.playMode==='teams'&&N(c.teamNames[0])===N(c.teamNames[1])){v.textContent='The two team names must be different.';v.classList.add('show');return}
+   if(!c.activity){const hit=bestActivity(c.name);if(hit){q('#gs87-act').value=hit;c=values()}}
+   if(!c.activity)c.enabled=false;
+   let all=configs().filter(x=>x.id!==c.id);all.push(c);all.sort((a,b)=>(+a.order||0)-(+b.order||0)).forEach((x,i)=>x.order=i);
+   if(await persistBoth(all,sessions())){w.remove();render();toastOk(c.activity?'Game setup saved':'Saved as draft')}
  };
- q('#as686-save').onclick=async()=>{
-   let v=values(),validation=q('#as686-validation');
-   validation.classList.remove('show');validation.textContent='';
-   if(!v.name){validation.textContent='Add a game name before saving.';validation.classList.add('show');q('#as686-name').focus();return}
-   if(v.playMode==='teams' && (!v.teamNames[0]||!v.teamNames[1])){validation.textContent='Add a name for both teams.';validation.classList.add('show');return}
-   if(v.playMode==='teams' && N(v.teamNames[0])===N(v.teamNames[1])){validation.textContent='The two teams need different names.';validation.classList.add('show');return}
-   if(!v.activity){
-     const hit=bestActivity(v.name);
-     if(hit){q('#as686-act').value=hit;v=values()}
-   }
-   if(v.format==='custom'&&!v.customUnit){validation.textContent='Add the custom scoring unit, or choose Points / Wins / Time.';validation.classList.add('show');q('#as686-custom').focus();return}
-   if(!v.activity)v.enabled=false;
-   let all=configs().filter(c=>c.id!==v.id);all.push(v);
-   all.sort((a,b)=>(+a.order||0)-(+b.order||0)).forEach((c,i)=>c.order=i);
-   if(!await persist(KEYC,all))return;
-   w.remove();render();
-   if(v.activity)toastOk('Score game saved');
-   else toastWarn('Saved as draft. Connect it to a programme activity before entertainers can use it.');
- };
- if(!start.activity&&start.name)tryAuto(true);
- setMode(start.playMode);
- sync();
+ setValues(start);q('#gs87-template').value=currentTemplate;sync()
 }
 
-async function moveConfig(id,dir){
- let all=configs(),i=all.findIndex(x=>x.id===id),j=i+dir;if(i<0||j<0||j>=all.length)return;
- [all[i],all[j]]=[all[j],all[i]];all.forEach((c,k)=>c.order=k);
- if(await persist(KEYC,all))render();
-}
-async function deleteConfig(id){
- if(!await confirmAction({question:'Delete this live score game setup?',danger:true}))return;
- if(await persist(KEYC,configs().filter(x=>x.id!==id)))render();
-}
-
+async function moveConfig(id,dir){let a=configs(),i=a.findIndex(x=>x.id===id),j=i+dir;if(i<0||j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];a.forEach((x,k)=>x.order=k);if(await persistBoth(a,sessions()))render()}
+async function deleteConfig(id){if(!await confirmAction({question:'Delete this game setup?',danger:true}))return;if(await persistBoth(configs().filter(x=>x.id!==id),sessions()))render()}
 function managerInner(){
- const cs=configs();
- const hist=sessionsRaw().filter(x=>x.status==='finished').slice().sort((a,b)=>String(b.finishedAt||'').localeCompare(String(a.finishedAt||''))).slice(0,50);
- return `<div class="as686-head"><div><div class="as686-kicker">LIVE OPERATIONS</div><h2>Activities Score</h2><p class="mini">Build, preview and manage individual or two-team live scoring. No paper and no code.</p></div><div class="as686-actions"><button class="btn" id="as686-new">+ Create score game</button></div></div>
- ${cs.length?`<div class="as686-grid">${cs.map((c,i)=>`<div class="as686-card">
-  <div class="as686-cardtop"><div><span class="as686-pill ${statusFor(c)}">${statusFor(c)==='ready'?'READY':'DRAFT'}</span><h3>${E(c.name||'Untitled game')}</h3></div><div style="display:flex;gap:5px"><button class="iconbtn" data-as686-up="${E(c.id)}" ${i===0?'disabled':''}>↑</button><button class="iconbtn" data-as686-down="${E(c.id)}" ${i===cs.length-1?'disabled':''}>↓</button></div></div>
-  <div class="as686-meta">${c.activity?`Connected: <b>${E(c.activity)}</b>`:'Not connected to a programme activity'}<br>${c.playMode==='teams'?`2 teams · <b>${E(c.teamNames[0])}</b> vs <b>${E(c.teamNames[1])}</b>`:'Individual ranking'} · ${E(unit(c))} · ${c.structure==='rounds'?c.rounds+' rounds':'one final score'} · ${c.rule==='low'?'lowest':'highest'} total wins</div>
-  <div class="as686-tools"><button class="primary" data-as686-edit="${E(c.id)}">Edit</button><button data-as686-preview="${E(c.id)}">Preview</button><button class="danger" data-as686-del="${E(c.id)}">Delete</button></div>
- </div>`).join('')}</div>`:`<div class="as686-empty"><b>No live score games yet.</b><br>Create Darts, Boccia, Bean Bags or any competition you want.</div>`}
- <div class="as686-history"><div class="as686-kicker">COMPLETED GAMES</div><h3>Results history</h3>${hist.length?`<div class="card">${hist.map(g=>`<div class="as686-history-row" data-as686-history="${E(g.id)}"><div><b>${E(g.activityName||'Game')}</b><span>${E(g.date||'')} · ${E(g.entertainerName||'')} · ${(g.players||[]).length} participants</span></div><div class="as686-rank">🏆 ${E(g.winner||'—')}</div></div>`).join('')}</div>`:`<p class="mini">Finished games will appear here automatically.</p>`}</div>`;
+ const cs=configs(),hist=sessions().filter(x=>x.status==='finished').sort((a,b)=>String(b.finishedAt||'').localeCompare(String(a.finishedAt||''))).slice(0,60);
+ return `<div class="gs87-head"><div><div class="gs87-kicker">SMART LIVE OPERATIONS</div><h2>Activities Score</h2><p class="mini">Real game templates, custom rules, timers, teams and live scoring. Settings are backed up locally before cloud sync.</p></div><div class="gs87-actions"><button class="btn" id="gs87-new">+ Create game</button></div></div>
+ ${cs.length?`<div class="gs87-grid">${cs.map((c,i)=>`<div class="gs87-card"><div class="gs87-cardtop"><div><span class="gs87-pill ${status(c)}">${status(c)==='ready'?'READY':'DRAFT'}</span><h3>${E(c.name||'Untitled')}</h3></div><div><button class="iconbtn" data-gs87-up="${E(c.id)}" ${i===0?'disabled':''}>↑</button><button class="iconbtn" data-gs87-down="${E(c.id)}" ${i===cs.length-1?'disabled':''}>↓</button></div></div><div class="gs87-meta">${E(template(c.templateKey).label)}<br>${c.activity?`Connected: <b>${E(c.activity)}</b>`:'Not connected'} · ${c.playMode==='teams'?E(c.teamNames[0])+' vs '+E(c.teamNames[1]):'Individual'}${c.timerMode!=='none'?' · '+E(c.timerMode)+' timer':''}</div><div class="gs87-tools"><button class="primary" data-gs87-edit="${E(c.id)}">Edit</button><button data-gs87-preview="${E(c.id)}">Live preview</button><button class="danger" data-gs87-del="${E(c.id)}">Delete</button></div></div>`).join('')}</div>`:`<div class="gs87-empty"><b>No live games yet.</b><br>Create a real rule template or your own custom game.</div>`}
+ <div class="gs87-history"><div class="gs87-kicker">COMPLETED GAMES</div><h3>Results history</h3>${hist.length?`<div class="card">${hist.map(g=>`<div class="gs87-history-row" data-gs87-history="${E(g.id)}"><div><b>${E(g.activityName||'Game')}</b><span>${E(g.date||'')} · ${E(g.entertainerName||'')} · ${(g.players||[]).length} participants</span></div><div class="gs87-rank">🏆 ${E(g.winner||'—')}</div></div>`).join('')}</div>`:`<p class="mini">Finished games will appear here automatically.</p>`}</div>`
 }
-window.activityScoresInner662=managerInner;
-window.openActivityScore662=()=>{if(S.session&&S.session.role==='manager')editor()};
+window.activityScoresInner662=managerInner;window.openActivityScore662=()=>{if(S.session&&S.session.role==='manager')editor()};
 
-function blankGame(a,c){
- return {
-   id:ID(),configId:c.id,activityId:a.id,activityName:a.name,date:sessionDate(),time:a.time||'',location:a.location||'',
-   entertainer:S.session&&S.session.username||'',
-   entertainerName:S.session&&S.session.display_name||S.session&&S.session.name||S.session&&S.session.username||'',
-   status:'live',startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),players:[],
-   playMode:c.playMode,teamNames:[...c.teamNames]
- };
-}
-function normalizePlayer(p,c,defaultTeam='team1'){
- p=p||{};p.id=p.id||ID();p.name=p.name||'';p.room=p.room||'';
- p.team=(p.team==='team2'?'team2':(p.team==='team1'?'team1':defaultTeam));
- if(c.structure==='rounds')p.rounds=Array.from({length:c.rounds},(_,i)=>p.rounds&&p.rounds[i]!=null?p.rounds[i]:'');
- else p.score=p.score!=null?p.score:'';
- return p;
-}
-async function saveGame(g){
- let all=sessionsRaw().filter(x=>x.id!==g.id);all.push(g);
- if(all.length>500)all=all.slice(-500);
- return persist(KEYS,all);
-}
-function scoreGrid(c,includeRank=true){
- const cols=[];
- if(includeRank)cols.push('30px');
- cols.push('minmax(120px,1fr)');
- if(c.guestDetails==='name-room')cols.push('78px');
- if(c.structure==='rounds')for(let i=0;i<c.rounds;i++)cols.push('68px');
- else cols.push('82px');
- if(c.structure==='rounds')cols.push('74px');
- cols.push('36px');
- return cols.join(' ');
-}
-function tableHeader(c,includeRank=true){
- const h=[];
- if(includeRank)h.push('');
- h.push('Guest');
- if(c.guestDetails==='name-room')h.push('Room');
- if(c.structure==='rounds'){for(let i=0;i<c.rounds;i++)h.push('R'+(i+1));h.push('Total')}
- else h.push(unit(c));
- h.push('');
- return h;
-}
-function playerRows(players,c,rankMap,teamKey){
- const grid=scoreGrid(c,true);
- return `<div class="as686-scoretable"><div class="as686-scorehead" style="grid-template-columns:${grid}">${tableHeader(c,true).map(x=>`<span>${E(x)}</span>`).join('')}</div>
- ${players.length?players.map(p=>`<div class="as686-player" style="grid-template-columns:${grid}">
-   <span class="rank">${rankMap[p.id]||'—'}</span>
-   <input data-as686-name="${E(p.id)}" value="${E(p.name)}" placeholder="Guest name">
-   ${c.guestDetails==='name-room'?`<input class="as686-room" data-as686-room="${E(p.id)}" value="${E(p.room)}" placeholder="Room">`:''}
-   ${c.structure==='rounds'?(p.rounds||[]).map((v,i)=>`<input data-as686-round="${E(p.id)}" data-round="${i}" type="number" step="any" inputmode="decimal" value="${E(v)}" placeholder="0">`).join(''):`<input data-as686-score="${E(p.id)}" type="number" step="any" inputmode="decimal" value="${E(p.score)}" placeholder="0">`}
-   ${c.structure==='rounds'?`<span class="as686-total">${E(totalFor(p,c))}</span>`:''}
-   <button data-as686-remove="${E(p.id)}">×</button>
- </div>`).join(''):`<div class="as686-empty">No players in this team yet.</div>`}</div>
- ${teamKey?`<button type="button" class="as686-addteam" data-as686-addteam="${teamKey}">+ Add player to ${E(teamName(c,teamKey))}</button>`:''}`;
-}
-function bindPlayerInputs(body,g,c,draw){
- $$('[data-as686-name]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Name);if(p)p.name=el.value});
- $$('[data-as686-room]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Room);if(p)p.room=el.value});
- $$('[data-as686-score]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Score);if(p){p.score=el.value;draw()}});
- $$('[data-as686-round]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.as686Round);if(p){p.rounds=p.rounds||[];p.rounds[+el.dataset.round]=el.value;draw()}});
- $$('[data-as686-remove]',body).forEach(el=>el.onclick=()=>{g.players=g.players.filter(x=>x.id!==el.dataset.as686Remove);draw()});
-}
+function blankGame(a,c){return{id:ID(),configId:c.id,activityId:a.id,activityName:a.name,date:sessionDate(),time:a.time||'',location:a.location||'',entertainer:S.session&&S.session.username||'',entertainerName:S.session&&S.session.display_name||S.session&&S.session.name||S.session&&S.session.username||'',status:'live',startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),players:[],engine:c.engine,teamNames:[...(c.teamNames||['Team A','Team B'])],ends:[],timer:{elapsed:0,running:false,startedAt:null}}}
+function normalPlayer(p,c,team='team1'){p=p||{};p.id=p.id||ID();p.name=p.name||'';p.room=p.room||'';p.team=p.team==='team2'?'team2':team;if(c.structure==='rounds')p.rounds=Array.from({length:c.rounds},(_,i)=>p.rounds&&p.rounds[i]!=null?p.rounds[i]:'');else p.score=p.score??'';p.remaining=p.remaining??c.startScore;p.lives=p.lives??c.lives;p.killer=!!p.killer;p.killerHits=p.killerHits||0;p.number=p.number||'';p.seq=p.seq||1;p.cricket=p.cricket||{};p.cricketScore=p.cricketScore||0;return p}
+async function saveGame(g){let ss=sessions().filter(x=>x.id!==g.id);ss.push(g);if(ss.length>500)ss=ss.slice(-500);return persistBoth(configs(),ss)}
 
-function gameModal(a,c,preview=false){
- c=migrateConfig(c,0);
- const old=!preview?latestSession(a):null;
- let g=(old&&old.status!=='finished')?JSON.parse(JSON.stringify(old)):blankGame(a,c);
- g.playMode=c.playMode;g.teamNames=[...c.teamNames];
- g.players=(g.players||[]).map(p=>normalizePlayer(p,c,p.team||'team1'));
-
- const w=baseModal(`<div class="as686-game">
-  <div class="as686-gamehead"><div><span class="as686-live">Live scoring</span><h3>${E(a.name)}</h3><p class="mini">${E(a.time||'')}${a.location?' · '+E(a.location):''} · ${c.playMode==='teams'?`${E(c.teamNames[0])} vs ${E(c.teamNames[1])} · `:''}${c.structure==='rounds'?c.rounds+' rounds · ':''}${E(unit(c))} · ${c.rule==='low'?'lowest':'highest'} total wins</p></div><span class="as686-pill">${preview?'PREVIEW':'LIVE'}</span></div>
-  ${c.instructions?`<div class="as686-note"><b>Instructions</b><br>${E(c.instructions)}</div>`:''}
-  <div id="as686-livebody"></div>
-  <div class="as686-bottom">
-   ${c.playMode==='individual'?`<button class="btn ghost" id="as686-add">+ Add guest</button>`:''}
-   <button class="btn" id="as686-finish">${preview?'Show winner':'Finish game'}</button>
-   <button class="btn ghost" id="as686-close">Close</button>
-  </div>
- </div>`);
- const body=$('#as686-livebody',w);
-
- function drawIndividual(){
-   const r=ranked(g,c),rankMap={};r.forEach((p,i)=>rankMap[p.id]=i+1);
-   const lead=r[0];
-   body.innerHTML=`<div class="as686-statbar">
-    <div class="as686-stat"><b>${g.players.length}</b><span>Participants</span></div>
-    <div class="as686-stat"><b>${lead?E(lead.total):'—'}</b><span>Leading ${E(unit(c))}</span></div>
-    <div class="as686-stat"><b>${lead?E(lead.name||'Guest'):'—'}</b><span>Leader</span></div>
-   </div>${playerRows(g.players,c,rankMap,'')}`;
+function timerHtml(c,g){
+ if(c.timerMode==='none')return'';
+ return `<div class="gs87-timer"><div><div class="gs87-kicker">${c.timerMode==='countdown'?'COUNTDOWN':'ELAPSED TIME'}</div><div class="gs87-clock" id="gs87-clock">00:00</div></div><div class="gs87-timerbtns"><button id="gs87-timer-toggle">Start</button><button id="gs87-timer-reset">Reset</button></div></div>`
+}
+function bindTimer(w,c,g){
+ if(c.timerMode==='none')return()=>{};
+ let iv=null;
+ const clock=$('#gs87-clock',w),toggle=$('#gs87-timer-toggle',w);
+ function elapsed(){return num(g.timer?.elapsed)+(g.timer?.running&&g.timer.startedAt?Math.max(0,(Date.now()-g.timer.startedAt)/1000):0)}
+ function paint(){
+   let sec=elapsed();if(c.timerMode==='countdown')sec=Math.max(0,c.timerSeconds-sec);
+   const m=Math.floor(sec/60),ss=Math.floor(sec%60);if(clock)clock.textContent=String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+   if(c.timerMode==='countdown'&&sec<=0&&g.timer?.running){g.timer.elapsed=c.timerSeconds;g.timer.running=false;g.timer.startedAt=null;if(toggle)toggle.textContent='Start';clearInterval(iv);toastWarn('Time finished')}
  }
- function drawTeams(){
-   const tr=teamResults(g,c),lead=tr[0],rankMap={};
-   ['team1','team2'].forEach(key=>rankedPlayers(teamPlayers(g,key),c).forEach((p,i)=>rankMap[p.id]=i+1));
+ function run(){clearInterval(iv);iv=setInterval(paint,500);paint()}
+ if(toggle)toggle.onclick=()=>{g.timer=g.timer||{elapsed:0,running:false,startedAt:null};if(g.timer.running){g.timer.elapsed=elapsed();g.timer.running=false;g.timer.startedAt=null;toggle.textContent='Start'}else{g.timer.running=true;g.timer.startedAt=Date.now();toggle.textContent='Pause';run()}paint()};
+ const reset=$('#gs87-timer-reset',w);if(reset)reset.onclick=()=>{g.timer={elapsed:0,running:false,startedAt:null};if(toggle)toggle.textContent='Start';paint()};
+ run();return()=>clearInterval(iv)
+}
+function genericBody(g,c){
+ if(c.playMode==='teams'){
    const t1=teamTotal(g,c,'team1'),t2=teamTotal(g,c,'team2');
-   const n1=teamPlayers(g,'team1').length,n2=teamPlayers(g,'team2').length;
-   body.innerHTML=`<div class="as686-teamscoreboard">
-    <div class="as686-teamhero ${lead&&lead.key==='team1'&&t1!==t2?'leading':''}"><span>Team</span><b>${E(c.teamNames[0])}</b><strong>${E(t1)}</strong><span>${E(unit(c))} · ${n1} player${n1===1?'':'s'}</span></div>
-    <div class="as686-vs">VS</div>
-    <div class="as686-teamhero ${lead&&lead.key==='team2'&&t1!==t2?'leading':''}"><span>Team</span><b>${E(c.teamNames[1])}</b><strong>${E(t2)}</strong><span>${E(unit(c))} · ${n2} player${n2===1?'':'s'}</span></div>
-   </div>
-   <div class="as686-teamsection">
-    <div class="as686-teamsection-head"><div><small>TEAM 1</small><b>${E(c.teamNames[0])}</b></div><strong>${E(t1)} ${E(unit(c))}</strong></div>
-    ${playerRows(teamPlayers(g,'team1'),c,rankMap,'team1')}
-   </div>
-   <div class="as686-teamsection">
-    <div class="as686-teamsection-head"><div><small>TEAM 2</small><b>${E(c.teamNames[1])}</b></div><strong>${E(t2)} ${E(unit(c))}</strong></div>
-    ${playerRows(teamPlayers(g,'team2'),c,rankMap,'team2')}
-   </div>`;
+   const rows=key=>teamPlayers(g,key);
+   return `<div class="gs87-note">${c.endMode==='cornhole'?'Enter the points awarded to each side after cancellation for every frame. The app adds the match total automatically.':'Enter the official points awarded at the end of each end. The app adds the match total automatically.'}</div><div class="gs87-teamboard"><div class="gs87-teamhero ${t1>t2?'leading':''}"><span>Team</span><b>${E(c.teamNames[0])}</b><strong>${t1}</strong><span>${E(unit(c))}</span></div><div class="gs87-vs">VS</div><div class="gs87-teamhero ${t2>t1?'leading':''}"><span>Team</span><b>${E(c.teamNames[1])}</b><strong>${t2}</strong><span>${E(unit(c))}</span></div></div>${['team1','team2'].map((key,ix)=>`<div class="gs87-teamsection"><div class="gs87-teamsection-head"><b>${E(c.teamNames[ix])}</b><strong>${teamTotal(g,c,key)} ${E(unit(c))}</strong></div>${genericRows(rows(key),c)}<button class="gs87-add" data-gs87-add="${key}">+ Add player</button></div>`).join('')}`
  }
+ const r=rankedPlayers(g.players,c);return `<div class="gs87-statbar"><div class="gs87-stat"><b>${g.players.length}</b><span>Players</span></div><div class="gs87-stat"><b>${r[0]?r[0].total:'—'}</b><span>Leading score</span></div><div class="gs87-stat"><b>${E(r[0]?.name||'—')}</b><span>Leader</span></div></div>${genericRows(g.players,c)}<button class="gs87-add" data-gs87-add="individual">+ Add player</button>`
+}
+function genericRows(players,c){
+ const cols=['30px','minmax(125px,1fr)'];if(c.structure==='rounds')for(let i=0;i<c.rounds;i++)cols.push('68px');else cols.push('82px');if(c.structure==='rounds')cols.push('74px');cols.push('36px');const grid=cols.join(' ');
+ const r=rankedPlayers(players,c),rank={};r.forEach((p,i)=>rank[p.id]=i+1);
+ return `<div class="gs87-scoretable"><div class="gs87-scorehead" style="grid-template-columns:${grid}"><span></span><span>Guest</span>${c.structure==='rounds'?Array.from({length:c.rounds},(_,i)=>`<span>R${i+1}</span>`).join(''):`<span>${E(unit(c))}</span>`}${c.structure==='rounds'?'<span>Total</span>':''}<span></span></div>${players.length?players.map(p=>`<div class="gs87-player" style="grid-template-columns:${grid}"><span class="gs87-rankdot">${rank[p.id]||'—'}</span><input data-gs87-name="${E(p.id)}" value="${E(p.name)}" placeholder="Guest name">${c.structure==='rounds'?(p.rounds||[]).map((v,i)=>`<input data-gs87-round="${E(p.id)}" data-ri="${i}" type="number" inputmode="decimal" value="${E(v)}" placeholder="0">`).join(''):`<input data-gs87-score="${E(p.id)}" type="number" inputmode="decimal" value="${E(p.score)}" placeholder="0">`}${c.structure==='rounds'?`<span class="gs87-total">${playerTotal(p,c)}</span>`:''}<button data-gs87-remove="${E(p.id)}">×</button></div>`).join(''):`<div class="gs87-empty">Add players to start scoring.</div>`}</div>`
+}
+function countdownBody(g,c){
+ const groups=c.playMode==='teams'?['team1','team2']:['individual'];
+ return groups.map((key,ix)=>{const ps=key==='individual'?g.players:teamPlayers(g,key);return `<div class="gs87-teamsection">${key!=='individual'?`<div class="gs87-teamsection-head"><b>${E(c.teamNames[ix])}</b></div>`:''}${ps.map(p=>`<div class="gs87-turn"><div class="gs87-turn-head"><div><b>${E(p.name||'Guest')}</b><span class="mini">${(p.turns||[]).length} turns</span></div><span class="gs87-remain">${p.remaining}</span></div><div class="gs87-turn-controls"><input data-gs87-turnscore="${E(p.id)}" type="number" min="0" max="180" placeholder="Turn score (0–180)"><button data-gs87-applyturn="${E(p.id)}">Apply</button></div><div class="gs87-log">${(p.turns||[]).slice(-5).map(x=>E(x)).join(' · ')||'No turns yet'}</div></div>`).join('')||'<div class="gs87-empty">Add players first.</div>'}<button class="gs87-add" data-gs87-add="${key}">+ Add player</button></div>`}).join('')
+}
+function killerBody(g,c){
+ return `<div class="gs87-note">Assign every player a unique board number. Mark Killer after they complete the configured double requirement. Remove a life when a Killer hits an opponent's double.</div><div class="card">${g.players.length?g.players.map(p=>`<div class="gs87-killerrow"><input data-gs87-name="${E(p.id)}" value="${E(p.name)}" placeholder="Guest name"><input data-gs87-number="${E(p.id)}" value="${E(p.number)}" placeholder="No."><div class="gs87-lives">${'♥'.repeat(Math.max(0,p.lives))||'OUT'}</div><div class="killer-actions"><button class="gs87-killbtn ${p.killer?'on':''}" data-gs87-own-double="${E(p.id)}">${p.killer?'KILLER ✓':'Own double '+Math.min(p.killerHits||0,c.killerHits)+'/'+c.killerHits}</button> <button class="gs87-killbtn" data-gs87-life="${E(p.id)}" ${p.killer?'':'disabled'}>Hit player −1 life</button></div></div>`).join(''):'<div class="gs87-empty">Add the players and assign their numbers.</div>'}</div><button class="gs87-add" data-gs87-add="individual">+ Add player</button>`
+}
+function sequenceBody(g,c){
+ const final=c.includeBull?c.sequenceEnd+1:c.sequenceEnd;
+ return `<div class="card">${g.players.length?g.players.map(p=>{const done=p.seq>final,target=done?'DONE':(p.seq>c.sequenceEnd?'BULL':p.seq);return`<div class="gs87-seqrow"><div><b>${E(p.name||'Guest')}</b><span class="mini">Progress ${Math.min(p.seq-1,final)}/${final}</span></div><span class="gs87-target">${E(target)}</span><button data-gs87-next="${E(p.id)}" ${done?'disabled':''}>Hit ✓</button></div>`}).join(''):'<div class="gs87-empty">Add players to start.</div>'}</div><button class="gs87-add" data-gs87-add="individual">+ Add player</button>`
+}
+const CT=['20','19','18','17','16','15','BULL'];
+function cricketBody(g,c){
+ return `<div class="gs87-note">Enter marks for each target (0–3 closed). Use Score for points scored after closing a target. The screen keeps the official target set 20–15 + Bull.</div>${g.players.map(p=>`<div class="gs87-teamsection"><div class="gs87-teamsection-head"><b>${E(p.name||'Guest')}</b><strong>${p.cricketScore||0} pts</strong></div><div class="gs87-scoretable"><div class="gs87-scorehead" style="grid-template-columns:80px repeat(7,60px) 78px"><span>Guest</span>${CT.map(x=>`<span>${x}</span>`).join('')}<span>Score</span></div><div class="gs87-player" style="grid-template-columns:80px repeat(7,60px) 78px"><input data-gs87-name="${E(p.id)}" value="${E(p.name)}" placeholder="Name">${CT.map(t=>`<input data-gs87-mark="${E(p.id)}" data-target="${t}" type="number" min="0" max="3" value="${E(Math.min(3,+p.cricket[t]||0))}">`).join('')}<input data-gs87-cscore="${E(p.id)}" type="number" min="0" value="${E(p.cricketScore||0)}"></div></div></div>`).join('')||'<div class="gs87-empty">Add players to start Cricket.</div>'}<button class="gs87-add" data-gs87-add="individual">+ Add player</button>`
+}
+function endsBody(g,c){
+ const rows=g.ends||[],t1=rows.reduce((a,x)=>a+num(x.a),0),t2=rows.reduce((a,x)=>a+num(x.b),0),limit=c.rounds||0;
+ const count=limit||Math.max(rows.length+1,1);while(g.ends.length<count)g.ends.push({a:'',b:''});
+ return `<div class="gs87-teamboard"><div class="gs87-teamhero ${t1>t2?'leading':''}"><span>Team</span><b>${E(c.teamNames[0])}</b><strong>${t1}</strong><span>Points</span></div><div class="gs87-vs">VS</div><div class="gs87-teamhero ${t2>t1?'leading':''}"><span>Team</span><b>${E(c.teamNames[1])}</b><strong>${t2}</strong><span>Points</span></div></div><div class="card">${g.ends.map((x,i)=>`<div class="gs87-endrow"><b>${c.endMode==='cornhole'?'Frame':'End'} ${i+1}</b><input data-gs87-enda="${i}" type="number" min="0" value="${E(x.a)}" placeholder="${E(c.teamNames[0])}"><input data-gs87-endb="${i}" type="number" min="0" value="${E(x.b)}" placeholder="${E(c.teamNames[1])}"></div>`).join('')}</div>${!limit?'<button class="gs87-add" id="gs87-addend">+ Add end / frame</button>':''}`
+}
+function cricketWinner(g,c){
+ const complete=p=>CT.every(t=>(+p.cricket[t]||0)>=3);const eligible=g.players.filter(complete);if(!eligible.length)return[];const max=Math.max(...g.players.map(p=>+p.cricketScore||0));return eligible.filter(p=>(+p.cricketScore||0)>=max)
+}
+function gameModal(a,c,preview=false){
+ c=migrateConfig(c,0);const old=!preview?latestSession(a):null;let g=(old&&old.status!=='finished')?JSON.parse(JSON.stringify(old)):blankGame(a,c);g.players=(g.players||[]).map(p=>normalPlayer(p,c,p.team||'team1'));g.ends=g.ends||[];
+ const w=baseModal(`<div class="gs87-game"><div class="gs87-gamehead"><div><span class="gs87-live">${preview?'Interactive preview':'Live scoring'}</span><h3>${E(a.name)}</h3><p class="mini">${E(template(c.templateKey).label)} · ${c.playMode==='teams'?E(c.teamNames[0])+' vs '+E(c.teamNames[1]):'Individual'}</p></div><span class="gs87-pill">${preview?'PREVIEW':'LIVE'}</span></div>${c.rules?`<div class="gs87-note"><b>Rules</b><br>${E(c.rules)}</div>`:''}${c.instructions?`<div class="gs87-note"><b>Hotel instructions</b><br>${E(c.instructions)}</div>`:''}${timerHtml(c,g)}<div id="gs87-body"></div><div class="gs87-bottom"><button class="btn" id="gs87-finish">${preview?'Show result':'Finish game'}</button><button class="btn ghost" id="gs87-close">Close</button></div></div>`);
+ const body=$('#gs87-body',w),stopTimer=bindTimer(w,c,g);
  function draw(){
-   g.players=g.players.map(p=>normalizePlayer(p,c,p.team||'team1'));
-   if(c.playMode==='teams')drawTeams();else drawIndividual();
-   bindPlayerInputs(body,g,c,draw);
-   $$('[data-as686-addteam]',body).forEach(b=>b.onclick=()=>{
-     const key=b.dataset.as686Addteam==='team2'?'team2':'team1';
-     g.players.push(normalizePlayer({id:ID(),team:key},c,key));draw();
-     setTimeout(()=>{const z=$$(`[data-as686-name]`,body);if(z.length)z[z.length-1].focus()},20);
-   });
+   if(c.engine==='countdown01')body.innerHTML=countdownBody(g,c);
+   else if(c.engine==='killer')body.innerHTML=killerBody(g,c);
+   else if(c.engine==='sequence')body.innerHTML=sequenceBody(g,c);
+   else if(c.engine==='cricket')body.innerHTML=cricketBody(g,c);
+   else if(c.engine==='ends')body.innerHTML=endsBody(g,c);
+   else body.innerHTML=genericBody(g,c);
+   bind();
  }
-
- if(c.playMode==='individual'){
-   $('#as686-add',w).onclick=()=>{g.players.push(normalizePlayer({id:ID()},c));draw();setTimeout(()=>{const z=$$('[data-as686-name]',body);if(z.length)z[z.length-1].focus()},20)};
+ function bind(){
+   $$('[data-gs87-name]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Name);if(p)p.name=el.value});
+   $$('[data-gs87-score]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Score);if(p){p.score=el.value;draw()}});
+   $$('[data-gs87-round]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Round);if(p){p.rounds[+el.dataset.ri]=el.value;draw()}});
+   $$('[data-gs87-remove]',body).forEach(el=>el.onclick=()=>{g.players=g.players.filter(x=>x.id!==el.dataset.gs87Remove);draw()});
+   $$('[data-gs87-add]',body).forEach(el=>el.onclick=()=>{const key=el.dataset.gs87Add;g.players.push(normalPlayer({id:ID(),team:key==='team2'?'team2':'team1'},c,key==='team2'?'team2':'team1'));draw()});
+   $$('[data-gs87-applyturn]',body).forEach(btn=>btn.onclick=async()=>{const p=g.players.find(x=>x.id===btn.dataset.gs87Applyturn),inp=$(`[data-gs87-turnscore="${btn.dataset.gs87Applyturn}"]`,body);if(!p||!inp)return;const sc=Math.max(0,Math.min(180,+inp.value||0)),before=+p.remaining||c.startScore,next=before-sc;let bust=next<0||(c.outRule==='double'&&next===1);if(next===0&&c.outRule==='double'){const ok=await confirmAction({question:'Was the checkout finished on a double?'});if(!ok)bust=true}if(bust){p.turns=p.turns||[];p.turns.push('Bust '+sc+' → '+before);p.remaining=before}else{p.remaining=next;p.turns=p.turns||[];p.turns.push(sc+' → '+next)}draw()});
+   $$('[data-gs87-number]',body).forEach(el=>el.oninput=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Number);if(p)p.number=el.value});
+   $$('[data-gs87-own-double]',body).forEach(el=>el.onclick=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87OwnDouble);if(p&&!p.killer){p.killerHits=(+p.killerHits||0)+1;if(p.killerHits>=c.killerHits)p.killer=true;draw()}});
+   $$('[data-gs87-life]',body).forEach(el=>el.onclick=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Life);if(p){p.lives=Math.max(0,p.lives-1);draw()}});
+   $$('[data-gs87-next]',body).forEach(el=>el.onclick=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Next);if(p){p.seq++;draw()}});
+   $$('[data-gs87-mark]',body).forEach(el=>el.onchange=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Mark);if(p){p.cricket[el.dataset.target]=Math.max(0,Math.min(3,+el.value||0));draw()}});
+   $$('[data-gs87-cscore]',body).forEach(el=>el.onchange=()=>{const p=g.players.find(x=>x.id===el.dataset.gs87Cscore);if(p){p.cricketScore=Math.max(0,+el.value||0);draw()}});
+   $$('[data-gs87-enda]',body).forEach(el=>el.onchange=()=>{g.ends[+el.dataset.gs87Enda].a=Math.max(0,+el.value||0);draw()});
+   $$('[data-gs87-endb]',body).forEach(el=>el.onchange=()=>{g.ends[+el.dataset.gs87Endb].b=Math.max(0,+el.value||0);draw()});
+   const addEnd=$('#gs87-addend',body);if(addEnd)addEnd.onclick=()=>{g.ends.push({a:'',b:''});draw()}
  }
- $('#as686-close',w).onclick=async()=>{if(!preview){g.updatedAt=new Date().toISOString();await saveGame(g)}w.remove()};
- $('#as686-finish',w).onclick=async()=>{
-   g.players=g.players.filter(p=>String(p.name||'').trim());
-   if(c.playMode==='teams'){
-     if(!teamPlayers(g,'team1').length||!teamPlayers(g,'team2').length){toastWarn('Add at least one guest to each team before finishing.');return}
-     const win=winningTeams(g,c);
-     if(!c.allowTies&&win.length>1){toastWarn('The team score is tied. Enter the tiebreak result before finishing.');return}
-     const winnerNames=win.map(x=>x.name).join(' & ');
-     if(!preview){
-       if(!await confirmAction({question:`Finish ${a.name}? Winning team: ${winnerNames}`}))return;
-       g.status='finished';g.finishedAt=new Date().toISOString();g.updatedAt=g.finishedAt;g.winner=winnerNames;g.winnerType='team';g.configSnapshot=c;
-       if(!await saveGame(g))return;
-     }
-     const results=teamResults(g,c);
-     body.innerHTML=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">${win.length>1?'TIED TEAMS':'WINNING TEAM'}</span><b>${E(winnerNames)}</b><span>Final team score: ${E(results[0]?.total??'—')} ${E(unit(c))} · ${g.players.length} participants</span></div>
-      ${results.map((tr,i)=>`<div class="as686-team-result ${i===0?'winner':''}">
-       <div class="as686-team-result-head"><div><span class="mini">${i===0?'1ST':'2ND'} TEAM</span><b>${E(tr.name)}</b></div><strong>${E(tr.total)} ${E(unit(c))}</strong></div>
-       ${tr.players.map(p=>`<div class="as686-memberresult"><div><b>${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><strong>${E(p.total)} ${E(unit(c))}</strong></div>`).join('')}
-      </div>`).join('')}`;
+ $('#gs87-close',w).onclick=async()=>{stopTimer();g.updatedAt=new Date().toISOString();if(!preview)await saveGame(g);w.remove()};
+ $('#gs87-finish',w).onclick=async()=>{
+   let winner='',resultHtml='';
+   if(c.engine==='countdown01'){
+     const wins=g.players.filter(p=>+p.remaining===0);if(!wins.length){toastWarn('No player/team has checked out to zero yet.');return}winner=wins.map(p=>p.name||'Guest').join(' & ');
+   }else if(c.engine==='killer'){
+     const alive=g.players.filter(p=>(+p.lives||0)>0);if(alive.length!==1){toastWarn('Killer finishes when only one player has lives remaining.');return}winner=alive[0].name||'Guest';
+   }else if(c.engine==='sequence'){
+     const final=c.includeBull?c.sequenceEnd+1:c.sequenceEnd,wins=g.players.filter(p=>p.seq>final);if(!wins.length){toastWarn('No player has completed the target sequence yet.');return}winner=wins[0].name||'Guest';
+   }else if(c.engine==='cricket'){
+     const wins=cricketWinner(g,c);if(!wins.length){toastWarn('To finish Cricket, a player must close 20–15 and Bull and have at least the highest score.');return}winner=wins.map(p=>p.name||'Guest').join(' & ');
+   }else if(c.engine==='ends'){
+     const aTot=g.ends.reduce((x,r)=>x+num(r.a),0),bTot=g.ends.reduce((x,r)=>x+num(r.b),0);
+     if(c.scoreLimit>0 && Math.max(aTot,bTot)<c.scoreLimit){toastWarn('The score limit is '+c.scoreLimit+'. No team has reached it yet.');return}
+     if(aTot===bTot&&!c.allowTies){toastWarn('The match is tied. Add a tie-break end/frame.');return}
+     winner=aTot===bTot?c.teamNames.join(' & '):(aTot>bTot?c.teamNames[0]:c.teamNames[1]);resultHtml=`<div class="gs87-resultteam ${winner===c.teamNames[0]?'winner':''}"><div class="gs87-teamsection-head"><b>${E(c.teamNames[0])}</b><strong>${aTot}</strong></div></div><div class="gs87-resultteam ${winner===c.teamNames[1]?'winner':''}"><div class="gs87-teamsection-head"><b>${E(c.teamNames[1])}</b><strong>${bTot}</strong></div></div>`;
+   }else if(c.playMode==='teams'){
+     const aTot=teamTotal(g,c,'team1'),bTot=teamTotal(g,c,'team2');if(c.scoreLimit>0&&Math.max(aTot,bTot)<c.scoreLimit){toastWarn('The score limit is '+c.scoreLimit+'. No team has reached it yet.');return}if(aTot===bTot&&!c.allowTies){toastWarn('The team score is tied. Add a tiebreak score.');return}winner=aTot===bTot?c.teamNames.join(' & '):(c.rule==='low'?(aTot<bTot?c.teamNames[0]:c.teamNames[1]):(aTot>bTot?c.teamNames[0]:c.teamNames[1]));resultHtml=['team1','team2'].map((k,i)=>`<div class="gs87-resultteam ${winner===c.teamNames[i]?'winner':''}"><div class="gs87-teamsection-head"><b>${E(c.teamNames[i])}</b><strong>${teamTotal(g,c,k)} ${E(unit(c))}</strong></div>${rankedPlayers(teamPlayers(g,k),c).map(p=>`<div class="gs87-member"><span>${E(p.name||'Guest')}</span><strong>${p.total}</strong></div>`).join('')}</div>`).join('');
    }else{
-     if(!g.players.length){toastWarn('Add at least one guest before finishing.');return}
-     const win=individualWinners(g,c);
-     if(!c.allowTies&&win.length>1){toastWarn('First place is tied. Enter the tiebreak result before finishing.');return}
-     const winnerNames=win.map(x=>x.name||'Guest').join(' & ');
-     if(!preview){
-       if(!await confirmAction({question:`Finish ${a.name}? Winner: ${winnerNames}`}))return;
-       g.status='finished';g.finishedAt=new Date().toISOString();g.updatedAt=g.finishedAt;g.winner=winnerNames;g.winnerType='individual';g.configSnapshot=c;
-       if(!await saveGame(g))return;
-     }
-     const r=ranked(g,c);
-     body.innerHTML=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">${win.length>1?'JOINT WINNERS':'WINNER'}</span><b>${E(winnerNames)}</b><span>${E(unit(c))}: ${E(r[0]?.total??'—')} · ${g.players.length} participants</span></div><div class="card">${r.map((p,i)=>`<div class="as686-history-row"><div><b>${i+1}. ${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><div class="as686-rank">${E(p.total)} ${E(unit(c))}</div></div>`).join('')}</div>`;
+     const r=rankedPlayers(g.players,c);if(!r.length){toastWarn('Add at least one player.');return}if(c.scoreLimit>0&&c.rule==='high'&&r[0].total<c.scoreLimit){toastWarn('The score limit is '+c.scoreLimit+'. No player has reached it yet.');return}winner=r[0].name||'Guest';resultHtml=`<div class="card">${r.map((p,i)=>`<div class="gs87-history-row"><div><b>${i+1}. ${E(p.name||'Guest')}</b></div><div class="gs87-rank">${p.total} ${E(unit(c))}</div></div>`).join('')}</div>`;
    }
-   if($('#as686-add',w))$('#as686-add',w).style.display='none';
-   $('#as686-finish',w).style.display='none';
-   $$('.as686-addteam',body).forEach(x=>x.style.display='none');
-   if(!preview)toastOk('Game finished and result saved');
+   if(!preview){if(!await confirmAction({question:`Finish ${a.name}? Winner: ${winner}`}))return;g.status='finished';g.finishedAt=new Date().toISOString();g.updatedAt=g.finishedAt;g.winner=winner;g.configSnapshot=c;if(!await saveGame(g))return}
+   stopTimer();body.innerHTML=`<div class="gs87-winner"><span class="cup">🏆</span><span class="mini">WINNER</span><b>${E(winner)}</b><span>${E(a.name)}</span></div>${resultHtml}`;$('#gs87-finish',w).style.display='none';if(!preview)toastOk('Game finished and saved')
  };
- draw();
+ draw()
 }
-
-function historyModal(g){
- const c=migrateConfig(g.configSnapshot||configs().find(x=>x.id===g.configId)||{},0);
- let content='';
- if(c.playMode==='teams'||g.winnerType==='team'){
-   const results=teamResults(g,c);
-   content=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">WINNING TEAM</span><b>${E(g.winner||results[0]?.name||'—')}</b><span>${(g.players||[]).length} participants · ${E(g.entertainerName||'')}</span></div>
-   ${results.map((tr,i)=>`<div class="as686-team-result ${i===0?'winner':''}">
-    <div class="as686-team-result-head"><div><span class="mini">${i===0?'1ST':'2ND'} TEAM</span><b>${E(tr.name)}</b></div><strong>${E(tr.total)} ${E(unit(c))}</strong></div>
-    ${tr.players.map(p=>`<div class="as686-memberresult"><div><b>${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><strong>${E(p.total)} ${E(unit(c))}</strong></div>`).join('')}
-   </div>`).join('')}`;
- }else{
-   const r=ranked(g,c);
-   content=`<div class="as686-winner"><span class="cup">🏆</span><span class="mini">WINNER</span><b>${E(g.winner||individualWinners(g,c).map(x=>x.name).join(' & ')||'—')}</b><span>${(g.players||[]).length} participants · ${E(g.entertainerName||'')}</span></div><div class="card">${r.map((p,i)=>`<div class="as686-history-row"><div><b>${i+1}. ${E(p.name)}</b>${p.room?`<span>Room ${E(p.room)}</span>`:''}</div><div class="as686-rank">${E(p.total)} ${E(unit(c))}</div></div>`).join('')}</div>`;
- }
- const w=baseModal(`<div class="as686-game"><div class="as686-kicker">COMPLETED GAME</div><h3>${E(g.activityName||'Game')}</h3>${content}<button class="btn ghost" id="as686-hx">Close</button></div>`);
- $('#as686-hx',w).onclick=()=>w.remove();
-}
-
-function injectStaffButtons(root=document){
- if(!S.session||S.session.role!=='staff')return;
- $$('.tlx-body[data-actopen]',root).forEach(box=>{
-   if(box.querySelector('.as686-scorebtn'))return;
-   const a=(S.activities||[]).find(x=>String(x.id)===String(box.dataset.actopen)),c=a&&linkedCfg(a);if(!a||!c)return;
-   const old=latestSession(a),done=old&&old.status==='finished';
-   const b=document.createElement('button');b.type='button';b.className='as686-scorebtn'+(done?' done':'');b.dataset.as686Start=String(a.id);
-   b.textContent=done?'✓ View result':'🏆 '+(old?'Continue game':'Start game');box.appendChild(b);
- });
-}
-
-document.addEventListener('click',e=>{
- const b=e.target.closest&&e.target.closest('[data-as686-start],[data-as686-edit],[data-as686-preview],[data-as686-del],[data-as686-up],[data-as686-down],[data-as686-history],#as686-new');
- if(!b)return;
- if(b.matches('[data-as686-start]')){
-   e.preventDefault();e.stopImmediatePropagation();
-   const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.as686Start)),c=a&&linkedCfg(a),g=a&&latestSession(a);
-   if(g&&g.status==='finished')historyModal(g);else if(a&&c)gameModal(a,c);
-   return;
- }
- if(b.id==='as686-new'){e.preventDefault();editor();return}
- if(b.dataset.as686Edit){e.preventDefault();editor(configs().find(x=>x.id===b.dataset.as686Edit));return}
- if(b.dataset.as686Preview){
-   e.preventDefault();
-   const c=configs().find(x=>x.id===b.dataset.as686Preview);if(c)gameModal({id:'preview-'+c.id,name:c.activity||c.name,time:'15:30',location:'Pool Area',day:typeof todayIndex==='function'?todayIndex():0},c,true);return
- }
- if(b.dataset.as686Del){e.preventDefault();deleteConfig(b.dataset.as686Del);return}
- if(b.dataset.as686Up){e.preventDefault();moveConfig(b.dataset.as686Up,-1);return}
- if(b.dataset.as686Down){e.preventDefault();moveConfig(b.dataset.as686Down,1);return}
- if(b.dataset.as686History){e.preventDefault();const g=sessionsRaw().find(x=>x.id===b.dataset.as686History);if(g)historyModal(g);return}
+function historyModal(g){const c=migrateConfig(g.configSnapshot||configs().find(x=>x.id===g.configId)||{},0);const w=baseModal(`<div class="gs87-game"><div class="gs87-kicker">COMPLETED GAME</div><h3>${E(g.activityName||'Game')}</h3><div class="gs87-winner"><span class="cup">🏆</span><span class="mini">WINNER</span><b>${E(g.winner||'—')}</b><span>${E(template(c.templateKey).label)} · ${(g.players||[]).length} participants</span></div><button class="btn ghost" id="gs87-hx">Close</button></div>`);$('#gs87-hx',w).onclick=()=>w.remove()}
+function injectStaffButtons(root=document){if(!S.session||S.session.role!=='staff')return;$$('.tlx-body[data-actopen]',root).forEach(box=>{if(box.querySelector('.gs87-scorebtn'))return;const a=(S.activities||[]).find(x=>String(x.id)===String(box.dataset.actopen)),c=a&&linkedCfg(a);if(!a||!c)return;const old=latestSession(a),done=old&&old.status==='finished',b=document.createElement('button');b.type='button';b.className='gs87-scorebtn'+(done?' done':'');b.dataset.gs87Start=String(a.id);b.textContent=done?'✓ View result':'🏆 '+(old?'Continue game':'Start game');box.appendChild(b)})}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gs87-start],[data-gs87-edit],[data-gs87-preview],[data-gs87-del],[data-gs87-up],[data-gs87-down],[data-gs87-history],#gs87-new');if(!b)return;
+ if(b.dataset.gs87Start){e.preventDefault();e.stopImmediatePropagation();const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.gs87Start)),c=a&&linkedCfg(a),g=a&&latestSession(a);if(g&&g.status==='finished')historyModal(g);else if(a&&c)gameModal(a,c);return}
+ if(b.id==='gs87-new'){e.preventDefault();editor();return}
+ if(b.dataset.gs87Edit){e.preventDefault();editor(configs().find(x=>x.id===b.dataset.gs87Edit));return}
+ if(b.dataset.gs87Preview){e.preventDefault();const c=configs().find(x=>x.id===b.dataset.gs87Preview);if(c)gameModal({id:'preview-'+c.id,name:c.activity||c.name,time:'15:30',location:'Pool Area'},c,true);return}
+ if(b.dataset.gs87Del){e.preventDefault();deleteConfig(b.dataset.gs87Del);return}
+ if(b.dataset.gs87Up){e.preventDefault();moveConfig(b.dataset.gs87Up,-1);return}
+ if(b.dataset.gs87Down){e.preventDefault();moveConfig(b.dataset.gs87Down,1);return}
+ if(b.dataset.gs87History){e.preventDefault();const g=sessions().find(x=>x.id===b.dataset.gs87History);if(g)historyModal(g);return}
 },true);
-
-const observer=new MutationObserver(()=>injectStaffButtons());
-observer.observe(document.body,{childList:true,subtree:true});
-setTimeout(()=>injectStaffButtons(),100);
-
-window.AUREA_LIVE_SCORE_V686={
- version:'6.86',
- configs,
- sessions:sessionsRaw,
- openEditor:editor,
- openGame:gameModal,
- manager:managerInner,
- activityNames,
- teamTotal,
- teamResults
-};
+const mo=new MutationObserver(()=>injectStaffButtons());mo.observe(document.body,{childList:true,subtree:true});setTimeout(()=>injectStaffButtons(),100);
+window.AUREA_LIVE_SCORE_V688={version:'6.88',configs,sessions,openEditor:editor,openGame:gameModal,templates:TEMPLATES,hydrate,sync:syncLocalToCloud};
 })();
 </script>
 
