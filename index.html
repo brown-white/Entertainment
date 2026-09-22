@@ -19604,32 +19604,12 @@ window.AUREA_PROGRAM_PRINT_V653={version:'6.53',print:print653,weekHtml:week653,
 if(window.__AUREA_PROGRAM_PRINT_V654)return;window.__AUREA_PROGRAM_PRINT_V654=true;
 
 function managerPrintDialog654(){
-  const api=window.AUREA_PROGRAM_PRINT_V653;
-  if(!api||typeof api.print!=='function'){toastErr('Programme print system is not ready.');return}
-  S._ib654Scope=S._ib654Scope||'week';
-  const wrap=baseModal(`<div class="ib635-modal">
-    <div class="ib635-intro">
-      <div class="ib635-kicker">Hotel information board</div>
-      <h3>Print Entertainment Programme</h3>
-      <p>Reusable programme layout. Calendar dates are intentionally hidden from the printed file.</p>
-    </div>
-    <label>Programme format</label>
-    <div class="ib635-choice">
-      <button type="button" data-ib654-scope="day" class="${S._ib654Scope==='day'?'on':''}">Selected day</button>
-      <button type="button" data-ib654-scope="week" class="${S._ib654Scope==='week'?'on':''}">Full week</button>
-    </div>
-    <div class="ib635-note">Guest copy: no entertainer names. Team copy: includes the responsible entertainer. Neither printed version contains calendar dates.</div>
-    <div class="ib635-actions">
-      <button class="btn" id="ib654-guest">${ic('download',16)} Print without entertainer</button>
-      <button class="btn ghost" id="ib654-team">${ic('users',16)} Print with entertainer</button>
-    </div>
-    <button class="btn ghost" id="ib654-close">${t('close')}</button>
-  </div>`);
-  const bs=[...wrap.querySelectorAll('[data-ib654-scope]')];
-  bs.forEach(b=>b.onclick=()=>{S._ib654Scope=b.dataset.ib654Scope;bs.forEach(x=>x.classList.toggle('on',x===b));});
-  wrap.querySelector('#ib654-close').onclick=()=>wrap.remove();
-  wrap.querySelector('#ib654-guest').onclick=()=>api.print({scope:S._ib654Scope,includeWho:false,day:S.day});
-  wrap.querySelector('#ib654-team').onclick=()=>api.print({scope:S._ib654Scope,includeWho:true,day:S.day});
+  /* V6.93: this old lexical handler is still called by the V6.54
+     capture-phase listener. Never render the old modal again. */
+  const latest=window.__AUREA_FINAL_EXPORT_OPEN_V693;
+  if(typeof latest==='function')return latest();
+  toastWarn('Programme export is loading. Please try again.');
+  return null;
 }
 window.openInfoBoardExport635=managerPrintDialog654;
 
@@ -20240,6 +20220,7 @@ window.openInfoBoardExport635=function(){
  w.querySelector('#ib681-close').onclick=()=>w.remove();
  return w
 };
+window.__AUREA_FINAL_EXPORT_OPEN_V693=window.openInfoBoardExport635;
 window.printInfoBoardProgram635=print681;
 if(window.AUREA_PROGRAM_V667)window.AUREA_PROGRAM_V667.print=print681;
 if(window.AUREA_INFO_BOARD_V642)window.AUREA_INFO_BOARD_V642.print=print681;
@@ -20258,6 +20239,15 @@ if(window.AUREA_PROGRAM_PRINT_V653) {
   window.AUREA_PROGRAM_PRINT_V653.dayHtml=(day,who)=>day681(day==null?(typeof todayIndex==='function'?todayIndex():0):+day,!!who);
 }
 if(window.AUREA_PROGRAM_V667) window.AUREA_PROGRAM_V667.print=print681;
+if(window.AUREA_PROGRAM_PRINT_V654){
+  window.AUREA_PROGRAM_PRINT_V654.openManager=window.__AUREA_FINAL_EXPORT_OPEN_V693;
+  window.AUREA_PROGRAM_PRINT_V654.route=function(){
+    const open=document.querySelector('#ib635-open');
+    if(open)open.onclick=(e)=>{e&&e.preventDefault();window.__AUREA_FINAL_EXPORT_OPEN_V693();};
+    const quick=document.querySelector('#ib635-quick');
+    if(quick)quick.onclick=(e)=>{e&&e.preventDefault();print681({scope:'day',includeWho:false,day:S.day});};
+  };
+}
 
 /* Rewire the concrete manager controls after every render. This also covers the
    old V6.35 lexical handlers without deleting unrelated programme functionality. */
@@ -20281,7 +20271,7 @@ document.addEventListener('click',function(e){
 },true);
 setTimeout(route682,0);
 
-window.AUREA_EXPORT_V692={version:'6.92',print:print681,open:window.openInfoBoardExport635,groups:['activity','event','show','live']};
+window.AUREA_EXPORT_V693={version:'6.93',print:print681,open:window.__AUREA_FINAL_EXPORT_OPEN_V693,groups:['activity','event','show','live']};
 
 })();
 </script>
