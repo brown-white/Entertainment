@@ -20186,19 +20186,60 @@ const days681=()=>{try{return t('days')}catch(_){return ['Monday','Tuesday','Wed
 const kind681=a=>{const c=String(a?.category||'mAdult');if(c==='mEvents')return'event';if(c==='eBefore')return'before';if(c==='eLive')return'live';if(c==='eShow'||c==='eKidsStage')return'show';if(c==='eAfter')return'aftershow';if(c==='eParty')return'special';return'activity'};
 const label681=a=>({activity:'ACTIVITY',event:'EVENT',before:'BEFORE SHOW',live:'LIVE MUSIC',show:'SHOW',aftershow:'AFTER SHOW',special:'SPECIAL EVENT'}[kind681(a)]||'ACTIVITY');
 const slot681=a=>{let m=0;try{m=timeToMin(a.time)||0}catch(_){const q=String(a.time||'').match(/(\d{1,2}):(\d{2})/);m=q?(+q[1]*60+ +q[2]):0}return m<14*60?'morning':m<18*60?'afternoon':m<23*60?'evening':'after'};
-const items681=d=>(S.activities||[]).filter(a=>a&&+a.day===+d).slice().sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
+const group681=a=>{const k=kind681(a);if(k==='activity')return'activity';if(k==='event'||k==='special')return'event';if(k==='live')return'live';if(k==='before'||k==='show'||k==='aftershow')return'show';return'activity'};
+const normTypes681=types=>{const a=Array.isArray(types)?types:types?[types]:[];const ok=[...new Set(a.map(String).filter(x=>['activity','event','show','live'].includes(x)))];return ok.length?ok:null};
+const items681=(d,types)=>{const wanted=normTypes681(types);return(S.activities||[]).filter(a=>a&&+a.day===+d&&(!wanted||wanted.includes(group681(a)))).slice().sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')))};
+const filterLabel681=types=>{const a=normTypes681(types);if(!a)return'Full programme';const nm={activity:'Activities',event:'Events',show:'Shows',live:'Live Music'};return a.map(x=>nm[x]).join(' · ')};
+const legendKinds681=types=>{const a=normTypes681(types);if(!a)return['activity','event','before','live','show','aftershow','special'];const out=[];if(a.includes('activity'))out.push('activity');if(a.includes('event'))out.push('event','special');if(a.includes('show'))out.push('before','show','aftershow');if(a.includes('live'))out.push('live');return out};
 const who681=a=>{const x=String(a?.entertainer||'').trim();if(!x)return'';try{return typeof entertainerName==='function'?entertainerName(x):x}catch(_){return x}};
 const meta681=d=>{try{return typeof info635==='function'?(info635(d)||{}):{}}catch(_){return{}}};
 const cat681=a=>String(a?.customCategory||'').trim();
-const css681=scope=>`@page{size:${scope==='week'?'A3 landscape':'A4 portrait'};margin:${scope==='week'?'7mm':'10mm'}}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#241b16;font-family:Arial,sans-serif;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.sheet{width:100%}.hero{display:flex;justify-content:space-between;align-items:end;border-bottom:3px solid #9d744c;padding-bottom:8px;margin-bottom:9px}.k{font-size:7px;letter-spacing:.22em;font-weight:900;color:#9d744c;text-transform:uppercase}.hero h1{font:700 ${scope==='week'?'25':'28'}px Georgia,serif;margin:2px 0 0;color:#241b16}.copy{font-size:6px;font-weight:900;letter-spacing:.12em;color:#75685f;text-transform:uppercase}.legend{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}.legend span,.badge{border-radius:999px;padding:3px 7px;font-size:5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;border:1px solid transparent}.activity{--bg:#f2efe9;--edge:#95887a;--ink:#51483f}.event{--bg:#fff2dc;--edge:#d19a42;--ink:#805414}.before{--bg:#f3eadf;--edge:#9a7751;--ink:#63472c}.live{--bg:#eaf2ec;--edge:#66806e;--ink:#3f5e49}.show{--bg:#f0ebf5;--edge:#756086;--ink:#554166}.aftershow{--bg:#eaf1f5;--edge:#557389;--ink:#385568}.special{--bg:#f6e9e6;--edge:#9b5c50;--ink:#713e35}.legend span{background:var(--bg);border-color:var(--edge);color:var(--ink)}.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;align-items:start}.day{border:1px solid #d7cabc;border-radius:10px;overflow:hidden;background:#fff;break-inside:avoid}.dayhead{background:#2f221b;color:#fff;padding:8px 9px}.dayhead b{font:700 13px Georgia,serif;color:#fff}.daymeta{padding:4px 7px;min-height:16px;background:#faf7f2;border-bottom:1px solid #e6ddd4;font-size:5.2px;color:#6d6057}.body{padding:5px}.sec{margin-bottom:6px}.sectitle{display:flex;justify-content:space-between;background:#f4f0ea;border-left:3px solid #b68a5a;border-radius:5px;padding:4px 6px;font-size:5.8px;font-weight:900;letter-spacing:.11em;color:#342a24}.card{margin-top:3px;padding:6px;border-left:4px solid var(--edge);background:var(--bg);break-inside:avoid}.time{font-size:6px;font-weight:900;color:#765637}.name{font-size:7.6px;font-weight:900;line-height:1.15;color:#241b16!important;-webkit-text-fill-color:#241b16!important;margin:1px 0}.place,.staff,.cat{font-size:5.2px;color:#62574f!important;-webkit-text-fill-color:#62574f!important}.cat{font-weight:800;margin-top:2px}.badge{display:inline-block;margin-top:4px;background:var(--edge);color:#fff!important;-webkit-text-fill-color:#fff!important}.empty{padding:5px;font-size:5px;color:#8c8179;font-style:italic}.footer{display:flex;justify-content:space-between;border-top:1px solid #ddd3c8;margin-top:8px;padding-top:5px;font-size:5px;color:#776c64}.dayview .sec{margin:12px 0}.dayview .sectitle{font-size:8px;padding:7px 9px}.rows{display:grid;gap:6px;margin-top:5px}.row{display:grid;grid-template-columns:80px minmax(0,1.6fr) minmax(100px,.8fr) ${scope==='day'?'130px':'0'};gap:10px;align-items:center;padding:9px 10px;border:1px solid #ddd3c8;border-left:6px solid var(--edge);background:var(--bg);border-radius:9px;break-inside:avoid}.row .time,.row .name{font-size:9px}.row .place,.row .staff,.row .cat{font-size:7px}.row .badge{margin:0 0 3px}.loclabel{font-size:5.5px;color:#8c8077}@media print{.day,.card,.row,.sec{break-inside:avoid!important;page-break-inside:avoid!important}}`;
-function legend681(){return `<div class="legend">${['activity','event','before','live','show','aftershow','special'].map(k=>`<span class="${k}">${({activity:'Activity',event:'Event',before:'Before Show',live:'Live Music',show:'Show',aftershow:'After Show',special:'Special Event'})[k]}</span>`).join('')}</div>`}
+const css681=scope=>`@page{size:${scope==='week'?'A3 landscape':'A4 portrait'};margin:${scope==='week'?'7mm':'10mm'}}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#241b16;font-family:Arial,sans-serif;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.sheet{width:100%}.hero{display:flex;justify-content:space-between;align-items:end;border-bottom:3px solid #9d744c;padding-bottom:8px;margin-bottom:9px}.k{font-size:7px;letter-spacing:.22em;font-weight:900;color:#9d744c;text-transform:uppercase}.hero h1{font:700 ${scope==='week'?'25':'28'}px Georgia,serif;margin:2px 0 0;color:#241b16}.filterline{margin-top:2px;font-size:5.6px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#8b7768}.copy{font-size:6px;font-weight:900;letter-spacing:.12em;color:#75685f;text-transform:uppercase}.legend{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}.legend span,.badge{border-radius:999px;padding:3px 7px;font-size:5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;border:1px solid transparent}.activity{--bg:#f2efe9;--edge:#95887a;--ink:#51483f}.event{--bg:#fff2dc;--edge:#d19a42;--ink:#805414}.before{--bg:#f3eadf;--edge:#9a7751;--ink:#63472c}.live{--bg:#eaf2ec;--edge:#66806e;--ink:#3f5e49}.show{--bg:#f0ebf5;--edge:#756086;--ink:#554166}.aftershow{--bg:#eaf1f5;--edge:#557389;--ink:#385568}.special{--bg:#f6e9e6;--edge:#9b5c50;--ink:#713e35}.legend span{background:var(--bg);border-color:var(--edge);color:var(--ink)}.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;align-items:start}.day{border:1px solid #d7cabc;border-radius:10px;overflow:hidden;background:#fff;break-inside:avoid}.dayhead{background:#2f221b;color:#fff;padding:8px 9px}.dayhead b{font:700 13px Georgia,serif;color:#fff}.daymeta{padding:4px 7px;min-height:16px;background:#faf7f2;border-bottom:1px solid #e6ddd4;font-size:5.2px;color:#6d6057}.body{padding:5px}.sec{margin-bottom:6px}.sectitle{display:flex;justify-content:space-between;background:#f4f0ea;border-left:3px solid #b68a5a;border-radius:5px;padding:4px 6px;font-size:5.8px;font-weight:900;letter-spacing:.11em;color:#342a24}.card{margin-top:3px;padding:6px;border-left:4px solid var(--edge);background:var(--bg);break-inside:avoid}.time{font-size:6px;font-weight:900;color:#765637}.name{font-size:7.6px;font-weight:900;line-height:1.15;color:#241b16!important;-webkit-text-fill-color:#241b16!important;margin:1px 0}.place,.staff,.cat{font-size:5.2px;color:#62574f!important;-webkit-text-fill-color:#62574f!important}.cat{font-weight:800;margin-top:2px}.badge{display:inline-block;margin-top:4px;background:var(--edge);color:#fff!important;-webkit-text-fill-color:#fff!important}.empty{padding:5px;font-size:5px;color:#8c8179;font-style:italic}.footer{display:flex;justify-content:space-between;border-top:1px solid #ddd3c8;margin-top:8px;padding-top:5px;font-size:5px;color:#776c64}.dayview .sec{margin:12px 0}.dayview .sectitle{font-size:8px;padding:7px 9px}.rows{display:grid;gap:6px;margin-top:5px}.row{display:grid;grid-template-columns:80px minmax(0,1.6fr) minmax(100px,.8fr) ${scope==='day'?'130px':'0'};gap:10px;align-items:center;padding:9px 10px;border:1px solid #ddd3c8;border-left:6px solid var(--edge);background:var(--bg);border-radius:9px;break-inside:avoid}.row .time,.row .name{font-size:9px}.row .place,.row .staff,.row .cat{font-size:7px}.row .badge{margin:0 0 3px}.loclabel{font-size:5.5px;color:#8c8077}@media print{.day,.card,.row,.sec{break-inside:avoid!important;page-break-inside:avoid!important}}`;
+function legend681(types){return `<div class="legend">${legendKinds681(types).map(k=>`<span class="${k}">${({activity:'Activity',event:'Event',before:'Before Show',live:'Live Music',show:'Show',aftershow:'After Show',special:'Special Event'})[k]}</span>`).join('')}</div>`}
 const slotTitle681=k=>({morning:'MORNING',afternoon:'AFTERNOON',evening:'EVENING',after:'AFTER EVENING'}[k]);
 function section681(k,list,who,compact){let content=list.map(a=>{const ty=kind681(a),cc=cat681(a);if(compact)return `<div class="card ${ty}"><div class="time">${E681(a.time||'')}</div><div class="name">${E681(a.name||'Untitled')}</div><div class="place">${E681(a.location||'')}</div>${cc?`<div class="cat">${E681(cc)}</div>`:''}${who&&who681(a)?`<div class="staff">${E681(who681(a))}</div>`:''}<span class="badge">${label681(a)}</span></div>`;return `<div class="row ${ty}"><div class="time">${E681(a.time||'—')}</div><div><span class="badge">${label681(a)}</span><div class="name">${E681(a.name||'Untitled')}</div>${cc?`<div class="cat">${E681(cc)}</div>`:''}</div><div><div class="name">${E681(a.location||'—')}</div><div class="loclabel">LOCATION</div></div>${who?`<div class="staff">${E681(who681(a)||'—')}</div>`:'<div></div>'}</div>`}).join('');return `<section class="sec"><div class="sectitle"><span>${slotTitle681(k)}</span><span>${list.length}</span></div>${list.length?(compact?content:`<div class="rows">${content}</div>`):'<div class="empty">No programme</div>'}</section>`}
-function week681(who){return `<div class="sheet"><div class="hero"><div><div class="k">Entertainment Department</div><h1>Weekly Programme</h1></div><div class="copy">${who?'Team operational copy':'Guest information copy'}</div></div>${legend681()}<div class="week">${Array.from({length:7},(_,d)=>{const all=items681(d),m=meta681(d);return `<article class="day"><div class="dayhead"><b>${E681(days681()[d]||'Day')}</b></div><div class="daymeta">${E681([m.identity&&m.identity!==days681()[d]?m.identity:'',m.theme?'Restaurant: '+m.theme:''].filter(Boolean).join(' · '))}</div><div class="body">${['morning','afternoon','evening','after'].map(k=>section681(k,all.filter(a=>slot681(a)===k),who,true)).join('')}</div></article>`}).join('')}</div><div class="footer"><span>Entertainment Team</span><span>Times and locations may change.</span></div></div>`}
-function day681(d,who){const all=items681(d),m=meta681(d);return `<div class="sheet dayview"><div class="hero"><div><div class="k">Entertainment Department</div><h1>${E681(m.identity||days681()[d]||'Programme')}</h1></div><div class="copy">${who?'Team operational copy':'Guest information copy'}</div></div>${legend681()}${m.theme?`<div class="daymeta">Restaurant theme · ${E681(m.theme)}</div>`:''}${['morning','afternoon','evening','after'].map(k=>section681(k,all.filter(a=>slot681(a)===k),who,false)).join('')}<div class="footer"><span>Entertainment Team</span><span>Times and locations may change.</span></div></div>`}
-function print681({scope='week',includeWho=false,day=null,date=null}={}){let d=day==null?(typeof todayIndex==='function'?todayIndex():0):+day;if(date){try{const dt=new Date(date+'T12:00:00');d=(dt.getDay()+6)%7}catch(_){}}const html=scope==='day'?day681(d,includeWho):week681(includeWho),w=window.open('','_blank');if(!w)return toastErr('Could not open print window.');w.document.open();w.document.write('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Entertainment Programme</title><style>'+css681(scope)+'</style></head><body>'+html+'<scr'+'ipt>setTimeout(function(){window.print()},500);<\/scr'+'ipt></body></html>');w.document.close()}
+function week681(who,types){return `<div class="sheet"><div class="hero"><div><div class="k">Entertainment Department</div><h1>Weekly Programme</h1><div class="filterline">${E681(filterLabel681(types))}</div></div><div class="copy">${who?'Team operational copy':'Guest information copy'}</div></div>${legend681(types)}<div class="week">${Array.from({length:7},(_,d)=>{const all=items681(d,types),m=meta681(d);return `<article class="day"><div class="dayhead"><b>${E681(days681()[d]||'Day')}</b></div><div class="daymeta">${E681([m.identity&&m.identity!==days681()[d]?m.identity:'',m.theme?'Restaurant: '+m.theme:''].filter(Boolean).join(' · '))}</div><div class="body">${['morning','afternoon','evening','after'].map(k=>section681(k,all.filter(a=>slot681(a)===k),who,true)).join('')}</div></article>`}).join('')}</div><div class="footer"><span>Entertainment Team</span><span>Times and locations may change.</span></div></div>`}
+function day681(d,who,types){const all=items681(d,types),m=meta681(d);return `<div class="sheet dayview"><div class="hero"><div><div class="k">Entertainment Department</div><h1>${E681(m.identity||days681()[d]||'Programme')}</h1><div class="filterline">${E681(filterLabel681(types))}</div></div><div class="copy">${who?'Team operational copy':'Guest information copy'}</div></div>${legend681(types)}${m.theme?`<div class="daymeta">Restaurant theme · ${E681(m.theme)}</div>`:''}${['morning','afternoon','evening','after'].map(k=>section681(k,all.filter(a=>slot681(a)===k),who,false)).join('')}<div class="footer"><span>Entertainment Team</span><span>Times and locations may change.</span></div></div>`}
+function print681({scope='week',includeWho=false,day=null,date=null,types=null}={}){let d=day==null?(typeof todayIndex==='function'?todayIndex():0):+day;if(date){try{const dt=new Date(date+'T12:00:00');d=(dt.getDay()+6)%7}catch(_){}}const selected=normTypes681(types),html=scope==='day'?day681(d,includeWho,selected):week681(includeWho,selected),w=window.open('','_blank');if(!w)return toastErr('Could not open print window.');w.document.open();w.document.write('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Entertainment Programme</title><style>'+css681(scope)+'</style></head><body>'+html+'<scr'+'ipt>setTimeout(function(){window.print()},500);<\/scr'+'ipt></body></html>');w.document.close()}
 /* Replace the actual modal itself so no old lexical print function can survive. */
-window.openInfoBoardExport635=function(){S._ib635Scope=S._ib635Scope||'week';const w=baseModal(`<div class="ib635-modal"><div class="ib635-intro"><div class="ib635-kicker">Entertainment programme</div><h3>Export programme</h3><p>Choose the format and whether staff names should be included.</p></div><label>Reference date</label><input type="date" id="ib681-date" value="${E681(S.exportDate||todayISO())}"><label>Format</label><div class="ib635-choice"><button type="button" data-ib681-scope="day" class="${S._ib635Scope==='day'?'on':''}">Selected day</button><button type="button" data-ib681-scope="week" class="${S._ib635Scope==='week'?'on':''}">Full week</button></div><div class="ib635-actions"><button class="btn" id="ib681-guest">Guest information copy</button><button class="btn ghost" id="ib681-team">Team operational copy</button></div><button class="btn ghost" id="ib681-close">Close</button></div>`);const bs=[...w.querySelectorAll('[data-ib681-scope]')];bs.forEach(b=>b.onclick=()=>{S._ib635Scope=b.dataset.ib681Scope;bs.forEach(x=>x.classList.toggle('on',x===b))});const args=x=>({scope:S._ib635Scope||'week',date:w.querySelector('#ib681-date').value||todayISO(),includeWho:x});w.querySelector('#ib681-guest').onclick=()=>print681(args(false));w.querySelector('#ib681-team').onclick=()=>print681(args(true));w.querySelector('#ib681-close').onclick=()=>w.remove();return w};
+window.openInfoBoardExport635=function(){
+ if(!S.session||S.session.role!=='manager'){toastWarn('Manager only');return null;}
+ S._ib635Scope=S._ib635Scope||'week';
+ S._ib681Types=Array.isArray(S._ib681Types)?S._ib681Types:[];
+ const w=baseModal(`<div class="ib635-modal"><div class="ib635-intro"><div class="ib635-kicker">Entertainment programme</div><h3>Export programme</h3><p>Export the full programme or only the programme types you need.</p></div>
+ <label>Reference date</label><input type="date" id="ib681-date" value="${E681(S.exportDate||todayISO())}">
+ <label>Format</label><div class="ib635-choice"><button type="button" data-ib681-scope="day" class="${S._ib635Scope==='day'?'on':''}">Selected day</button><button type="button" data-ib681-scope="week" class="${S._ib635Scope==='week'?'on':''}">Full week</button></div>
+ <label>Programme content</label><div class="ib635-choice" id="ib681-types">
+  <button type="button" data-ib681-type="all" style="grid-column:1/-1">Full programme</button>
+  <button type="button" data-ib681-type="activity">Activities</button>
+  <button type="button" data-ib681-type="event">Events</button>
+  <button type="button" data-ib681-type="show">Shows</button>
+  <button type="button" data-ib681-type="live">Live Music</button>
+ </div>
+ <div class="ib635-note">You can select one type or combine several. “Shows” includes Before Show, Show and After Show. “Events” includes Event and Special Event.</div>
+ <div class="ib635-actions"><button class="btn" id="ib681-guest">Guest information copy</button><button class="btn ghost" id="ib681-team">Team operational copy</button></div>
+ <button class="btn ghost" id="ib681-close">Close</button></div>`);
+ const scopes=[...w.querySelectorAll('[data-ib681-scope]')];
+ scopes.forEach(b=>b.onclick=()=>{S._ib635Scope=b.dataset.ib681Scope;scopes.forEach(x=>x.classList.toggle('on',x===b))});
+ const typeBtns=[...w.querySelectorAll('[data-ib681-type]')];
+ const paintTypes=()=>{const sel=normTypes681(S._ib681Types);typeBtns.forEach(b=>b.classList.toggle('on',b.dataset.ib681Type==='all'?!sel:!!(sel&&sel.includes(b.dataset.ib681Type))))};
+ typeBtns.forEach(b=>b.onclick=()=>{
+   const k=b.dataset.ib681Type;
+   if(k==='all'){S._ib681Types=[]}
+   else{
+     let a=normTypes681(S._ib681Types)||[];
+     a=a.includes(k)?a.filter(x=>x!==k):[...a,k];
+     S._ib681Types=a;
+   }
+   paintTypes();
+ });
+ paintTypes();
+ const args=x=>({scope:S._ib635Scope||'week',date:w.querySelector('#ib681-date').value||todayISO(),includeWho:x,types:normTypes681(S._ib681Types)});
+ w.querySelector('#ib681-guest').onclick=()=>print681(args(false));
+ w.querySelector('#ib681-team').onclick=()=>print681(args(true));
+ w.querySelector('#ib681-close').onclick=()=>w.remove();
+ return w
+};
 window.printInfoBoardProgram635=print681;
 if(window.AUREA_PROGRAM_V667)window.AUREA_PROGRAM_V667.print=print681;
 if(window.AUREA_INFO_BOARD_V642)window.AUREA_INFO_BOARD_V642.print=print681;
@@ -20240,7 +20281,7 @@ document.addEventListener('click',function(e){
 },true);
 setTimeout(route682,0);
 
-window.AUREA_EXPORT_V682={version:'6.82',print:print681,open:window.openInfoBoardExport635};
+window.AUREA_EXPORT_V692={version:'6.92',print:print681,open:window.openInfoBoardExport635,groups:['activity','event','show','live']};
 
 })();
 </script>
@@ -20872,6 +20913,148 @@ window.AUREA_DAY_OFF_HISTORY_V691={
   dayPlanForDate:dayPlanForDate691,
   history:history691,
   start:start691
+};
+})();
+</script>
+
+
+<script id="day-off-persistence-v692">
+/* ============================================================
+   V6.92 — Day Off persistence authority
+   Dedicated local revision + cloud retry for dayOverrides.
+   This layer is intentionally LAST so old Day Plan / Entrance
+   modals cannot bypass the persistence rule.
+   ============================================================ */
+(()=>{
+'use strict';
+if(window.__DAY_OFF_PERSISTENCE_V692)return;
+window.__DAY_OFF_PERSISTENCE_V692=1;
+
+const LOCAL692='aurea_day_overrides_v692';
+const REV692='dayOverridesRevisionV692';
+
+function clone692(v){try{return JSON.parse(JSON.stringify(v||{}))}catch(_){return{}}}
+function read692(){
+  try{
+    const x=JSON.parse(localStorage.getItem(LOCAL692)||'null');
+    return x&&typeof x==='object'&&x.overrides&&typeof x.overrides==='object'?x:null;
+  }catch(_){return null}
+}
+function write692(overrides,rev,pending){
+  const x={rev:+rev||Date.now(),pending:!!pending,overrides:clone692(overrides),savedAt:new Date().toISOString()};
+  try{localStorage.setItem(LOCAL692,JSON.stringify(x))}catch(_){}
+  return x
+}
+function settingsRev692(){return +(S.settings&&S.settings[REV692]||0)||0}
+function effectiveOverrides692(){
+  const local=read692(),remote=clone692(S.settings&&S.settings.dayOverrides||{}),rr=settingsRev692();
+  if(local&&(+local.rev||0)>=rr)return clone692(local.overrides);
+  if(rr>0){
+    if(!local||(+local.rev||0)<rr)write692(remote,rr,false);
+    return remote;
+  }
+  if(local)return clone692(local.overrides);
+  return remote
+}
+function hydrate692(){
+  const local=read692(),rr=settingsRev692();
+  if(local&&(+local.rev||0)>rr){
+    S.settings={...(S.settings||{}),dayOverrides:clone692(local.overrides),[REV692]:+local.rev};
+    try{if(typeof writeSettingsBackupV626==='function')writeSettingsBackupV626(S.settings)}catch(_){}
+    return true
+  }
+  if(rr>0&&(!local||(+local.rev||0)<rr))write692(S.settings&&S.settings.dayOverrides||{},rr,false);
+  return false
+}
+
+/* Make every Day Plan read use the newest dedicated copy. */
+const originalDayPlanFor692=dayPlanFor;
+dayPlanFor=function(day){
+  hydrate692();
+  const base=(DAY_PLAN||[]).find(d=>+d.day===+day)||(DAY_PLAN||[])[0];
+  const all=effectiveOverrides692(),ov=all&&all[String(day)];
+  if(!ov)return base;
+  return {...base,
+    off:Array.isArray(ov.off)?ov.off.map(Number).filter(Number.isFinite):((base&&base.off)||[]).slice(),
+    entrance:typeof ov.entrance==='number'?ov.entrance:base.entrance,
+    custom:true
+  }
+};
+window.dayPlanFor=dayPlanFor;
+
+dayIsCustom=function(day){
+  const all=effectiveOverrides692();
+  return !!(all&&all[String(day)])
+};
+window.dayIsCustom=dayIsCustom;
+
+/* The previous V6.91 attendance resolver reads S.settings. Hydrate first so
+   historical attendance sees the newest saved override/history data. */
+const attAutoBefore692=attAuto;
+attAuto=function(user,mk,day){hydrate692();return attAutoBefore692(user,mk,day)};
+
+/* Final DB boundary: ANY existing or future modal that writes dayOverrides gets
+   local persistence BEFORE cloud. A cloud/network failure no longer makes the
+   manager's saved Day Off disappear after refresh. */
+const saveSettingsBefore692=DB.saveSettings.bind(DB);
+DB.saveSettings=async function(next){
+  if(!next||next.dayOverrides===undefined)return saveSettingsBefore692(next);
+
+  const overrides=clone692(next.dayOverrides||{});
+  const rev=Date.now();
+  write692(overrides,rev,true);
+  next={...next,dayOverrides:overrides,[REV692]:rev};
+
+  try{
+    const result=await saveSettingsBefore692(next);
+    write692((result&&result.dayOverrides)||overrides,(result&&result[REV692])||rev,false);
+    return result
+  }catch(err){
+    /* Original saveSettings writes S.settings + the normal browser backup
+       before attempting cloud. Keep that successful local save authoritative. */
+    S.settings={...(S.settings||{}),...next,dayOverrides:overrides,[REV692]:rev};
+    try{if(typeof writeSettingsBackupV626==='function')writeSettingsBackupV626(S.settings)}catch(_){}
+    write692(overrides,rev,true);
+    console.warn('Day Off saved locally; cloud sync pending',err);
+    setTimeout(syncPending692,1500);
+    return S.settings
+  }
+};
+
+async function syncPending692(){
+  hydrate692();
+  const local=read692();if(!local||!local.pending)return true;
+  try{
+    const next={...(S.settings||{}),dayOverrides:clone692(local.overrides),[REV692]:+local.rev};
+    const r=await saveSettingsBefore692(next);
+    write692((r&&r.dayOverrides)||local.overrides,(r&&r[REV692])||local.rev,false);
+    return true
+  }catch(e){
+    console.warn('Day Off cloud retry pending',e);
+    return false
+  }
+}
+
+/* The first DB.load starts earlier in this historical single-file app. Render
+   is therefore also guarded: once load completes, the dedicated local revision
+   is restored before the Day Plan is painted. */
+const renderBefore692=render;
+render=function(){
+  hydrate692();
+  return renderBefore692.apply(this,arguments)
+};
+window.render=render;
+
+[0,250,800,1800,3500].forEach(ms=>setTimeout(hydrate692,ms));
+window.addEventListener('focus',()=>{hydrate692();syncPending692()});
+setTimeout(syncPending692,2200);
+
+window.AUREA_DAY_OFF_PERSISTENCE_V692={
+  version:'6.92',
+  read:read692,
+  effective:effectiveOverrides692,
+  hydrate:hydrate692,
+  sync:syncPending692
 };
 })();
 </script>
