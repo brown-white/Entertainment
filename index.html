@@ -6066,17 +6066,14 @@ function openEntranceModal(day){
   wrap.querySelector("#ent-save").onclick=async ()=>{
     const raw=wrap.querySelector("#ent-sel").value;
     const entrance=raw?+raw:null;
+    const btn=wrap.querySelector("#ent-save");
     try{
-      if(typeof window.saveDayPlanPatchV694==="function"){
-        await window.saveDayPlanPatchV694(day,{entrance});
-      }else{
-        const all={...(S.settings.dayOverrides||{})};
-        const cur=all[String(day)] || {off:[...dp.off],entrance:dp.entrance};
-        all[String(day)]={...cur,entrance};
-        await DB.saveSettings({...S.settings,dayOverrides:all});
-      }
-      wrap.remove(); toastOk(t("dutySaved")); render();
-    }catch(e){ console.error(e); toastErr(t("errSave")); }
+      btn.disabled=true; btn.textContent="Saving…";
+      const r=await window.saveDayPlanPatchV696(day,{entrance});
+      wrap.remove();
+      toastOk(r.cloudVerified?"Entrance saved":"Entrance saved · cloud sync pending");
+      render();
+    }catch(e){ console.error("Entrance save failed",e); btn.disabled=false; btn.textContent=t("save"); toastErr("Entrance was not saved. Please try again."); }
   };
 }
 function assignView(){
@@ -7532,33 +7529,23 @@ function openDutyModal(day){
   wrap.querySelector("#duty-x").onclick=()=>wrap.remove();
   wrap.querySelector("#duty-save").onclick=async ()=>{
     const off=[...wrap.querySelectorAll(".duty-off")].filter(b=>b.checked).map(b=>+b.value);
+    const btn=wrap.querySelector("#duty-save");
     try{
-      if(typeof window.saveDayPlanPatchV694==="function"){
-        await window.saveDayPlanPatchV694(day,{off});
-      }else{
-        const all={...(S.settings.dayOverrides||{})};
-        const cur=all[String(day)]||{off:[...dp.off],entrance:dp.entrance};
-        all[String(day)]={...cur,off};
-        await DB.saveSettings({...S.settings,dayOverrides:all});
-      }
-      wrap.remove(); toastOk(t("dutySaved")); render();
-    }catch(e){ console.error(e); toastErr(t("errSave")); }
+      btn.disabled=true; btn.textContent="Saving…";
+      const r=await window.saveDayPlanPatchV696(day,{off});
+      wrap.remove();
+      toastOk(r.cloudVerified?"Day off saved":"Day off saved · cloud sync pending");
+      render();
+    }catch(e){ console.error("Day off save failed",e); btn.disabled=false; btn.textContent=t("save"); toastErr("Day off was not saved. Please try again."); }
   };
   const rst=wrap.querySelector("#duty-reset");
   if(rst) rst.onclick=async ()=>{
     try{
       const base=(DAY_PLAN||[]).find(x=>+x.day===+day)||(DAY_PLAN||[])[0];
       const off=Array.isArray(base&&base.off)?base.off.slice():[];
-      if(typeof window.saveDayPlanPatchV694==="function"){
-        await window.saveDayPlanPatchV694(day,{off});
-      }else{
-        const all={...(S.settings.dayOverrides||{})};
-        const cur=all[String(day)]||{off:[...dp.off],entrance:dp.entrance};
-        all[String(day)]={...cur,off};
-        await DB.saveSettings({...S.settings,dayOverrides:all});
-      }
-      wrap.remove(); toastOk(t("dutySaved")); render();
-    }catch(e){ console.error(e); toastErr(t("errSave")); }
+      const r=await window.saveDayPlanPatchV696(day,{off});
+      wrap.remove(); toastOk(r.cloudVerified?"Day off reset":"Day off reset · cloud sync pending"); render();
+    }catch(e){ console.error("Day off reset failed",e); toastErr("Day off reset was not saved."); }
   };
 }
 function openBusModal(bus, dir){
@@ -11667,8 +11654,8 @@ function applyRealtimeChange(payload){
       const row=payload.new;
       if(row && row.data){
         const incoming={...DEFAULT_SETTINGS,...row.data};
-        S.settings=(typeof window.reconcileDayPlanRealtimeV694==="function")
-          ? window.reconcileDayPlanRealtimeV694(incoming)
+        S.settings=(typeof window.reconcileDayPlanRealtimeV696==="function")
+          ? window.reconcileDayPlanRealtimeV696(incoming)
           : incoming;
         applySettings();
         return true;
@@ -20816,464 +20803,6 @@ window.AUREA_LIVE_SCORE_V688={version:'6.88',configs,sessions,openEditor:editor,
 </script>
 
 
-<script id="day-off-history-v691">
-/* ============================================================
-   V6.91 — Effective-date Day Off history
-   A weekly Day Plan change must never rewrite old attendance.
-   Current/future rota uses the new plan; past automatic attendance
-   keeps the plan that was effective on that date.
-   ============================================================ */
-(()=>{
-'use strict';
-if(window.__DAY_OFF_HISTORY_V691)return;
-window.__DAY_OFF_HISTORY_V691=1;
-
-const HISTKEY691='dayOffHistoryV691';
-const STARTKEY691='dayOffHistoryStartV691';
-const LOCALSTART691='aurea_dayoff_history_start_v691';
-
-function iso691(v){
-  v=String(v||'').slice(0,10);
-  return /^\d{4}-\d{2}-\d{2}$/.test(v)?v:'';
-}
-function today691(){
-  try{return hotelDateStr()}catch(_){return new Date().toISOString().slice(0,10)}
-}
-function start691(){
-  let v=iso691(S.settings&&S.settings[STARTKEY691]);
-  if(v)return v;
-  try{v=iso691(localStorage.getItem(LOCALSTART691))}catch(_){}
-  if(!v)v=today691();
-  try{localStorage.setItem(LOCALSTART691,v)}catch(_){}
-  /* Keep it in memory immediately. The next settings save carries it to cloud. */
-  S.settings={...(S.settings||{}),[STARTKEY691]:v};
-  return v;
-}
-function basePlan691(day){
-  const base=(DAY_PLAN||[]).find(d=>+d.day===+day)||(DAY_PLAN||[])[0]||{day:+day,off:[],entrance:null};
-  return {...base,off:Array.isArray(base.off)?base.off.slice():[]};
-}
-function normalizeOff691(v){
-  return [...new Set((Array.isArray(v)?v:[]).map(Number).filter(Number.isFinite))].sort((a,b)=>a-b);
-}
-function currentPlanFromOverrides691(overrides,day){
-  const base=basePlan691(day),ov=overrides&&overrides[String(day)];
-  if(!ov)return base;
-  return {...base,
-    off:Array.isArray(ov.off)?normalizeOff691(ov.off):base.off.slice(),
-    entrance:typeof ov.entrance==='number'?ov.entrance:base.entrance,
-    custom:true
-  };
-}
-function history691(){
-  const raw=S.settings&&S.settings[HISTKEY691];
-  return Array.isArray(raw)?raw.slice():[];
-}
-function recordForDate691(day,date){
-  const d=iso691(date);if(!d)return null;
-  return history691()
-    .filter(x=>+x.day===+day&&iso691(x.effectiveFrom)&&iso691(x.effectiveFrom)<=d)
-    .sort((a,b)=>iso691(b.effectiveFrom).localeCompare(iso691(a.effectiveFrom)))[0]||null;
-}
-/* Public resolver: the exact Day Plan that was valid on a calendar date. */
-function dayPlanForDate691(day,date){
-  const d=iso691(date),base=basePlan691(day);
-  if(!d)return typeof dayPlanFor==='function'?dayPlanFor(day):base;
-
-  const rec=recordForDate691(day,d);
-  if(rec){
-    return {...base,
-      off:Array.isArray(rec.off)?normalizeOff691(rec.off):base.off.slice(),
-      entrance:typeof rec.entrance==='number'?rec.entrance:base.entrance,
-      custom:rec.custom!==false,
-      effectiveFrom:rec.effectiveFrom
-    };
-  }
-
-  /* Migration rule for installations that already have a current override:
-     everything before V6.91's first effective date remains the STANDARD
-     historical rota; the current custom rota starts from the migration date.
-     This repairs the old retroactive-attendance behaviour. */
-  if(d<start691())return base;
-  return currentPlanFromOverrides691((S.settings&&S.settings.dayOverrides)||{},day);
-}
-window.dayPlanForDateV691=dayPlanForDate691;
-
-/* Attendance is the place where the old bug happened. Manual P/O/A/V always
-   wins in attStatus; this function only supplies the automatic plan value. */
-attAuto=function(user,mk,day){
-  if(notYetHired(user,mk,day)||leftBefore(user,mk,day))return 'N';
-  if(isAttOnly(user))return 'P';
-  let num=user.number;if(!num&&user.role==='manager')num=1;
-  if(!num)return 'P';
-  const ds=dateStr(mk,day),wd=weekdayOf(mk,day),dp=dayPlanForDate691(wd,ds);
-  return dp.off.includes(num)?'O':'P';
-};
-
-/* Capture every future Day Off change regardless of which old/new modal writes
-   dayOverrides. This avoids another patch-order problem: the history is added
-   at the database boundary, not only to one button. Entrance-only changes do
-   not create a Day Off history record. */
-const saveSettingsBefore691=DB.saveSettings.bind(DB);
-DB.saveSettings=async function(next){
-  next=next||{};
-  const beforeOverrides=(S.settings&&S.settings.dayOverrides)||{};
-  const afterOverrides=next.dayOverrides!==undefined?(next.dayOverrides||{}):beforeOverrides;
-  let hist=history691(),changed=false;
-  const effective=today691(),start=start691();
-
-  for(let day=0;day<7;day++){
-    const beforePlan=currentPlanFromOverrides691(beforeOverrides,day);
-    const afterPlan=currentPlanFromOverrides691(afterOverrides,day);
-    const beforeOff=normalizeOff691(beforePlan.off);
-    const afterOff=normalizeOff691(afterPlan.off);
-    if(JSON.stringify(beforeOff)===JSON.stringify(afterOff))continue;
-
-    /* One authoritative record per weekday per effective date. If the manager
-       edits the same weekday twice today, the second save replaces today's
-       record rather than creating conflicting duplicates. */
-    hist=hist.filter(x=>!(+x.day===day&&iso691(x.effectiveFrom)===effective));
-    hist.push({
-      day,
-      effectiveFrom:effective,
-      off:afterOff,
-      entrance:typeof afterPlan.entrance==='number'?afterPlan.entrance:null,
-      custom:!!afterOverrides[String(day)],
-      updatedAt:new Date().toISOString()
-    });
-    changed=true;
-  }
-
-  if(changed||!iso691(next[STARTKEY691])){
-    next={...next,[STARTKEY691]:start,[HISTKEY691]:hist};
-  }
-  return saveSettingsBefore691(next);
-};
-
-window.AUREA_DAY_OFF_HISTORY_V691={
-  version:'6.91',
-  dayPlanForDate:dayPlanForDate691,
-  history:history691,
-  start:start691
-};
-})();
-</script>
-
-
-
-<script id="day-plan-persistence-v694">
-/* ============================================================
-   V6.94 — Atomic Day Plan persistence
-   Day Off + Entrance are one authoritative record.
-   Saves locally first, then cloud, and protects against stale
-   realtime/server echoes and old modal references.
-   ============================================================ */
-(()=>{
-'use strict';
-if(window.__DAY_PLAN_PERSISTENCE_V694)return;
-window.__DAY_PLAN_PERSISTENCE_V694=1;
-
-const LOCAL694='aurea_day_plan_v694';
-const REV694='dayPlanRevisionV694';
-const HISTKEY694='dayOffHistoryV691';
-const STARTKEY694='dayOffHistoryStartV691';
-
-function clone694(v){try{return JSON.parse(JSON.stringify(v??{}))}catch(_){return{}}}
-function normOff694(v){
-  return [...new Set((Array.isArray(v)?v:[]).map(Number).filter(Number.isFinite))].sort((a,b)=>a-b)
-}
-function base694(day){
-  const b=(DAY_PLAN||[]).find(x=>+x.day===+day)||(DAY_PLAN||[])[0]||{day:+day,off:[],entrance:null};
-  return {...b,off:normOff694(b.off),entrance:typeof b.entrance==='number'?b.entrance:null}
-}
-function normalizeEntry694(day,v){
-  const b=base694(day),x=v&&typeof v==='object'?v:{};
-  return {
-    off:Array.isArray(x.off)?normOff694(x.off):b.off.slice(),
-    entrance:typeof x.entrance==='number'?+x.entrance:(x.entrance===null?null:b.entrance)
-  }
-}
-function normalizeOverrides694(v){
-  const out={};
-  if(v&&typeof v==='object'){
-    for(let day=0;day<7;day++){
-      if(Object.prototype.hasOwnProperty.call(v,String(day)))out[String(day)]=normalizeEntry694(day,v[String(day)])
-    }
-  }
-  return out
-}
-function sameEntry694(a,b){
-  return JSON.stringify(normalizeEntry694(0,{off:a?.off,entrance:a?.entrance}))
-      ===JSON.stringify(normalizeEntry694(0,{off:b?.off,entrance:b?.entrance}))
-}
-function local694(){
-  try{
-    const x=JSON.parse(localStorage.getItem(LOCAL694)||'null');
-    return x&&typeof x==='object'&&x.overrides&&typeof x.overrides==='object'?x:null
-  }catch(_){return null}
-}
-function write694({overrides,rev,pending,history,historyStart}){
-  const rec={
-    rev:+rev||Date.now(),
-    pending:!!pending,
-    overrides:normalizeOverrides694(overrides),
-    history:Array.isArray(history)?clone694(history):clone694(S.settings&&S.settings[HISTKEY694]||[]),
-    historyStart:String(historyStart||S.settings&&S.settings[STARTKEY694]||''),
-    savedAt:new Date().toISOString()
-  };
-  try{localStorage.setItem(LOCAL694,JSON.stringify(rec))}catch(e){console.warn('Day Plan local save unavailable',e)}
-  return rec
-}
-function settingsRev694(st=S.settings){return +(st&&st[REV694]||0)||0}
-function nextRev694(){
-  const l=local694();
-  return Math.max(Date.now(),settingsRev694()+1,(l&&+l.rev||0)+1)
-}
-function effective694(){
-  const l=local694(),cloud=normalizeOverrides694(S.settings&&S.settings.dayOverrides||{}),rr=settingsRev694();
-  if(l&&(+l.rev||0)>=rr)return normalizeOverrides694(l.overrides);
-  if(rr>0){
-    if(!l||(+l.rev||0)<rr)write694({overrides:cloud,rev:rr,pending:false});
-    return cloud
-  }
-  return l?normalizeOverrides694(l.overrides):cloud
-}
-function applyLocal694(rec){
-  if(!rec)return false;
-  const rr=settingsRev694();
-  if((+rec.rev||0)<rr)return false;
-  S.settings={
-    ...(S.settings||{}),
-    dayOverrides:normalizeOverrides694(rec.overrides),
-    [REV694]:+rec.rev||0,
-    [HISTKEY694]:Array.isArray(rec.history)?clone694(rec.history):(S.settings&&S.settings[HISTKEY694]||[]),
-    [STARTKEY694]:rec.historyStart||S.settings&&S.settings[STARTKEY694]||''
-  };
-  try{if(typeof writeSettingsBackupV626==='function')writeSettingsBackupV626(S.settings)}catch(_){}
-  return true
-}
-function hydrate694(){
-  const l=local694(),rr=settingsRev694();
-  if(l&&(+l.rev||0)>=rr)return applyLocal694(l);
-  if(rr>0&&(!l||(+l.rev||0)<rr))write694({
-    overrides:S.settings&&S.settings.dayOverrides||{},
-    rev:rr,pending:false,
-    history:S.settings&&S.settings[HISTKEY694]||[],
-    historyStart:S.settings&&S.settings[STARTKEY694]||''
-  });
-  return false
-}
-
-/* A server realtime message is accepted for all normal settings, but a newer
-   locally saved Day Plan can never be rolled back by an older app_settings echo. */
-window.reconcileDayPlanRealtimeV694=function(incoming){
-  incoming={...DEFAULT_SETTINGS,...(incoming||{})};
-  const l=local694(),ir=+(incoming[REV694]||0)||0;
-  if(l&&(+l.rev||0)>ir){
-    return {
-      ...incoming,
-      dayOverrides:normalizeOverrides694(l.overrides),
-      [REV694]:+l.rev,
-      [HISTKEY694]:Array.isArray(l.history)?clone694(l.history):(incoming[HISTKEY694]||[]),
-      [STARTKEY694]:l.historyStart||incoming[STARTKEY694]||''
-    }
-  }
-  if(ir>0)write694({
-    overrides:incoming.dayOverrides||{},rev:ir,pending:false,
-    history:incoming[HISTKEY694]||[],historyStart:incoming[STARTKEY694]||''
-  });
-  return incoming
-};
-
-/* Every visual Day Plan read uses the canonical record. */
-dayPlanFor=function(day){
-  hydrate694();
-  const b=base694(day),all=effective694(),ov=all[String(day)];
-  if(!ov)return b;
-  const x=normalizeEntry694(day,ov);
-  return {...b,...x,custom:true}
-};
-window.dayPlanFor=dayPlanFor;
-
-dayIsCustom=function(day){
-  hydrate694();
-  return Object.prototype.hasOwnProperty.call(effective694(),String(day))
-};
-window.dayIsCustom=dayIsCustom;
-
-/* Existing V6.91 historical attendance still remains authoritative.
-   Hydrate the persisted history/overrides before that resolver runs. */
-const attAutoBefore694=attAuto;
-attAuto=function(user,mk,day){hydrate694();return attAutoBefore694(user,mk,day)};
-
-/* Capture the save chain AFTER V6.91, so Day Off history still gets written.
-   This wrapper also protects any older hidden modal that still writes
-   dayOverrides directly. */
-const saveSettingsBefore694=DB.saveSettings.bind(DB);
-
-function touchedDays694(incoming,rawBefore){
-  const a=normalizeOverrides694(incoming||{}),b=normalizeOverrides694(rawBefore||{});
-  const keys=new Set([...Object.keys(a),...Object.keys(b)]);
-  return [...keys].filter(k=>JSON.stringify(a[k]??null)!==JSON.stringify(b[k]??null))
-}
-function mergeIncoming694(incoming,rawBefore){
-  const canonical=effective694(),inc=normalizeOverrides694(incoming||{}),before=normalizeOverrides694(rawBefore||{});
-  const touched=touchedDays694(inc,before);
-  if(!touched.length){
-    /* If an old caller supplied the same raw snapshot, never let it erase a
-       newer canonical local value. */
-    return canonical
-  }
-  for(const k of touched){
-    if(Object.prototype.hasOwnProperty.call(inc,k))canonical[k]=inc[k];
-    else delete canonical[k]
-  }
-  return canonical
-}
-
-DB.saveSettings=async function(next){
-  if(!next||next.dayOverrides===undefined)return saveSettingsBefore694(next);
-
-  const rawBefore=clone694(S.settings&&S.settings.dayOverrides||{});
-  const merged=mergeIncoming694(next.dayOverrides,rawBefore);
-  const rev=nextRev694();
-
-  /* SAVE #1: synchronous local authority BEFORE any network await. */
-  write694({
-    overrides:merged,rev,pending:true,
-    history:S.settings&&S.settings[HISTKEY694]||[],
-    historyStart:S.settings&&S.settings[STARTKEY694]||''
-  });
-
-  const prepared={...next,dayOverrides:merged,[REV694]:rev};
-
-  try{
-    const result=await saveSettingsBefore694(prepared);
-    /* V6.91 may have added historical records inside the save chain. */
-    const finalSettings=result&&typeof result==='object'?result:S.settings;
-    write694({
-      overrides:finalSettings&&finalSettings.dayOverrides||merged,
-      rev:+((finalSettings&&finalSettings[REV694])||rev),
-      pending:false,
-      history:finalSettings&&finalSettings[HISTKEY694]||[],
-      historyStart:finalSettings&&finalSettings[STARTKEY694]||''
-    });
-    hydrate694();
-    return finalSettings
-  }catch(err){
-    /* The original saveSettings writes memory + normal browser backup before
-       the cloud request. Keep the atomic Day Plan copy even when cloud is down. */
-    S.settings={
-      ...(S.settings||{}),
-      ...prepared,
-      dayOverrides:merged,
-      [REV694]:rev
-    };
-    try{if(typeof writeSettingsBackupV626==='function')writeSettingsBackupV626(S.settings)}catch(_){}
-    write694({
-      overrides:merged,rev,pending:true,
-      history:S.settings&&S.settings[HISTKEY694]||[],
-      historyStart:S.settings&&S.settings[STARTKEY694]||''
-    });
-    console.warn('Day Plan saved locally; cloud retry pending',err);
-    setTimeout(sync694,1200);
-    return S.settings
-  }
-};
-
-async function sync694(){
-  hydrate694();
-  const l=local694();
-  if(!l||!l.pending)return true;
-  try{
-    const next={
-      ...(S.settings||{}),
-      dayOverrides:normalizeOverrides694(l.overrides),
-      [REV694]:+l.rev,
-      [HISTKEY694]:Array.isArray(l.history)?clone694(l.history):(S.settings&&S.settings[HISTKEY694]||[]),
-      [STARTKEY694]:l.historyStart||S.settings&&S.settings[STARTKEY694]||''
-    };
-    const r=await saveSettingsBefore694(next);
-    const finalSettings=r&&typeof r==='object'?r:S.settings;
-    write694({
-      overrides:finalSettings&&finalSettings.dayOverrides||l.overrides,
-      rev:+((finalSettings&&finalSettings[REV694])||l.rev),
-      pending:false,
-      history:finalSettings&&finalSettings[HISTKEY694]||l.history||[],
-      historyStart:finalSettings&&finalSettings[STARTKEY694]||l.historyStart||''
-    });
-    return true
-  }catch(e){
-    console.warn('Day Plan cloud retry still pending',e);
-    return false
-  }
-}
-
-/* Canonical partial save. Day Off changes preserve Entrance and Entrance changes
-   preserve Day Off. If the resulting day equals the standard plan exactly, the
-   override is removed cleanly. */
-window.saveDayPlanPatchV694=async function(day,patch){
-  day=+day;
-  if(!(day>=0&&day<=6))throw new Error('Invalid weekday');
-
-  hydrate694();
-  const all=effective694(),b=base694(day);
-  const current=Object.prototype.hasOwnProperty.call(all,String(day))
-    ? normalizeEntry694(day,all[String(day)])
-    : {off:b.off.slice(),entrance:b.entrance};
-
-  const next={
-    off:Object.prototype.hasOwnProperty.call(patch||{},'off')?normOff694(patch.off):current.off.slice(),
-    entrance:Object.prototype.hasOwnProperty.call(patch||{},'entrance')
-      ? (typeof patch.entrance==='number'?+patch.entrance:null)
-      : current.entrance
-  };
-
-  const standard=JSON.stringify(next.off)===JSON.stringify(b.off)
-    && next.entrance===b.entrance;
-
-  if(standard)delete all[String(day)];
-  else all[String(day)]=next;
-
-  await DB.saveSettings({...S.settings,dayOverrides:all});
-
-  /* Immediate post-save verification against the authoritative copy. */
-  const verify=effective694();
-  const actual=Object.prototype.hasOwnProperty.call(verify,String(day))
-    ? normalizeEntry694(day,verify[String(day)])
-    : {off:b.off.slice(),entrance:b.entrance};
-
-  if(JSON.stringify(actual.off)!==JSON.stringify(next.off)||actual.entrance!==next.entrance){
-    throw new Error('Day Plan verification failed')
-  }
-  return actual
-};
-
-/* Restore the dedicated state before every render/load-facing UI paint. */
-const renderBefore694=render;
-render=function(){
-  hydrate694();
-  return renderBefore694.apply(this,arguments)
-};
-window.render=render;
-
-[0,100,300,800,1600,3200].forEach(ms=>setTimeout(hydrate694,ms));
-setTimeout(sync694,1800);
-window.addEventListener('focus',()=>{hydrate694();sync694()});
-window.addEventListener('online',()=>sync694());
-
-window.AUREA_DAY_PLAN_V694={
-  version:'6.94',
-  effective:effective694,
-  hydrate:hydrate694,
-  savePatch:window.saveDayPlanPatchV694,
-  sync:sync694,
-  local:local694
-};
-})();
-</script>
-
-
 <script id="auto-assignment-audit-v695">
 (()=>{
 'use strict';
@@ -21296,6 +20825,201 @@ window.AUREA_AUTO_ASSIGN_AUDIT_V695={
     return !!(api&&api.valid&&api.valid(a))
   }
 };
+})();
+</script>
+
+
+<script id="day-plan-direct-save-v696">
+(()=>{
+'use strict';
+if(window.__DAY_PLAN_DIRECT_SAVE_V696)return;
+window.__DAY_PLAN_DIRECT_SAVE_V696=1;
+
+const LOCAL696='aurea_day_plan_v696';
+const REV696='dayPlanRevisionV696';
+const HIST696='dayOffHistoryV696';
+const START696='dayOffHistoryStartV696';
+
+function cp696(v){try{return JSON.parse(JSON.stringify(v??{}))}catch(_){return{}}}
+function iso696(v){v=String(v||'').slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(v)?v:''}
+function today696(){try{return hotelDateStr()}catch(_){return new Date().toISOString().slice(0,10)}}
+function off696(v){return [...new Set((Array.isArray(v)?v:[]).map(Number).filter(n=>Number.isFinite(n)&&n>0))].sort((a,b)=>a-b)}
+function base696(day){
+  const b=(DAY_PLAN||[]).find(x=>+x.day===+day)||(DAY_PLAN||[])[0]||{day:+day,off:[],entrance:null};
+  return {...b,off:off696(b.off),entrance:typeof b.entrance==='number'?+b.entrance:null};
+}
+function entry696(day,v){
+  const b=base696(day),x=v&&typeof v==='object'?v:{};
+  return {off:Array.isArray(x.off)?off696(x.off):b.off.slice(),entrance:typeof x.entrance==='number'?+x.entrance:(x.entrance===null?null:b.entrance)};
+}
+function overrides696(v){
+  const o={};
+  if(v&&typeof v==='object')for(let d=0;d<7;d++)if(Object.prototype.hasOwnProperty.call(v,String(d)))o[String(d)]=entry696(d,v[String(d)]);
+  return o;
+}
+function eqEntry696(day,a,b){return JSON.stringify(entry696(day,a))===JSON.stringify(entry696(day,b))}
+function readLocal696(){
+  try{const x=JSON.parse(localStorage.getItem(LOCAL696)||'null');return x&&typeof x==='object'&&x.overrides?x:null}catch(_){return null}
+}
+function writeLocal696(rec){
+  const out={rev:+rec.rev||Date.now(),pending:!!rec.pending,overrides:overrides696(rec.overrides),history:Array.isArray(rec.history)?cp696(rec.history):[],historyStart:iso696(rec.historyStart)||today696(),savedAt:new Date().toISOString()};
+  try{localStorage.setItem(LOCAL696,JSON.stringify(out))}catch(e){console.warn('Day Plan local backup unavailable',e)}
+  return out;
+}
+function settingsRev696(st=S.settings){return +(st&&st[REV696]||0)||0}
+function nextRev696(){const l=readLocal696();return Math.max(Date.now(),settingsRev696()+1,(l&&+l.rev||0)+1)}
+
+function migrateOldLocal696(){
+  if(readLocal696())return;
+  try{
+    const old=JSON.parse(localStorage.getItem('aurea_day_plan_v694')||'null');
+    if(old&&old.overrides)writeLocal696({rev:+old.rev||Date.now(),pending:!!old.pending,overrides:old.overrides,history:old.history||S.settings?.dayOffHistoryV691||[],historyStart:old.historyStart||S.settings?.dayOffHistoryStartV691||today696()});
+  }catch(_){ }
+}
+migrateOldLocal696();
+
+function canonical696(){
+  const l=readLocal696(),remote=overrides696(S.settings&&S.settings.dayOverrides||{}),rr=settingsRev696();
+  if(l&&(+l.rev||0)>=rr)return {rev:+l.rev||0,overrides:overrides696(l.overrides),history:Array.isArray(l.history)?cp696(l.history):[],historyStart:iso696(l.historyStart)||today696(),pending:!!l.pending};
+  return {rev:rr,overrides:remote,history:Array.isArray(S.settings&&S.settings[HIST696])?cp696(S.settings[HIST696]):[],historyStart:iso696(S.settings&&S.settings[START696])||today696(),pending:false};
+}
+function applyCanonical696(rec){
+  if(!rec)return;
+  S.settings={...(S.settings||{}),dayOverrides:overrides696(rec.overrides),[REV696]:+rec.rev||0,[HIST696]:cp696(rec.history||[]),[START696]:rec.historyStart||today696()};
+  try{if(typeof writeSettingsBackupV626==='function')writeSettingsBackupV626(S.settings)}catch(_){ }
+}
+function hydrate696(){const rec=canonical696();applyCanonical696(rec);if(rec.rev)writeLocal696(rec);return rec}
+
+function planForDate696(day,date){
+  const d=iso696(date),b=base696(day),rec=canonical696();
+  if(!d)return dayPlanFor(day);
+  const hist=(rec.history||[]).filter(x=>+x.day===+day&&iso696(x.effectiveFrom)&&iso696(x.effectiveFrom)<=d).sort((a,b)=>iso696(b.effectiveFrom).localeCompare(iso696(a.effectiveFrom)))[0];
+  if(hist)return {...b,off:off696(hist.off),entrance:typeof hist.entrance==='number'?hist.entrance:b.entrance,custom:true,effectiveFrom:hist.effectiveFrom};
+  if(d<(rec.historyStart||today696()))return b;
+  const ov=rec.overrides[String(day)];return ov?{...b,...entry696(day,ov),custom:true}:b;
+}
+window.dayPlanForDateV696=planForDate696;
+
+dayPlanFor=function(day){const rec=canonical696(),b=base696(day),ov=rec.overrides[String(day)];return ov?{...b,...entry696(day,ov),custom:true}:b};
+window.dayPlanFor=dayPlanFor;
+dayIsCustom=function(day){return Object.prototype.hasOwnProperty.call(canonical696().overrides,String(day))};
+window.dayIsCustom=dayIsCustom;
+
+attAuto=function(user,mk,day){
+  if(notYetHired(user,mk,day)||leftBefore(user,mk,day))return 'N';
+  if(isAttOnly(user))return 'P';
+  let num=user.number;if(!num&&user.role==='manager')num=1;
+  if(!num)return 'P';
+  const ds=dateStr(mk,day),wd=weekdayOf(mk,day),dp=planForDate696(wd,ds);
+  return dp.off.includes(num)?'O':'P';
+};
+
+function buildHistory696(rec,day,nextEntry,offChanged){
+  let hist=Array.isArray(rec.history)?cp696(rec.history):[];
+  if(!offChanged)return hist;
+  const effective=today696();
+  hist=hist.filter(x=>!(+x.day===+day&&iso696(x.effectiveFrom)===effective));
+  hist.push({day:+day,effectiveFrom:effective,off:off696(nextEntry.off),entrance:nextEntry.entrance,updatedAt:new Date().toISOString()});
+  return hist;
+}
+
+async function verifyCloud696(expected){
+  if(!REMOTE)return {verified:true,offline:true};
+  try{
+    const rows=await sb('app_settings?select=data&id=eq.1');
+    const data=rows&&rows[0]&&rows[0].data;
+    if(!data)return {verified:false};
+    const remoteRev=+(data[REV696]||0)||0;
+    if(remoteRev!==+expected.rev)return {verified:false,remoteRev};
+    if(JSON.stringify(overrides696(data.dayOverrides||{}))!==JSON.stringify(overrides696(expected.overrides)))return {verified:false,remoteRev};
+    return {verified:true,remoteRev};
+  }catch(e){console.warn('Day Plan cloud verify failed',e);return {verified:false,error:e}}
+}
+
+async function cloudWrite696(rec){
+  if(!REMOTE)return true;
+  const next={...DEFAULT_SETTINGS,...(S.settings||{}),dayOverrides:overrides696(rec.overrides),[REV696]:+rec.rev,[HIST696]:cp696(rec.history||[]),[START696]:rec.historyStart||today696(),_settingsUpdatedAtV626:Math.max(Date.now(),+(S.settings&&S.settings._settingsUpdatedAtV626||0)+1)};
+  await cloudUpsertSettingsV626(next);
+  S.settings=next;
+  try{writeSettingsBackupV626(next)}catch(_){ }
+  return true;
+}
+
+window.saveDayPlanPatchV696=async function(day,patch){
+  day=+day;if(!(day>=0&&day<=6))throw new Error('Invalid weekday');
+  const rec=hydrate696(),b=base696(day);
+  const cur=Object.prototype.hasOwnProperty.call(rec.overrides,String(day))?entry696(day,rec.overrides[String(day)]):{off:b.off.slice(),entrance:b.entrance};
+  const next={off:Object.prototype.hasOwnProperty.call(patch||{},'off')?off696(patch.off):cur.off.slice(),entrance:Object.prototype.hasOwnProperty.call(patch||{},'entrance')?(typeof patch.entrance==='number'?+patch.entrance:null):cur.entrance};
+  const offChanged=JSON.stringify(next.off)!==JSON.stringify(cur.off);
+  const standard=JSON.stringify(next.off)===JSON.stringify(b.off)&&next.entrance===b.entrance;
+  const all=overrides696(rec.overrides);
+  if(standard)delete all[String(day)];else all[String(day)]=next;
+  const rev=nextRev696();
+  const finalRec={rev,pending:true,overrides:all,history:buildHistory696(rec,day,next,offChanged),historyStart:rec.historyStart||today696()};
+
+  /* DIRECT SAVE NOW — before any await. */
+  applyCanonical696(finalRec);
+  writeLocal696(finalRec);
+  try{if(typeof writeSettingsBackupV626==='function')writeSettingsBackupV626(S.settings)}catch(_){ }
+
+  let cloudVerified=!REMOTE;
+  try{
+    await cloudWrite696(finalRec);
+    let check=await verifyCloud696(finalRec);
+    if(!check.verified&&REMOTE){await cloudWrite696(finalRec);check=await verifyCloud696(finalRec)}
+    cloudVerified=!!check.verified;
+  }catch(e){console.warn('Day Plan cloud save pending',e);cloudVerified=false}
+
+  writeLocal696({...finalRec,pending:!cloudVerified});
+  applyCanonical696({...finalRec,pending:!cloudVerified});
+  if(!cloudVerified)setTimeout(syncDayPlanV696,1200);
+
+  const verify=canonical696(),actual=Object.prototype.hasOwnProperty.call(verify.overrides,String(day))?entry696(day,verify.overrides[String(day)]):{off:b.off.slice(),entrance:b.entrance};
+  if(JSON.stringify(actual.off)!==JSON.stringify(next.off)||actual.entrance!==next.entrance)throw new Error('Local Day Plan verification failed');
+  return {saved:true,cloudVerified,day,off:actual.off.slice(),entrance:actual.entrance,revision:rev};
+};
+
+async function syncDayPlanV696(){
+  const rec=canonical696();if(!rec.pending)return true;
+  try{await cloudWrite696(rec);const check=await verifyCloud696(rec);if(!check.verified)return false;writeLocal696({...rec,pending:false});applyCanonical696({...rec,pending:false});return true}catch(e){console.warn('Day Plan retry pending',e);return false}
+}
+window.syncDayPlanV696=syncDayPlanV696;
+
+/* Safety net for old retained code paths. */
+const saveSettingsBase696=DB.saveSettings.bind(DB);
+DB.saveSettings=async function(next){
+  if(!next||next.dayOverrides===undefined)return saveSettingsBase696(next);
+  const current=canonical696().overrides,incoming=overrides696(next.dayOverrides||{});
+  const keys=new Set([...Object.keys(current),...Object.keys(incoming)]);
+  let changed=false;
+  for(const k of keys){
+    const day=+k,a=current[k]||base696(day),b=incoming[k]||base696(day);
+    if(eqEntry696(day,a,b))continue;
+    changed=true;
+    const eb=entry696(day,b);
+    await window.saveDayPlanPatchV696(day,{off:eb.off,entrance:eb.entrance});
+  }
+  if(changed)return S.settings;
+  return saveSettingsBase696({...next,dayOverrides:current,[REV696]:settingsRev696()});
+};
+
+window.reconcileDayPlanRealtimeV696=function(incoming){
+  incoming={...DEFAULT_SETTINGS,...(incoming||{})};
+  const local=readLocal696(),ir=+(incoming[REV696]||0)||0;
+  if(local&&(+local.rev||0)>=ir)return {...incoming,dayOverrides:overrides696(local.overrides),[REV696]:+local.rev,[HIST696]:cp696(local.history||[]),[START696]:local.historyStart||today696()};
+  if(ir>0)writeLocal696({rev:ir,pending:false,overrides:incoming.dayOverrides||{},history:incoming[HIST696]||[],historyStart:incoming[START696]||today696()});
+  return incoming;
+};
+
+const renderBase696=render;
+render=function(){hydrate696();return renderBase696.apply(this,arguments)};
+window.render=render;
+
+[0,80,250,700,1600,3500].forEach(ms=>setTimeout(hydrate696,ms));
+setTimeout(syncDayPlanV696,1800);
+window.addEventListener('focus',()=>{hydrate696();syncDayPlanV696()});
+window.addEventListener('online',()=>syncDayPlanV696());
+window.AUREA_DAY_PLAN_V696={version:'6.96',savePatch:window.saveDayPlanPatchV696,dayPlanFor,dayPlanForDate:planForDate696,hydrate:hydrate696,sync:syncDayPlanV696,local:readLocal696};
 })();
 </script>
 
