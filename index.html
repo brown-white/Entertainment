@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.25-save-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.25-prizes-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -20695,6 +20695,213 @@ window.addEventListener('online',()=>{loadCloud697();sync697()});
 window.AUREA_DAY_PLAN_V697={version:'6.97',row:ROW697,savePatch:window.saveDayPlanPatchV697,dayPlanFor,dayPlanForDate:planForDate697,load:loadCloud697,sync:sync697,local:readLocal697};
 })();
 
+</script>
+
+<script id="aurea-prizes-v701">
+/* ===== V7.01 TICKET STUDIO · MAKE PRIZES FOR THE WINNERS (2026-09-25) =====
+   A printable prize card for Tombola / Bingo winners with a signature box.
+   Settings are kept in localStorage 'aurea.prizes.v701', which the cloud
+   guard copies to every phone. */
+(function(){
+'use strict';
+if(window.__AUREA_PRIZES_V701) return; window.__AUREA_PRIZES_V701=true;
+const KEY='aurea.prizes.v701';
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const get=()=>{ try{ return JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(_){ return {}; } };
+const put=o=>{ try{ localStorage.setItem(KEY,JSON.stringify(o)); }catch(_){} };
+const GAMES={tombola:'Tombola',bingo:'Bingo',other:'Game'};
+function today(){ try{ return hotelDateStr(); }catch(_){ return new Date().toISOString().slice(0,10); } }
+function niceDate(iso){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso||'')) return '';
+  const d=new Date(iso+'T12:00:00');
+  return d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+function brand(){
+  const st=(typeof S!=='undefined'&&S.settings)||{};
+  return {name:String(st.hotelName||st.name||'Entertainment'), logo:String(st.logo||'')};
+}
+function colours(){
+  const cs=getComputedStyle(document.documentElement);
+  const v=(n,f)=>(cs.getPropertyValue(n)||'').trim()||f;
+  return {ink:v('--espresso','#3E2A1E'), gold:v('--bronze','#B98A5C')};
+}
+function serial(o,i){ return 'PRZ-'+String(o.date||today()).replace(/-/g,'').slice(2)+'-'+String(i+1).padStart(2,'0'); }
+
+/* one card; empty values print as a line to write on */
+function field(label,val,wide){
+  return `<div class="f${wide?' w':''}"><span>${E(label)}</span>${val?`<b>${E(val)}</b>`:'<i></i>'}</div>`;
+}
+function cardHtml(o,p,i){
+  const b=brand(), game=o.game==='other'?(o.gameName||'Game'):GAMES[o.game]||'Tombola';
+  const when=[o.event, niceDate(o.date)].filter(Boolean).join(', ');
+  return `<article class="card">
+    <header>${b.logo?`<img src="${E(b.logo)}" alt="">`:''}<span class="hotel">${E(b.name)}</span><span class="sn">${E(serial(o,i))}</span></header>
+    <div class="body">
+      <p class="game">${E(game)} winner</p>
+      <h1>Prize voucher</h1>
+      <div class="prize">${p.prize?E(p.prize):'<i class="long"></i>'}</div>
+      ${when?`<p class="when">${E(when)}</p>`:''}
+      <div class="fields">${field('Winner',p.name,true)}${field('Room',p.room)}${field('Winning number',p.number)}</div>
+    </div>
+    <footer>
+      <div class="terms">
+        <p><span>Collect at</span> ${E(o.collect||'Entertainment desk')}</p>
+        <p><span>Valid until</span> ${E(o.valid||'End of your stay')}</p>
+        <p class="small">Please show this card to collect your prize. One prize per card.</p>
+      </div>
+      <div class="sign"><div class="box"></div><p><b>${E(o.signer||'')}</b>${E(o.role||'Entertainment Manager')}</p></div>
+    </footer>
+  </article>`;
+}
+function css(o){
+  const c=colours(), small=o.size==='small';
+  return `@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&display=swap');
+@page{size:A4 portrait;margin:8mm}*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;color:${c.ink};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{display:grid;grid-template-columns:${small?'1fr 1fr':'1fr'};gap:8mm}
+.card{position:relative;height:${small?'136mm':'136mm'};border:1.2mm solid ${c.ink};outline:.35mm solid ${c.gold};outline-offset:-3mm;background:#fff;padding:${small?'8mm 8mm 7mm':'9mm 13mm 8mm'};display:flex;flex-direction:column;break-inside:avoid}
+header{display:flex;align-items:center;gap:3mm;font-size:${small?'7pt':'8pt'};font-weight:700;letter-spacing:.06em}
+header img{height:${small?'8mm':'10mm'};width:auto;border-radius:50%}
+header .hotel{flex:1}header .sn{font-weight:600;color:${c.gold}}
+.body{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center}
+.game{margin:0;font-size:${small?'8.5pt':'10pt'};font-weight:600;color:${c.gold};letter-spacing:.04em}
+h1{margin:1mm 0 0;font:400 ${small?'24pt':'34pt'}/1 'DM Serif Display',Georgia,serif}
+.prize{margin:${small?'4mm':'5mm'} 0 0;padding:${small?'3mm 4mm':'3.5mm 9mm'};border-top:.4mm solid ${c.gold};border-bottom:.4mm solid ${c.gold};font:400 ${small?'15pt':'21pt'}/1.2 'DM Serif Display',Georgia,serif;min-width:60%}
+.prize .long{display:block;height:${small?'9mm':'11mm'}}
+.when{margin:2.5mm 0 0;font-size:${small?'7.5pt':'8.5pt'};opacity:.75}
+.fields{display:flex;flex-wrap:wrap;gap:${small?'2.5mm 4mm':'3mm 7mm'};width:100%;margin-top:${small?'4mm':'6mm'};text-align:left}
+.f{flex:1 1 ${small?'30%':'22%'};font-size:${small?'7pt':'8pt'}}.f.w{flex-basis:${small?'100%':'40%'}}
+.f span{display:block;opacity:.7;margin-bottom:1mm}.f b{display:block;font-size:${small?'10pt':'12pt'};border-bottom:.3mm solid ${c.ink};padding-bottom:.8mm;min-height:6mm}
+.f i{display:block;height:6mm;border-bottom:.3mm solid ${c.ink}}
+footer{display:flex;align-items:flex-end;gap:6mm;margin-top:${small?'4mm':'5mm'}}
+.terms{flex:1;font-size:${small?'6.8pt':'7.8pt'};line-height:1.45}.terms p{margin:0}.terms span{font-weight:700}.terms .small{opacity:.65;margin-top:1mm}
+.sign{width:${small?'40mm':'64mm'};text-align:center}
+.sign .box{height:${small?'14mm':'19mm'};border:.3mm dashed ${c.gold};border-bottom:.4mm solid ${c.ink};background:#fcfaf6}
+.sign p{margin:1.2mm 0 0;font-size:${small?'6.8pt':'7.5pt'};line-height:1.35}.sign b{display:block;font-size:${small?'8pt':'9pt'}}
+@media screen{body{background:#eee;padding:10px}.sheet{max-width:210mm;margin:auto}}`;
+}
+function allCards(o){
+  const list=(o.prizes||[]).filter(p=>p.prize||p.name||p.room||p.number);
+  const blanks=Math.max(0,Math.min(60,+o.blanks||0));
+  for(let i=0;i<blanks;i++) list.push({prize:o.blankPrize||''});
+  return list;
+}
+function printCards(o){
+  const list=allCards(o);
+  if(!list.length){ toastErr('Add at least one prize or a blank card.'); return; }
+  const w=window.open('','_blank');
+  if(!w){ toastErr('Could not open the print window. Allow pop-ups and try again.'); return; }
+  const cards=list.map((p,i)=>cardHtml(o,p,i)).join('');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Prize cards</title><style>'+css(o)+'</style></head><body><div class="sheet">'+cards+'</div><scr'+'ipt>window.onload=function(){setTimeout(function(){window.print()},500)};<\/scr'+'ipt></body></html>');
+  w.document.close();
+}
+
+/* ---------- the maker ---------- */
+function prizeRow(p){
+  p=p||{};
+  return `<div class="pz-row">
+    <div class="pz-top"><input class="pz-prize" placeholder="Prize, e.g. Dinner for two at the à la carte" value="${E(p.prize||'')}">
+    <button type="button" class="pz-rm" aria-label="Remove prize">×</button></div>
+    <div class="pz-3"><input class="pz-name" placeholder="Winner name" value="${E(p.name||'')}"><input class="pz-room" placeholder="Room" value="${E(p.room||'')}"><input class="pz-num" placeholder="Winning no." value="${E(p.number||'')}"></div>
+  </div>`;
+}
+function read(w){
+  const q=s=>w.querySelector(s);
+  return {
+    game:q('#pz-game').value, gameName:q('#pz-gamename').value.trim(),
+    event:q('#pz-event').value.trim(), date:q('#pz-date').value,
+    prizes:[...w.querySelectorAll('.pz-row')].map(r=>({prize:r.querySelector('.pz-prize').value.trim(),name:r.querySelector('.pz-name').value.trim(),room:r.querySelector('.pz-room').value.trim(),number:r.querySelector('.pz-num').value.trim()})),
+    blanks:Math.max(0,Math.min(60,+q('#pz-blanks').value||0)), blankPrize:q('#pz-blankprize').value.trim(),
+    collect:q('#pz-collect').value.trim(), valid:q('#pz-valid').value.trim(),
+    signer:q('#pz-signer').value.trim(), role:q('#pz-role').value.trim(),
+    size:q('#pz-size').value
+  };
+}
+function open(){
+  const c=get(), studio=document.querySelector('.tk655-modal');
+  const fromStudio={
+    event:studio&&studio.querySelector('#rtitle')?studio.querySelector('#rtitle').value.trim():'',
+    game:studio&&studio.querySelector('#rtype')?studio.querySelector('#rtype').value:''
+  };
+  const s=(typeof S!=='undefined'&&S.session)||{};
+  const prizes=(c.prizes&&c.prizes.length)?c.prizes.map(p=>({prize:p.prize})):[{prize:''}];
+  const w=baseModal(`<div class="pz-modal">
+    <h3>Make prizes for the winners</h3>
+    <p class="mini">Print a prize card for each winner. Leave a name, room or number empty and the card gets a line to write it by hand.</p>
+    <div class="pz-2"><div><label>Game</label><select id="pz-game"><option value="tombola">Tombola</option><option value="bingo">Bingo</option><option value="other">Other game</option></select></div>
+      <div><label>Date</label><input id="pz-date" type="date" value="${E(today())}"></div></div>
+    <div id="pz-gamewrap" style="display:none"><label>Game name</label><input id="pz-gamename" value="${E(c.gameName||'')}" placeholder="e.g. Quiz night"></div>
+    <label>Event</label><input id="pz-event" value="${E(fromStudio.event||c.event||'')}" placeholder="e.g. Sunday Tombola night">
+    <label>Prizes</label><div id="pz-list">${prizes.map(prizeRow).join('')}</div>
+    <button type="button" class="btn sm ghost" id="pz-add">${ic('plus',14)} Add prize</button>
+    <div class="pz-2"><div><label>Blank cards</label><input id="pz-blanks" type="number" min="0" max="60" value="${+c.blanks||0}"></div>
+      <div><label>Prize on blank cards</label><input id="pz-blankprize" value="${E(c.blankPrize||'')}" placeholder="Empty = write by hand"></div></div>
+    <div class="pz-2"><div><label>Collect at</label><input id="pz-collect" value="${E(c.collect||'Entertainment desk')}"></div>
+      <div><label>Valid until</label><input id="pz-valid" value="${E(c.valid||'End of your stay')}"></div></div>
+    <div class="pz-2"><div><label>Signed by</label><input id="pz-signer" value="${E(c.signer||s.name||'')}"></div>
+      <div><label>Title</label><input id="pz-role" value="${E(c.role||'Entertainment Manager')}"></div></div>
+    <label>Card size</label><select id="pz-size"><option value="large">Large · 2 per A4 page</option><option value="small">Small · 4 per A4 page</option></select>
+    <label>Preview</label><div class="pz-prev"><iframe id="pz-frame" title="Prize card preview"></iframe></div>
+    <p class="mini" id="pz-count"></p>
+    <button class="btn" id="pz-print">${ic('download',16)} Print / PDF prize cards</button>
+    <button class="btn ghost" id="pz-close">Close</button>
+  </div>`);
+  const q=x=>w.querySelector(x);
+  q('#pz-game').value=fromStudio.game==='bingo'?'bingo':(c.game||'tombola');
+  q('#pz-size').value=c.size||'large';
+  const list=q('#pz-list');
+  function wireRows(){ list.querySelectorAll('.pz-rm').forEach(b=>b.onclick=()=>{ const rows=list.querySelectorAll('.pz-row'); if(rows.length>1) b.closest('.pz-row').remove(); else rows[0].querySelectorAll('input').forEach(i=>i.value=''); draw(); }); }
+  function draw(){
+    const o=read(w);
+    q('#pz-gamewrap').style.display=o.game==='other'?'block':'none';
+    const cards=allCards(o), n=cards.length;
+    q('#pz-count').textContent=n?(n+' card'+(n>1?'s':'')+' · '+Math.ceil(n/(o.size==='small'?4:2))+' A4 page'+(Math.ceil(n/(o.size==='small'?4:2))>1?'s':'')):'Add a prize or a blank card to print.';
+    const first=cards[0]||{prize:''};
+    const f=q('#pz-frame'), doc=f.contentDocument;
+    if(doc){ doc.open(); doc.write('<!doctype html><html><head><meta charset="utf-8"><style>'+css({...o,size:'large'})+' body{background:#fff;padding:0;margin:0}.sheet{width:194mm}</style></head><body><div class="sheet">'+cardHtml(o,first,0)+'</div></body></html>'); doc.close(); }
+    const box=q('.pz-prev'); const scale=Math.min(1,(box.clientWidth||320)/733);
+    f.style.transform='scale('+scale+')'; box.style.height=Math.round(514*scale+2)+'px';
+  }
+  q('#pz-add').onclick=()=>{ list.insertAdjacentHTML('beforeend',prizeRow({})); wireRows(); draw(); const r=list.lastElementChild; if(r) r.querySelector('.pz-prize').focus(); };
+  w.addEventListener('input',draw); w.addEventListener('change',draw);
+  wireRows(); draw(); setTimeout(draw,60);
+  q('#pz-close').onclick=()=>w.remove();
+  q('#pz-print').onclick=()=>{
+    const o=read(w);
+    /* remember the set-up and the prize names, not the winners */
+    put({...o,prizes:o.prizes.map(p=>({prize:p.prize}))});
+    printCards(o);
+  };
+}
+window.openPrizeMakerV701=open;
+window.AUREA_PRIZES_V701={open,printCards,cardHtml};
+
+/* entry inside the Ticket Studio */
+function addEntry(){
+  const m=document.querySelector('.tk655-modal');
+  if(!m || m.querySelector('#pz-entry')) return;
+  const head=m.querySelector('.tk655-head');
+  const html=`<button type="button" id="pz-entry" class="pz-entry">
+      <span class="pz-entry-t">Make prizes for the winners</span>
+      <span class="pz-entry-s">Prize cards for Tombola and Bingo winners, with space for your signature</span>
+    </button>`;
+  if(head) head.insertAdjacentHTML('afterend',html); else m.insertAdjacentHTML('afterbegin',html);
+  m.querySelector('#pz-entry').onclick=open;
+}
+new MutationObserver(()=>addEntry()).observe(document.body,{childList:true,subtree:true});
+
+const st=document.createElement('style'); st.id='pz-style';
+st.textContent=`.pz-entry{display:block;width:100%;text-align:left;margin:14px 0 6px;padding:14px 16px;border-radius:16px;border:1px solid var(--bronze);background:var(--card,#fff);color:var(--ink);cursor:pointer;box-shadow:inset 4px 0 0 var(--bronze)}
+.pz-entry-t{display:block;font-weight:700;font-size:15px}.pz-entry-s{display:block;margin-top:3px;font-size:12.5px;color:var(--muted)}
+.pz-modal h3{margin:0 0 4px}.pz-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pz-row{border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:8px;background:var(--card,#fff)}
+.pz-top{display:flex;gap:8px;align-items:center}.pz-top input{flex:1;margin:0}
+.pz-rm{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
+.pz-3{display:grid;grid-template-columns:2fr 1fr 1.2fr;gap:6px;margin-top:6px}.pz-3 input{margin:0;min-width:0}
+.pz-prev{position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#fff;margin-bottom:6px}
+.pz-prev iframe{position:absolute;left:0;top:0;width:733px;height:514px;border:0;transform-origin:0 0;pointer-events:none}`;
+document.head.appendChild(st);
+})();
 </script>
 
 <script id="aurea-cloud-guard">
