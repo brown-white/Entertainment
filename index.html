@@ -4285,6 +4285,10 @@ input,select,textarea{background:var(--theme-input-bg)!important;border-color:va
 
 
 <script id="aurea-app">
+/* boot fix 2026.09.25: these functions are defined later by update layers that assign them
+   without declaring them; in strict mode that throws and stopped the whole app from starting. */
+var listByCat,teamMemberList,guestTicketsView,openTicketBuyModal,activityStatus,managerTicketsInner,myBooking,ordersFor,myOrders,myRequestsList,accountName,guestForRoom,accountForRoom,guestActivities,guestRecord,guestFullInfo,unreadGuests,openExportModal,tonightCard,attentionCard,attentionItems,applySettings,loginView,dayPlanFor,dayIsCustom,attAuto;
+
 /* ===== core ===== */
 
 /* ================================================================
@@ -5021,37 +5025,19 @@ function demoNotes(){
 
 /* ---------------- data layer ---------------- */
 async function sb(path, opts={}){
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),15000);
-  const external=opts.signal;
-  const abort=()=>controller.abort();
-  if(external){if(external.aborted)abort();else external.addEventListener('abort',abort,{once:true});}
-  try{
-    const res=await fetch(CONFIG.SUPABASE_URL+"/rest/v1/"+path,{
-      ...opts,signal:controller.signal,
-      headers:{
-        "apikey":CONFIG.SUPABASE_ANON_KEY,
-        "Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
-        "Content-Type":"application/json",
-        "Prefer":opts.method==="POST"||opts.method==="PATCH"?"return=representation":"",
-        ...(opts.headers||{})
-      }
-    });
-    const body=await res.text();
-    if(!res.ok){
-      let detail={};try{detail=JSON.parse(body)||{};}catch(_){}
-      const error=new Error("Database request failed: "+path.split('?')[0]+" (HTTP "+res.status+")"+(detail.message?" — "+detail.message:""));
-      error.status=res.status;error.code=detail.code||'';error.table=path.split('?')[0];
-      throw error;
+  const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + path, {
+    ...opts,
+    headers:{
+      "apikey":CONFIG.SUPABASE_ANON_KEY,
+      "Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
+      "Content-Type":"application/json",
+      "Prefer": opts.method==="POST"||opts.method==="PATCH" ? "return=representation" : "",
+      ...(opts.headers||{})
     }
-    return __sbParse(body);
-  }catch(error){
-    if(error.name==='AbortError')throw new Error("Database request timed out after 15 seconds: "+path.split('?')[0]+". Please retry.");
-    throw error;
-  }finally{
-    clearTimeout(timeout);
-    if(external)external.removeEventListener('abort',abort);
-  }
+  });
+  if(!res.ok) throw new Error("Supabase "+res.status+" on "+path);
+  const txt = await res.text();
+  return __sbParse(txt);
 }
 /* Supabase normally returns the created row. If it ever returns nothing
    (blocked header, odd proxy, empty body), fall back to the row we sent so
@@ -5133,10 +5119,6 @@ function openPhotoViewer(urls, start){
     const pv=wrap.querySelector(".prev"); if(pv) pv.onclick=e=>{ e.stopPropagation(); i=(i-1+list.length)%list.length; draw(); };
     const nx=wrap.querySelector(".next"); if(nx) nx.onclick=e=>{ e.stopPropagation(); i=(i+1)%list.length; draw(); };
   };
-  function close(){
-    wrap.remove();
-    document.removeEventListener("keydown",onKey);
-  }
   function onKey(e){
     if(e.key==="Escape") close();
     if(e.key==="ArrowLeft"){ i=(i-1+list.length)%list.length; draw(); }
@@ -6078,18 +6060,10 @@ function render(){
   wireCommon();
 }
 function errorView(){
-  const error=S.loadError, message=error&&error.message?String(error.message):'The database could not be loaded.';
-  const status=error&&error.status,code=error&&error.code;
-  const hint=status===401||status===403
-    ? 'The database refused access. Check the project API configuration and the existing access policies.'
-    : code==='PGRST205'||code==='42P01'||code==='42703'||code==='PGRST204'
-    ? 'The database schema does not match this app. Check the table or column named below.'
-    : 'Check the connection and database availability, then retry. Your saved data has not been reset.';
   return `<div class="screen fadein" style="display:flex;flex-direction:column;justify-content:center">
-    <div class="empty" role="alert"><div class="big">${ic("globe",30)}</div>
-      <h2>The app could not finish loading</h2><p class="mini" style="margin-top:12px">${esc(hint)}</p>
-      <p style="margin-top:12px;overflow-wrap:anywhere">${esc(message)}</p>
-      <button class="btn" id="btn-retry" style="margin-top:18px">Retry</button>
+    <div class="empty"><div class="big">${ic("globe",30)}</div>
+      Could not reach the database.<br>Please check your internet connection.
+      <button class="btn" id="btn-retry" style="margin-top:18px">${ic("back",16)}</button>
     </div></div>`;
 }
 
@@ -12649,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.25-clean-v2";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.25-save-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -12975,7 +12949,6 @@ function startRealtime(){
   document.head.appendChild(sc);
 }
 (async function(){
-  initErrorGuard();
   restore();
   document.documentElement.setAttribute("data-theme",S.theme);
   document.documentElement.lang=S.lang;
@@ -12983,7 +12956,7 @@ function startRealtime(){
   try{ await DB.load(); }
   catch(e){
     console.error(e);
-    if(REMOTE){ S.loadError=e; applySettings(); render(); return; }
+    if(REMOTE){ S.loadError=true; applySettings(); render(); return; }
     S.activities=demoActivities(); S.bookings=demoBookings();
     S.users=DEMO_USERS.map(u=>({...u})); S.tickets=demoTickets(); S.orders=demoOrders();
     S.rooms=demoRooms(); S.accounts=demoAccounts(); S.messages=demoMessages();
@@ -13026,6 +12999,7 @@ function startRealtime(){
   initPhotoTaps();
   setTimeout(()=>loadWeather(false), 800);
   initConnectionWatch();
+  initErrorGuard();
   // ===== Activity alarms + live status dots =====
   // Check every 30s so a minute boundary is never missed; re-render keeps dots current.
   let __lastMin=-1;
@@ -13040,12 +13014,7 @@ function startRealtime(){
   setTimeout(alarmTick, 1500);                            // run shortly after load
   window.addEventListener("focus", alarmTick);            // catch phone waking up
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) alarmTick(); });
-})().catch(error=>{
-  console.error('App startup failed',error);
-  S.loadError=error;
-  const app=document.getElementById('app');
-  if(app){app.innerHTML=errorView();const retry=app.querySelector('#btn-retry');if(retry)retry.onclick=()=>location.reload();}
-});
+})();
 
 ;
 
@@ -13657,7 +13626,7 @@ function startRealtime(){
     if(['eBefore','eLive','eShow','eAfter','eParty'].includes(c)) return 'evening';
     return 'activity';
   }
-  window.listByCat=function(acts,opts){
+  window.listByCat=listByCat=function(acts,opts){
     acts=(acts||[]).filter(Boolean).slice().sort((a,b)=>v65Start(a)-v65Start(b)||String(a.name||'').localeCompare(String(b.name||'')));
     if(!acts.length) return `<div class="empty"><div class="big">${ic('pin',30)}</div>${t('noneToday')}</div>`;
     let out='<div class="timeline-program-v65">', last='';
@@ -14019,7 +13988,7 @@ function startRealtime(){
   }
 
   // Canonical team list: merges Team Profiles + Team Accounts even when titles/punctuation differ.
-  window.teamMemberList = function(){
+  teamMemberList = function(){
     const map=new Map();
     function add(name,photo,rank){
       const nm=String(name||'').trim(); if(!nm) return;
@@ -14110,14 +14079,14 @@ function startRealtime(){
     </div>`;
   }
 
-  window.guestTicketsView = function(){
+  guestTicketsView = function(){
     return `<div class="screen fadein g611 g611-tickets">${topBar(t('tickets'),'')}<div class="g611-ticket-intro">${esc(t('payNote'))}</div>${(S.tickets||[]).length?(S.tickets||[]).map(tk=>{
       const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null,soldOut=left!==null&&left<=0;
       return `<article class="g611-ticket-card"><img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy"><div class="g611-ticket-body"><div class="g611-eyebrow">${esc(t('tickets'))}</div><h4>${esc(tk.name)}</h4><div class="g611-ticket-meta"><span>${esc(t('days')[tk.day])}</span><span>${mi('clock')}${esc(tk.time)}</span><span>${mi('pin')}${esc(tk.location||'')}</span>${left!==null?`<span>${left} ${esc(t('seatsLeft'))}</span>`:''}</div><div class="g611-ticket-desc">${esc(tk.desc||'')}</div><div class="g611-ticket-foot"><span class="g611-ticket-price">${esc(tk.price||'')}</span>${soldOut?`<span class="chip full">${esc(t('soldOut'))}</span>`:`<button class="btn sm" data-buy="${tk.id}">${esc(t('buyTicket'))}</button>`}</div></div></article>`;
     }).join(''):emptyV611('ticket',t('ticketsNone'))}</div>`;
   };
 
-  window.openTicketBuyModal = function(tk){
+  openTicketBuyModal = function(tk){
     const sold=ticketsSold(tk.id), left=tk.capacity>0?Math.max(0,tk.capacity-sold):null, max=left!==null?Math.max(1,Math.min(10,left)):10;
     const team=teamMemberList(); let chosen='';
     const wrap=baseModal(`<div class="ticket-buy-modern"><div class="g611-eyebrow">${esc(t('tickets'))}</div><h3>${esc(tk.name)}</h3><p class="mini">${esc(t('days')[tk.day])} · ${mi('clock')}${esc(tk.time)} · ${mi('pin')}${esc(tk.location||'')}</p>${tk.desc?`<p style="margin:12px 0 6px">${esc(tk.desc)}</p>`:''}<p class="mini">${esc(t('payNote'))}</p><div class="row2" style="align-items:end;margin-top:12px"><div><label>${esc(t('qty'))}</label><input id="tq" type="number" min="1" max="${max}" value="1"></div><div style="text-align:end;font-family:var(--font-display);font-size:26px;color:var(--cacao);padding-bottom:10px">${esc(tk.price||'')}</div></div>${team.length?`<div class="ticket-collect-title"><label style="margin:0">${esc(t('collectFrom'))}</label><span class="mini">${team.length}</span></div><div class="memberrow">${team.map(m=>`<button type="button" class="memb" data-memb="${esc(m.name)}"><span class="mb-av">${m.photo?`<img src="${esc(m.photo)}" alt="">`:esc(m.name.trim().charAt(0).toUpperCase())}</span><span class="mb-nm">${esc(m.name)}</span></button>`).join('')}</div>`:''}<button class="btn" id="t-go">${esc(t('buyTicket'))}</button><div class="err" id="t-err"></div><button class="btn ghost" id="t-x">${esc(t('close'))}</button></div>`);
@@ -14153,7 +14122,7 @@ function startRealtime(){
   function cleanPersonNameV612(v){
     return String(v||'').toLowerCase().replace(/\b(mr|mrs|ms|miss|mister|madam|madame)\b\.?/g,' ').replace(/[^a-z0-9\u00c0-\u024f\u0600-\u06ff]+/g,' ').replace(/\s+/g,' ').trim();
   }
-  window.teamMemberList=function(){
+  teamMemberList=function(){
     /* Public team profiles are canonical. Accounts are fallback only. This prevents the same person appearing from two data sources. */
     const profiles=(S.profiles||[]).filter(p=>String(p.name||'').trim());
     const source=profiles.length?profiles.map(p=>({name:String(p.name||'').trim(),photo:p.photo||''})):(S.users||[]).filter(u=>u.role==='staff').map(u=>({name:String(u.display_name||u.username||'').trim(),photo:u.photo||''}));
@@ -14200,9 +14169,9 @@ function startRealtime(){
     return`<div class="screen fadein g612 g612-stay">${topBar(t('myStay'),g.name)}<div class="stay-passport"><div class="sig-kicker" style="color:#d9b88f;margin-bottom:14px">My holiday</div><div class="g612-profile"><div class="g612-avatar-wrap"><button class="g612-avatar" id="guest-photo-open" aria-label="Profile photo">${photo?`<img src="${esc(photo)}" alt="">`:esc(initial)}</button><button class="g612-photo-btn" id="guest-photo-edit" aria-label="Change photo">${ic('user',13)}</button></div><div><h2>${esc(g.name)}</h2><p>${esc(t('room'))} ${esc(g.room)}${g.nationality?' · '+esc(g.nationality):''}<br>${acc&&acc.arrival?esc(acc.arrival):'—'} → ${acc&&acc.departure?esc(acc.departure):'—'}</p></div></div><div class="g612-stay-grid"><div class="g612-stay-stat"><b>${p?p.dayNo:'—'}</b><span>Day</span></div><div class="g612-stay-stat"><b>${mine.length}</b><span>Activities</span></div><div class="g612-stay-stat"><b>${orders.reduce((n,o)=>n+(+o.qty||0),0)}</b><span>Tickets</span></div></div><div class="g612-stay-progress"><div class="bar"><span style="width:${pct}%"></span></div><div class="foot"><span>${p&&p.total?`Day ${p.dayNo} of ${p.total}`:'Your stay'}</span><span>${p&&p.left!=null?`${p.left} nights left`:''}</span></div></div></div><div class="g612-stay-tools"><button class="g612-tool" id="guest-photo-tool"><span class="tool-icon">${ic('user',17)}</span><b>${photo?'Change photo':'Add your photo'}</b><span>Personalize My Stay</span></button><button class="g612-tool" id="btn-chpass"><span class="tool-icon">${ic('key',17)}</span><b>${esc(t('changePass'))}</b><span>Account security</span></button></div><div class="g611-section-title"><h3>${esc(t('myBookings'))}</h3><span class="count">${mine.length}</span></div><div class="g612-res-list">${bookingRows||`<div class="g611-empty"><div class="g611-empty-ic">${ic('calendar',22)}</div>${esc(t('noBookings'))}</div>`}</div><div class="g611-section-title"><h3>${esc(t('myTickets'))}</h3><span class="count">${orders.length}</span></div><div class="g612-res-list">${orderRows||`<div class="g611-empty"><div class="g611-empty-ic">${ic('ticket',22)}</div>${esc(t('ticketsNone'))}</div>`}</div></div>`;
   }
 
-  window.guestTicketsView=function(){return`<div class="screen fadein g612 g612-tickets">${topBar(t('tickets'),'')}<div class="ticket-note"><span class="ico">${ic('ticket',15)}</span><span>${esc(t('payNote'))}</span></div>${(S.tickets||[]).length?(S.tickets||[]).map(tk=>{const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null,soldOut=left!==null&&left<=0;return`<article class="g612-ticket"><div class="visual"><img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy"><span class="price">${esc(tk.price||'')}</span><div class="title"><div class="sig-kicker" style="color:#f0cfaa">Ticket event</div><h4>${esc(tk.name)}</h4></div></div><div class="body"><div class="meta"><span>${esc(t('days')[tk.day]||'')}</span><span>${mi('clock')}${esc(tk.time||'')}</span><span>${mi('pin')}${esc(tk.location||'')}</span></div>${tk.desc?`<div class="desc">${esc(tk.desc)}</div>`:''}<div class="foot"><span class="availability">${left===null?'Available':soldOut?esc(t('soldOut')):`${left} ${esc(t('seatsLeft'))}`}</span>${soldOut?`<span class="chip full">${esc(t('soldOut'))}</span>`:`<button class="buy" data-buy="${tk.id}">${esc(t('buyTicket'))}</button>`}</div></div></article>`;}).join(''):`<div class="g611-empty">${esc(t('ticketsNone'))}</div>`}</div>`;};
+  guestTicketsView=function(){return`<div class="screen fadein g612 g612-tickets">${topBar(t('tickets'),'')}<div class="ticket-note"><span class="ico">${ic('ticket',15)}</span><span>${esc(t('payNote'))}</span></div>${(S.tickets||[]).length?(S.tickets||[]).map(tk=>{const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null,soldOut=left!==null&&left<=0;return`<article class="g612-ticket"><div class="visual"><img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy"><span class="price">${esc(tk.price||'')}</span><div class="title"><div class="sig-kicker" style="color:#f0cfaa">Ticket event</div><h4>${esc(tk.name)}</h4></div></div><div class="body"><div class="meta"><span>${esc(t('days')[tk.day]||'')}</span><span>${mi('clock')}${esc(tk.time||'')}</span><span>${mi('pin')}${esc(tk.location||'')}</span></div>${tk.desc?`<div class="desc">${esc(tk.desc)}</div>`:''}<div class="foot"><span class="availability">${left===null?'Available':soldOut?esc(t('soldOut')):`${left} ${esc(t('seatsLeft'))}`}</span>${soldOut?`<span class="chip full">${esc(t('soldOut'))}</span>`:`<button class="buy" data-buy="${tk.id}">${esc(t('buyTicket'))}</button>`}</div></div></article>`;}).join(''):`<div class="g611-empty">${esc(t('ticketsNone'))}</div>`}</div>`;};
 
-  window.openTicketBuyModal=function(tk){
+  openTicketBuyModal=function(tk){
     const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null,max=left!==null?Math.max(1,Math.min(10,left)):10,team=teamMemberList();let chosen='';
     const wrap=baseModal(`<div class="ticket-buy-v612"><div class="sig-kicker">Ticket reservation</div><h3>${esc(tk.name)}</h3><p class="mini">${esc(t('days')[tk.day]||'')} · ${mi('clock')}${esc(tk.time||'')} · ${mi('pin')}${esc(tk.location||'')}</p>${tk.desc?`<p style="margin:12px 0">${esc(tk.desc)}</p>`:''}<div class="row2" style="align-items:end"><div><label>${esc(t('qty'))}</label><input id="tq" type="number" min="1" max="${max}" value="1"></div><div style="text-align:right;padding-bottom:11px;font:600 25px/1 var(--font-display);color:var(--espresso)">${esc(tk.price||'')}</div></div>${team.length?`<label>${esc(t('collectFrom'))}</label><div class="collector-note">Choose one member of the entertainment team. Each person is shown once.</div><div class="memberrow">${team.map(m=>`<button type="button" class="memb" data-memb="${esc(m.name)}"><span class="mb-av">${m.photo?`<img src="${esc(m.photo)}" alt="">`:esc(m.name.charAt(0).toUpperCase())}</span><span class="mb-nm">${esc(m.name)}</span></button>`).join('')}</div>`:''}<button class="btn" id="t-go">${esc(t('buyTicket'))}</button><div class="err" id="t-err"></div><button class="btn ghost" id="t-x">${esc(t('close'))}</button></div>`);
     wrap.querySelector('#t-x').onclick=()=>wrap.remove();wrap.querySelectorAll('[data-memb]').forEach(b=>b.onclick=()=>{chosen=b.dataset.memb;wrap.querySelectorAll('.memb').forEach(x=>x.classList.toggle('on',x===b));wrap.querySelector('#t-err').textContent='';});wrap.querySelector('#t-go').onclick=async()=>{if(team.length&&!chosen){wrap.querySelector('#t-err').textContent=t('chooseMember');return;}const g=S.session,qty=Math.max(1,Math.min(max,+wrap.querySelector('#tq').value||1));await DB.addOrder({ticket_id:tk.id,room:g.room,guest_name:g.name,nationality:g.nationality||'',qty,status:'reserved',collect_from:chosen});wrap.remove();toast(t('ticketOk'));render();};
@@ -14416,7 +14385,7 @@ function startRealtime(){
   function c(k){const d=copy[S.lang]||copy.en;return d[k]||copy.en[k]||k;}
   function normPerson(v){return String(v||'').normalize('NFKD').toLowerCase().replace(/\b(mr|mrs|ms|miss|mister|madam|madame)\b\.?/g,' ').replace(/[^a-z0-9\u00c0-\u024f\u0600-\u06ff]+/g,' ').replace(/\s+/g,' ').trim();}
   function samePerson(a,b){const x=normPerson(a),y=normPerson(b);return !!x&&!!y&&x===y;}
-  window.teamMemberList=function(){
+  teamMemberList=function(){
     /* Only real active entertainer accounts are selectable, so every selection has an inbox/workday destination. Public profiles only enrich the photo. */
     const map=new Map();
     (S.users||[]).filter(u=>u.role==='staff'&&u.active!==false&&!(typeof isAttOnly==='function'&&isAttOnly(u))).forEach(u=>{
@@ -14432,7 +14401,7 @@ function startRealtime(){
     parts.forEach(part=>{const ts=[...part.matchAll(/(\d{1,2})[:.](\d{2})/g)].map(m=>(+m[1])*60+(+m[2]));if(!ts.length)return;const st=ts[0],en=ts[1]!=null?ts[1]:st+45;out.push({s0:st,e0:en<st?en+1440:en});});
     return out.sort((x,y)=>x.s0-y.s0);
   }
-  window.activityStatus=function(a,nowMin){const ws=activityWindowsV614(a);if(!ws.length)return'todo';const now=typeof nowMin==='number'?nowMin:nowMinutes();if(ws.some(w=>now>=w.s0&&now<w.e0))return'live';if(ws.some(w=>now<w.s0))return'todo';return'done';};
+  activityStatus=function(a,nowMin){const ws=activityWindowsV614(a);if(!ws.length)return'todo';const now=typeof nowMin==='number'?nowMin:nowMinutes();if(ws.some(w=>now>=w.s0&&now<w.e0))return'live';if(ws.some(w=>now<w.s0))return'todo';return'done';};
   function firstFutureStartV614(a,now){const ws=activityWindowsV614(a);const fut=ws.map(w=>w.s0).filter(x=>x>now);return fut.length?Math.min(...fut):null;}
   function firstStartV614(a){const ws=activityWindowsV614(a);return ws.length?ws[0].s0:9999;}
   function nextActivityAfter(a){
@@ -14469,13 +14438,13 @@ function startRealtime(){
 
   function ticketExplainV614(){return`<div class="v614-ticket-explain"><div class="top"><span class="ico">${ic('ticket',18)}</span><div><b>${esc(c('ticketLead'))}</b></div></div><p>${esc(c('ticketBody'))}</p><div class="v614-steps"><div class="v614-step"><strong>01</strong><span>${esc(c('s1'))}</span></div><div class="v614-step"><strong>02</strong><span>${esc(c('s2'))}</span></div><div class="v614-step"><strong>03</strong><span>${esc(c('s3'))}</span></div></div></div>`;}
 
-  window.guestTicketsView=function(){return`<div class="screen fadein g612 g612-tickets">${topBar(t('tickets'),'')}${ticketExplainV614()}${(S.tickets||[]).length?(S.tickets||[]).map(tk=>{const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null,soldOut=left!==null&&left<=0;return`<article class="g612-ticket"><div class="visual"><img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy"><span class="price">${esc(tk.price||'')}</span><div class="title"><div class="sig-kicker" style="color:#f0cfaa">${esc(t('tickets'))}</div><h4>${esc(tk.name)}</h4></div></div><div class="body"><div class="meta"><span>${esc(t('days')[tk.day]||'')}</span><span>${mi('clock')}${esc(tk.time||'')}</span><span>${mi('pin')}${esc(tk.location||'')}</span></div>${tk.desc?`<div class="desc">${esc(tk.desc)}</div>`:''}<div class="foot"><span class="availability">${left===null?'Available':soldOut?esc(t('soldOut')):`${left} ${esc(t('seatsLeft'))}`}</span>${soldOut?`<span class="chip full">${esc(t('soldOut'))}</span>`:`<button class="buy" data-buy="${tk.id}">${esc(t('buyTicket'))}</button>`}</div></div></article>`;}).join(''):`<div class="g611-empty">${esc(t('ticketsNone'))}</div>`}</div>`;};
+  guestTicketsView=function(){return`<div class="screen fadein g612 g612-tickets">${topBar(t('tickets'),'')}${ticketExplainV614()}${(S.tickets||[]).length?(S.tickets||[]).map(tk=>{const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null,soldOut=left!==null&&left<=0;return`<article class="g612-ticket"><div class="visual"><img src="${esc(tk.image||IMG.show)}" alt="" loading="lazy"><span class="price">${esc(tk.price||'')}</span><div class="title"><div class="sig-kicker" style="color:#f0cfaa">${esc(t('tickets'))}</div><h4>${esc(tk.name)}</h4></div></div><div class="body"><div class="meta"><span>${esc(t('days')[tk.day]||'')}</span><span>${mi('clock')}${esc(tk.time||'')}</span><span>${mi('pin')}${esc(tk.location||'')}</span></div>${tk.desc?`<div class="desc">${esc(tk.desc)}</div>`:''}<div class="foot"><span class="availability">${left===null?'Available':soldOut?esc(t('soldOut')):`${left} ${esc(t('seatsLeft'))}`}</span>${soldOut?`<span class="chip full">${esc(t('soldOut'))}</span>`:`<button class="buy" data-buy="${tk.id}">${esc(t('buyTicket'))}</button>`}</div></div></article>`;}).join(''):`<div class="g611-empty">${esc(t('ticketsNone'))}</div>`}</div>`;};
 
   function openTicketSuccessV614(tk,qty,chosen){
     const wrap=baseModal(`<div class="v614-ticket-success"><div class="ticket-big">${ic('ticket',27)}</div><h3>${esc(c('reservedTitle'))}</h3><p>${esc(c('reservedBody'))}</p><div class="assigned"><span>${esc(c('payTo'))}</span><b>${esc(chosen||'Entertainment Team')}</b><span>${esc(c('physical'))}</span></div><p>${esc(tk.name)} · ×${qty}${tk.price?` · ${esc(tk.price)}`:''}</p><button class="btn" id="v614-ts-ok">${esc(t('close'))}</button></div>`);wrap.querySelector('#v614-ts-ok').onclick=()=>wrap.remove();
   }
 
-  window.openTicketBuyModal=function(tk){
+  openTicketBuyModal=function(tk){
     const sold=ticketsSold(tk.id),left=tk.capacity>0?Math.max(0,tk.capacity-sold):null;
     if(left!==null&&left<=0){toastWarn(t('soldOut'));return;}
     const max=left!==null?Math.max(1,Math.min(10,left)):10,team=teamMemberList();let chosen='';
@@ -14503,7 +14472,7 @@ function startRealtime(){
   const __myWorkDayV613=myWorkDayView;
   myWorkDayView=function(){const html=__myWorkDayV613();if(!S.session||S.session.role!=='staff')return html;const pos=html.lastIndexOf('</div>');return pos<0?html:html.slice(0,pos)+staffTicketPanelV614()+html.slice(pos);};
 
-  window.managerTicketsInner=function(){
+  managerTicketsInner=function(){
     const all=(S.orders||[]),pending=all.filter(o=>o.status!=='paid').reduce((n,o)=>n+(+o.qty||0),0),paid=all.filter(o=>o.status==='paid').reduce((n,o)=>n+(+o.qty||0),0),total=all.reduce((n,o)=>n+(+o.qty||0),0);
     return`<div class="v614-manager-ticket-summary"><div><b>${total}</b><span>${esc(c('managerOrders'))}</span></div><div><b>${pending}</b><span>${esc(c('managerPending'))}</span></div><div><b>${paid}</b><span>${esc(c('managerPaid'))}</span></div></div><button class="btn" id="btn-addticket" style="margin:0 0 14px">＋ ${esc(t('addTicket'))}</button>${(S.tickets||[]).length?(S.tickets||[]).map(tk=>{const os=ordersFor(tk.id),sold=ticketsSold(tk.id);return`<div class="card"><div class="act" style="margin-bottom:${os.length?8:0}px"><img class="thumb" src="${esc(tk.image||IMG.show)}" alt=""><div class="mid"><span class="catbadge">${esc(t('days')[tk.day]||'')} · ${esc(tk.time||'')}</span><h4>${esc(tk.name)}</h4><div class="meta"><span>${esc(tk.price||'')}</span><span>${mi('ticket')}${sold}${tk.capacity>0?'/'+tk.capacity:''}</span></div></div><div class="side"><button class="btn sm ghost" data-tedit="${tk.id}">${ic('pen',15)}</button></div></div>${os.length?os.map(o=>`<div class="v614-mgr-order"><div class="who"><b>${esc(t('room'))} ${esc(o.room||'')} · ${esc(o.guest_name||'')} · ×${+o.qty||1}</b><span>${o.collect_from?`${esc(c('payTo'))} ${esc(o.collect_from)} · `:''}${esc(o.status==='paid'?c('paidHanded'):c('pending'))}</span></div><div class="actions"><button class="chip ${o.status==='paid'?'ok':'res'}" data-tpaid="${o.id}">${esc(o.status==='paid'?t('paid'):t('reserved'))}</button><button class="btn sm warn" data-tdel="${o.id}">${ic('close',14)}</button></div></div>`).join(''):`<p class="mini" style="margin:8px 0 0">${esc(t('none'))}</p>`}</div>`;}).join(''):`<div class="empty"><div class="big">${ic('ticket',30)}</div>${esc(t('ticketsNone'))}</div>`}
     <button class="btn ghost" id="tk655-open" data-ticket-studio-page="program-tickets" style="margin:14px 0 4px">${ic('download',16)} Ticket Production Studio</button>`;
@@ -14989,21 +14958,21 @@ staffView=function(){return withOperational619(()=>baseStaffView619());};
 
 const baseBookingsFor619=bookingsFor;
 bookingsFor=function(actId){return currentRows619(S.bookings).filter(b=>String(b.activity_id)===String(actId));};
-window.myBooking=function(actId){
+myBooking=function(actId){
   const a=guestAcc619();if(!a)return null;
   return (S.bookings||[]).find(b=>String(b.activity_id)===String(actId)&&rowBelongs619(b,a));
 };
-window.ordersFor=function(tkId){return currentRows619(S.orders).filter(o=>String(o.ticket_id)===String(tkId));};
-window.myOrders=function(){const a=guestAcc619();return a?(S.orders||[]).filter(o=>rowBelongs619(o,a)):[];};
-window.myRequestsList=function(){const a=guestAcc619();return a?(S.requests||[]).filter(r=>rowBelongs619(r,a)):[];};
-window.accountName=function(room){const a=currentAccountForRoom619(room)||accountFromChannel619(room);return a?a.name:visibleRoom619(room);};
-window.guestForRoom=function(room){return currentAccountForRoom619(room);};
-window.accountForRoom=function(room){return currentAccountForRoom619(room);};
-window.guestActivities=function(room){
+ordersFor=function(tkId){return currentRows619(S.orders).filter(o=>String(o.ticket_id)===String(tkId));};
+myOrders=function(){const a=guestAcc619();return a?(S.orders||[]).filter(o=>rowBelongs619(o,a)):[];};
+myRequestsList=function(){const a=guestAcc619();return a?(S.requests||[]).filter(r=>rowBelongs619(r,a)):[];};
+accountName=function(room){const a=currentAccountForRoom619(room)||accountFromChannel619(room);return a?a.name:visibleRoom619(room);};
+guestForRoom=function(room){return currentAccountForRoom619(room);};
+accountForRoom=function(room){return currentAccountForRoom619(room);};
+guestActivities=function(room){
   const a=currentAccountForRoom619(room);if(!a)return[];
   return (S.bookings||[]).filter(b=>rowBelongs619(b,a)).map(b=>{const x=S.activities.find(z=>z.id===b.activity_id);return x?x.name:null;}).filter(Boolean);
 };
-window.guestRecord=function(acc){
+guestRecord=function(acc){
   const bookings=(S.bookings||[]).filter(b=>rowBelongs619(b,acc)),actIds=bookings.map(b=>b.activity_id);
   const acts=(S.activities||[]).filter(a=>actIds.includes(a.id));
   const orders=(S.orders||[]).filter(o=>rowBelongs619(o,acc)),reqs=(S.requests||[]).filter(r=>rowBelongs619(r,acc));
@@ -15013,7 +14982,7 @@ window.guestRecord=function(acc){
   const favs=Object.keys(byCat).sort((x,y)=>byCat[y]-byCat[x]).slice(0,3),avg=fb.length?Math.round(fb.reduce((n,f)=>n+(+f.rate||0),0)/fb.length*10)/10:0;
   return{acc,bookings,acts,orders,reqs,fb,msgs,quiz,favs,avg,nights:guestStayNights(acc),daysApp:guestDaysInApp(acc)};
 };
-window.guestFullInfo=function(room){
+guestFullInfo=function(room){
   const acc=currentAccountForRoom619(room);if(!acc)return null;const r=guestRecord(acc);
   return{room:acc.room,name:acc.name,username:acc.username||acc.room,phone:acc.phone||'',nationality:acc.nationality||'',arrival:acc.arrival||'',departure:acc.departure||'',days:guestDaysHere(acc),activities:r.acts.map(a=>a.name),tickets:r.orders.reduce((n,o)=>n+(+o.qty||0),0),requests:r.reqs.length};
 };
@@ -15024,7 +14993,7 @@ unreadFor=function(role){
   }
   return oldUnreadFor619(role);
 };
-window.unreadGuests=function(){
+unreadGuests=function(){
   return currentRows619((S.messages||[]).filter(m=>!isStaffRoom(m.room))).filter(m=>m.sender==='guest'&&!m.read_by_team).length;
 };
 
@@ -15500,7 +15469,6 @@ function smartExportExcel620(sets,fname){
     XLSX.writeFile(wb,fname+".xlsx");
   })();
 }
-window.smartExportExcel620=smartExportExcel620;
 function openSmartExport620(){
   S.fbMonth="";S.fbDate="";
   const defaultPick=new Set(["todayplan","teamduty","program"]);
@@ -15524,7 +15492,7 @@ function openSmartExport620(){
   wrap.querySelector("#ex620-xlsx").onclick=async()=>{const sets=gather();if(!sets.length){toastWarn("Choose at least one export.");return;}try{await smartExportExcel620(sets,fname);toastOk(t("saved"));}catch(e){console.error("smart excel",e);toastErr(t("errSave"));}};
   wrap.querySelector("#ex620-pdf").onclick=()=>{const sets=gather();if(!sets.length){toastWarn("Choose at least one export.");return;}exportPdfSets(sets,((S.settings&&(S.settings.hotelName||S.settings.name))||"Hotel")+" — Smart operations export");wrap.remove();};
 }
-window.openExportModal=openSmartExport620;
+window.openExportModal=openExportModal=openSmartExport620;
 
 /* Weekly report now uses the same live-source engine, so it cannot disagree with the Export Center. */
 window.exportReport=exportReport=async function(){
@@ -15562,7 +15530,7 @@ function responsibleDisplayV621(a){
   return dj?(dj.display_name||dj.username||""):"—";
 }
 function typeV621(a){return normCat(a)==="mEvents"?"Event":"Show";}
-window.tonightCard=function(){
+window.tonightCard=tonightCard=function(){
   const list=todayRequirementItemsV621();
   if(!list.length)return"";
   return `<div class="sec"><h3>${ic("sparkle",18)} ${t("today")}</h3><div class="v621-today-list">${list.map(a=>{
@@ -16441,7 +16409,7 @@ function managerAttentionItems627(){
   return items.sort((a,b)=>a.rank-b.rank||a.title.localeCompare(b.title));
 }
 window.managerAttentionItemsV627=managerAttentionItems627;
-window.attentionItems=managerAttentionItems627;
+window.attentionItems=attentionItems=managerAttentionItems627;
 
 function actionCenter627(){
   const items=managerAttentionItems627();
@@ -16466,7 +16434,7 @@ function actionCenter627(){
     }).join("")}
   </section>`;
 }
-window.attentionCard=actionCenter627;
+window.attentionCard=attentionCard=actionCenter627;
 
 /* Navigation is resolved from a fresh data build, so indices never point at stale information. */
 const wireBefore627=window.wireCommon;
@@ -16830,7 +16798,7 @@ function applyTheme629(){
   const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',c.bg);
   document.title=st.name||'Entertainment';
 }
-window.applySettings=applyTheme629;
+window.applySettings=applySettings=applyTheme629;
 
 function field629(mode,k,label,val){
   return `<div class="ts629-color"><label>${esc(label)}</label><input type="color" data-ts629="${mode}.${k}" value="${esc(hex629(val,'#000000'))}"></div>`;
@@ -17707,8 +17675,6 @@ function boardItems635(day){
     return (am==null?9999:am)-(bm==null?9999:bm)||String(a.name||'').localeCompare(String(b.name||''));
   });
 }
-window.dateLabel635=dateLabel635;
-window.info635=info635;
 function info635(day){
   let identity='',theme='';
   try{
@@ -18233,7 +18199,7 @@ function loginView638(){
   </div></div>`;
 }
 window.loginView=loginView638;
-try{window.loginView=loginView638;}catch(e){}
+try{loginView=loginView638;}catch(e){}
 
 function vxCard638(a,event=false){
   const api=window.AUREA_PUBLIC_EXPLORE_V637||{};
@@ -18364,7 +18330,7 @@ function loginView639(){
   }
   return `<div class="login-wrap login638 fadein"><div class="login638-shell"><div class="login638-top"><div class="login638-brand"><div class="login638-mark">${logo}</div><div class="login638-brandtxt"><b>${esc(st.name||'Entertainment')}</b><span>${esc(st.subtitle||t('appSub'))}</span></div></div><button type="button" class="login638-teamtop" id="btn-guestlink">${ic('back',13)} ${t('backToGuest')}</button></div><section class="login638-copy"><div class="ey">${esc(tx.teamEyebrow)}</div><h1>${esc(tx.teamTitle)}</h1><p>${esc(tx.teamText)}</p></section>${languages}<div class="login638-tabs">${['staff','manager'].map(r=>`<button data-role="${r}" class="${loginRole===r?'on':''}">${t(r)}</button>`).join('')}</div><div class="login638-card"><label>${t('user')}</label><input id="f-user" autocapitalize="none" placeholder="${loginRole}"><label>${t('pass')}</label><input id="f-pass" type="password" placeholder="••••"><button class="btn" id="btn-login">${t('signin')}</button><div class="err" id="login-err"></div></div><button type="button" class="login638-explore" id="btn-public-explore"><span class="ico">${ic('sparkle',18)}</span><span class="txt"><b>${esc(tx.exploreCtaTitle)}</b><small>${esc(tx.exploreCtaText)}</small></span><span class="go">${ic('back',17)}</span></button></div></div>`;
 }
-window.loginView=loginView639;try{window.loginView=loginView639;}catch(e){}
+window.loginView=loginView639;try{loginView=loginView639;}catch(e){}
 
 /* Override login wiring only to remember whether the visitor deliberately left Explore. */
 const wireLoginBefore639=window.wireLogin||wireLogin;
@@ -18473,7 +18439,7 @@ function loginView640(){
   const desc=guestMode==='new'?(tx.firstText||'Create your private guest account for this stay.'):(tx.signinText||'Sign in to your private stay.');
   return `<div class="login-wrap login638 fadein"><div class="login638-shell"><div class="login638-top"><div class="login638-brand"><div class="login638-mark">${logo}</div><div class="login638-brandtxt"><b>${esc(st.name||'Entertainment')}</b><span>${esc(st.subtitle||t('appSub'))}</span></div></div><button type="button" class="login638-teamtop" id="btn-teamlink">${ic('users',14)} ${t('otherUsers')}</button></div><section class="login638-copy"><div class="ey">${esc(ey)}</div><h1>${esc(title)}</h1><p>${esc(desc)}</p></section>${languages}<div class="login638-tabs"><button data-gmode="signin" class="${guestMode==='signin'?'on':''}">${t('signin')}</button><button data-gmode="new" class="${guestMode==='new'?'on':''}">${t('firstVisit')}</button></div><div class="login638-card">${fields}${guestMode==='signin'?`<button class="btn" id="btn-login">${t('signin')}</button>`:''}<div class="err" id="login-err"></div>${!REMOTE?`<p class="hint">${t('demoNote')}</p>`:''}</div><button type="button" class="login638-explore" id="btn-public-explore"><span class="ico">${ic('sparkle',18)}</span><span class="txt"><b>${esc(tx.exploreCtaTitle||'Explore the entertainment')}</b><small>${esc(tx.exploreCtaText||'No account needed')}</small></span><span class="go">${ic('back',17)}</span></button><div class="login638-trust">Your stay is private. A room number only works when it exists in the active hotel room list.</div></div></div>`;
 }
-window.loginView640=loginView640;window.loginView=loginView640;try{window.loginView=loginView640}catch(e){}
+window.loginView640=loginView640;window.loginView=loginView640;try{loginView=loginView640}catch(e){}
 
 window.wireLogin=wireLogin=function(){
   wireLoginBefore640();
@@ -19747,8 +19713,6 @@ window.gl666Excel=async type=>{let d=data(type),dep=type==='departure';try{if(ty
 
 (()=>{'use strict';
 if(window.__AUREA_PROGRAM_V667)return;window.__AUREA_PROGRAM_V667=true;
-const q=(selector,root=document)=>root.querySelector(selector);
-const qa=(selector,root=document)=>Array.from(root.querySelectorAll(selector));
 const esc667=x=>String(x??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
 const customCats667=()=>Array.isArray(S.settings&&S.settings.programCustomCategories)?S.settings.programCustomCategories:[];
 const baseName667=c=>({mAdult:'Activity',mEvents:'Event',eLive:'Live Music',eShow:'Show',eParty:'Party / Special',eBefore:'Live Music',eAfter:'Live Music',eKidsStage:'Show'}[c]||catLabel(c));
@@ -19816,8 +19780,6 @@ window.AUREA_PROGRAM_REPAIR_V668={version:'6.68',printEngine:'V6.67',categoryMan
 
 (()=>{'use strict';
 if(window.__AUREA_ACTIVITY_CATEGORIES_V674)return;window.__AUREA_ACTIVITY_CATEGORIES_V674=1;
-const q=(selector,root=document)=>root.querySelector(selector);
-const qa=(selector,root=document)=>Array.from(root.querySelectorAll(selector));
 const ICONS=['🎯','🏆','🧘','💃','🎵','🧠','🗣️','🎨','🏖️','💪','🎲','♟️','🏐','⚽','🌿','✨'];
 const E=v=>String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c));
 const norm=x=>({id:String(x?.id||('ac_'+Date.now())),name:String(x?.name||'').trim(),icon:String(x?.icon||''),base:'mAdult'});
@@ -19862,19 +19824,17 @@ function localRead(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');ret
 function clean(list){const seen=new Set();return (list||[]).map(norm).filter(x=>x.name&&!seen.has(x.name.toLowerCase())&&seen.add(x.name.toLowerCase()))}
 function list(){const settings=Array.isArray(S.settings?.programCustomCategories)?S.settings.programCustomCategories:[];const a=clean(settings);return a.length?a:clean(localRead())}
 function commitLocal(a){a=clean(a);try{localStorage.setItem(KEY,JSON.stringify(a))}catch(_){}S.settings={...(S.settings||{}),programCustomCategories:a};return a}
-async function commit(a){a=commitLocal(a);try{await DB.saveSettings(S.settings);return true}catch(err){console.warn('V6.75 cloud category save failed; local copy kept',err);return false}}
-function categorySaved675(synced,message){if(synced)toastOk(message);else toastWarn(message+' on this device only. Cloud save failed.');}
-async function saveLinkedCategories675(changed){for(const activity of changed)await DB.saveActivity(activity);}
+async function commit(a){a=commitLocal(a);try{await DB.saveSettings(S.settings)}catch(err){console.warn('V6.75 cloud category save failed; local copy kept',err)}return a}
 const catOf=a=>String(a?.customCategory||'').trim();
 const iconOf=n=>list().find(x=>x.name.toLowerCase()===String(n).toLowerCase())?.icon||'';
 const ICONS=['🎯','🏆','🧘','💃','🎵','🧠','🗣️','🎨','🏖️','💪','🎲','♟️','🏐','⚽','🌿','✨'];
 function manager(onDone){let data=list().map(x=>({...x})),chosen='';const w=baseModal(`<div class="v674-manager"><h3>Activity categories</h3><p class="mini">Guest-friendly categories for Activities only. Activity / Event / Show / Before Show / After Show / Special Event remain unchanged.</p><label>Category name</label><div class="name-row"><input id="v675-name" autocomplete="off" placeholder="e.g. Chilling & Relaxing"><button type="button" class="btn" id="v675-add">+ Add</button></div><label style="margin-top:12px">Icon <span class="mini">(optional)</span></label><div class="v674-icons"><button type="button" class="noicon on" data-v675-icon="">No icon</button>${ICONS.map(i=>`<button type="button" data-v675-icon="${E(i)}">${E(i)}</button>`).join('')}</div><div id="v675-list" class="v674-list"></div><div class="v675-save-note">Categories save immediately when you add, rename or delete them.</div><button type="button" class="btn ghost" id="v675-close">Close</button></div>`);
  const paint=()=>{const h=w.querySelector('#v675-list');if(!h)return;h.innerHTML=data.length?data.map((c,i)=>`<div class="v674-row"><span class="ico">${c.icon?E(c.icon):'—'}</span><span><b>${E(c.name)}</b><small>${c.icon?'With icon':'Without icon'}</small></span><span class="v674-actions"><button type="button" data-v675-ren="${i}">Rename</button><button type="button" data-v675-del="${i}">Delete</button></span></div>`).join(''):'<p class="mini">No categories yet.</p>'};
  w.addEventListener('click',async ev=>{const ib=ev.target.closest?.('[data-v675-icon]');if(ib){ev.preventDefault();chosen=ib.dataset.v675Icon||'';w.querySelectorAll('[data-v675-icon]').forEach(x=>x.classList.toggle('on',x===ib));return}
- const rb=ev.target.closest?.('[data-v675-ren]');if(rb){ev.preventDefault();const i=+rb.dataset.v675Ren,old=data[i]?.name,n=prompt('Category name',old||'');if(!n||!n.trim())return;const name=n.trim();if(data.some((x,j)=>j!==i&&x.name.toLowerCase()===name.toLowerCase()))return toastErr('This category already exists.');const next=data.map((c,j)=>j===i?{...c,name}:c),changed=(S.activities||[]).filter(a=>String(a.category||'mAdult')==='mAdult'&&catOf(a).toLowerCase()===String(old).toLowerCase()).map(a=>({...a,customCategory:name}));try{await saveLinkedCategories675(changed);const synced=await commit(next);data=next;paint();onDone?.();categorySaved675(synced,'Category renamed')}catch(err){console.error('Category rename persistence failed',err);toastErr('Could not save all linked activities. Retry the category change.')}return}
- const db=ev.target.closest?.('[data-v675-del]');if(db){ev.preventDefault();const i=+db.dataset.v675Del,old=data[i]?.name;if(!await confirmAction({question:'Delete this activity category? Activities using it will return to no activity category.',danger:true}))return;const next=data.filter((_,j)=>j!==i),changed=(S.activities||[]).filter(a=>String(a.category||'mAdult')==='mAdult'&&catOf(a).toLowerCase()===String(old).toLowerCase()).map(a=>({...a,customCategory:''}));try{await saveLinkedCategories675(changed);const synced=await commit(next);data=next;paint();onDone?.();categorySaved675(synced,'Category deleted')}catch(err){console.error('Category removal persistence failed',err);toastErr('Could not save all linked activities. Retry the category change.')}return}});
+ const rb=ev.target.closest?.('[data-v675-ren]');if(rb){ev.preventDefault();const i=+rb.dataset.v675Ren,old=data[i]?.name,n=prompt('Category name',old||'');if(!n||!n.trim())return;const name=n.trim();if(data.some((x,j)=>j!==i&&x.name.toLowerCase()===name.toLowerCase()))return toastErr('This category already exists.');data[i].name=name;(S.activities||[]).forEach(a=>{if(String(a.category||'mAdult')==='mAdult'&&catOf(a).toLowerCase()===String(old).toLowerCase())a.customCategory=name});await commit(data);paint();onDone?.();toastOk('Category renamed');return}
+ const db=ev.target.closest?.('[data-v675-del]');if(db){ev.preventDefault();const i=+db.dataset.v675Del,old=data[i]?.name;if(!await confirmAction({question:'Delete this activity category? Activities using it will return to no activity category.',danger:true}))return;data.splice(i,1);(S.activities||[]).forEach(a=>{if(String(a.category||'mAdult')==='mAdult'&&catOf(a).toLowerCase()===String(old).toLowerCase())a.customCategory=''});await commit(data);paint();onDone?.();toastOk('Category deleted');return}});
  const add=w.querySelector('#v675-add'),input=w.querySelector('#v675-name');
- const doAdd=async()=>{const name=String(input?.value||'').trim();if(!name)return toastErr('Enter a category name.');if(data.some(x=>x.name.toLowerCase()===name.toLowerCase()))return toastErr('This category already exists.');data.push({id:'ac_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name,icon:chosen,base:'mAdult'});const synced=await commit(data);if(input)input.value='';paint();onDone?.();categorySaved675(synced,'Category added')};
+ const doAdd=async()=>{const name=String(input?.value||'').trim();if(!name)return toastErr('Enter a category name.');if(data.some(x=>x.name.toLowerCase()===name.toLowerCase()))return toastErr('This category already exists.');data.push({id:'ac_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name,icon:chosen,base:'mAdult'});await commit(data);if(input)input.value='';paint();onDone?.();toastOk('Category added')};
  if(add)add.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();doAdd()});
  if(input)input.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();doAdd()}});
  w.querySelector('#v675-close').onclick=()=>w.remove();paint();return w}
@@ -20522,12 +20482,6 @@ const HIST697='dayOffHistoryV697';
 const START697='dayOffHistoryStartV697';
 let cloud697=null;
 let cloudLoad697=null;
-let dayPlanWrites697=Promise.resolve();
-function queueDayPlan697(operation){
-  const result=dayPlanWrites697.then(operation,operation);
-  dayPlanWrites697=result.catch(()=>{});
-  return result;
-}
 
 function cp697(v){try{return JSON.parse(JSON.stringify(v??{}))}catch(_){return{}}}
 function iso697(v){v=String(v||'').slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(v)?v:''}
@@ -20546,7 +20500,7 @@ function ovs697(v){
 }
 function readLocal697(){try{const x=JSON.parse(localStorage.getItem(LOCAL697)||'null');return x&&typeof x==='object'&&x.overrides?x:null}catch(_){return null}}
 function writeLocal697(r){
-  const x={version:'6.97',revision:Math.max(0,Number(r.revision)||0),pending:!!r.pending,overrides:ovs697(r.overrides),history:Array.isArray(r.history)?cp697(r.history):[],historyStart:iso697(r.historyStart)||today697(),updatedAt:new Date().toISOString()};
+  const x={version:'6.97',revision:+r.revision||Date.now(),pending:!!r.pending,overrides:ovs697(r.overrides),history:Array.isArray(r.history)?cp697(r.history):[],historyStart:iso697(r.historyStart)||today697(),updatedAt:new Date().toISOString()};
   try{localStorage.setItem(LOCAL697,JSON.stringify(x))}catch(e){console.warn('Day Plan local backup unavailable',e)} return x;
 }
 function record697(v){
@@ -20573,7 +20527,7 @@ migrateLocal697();
 
 function newest697(){
   const a=record697(readLocal697()||{}),b=record697(cloud697||{}),c=settingsSeed697();
-  let best=c; for(const x of [b,a])if((+x.revision||0)>0&&(+x.revision||0)>=(+best.revision||0))best=x;
+  let best=c; for(const x of [a,b])if((+x.revision||0)>(+best.revision||0))best=x;
   return record697(best);
 }
 function mirrorMemory697(r){
@@ -20588,20 +20542,20 @@ function nextRev697(){const r=newest697();return Math.max(Date.now(),(+r.revisio
 function planForDate697(day,date){
   const d=iso697(date),b=base697(day),r=newest697();if(!d)return dayPlanFor(day);
   const h=(r.history||[]).filter(x=>+x.day===+day&&iso697(x.effectiveFrom)&&iso697(x.effectiveFrom)<=d).sort((a,b)=>iso697(b.effectiveFrom).localeCompare(iso697(a.effectiveFrom)))[0];
-  if(h)return {...b,off:off697(h.off),entrance:typeof h.entrance==='number'?h.entrance:(h.entrance===null?null:b.entrance),custom:true,effectiveFrom:h.effectiveFrom};
+  if(h)return {...b,off:off697(h.off),entrance:typeof h.entrance==='number'?h.entrance:b.entrance,custom:true,effectiveFrom:h.effectiveFrom};
   if(d<(r.historyStart||today697()))return b;
   const ov=r.overrides[String(day)];return ov?{...b,...entry697(day,ov),custom:true}:b;
 }
 window.dayPlanForDateV697=planForDate697;
 
-window.dayPlanFor=function(day){const r=newest697(),b=base697(day),ov=r.overrides[String(day)];return ov?{...b,...entry697(day,ov),custom:true}:b};
+dayPlanFor=function(day){const r=newest697(),b=base697(day),ov=r.overrides[String(day)];return ov?{...b,...entry697(day,ov),custom:true}:b};
 window.dayPlanFor=dayPlanFor;
-window.dayIsCustom=function(day){return Object.prototype.hasOwnProperty.call(newest697().overrides,String(day))};window.dayIsCustom=dayIsCustom;
+dayIsCustom=function(day){return Object.prototype.hasOwnProperty.call(newest697().overrides,String(day))};window.dayIsCustom=dayIsCustom;
 
-window.attAuto=function(user,mk,day){
+attAuto=function(user,mk,day){
   if(notYetHired(user,mk,day)||leftBefore(user,mk,day))return 'N'; if(isAttOnly(user))return 'P';
   let n=user.number;if(!n&&user.role==='manager')n=1;if(!n)return 'P';
-  const ds=dateStr(mk,day),wd=weekdayOf(mk,day),dp=planForDate697(wd,ds);return dp.off.includes(+n)?'O':'P';
+  const ds=dateStr(mk,day),wd=weekdayOf(mk,day),dp=planForDate697(wd,ds);return dp.off.includes(n)?'O':'P';
 };
 
 function history697(r,day,next,offChanged){
@@ -20658,7 +20612,7 @@ async function loadCloud697(){
       /* First V6.97 load: seed dedicated row from the best existing Day Plan. */
       const seed=hydrate697();
       if(seed.revision||Object.keys(seed.overrides).length){
-        const r={...seed,revision:seed.revision||nextRev697(),pending:true};writeLocal697(r);const verified=await saveDedicated697(r);cloud697={...r,pending:!verified};writeLocal697(cloud697);mirrorMemory697(cloud697);
+        const r={...seed,revision:seed.revision||nextRev697(),pending:true};writeLocal697(r);await saveDedicated697(r);cloud697={...r,pending:false};writeLocal697(cloud697);mirrorMemory697(cloud697);
       }
       return newest697();
     }catch(e){console.warn('Day Plan dedicated load pending',e);return hydrate697()}
@@ -20676,12 +20630,12 @@ window.reconcileDayPlanRealtimeV697=function(incoming){
   return {...incoming,dayOverrides:ovs697(r.overrides),[REV697]:+r.revision,[HIST697]:cp697(r.history||[]),[START697]:r.historyStart||today697()};
 };
 
-async function saveDayPlanPatchNow697(day,patch){
+window.saveDayPlanPatchV697=async function(day,patch){
   day=+day;if(!(day>=0&&day<=6))throw new Error('Invalid weekday');
   await loadCloud697();
   const r=newest697(),b=base697(day),cur=Object.prototype.hasOwnProperty.call(r.overrides,String(day))?entry697(day,r.overrides[String(day)]):{off:b.off.slice(),entrance:b.entrance};
   const next={off:Object.prototype.hasOwnProperty.call(patch||{},'off')?off697(patch.off):cur.off.slice(),entrance:Object.prototype.hasOwnProperty.call(patch||{},'entrance')?(typeof patch.entrance==='number'?+patch.entrance:null):cur.entrance};
-  const offChanged=JSON.stringify(next.off)!==JSON.stringify(cur.off)||next.entrance!==cur.entrance,all=ovs697(r.overrides),standard=JSON.stringify(next.off)===JSON.stringify(b.off)&&next.entrance===b.entrance;
+  const offChanged=JSON.stringify(next.off)!==JSON.stringify(cur.off),all=ovs697(r.overrides),standard=JSON.stringify(next.off)===JSON.stringify(b.off)&&next.entrance===b.entrance;
   if(standard)delete all[String(day)];else all[String(day)]=next;
   const rec={version:'6.97',revision:nextRev697(),pending:true,overrides:all,history:history697(r,day,next,offChanged),historyStart:r.historyStart||today697()};
 
@@ -20699,16 +20653,12 @@ async function saveDayPlanPatchNow697(day,patch){
   if(JSON.stringify(actual.off)!==JSON.stringify(next.off)||actual.entrance!==next.entrance)throw new Error('Day Plan local verification failed');
 
   /* Keep assignments consistent with the newly saved duty plan. */
-  try{const planner=window.AUREA_SMART_ASSIGNMENT_V622;if(planner&&typeof planner.repairDay==='function')await planner.repairDay(day)}catch(e){console.warn('Assignment repair after Day Plan save',e)}
+  try{if(typeof repairDay622==='function')await repairDay622(day)}catch(e){console.warn('Assignment repair after Day Plan save',e)}
   if(!dedicated)setTimeout(sync697,1200);
   return {saved:true,serverVerified,dedicatedVerified:dedicated,mirrorVerified:mirror,revision:rec.revision,off:actual.off.slice(),entrance:actual.entrance};
 };
 
-window.saveDayPlanPatchV697=function(day,patch){
-  return queueDayPlan697(()=>saveDayPlanPatchNow697(day,cp697(patch)));
-};
-function sync697(){return queueDayPlan697(syncDayPlanNow697);}
-async function syncDayPlanNow697(){
+async function sync697(){
   const r=newest697();if(!r.pending)return true;
   try{
     const ok=await saveDedicated697(r);if(!ok)return false;
@@ -20724,7 +20674,7 @@ window.syncDayPlanV697=sync697;
 const saveSettingsBase697=DB.saveSettings.bind(DB);
 DB.saveSettings=async function(next){
   next=next||{};await loadCloud697();const r=newest697();
-  if(next.dayOverrides!==undefined&&(!Object.prototype.hasOwnProperty.call(next,REV697)||(+next[REV697]||0)>=(+r.revision||0))){
+  if(next.dayOverrides!==undefined){
     const inc=ovs697(next.dayOverrides||{}),cur=ovs697(r.overrides),keys=new Set([...Object.keys(inc),...Object.keys(cur)]);
     for(const k of keys){
       const d=+k,a=Object.prototype.hasOwnProperty.call(cur,k)?entry697(d,cur[k]):entry697(d,base697(d)),b=Object.prototype.hasOwnProperty.call(inc,k)?entry697(d,inc[k]):entry697(d,base697(d));
@@ -20745,6 +20695,178 @@ window.addEventListener('online',()=>{loadCloud697();sync697()});
 window.AUREA_DAY_PLAN_V697={version:'6.97',row:ROW697,savePatch:window.saveDayPlanPatchV697,dayPlanFor,dayPlanForDate:planForDate697,load:loadCloud697,sync:sync697,local:readLocal697};
 })();
 
+</script>
+
+<script id="aurea-cloud-guard">
+/* ===== V7.0 CLOUD SAVE GUARD (2026-09-25) =====
+   1. A change the database refuses is never silent any more: a clear bar says
+      "not saved" instead of the app pretending it worked.
+   2. Everything the update layers kept ONLY on one phone (guest arrivals and
+      departures, ticket studio, bingo, categories, payroll, performance
+      control, live scores, guest photos…) is now copied to Supabase
+      (app_settings row 3) and pulled onto every other phone.
+   3. On start the app proves it can write to the database (row 99) and
+      tells the manager plainly if it cannot. */
+(function(){
+'use strict';
+if(window.__AUREA_GUARD_V70) return; window.__AUREA_GUARD_V70=true;
+if(typeof REMOTE==='undefined' || !REMOTE) return;
+
+/* ---------- 1. never a silent failed save ---------- */
+const WRITE=/^(POST|PATCH|DELETE|PUT)$/i;
+let failInfo=null;
+function bar(){
+  let el=document.getElementById('cg-bar');
+  if(!failInfo){ if(el) el.remove(); return; }
+  const s=(typeof S!=="undefined"&&S.session); if(!s || s.role==='guest'){ if(el) el.remove(); return; }
+  if(!el){
+    el=document.createElement('div'); el.id='cg-bar';
+    el.style.cssText='position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:99999;background:#B0392B;color:#fff;border-radius:14px;padding:11px 14px;font:600 13.5px/1.35 Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center';
+    document.body.appendChild(el);
+  }
+  el.innerHTML='<span style="flex:1">Not saved to the database — this change is only on this phone.</span>'+
+    '<button id="cg-more" style="background:#fff;color:#B0392B;border:0;border-radius:99px;padding:6px 12px;font:700 12.5px Inter,system-ui,sans-serif">Why?</button>';
+  el.querySelector('#cg-more').onclick=()=>alert(
+    'The database refused to save.\n\n'+
+    'Reason: '+failInfo+'\n\n'+
+    'Fix (one time): open Supabase → SQL Editor → paste the file fix-saving.sql → Run. '+
+    'Then refresh the app. Your changes on this phone will upload by themselves.');
+}
+function markFail(path,why){ failInfo=why+' ('+String(path).split('?')[0]+')'; bar(); }
+function markOk(){ if(failInfo){ failInfo=null; bar(); } }
+window.cloudGuardStatusV70=()=>failInfo;
+
+const sbBase=sb;
+sb=async function(path,opts){
+  opts=opts||{};
+  const m=String(opts.method||'GET').toUpperCase();
+  if(!WRITE.test(m)) return sbBase(path,opts);
+  let r;
+  try{ r=await sbBase(path,opts); }
+  catch(e){
+    const msg=String(e&&e.message||e);
+    if(/Failed to fetch|NetworkError|Load failed/i.test(msg)) markFail(path,'no internet connection');
+    else markFail(path,msg.replace(/^Supabase /,'database said '));
+    throw e;
+  }
+  /* PATCH that changed NOTHING = the database silently refused (row security). */
+  const p=String(path);
+  if(m==='PATCH' && /(^|[?&])id=eq\./.test(p) && !/^app_settings/.test(p) && Array.isArray(r) && r.length===0){
+    markFail(path,'the database blocked the update');
+    throw new Error('Supabase blocked update on '+p);
+  }
+  markOk();
+  return r;
+};
+window.sb=sb;
+
+/* ---------- 2. phone-only data → shared cloud copy ---------- */
+const ROW=3, META='aurea_cloudsync_meta_v70', MAX=400000;
+const ALLOW=/^(aurea[._]|entapp_)/;
+const DENY=/^(entapp_v3|entapp_lang|entapp_settings_v626|aurea_day_plan_v69\d|aurea_cloudsync_meta_v70|entapp_performance_selected_month_v648)$/;
+const synced=k=>ALLOW.test(k)&&!DENY.test(k);
+const P=Storage.prototype, oSet=P.setItem, oRem=P.removeItem, oGet=P.getItem;
+let ls=null; try{ ls=window.localStorage; }catch(_){}
+if(!ls) return;
+const meta=()=>{ try{ return JSON.parse(oGet.call(ls,META)||'{}')||{}; }catch(_){ return {}; } };
+const setMeta=x=>{ try{ oSet.call(ls,META,JSON.stringify(x)); }catch(_){} };
+const dirty=new Set(); let tmr=null, busy=false;
+function schedule(ms){ clearTimeout(tmr); tmr=setTimeout(push, ms==null?700:ms); }
+P.setItem=function(k,v){
+  oSet.call(this,k,v);
+  if(this===ls){ k=String(k); if(synced(k)){ const x=meta(); x[k]=Date.now(); setMeta(x); dirty.add(k); schedule(); } }
+};
+P.removeItem=function(k){
+  oRem.call(this,k);
+  if(this===ls){ k=String(k); if(synced(k)){ const x=meta(); x[k]=Date.now(); setMeta(x); dirty.add(k); schedule(); } }
+};
+async function fetchRow(){
+  const rows=await sbBase('app_settings?select=id,data&id=eq.'+ROW);
+  return rows&&rows[0]?rows[0]:null;
+}
+async function writeRow(data){
+  let r=null;
+  try{ r=await sbBase('app_settings?id=eq.'+ROW,{method:'PATCH',body:JSON.stringify({data})}); }catch(_){}
+  if(!(r&&r.length)) r=await sb('app_settings?on_conflict=id',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify({id:ROW,data})});
+  return r;
+}
+async function push(){
+  if(busy){ schedule(1500); return; }
+  if(!dirty.size) return;
+  busy=true; const keys=[...dirty]; dirty.clear();
+  try{
+    const row=await fetchRow();
+    const data=(row&&row.data&&row.data.keys)?row.data:{keys:{}};
+    const x=meta(); let any=false;
+    for(const k of keys){
+      const lt=+x[k]||Date.now(), c=data.keys[k];
+      if(c && +c.t>lt) continue;                       // another phone is newer
+      const v=oGet.call(ls,k);
+      if(v!=null && v.length>MAX) continue;            // too big to share
+      data.keys[k]=(v==null)?{t:lt,del:true}:{t:lt,v:v}; any=true;
+    }
+    if(any){ data.updatedAt=new Date().toISOString(); await writeRow(data); markOk(); }
+  }catch(e){
+    keys.forEach(k=>dirty.add(k));
+    markFail('app_settings','shared data could not be uploaded');
+    schedule(15000);
+  }finally{ busy=false; }
+}
+async function pull(){
+  let row; try{ row=await fetchRow(); }catch(_){ return false; }
+  const keys=(row&&row.data&&row.data.keys)||{};
+  const x=meta(); let changed=false;
+  for(const k in keys){
+    if(!synced(k) || dirty.has(k)) continue;
+    const c=keys[k]||{}, lt=+x[k]||0;
+    if(+c.t>lt){
+      try{ if(c.del) oRem.call(ls,k); else if(typeof c.v==='string') oSet.call(ls,k,c.v); }catch(_){ continue; }
+      x[k]=+c.t; changed=true;
+    }
+  }
+  /* anything this phone has that the cloud has never seen → upload it */
+  for(let i=0;i<ls.length;i++){
+    const k=ls.key(i); if(!k || !synced(k)) continue;
+    if(!keys[k]){ if(!x[k]) x[k]=Date.now(); dirty.add(k); }
+  }
+  setMeta(x);
+  if(dirty.size) schedule(300);
+  return changed;
+}
+async function cycle(){
+  if(document.hidden) return;
+  const changed=await pull();
+  if(changed && (typeof S!=="undefined") && S.session && typeof render==='function'){
+    try{ if(typeof safeToRender!=='function' || safeToRender()) render(); }catch(_){}
+  }
+}
+window.cloudSyncNowV70=async()=>{ await cycle(); await push(); };
+setTimeout(cycle,1200);
+setInterval(cycle,12000);
+window.addEventListener('focus',cycle);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cycle(); else push(); });
+window.addEventListener('online',()=>{ cycle(); push(); });
+window.addEventListener('pagehide',()=>{ if(dirty.size) push(); });
+
+/* ---------- 3. prove the database accepts writes ---------- */
+async function health(){
+  const s=(typeof S!=="undefined"&&S.session); if(!s || s.role==='guest') return;
+  const stamp=Date.now();
+  try{
+    let r=null;
+    try{ r=await sbBase('app_settings?id=eq.99',{method:'PATCH',body:JSON.stringify({data:{ping:stamp}})}); }catch(_){}
+    if(!(r&&r.length)) await sbBase('app_settings?on_conflict=id',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify({id:99,data:{ping:stamp}})});
+    const back=await sbBase('app_settings?select=data&id=eq.99');
+    if(!(back&&back[0]&&back[0].data&&+back[0].data.ping===stamp)) markFail('app_settings','the database is not keeping changes');
+  }catch(e){
+    const msg=String(e&&e.message||e);
+    markFail('app_settings', /fetch|Network|Load failed/i.test(msg)?'no internet connection':'the database refuses to save ('+msg.replace(/^Supabase /,'')+')');
+  }
+}
+setTimeout(health,3000);
+let lastRole=null;
+setInterval(()=>{ const r=(typeof S!=="undefined"&&S.session)&&S.session.role; if(r!==lastRole){ lastRole=r; if(r) health(); bar(); } },2000);
+})();
 </script>
 
 </body>
