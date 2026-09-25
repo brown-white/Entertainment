@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.25-prizes-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.25-merge-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -20980,6 +20980,7 @@ const setMeta=x=>{ try{ oSet.call(ls,META,JSON.stringify(x)); }catch(_){} };
 const dirty=new Set(); let tmr=null, busy=false;
 function schedule(ms){ clearTimeout(tmr); tmr=setTimeout(push, ms==null?700:ms); }
 P.setItem=function(k,v){
+  if(this===ls){ let same=false; try{ same=oGet.call(this,String(k))===String(v); }catch(_){} if(same) return; }
   oSet.call(this,k,v);
   if(this===ls){ k=String(k); if(synced(k)){ const x=meta(); x[k]=Date.now(); setMeta(x); dirty.add(k); schedule(); } }
 };
@@ -21073,6 +21074,210 @@ async function health(){
 setTimeout(health,3000);
 let lastRole=null;
 setInterval(()=>{ const r=(typeof S!=="undefined"&&S.session)&&S.session.role; if(r!==lastRole){ lastRole=r; if(r) health(); bar(); } },2000);
+})();
+</script>
+
+<script id="aurea-settings-merge-v702">
+/* ===== V7.02 SETTINGS MERGE (2026-09-25) =====
+   WHY CHANGES DISAPPEARED: all settings (daily standards, day information,
+   entrance, salaries, requirement sheets…) live in ONE database row. Every
+   phone wrote the WHOLE row from its own copy, so any phone with an older
+   copy — a team phone saving something small in the background, or opening
+   with an older backup — put the old values back for everyone.
+   NOW: a phone only writes the parts it actually changed, onto the newest
+   row in the database, and only if nobody else wrote in between (it
+   re-reads and retries). Unsent changes wait in a queue and are resent;
+   they never replace other people's work. Every phone refreshes the
+   settings from the database every 10 seconds. */
+(function(){
+'use strict';
+if(window.__AUREA_MERGE_V702) return; window.__AUREA_MERGE_V702=true;
+if(typeof REMOTE==='undefined' || !REMOTE) return;
+
+const REVK='_settingsUpdatedAtV626', PKEY='settingsPendingV702';
+const DAYKEYS=['dayOverrides','dayPlanRevisionV697','dayOffHistoryV697','dayOffHistoryStartV697'];
+const J=v=>JSON.stringify(v===undefined?null:v);
+const clone=v=>v===undefined?undefined:JSON.parse(JSON.stringify(v));
+const isObj=v=>!!v && typeof v==='object' && !Array.isArray(v);
+const has=(o,k)=>!!o && Object.prototype.hasOwnProperty.call(o,k);
+
+/* ---- a change = which keys (and, inside maps, which entries) moved ---- */
+function diff(a,b){
+  a=a||{}; b=b||{};
+  const out={set:{},del:[]};
+  for(const k of new Set([...Object.keys(a),...Object.keys(b)])){
+    if(k===REVK || k==='_mergeV702') continue;
+    if(J(a[k])===J(b[k])) continue;
+    if(!has(b,k)){ out.del.push(k); continue; }
+    if(isObj(b[k]) && (isObj(a[k]) || a[k]==null)){
+      const ak=isObj(a[k])?a[k]:{}, s={}, d=[];
+      for(const sk of new Set([...Object.keys(ak),...Object.keys(b[k])])){
+        if(J(ak[sk])===J(b[k][sk])) continue;
+        if(has(b[k],sk)) s[sk]=clone(b[k][sk]); else d.push(sk);
+      }
+      out.set[k]={sub:{s,d}};
+    } else out.set[k]={v:clone(b[k])};
+  }
+  return out;
+}
+const empty=p=>!p || (!Object.keys(p.set||{}).length && !(p.del||[]).length);
+function apply(obj,p){
+  obj=obj||{}; if(!p) return obj;
+  for(const k in (p.set||{})){
+    const e=p.set[k];
+    if(e.sub){
+      const t=isObj(obj[k])?{...obj[k]}:{};
+      for(const sk in e.sub.s) t[sk]=clone(e.sub.s[sk]);
+      for(const sk of e.sub.d) delete t[sk];
+      obj[k]=t;
+    } else obj[k]=clone(e.v);
+  }
+  for(const k of (p.del||[])) delete obj[k];
+  return obj;
+}
+/* keep the keys/entries of `intent`, but take the values from `st` */
+function valuesFrom(intent,st){
+  const out={set:{},del:(intent.del||[]).filter(k=>!has(st,k))};
+  for(const k in intent.set){
+    if(DAYKEYS.includes(k)){ if(has(st,k)) out.set[k]={v:clone(st[k])}; continue; }
+    const e=intent.set[k];
+    if(e.sub){
+      const src=isObj(st[k])?st[k]:{}, s={}, d=[...e.sub.d.filter(sk=>!has(src,sk))];
+      for(const sk in e.sub.s){ if(has(src,sk)) s[sk]=clone(src[sk]); else d.push(sk); }
+      out.set[k]={sub:{s,d}};
+    } else if(has(st,k)) out.set[k]={v:clone(st[k])};
+    else out.del.push(k);
+  }
+  return out;
+}
+
+/* ---- queue of changes not yet confirmed by the database ---- */
+const readQ=()=>{ try{ const x=JSON.parse(localStorage.getItem(PKEY)||'[]'); return Array.isArray(x)?x:[]; }catch(_){ return []; } };
+const writeQ=q=>{ try{ if(q.length) localStorage.setItem(PKEY,JSON.stringify(q.slice(-60))); else localStorage.removeItem(PKEY); }catch(_){} };
+const withQ=o=>readQ().reduce((acc,p)=>apply(acc,p),o);
+
+let base=null;        // the newest row-1 data this phone has seen from the database
+function setFresh(data){
+  base=clone(data||{});
+  let s={...DEFAULT_SETTINGS,...clone(base)};
+  s=withQ(s);
+  try{ if(typeof window.reconcileDayPlanRealtimeV697==='function') s=window.reconcileDayPlanRealtimeV697(s); }catch(_){}
+  S.settings=s;
+  try{ writeSettingsBackupV626(s); }catch(_){}
+  return s;
+}
+
+/* load: the database is the truth; only queued changes are laid on top */
+reconcileSettingsV626=function(remoteSettings){
+  const missing=(remoteSettings===DEFAULT_SETTINGS) || !remoteSettings;
+  if(missing){
+    base={};
+    const local=readSettingsBackupV626();
+    const s={...DEFAULT_SETTINGS,...(local||{})};
+    try{ writeSettingsBackupV626(s); }catch(_){}
+    return {settings:s,localNewer:!!local};      // first ever start: seed the row
+  }
+  const s=setFresh(remoteSettings);
+  return {settings:s,localNewer:readQ().length>0};
+};
+window.reconcileSettingsV626=reconcileSettingsV626;
+
+async function fetchRow(){
+  const rows=await sb('app_settings?select=id,data&id=eq.1');
+  return rows&&rows[0]?rows[0]:null;
+}
+
+/* save: write only what changed, on top of the newest row, never over someone else */
+cloudUpsertSettingsV626=async function(st){
+  const it=st&&st._mergeV702; if(st) delete st._mergeV702;
+  let p=it ? valuesFrom(it,st) : diff(withQ(clone(base||{})),st);
+  const q=readQ();
+  if(!empty(p)){ q.push(p); writeQ(q); }
+  if(!q.length) return [{id:1,data:base}];
+  let lastErr=null;
+  for(let attempt=0;attempt<6;attempt++){
+    try{
+      const row=await fetchRow(), R=row&&row.data?row.data:null;
+      const merged=readQ().reduce((acc,x)=>apply(acc,x),clone(R||{}));
+      const prev=R?+R[REVK]||0:0;
+      merged[REVK]=Math.max(Date.now(),prev+1);
+      let res;
+      if(R){
+        const guard=has(R,REVK)?'&data->>'+REVK+'=eq.'+encodeURIComponent(String(R[REVK])):'';
+        res=await sb('app_settings?id=eq.1'+guard,{method:'PATCH',body:JSON.stringify({data:merged})});
+        if(!(res&&res.length)){ await new Promise(r=>setTimeout(r,150+Math.random()*350)); continue; }  // someone wrote in between: re-read
+      } else {
+        res=await sb('app_settings?on_conflict=id',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify({id:1,data:merged})});
+      }
+      writeQ([]);
+      setFresh(merged);
+      return res;
+    }catch(e){ lastErr=e; break; }
+  }
+  throw lastErr||new Error('Settings are busy — will retry');
+};
+window.cloudUpsertSettingsV626=cloudUpsertSettingsV626;
+
+/* outermost save: remember what THIS call changes, and for the day plan only
+   pass on the weekdays that were really edited */
+const saveInner=DB.saveSettings.bind(DB);
+DB.saveSettings=async function(next){
+  next=next||{};
+  const pre=S.settings||{};
+  const ref=(next===pre)?withQ({...DEFAULT_SETTINGS,...clone(base||{})}):pre;
+  const d=diff(ref,next);
+  if(has(next,'dayOverrides')){
+    const mine=isObj(pre.dayOverrides)?pre.dayOverrides:{}, want=isObj(next.dayOverrides)?next.dayOverrides:{};
+    const days=[0,1,2,3,4,5,6].map(String).filter(k=>J(mine[k])!==J(want[k]));
+    if(!days.length || next===pre){ next={...next}; delete next.dayOverrides; }
+    else{
+      try{ if(window.AUREA_DAY_PLAN_V697) await window.AUREA_DAY_PLAN_V697.load(); }catch(_){}
+      const fresh={...((S.settings&&S.settings.dayOverrides)||{})};
+      days.forEach(k=>{ if(has(want,k)) fresh[k]=clone(want[k]); else delete fresh[k]; });
+      next={...next,dayOverrides:fresh};
+    }
+  }
+  next={...next,_mergeV702:d};
+  await saveInner(next);
+  if(S.settings) delete S.settings._mergeV702;
+  return S.settings;
+};
+
+/* realtime: take the new row as the base, keep queued changes on top */
+if(typeof applyRealtimeChange==='function'){
+  const rtBase=applyRealtimeChange;
+  applyRealtimeChange=function(payload){
+    const r=rtBase(payload);
+    try{
+      if(payload && payload.table==='app_settings' && payload.new && +payload.new.id===1 && payload.new.data){
+        setFresh(payload.new.data); try{ applySettings(); }catch(_){}
+      }
+    }catch(_){}
+    return r;
+  };
+  window.applyRealtimeChange=applyRealtimeChange;
+}
+
+/* every phone refreshes settings from the database; queued changes are resent */
+let busy=false;
+async function refresh(){
+  if(busy || document.hidden) return; busy=true;
+  try{
+    if(readQ().length){ try{ await cloudUpsertSettingsV626(S.settings||{}); }catch(_){} }
+    const row=await fetchRow();
+    if(row && row.data && (+row.data[REVK]||0)!==(+(base&&base[REVK])||0)){
+      setFresh(row.data);
+      try{ applySettings(); }catch(_){}
+      if(S.session && (typeof safeToRender!=='function' || safeToRender())){ try{ render(); }catch(_){} }
+    }
+  }catch(_){}
+  busy=false;
+}
+window.refreshSettingsV702=refresh;
+setInterval(refresh,10000);
+window.addEventListener('focus',refresh);
+window.addEventListener('online',refresh);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refresh(); });
 })();
 </script>
 
