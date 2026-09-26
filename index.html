@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.26-prizes-v2";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.26-studio-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -20850,7 +20850,7 @@ function printSet(s){
 
 /* ---------- the maker ---------- */
 function blankSet(){
-  const d=defaults(), s=(typeof S!=='undefined'&&S.session)||{}, studio=document.querySelector('.tk655-modal');
+  const d=defaults(), s=(typeof S!=='undefined'&&S.session)||{}, studio=document.querySelector('.tk655-modal, .tk8-studio');
   const ev=studio&&studio.querySelector('#rtitle')?studio.querySelector('#rtitle').value.trim():'';
   const ty=studio&&studio.querySelector('#rtype')?studio.querySelector('#rtype').value:'';
   const date=today();
@@ -21000,6 +21000,777 @@ st.textContent=`.pz-entry{display:flex;gap:12px;align-items:center;width:100%;te
 .pz-prev{position:relative;overflow:hidden;border-radius:12px;background:#e9e6e1;margin-bottom:6px}
 .pz-prev iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none}
 .pz2 .btn.danger{color:#B0392B;border-color:rgba(176,57,43,.35)}`;
+document.head.appendChild(st);
+})();
+</script>
+
+<script id="aurea-tickets-v707">
+/* ===== V7.07 TICKETS — FIXES + NEW DESIGN (2026-09-26) =====
+   Bugs fixed:
+   1. Seats left: the guest's list counted only THEIR OWN orders ("4 left"),
+      while the Reserve button counted everyone's ("Sold out").
+   2. Capacity never reset: an order counted for every future week, because an
+      order did not know which date it was for. Each order now belongs to one
+      date (event_date, or worked out from when it was made) and only orders
+      for the NEXT date count.
+   3. Repeat orders: a guest could reserve the same event twice; the second
+      tap now changes the existing reservation. Old repeats are shown to the
+      manager with "Keep one" / "Combine".
+   4. The same order could appear twice on a phone (save + live update race).
+   5. Deleting a ticket event: no confirmation, and its orders stayed behind as
+      "Ticket event" ghosts. Now it asks and removes them together.
+   6. Attendance-only people were offered as ticket collectors.
+   7. Staff "paid" toggle had no error message and could be undone by a slip.
+   8. Guests could reserve a date after their departure.
+   9. Guests could not see their own reservations anywhere. */
+(function(){
+'use strict';
+if(window.__AUREA_TICKETS_V707) return; window.__AUREA_TICKETS_V707=true;
+
+const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LOC={en:'en-GB',de:'de-DE',ru:'ru-RU',pl:'pl-PL',cs:'cs-CZ',nl:'nl-NL',fr:'fr-FR',ar:'ar-EG'};
+const G={
+ en:{more:'Reserve more',title:'Tickets',how1:'Reserve in the app',how2:'Pay the team member you choose',how3:'Receive your paper ticket',mine:'Your reservations',book:'Experiences',left:'{n} of {c} left',avail:'Available',sold:'Sold out',reserve:'Reserve',reserved:'Reserved ×{n}',change:'Change',qty:'Tickets',total:'Total',collect:'Pay & collect from',offToday:'off today',noCharge:'Nothing is charged in the app — you pay in person and receive your paper ticket.',confirm:'Reserve ×{n}',update:'Update to ×{n}',already:'You already reserved ×{n} for this date. Change the number or the person below.',afterStay:'This date is after your departure.',pickPerson:'Please choose who you will pay.',doneTitle:'Reserved',doneBody:'{p} has your reservation. Pay in person and you will receive your paper ticket.',payAt:'Pay & collect from {p}',handed:'Ticket received',none:'No ticket events at the moment.',onlyLeft:'Only {n} left for this date.',close:'Close',remove:'Cancel reservation',removeQ:'Cancel this reservation?',saving:'Saving…',err:'Could not save. Please try again.',team:'Entertainment Team'},
+ de:{more:'Weitere reservieren',title:'Tickets',how1:'In der App reservieren',how2:'Beim gewählten Teammitglied bezahlen',how3:'Papierticket erhalten',mine:'Deine Reservierungen',book:'Erlebnisse',left:'{n} von {c} frei',avail:'Verfügbar',sold:'Ausverkauft',reserve:'Reservieren',reserved:'Reserviert ×{n}',change:'Ändern',qty:'Tickets',total:'Gesamt',collect:'Bezahlen & abholen bei',offToday:'heute frei',noCharge:'In der App wird nichts berechnet — du bezahlst persönlich und bekommst dein Papierticket.',confirm:'×{n} reservieren',update:'Auf ×{n} ändern',already:'Du hast für diesen Termin schon ×{n} reserviert. Ändere unten die Anzahl oder die Person.',afterStay:'Dieser Termin ist nach deiner Abreise.',pickPerson:'Bitte wähle, bei wem du bezahlst.',doneTitle:'Reserviert',doneBody:'{p} hat deine Reservierung. Bezahle persönlich und du bekommst dein Papierticket.',payAt:'Bezahlen & abholen bei {p}',handed:'Ticket erhalten',none:'Im Moment gibt es keine Ticket-Events.',onlyLeft:'Nur noch {n} frei für diesen Termin.',close:'Schließen',remove:'Reservierung stornieren',removeQ:'Diese Reservierung stornieren?',saving:'Speichern…',err:'Speichern nicht möglich. Bitte erneut versuchen.',team:'Entertainment-Team'},
+ ru:{more:'Ещё билеты',title:'Билеты',how1:'Забронируйте в приложении',how2:'Оплатите выбранному участнику команды',how3:'Получите бумажный билет',mine:'Ваши брони',book:'Мероприятия',left:'осталось {n} из {c}',avail:'Есть места',sold:'Мест нет',reserve:'Забронировать',reserved:'Забронировано ×{n}',change:'Изменить',qty:'Билеты',total:'Итого',collect:'Оплатить и получить у',offToday:'сегодня выходной',noCharge:'В приложении ничего не списывается — вы платите лично и получаете бумажный билет.',confirm:'Забронировать ×{n}',update:'Изменить на ×{n}',already:'Вы уже забронировали ×{n} на эту дату. Измените количество или человека ниже.',afterStay:'Эта дата после вашего отъезда.',pickPerson:'Выберите, кому вы заплатите.',doneTitle:'Забронировано',doneBody:'{p} получил(а) вашу бронь. Оплатите лично и получите бумажный билет.',payAt:'Оплатить и получить у {p}',handed:'Билет получен',none:'Сейчас нет мероприятий с билетами.',onlyLeft:'На эту дату осталось только {n}.',close:'Закрыть',remove:'Отменить бронь',removeQ:'Отменить эту бронь?',saving:'Сохранение…',err:'Не удалось сохранить. Попробуйте ещё раз.',team:'Команда анимации'},
+ pl:{more:'Zarezerwuj więcej',title:'Bilety',how1:'Zarezerwuj w aplikacji',how2:'Zapłać wybranej osobie z zespołu',how3:'Odbierz papierowy bilet',mine:'Twoje rezerwacje',book:'Wydarzenia',left:'zostało {n} z {c}',avail:'Dostępne',sold:'Wyprzedane',reserve:'Zarezerwuj',reserved:'Zarezerwowano ×{n}',change:'Zmień',qty:'Bilety',total:'Razem',collect:'Zapłać i odbierz u',offToday:'dziś wolne',noCharge:'Aplikacja niczego nie pobiera — płacisz osobiście i dostajesz papierowy bilet.',confirm:'Zarezerwuj ×{n}',update:'Zmień na ×{n}',already:'Masz już ×{n} na ten termin. Zmień liczbę lub osobę poniżej.',afterStay:'Ten termin jest po Twoim wyjeździe.',pickPerson:'Wybierz, komu zapłacisz.',doneTitle:'Zarezerwowano',doneBody:'{p} ma Twoją rezerwację. Zapłać osobiście i odbierz papierowy bilet.',payAt:'Zapłać i odbierz u {p}',handed:'Bilet odebrany',none:'Obecnie brak wydarzeń z biletami.',onlyLeft:'Na ten termin zostało tylko {n}.',close:'Zamknij',remove:'Anuluj rezerwację',removeQ:'Anulować tę rezerwację?',saving:'Zapisywanie…',err:'Nie udało się zapisać. Spróbuj ponownie.',team:'Zespół animacji'},
+ cs:{more:'Rezervovat další',title:'Vstupenky',how1:'Rezervujte v aplikaci',how2:'Zaplaťte vybranému členovi týmu',how3:'Převezměte papírovou vstupenku',mine:'Vaše rezervace',book:'Zážitky',left:'zbývá {n} z {c}',avail:'Volné',sold:'Vyprodáno',reserve:'Rezervovat',reserved:'Rezervováno ×{n}',change:'Změnit',qty:'Vstupenky',total:'Celkem',collect:'Zaplatit a vyzvednout u',offToday:'dnes volno',noCharge:'V aplikaci se nic neúčtuje — platíte osobně a dostanete papírovou vstupenku.',confirm:'Rezervovat ×{n}',update:'Změnit na ×{n}',already:'Na tento termín už máte ×{n}. Změňte počet nebo osobu níže.',afterStay:'Tento termín je po vašem odjezdu.',pickPerson:'Vyberte, komu zaplatíte.',doneTitle:'Rezervováno',doneBody:'{p} má vaši rezervaci. Zaplaťte osobně a dostanete papírovou vstupenku.',payAt:'Zaplatit a vyzvednout u {p}',handed:'Vstupenka převzata',none:'Momentálně nejsou žádné akce se vstupenkami.',onlyLeft:'Na tento termín zbývá jen {n}.',close:'Zavřít',remove:'Zrušit rezervaci',removeQ:'Zrušit tuto rezervaci?',saving:'Ukládání…',err:'Uložení se nezdařilo. Zkuste to znovu.',team:'Animační tým'},
+ nl:{more:'Meer reserveren',title:'Tickets',how1:'Reserveer in de app',how2:'Betaal het teamlid dat je kiest',how3:'Ontvang je papieren ticket',mine:'Jouw reserveringen',book:'Belevenissen',left:'{n} van {c} vrij',avail:'Beschikbaar',sold:'Uitverkocht',reserve:'Reserveren',reserved:'Gereserveerd ×{n}',change:'Wijzigen',qty:'Tickets',total:'Totaal',collect:'Betalen & ophalen bij',offToday:'vandaag vrij',noCharge:'In de app wordt niets afgerekend — je betaalt persoonlijk en krijgt je papieren ticket.',confirm:'×{n} reserveren',update:'Wijzig naar ×{n}',already:'Je hebt voor deze datum al ×{n} gereserveerd. Wijzig hieronder het aantal of de persoon.',afterStay:'Deze datum is na je vertrek.',pickPerson:'Kies bij wie je betaalt.',doneTitle:'Gereserveerd',doneBody:'{p} heeft je reservering. Betaal persoonlijk en je krijgt je papieren ticket.',payAt:'Betalen & ophalen bij {p}',handed:'Ticket ontvangen',none:'Op dit moment zijn er geen ticketevenementen.',onlyLeft:'Nog maar {n} vrij voor deze datum.',close:'Sluiten',remove:'Reservering annuleren',removeQ:'Deze reservering annuleren?',saving:'Opslaan…',err:'Opslaan mislukt. Probeer het opnieuw.',team:'Entertainmentteam'},
+ fr:{more:'Réserver plus',title:'Billets',how1:"Réservez dans l'application",how2:"Payez le membre de l'équipe choisi",how3:'Recevez votre billet papier',mine:'Vos réservations',book:'Expériences',left:'{n} sur {c} disponibles',avail:'Disponible',sold:'Complet',reserve:'Réserver',reserved:'Réservé ×{n}',change:'Modifier',qty:'Billets',total:'Total',collect:'Payer et retirer auprès de',offToday:'en repos',noCharge:"Rien n'est débité dans l'application — vous payez en personne et recevez votre billet papier.",confirm:'Réserver ×{n}',update:'Passer à ×{n}',already:'Vous avez déjà réservé ×{n} pour cette date. Modifiez le nombre ou la personne ci-dessous.',afterStay:'Cette date est après votre départ.',pickPerson:'Choisissez qui vous allez payer.',doneTitle:'Réservé',doneBody:'{p} a votre réservation. Payez en personne et recevez votre billet papier.',payAt:'Payer et retirer auprès de {p}',handed:'Billet reçu',none:'Aucun événement avec billet pour le moment.',onlyLeft:'Plus que {n} pour cette date.',close:'Fermer',remove:'Annuler la réservation',removeQ:'Annuler cette réservation ?',saving:'Enregistrement…',err:"Impossible d'enregistrer. Réessayez.",team:"Équipe d'animation"},
+ ar:{more:'احجز المزيد',title:'التذاكر',how1:'احجز من التطبيق',how2:'ادفع لعضو الفريق الذي تختاره',how3:'استلم تذكرتك الورقية',mine:'حجوزاتك',book:'الفعاليات',left:'متبقٍ {n} من {c}',avail:'متاح',sold:'نفدت التذاكر',reserve:'احجز',reserved:'محجوز ×{n}',change:'تغيير',qty:'التذاكر',total:'الإجمالي',collect:'ادفع واستلم من',offToday:'في إجازة اليوم',noCharge:'لا يتم خصم أي مبلغ في التطبيق — تدفع شخصياً وتستلم تذكرتك الورقية.',confirm:'احجز ×{n}',update:'غيّر إلى ×{n}',already:'لقد حجزت ×{n} لهذا الموعد. غيّر العدد أو الشخص بالأسفل.',afterStay:'هذا الموعد بعد تاريخ مغادرتك.',pickPerson:'اختر الشخص الذي ستدفع له.',doneTitle:'تم الحجز',doneBody:'{p} لديه حجزك. ادفع شخصياً وستستلم تذكرتك الورقية.',payAt:'ادفع واستلم من {p}',handed:'تم استلام التذكرة',none:'لا توجد فعاليات بتذاكر حالياً.',onlyLeft:'متبقٍ {n} فقط لهذا الموعد.',close:'إغلاق',remove:'إلغاء الحجز',removeQ:'هل تريد إلغاء هذا الحجز؟',saving:'جارٍ الحفظ…',err:'تعذّر الحفظ. حاول مرة أخرى.',team:'فريق الترفيه'}
+};
+function g(k,vars){ let s=(G[S.lang]||G.en)[k]||G.en[k]||k; if(vars) for(const v in vars) s=s.split('{'+v+'}').join(vars[v]); return s; }
+
+/* ---------- the full order list, even while a guest screen is drawn ---------- */
+let ALL=null, depth=0;
+function dedupe(){
+  const arr=S.orders; if(!Array.isArray(arr)) return;
+  const seen=new Map(); arr.forEach(o=>{ if(o&&o.id!=null) seen.set(String(o.id),o); });
+  if(seen.size!==arr.filter(o=>o&&o.id!=null).length) S.orders=[...seen.values(),...arr.filter(o=>!o||o.id==null)];
+}
+const r0=render;
+render=function(){ if(depth===0){ dedupe(); ALL=S.orders; } depth++; try{ return r0.apply(this,arguments); } finally{ depth--; } };
+window.render=render;
+const allOrders=()=>(depth>0&&ALL)?ALL:(S.orders||[]);
+
+/* ---------- dates ---------- */
+const DAY=86400000;
+const toD=s=>new Date(s+'T12:00:00');
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addDays=(s,n)=>{ const d=toD(s); d.setDate(d.getDate()+n); return ymd(d); };
+const wdOf=s=>(toD(s).getDay()+6)%7;
+const startMin=tk=>{ const m=String(tk&&tk.time||'').match(/(\d{1,2})[:.](\d{2})/); return m?(+m[1])*60+(+m[2]):20*60; };
+function hotelParts(ms){
+  const tz=(S.settings&&S.settings.timezone)||'';
+  let d=new Date(ms);
+  if(tz){ try{ const x=new Date(d.toLocaleString('en-US',{timeZone:tz})); if(!isNaN(x)) d=x; }catch(_){} }
+  return {date:ymd(d),min:d.getHours()*60+d.getMinutes()};
+}
+const tkOf=id=>(S.tickets||[]).find(x=>String(x.id)===String(id))||null;
+function nextDate(tk){
+  const today=hotelDateStr(), now=nowMinutes();
+  let diff=((+tk.day)-wdOf(today)+7)%7;
+  if(diff===0 && now>=startMin(tk)) diff=7;
+  return addDays(today,diff);
+}
+function orderDate(o){
+  if(o && /^\d{4}-\d{2}-\d{2}/.test(String(o.event_date||''))) return String(o.event_date).slice(0,10);
+  const tk=tkOf(o&&o.ticket_id); if(!tk) return '';
+  const ms=Date.parse(o.created_at||''); const p=Number.isFinite(ms)?hotelParts(ms):{date:hotelDateStr(),min:nowMinutes()};
+  let diff=((+tk.day)-wdOf(p.date)+7)%7;
+  if(diff===0 && p.min>=startMin(tk)) diff=7;
+  return addDays(p.date,diff);
+}
+function niceDate(s,opts){ try{ return toD(s).toLocaleDateString(LOC[S.lang]||'en-GB',opts||{weekday:'short',day:'numeric',month:'short'}); }catch(_){ return s; } }
+const qtyOf=o=>Math.max(1,+o.qty||1);
+const isPaid=o=>String(o&&o.status||'').toLowerCase()==='paid';
+function soldFor(tk,date){ date=date||nextDate(tk); return allOrders().filter(o=>String(o.ticket_id)===String(tk.id)&&orderDate(o)===date).reduce((n,o)=>n+qtyOf(o),0); }
+ticketsSold=function(id){ const tk=tkOf(id); return tk?soldFor(tk):0; };
+window.ticketsSold=ticketsSold;
+
+/* ---------- people ---------- */
+const norm=v=>String(v||'').normalize('NFKD').toLowerCase().replace(/\b(mr|mrs|ms|miss)\b\.?/g,' ').replace(/[^a-z0-9\u00c0-\u024f\u0600-\u06ff]+/g,' ').trim();
+function collectors(){
+  const seen=new Set();
+  return (S.users||[]).filter(u=>u&&u.role==='staff'&&u.active!==false&&!(typeof isAttOnly==='function'&&isAttOnly(u))&&!(typeof hasLeft==='function'&&hasLeft(u)))
+    .map(u=>({u,name:String(u.display_name||u.username||'').trim(),photo:(typeof photoOf==='function'?photoOf(u):'')||u.photo||u.avatar||''}))
+    .filter(x=>x.name&&!seen.has(norm(x.name))&&seen.add(norm(x.name)))
+    .sort((a,b)=>(+a.u.number||99)-(+b.u.number||99));
+}
+function offToday(u){ try{ return !availableOn(u,todayIndex(),hotelDateStr()); }catch(_){ return false; } }
+const roomOf=o=>{ try{ return window.AUREA_GUEST_LIFECYCLE&&typeof window.AUREA_GUEST_LIFECYCLE.visibleRoom==='function'?window.AUREA_GUEST_LIFECYCLE.visibleRoom(o.room):String(o.room||''); }catch(_){ return String(o.room||''); } };
+const stayKey=o=>roomOf(o)+'|'+norm(o.guest_name);
+const guestAcc=()=>S.session&&S.session.role==='guest'?(S.accounts||[]).find(a=>a.id===S.session.accountId)||null:null;
+function isMine(o){
+  if(!(S.session&&S.session.role==='guest')||!o) return false;
+  const a=guestAcc(), L=window.AUREA_GUEST_LIFECYCLE;
+  if(a&&L&&typeof L.rowBelongs==='function') return L.rowBelongs(o,a);
+  return String(roomOf(o))===String(S.session.room)&&norm(o.guest_name)===norm(S.session.name);
+}
+function guestRoomValue(){ const a=guestAcc(), L=window.AUREA_GUEST_LIFECYCLE; return (a&&L&&typeof L.stayToken==='function')?L.stayToken(a):String(S.session&&S.session.room||''); }
+const mineList=()=>allOrders().filter(isMine);
+
+/* ---------- price ---------- */
+function money(price,n){
+  const s=String(price||'').trim(), m=s.match(/(\d+(?:[.,]\d{1,2})?)/);
+  if(!m) return s;
+  const v=parseFloat(m[1].replace(',','.'))*n, out=(Math.round(v*100)/100).toString().replace('.',m[1].includes(',')?',':'.');
+  return s.replace(m[1],out);
+}
+const priceNum=p=>{ const m=String(p||'').match(/(\d+(?:[.,]\d{1,2})?)/); return m?parseFloat(m[1].replace(',','.')):0; };
+
+/* ---------- repeat orders ---------- */
+function duplicateGroups(){
+  const map=new Map();
+  allOrders().forEach(o=>{ const d=orderDate(o); if(!d||d<hotelDateStr()) return; const k=String(o.ticket_id)+'|'+stayKey(o)+'|'+d; (map.get(k)||map.set(k,[]).get(k)).push(o); });
+  return [...map.values()].filter(l=>l.length>1).map(l=>l.sort((a,b)=>String(a.created_at||'').localeCompare(String(b.created_at||''))));
+}
+
+/* ---------- saving ---------- */
+let noDateCol=false;
+async function postOrder(row){
+  if(!REMOTE){ return DB.addOrder(row); }
+  const send=async body=>{ const r=await sb('ticket_orders',{method:'POST',body:JSON.stringify(body)}); const saved=(r&&r[0])||{...body,id:Date.now()}; if(!(S.orders||[]).some(o=>String(o.id)===String(saved.id))) S.orders.push(saved); dedupe(); return saved; };
+  if(!noDateCol){
+    try{ return await send(row); }
+    catch(e){ if(/event_date|column|Supabase 400/i.test(String(e&&e.message||e))){ noDateCol=true; } else throw e; }
+  }
+  const {event_date,...rest}=row; return send(rest);
+}
+async function patchOrder(o,patch){
+  if(REMOTE){
+    let body=patch;
+    if(noDateCol && 'event_date' in body){ const {event_date,...rest}=body; body=rest; }
+    try{ await sb('ticket_orders?id=eq.'+encodeURIComponent(o.id),{method:'PATCH',body:JSON.stringify(body)}); }
+    catch(e){ if('event_date' in body && /event_date|column|Supabase 400/i.test(String(e&&e.message||e))){ noDateCol=true; const {event_date,...rest}=body; await sb('ticket_orders?id=eq.'+encodeURIComponent(o.id),{method:'PATCH',body:JSON.stringify(rest)}); } else throw e; }
+  }
+  const x=(S.orders||[]).find(y=>String(y.id)===String(o.id)); if(x) Object.assign(x,patch);
+}
+/* Fresh count straight from the database right before saving, so two guests
+   cannot both take the last seats. */
+async function freshSold(tk,date,exceptId){
+  if(!REMOTE) return soldFor(tk,date)-(exceptId?qtyOf((S.orders||[]).find(o=>String(o.id)===String(exceptId))||{qty:0}):0);
+  try{
+    const rows=await sb('ticket_orders?select=*&ticket_id=eq.'+encodeURIComponent(tk.id));
+    return (rows||[]).filter(o=>String(o.id)!==String(exceptId||'')&&orderDate(o)===date).reduce((n,o)=>n+qtyOf(o),0);
+  }catch(_){ return soldFor(tk,date); }
+}
+
+/* ============ GUEST ============ */
+function myOrders(){
+  return mineList().filter(o=>{ const d=orderDate(o); return d && d>=addDays(hotelDateStr(),-1); })
+    .sort((a,b)=>orderDate(a).localeCompare(orderDate(b)));
+}
+function dateBlock(s){
+  const d=toD(s);
+  return `<span class="tk7-date"><small>${E(d.toLocaleDateString(LOC[S.lang]||'en-GB',{weekday:'short'}))}</small><b>${d.getDate()}</b><small>${E(d.toLocaleDateString(LOC[S.lang]||'en-GB',{month:'short'}))}</small></span>`;
+}
+function resCard(o){
+  const tk=tkOf(o.ticket_id); if(!tk) return '';
+  const d=orderDate(o), paid=isPaid(o), who=o.collect_from||g('team');
+  return `<article class="tk7-res ${paid?'paid':''}" data-tk7-mine="${E(o.id)}">${dateBlock(d)}
+    <span class="tk7-res-mid"><b>${E(tk.name)}</b><span>${E(tk.time||'')}${tk.location?' · '+E(tk.location):''}</span><span class="tk7-res-q">×${qtyOf(o)}${tk.price?' · '+E(money(tk.price,qtyOf(o))):''}</span></span>
+    <span class="tk7-res-st">${paid?`<i class="ok">${ic('check',13)} ${E(g('handed'))}</i>`:`<i>${E(g('payAt',{p:who}))}</i>`}</span></article>`;
+}
+function evCard(tk){
+  const d=nextDate(tk), sold=soldFor(tk,d), cap=+tk.capacity||0, left=cap?Math.max(0,cap-sold):null, soldOut=left!==null&&left<=0;
+  const mine=mineList().find(o=>String(o.ticket_id)===String(tk.id)&&orderDate(o)===d&&!isPaid(o));
+  const paidMine=mineList().filter(o=>String(o.ticket_id)===String(tk.id)&&orderDate(o)===d&&isPaid(o)).reduce((n,o)=>n+qtyOf(o),0);
+  const pct=cap?Math.min(100,Math.round(sold/cap*100)):0;
+  return `<article class="tk7-ev ${soldOut&&!mine?'out':''}">
+    <div class="tk7-ev-img"><img src="${E(tk.image||IMG.show)}" alt="" loading="lazy" decoding="async"><span class="tk7-chip">${E(niceDate(d))} · ${E(tk.time||'')}</span>${tk.price?`<span class="tk7-price">${E(tk.price)}</span>`:''}<h4>${E(tk.name)}</h4></div>
+    <div class="tk7-ev-body">
+      ${tk.location?`<p class="tk7-place">${mi('pin')}${E(tk.location)}</p>`:''}
+      ${tk.desc?`<p class="tk7-desc">${E(tk.desc)}</p>`:''}
+      ${cap?`<div class="tk7-bar"><i style="width:${pct}%"></i></div>`:''}
+      <div class="tk7-ev-foot"><span class="tk7-left ${soldOut?'out':left!==null&&left<=3?'low':''}">${soldOut?E(g('sold')):left!==null?E(g('left',{n:left,c:cap})):E(g('avail'))}</span>
+      ${mine?`<button class="tk7-btn ghost" data-tk7-buy="${E(tk.id)}">${E(g('reserved',{n:qtyOf(mine)}))} · ${E(g('change'))}</button>`:soldOut?(paidMine?`<span class="tk7-have">${ic('check',13)} ×${paidMine}</span>`:''):`<button class="tk7-btn${paidMine?' ghost':''}" data-tk7-buy="${E(tk.id)}">${paidMine?E(g('more')):E(g('reserve'))}</button>`}</div>
+    </div></article>`;
+}
+guestTicketsView=function(){
+  const list=(S.tickets||[]).slice().sort((a,b)=>(nextDate(a)+String(startMin(a)).padStart(4,'0')).localeCompare(nextDate(b)+String(startMin(b)).padStart(4,'0')));
+  const mine=myOrders();
+  return `<div class="screen fadein tk7">${topBar(g('title'),'')}
+    <div class="tk7-how"><span><b>1</b>${E(g('how1'))}</span><span><b>2</b>${E(g('how2'))}</span><span><b>3</b>${E(g('how3'))}</span></div>
+    ${mine.length?`<h3 class="tk7-h">${E(g('mine'))}</h3><div class="tk7-mine">${mine.map(resCard).join('')}</div>`:''}
+    <h3 class="tk7-h">${E(g('book'))}</h3>
+    ${list.length?`<div class="tk7-evs">${list.map(evCard).join('')}</div>`:`<div class="tk7-empty">${E(g('none'))}</div>`}
+  </div>`;
+};
+window.guestTicketsView=guestTicketsView;
+
+openTicketBuyModal=function(tk){
+  if(!tk) return;
+  const d=nextDate(tk), people=collectors();
+  const mine=mineList().filter(o=>String(o.ticket_id)===String(tk.id)&&orderDate(o)===d&&!isPaid(o));
+  const existing=mine[0]||null;
+  const cap=+tk.capacity||0, soldNow=soldFor(tk,d)-(existing?qtyOf(existing):0), maxLeft=cap?Math.max(0,cap-soldNow):10;
+  const dep=String(S.session&&S.session.departure||'').slice(0,10);
+  const afterStay=dep&&/^\d{4}-\d{2}-\d{2}$/.test(dep)&&d>dep;
+  if(!existing && cap && maxLeft<=0){ toastWarn(g('sold')); return; }
+  let qty=existing?qtyOf(existing):1, who=existing?existing.collect_from||'':'';
+  const max=Math.max(1,Math.min(10,maxLeft||1));
+  const wrap=baseModal(`<div class="tk7-buy">
+    <div class="tk7-buy-hero"><img src="${E(tk.image||IMG.show)}" alt=""><div><span class="tk7-chip">${E(niceDate(d,{weekday:'long',day:'numeric',month:'long'}))} · ${E(tk.time||'')}</span><h3>${E(tk.name)}</h3>${tk.location?`<p>${mi('pin')}${E(tk.location)}</p>`:''}</div></div>
+    <div class="tk7-perf"></div>
+    ${existing?`<p class="tk7-note">${E(g('already',{n:qtyOf(existing)}))}</p>`:''}
+    ${afterStay?`<p class="tk7-note bad">${E(g('afterStay'))}</p>`:''}
+    <div class="tk7-qty"><span>${E(g('qty'))}</span><div class="tk7-step"><button type="button" data-q="-1" aria-label="−">−</button><b id="tk7-n">${qty}</b><button type="button" data-q="1" aria-label="+">+</button></div>
+      ${tk.price?`<span class="tk7-total"><small>${E(g('total'))}</small><b id="tk7-tot">${E(money(tk.price,qty))}</b></span>`:''}</div>
+    ${cap&&maxLeft<=5?`<p class="tk7-note">${E(g('onlyLeft',{n:maxLeft}))}</p>`:''}
+    <label class="tk7-lbl">${E(g('collect'))}</label>
+    <div class="tk7-people">${people.map(p=>`<button type="button" class="tk7-person ${norm(p.name)===norm(who)?'on':''}" data-tk7-who="${E(p.name)}"><span class="av">${p.photo?`<img src="${E(p.photo)}" alt="">`:E(p.name.charAt(0).toUpperCase())}</span><span class="nm">${E(p.name)}</span>${offToday(p.u)?`<span class="off">${E(g('offToday'))}</span>`:''}</button>`).join('')}</div>
+    <p class="tk7-fine">${E(g('noCharge'))}</p>
+    <p class="tk7-err" id="tk7-err"></p>
+    <button class="btn" id="tk7-go" ${afterStay?'disabled':''}>${E(existing?g('update',{n:qty}):g('confirm',{n:qty}))}</button>
+    ${existing?`<button class="btn ghost danger" id="tk7-cancel">${E(g('remove'))}</button>`:''}
+    <button class="btn ghost" id="tk7-x">${E(g('close'))}</button></div>`);
+  const q=s=>wrap.querySelector(s);
+  const paint=()=>{ q('#tk7-n').textContent=qty; const tt=q('#tk7-tot'); if(tt) tt.textContent=money(tk.price,qty); q('#tk7-go').textContent=existing?g('update',{n:qty}):g('confirm',{n:qty}); };
+  wrap.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{ qty=Math.max(1,Math.min(max,qty+(+b.dataset.q))); paint(); });
+  wrap.querySelectorAll('[data-tk7-who]').forEach(b=>b.onclick=()=>{ who=b.dataset.tk7Who; wrap.querySelectorAll('.tk7-person').forEach(x=>x.classList.toggle('on',x===b)); q('#tk7-err').textContent=''; });
+  q('#tk7-x').onclick=()=>wrap.remove();
+  const cn=q('#tk7-cancel');
+  if(cn) cn.onclick=async()=>{ if(!confirm(g('removeQ'))) return; cn.disabled=true; try{ await DB.deleteOrder(existing.id); wrap.remove(); render(); }catch(e){ cn.disabled=false; q('#tk7-err').textContent=g('err'); } };
+  let busy=false;
+  q('#tk7-go').onclick=async()=>{
+    if(busy) return;
+    if(people.length && !who){ q('#tk7-err').textContent=g('pickPerson'); return; }
+    busy=true; const btn=q('#tk7-go'); btn.disabled=true; btn.textContent=g('saving');
+    try{
+      if(cap){
+        const taken=await freshSold(tk,d,existing&&existing.id);
+        if(taken+qty>cap){ const n=Math.max(0,cap-taken); q('#tk7-err').textContent=n?g('onlyLeft',{n}):g('sold'); busy=false; btn.disabled=false; paint(); return; }
+      }
+      const s=S.session;
+      if(existing){ await patchOrder(existing,{qty,collect_from:who,event_date:d}); }
+      else{
+        /* one more check for a repeat made on another phone in the meantime */
+        const again=mineList().find(o=>String(o.ticket_id)===String(tk.id)&&orderDate(o)===d&&!isPaid(o));
+        if(again) await patchOrder(again,{qty,collect_from:who,event_date:d});
+        else await postOrder({ticket_id:tk.id,room:guestRoomValue(),guest_name:s.name,nationality:s.nationality||'',qty,status:'reserved',collect_from:who,event_date:d});
+      }
+      wrap.remove(); render(); done(tk,d,qty,who);
+    }catch(e){ console.error('V7.07 ticket order',e); busy=false; btn.disabled=false; paint(); q('#tk7-err').textContent=g('err'); }
+  };
+};
+window.openTicketBuyModal=openTicketBuyModal;
+function done(tk,d,qty,who){
+  const w=baseModal(`<div class="tk7-done"><div class="tk7-stub"><span class="tk7-stub-ic">${ic('check',26)}</span><h3>${E(g('doneTitle'))}</h3><p class="tk7-stub-ev">${E(tk.name)}</p><p>${E(niceDate(d,{weekday:'long',day:'numeric',month:'long'}))} · ${E(tk.time||'')}</p><div class="tk7-perf"></div><p class="tk7-stub-q">×${qty}${tk.price?' · '+E(money(tk.price,qty)):''}</p><p class="tk7-stub-who">${E(g('doneBody',{p:who||g('team')}))}</p></div><button class="btn" id="tk7-ok">${E(g('close'))}</button></div>`);
+  w.querySelector('#tk7-ok').onclick=()=>w.remove();
+}
+
+/* ============ STAFF ============ */
+function staffPanel(){
+  if(!(S.session&&S.session.role==='staff')) return '';
+  const me=new Set([S.session.name,S.session.username].map(norm));
+  const u=(S.users||[]).find(x=>String(x.username)===String(S.session.username)); if(u) me.add(norm(u.display_name));
+  const since=addDays(hotelDateStr(),-3);
+  const list=allOrders().filter(o=>o.collect_from&&me.has(norm(o.collect_from))&&(orderDate(o)||'9')>=since);
+  const todo=list.filter(o=>!isPaid(o)).sort((a,b)=>orderDate(a).localeCompare(orderDate(b)));
+  const got=list.filter(isPaid).sort((a,b)=>orderDate(b).localeCompare(orderDate(a))).slice(0,8);
+  const rep=new Set(); duplicateGroups().forEach(l=>l.slice(1).forEach(o=>rep.add(String(o.id))));
+  const row=o=>{ const tk=tkOf(o.ticket_id); const d=orderDate(o);
+    return `<div class="tk7-srow ${isPaid(o)?'paid':''}"><span class="tk7-srow-mid"><b>${E(o.guest_name||'Guest')} · Room ${E(roomOf(o)||'—')} · ×${qtyOf(o)}</b>${rep.has(String(o.id))?'<em class="tk7-rep">Repeat order — ask the manager before taking payment</em>':''}<span>${E(tk?tk.name:'Event deleted')}${d?' · '+E(niceDate(d)):''}${tk&&tk.time?' · '+E(tk.time):''}${tk&&tk.price?' · '+E(money(tk.price,qtyOf(o))):''}</span></span>
+      ${isPaid(o)?`<button class="tk7-mini undo" data-tk7-status="${E(o.id)}" data-next="reserved">${ic('check',13)} Handed over</button>`:`<button class="tk7-mini" data-tk7-status="${E(o.id)}" data-next="paid">Paid & handed over</button>`}</div>`; };
+  return `<section class="tk7-staff"><div class="tk7-staff-head"><h3>${ic('ticket',17)} Ticket collections</h3>${todo.length?`<span class="tk7-pill warn">${todo.length} to collect</span>`:''}</div>
+    ${todo.length?todo.map(row).join(''):`<div class="tk7-empty sm">No guest is waiting to pay you for a ticket.</div>`}
+    ${got.length?`<p class="tk7-sub">Handed over</p>${got.map(row).join('')}`:''}</section>`;
+}
+const wd0=myWorkDayView;
+myWorkDayView=function(){
+  let html=wd0.apply(this,arguments);
+  if(!(S.session&&S.session.role==='staff')) return html;
+  html=html.replace(/<section class="v614-staff-tickets">[\s\S]*?<\/section>/,'');
+  const pos=html.lastIndexOf('</div>');
+  return pos<0?html+staffPanel():html.slice(0,pos)+staffPanel()+html.slice(pos);
+};
+window.myWorkDayView=myWorkDayView;
+
+/* ============ MANAGER ============ */
+function stat(n,l,cls){ return `<div class="tk7-stat ${cls||''}"><b>${n}</b><span>${E(l)}</span></div>`; }
+window.guestTicketsManagerInnerV620=function(){
+  const mode=S.tk7Mode||'upcoming', qs=String(S.tk7Search||'').trim().toLowerCase(), today=hotelDateStr();
+  const all=allOrders();
+  const up=all.filter(o=>(orderDate(o)||'')>=today||!tkOf(o.ticket_id));
+  const pending=up.filter(o=>!isPaid(o)), paid=up.filter(isPaid);
+  const revenue=paid.reduce((n,o)=>{ const tk=tkOf(o.ticket_id); return n+(tk?priceNum(tk.price)*qtyOf(o):0); },0);
+  const cur=(()=>{ const tk=(S.tickets||[]).find(x=>priceNum(x.price)); const m=tk&&String(tk.price).replace(/[\d\s.,]/g,''); return m||''; })();
+  const pool=mode==='past'?all.filter(o=>(orderDate(o)||'')<today&&tkOf(o.ticket_id)):mode==='pending'?pending:mode==='paid'?paid:up;
+  const shown=pool.filter(o=>{ if(!qs) return true; const tk=tkOf(o.ticket_id); return [o.guest_name,roomOf(o),o.collect_from,tk&&tk.name].join(' ').toLowerCase().includes(qs); });
+  const groups=new Map();
+  shown.forEach(o=>{ const tk=tkOf(o.ticket_id), d=orderDate(o)||'', k=(tk?String(tk.id):'x')+'|'+d; if(!groups.has(k)) groups.set(k,{tk,d,list:[]}); groups.get(k).list.push(o); });
+  const gs=[...groups.values()].sort((a,b)=>mode==='past'?(b.d+'').localeCompare(a.d+''):(a.d+String(a.tk?startMin(a.tk):0).padStart(4,'0')).localeCompare(b.d+String(b.tk?startMin(b.tk):0).padStart(4,'0')));
+  const dups=duplicateGroups();
+  const row=o=>`<div class="tk7-orow ${isPaid(o)?'paid':''}"><span class="tk7-orow-mid"><b>${E(o.guest_name||'Guest')}</b><span>Room ${E(roomOf(o)||'—')} · ×${qtyOf(o)} · ${E(o.collect_from||'Entertainment Team')}${o.created_at?' · ordered '+E(whenLabel(o.created_at)):''}</span></span>
+      <span class="tk7-orow-act"><button class="tk7-mini ${isPaid(o)?'undo':''}" data-tk7-status="${E(o.id)}" data-next="${isPaid(o)?'reserved':'paid'}">${isPaid(o)?ic('check',13)+' Paid':'Mark paid'}</button><button class="tk7-icon" data-gt620-edit="${E(o.id)}" aria-label="Edit">${ic('pen',15)}</button><button class="tk7-icon" data-tk7-del="${E(o.id)}" aria-label="Delete">${ic('trash',15)}</button></span></div>`;
+  return `<div class="tk7-mgr">
+    <div class="tk7-mhead"><p class="tk7-eyebrow">Guest ticket orders</p><h3>Tickets</h3></div>
+    <div class="tk7-stats">${stat(up.length,'Orders')}${stat(up.reduce((n,o)=>n+qtyOf(o),0),'Tickets')}${stat(pending.reduce((n,o)=>n+qtyOf(o),0),'To collect','warn')}${stat(revenue?(Math.round(revenue*100)/100)+(cur?' '+cur:''):paid.reduce((n,o)=>n+qtyOf(o),0),revenue?'Paid in':'Paid','ok')}</div>
+    ${dups.length?`<div class="tk7-dups"><b>${dups.length} repeat order${dups.length>1?'s':''} found</b><span>The same guest ordered the same event for the same date more than once.</span>${dups.map((l,i)=>{ const tk=tkOf(l[0].ticket_id); const sum=l.reduce((n,o)=>n+qtyOf(o),0);
+      return `<div class="tk7-dup"><span><b>${E(l[0].guest_name||'Guest')} · Room ${E(roomOf(l[0]))}</b>${E(tk?tk.name:'')} · ${E(niceDate(orderDate(l[0])))} · ${l.map(o=>'×'+qtyOf(o)).join(' + ')}</span><span class="tk7-dup-act"><button class="tk7-mini" data-tk7-keep="${i}">Keep one (×${qtyOf(l[0])})</button>${sum!==qtyOf(l[0])?`<button class="tk7-mini ghost" data-tk7-merge="${i}">Combine (×${sum})</button>`:''}</span></div>`; }).join('')}</div>`:''}
+    <div class="tk7-tools"><input id="tk7-search" type="search" autocomplete="off" value="${E(S.tk7Search||'')}" placeholder="Search guest, room, event or team member"></div>
+    <div class="tk7-filter">${[['upcoming','Upcoming'],['pending','To collect'],['paid','Paid'],['past','Past']].map(([k,l])=>`<button class="${mode===k?'on':''}" data-tk7-mode="${k}">${l}</button>`).join('')}</div>
+    ${gs.length?gs.map(gr=>{ const cap=gr.tk?+gr.tk.capacity||0:0, sold=gr.tk&&gr.d?soldFor(gr.tk,gr.d):0;
+      return `<section class="tk7-group"><header>${gr.tk?`<img src="${E(gr.tk.image||IMG.show)}" alt="">`:''}<span><b>${E(gr.tk?gr.tk.name:'Event deleted')}</b><span>${gr.d?E(niceDate(gr.d,{weekday:'long',day:'numeric',month:'short'})):''}${gr.tk&&gr.tk.time?' · '+E(gr.tk.time):''}</span></span>${gr.tk?`<span class="tk7-cap">${sold}${cap?'/'+cap:''}</span>`:''}</header>${gr.list.map(row).join('')}</section>`; }).join('')
+      :`<div class="tk7-empty">No ticket orders ${mode==='past'?'in the past':'here'}.</div>`}
+    <div class="tk7-bottom"><button class="btn ghost" id="tk7-events">${ic('ticket',16)} Manage ticket events</button>
+    <button class="btn ghost" id="tk655-open" data-ticket-studio-page="guest-tickets">${ic('download',16)} Ticket Production Studio</button></div>
+  </div>`;
+};
+guestTicketsManagerInnerV620=window.guestTicketsManagerInnerV620;
+
+managerTicketsInner=function(){
+  const list=(S.tickets||[]).slice().sort((a,b)=>(nextDate(a)+String(startMin(a)).padStart(4,'0')).localeCompare(nextDate(b)+String(startMin(b)).padStart(4,'0')));
+  return `<div class="tk7-mgr">
+    <div class="tk7-mhead"><p class="tk7-eyebrow">Programme</p><h3>Ticket events</h3><p class="mini">Each event repeats every week on its day. Seats count per date, so every week starts fresh.</p></div>
+    <button class="btn" id="btn-addticket">${ic('plus',16)} Add ticket event</button>
+    ${list.length?`<div class="tk7-evlist">${list.map(tk=>{ const d=nextDate(tk), sold=soldFor(tk,d), cap=+tk.capacity||0, pend=allOrders().filter(o=>String(o.ticket_id)===String(tk.id)&&orderDate(o)===d&&!isPaid(o)).length, pct=cap?Math.min(100,Math.round(sold/cap*100)):0;
+      return `<article class="tk7-evrow"><img src="${E(tk.image||IMG.show)}" alt=""><span class="tk7-evrow-mid"><b>${E(tk.name)}</b><span>Next: ${E(niceDate(d,{weekday:'long',day:'numeric',month:'short'}))} · ${E(tk.time||'')}${tk.location?' · '+E(tk.location):''}</span>
+        <span class="tk7-evrow-cap">${cap?`<span class="tk7-bar"><i style="width:${pct}%"></i></span>`:''}<small>${sold}${cap?' of '+cap:''} sold${pend?` · <em>${pend} to collect</em>`:''}${tk.price?' · '+E(tk.price):''}</small></span></span>
+        <span class="tk7-evrow-act"><button class="tk7-mini ghost" data-tedit="${E(tk.id)}">Edit</button><button class="tk7-mini" data-tk7-orders="${E(tk.id)}">Orders</button></span></article>`; }).join('')}</div>`
+      :`<div class="tk7-empty">No ticket events yet. Add the first one — for example a Gala Dinner or a boat trip.</div>`}
+    <button class="btn ghost" id="tk655-open" data-ticket-studio-page="program-tickets" style="margin-top:12px">${ic('download',16)} Ticket Production Studio</button>
+  </div>`;
+};
+window.managerTicketsInner=managerTicketsInner;
+
+/* delete a ticket event: ask, and take its orders with it */
+const edit0=openTicketEditModal;
+openTicketEditModal=function(tk){
+  edit0(tk);
+  const wraps=document.querySelectorAll('.modal-bg'), w=wraps[wraps.length-1]; if(!w||!tk) return;
+  const del=w.querySelector('#k-del'); if(!del) return;
+  del.textContent='Delete ticket event';
+  del.onclick=async()=>{
+    const orders=(S.orders||[]).filter(o=>String(o.ticket_id)===String(tk.id));
+    const open=orders.filter(o=>(orderDate(o)||'')>=hotelDateStr()).length;
+    const ok=await confirmAction({question:'Delete "'+(tk.name||'this event')+'"?',detail:open?open+' upcoming order'+(open>1?'s':'')+' for this event will be deleted too. Guests will no longer see it.':'Guests will no longer see this event. This cannot be undone.',confirmLabel:'Delete event',danger:true});
+    if(!ok) return;
+    del.disabled=true;
+    try{
+      for(const o of orders){ try{ await DB.deleteOrder(o.id); }catch(e){ console.warn('order delete',e); } }
+      await DB.deleteTicket(tk.id); w.remove(); toastOk('Ticket event deleted'); render();
+    }catch(e){ del.disabled=false; toastErr(t('errSave')); }
+  };
+};
+window.openTicketEditModal=openTicketEditModal;
+
+/* the manager's order editor: only real team members as collectors, keep the date */
+const oe0=window.openGuestTicketOrderEditV620;
+if(typeof oe0==='function'){
+  window.openGuestTicketOrderEditV620=function(id){
+    oe0(id);
+    const wraps=document.querySelectorAll('.modal-bg'), w=wraps[wraps.length-1]; if(!w) return;
+    const sel=w.querySelector('#gt620-member');
+    if(sel){ const cur=sel.value; sel.innerHTML=`<option value="">Entertainment Team</option>`+collectors().map(p=>`<option value="${E(p.name)}" ${norm(p.name)===norm(cur)?'selected':''}>${E(p.name)}</option>`).join(''); if(cur&&!collectors().some(p=>norm(p.name)===norm(cur))) sel.insertAdjacentHTML('beforeend',`<option value="${E(cur)}" selected>${E(cur)} (no longer in the team)</option>`); }
+  };
+}
+
+/* ---------- wiring ---------- */
+async function setStatus(id,next,btn){
+  const o=(S.orders||[]).find(x=>String(x.id)===String(id)); if(!o) return;
+  if(next==='reserved' && !confirm('Mark this ticket as NOT paid / not handed over?')) return;
+  if(btn){ btn.disabled=true; btn.textContent='Saving…'; }
+  try{ await patchOrder(o,{status:next}); toastOk(next==='paid'?'Paid · ticket handed over':'Marked as not paid'); render(); }
+  catch(e){ console.error('ticket status',e); toastErr(t('errSave')); if(btn){ btn.disabled=false; render(); } }
+}
+window.__wireSteps.push(function(){
+  document.querySelectorAll('[data-tk7-buy]').forEach(b=>b.onclick=()=>openTicketBuyModal(tkOf(b.dataset.tk7Buy)));
+  document.querySelectorAll('[data-tk7-mine]').forEach(b=>b.onclick=()=>{ const o=allOrders().find(x=>String(x.id)===String(b.dataset.tk7Mine)); const tk=o&&tkOf(o.ticket_id); if(tk&&!isPaid(o)&&orderDate(o)===nextDate(tk)) openTicketBuyModal(tk); });
+  document.querySelectorAll('[data-tk7-status]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); setStatus(b.dataset.tk7Status,b.dataset.next,b); });
+  document.querySelectorAll('[data-tk7-mode]').forEach(b=>b.onclick=()=>{ S.tk7Mode=b.dataset.tk7Mode; render(); });
+  document.querySelectorAll('[data-tk7-del]').forEach(b=>b.onclick=async()=>{
+    const o=(S.orders||[]).find(x=>String(x.id)===String(b.dataset.tk7Del)); if(!o) return; const tk=tkOf(o.ticket_id);
+    if(!await confirmAction({question:'Delete this ticket order?',detail:(o.guest_name||'Guest')+' · Room '+roomOf(o)+(tk?' · '+tk.name:''),confirmLabel:'Delete order',danger:true})) return;
+    try{ await DB.deleteOrder(o.id); toastOk(t('deleted')); render(); }catch(e){ toastErr(t('errSave')); }
+  });
+  const dups=document.querySelector('.tk7-dups')?duplicateGroups():[];
+  document.querySelectorAll('[data-tk7-keep],[data-tk7-merge]').forEach(b=>b.onclick=async()=>{
+    const l=dups[+(b.dataset.tk7Keep??b.dataset.tk7Merge)]; if(!l) return;
+    const merge=b.hasAttribute('data-tk7-merge'), keep=l[0], extra=l.slice(1), sum=l.reduce((n,o)=>n+qtyOf(o),0);
+    b.disabled=true;
+    try{
+      if(merge) await patchOrder(keep,{qty:sum,status:l.some(isPaid)?'paid':keep.status||'reserved'});
+      else if(l.some(isPaid)&&!isPaid(keep)) await patchOrder(keep,{status:'paid'});
+      for(const o of extra) await DB.deleteOrder(o.id);
+      toastOk(merge?'Combined into one order':'Repeat removed'); render();
+    }catch(e){ b.disabled=false; toastErr(t('errSave')); }
+  });
+  const s=document.querySelector('#tk7-search');
+  if(s && !s.dataset.w){ s.dataset.w='1'; s.oninput=()=>{ S.tk7Search=s.value; const pos=s.selectionStart; render(); const n=document.querySelector('#tk7-search'); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(_){} } }; }
+  const ev=document.querySelector('#tk7-events'); if(ev) ev.onclick=()=>{ S.tab='program'; S.sub=S.sub||{}; S.sub.program='tickets'; render(); };
+  document.querySelectorAll('[data-tk7-orders]').forEach(b=>b.onclick=()=>{ const tk=tkOf(b.dataset.tk7Orders); S.tk7Search=tk?tk.name:''; S.tk7Mode='upcoming'; S.tab='guests'; S.sub=S.sub||{}; S.sub.guests='tickets'; render(); });
+});
+
+/* orders saved elsewhere (old screens) never show twice */
+const add0=DB.addOrder.bind(DB);
+DB.addOrder=async function(o){ const r=await add0(o); dedupe(); return r; };
+
+const st=document.createElement('style'); st.id='tk7-style';
+st.textContent=`
+.tk7-how{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 18px}
+.tk7-how span{display:flex;flex-direction:column;gap:6px;padding:12px 10px;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line);font-size:12px;line-height:1.3;color:var(--muted)}
+.tk7-how b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--espresso);color:#fff;font-size:12px}
+.tk7-h{margin:4px 0 10px;font-family:var(--font-display);font-size:22px;font-weight:400}
+.tk7-mine{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.tk7-res{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--card,#fff);border:1px solid var(--line);cursor:pointer;overflow:hidden}
+.tk7-res:before,.tk7-res:after{content:'';position:absolute;left:59px;width:14px;height:14px;border-radius:50%;background:var(--bg)}
+.tk7-res:before{top:-7px}.tk7-res:after{bottom:-7px}
+.tk7-date{flex:none;width:52px;display:flex;flex-direction:column;align-items:center;padding-right:10px;border-right:1.5px dashed var(--line);line-height:1.1}
+.tk7-date b{font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--espresso)}.tk7-date small{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--bronze)}
+.tk7-res-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.tk7-res-mid b{font-size:15.5px}.tk7-res-mid span{font-size:12.5px;color:var(--muted)}.tk7-res-q{font-weight:600;color:var(--ink)!important}
+.tk7-res-st i{display:inline-flex;align-items:center;gap:4px;font-style:normal;font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:99px;background:rgba(208,133,38,.12);color:#9A5B10;text-align:center;line-height:1.2}
+.tk7-res-st i.ok{background:rgba(94,138,87,.14);color:#4E7A48}
+.tk7-evs{display:flex;flex-direction:column;gap:16px}
+.tk7-ev{border-radius:22px;overflow:hidden;background:var(--card,#fff);border:1px solid var(--line);box-shadow:0 10px 30px rgba(40,25,10,.06)}
+.tk7-ev.out{opacity:.72}
+.tk7-ev-img{position:relative;height:170px}.tk7-ev-img img{width:100%;height:100%;object-fit:cover;display:block}
+.tk7-ev-img:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(0,0,0,.62))}
+.tk7-ev-img h4{position:absolute;left:16px;right:16px;bottom:12px;z-index:1;margin:0;color:#fff;font-family:var(--font-display);font-size:25px;font-weight:400;line-height:1.1}
+.tk7-chip{position:absolute;left:12px;top:12px;z-index:1;padding:6px 10px;border-radius:99px;background:rgba(255,255,255,.92);color:#2B1F16;font-size:12px;font-weight:700}
+.tk7-price{position:absolute;right:12px;top:12px;z-index:1;padding:6px 11px;border-radius:99px;background:var(--espresso);color:#fff;font-size:13px;font-weight:700}
+.tk7-ev-body{padding:12px 16px 14px}.tk7-place{margin:0;font-size:13px;color:var(--muted)}.tk7-desc{margin:6px 0 0;font-size:13.5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tk7-bar{display:block;height:5px;border-radius:9px;background:rgba(185,138,92,.18);overflow:hidden;margin:10px 0 0}.tk7-bar i{display:block;height:100%;border-radius:9px;background:var(--bronze)}
+.tk7-ev-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.tk7-have{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:#4E7A48}
+.tk7-left{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.tk7-left.low{color:#B06A12}.tk7-left.out{color:#B0392B}
+.tk7-btn{border:0;border-radius:99px;padding:10px 18px;background:var(--espresso);color:#fff;font-weight:700;font-size:14px;cursor:pointer}.tk7-btn.ghost{background:transparent;color:var(--espresso);border:1px solid var(--bronze)}
+.tk7-empty{padding:22px;border-radius:18px;border:1px dashed var(--line);text-align:center;color:var(--muted);font-size:14px}.tk7-empty.sm{padding:12px;font-size:13px}
+.tk7-buy-hero{display:flex;gap:12px;align-items:center}.tk7-buy-hero img{width:78px;height:78px;border-radius:16px;object-fit:cover;flex:none}
+.tk7-buy-hero .tk7-chip{position:static;display:inline-block;background:rgba(185,138,92,.15);color:var(--espresso);margin-bottom:6px}.tk7-buy-hero h3{margin:0}.tk7-buy-hero p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+.tk7-perf{height:0;border-top:2px dashed var(--line);margin:14px -4px;position:relative}
+.tk7-qty{display:flex;align-items:center;gap:12px;margin:4px 0 8px}.tk7-qty>span{font-weight:700;font-size:14px}
+.tk7-step{display:flex;align-items:center;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--card,#fff)}
+.tk7-step button{width:42px;height:40px;border:0;background:transparent;font-size:20px;color:var(--espresso);cursor:pointer}.tk7-step b{min-width:28px;text-align:center;font-size:17px}
+.tk7-total{margin-left:auto;text-align:right;line-height:1.1}.tk7-total small{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.tk7-total b{font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--espresso)}
+.tk7-lbl{display:block;margin:10px 0 8px}
+.tk7-people{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.tk7-person{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:16px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);cursor:pointer}
+.tk7-person.on{border-color:var(--espresso);box-shadow:0 0 0 2px rgba(62,42,30,.18);background:rgba(185,138,92,.08)}
+.tk7-person .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:rgba(185,138,92,.18);color:var(--espresso);font-weight:700;font-size:18px}.tk7-person .av img{width:100%;height:100%;object-fit:cover}
+.tk7-person .nm{font-size:12.5px;font-weight:600;text-align:center;line-height:1.2}.tk7-person .off{font-size:10px;color:var(--muted)}
+.tk7-fine{margin:12px 0 4px;font-size:12.5px;color:var(--muted);line-height:1.4}
+.tk7-note{margin:0 0 10px;padding:10px 12px;border-radius:12px;background:rgba(185,138,92,.12);font-size:13px;line-height:1.4}.tk7-note.bad{background:rgba(176,57,43,.1);color:#9C2F23}
+.tk7-err{min-height:1px;margin:4px 0;color:#B0392B;font-size:13px;font-weight:600}
+.tk7-buy .btn.danger,.tk7-mgr .danger{color:#B0392B}
+.tk7-done{text-align:center}.tk7-stub{margin:4px 0 16px;padding:22px 18px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}
+.tk7-stub-ic{width:54px;height:54px;border-radius:50%;display:inline-grid;place-items:center;background:rgba(94,138,87,.15);color:#4E7A48}
+.tk7-stub h3{margin:10px 0 2px}.tk7-stub p{margin:2px 0;font-size:13.5px;color:var(--muted)}.tk7-stub-ev{font-family:var(--font-display);font-size:22px!important;color:var(--ink)!important}
+.tk7-stub-q{font-weight:700;color:var(--ink)!important}.tk7-stub-who{margin-top:8px!important;line-height:1.45}
+.tk7-staff{margin-top:20px;padding:14px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}
+.tk7-staff-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.tk7-staff-head h3{margin:0;font-size:17px;display:flex;align-items:center;gap:6px}
+.tk7-pill{font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:99px}.tk7-pill.warn{background:rgba(208,133,38,.14);color:#9A5B10}
+.tk7-sub{margin:12px 0 4px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tk7-srow,.tk7-orow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.tk7-srow-mid,.tk7-orow-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.tk7-srow-mid b,.tk7-orow-mid b{font-size:14px}.tk7-srow-mid span,.tk7-orow-mid span{font-size:12px;color:var(--muted)}
+.tk7-rep{font-style:normal;font-size:11.5px;font-weight:700;color:#B06A12}
+.tk7-srow.paid,.tk7-orow.paid{opacity:.8}
+.tk7-mini{flex:none;border:0;border-radius:99px;padding:8px 12px;background:var(--espresso);color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.tk7-mini.ghost{background:transparent;color:var(--espresso);border:1px solid var(--line)}.tk7-mini.undo{background:rgba(94,138,87,.14);color:#4E7A48}
+.tk7-icon{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer}
+.tk7-orow-act{display:flex;gap:6px;align-items:center}
+.tk7-eyebrow{margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}.tk7-mhead h3{margin:2px 0 6px}
+.tk7-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 12px}
+.tk7-stat{padding:12px 8px;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line);text-align:center}.tk7-stat b{display:block;font-family:var(--font-display);font-size:24px;font-weight:400}.tk7-stat span{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tk7-stat.warn b{color:#B06A12}.tk7-stat.ok b{color:#4E7A48}
+.tk7-dups{margin:0 0 12px;padding:12px 14px;border-radius:16px;background:rgba(208,133,38,.1);border:1px solid rgba(208,133,38,.35)}.tk7-dups>b{display:block;font-size:14px}.tk7-dups>span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.tk7-dup{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(208,133,38,.25)}.tk7-dup>span:first-child{flex:1 1 200px;font-size:12.5px;display:flex;flex-direction:column}.tk7-dup-act{display:flex;gap:6px}
+.tk7-tools input{width:100%;margin:0 0 8px}
+.tk7-filter{display:flex;gap:6px;margin:0 0 12px;overflow-x:auto}.tk7-filter button{flex:none;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);border-radius:99px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer}.tk7-filter button.on{background:var(--espresso);border-color:var(--espresso);color:#fff}
+.tk7-group{margin:0 0 12px;padding:4px 14px 6px;border-radius:18px;background:var(--card,#fff);border:1px solid var(--line)}
+.tk7-group header{display:flex;align-items:center;gap:10px;padding:10px 0}.tk7-group header img{width:40px;height:40px;border-radius:12px;object-fit:cover}.tk7-group header>span{flex:1;display:flex;flex-direction:column}.tk7-group header b{font-size:15px}.tk7-group header span span{font-size:12px;color:var(--muted)}
+.tk7-cap{flex:none!important;font-weight:700;font-size:13px;padding:4px 10px;border-radius:99px;background:rgba(185,138,92,.14);color:var(--espresso)}
+.tk7-bottom{display:flex;flex-direction:column;gap:0;margin-top:6px}
+.tk7-evlist{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.tk7-evrow{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:var(--card,#fff);border:1px solid var(--line)}.tk7-evrow>img{width:58px;height:58px;border-radius:14px;object-fit:cover;flex:none}
+.tk7-evrow-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.tk7-evrow-mid b{font-size:15px}.tk7-evrow-mid>span{font-size:12px;color:var(--muted)}
+.tk7-evrow-cap .tk7-bar{margin:6px 0 3px}.tk7-evrow-cap small{font-size:11.5px;color:var(--muted)}.tk7-evrow-cap em{font-style:normal;color:#B06A12;font-weight:700}
+.tk7-evrow-act{display:flex;flex-direction:column;gap:6px}
+@media (max-width:360px){.tk7-stats{grid-template-columns:repeat(2,1fr)}}`;
+document.head.appendChild(st);
+})();
+</script>
+
+<script id="aurea-ticket-studio-v708">
+/* ===== V7.08 TICKET PRODUCTION STUDIO — checked + redesigned (2026-09-26) =====
+   Bugs fixed:
+   1. Repeat numbers: nothing remembered which Tombola / Bingo / club numbers
+      were already printed, so printing "batch A from 1" twice gave two guests
+      the same number. Every print is now saved (settings key ticketPrintsV708)
+      and an overlap is shown BEFORE printing, with "use the next free number".
+   2. Identical Bingo cards across batches: a card depended only on the set
+      number + ticket number, so batch A 1–50 and batch B 1–50 were the SAME
+      cards with different serials (two winners at once). Batch A stays exactly
+      as before; every other batch now gets its own cards.
+   3. The Bingo note still said the price replaces "FREE" — 90-ball tickets
+      have no FREE field. Removed.
+   Kept: all three ticket types, paired Tombola stub, unique-card check, the
+   Bingo colours, club offers, Excel control list, Prize vouchers entry. */
+(function(){
+'use strict';
+if(window.__AUREA_STUDIO_V708) return; window.__AUREA_STUDIO_V708=true;
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P=n=>String(n).padStart(4,'0');
+const CKEY='aurea.tickets.v657', HKEY='ticketPrintsV708';
+const TYPES={
+  tombola:{code:'TOM',name:'Tombola',line:'Numbered guest ticket + matching Entertainment copy'},
+  bingo:{code:'BIN',name:'Bingo',line:'90-ball cards — every card unique'},
+  disco:{code:'DSC',name:'Club ticket',line:'Admission ticket with what is included'}
+};
+const STYLES={
+  ivory:{label:'Ivory & gold',paper:'#FFFDF8',ink:'#1F2430',gold:'#B8975A',soft:'#F4EDE0',stub:'#1F2430',stubInk:'#F7F3EC'},
+  navy:{label:'Midnight navy',paper:'#101820',ink:'#F7F3EC',gold:'#C9A96E',soft:'#18232E',stub:'#F7F3EC',stubInk:'#101820'},
+  espresso:{label:'Espresso & sand',paper:'#FBF7F1',ink:'#3E2A1E',gold:'#B98A5C',soft:'#F1E7DA',stub:'#3E2A1E',stubInk:'#FBF7F1'}
+};
+const COLORS=[['Yellow','#E9D06B'],['Blue','#78B7D0'],['Green','#8CCB91'],['Pink','#E8A7B7'],['Orange','#E8A05D'],['Red','#D9786D'],['Purple','#B49AD1'],['Ivory','#E9E0CF']];
+const cfg=()=>{ try{ return JSON.parse(localStorage.getItem(CKEY)||'{}')||{}; }catch(_){ return {}; } };
+const putCfg=o=>{ try{ localStorage.setItem(CKEY,JSON.stringify(o)); }catch(_){} };
+const history=()=>{ const m=(S.settings&&S.settings[HKEY])||{}; return (m&&typeof m==='object'&&!Array.isArray(m))?m:{}; };
+const brand=()=>{ const st=S.settings||{}; return {name:String(st.hotelName||st.name||'Entertainment'),logo:String(st.logo||'')}; };
+function today(){ try{ return hotelDateStr(); }catch(_){ return new Date().toISOString().slice(0,10); } }
+const nice=iso=>{ try{ return new Date(String(iso).slice(0,10)+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(_){ return iso; } };
+
+/* ---------- Bingo: batch A unchanged, other batches get their own cards ---------- */
+function batchOffset(b){
+  b=String(b||'A').toUpperCase();
+  if(b==='A') return 0;
+  let h=0; for(const ch of b) h=(Math.imul(h,31)+ch.charCodeAt(0))>>>0;
+  return ((h%900)+1)*10000;
+}
+function card90(o,n){
+  const gen=window.AUREA_BINGO90_V658&&window.AUREA_BINGO90_V658.card90;
+  return gen?gen(+o.seed||8260,n+batchOffset(o.batch)):[[],[],[]];
+}
+const sig=g=>g.flat().join('|');
+function bingoCheck(o){
+  const seen=new Map();
+  for(let i=0;i<o.count;i++){ const n=o.start+i, s=sig(card90(o,n)); if(seen.has(s)) return {ok:false,a:seen.get(s),b:n}; seen.set(s,n); }
+  /* also against every Bingo batch printed before with the same card set */
+  const clash=Object.values(history()).filter(h=>h&&h.type==='bingo'&&String(h.batch).toUpperCase()!==String(o.batch).toUpperCase()&&(+h.seed||8260)===(+o.seed||8260));
+  for(const h of clash){
+    for(let n=h.start;n<=h.end&&n<h.start+400;n++){ const s=sig(card90(h,n)); if(seen.has(s)) return {ok:false,other:h,a:seen.get(s),b:n}; }
+  }
+  return {ok:true};
+}
+
+/* ---------- repeat numbers ---------- */
+function overlaps(o){
+  const end=o.start+o.count-1;
+  return Object.values(history()).filter(h=>h&&h.type===o.type&&String(h.batch).toUpperCase()===String(o.batch).toUpperCase()&&h.start<=end&&h.end>=o.start)
+    .sort((a,b)=>(b.printedAt||0)-(a.printedAt||0));
+}
+function nextFree(type,batch){
+  const hs=Object.values(history()).filter(h=>h&&h.type===type&&String(h.batch).toUpperCase()===String(batch).toUpperCase());
+  return hs.length?Math.max(...hs.map(h=>+h.end||0))+1:1;
+}
+async function record(o){
+  const id='p'+Date.now().toString(36);
+  const h={id,type:o.type,batch:String(o.batch).toUpperCase(),start:o.start,end:o.start+o.count-1,seed:o.type==='bingo'?(+o.seed||8260):undefined,title:o.type==='disco'?(o.club||o.title):o.title,date:today(),printedAt:Date.now(),by:(S.session&&S.session.name)||''};
+  try{ await DB.saveSettings({...S.settings,[HKEY]:{...history(),[id]:h}}); }catch(e){ console.warn('print history',e); }
+}
+
+/* ---------- printed tickets ---------- */
+function mono(st){ const b=brand(); return b.logo?`<img class="lg" src="${E(b.logo)}" alt="">`:`<span class="mn">${E(b.name.trim().charAt(0)||'E')}</span>`; }
+function serial(o,n){ return TYPES[o.type].code+'-'+String(o.batch).toUpperCase()+'-'+P(n); }
+function tombola(o,n){
+  const b=brand();
+  return `<article class="tk tom"><div class="main"><div class="fr"></div><header>${mono()}<span class="ht">${E(b.name)}</span></header>
+    <p class="kick">Tombola</p><div class="big">${P(n)}</div><p class="ev">${E(o.title||'Tombola night')}</p><p class="meta">${[o.time,o.place].filter(Boolean).map(E).join(' · ')}</p>
+    <p class="sn">${E(serial(o,n))}</p></div>
+    <aside class="stub"><small>Entertainment copy</small><b>${P(n)}</b><em>${E(serial(o,n))}</em><span class="nm">Name / room</span></aside></article>`;
+}
+function bingo(o,n){
+  const g=card90(o,n), b=brand();
+  return `<article class="tk bin" style="--c:${E(o.color||'#E9D06B')}"><header><span class="bw">Bingo</span><span class="ht">${E(b.name)}</span><span class="sn">${E(serial(o,n))}</span></header>
+    <div class="info"><span><small>Event</small><b>${E(o.title||'Bingo night')}</b></span><span><small>Time</small><b>${E(o.time||'—')}</b></span><span><small>Place</small><b>${E(o.place||'—')}</b></span>${o.price?`<span><small>Price</small><b>${E(o.price+' '+(o.currency||''))}</b></span>`:''}</div>
+    <div class="g">${g.flat().map(v=>`<i class="${v===''?'x':''}">${v===''?'':v}</i>`).join('')}</div>
+    <footer>Good luck! · 90-ball · unique card</footer></article>`;
+}
+function disco(o,n){
+  const b=brand();
+  return `<article class="tk dis"><div class="main"><div class="fr"></div><header>${mono()}<span class="ht">${E(b.name)}</span></header>
+    <p class="kick">Admission</p><h1>${E(o.club||'Club night')}</h1><p class="ev">${E(o.title||'')}</p>
+    <p class="meta">${[o.time&&('Time '+o.time),o.place&&('Meet at '+o.place),o.price&&(o.price+' '+(o.currency||''))].filter(Boolean).map(E).join(' · ')}</p>
+    ${(o.offers||[]).length?`<ul>${o.offers.map(x=>`<li>${E(x)}</li>`).join('')}</ul>`:''}<p class="foot">Show this ticket at the meeting point</p></div>
+    <aside class="stub"><small>Admission</small><b>${P(n)}</b><em>${E(serial(o,n))}</em></aside></article>`;
+}
+function css(o){
+  const s=STYLES[o.style]||STYLES.ivory;
+  return `@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&display=swap');
+@page{size:A4 portrait;margin:8mm}*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.tk{break-inside:avoid;position:relative;overflow:hidden}
+.tom,.dis{display:flex;height:62mm;background:${s.paper};color:${s.ink};border-radius:2.5mm}
+.dis .foot{margin:auto 0 0;font-size:6pt;letter-spacing:.08em;opacity:.65}
+.main{position:relative;flex:1;padding:5mm 5.5mm 4mm;display:flex;flex-direction:column}
+.fr{position:absolute;inset:2mm;border:.3mm solid ${s.gold};border-radius:1.6mm;pointer-events:none}
+header{display:flex;align-items:center;gap:2mm;font-size:5.8pt;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.mn{width:6mm;height:6mm;border-radius:50%;border:.25mm solid ${s.gold};color:${s.gold};display:inline-grid;place-items:center;font:400 9pt 'DM Serif Display',Georgia,serif;letter-spacing:0}
+.lg{width:6mm;height:6mm;border-radius:50%;object-fit:cover;border:.25mm solid ${s.gold}}
+.kick{margin:2.5mm 0 0;font-size:6.2pt;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:${s.gold}}
+.big{font:400 34pt/1 'DM Serif Display',Georgia,serif;margin:1mm 0 0}
+.ev{margin:1.2mm 0 0;font-size:9pt;font-weight:700}.meta{margin:.8mm 0 0;font-size:7pt;opacity:.75}
+.sn{margin:auto 0 0;font-size:6.5pt;letter-spacing:.1em;color:${s.gold};font-weight:600}
+.stub{position:relative;width:27mm;flex:none;background:${s.stub};color:${s.stubInk};border-left:.4mm dashed ${s.gold};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4mm;text-align:center;padding:3mm 2mm}
+.stub:before,.stub:after{content:'';position:absolute;left:-2.2mm;width:4mm;height:4mm;border-radius:50%;background:#fff}.stub:before{top:-2mm}.stub:after{bottom:-2mm}
+.stub small{font-size:5.4pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:${s.gold}}
+.stub b{font:400 20pt/1 'DM Serif Display',Georgia,serif}.stub em{font-style:normal;font-size:5.6pt;opacity:.8}
+.stub .nm{margin-top:7mm;width:100%;border-top:.25mm solid currentColor;padding-top:.8mm;font-size:5pt;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+.dis h1{margin:.4mm 0 0;font:400 20pt/1.05 'DM Serif Display',Georgia,serif}
+.dis ul{margin:1.6mm 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.8mm 3mm;font-size:6.8pt}
+.dis li:before{content:'✓ ';color:${s.gold};font-weight:700}
+.bin{border:.4mm solid color-mix(in srgb,var(--c) 70%,#3E2A1E);border-radius:2.5mm;background:#fff;color:#2B1F16;padding:0 0 2.5mm}
+.bin header{background:var(--c);padding:2.2mm 3.5mm;gap:2.5mm;letter-spacing:.1em}
+.bin .bw{font:400 16pt/1 'DM Serif Display',Georgia,serif;letter-spacing:.02em;text-transform:none}
+.bin .ht{flex:1;font-size:5.8pt;opacity:.8}.bin .sn{margin:0;color:#2B1F16;font-size:6.5pt}
+.bin .info{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5mm;padding:2mm 3.5mm 1.5mm}
+.bin .info small{display:block;font-size:5pt;letter-spacing:.14em;text-transform:uppercase;opacity:.6}.bin .info b{display:block;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bin .g{display:grid;grid-template-columns:repeat(9,1fr);margin:0 3.5mm;border:.35mm solid #3E2A1E;border-radius:1.2mm;overflow:hidden}
+.bin .g i{font-style:normal;height:9.5mm;display:grid;place-items:center;font:400 13pt 'DM Serif Display',Georgia,serif;border-right:.2mm solid rgba(62,42,30,.35);border-bottom:.2mm solid rgba(62,42,30,.35)}
+.bin .g i:nth-child(9n){border-right:0}.bin .g i:nth-child(n+19){border-bottom:0}
+.bin .g i.x{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--c) 45%,#fff) 0 1.2mm,color-mix(in srgb,var(--c) 25%,#fff) 1.2mm 2.4mm)}
+.bin footer{margin:1.6mm 3.5mm 0;font-size:5.8pt;letter-spacing:.14em;text-transform:uppercase;opacity:.6;text-align:center}
+@media screen{body{background:#e9e6e1;padding:10px}.sheet{max-width:210mm;margin:auto}}`;
+}
+function ticket(o,n){ return o.type==='bingo'?bingo(o,n):o.type==='disco'?disco(o,n):tombola(o,n); }
+function printSet(o){
+  let cards=''; for(let i=0;i<o.count;i++) cards+=ticket(o,o.start+i);
+  const w=window.open('','_blank');
+  if(!w){ toastErr('Could not open the print window. Allow pop-ups and try again.'); return false; }
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+E(TYPES[o.type].name)+' tickets</title><style>'+css(o)+'</style></head><body><div class="sheet">'+cards+'</div><scr'+'ipt>window.onload=function(){setTimeout(function(){window.print()},500)};<\/scr'+'ipt></body></html>');
+  w.document.close(); return true;
+}
+async function excelList(o){
+  const rows=[['Type','Serial','Number','Event / club','Time','Place','Price','Currency','Included','Bingo card (row by row)']];
+  for(let i=0;i<o.count;i++){ const n=o.start+i;
+    rows.push([TYPES[o.type].name,serial(o,n),P(n),o.type==='disco'?o.club:o.title,o.time,o.place,o.price||'',o.price?o.currency:'',o.type==='disco'?(o.offers||[]).join(', '):'',o.type==='bingo'?card90(o,n).map(r=>r.map(v=>v===''?'-':v).join(' ')).join(' / '):'']); }
+  try{ await loadXLSX(); const wb=XLSX.utils.book_new(), ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:12},{wch:16},{wch:8},{wch:24},{wch:10},{wch:18},{wch:8},{wch:8},{wch:40},{wch:80}]; XLSX.utils.book_append_sheet(wb,ws,'Control list'); XLSX.writeFile(wb,TYPES[o.type].name.replace(/\s/g,'_')+'_'+String(o.batch).toUpperCase()+'_'+P(o.start)+'-'+P(o.start+o.count-1)+'.xlsx'); }
+  catch(e){ toastErr('Excel export could not be created.'); }
+}
+
+/* ---------- the studio ---------- */
+function open(){
+  const c=cfg();
+  let o={type:TYPES[c.type]?c.type:'tombola',batch:String(c.batch||'A').toUpperCase(),start:+c.start||1,count:Math.max(1,Math.min(1000,+c.count||20)),
+    title:c.title||'',time:c.time||'',place:c.place||'',club:c.club||'',price:c.price||'',currency:c.currency||'EUR',seed:+c.seed||8260,
+    color:c.color||'#E9D06B',style:STYLES[c.style]?c.style:'ivory',offers:Array.isArray(c.offers)&&c.offers.length?c.offers.slice():['Transport to the club and back','Club entrance','1 drink','Entertainer guide']};
+  /* start where the last print stopped */
+  const nf=nextFree(o.type,o.batch); if(overlaps(o).length) o.start=nf;
+  const wrap=baseModal('<div class="tk8-studio"></div>');
+  const box=wrap.querySelector('.tk8-studio');
+  const q=s=>box.querySelector(s);
+  function draw(){
+    const ov=overlaps(o), bc=o.type==='bingo'?bingoCheck(o):{ok:true};
+    const end=o.start+o.count-1;
+    const hist=Object.values(history()).filter(Boolean).sort((a,b)=>(b.printedAt||0)-(a.printedAt||0)).slice(0,8);
+    box.innerHTML=`<div class="tk655-head tk8-head"><p class="tk8-eyebrow">Manager · Ticket Studio</p><h3>Ticket Production Studio</h3><p class="mini">Design, number and print paper tickets. Every print is remembered, so no number is printed twice by mistake.</p></div>
+      <button type="button" class="tk8-prize" id="tk8-prize"><span class="tk8-prize-ic">${ic('trophy',20)}</span><span><b>Make prizes for the winners</b><span>Prize vouchers for Tombola and Bingo winners, with your signature</span></span></button>
+      <div class="tk8-types">${Object.entries(TYPES).map(([k,v])=>`<button type="button" class="tk8-type ${o.type===k?'on':''}" data-t="${k}"><b>${E(v.name)}</b><span>${E(v.line)}</span></button>`).join('')}</div>
+      <input type="hidden" id="rtype" value="${E(o.type)}">
+      <section class="tk8-sec"><h4>Numbers</h4>
+        <div class="tk8-3"><div><label>Batch</label><input id="t8-batch" value="${E(o.batch)}" maxlength="4"></div><div><label>First number</label><input id="t8-start" type="number" min="1" value="${o.start}"></div><div><label>How many</label><input id="t8-count" type="number" min="1" max="1000" value="${o.count}"></div></div>
+        <p class="tk8-range">${E(serial(o,o.start))} → ${E(serial(o,end))} · ${o.count} ticket${o.count>1?'s':''} · ${Math.ceil(o.count/(o.type==='bingo'?10:8))} A4 page${Math.ceil(o.count/(o.type==='bingo'?10:8))>1?'s':''}</p>
+        ${ov.length?`<div class="tk8-warn"><b>These numbers were printed before</b><span>${ov.slice(0,3).map(h=>`${E(TYPES[h.type].code)}-${E(h.batch)}-${P(h.start)} → ${P(h.end)} on ${E(nice(h.date))}${h.title?' ('+E(h.title)+')':''}`).join('<br>')}</span><span>Printing them again gives two guests the same number.</span><button type="button" class="tk8-mini" id="t8-next">Start at the next free number (${nextFree(o.type,o.batch)})</button></div>`:''}
+        ${!bc.ok?`<div class="tk8-warn bad"><b>Duplicate Bingo card</b><span>${bc.other?`Card ${P(bc.a)} is the same as card ${P(bc.b)} of batch ${E(bc.other.batch)} printed on ${E(nice(bc.other.date))}. Change the batch letter or the card set number.`:`Cards ${P(bc.a)} and ${P(bc.b)} are the same.`}</span></div>`:o.type==='bingo'?`<p class="tk8-ok">${ic('check',13)} All ${o.count} Bingo cards are unique${Object.values(history()).some(h=>h&&h.type==='bingo')?' — also compared with earlier Bingo batches':''}.</p>`:''}
+      </section>
+      <section class="tk8-sec"><h4>Details</h4>
+        ${o.type==='disco'?`<label>Club name</label><input id="t8-club" value="${E(o.club)}" placeholder="e.g. Little Buddha">`:''}
+        <label>${o.type==='disco'?'Party / night':'Event'}</label><input id="rtitle" value="${E(o.title)}" placeholder="${o.type==='bingo'?'e.g. Bingo by the pool':o.type==='disco'?'e.g. Friday Club Night':'e.g. Sunday Tombola night'}">
+        <div class="tk8-2"><div><label>Time</label><input id="t8-time" value="${E(o.time)}" placeholder="21:30"></div><div><label>${o.type==='disco'?'Meeting point':'Place'}</label><input id="t8-place" value="${E(o.place)}"></div></div>
+        ${o.type!=='tombola'?`<div class="tk8-2"><div><label>Price</label><input id="t8-price" inputmode="decimal" value="${E(o.price)}" placeholder="optional"></div><div><label>Currency</label><select id="t8-cur">${['EUR','USD','EGP','GBP'].map(x=>`<option ${o.currency===x?'selected':''}>${x}</option>`).join('')}</select></div></div>`:''}
+        ${o.type==='disco'?`<label>What is included</label><div id="t8-offers">${o.offers.map((x,i)=>`<div class="tk8-offer"><input class="t8-off" value="${E(x)}"><button type="button" class="tk8-x" data-rm="${i}" aria-label="Remove">×</button></div>`).join('')}</div><button type="button" class="btn sm ghost" id="t8-addoff">${ic('plus',14)} Add item</button>`:''}
+        ${o.type==='bingo'?`<label>Ticket colour</label><div class="tk8-colors">${COLORS.map(([n,v])=>`<button type="button" class="tk8-color ${o.color===v?'on':''}" data-col="${v}" style="--sw:${v}" aria-label="${n}"></button>`).join('')}</div>
+          <details class="tk8-adv"><summary>Advanced · card set number</summary><input id="t8-seed" type="number" value="${o.seed}"><p class="mini">Cards are made from this number, the batch letter and the ticket number. Reprinting the same batch and numbers gives exactly the same cards.</p></details>`:''}
+      </section>
+      ${o.type!=='bingo'?`<section class="tk8-sec"><h4>Design</h4><div class="tk8-styles">${Object.entries(STYLES).map(([k,v])=>`<button type="button" class="tk8-style ${o.style===k?'on':''}" data-st="${k}"><span style="background:${v.paper};border-color:${v.gold}"><i style="background:${v.stub}"></i></span>${E(v.label)}</button>`).join('')}</div></section>`:''}
+      <section class="tk8-sec"><h4>Preview</h4><div class="tk8-prev"><iframe id="t8-frame" title="Ticket preview"></iframe></div></section>
+      <button class="btn" id="rprint8" ${bc.ok?'':'disabled'}>${ic('download',16)} Print / PDF ${o.count} ticket${o.count>1?'s':''}</button>
+      <button class="btn ghost" id="rexcel8" ${bc.ok?'':'disabled'}>${ic('download',16)} Excel control list</button>
+      ${hist.length?`<section class="tk8-sec tk8-hist"><h4>Printed before</h4>${hist.map(h=>`<button type="button" class="tk8-h" data-h="${E(h.id)}"><span class="tk8-h-ic">${E(TYPES[h.type]?TYPES[h.type].code:'')}</span><span class="tk8-h-mid"><b>${E(h.batch)}-${P(h.start)} → ${P(h.end)}</b><span>${E(h.title||TYPES[h.type].name)} · ${E(nice(h.date))}${h.by?' · '+E(h.by):''}</span></span></button>`).join('')}</section>`:''}
+      <button class="btn ghost" id="rclose8">Close</button>`;
+    preview(); wire();
+  }
+  function preview(){
+    const f=q('#t8-frame'); if(!f||!f.contentDocument) return;
+    const W=o.type==='bingo'?400:370, H=o.type==='bingo'?205:o.type==='disco'?300:236;
+    const doc=f.contentDocument; doc.open(); doc.write('<!doctype html><html><head><meta charset="utf-8"><style>'+css(o)+' body{background:transparent;padding:0;margin:0}.sheet{display:block;width:'+(o.type==='bingo'?'98mm':'98mm')+'}</style></head><body><div class="sheet">'+ticket(o,o.start)+'</div></body></html>'); doc.close();
+    const pv=q('.tk8-prev'), sc=Math.min(1.25,((pv&&pv.clientWidth)||320)/W);
+    f.style.width=W+'px'; f.style.height=H+'px'; f.style.transform='scale('+sc+')'; if(pv) pv.style.height=Math.round(H*sc+4)+'px';
+  }
+  function read(){
+    const v=(id,d)=>{ const el=q(id); return el?el.value:d; };
+    o.batch=String(v('#t8-batch',o.batch)||'A').trim().toUpperCase()||'A';
+    o.start=Math.max(1,parseInt(v('#t8-start',o.start),10)||1);
+    o.count=Math.max(1,Math.min(1000,parseInt(v('#t8-count',o.count),10)||1));
+    o.title=v('#rtitle',o.title).trim(); o.time=v('#t8-time',o.time).trim(); o.place=v('#t8-place',o.place).trim();
+    if(q('#t8-club')) o.club=q('#t8-club').value.trim();
+    if(q('#t8-price')) o.price=q('#t8-price').value.trim();
+    if(q('#t8-cur')) o.currency=q('#t8-cur').value;
+    if(q('#t8-seed')) o.seed=+q('#t8-seed').value||8260;
+    if(q('#t8-offers')) o.offers=[...box.querySelectorAll('.t8-off')].map(x=>x.value.trim()).filter(Boolean);
+    putCfg(o);
+  }
+  let tm=null;
+  function wire(){
+    box.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ read(); o.type=b.dataset.t; if(overlaps(o).length) o.start=nextFree(o.type,o.batch); draw(); });
+    box.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{ o.style=b.dataset.st; putCfg(o); draw(); });
+    box.querySelectorAll('[data-col]').forEach(b=>b.onclick=()=>{ o.color=b.dataset.col; putCfg(o); draw(); });
+    box.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ read(); o.offers.splice(+b.dataset.rm,1); draw(); });
+    const ad=q('#t8-addoff'); if(ad) ad.onclick=()=>{ read(); o.offers.push(''); draw(); const l=box.querySelectorAll('.t8-off'); if(l.length) l[l.length-1].focus(); };
+    const nx=q('#t8-next'); if(nx) nx.onclick=()=>{ read(); o.start=nextFree(o.type,o.batch); draw(); };
+    /* typing: update preview at once, redraw the checks when the field is left */
+    box.querySelectorAll('input,select').forEach(el=>{
+      if(el.type==='hidden') return;
+      el.oninput=()=>{ read(); clearTimeout(tm); tm=setTimeout(preview,120); };
+      el.onchange=()=>{ read(); const id=el.id; draw(); const n=id&&q('#'+id); if(n&&n.focus&&document.activeElement===document.body){ try{ n.focus(); }catch(_){} } };
+    });
+    q('#tk8-prize').onclick=()=>{ if(typeof window.openPrizeMakerV701==='function') window.openPrizeMakerV701(); };
+    q('#rclose8').onclick=()=>wrap.remove();
+    box.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=history()[b.dataset.h]; if(!h) return; read(); o.type=h.type; o.batch=h.batch; o.title=h.title||o.title; if(h.seed) o.seed=h.seed; o.start=nextFree(o.type,o.batch); draw(); toastOk('Settings from that print — starting at the next free number'); });
+    const pr=q('#rprint8');
+    if(pr) pr.onclick=async()=>{
+      read();
+      const bc=o.type==='bingo'?bingoCheck(o):{ok:true}; if(!bc.ok){ draw(); return; }
+      const ov=overlaps(o);
+      if(ov.length && !confirm('Numbers '+serial(o,o.start)+' to '+serial(o,o.start+o.count-1)+' were printed before. Print them AGAIN (only for replacing lost tickets)?')) return;
+      if(printSet(o)){ await record(o); o.start=nextFree(o.type,o.batch); putCfg(o); draw(); toastOk('Printed — next print starts at '+serial(o,o.start)); }
+    };
+    const ex=q('#rexcel8'); if(ex) ex.onclick=()=>{ read(); excelList(o); };
+  }
+  draw();
+}
+window.openTicketStudio655=window.openTicketStudio656=window.openTicketStudio657=window.openTicketStudioV708=open;
+window.AUREA_STUDIO_V708={open,card90,bingoCheck,overlaps,nextFree,css,ticket,batchOffset};
+window.__wireSteps.push(function(){ document.querySelectorAll('#tk655-open').forEach(b=>{ b.onclick=e=>{ if(e){ e.preventDefault(); } open(); }; }); });
+
+const st=document.createElement('style'); st.id='tk8-style';
+st.textContent=`.tk8-head .tk8-eyebrow,.tk8-eyebrow{margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}.tk8-head h3{margin:4px 0 4px}
+.tk8-prize{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:12px 0;padding:13px 15px;border-radius:18px;border:1px solid var(--bronze);background:linear-gradient(135deg,rgba(185,138,92,.16),rgba(185,138,92,.03));color:var(--ink);cursor:pointer}
+.tk8-prize-ic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--espresso);color:#fff}.tk8-prize b{display:block;font-size:15px}.tk8-prize span span{display:block;font-size:12.5px;color:var(--muted)}
+.tk8-types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 14px}
+.tk8-type{display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px 10px;border-radius:16px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);cursor:pointer}
+.tk8-type b{font-family:var(--font-display);font-size:17px;font-weight:400}.tk8-type span{font-size:11px;line-height:1.3;color:var(--muted)}
+.tk8-type.on{border-color:var(--espresso);background:var(--espresso);color:#fff}.tk8-type.on b{color:#fff}.tk8-type.on span{color:rgba(255,255,255,.75)}
+.tk8-sec{margin:0 0 12px;padding:14px;border-radius:18px;background:var(--card,#fff);border:1px solid var(--line)}
+.tk8-sec h4{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze)}
+.tk8-3{display:grid;grid-template-columns:.8fr 1fr 1fr;gap:8px}.tk8-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tk8-range{margin:4px 0 0;font-size:12.5px;font-weight:600;color:var(--muted)}
+.tk8-warn{margin-top:10px;padding:11px 12px;border-radius:14px;background:rgba(208,133,38,.1);border:1px solid rgba(208,133,38,.35);display:flex;flex-direction:column;gap:4px;font-size:12.5px;line-height:1.4}
+.tk8-warn b{font-size:13.5px}.tk8-warn.bad{background:rgba(176,57,43,.08);border-color:rgba(176,57,43,.35)}.tk8-warn .tk8-mini{align-self:flex-start;margin-top:4px}
+.tk8-ok{margin:8px 0 0;font-size:12.5px;font-weight:600;color:#4E7A48;display:flex;gap:5px;align-items:center}
+.tk8-mini{border:0;border-radius:99px;padding:8px 13px;background:var(--espresso);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer}
+.tk8-offer{display:flex;gap:6px;margin-bottom:6px}.tk8-offer input{flex:1;margin:0}
+.tk8-x{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:19px;cursor:pointer}
+.tk8-colors{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.tk8-color{width:34px;height:34px;border-radius:50%;border:2px solid #fff;background:var(--sw);box-shadow:0 0 0 1px var(--line);cursor:pointer}.tk8-color.on{box-shadow:0 0 0 2px var(--espresso)}
+.tk8-adv summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);margin:6px 0}
+.tk8-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tk8-style{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:12px;font-weight:600;cursor:pointer}.tk8-style.on{border-color:var(--bronze);box-shadow:0 0 0 2px rgba(185,138,92,.25)}
+.tk8-style>span{width:48px;height:28px;border-radius:5px;border:2px solid;display:flex;justify-content:flex-end;overflow:hidden}.tk8-style i{width:14px;height:100%;display:block}
+.tk8-prev{position:relative;overflow:hidden;border-radius:12px;background:#e9e6e1}.tk8-prev iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none}
+.tk8-hist .tk8-h{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 0;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.tk8-h-ic{flex:none;width:40px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:10.5px;font-weight:800;letter-spacing:.06em;background:rgba(185,138,92,.15);color:var(--espresso)}
+.tk8-h-mid{display:flex;flex-direction:column}.tk8-h-mid b{font-size:13.5px}.tk8-h-mid span{font-size:12px;color:var(--muted)}`;
 document.head.appendChild(st);
 })();
 </script>
