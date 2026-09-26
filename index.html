@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.26-studio-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.26-packs-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -21327,7 +21327,7 @@ managerTicketsInner=function(){
     <button class="btn" id="btn-addticket">${ic('plus',16)} Add ticket event</button>
     ${list.length?`<div class="tk7-evlist">${list.map(tk=>{ const d=nextDate(tk), sold=soldFor(tk,d), cap=+tk.capacity||0, pend=allOrders().filter(o=>String(o.ticket_id)===String(tk.id)&&orderDate(o)===d&&!isPaid(o)).length, pct=cap?Math.min(100,Math.round(sold/cap*100)):0;
       return `<article class="tk7-evrow"><img src="${E(tk.image||IMG.show)}" alt=""><span class="tk7-evrow-mid"><b>${E(tk.name)}</b><span>Next: ${E(niceDate(d,{weekday:'long',day:'numeric',month:'short'}))} · ${E(tk.time||'')}${tk.location?' · '+E(tk.location):''}</span>
-        <span class="tk7-evrow-cap">${cap?`<span class="tk7-bar"><i style="width:${pct}%"></i></span>`:''}<small>${sold}${cap?' of '+cap:''} sold${pend?` · <em>${pend} to collect</em>`:''}${tk.price?' · '+E(tk.price):''}</small></span></span>
+        <span class="tk7-evrow-cap">${cap?`<span class="tk7-bar"><i style="width:${pct}%"></i></span>`:''}<small>${sold}${cap?' of '+cap:''} sold${pend?` · <em>${pend} to collect</em>`:''}${tk.price?' · '+E(tk.price):''}</small>${typeof window.__tk7EvExtra==='function'?window.__tk7EvExtra(tk,d):''}</span></span>
         <span class="tk7-evrow-act"><button class="tk7-mini ghost" data-tedit="${E(tk.id)}">Edit</button><button class="tk7-mini" data-tk7-orders="${E(tk.id)}">Orders</button></span></article>`; }).join('')}</div>`
       :`<div class="tk7-empty">No ticket events yet. Add the first one — for example a Gala Dinner or a boat trip.</div>`}
     <button class="btn ghost" id="tk655-open" data-ticket-studio-page="program-tickets" style="margin-top:12px">${ic('download',16)} Ticket Production Studio</button>
@@ -21372,7 +21372,7 @@ async function setStatus(id,next,btn){
   const o=(S.orders||[]).find(x=>String(x.id)===String(id)); if(!o) return;
   if(next==='reserved' && !confirm('Mark this ticket as NOT paid / not handed over?')) return;
   if(btn){ btn.disabled=true; btn.textContent='Saving…'; }
-  try{ await patchOrder(o,{status:next}); toastOk(next==='paid'?'Paid · ticket handed over':'Marked as not paid'); render(); }
+  try{ await patchOrder(o,{status:next}); let note=''; try{ if(typeof window.__tk7AfterStatus==='function') note=await window.__tk7AfterStatus(o,next)||''; }catch(e){ console.warn('pack link',e); } toastOk((next==='paid'?'Paid · ticket handed over':'Marked as not paid')+note); render(); }
   catch(e){ console.error('ticket status',e); toastErr(t('errSave')); if(btn){ btn.disabled=false; render(); } }
 }
 window.__wireSteps.push(function(){
@@ -21403,6 +21403,7 @@ window.__wireSteps.push(function(){
   document.querySelectorAll('[data-tk7-orders]').forEach(b=>b.onclick=()=>{ const tk=tkOf(b.dataset.tk7Orders); S.tk7Search=tk?tk.name:''; S.tk7Mode='upcoming'; S.tab='guests'; S.sub=S.sub||{}; S.sub.guests='tickets'; render(); });
 });
 
+window.AUREA_TICKETS_V707={orderDate,nextDate,tkOf,allOrders,roomOf};
 /* orders saved elsewhere (old screens) never show twice */
 const add0=DB.addOrder.bind(DB);
 DB.addOrder=async function(o){ const r=await add0(o); dedupe(); return r; };
@@ -21491,7 +21492,6 @@ st.textContent=`
 document.head.appendChild(st);
 })();
 </script>
-
 <script id="aurea-ticket-studio-v708">
 /* ===== V7.08 TICKET PRODUCTION STUDIO — checked + redesigned (2026-09-26) =====
    Bugs fixed:
@@ -21774,7 +21774,316 @@ st.textContent=`.tk8-head .tk8-eyebrow,.tk8-eyebrow{margin:0;font-size:11px;font
 document.head.appendChild(st);
 })();
 </script>
+<script id="aurea-ticket-packs-v709">
+/* ===== V7.09 TICKET PACKS WITH THE TEAM (2026-09-26) =====
+   The manager gives an entertainer a pack of paper tickets (e.g. Tombola
+   0001–0020, 4 € each). The entertainer taps each number he sells; the
+   manager sees live how many are out, sold, and how much each person has to
+   pay back, records payments and closes the pack when unsold tickets return.
+   Stored in settings, three separate keys so the manager and the entertainer
+   never overwrite each other:
+     ticketHandoutsV709  packs            (manager)
+     ticketSalesV709     sold numbers     (entertainer, or manager on behalf)
+     ticketPaysV709      payments/closing (manager)
+   A guest order marked "Paid & handed over" takes the next free number(s)
+   from the collector's pack automatically. */
+(function(){
+'use strict';
+if(window.__AUREA_PACKS_V709) return; window.__AUREA_PACKS_V709=true;
+const HK='ticketHandoutsV709', SK='ticketSalesV709', PK='ticketPaysV709';
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const obj=v=>(v&&typeof v==='object'&&!Array.isArray(v))?v:{};
+const packs=()=>obj(S.settings&&S.settings[HK]), sales=()=>obj(S.settings&&S.settings[SK]), pays=()=>obj(S.settings&&S.settings[PK]);
+const P=n=>String(n).padStart(4,'0');
+const num=(p,n)=>(p.batch?String(p.batch).toUpperCase()+'-':'')+P(n);
+const r2=v=>Math.round((+v||0)*100)/100;
+const money=(v,c)=>{ v=r2(v); const s=Number.isInteger(v)?String(v):v.toFixed(2); return c==='€'||c==='EGP'||!c?s+' '+(c||'€'):c+s; };
+const T=()=>window.AUREA_TICKETS_V707||{};
+const tkOf=id=>(S.tickets||[]).find(x=>String(x.id)===String(id))||null;
+const norm=v=>String(v||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9\u00c0-\u024f\u0600-\u06ff]+/g,' ').trim();
+function today(){ try{ return hotelDateStr(); }catch(_){ return new Date().toISOString().slice(0,10); } }
+const nice=(s,o)=>{ try{ return new Date(String(s).slice(0,10)+'T12:00:00').toLocaleDateString('en-GB',o||{weekday:'short',day:'numeric',month:'short'}); }catch(_){ return s; } };
+function team(){
+  return (S.users||[]).filter(u=>u&&u.role==='staff'&&u.active!==false&&!(typeof isAttOnly==='function'&&isAttOnly(u))&&!(typeof hasLeft==='function'&&hasLeft(u)))
+    .sort((a,b)=>(+a.number||99)-(+b.number||99));
+}
+const userName=un=>{ const u=(S.users||[]).find(x=>String(x.username)===String(un)); return u?(u.display_name||u.username):String(un||''); };
+const isMe=p=>S.session&&(String(p.user)===String(S.session.username));
+function priceParse(s){ const m=String(s||'').match(/(\d+(?:[.,]\d{1,2})?)/); const cur=/\$/.test(s)?'$':/£/.test(s)?'£':/egp|le\b/i.test(s)?'EGP':'€'; return {v:m?parseFloat(m[1].replace(',','.')):0,cur}; }
 
+/* ---------- numbers ---------- */
+function soldOf(p){ const m=obj((sales()[p.id]||{}).sold); const out={}; Object.keys(m).forEach(k=>{ if(+k>=p.from&&+k<=p.to) out[k]=m[k]; }); return out; }
+function payOf(p){ const x=obj(pays()[p.id]); return {payments:Array.isArray(x.payments)?x.payments:[],closedAt:x.closedAt||0,returned:+x.returned||0}; }
+function stats(p){
+  const n=Math.max(0,p.to-p.from+1), sold=Object.keys(soldOf(p)).length, pay=payOf(p);
+  const paid=r2(pay.payments.reduce((s,x)=>s+(+x.amount||0),0)), owed=r2(sold*(+p.price||0));
+  return {n,sold,left:n-sold,owed,paid,balance:r2(owed-paid),closed:!!pay.closedAt,returned:pay.returned};
+}
+const openPacks=()=>Object.values(packs()).filter(p=>p&&!stats(p).closed);
+
+/* ---------- saving (sales are batched so fast tapping is one save) ---------- */
+const pendingSales={}; let saleTimer=null;
+function queueSale(p,map){ pendingSales[p.id]={sold:map,updatedAt:Date.now(),by:(S.session&&S.session.username)||''}; clearTimeout(saleTimer); saleTimer=setTimeout(flushSales,700); }
+async function flushSales(){
+  const ids=Object.keys(pendingSales); if(!ids.length) return;
+  const upd={...sales()}; ids.forEach(id=>{ upd[id]=pendingSales[id]; delete pendingSales[id]; });
+  try{ await DB.saveSettings({...S.settings,[SK]:upd}); }
+  catch(e){ toastErr('Sale not saved — check the internet'); ids.forEach(id=>{ pendingSales[id]=upd[id]; }); saleTimer=setTimeout(flushSales,5000); }
+}
+window.addEventListener('pagehide',()=>{ if(Object.keys(pendingSales).length) flushSales(); });
+function localSold(p){ return pendingSales[p.id]?obj(pendingSales[p.id].sold):obj((sales()[p.id]||{}).sold); }
+function toggle(p,n,info){
+  const m={...localSold(p)}, k=String(n);
+  if(m[k]) delete m[k]; else m[k]={t:Date.now(),...(info||{})};
+  queueSale(p,m);
+  /* show at once */
+  S.settings={...S.settings,[SK]:{...sales(),[p.id]:{sold:m,updatedAt:Date.now()}}};
+}
+async function savePack(p){ p.updatedAt=Date.now(); await DB.saveSettings({...S.settings,[HK]:{...packs(),[p.id]:p}}); }
+async function savePay(p,x){ await DB.saveSettings({...S.settings,[PK]:{...pays(),[p.id]:x}}); }
+async function deletePack(p){
+  const a={...packs()}; delete a[p.id]; const b={...sales()}; delete b[p.id]; const c={...pays()}; delete c[p.id];
+  await DB.saveSettings({...S.settings,[HK]:a,[SK]:b,[PK]:c});
+}
+
+/* ---------- guest orders: take numbers from the collector's pack ---------- */
+window.__tk7AfterStatus=async function(o,next){
+  const tk=tkOf(o.ticket_id); if(!tk) return '';
+  const d=T().orderDate?T().orderDate(o):'';
+  const who=norm(o.collect_from);
+  const p=openPacks().filter(x=>String(x.ticketId)===String(tk.id)&&(!d||!x.date||x.date===d)&&norm(userName(x.user))===who)[0];
+  if(!p) return '';
+  const m={...localSold(p)};
+  if(next==='paid'){
+    if(Object.values(m).some(v=>v&&String(v.orderId)===String(o.id))) return '';
+    const q=Math.max(1,+o.qty||1), give=[];
+    for(let n=p.from;n<=p.to&&give.length<q;n++) if(!m[String(n)]) give.push(n);
+    give.forEach(n=>{ m[String(n)]={t:Date.now(),orderId:o.id,guest:o.guest_name||'',room:(T().roomOf?T().roomOf(o):o.room)||''}; });
+    if(!give.length) return ' · pack is empty';
+    queueSale(p,m); S.settings={...S.settings,[SK]:{...sales(),[p.id]:{sold:m,updatedAt:Date.now()}}}; await flushSales();
+    return ' · give ticket '+give.map(n=>num(p,n)).join(', ');
+  } else {
+    let changed=false; Object.keys(m).forEach(k=>{ if(m[k]&&String(m[k].orderId)===String(o.id)){ delete m[k]; changed=true; } });
+    if(changed){ queueSale(p,m); S.settings={...S.settings,[SK]:{...sales(),[p.id]:{sold:m,updatedAt:Date.now()}}}; await flushSales(); return ' · numbers back in the pack'; }
+    return '';
+  }
+};
+
+/* ============ ENTERTAINER ============ */
+function chips(p,editable){
+  const m=localSold(p); let h='';
+  for(let n=p.from;n<=p.to;n++){ const s=m[String(n)]; h+=`<button type="button" class="th9-n ${s?'sold':''}" ${editable?`data-th9-n="${E(p.id)}|${n}"`:''} title="${s&&s.guest?E(s.guest+' '+(s.room||'')):''}">${E(P(n).replace(/^0+(?=\d{2})/,''))}</button>`; }
+  return `<div class="th9-grid">${h}</div>`;
+}
+function staffPanel(){
+  if(!(S.session&&S.session.role==='staff')) return '';
+  const mine=openPacks().filter(isMe).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  if(!mine.length) return '';
+  const tot=mine.reduce((s,p)=>{ const x=stats(p); s.owe+=x.balance; s.cur=p.currency||s.cur; return s; },{owe:0,cur:'€'});
+  return `<section class="th9-staff"><div class="th9-shead"><h3>${ic('ticket',17)} My ticket packs</h3>${tot.owe>0?`<span class="th9-pill">${E(money(tot.owe,tot.cur))} to hand in</span>`:''}</div>
+    <p class="th9-hint">Tap a number when you sell that ticket. Tap again to undo. Hand the money to your manager.</p>
+    ${mine.map(p=>{ const x=stats(p), tk=tkOf(p.ticketId);
+      return `<article class="th9-pack"><header><span><b>${E(p.name||(tk&&tk.name)||'Tickets')}</b><span>${p.date?E(nice(p.date))+' · ':''}${E(num(p,p.from))} – ${E(num(p,p.to))} · ${E(money(p.price,p.currency))} each</span></span></header>
+        <div class="th9-count"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>to hand in</span></div>
+        ${chips(p,true)}
+        <button type="button" class="th9-plus" data-th9-plus="${E(p.id)}" ${x.left?'':'disabled'}>+ Sold one (next number)</button></article>`; }).join('')}
+  </section>`;
+}
+const wd0=myWorkDayView;
+myWorkDayView=function(){
+  const html=wd0.apply(this,arguments);
+  if(!(S.session&&S.session.role==='staff')) return html;
+  const panel=staffPanel(); if(!panel) return html;
+  const i=html.indexOf('<section class="tk7-staff">');
+  if(i>=0) return html.slice(0,i)+panel+html.slice(i);
+  const pos=html.lastIndexOf('</div>'); return pos<0?html+panel:html.slice(0,pos)+panel+html.slice(pos);
+};
+window.myWorkDayView=myWorkDayView;
+
+/* ============ MANAGER ============ */
+function teamSection(){
+  const all=Object.values(packs()).filter(Boolean);
+  const mode=S.th9Mode||'open';
+  const list=all.filter(p=>mode==='open'?!stats(p).closed:stats(p).closed);
+  const open=all.filter(p=>!stats(p).closed).map(p=>({p,x:stats(p)}));
+  const cur=(open[0]&&open[0].p.currency)||'€';
+  const sum=k=>r2(open.reduce((s,o)=>s+o.x[k],0));
+  const byUser=new Map(); list.forEach(p=>{ if(!byUser.has(p.user)) byUser.set(p.user,[]); byUser.get(p.user).push(p); });
+  return `<section class="th9">
+    <div class="th9-mhead"><p class="th9-eyebrow">Paper tickets with the team</p><h3>Ticket packs</h3><p class="mini">Give an entertainer a range of numbered tickets. They tap each ticket they sell; you see who has to pay you how much.</p></div>
+    <div class="th9-stats"><div><b>${sum('left')}</b><span>With the team</span></div><div><b>${sum('sold')}</b><span>Sold</span></div><div class="warn"><b>${E(money(sum('balance'),cur))}</b><span>To collect</span></div><div class="ok"><b>${E(money(sum('paid'),cur))}</b><span>Collected</span></div></div>
+    <button class="btn" id="th9-new">${ic('plus',16)} Give tickets to an entertainer</button>
+    <div class="th9-filter"><button class="${mode==='open'?'on':''}" data-th9-mode="open">Open</button><button class="${mode==='closed'?'on':''}" data-th9-mode="closed">Settled</button></div>
+    ${byUser.size?[...byUser.entries()].map(([un,ps])=>{ const owe=r2(ps.reduce((s,p)=>s+stats(p).balance,0));
+      return `<div class="th9-user"><header><span class="av">${E(userName(un).charAt(0).toUpperCase())}</span><b>${E(userName(un))}</b>${mode==='open'?`<span class="th9-owe ${owe>0?'':'zero'}">${owe>0?'Owes '+E(money(owe,ps[0].currency)):'Nothing to pay'}</span>`:''}</header>
+        ${ps.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))).map(p=>{ const x=stats(p), tk=tkOf(p.ticketId), pct=x.n?Math.round(x.sold/x.n*100):0;
+          return `<button type="button" class="th9-row" data-th9-open="${E(p.id)}"><span class="th9-row-mid"><b>${E(p.name||(tk&&tk.name)||'Tickets')}${p.date?' · '+E(nice(p.date)):''}</b><span>${E(num(p,p.from))} – ${E(num(p,p.to))} · ${x.n} tickets · ${E(money(p.price,p.currency))}</span>
+            <span class="th9-bar"><i style="width:${pct}%"></i></span><span class="th9-nums">Sold <b>${x.sold}</b> · Left <b>${x.left}</b> · Owes <b>${E(money(x.owed,p.currency))}</b> · Paid <b>${E(money(x.paid,p.currency))}</b>${x.closed?' · settled':''}</span></span></button>`; }).join('')}</div>`; }).join('')
+      :`<div class="th9-empty">${mode==='open'?'No tickets are out with the team.':'No settled packs yet.'}</div>`}
+    ${all.length?`<button class="btn ghost" id="th9-xls">${ic('download',16)} Export packs to Excel</button>`:''}
+  </section>`;
+}
+const mti0=managerTicketsInner;
+managerTicketsInner=function(){
+  const html=mti0.apply(this,arguments);
+  const i=html.indexOf('<button class="btn ghost" id="tk655-open"');
+  return i>=0?html.slice(0,i)+teamSection()+html.slice(i):html+teamSection();
+};
+window.managerTicketsInner=managerTicketsInner;
+
+function nextFrom(ticketId,date,batch){
+  const ps=Object.values(packs()).filter(p=>p&&String(p.ticketId)===String(ticketId)&&(p.date||'')===(date||'')&&String(p.batch||'').toUpperCase()===String(batch||'').toUpperCase());
+  return ps.length?Math.max(...ps.map(p=>+p.to||0))+1:1;
+}
+function openEditor(p){
+  const isNew=!p, tks=S.tickets||[], ppl=team();
+  const tk0=p?tkOf(p.ticketId):tks[0];
+  const nd=tk=>tk&&T().nextDate?T().nextDate(tk):today();
+  const pr=priceParse(tk0&&tk0.price);
+  p=p?{...p}:{id:'h'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),ticketId:tk0?tk0.id:'',name:tk0?tk0.name:'',date:tk0?nd(tk0):today(),user:'',batch:'',from:1,to:20,price:pr.v||'',currency:pr.cur,note:'',createdAt:Date.now()};
+  if(isNew&&tk0) { p.from=nextFrom(p.ticketId,p.date,p.batch); p.to=p.from+19; }
+  const w=baseModal(`<div class="th9-ed"><h3>${isNew?'Give tickets to an entertainer':'Edit ticket pack'}</h3>
+    <label>Event</label><select id="th9-ev">${tks.map(tk=>`<option value="${E(tk.id)}" ${String(tk.id)===String(p.ticketId)?'selected':''}>${E(tk.name)}</option>`).join('')}<option value="" ${!p.ticketId?'selected':''}>Other…</option></select>
+    <div id="th9-namew" style="display:${p.ticketId?'none':'block'}"><label>Name on the list</label><input id="th9-name" value="${E(p.ticketId?'':p.name)}" placeholder="e.g. Tombola"></div>
+    <label>For the date</label><input id="th9-date" type="date" value="${E(p.date||'')}">
+    <label>Entertainer</label><div class="th9-ppl">${ppl.map(u=>`<button type="button" class="th9-p ${String(u.username)===String(p.user)?'on':''}" data-u="${E(u.username)}"><span class="av">${E(String(u.display_name||u.username).charAt(0).toUpperCase())}</span><span>${E(u.display_name||u.username)}</span></button>`).join('')}</div>
+    <div class="th9-3"><div><label>Batch</label><input id="th9-batch" value="${E(p.batch||'')}" placeholder="—" maxlength="3"></div><div><label>From number</label><input id="th9-from" type="number" min="1" value="${p.from}"></div><div><label>To number</label><input id="th9-to" type="number" min="1" value="${p.to}"></div></div>
+    <div class="th9-2"><div><label>Price per ticket</label><input id="th9-price" inputmode="decimal" value="${E(p.price)}"></div><div><label>Currency</label><select id="th9-cur">${['€','$','EGP','£'].map(c=>`<option ${p.currency===c?'selected':''}>${c}</option>`).join('')}</select></div></div>
+    <p class="th9-sum" id="th9-sum"></p><p class="th9-warn" id="th9-warn"></p>
+    <label>Note</label><input id="th9-note" value="${E(p.note||'')}" placeholder="optional">
+    <button class="btn" id="th9-save">${isNew?'Give tickets':'Save changes'}</button>
+    ${!isNew?`<button class="btn ghost danger" id="th9-del">Delete this pack</button>`:''}
+    <button class="btn ghost" id="th9-x">Close</button></div>`);
+  const q=s=>w.querySelector(s);
+  const read=()=>{
+    p.ticketId=q('#th9-ev').value; const tk=tkOf(p.ticketId); p.name=tk?tk.name:q('#th9-name').value.trim();
+    p.date=q('#th9-date').value; p.batch=q('#th9-batch').value.trim().toUpperCase();
+    p.from=Math.max(1,parseInt(q('#th9-from').value,10)||1); p.to=Math.max(p.from,parseInt(q('#th9-to').value,10)||p.from);
+    p.price=r2(parseFloat(String(q('#th9-price').value).replace(',','.'))||0); p.currency=q('#th9-cur').value; p.note=q('#th9-note').value.trim();
+  };
+  const check=()=>{
+    read(); q('#th9-namew').style.display=p.ticketId?'none':'block';
+    const n=p.to-p.from+1;
+    q('#th9-sum').textContent=`${num(p,p.from)} – ${num(p,p.to)} = ${n} ticket${n>1?'s':''} × ${money(p.price,p.currency)} = ${money(n*p.price,p.currency)}${p.user?' with '+userName(p.user):''}`;
+    const clash=Object.values(packs()).filter(x=>x&&x.id!==p.id&&String(x.ticketId)===String(p.ticketId)&&(x.date||'')===(p.date||'')&&String(x.batch||'').toUpperCase()===p.batch&&x.from<=p.to&&x.to>=p.from);
+    q('#th9-warn').innerHTML=clash.length?`These numbers are already with ${clash.map(x=>E(userName(x.user))+' ('+E(num(x,x.from))+'–'+E(num(x,x.to))+')').join(', ')}. <button type="button" class="th9-mini" id="th9-nf">Use ${E(num(p,nextFrom(p.ticketId,p.date,p.batch)))} onwards</button>`:'';
+    const nf=q('#th9-nf'); if(nf) nf.onclick=()=>{ const f=nextFrom(p.ticketId,p.date,p.batch), c=p.to-p.from; q('#th9-from').value=f; q('#th9-to').value=f+c; check(); };
+    return clash.length;
+  };
+  w.querySelectorAll('.th9-p').forEach(b=>b.onclick=()=>{ p.user=b.dataset.u; w.querySelectorAll('.th9-p').forEach(x=>x.classList.toggle('on',x===b)); check(); });
+  q('#th9-ev').onchange=()=>{ const tk=tkOf(q('#th9-ev').value); if(tk){ q('#th9-date').value=nd(tk); const pp=priceParse(tk.price); if(pp.v){ q('#th9-price').value=pp.v; q('#th9-cur').value=pp.cur; } } if(isNew){ read(); const f=nextFrom(p.ticketId,p.date,p.batch), c=Math.max(0,p.to-p.from); q('#th9-from').value=f; q('#th9-to').value=f+c; } check(); };
+  w.addEventListener('input',check); check();
+  q('#th9-x').onclick=()=>w.remove();
+  q('#th9-save').onclick=async()=>{
+    const clash=check();
+    if(!p.user){ q('#th9-warn').textContent='Choose the entertainer.'; return; }
+    if(!p.ticketId&&!p.name){ q('#th9-warn').textContent='Give the tickets a name.'; return; }
+    if(clash&&!confirm('Some of these numbers are already with someone else. Save anyway?')) return;
+    const b=q('#th9-save'); b.disabled=true; b.textContent='Saving…';
+    try{ await savePack(p); w.remove(); toastOk(isNew?`${p.to-p.from+1} tickets given to ${userName(p.user)}`:'Saved'); render(); }
+    catch(e){ b.disabled=false; b.textContent='Try again'; toastErr(t('errSave')); }
+  };
+  const d=q('#th9-del'); if(d) d.onclick=async()=>{ const x=stats(p); if(!await confirmAction({question:'Delete this ticket pack?',detail:`${userName(p.user)} · ${num(p,p.from)}–${num(p,p.to)}${x.sold?` · ${x.sold} sold, ${money(x.paid,p.currency)} paid`:''}. The sales and payments of this pack are deleted too.`,confirmLabel:'Delete pack',danger:true})) return; try{ await deletePack(p); w.remove(); toastOk('Pack deleted'); render(); }catch(e){ toastErr(t('errSave')); } };
+}
+function openPack(id){
+  const p=packs()[id]; if(!p) return;
+  const draw=()=>{
+    const x=stats(p), pay=payOf(p), tk=tkOf(p.ticketId), m=localSold(p);
+    const soldList=Object.entries(m).filter(([k,v])=>v&&v.guest).map(([k,v])=>`<li>${E(num(p,+k))} · ${E(v.guest)}${v.room?' · Room '+E(v.room):''}</li>`).join('');
+    box.innerHTML=`<p class="th9-eyebrow">${E(userName(p.user))}</p><h3>${E(p.name||(tk&&tk.name)||'Tickets')}${p.date?' · '+E(nice(p.date)):''}</h3>
+      <p class="mini">${E(num(p,p.from))} – ${E(num(p,p.to))} · ${x.n} tickets · ${E(money(p.price,p.currency))} each${p.note?' · '+E(p.note):''}</p>
+      <div class="th9-count big"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span><b>${E(money(x.owed,p.currency))}</b>owed</span><span><b>${E(money(x.paid,p.currency))}</b>paid</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>still to pay</span></div>
+      <p class="th9-hint">Numbers ${x.closed?'':'— tap to correct a sale'}</p>${chips(p,!x.closed)}
+      ${soldList?`<details class="th9-det"><summary>Sold to guests through the app</summary><ul>${soldList}</ul></details>`:''}
+      ${pay.payments.length?`<div class="th9-pays"><b>Payments</b>${pay.payments.map(y=>`<span>${E(money(y.amount,p.currency))} · ${E(whenLabel(new Date(y.at).toISOString()))}${y.by?' · '+E(y.by):''}</span>`).join('')}</div>`:''}
+      ${x.closed?`<p class="th9-ok">${ic('check',14)} Settled${pay.returned?` · ${pay.returned} unsold returned`:''}</p><button class="btn ghost" id="th9-reopen">Reopen pack</button>`
+        :`<div class="th9-payrow"><input id="th9-amt" inputmode="decimal" value="${x.balance>0?x.balance:''}" placeholder="Amount"><button class="btn" id="th9-pay">Money received</button></div>
+          <button class="btn ghost" id="th9-close">Unsold tickets returned — settle pack (${x.left} back)</button>`}
+      <button class="btn ghost" id="th9-edit">Edit pack</button><button class="btn ghost" id="th9-cl">Close</button>`;
+    box.querySelectorAll('[data-th9-n]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.th9N.split('|')[1]; toggle(p,n,{by:(S.session&&S.session.username)||''}); draw(); });
+    const payB=box.querySelector('#th9-pay'); if(payB) payB.onclick=async()=>{ const a=r2(parseFloat(String(box.querySelector('#th9-amt').value).replace(',','.'))); if(!(a>0)) return; payB.disabled=true; const pay=payOf(p); try{ await savePay(p,{...pay,payments:[...pay.payments,{amount:a,at:Date.now(),by:(S.session&&S.session.name)||''}]}); toastOk(money(a,p.currency)+' received from '+userName(p.user)); draw(); render(); }catch(e){ payB.disabled=false; toastErr(t('errSave')); } };
+    const cl=box.querySelector('#th9-close'); if(cl) cl.onclick=async()=>{ await flushSales(); const x2=stats(p); if(x2.balance>0&&!confirm(`${userName(p.user)} still has to pay ${money(x2.balance,p.currency)}. Settle the pack anyway?`)) return; const pay=payOf(p); try{ await savePay(p,{...pay,closedAt:Date.now(),returned:x2.left}); toastOk('Pack settled'); draw(); render(); }catch(e){ toastErr(t('errSave')); } };
+    const ro=box.querySelector('#th9-reopen'); if(ro) ro.onclick=async()=>{ const pay=payOf(p); try{ await savePay(p,{...pay,closedAt:0,returned:0}); draw(); render(); }catch(e){ toastErr(t('errSave')); } };
+    box.querySelector('#th9-edit').onclick=()=>{ w.remove(); openEditor(p); };
+    box.querySelector('#th9-cl').onclick=()=>{ w.remove(); render(); };
+  };
+  const w=baseModal('<div class="th9-detail"></div>'), box=w.querySelector('.th9-detail');
+  draw();
+}
+async function exportXls(){
+  const rows=Object.values(packs()).filter(Boolean).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||userName(a.user).localeCompare(userName(b.user))).map(p=>{ const x=stats(p), tk=tkOf(p.ticketId);
+    return [userName(p.user),p.name||(tk&&tk.name)||'',p.date||'',num(p,p.from)+' – '+num(p,p.to),x.n,p.price,p.currency,x.sold,x.left,x.owed,x.paid,x.balance,x.closed?'Settled':'Open',Object.keys(soldOf(p)).sort((a,b)=>a-b).map(n=>num(p,+n)).join(', ')]; });
+  await exportExcelSets([{title:'Ticket packs',headers:['Entertainer','Event','Date','Numbers','Tickets','Price','Currency','Sold','Left','Owed','Paid','Still to pay','Status','Sold numbers'],rows}],'Ticket_packs_'+today());
+}
+
+/* ---------- wiring ---------- */
+window.__wireSteps.push(function(){
+  const nb=document.querySelector('#th9-new'); if(nb) nb.onclick=()=>openEditor(null);
+  const xb=document.querySelector('#th9-xls'); if(xb) xb.onclick=()=>exportXls();
+  document.querySelectorAll('[data-th9-mode]').forEach(b=>b.onclick=()=>{ S.th9Mode=b.dataset.th9Mode; render(); });
+  document.querySelectorAll('[data-th9-open]').forEach(b=>b.onclick=()=>openPack(b.dataset.th9Open));
+  document.querySelectorAll('.th9-staff [data-th9-n]').forEach(b=>b.onclick=()=>{
+    const [id,n]=b.dataset.th9N.split('|'); const p=packs()[id]; if(!p) return;
+    const cur=localSold(p)[n]; if(cur&&cur.orderId&&!confirm('This ticket was given to a guest who ordered in the app ('+(cur.guest||'guest')+'). Undo the sale?')) return;
+    toggle(p,+n,{by:(S.session&&S.session.username)||''}); b.classList.toggle('sold');
+    const sec=b.closest('.th9-pack'); if(sec){ const x=stats(p), c=sec.querySelector('.th9-count'); if(c) c.innerHTML=`<span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>to hand in</span>`; const pl=sec.querySelector('.th9-plus'); if(pl) pl.disabled=!x.left; }
+  });
+  document.querySelectorAll('[data-th9-plus]').forEach(b=>b.onclick=()=>{
+    const p=packs()[b.dataset.th9Plus]; if(!p) return; const m=localSold(p);
+    for(let n=p.from;n<=p.to;n++) if(!m[String(n)]){ toggle(p,n,{by:(S.session&&S.session.username)||''}); toastOk('Sold '+num(p,n)); render(); return; }
+  });
+});
+window.__tk7EvExtra=function(tk,d){
+  const ps=Object.values(packs()).filter(p=>p&&String(p.ticketId)===String(tk.id)&&(!p.date||p.date===d));
+  if(!ps.length) return '';
+  const n=ps.reduce((s,p)=>s+stats(p).n,0), sold=ps.reduce((s,p)=>s+stats(p).sold,0);
+  return `<small class="th9-evx">Paper tickets with the team: ${sold} of ${n} sold · ${ps.map(p=>E(userName(p.user))).join(', ')}</small>`;
+};
+window.AUREA_PACKS_V709={packs,sales,pays,stats,openEditor,openPack,flushSales};
+
+const st=document.createElement('style'); st.id='th9-style';
+st.textContent=`.th9{margin:18px 0 12px;padding:16px;border-radius:22px;background:var(--card,#fff);border:1px solid var(--line)}
+.th9-eyebrow{margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}.th9-mhead h3{margin:2px 0 4px}
+.th9-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px}.th9-stats div{padding:10px 4px;border-radius:14px;background:var(--bg);text-align:center}
+.th9-stats b{display:block;font-family:var(--font-display);font-size:20px;font-weight:400}.th9-stats span{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.th9-stats .warn b{color:#B06A12}.th9-stats .ok b{color:#4E7A48}
+.th9-filter{display:flex;gap:6px;margin:12px 0 10px}.th9-filter button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:7px 14px;font-weight:600;font-size:13px;cursor:pointer}.th9-filter button.on{background:var(--espresso);border-color:var(--espresso);color:#fff}
+.th9-user{margin:0 0 10px;padding:4px 0 2px;border-top:1px solid var(--line)}.th9-user>header{display:flex;align-items:center;gap:8px;padding:10px 0 4px}
+.th9-user .av,.th9-p .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(185,138,92,.18);color:var(--espresso);font-weight:700;flex:none}
+.th9-user>header b{flex:1;font-size:15px}.th9-owe{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(208,133,38,.14);color:#9A5B10}.th9-owe.zero{background:rgba(94,138,87,.14);color:#4E7A48}
+.th9-row{display:block;width:100%;text-align:left;padding:10px 12px;margin:6px 0;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.th9-row-mid{display:flex;flex-direction:column;gap:3px}.th9-row-mid b{font-size:14px}.th9-row-mid>span{font-size:12px;color:var(--muted)}.th9-nums b{color:var(--ink)}
+.th9-bar{display:block;height:5px;border-radius:9px;background:rgba(185,138,92,.18);overflow:hidden;margin:3px 0}.th9-bar i{display:block;height:100%;background:var(--bronze);border-radius:9px}
+.th9-empty{padding:16px;border-radius:14px;border:1px dashed var(--line);text-align:center;color:var(--muted);font-size:13.5px;margin-bottom:10px}
+.th9-ppl{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-bottom:6px}
+.th9-p{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-size:12.5px;font-weight:600;cursor:pointer;text-align:left}.th9-p .av{width:26px;height:26px;font-size:12px}.th9-p.on{border-color:var(--espresso);background:rgba(185,138,92,.12)}
+.th9-3{display:grid;grid-template-columns:.7fr 1fr 1fr;gap:8px}.th9-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.th9-sum{margin:6px 0 4px;padding:10px 12px;border-radius:12px;background:rgba(185,138,92,.12);font-size:13px;font-weight:600}
+.th9-warn{min-height:1px;margin:4px 0;font-size:12.5px;font-weight:600;color:#9A5B10;line-height:1.5}
+.th9-mini{border:0;border-radius:99px;padding:6px 11px;background:var(--espresso);color:#fff;font-size:12px;font-weight:700;cursor:pointer;margin-left:4px}
+.th9-staff{margin-top:20px;padding:14px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}
+.th9-shead{display:flex;align-items:center;justify-content:space-between;gap:10px}.th9-shead h3{margin:0;font-size:17px;display:flex;align-items:center;gap:6px}
+.th9-pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(208,133,38,.14);color:#9A5B10}
+.th9-hint{margin:6px 0 10px;font-size:12.5px;color:var(--muted)}
+.th9-pack{padding:12px 0;border-top:1px solid var(--line)}.th9-pack header b{display:block;font-size:15px}.th9-pack header span span{font-size:12px;color:var(--muted)}
+.th9-count{display:flex;gap:6px;margin:10px 0}.th9-count span{flex:1;padding:8px 4px;border-radius:12px;background:var(--bg);text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.th9-count b{display:block;font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--ink);letter-spacing:0;text-transform:none}.th9-count .owe b{color:#B06A12}
+.th9-count.big{flex-wrap:wrap}.th9-count.big span{flex:1 1 30%}
+.th9-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px}
+.th9-n{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:14px;cursor:pointer}
+.th9-n.sold{background:var(--espresso);border-color:var(--espresso);color:#fff;text-decoration:line-through;text-decoration-thickness:1px}
+.th9-plus{width:100%;margin-top:10px;padding:11px;border-radius:99px;border:1px dashed var(--bronze);background:transparent;color:var(--espresso);font-weight:700;cursor:pointer}.th9-plus:disabled{opacity:.4}
+.th9-payrow{display:flex;gap:8px;align-items:center;margin:12px 0 6px}.th9-payrow input{flex:1;margin:0}.th9-payrow .btn{width:auto;margin:0;flex:none;padding-left:18px;padding-right:18px}
+.th9-pays{display:flex;flex-direction:column;gap:2px;margin:10px 0;font-size:12.5px;color:var(--muted)}.th9-pays b{color:var(--ink);font-size:13px}
+.th9-det{margin:10px 0;font-size:13px}.th9-det summary{cursor:pointer;font-weight:600}.th9-det ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+.th9-ok{margin:12px 0 6px;font-weight:700;color:#4E7A48;display:flex;gap:6px;align-items:center}
+.th9-ed .danger,.th9-detail .danger{color:#B0392B}
+.th9-detail .th9-count span{background:var(--card,#fff);border:1px solid var(--line)}
+.th9-evx{display:block;margin-top:2px;font-size:11.5px;color:var(--espresso)!important;font-weight:600}
+@media (max-width:360px){.th9-stats{grid-template-columns:repeat(2,1fr)}}`;
+document.head.appendChild(st);
+})();
+</script>
 <script id="aurea-cloud-guard">
 /* ===== V7.0 CLOUD SAVE GUARD (2026-09-25) =====
    1. A change the database refuses is never silent any more: a clear bar says
