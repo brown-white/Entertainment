@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.26-fair-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.26-prizes-v2";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -20698,208 +20698,308 @@ window.AUREA_DAY_PLAN_V697={version:'6.97',row:ROW697,savePatch:window.saveDayPl
 </script>
 
 <script id="aurea-prizes-v701">
-/* ===== V7.01 TICKET STUDIO · MAKE PRIZES FOR THE WINNERS (2026-09-25) =====
-   A printable prize card for Tombola / Bingo winners with a signature box.
-   Settings are kept in localStorage 'aurea.prizes.v701', which the cloud
-   guard copies to every phone. */
+/* ===== V7.06 TICKET STUDIO · PRIZES FOR THE WINNERS (2026-09-26) =====
+   Every prize set is SAVED in the database (settings key prizeSetsV706, one
+   entry per set, so two phones never overwrite each other). Sets reopen,
+   reprint, and each prize can be ticked "collected". New card design with
+   three styles and an Entertainment copy stub on the large card. */
 (function(){
 'use strict';
-if(window.__AUREA_PRIZES_V701) return; window.__AUREA_PRIZES_V701=true;
-const KEY='aurea.prizes.v701';
+if(window.__AUREA_PRIZES_V706) return; window.__AUREA_PRIZES_V706=true;
+const SKEY='prizeSetsV706', DKEY='aurea.prizes.v701';
 const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const get=()=>{ try{ return JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(_){ return {}; } };
-const put=o=>{ try{ localStorage.setItem(KEY,JSON.stringify(o)); }catch(_){} };
+const clone=v=>JSON.parse(JSON.stringify(v));
 const GAMES={tombola:'Tombola',bingo:'Bingo',other:'Game'};
+const STYLES={
+  ivory:{label:'Ivory & gold',paper:'#FFFDF8',ink:'#1F2430',gold:'#B8975A',soft:'#F4EDE0',line:'#E6DAC4',stub:'#F7F1E6'},
+  navy:{label:'Midnight navy',paper:'#101820',ink:'#F7F3EC',gold:'#C9A96E',soft:'#18232E',line:'#34414F',stub:'#0B1117'},
+  espresso:{label:'Espresso & sand',paper:'#FBF7F1',ink:'#3E2A1E',gold:'#B98A5C',soft:'#F1E7DA',line:'#E2D2BE',stub:'#F3EADF'}
+};
 function today(){ try{ return hotelDateStr(); }catch(_){ return new Date().toISOString().slice(0,10); } }
-function niceDate(iso){
+function niceDate(iso,short){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(iso||'')) return '';
-  const d=new Date(iso+'T12:00:00');
-  return d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  return new Date(iso+'T12:00:00').toLocaleDateString('en-GB',short?{day:'numeric',month:'short',year:'numeric'}:{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
-function brand(){
-  const st=(typeof S!=='undefined'&&S.settings)||{};
-  return {name:String(st.hotelName||st.name||'Entertainment'), logo:String(st.logo||'')};
+const defaults=()=>{ try{ return JSON.parse(localStorage.getItem(DKEY)||'{}')||{}; }catch(_){ return {}; } };
+const putDefaults=o=>{ try{ localStorage.setItem(DKEY,JSON.stringify(o)); }catch(_){} };
+const sets=()=>{ const m=(typeof S!=='undefined'&&S.settings&&S.settings[SKEY])||{}; return (m&&typeof m==='object'&&!Array.isArray(m))?m:{}; };
+function brand(){ const st=(typeof S!=='undefined'&&S.settings)||{}; return {name:String(st.hotelName||st.name||'Entertainment'),logo:String(st.logo||'')}; }
+function newCode(date){
+  const d=String(date||today()).replace(/-/g,'').slice(2);
+  const same=Object.values(sets()).filter(s=>s&&s.code&&s.code.indexOf(d)===0).length;
+  return d+String.fromCharCode(65+(same%26));
 }
-function colours(){
-  const cs=getComputedStyle(document.documentElement);
-  const v=(n,f)=>(cs.getPropertyValue(n)||'').trim()||f;
-  return {ink:v('--espresso','#3E2A1E'), gold:v('--bronze','#B98A5C')};
-}
-function serial(o,i){ return 'PRZ-'+String(o.date||today()).replace(/-/g,'').slice(2)+'-'+String(i+1).padStart(2,'0'); }
-
-/* one card; empty values print as a line to write on */
-function field(label,val,wide){
-  return `<div class="f${wide?' w':''}"><span>${E(label)}</span>${val?`<b>${E(val)}</b>`:'<i></i>'}</div>`;
-}
-function cardHtml(o,p,i){
-  const b=brand(), game=o.game==='other'?(o.gameName||'Game'):GAMES[o.game]||'Tombola';
-  const when=[o.event, niceDate(o.date)].filter(Boolean).join(', ');
-  return `<article class="card">
-    <header>${b.logo?`<img src="${E(b.logo)}" alt="">`:''}<span class="hotel">${E(b.name)}</span><span class="sn">${E(serial(o,i))}</span></header>
-    <div class="body">
-      <p class="game">${E(game)} winner</p>
-      <h1>Prize voucher</h1>
-      <div class="prize">${p.prize?E(p.prize):'<i class="long"></i>'}</div>
-      ${when?`<p class="when">${E(when)}</p>`:''}
-      <div class="fields">${field('Winner',p.name,true)}${field('Room',p.room)}${field('Winning number',p.number)}</div>
-    </div>
-    <footer>
-      <div class="terms">
-        <p><span>Collect at</span> ${E(o.collect||'Entertainment desk')}</p>
-        <p><span>Valid until</span> ${E(o.valid||'End of your stay')}</p>
-        <p class="small">Please show this card to collect your prize. One prize per card.</p>
-      </div>
-      <div class="sign"><div class="box"></div><p><b>${E(o.signer||'')}</b>${E(o.role||'Entertainment Manager')}</p></div>
-    </footer>
-  </article>`;
-}
-function css(o){
-  const c=colours(), small=o.size==='small';
-  return `@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&display=swap');
-@page{size:A4 portrait;margin:8mm}*{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,sans-serif;color:${c.ink};-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.sheet{display:grid;grid-template-columns:${small?'1fr 1fr':'1fr'};gap:8mm}
-.card{position:relative;height:${small?'136mm':'136mm'};border:1.2mm solid ${c.ink};outline:.35mm solid ${c.gold};outline-offset:-3mm;background:#fff;padding:${small?'8mm 8mm 7mm':'9mm 13mm 8mm'};display:flex;flex-direction:column;break-inside:avoid}
-header{display:flex;align-items:center;gap:3mm;font-size:${small?'7pt':'8pt'};font-weight:700;letter-spacing:.06em}
-header img{height:${small?'8mm':'10mm'};width:auto;border-radius:50%}
-header .hotel{flex:1}header .sn{font-weight:600;color:${c.gold}}
-.body{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center}
-.game{margin:0;font-size:${small?'8.5pt':'10pt'};font-weight:600;color:${c.gold};letter-spacing:.04em}
-h1{margin:1mm 0 0;font:400 ${small?'24pt':'34pt'}/1 'DM Serif Display',Georgia,serif}
-.prize{margin:${small?'4mm':'5mm'} 0 0;padding:${small?'3mm 4mm':'3.5mm 9mm'};border-top:.4mm solid ${c.gold};border-bottom:.4mm solid ${c.gold};font:400 ${small?'15pt':'21pt'}/1.2 'DM Serif Display',Georgia,serif;min-width:60%}
-.prize .long{display:block;height:${small?'9mm':'11mm'}}
-.when{margin:2.5mm 0 0;font-size:${small?'7.5pt':'8.5pt'};opacity:.75}
-.fields{display:flex;flex-wrap:wrap;gap:${small?'2.5mm 4mm':'3mm 7mm'};width:100%;margin-top:${small?'4mm':'6mm'};text-align:left}
-.f{flex:1 1 ${small?'30%':'22%'};font-size:${small?'7pt':'8pt'}}.f.w{flex-basis:${small?'100%':'40%'}}
-.f span{display:block;opacity:.7;margin-bottom:1mm}.f b{display:block;font-size:${small?'10pt':'12pt'};border-bottom:.3mm solid ${c.ink};padding-bottom:.8mm;min-height:6mm}
-.f i{display:block;height:6mm;border-bottom:.3mm solid ${c.ink}}
-footer{display:flex;align-items:flex-end;gap:6mm;margin-top:${small?'4mm':'5mm'}}
-.terms{flex:1;font-size:${small?'6.8pt':'7.8pt'};line-height:1.45}.terms p{margin:0}.terms span{font-weight:700}.terms .small{opacity:.65;margin-top:1mm}
-.sign{width:${small?'40mm':'64mm'};text-align:center}
-.sign .box{height:${small?'14mm':'19mm'};border:.3mm dashed ${c.gold};border-bottom:.4mm solid ${c.ink};background:#fcfaf6}
-.sign p{margin:1.2mm 0 0;font-size:${small?'6.8pt':'7.5pt'};line-height:1.35}.sign b{display:block;font-size:${small?'8pt':'9pt'}}
-@media screen{body{background:#eee;padding:10px}.sheet{max-width:210mm;margin:auto}}`;
-}
-function allCards(o){
-  const list=(o.prizes||[]).filter(p=>p.prize||p.name||p.room||p.number);
-  const blanks=Math.max(0,Math.min(60,+o.blanks||0));
-  for(let i=0;i<blanks;i++) list.push({prize:o.blankPrize||''});
+const serial=(s,i)=>'PRZ-'+(s.code||'000000A')+'-'+String(i+1).padStart(2,'0');
+function cardsOf(s){
+  const list=(s.prizes||[]).filter(p=>p.prize||p.name||p.room||p.number).map(p=>({...p}));
+  const blanks=Math.max(0,Math.min(60,+s.blanks||0));
+  for(let i=0;i<blanks;i++) list.push({prize:s.blankPrize||'',blank:true});
   return list;
 }
-function printCards(o){
-  const list=allCards(o);
-  if(!list.length){ toastErr('Add at least one prize or a blank card.'); return; }
+async function saveSet(s){
+  s.updatedAt=Date.now();
+  const all={...sets(),[s.id]:clone(s)};
+  await DB.saveSettings({...S.settings,[SKEY]:all});
+}
+async function deleteSet(id){
+  const all={...sets()}; delete all[id];
+  await DB.saveSettings({...S.settings,[SKEY]:all});
+}
+
+/* ---------- the card ---------- */
+function laurel(col){
+  let leaves='';
+  for(let i=0;i<8;i++){
+    const th=(108+i*14)*Math.PI/180, rr=26+(i%2?2.2:-1.2);
+    const x=50+rr*Math.cos(th), y=38+rr*Math.sin(th), rot=(108+i*14)+18;
+    leaves+=`<ellipse cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" rx="2.6" ry="6" transform="rotate(${rot.toFixed(1)} ${x.toFixed(2)} ${y.toFixed(2)})" fill="${col}"/>`;
+    const mx=100-x;
+    leaves+=`<ellipse cx="${mx.toFixed(2)}" cy="${y.toFixed(2)}" rx="2.6" ry="6" transform="rotate(${(-rot).toFixed(1)} ${mx.toFixed(2)} ${y.toFixed(2)})" fill="${col}"/>`;
+  }
+  const star=[];
+  for(let k=0;k<10;k++){ const ang=(-90+k*36)*Math.PI/180, rad=k%2?4.4:10.5; star.push((50+rad*Math.cos(ang)).toFixed(2)+','+(34+rad*Math.sin(ang)).toFixed(2)); }
+  return `<svg viewBox="0 0 100 70" aria-hidden="true"><path d="M${(50+26*Math.cos(108*Math.PI/180)).toFixed(1)} ${(38+26*Math.sin(108*Math.PI/180)).toFixed(1)} A26 26 0 0 1 ${(50+26*Math.cos(206*Math.PI/180)).toFixed(1)} ${(38+26*Math.sin(206*Math.PI/180)).toFixed(1)}" fill="none" stroke="${col}" stroke-width=".9"/><path d="M${(100-(50+26*Math.cos(108*Math.PI/180))).toFixed(1)} ${(38+26*Math.sin(108*Math.PI/180)).toFixed(1)} A26 26 0 0 0 ${(100-(50+26*Math.cos(206*Math.PI/180))).toFixed(1)} ${(38+26*Math.sin(206*Math.PI/180)).toFixed(1)}" fill="none" stroke="${col}" stroke-width=".9"/>${leaves}<polygon points="${star.join(' ')}" fill="${col}"/><circle cx="50" cy="34" r="15.5" fill="none" stroke="${col}" stroke-width=".5" opacity=".6"/></svg>`;
+}
+function corner(col){ return `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 12 V1 H12" fill="none" stroke="${col}" stroke-width="1.2"/><path d="M4 9 V4 H9" fill="none" stroke="${col}" stroke-width=".8"/><rect x="6.2" y="6.2" width="2.6" height="2.6" transform="rotate(45 7.5 7.5)" fill="${col}"/></svg>`; }
+function field(label,val){ return `<div class="f"><span>${E(label)}</span>${val?`<b>${E(val)}</b>`:'<i></i>'}</div>`; }
+function cardHtml(s,p,i){
+  const b=brand(), st=STYLES[s.style]||STYLES.ivory, small=s.size==='small';
+  const game=s.game==='other'?(s.gameName||'Game'):GAMES[s.game]||'Tombola';
+  const line=[game+' winner', s.event, niceDate(s.date,true)].filter(Boolean).join('  ·  ');
+  const mono=b.logo?`<img src="${E(b.logo)}" alt="">`:`<span class="mono">${E(b.name.trim().charAt(0)||'E')}</span>`;
+  const main=`<div class="main">
+      <div class="frame"></div>${['tl','tr','bl','br'].map(c=>`<span class="corner ${c}">${corner(st.gold)}</span>`).join('')}
+      <header>${mono}<span class="hotel">${E(b.name)}</span><span class="sn">No. ${E(serial(s,i))}</span></header>
+      <div class="mid"><div class="emblem">${laurel(st.gold)}</div>
+      <p class="kicker">Congratulations</p>
+      <h1>Prize Voucher</h1>
+      <p class="game">${E(line)}</p>
+      <div class="prize"><span>Your prize</span><strong>${p.prize?E(p.prize):'<i class="long"></i>'}</strong></div>
+      <div class="fields">${field('Winner',p.name)}${field('Room',p.room)}${field('Winning number',p.number)}</div></div>
+      <footer>
+        <div class="terms"><p><span>Collect at</span>${E(s.collect||'Entertainment desk')}</p><p><span>Valid until</span>${E(s.valid||'End of your stay')}</p><p class="note">Please present this voucher to collect your prize. One prize per voucher, not exchangeable for cash.</p></div>
+        <div class="sign"><div class="box"><em>Signature</em></div><p><b>${E(s.signer||'')}</b>${E(s.role||'Entertainment Manager')}</p></div>
+      </footer>
+    </div>`;
+  const stub=small?'':`<aside class="stub">
+      <p class="st-t">Entertainment copy</p>
+      <p class="st-sn">${E(serial(s,i))}</p>
+      ${field('Prize',p.prize)}${field('Winner',p.name)}${field('Room',p.room)}${field('Winning no.',p.number)}
+      <div class="st-sign"><i></i><span>Guest signature · prize received</span></div>
+      <div class="st-sign"><i></i><span>Date</span></div>
+    </aside>`;
+  return `<article class="card">${main}${stub}</article>`;
+}
+function css(s){
+  const st=STYLES[s.style]||STYLES.ivory, small=s.size==='small', dark=s.style==='navy';
+  const Z=small?.84:1;
+  const mm=v=>(v*Z).toFixed(2)+'mm', pt=v=>(v*Z).toFixed(2)+'pt';
+  return `@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap');
+@page{size:A4 portrait;margin:8mm}*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{display:grid;grid-template-columns:${small?'1fr 1fr':'1fr'};gap:${small?'6mm':'8mm'}}
+.card{display:flex;height:${small?'137mm':'136mm'};background:${st.paper};color:${st.ink};break-inside:avoid;position:relative;overflow:hidden}
+.main{position:relative;flex:1;padding:${mm(10)} ${mm(small?8:12)} ${mm(8)};display:flex;flex-direction:column;align-items:center;text-align:center}
+.frame{position:absolute;inset:${mm(3.5)};border:.5mm solid ${st.gold};outline:.25mm solid ${st.gold};outline-offset:${mm(1.3)};pointer-events:none}
+.corner{position:absolute;width:${mm(9)};height:${mm(9)}}.corner svg{width:100%;height:100%;display:block}
+.corner.tl{top:${mm(5.6)};left:${mm(5.6)}}.corner.tr{top:${mm(5.6)};right:${mm(5.6)};transform:scaleX(-1)}.corner.bl{bottom:${mm(5.6)};left:${mm(5.6)};transform:scaleY(-1)}.corner.br{bottom:${mm(5.6)};right:${mm(5.6)};transform:scale(-1)}
+header{position:relative;width:100%;display:flex;align-items:center;gap:${mm(2.5)};font-size:${pt(7)};letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+header img{height:${mm(8)};width:${mm(8)};object-fit:cover;border-radius:50%;border:.3mm solid ${st.gold}}
+.mono{display:inline-grid;place-items:center;width:${mm(8)};height:${mm(8)};border-radius:50%;border:.3mm solid ${st.gold};color:${st.gold};font:400 ${pt(12)} 'DM Serif Display',Georgia,serif;letter-spacing:0}
+.hotel{flex:1;text-align:left}.sn{color:${st.gold};letter-spacing:.08em;font-weight:500}
+.mid{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:${mm(2)} 0}
+.emblem{width:${mm(small?26:30)};margin:0}.emblem svg{display:block;width:100%}
+.kicker{margin:${mm(.5)} 0 0;font-size:${pt(8)};letter-spacing:.32em;text-transform:uppercase;color:${st.gold};font-weight:600}
+h1{margin:${mm(1)} 0 0;font:400 ${pt(small?28:38)}/1 'DM Serif Display',Georgia,serif;letter-spacing:.01em}
+.game{margin:${mm(1.8)} 0 0;font-size:${pt(8.3)};opacity:.78;letter-spacing:.02em}
+.prize{margin:${mm(4.5)} 0 0;min-width:72%;max-width:92%;padding:${mm(2.4)} ${mm(6)};background:${st.soft};border-top:.4mm solid ${st.gold};border-bottom:.4mm solid ${st.gold}}
+.prize span{display:block;font-size:${pt(6.5)};letter-spacing:.24em;text-transform:uppercase;color:${st.gold};font-weight:600}
+.prize strong{display:block;margin-top:${mm(.8)};font:400 ${pt(small?14:18)}/1.2 'DM Serif Display',Georgia,serif}
+.prize .long{display:block;height:${mm(7)};border-bottom:.3mm solid ${st.line};margin:0 ${mm(4)}}
+.fields{width:100%;display:grid;grid-template-columns:${small?'1fr 1fr':'2fr 1fr 1.3fr'};gap:${mm(2)} ${mm(5)};margin-top:${mm(small?5:6)};text-align:left}
+${small?'.fields .f:first-child{grid-column:1/-1}':''}
+.f span{display:block;font-size:${pt(6.5)};letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-bottom:${mm(.8)}}
+.f b{display:block;font-size:${pt(10.5)};font-weight:600;border-bottom:.3mm solid ${st.gold};padding-bottom:${mm(.8)};min-height:${mm(5.6)};white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.f i{display:block;height:${mm(5.6)};border-bottom:.3mm solid ${st.gold}}
+footer{width:100%;display:flex;align-items:flex-end;gap:${mm(5)};text-align:left}
+.terms{flex:1;font-size:${pt(7)};line-height:1.5}.terms p{margin:0}.terms span{display:inline-block;min-width:${mm(small?19:18)};font-weight:700;color:${st.gold};letter-spacing:.06em;text-transform:uppercase;font-size:${pt(6.3)}}
+.terms .note{opacity:.6;margin-top:${mm(1)};font-size:${pt(6.3)}}
+.sign{width:${mm(small?38:52)};text-align:center}
+.sign .box{position:relative;height:${mm(14)};border-bottom:.35mm solid ${st.ink};background:${dark?'#F7F3EC':'rgba(0,0,0,.015)'};${dark?'border-radius:1.5mm 1.5mm 0 0;':''}}
+${dark?'.sign .box em{color:#101820}':''}
+.sign .box em{position:absolute;left:${mm(1.5)};top:${mm(1)};font-style:normal;font-size:${pt(6)};letter-spacing:.14em;text-transform:uppercase;opacity:.45}
+.sign p{margin:${mm(1)} 0 0;font-size:${pt(6.8)};line-height:1.35;opacity:.9}.sign b{display:block;font-size:${pt(8.2)}}
+.stub{width:50mm;flex:none;background:${dark?'#F7F3EC':st.stub};color:${dark?'#101820':'inherit'};border-left:.4mm dashed ${st.gold};padding:10mm 5mm 8mm;display:flex;flex-direction:column;gap:2.6mm;position:relative}
+.stub:before,.stub:after{content:'';position:absolute;left:-3.2mm;width:6mm;height:6mm;border-radius:50%;background:${dark?'#fff':'#fff'}}
+.stub:before{top:-3mm}.stub:after{bottom:-3mm}
+.st-t{margin:0;font-size:6.5pt;letter-spacing:.24em;text-transform:uppercase;color:${st.gold};font-weight:700}
+.st-sn{margin:0 0 1mm;font:400 12pt 'DM Serif Display',Georgia,serif}
+.stub .f b{font-size:8.5pt;white-space:normal}
+.st-sign{margin-top:auto}.st-sign+.st-sign{margin-top:2mm}.st-sign i{display:block;height:7mm;border-bottom:.3mm solid ${dark?'#101820':st.ink}}.st-sign span{display:block;font-size:6pt;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:.8mm}
+@media screen{body{background:#e9e6e1;padding:10px}.sheet{max-width:210mm;margin:auto}}`;
+}
+function printSet(s){
+  const list=cardsOf(s);
+  if(!list.length){ toastErr('Add at least one prize or a blank card.'); return false; }
   const w=window.open('','_blank');
-  if(!w){ toastErr('Could not open the print window. Allow pop-ups and try again.'); return; }
-  const cards=list.map((p,i)=>cardHtml(o,p,i)).join('');
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Prize cards</title><style>'+css(o)+'</style></head><body><div class="sheet">'+cards+'</div><scr'+'ipt>window.onload=function(){setTimeout(function(){window.print()},500)};<\/scr'+'ipt></body></html>');
+  if(!w){ toastErr('Could not open the print window. Allow pop-ups and try again.'); return false; }
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Prize vouchers</title><style>'+css(s)+'</style></head><body><div class="sheet">'+list.map((p,i)=>cardHtml(s,p,i)).join('')+'</div><scr'+'ipt>window.onload=function(){setTimeout(function(){window.print()},600)};<\/scr'+'ipt></body></html>');
   w.document.close();
+  return true;
 }
 
 /* ---------- the maker ---------- */
-function prizeRow(p){
-  p=p||{};
-  return `<div class="pz-row">
-    <div class="pz-top"><input class="pz-prize" placeholder="Prize, e.g. Dinner for two at the à la carte" value="${E(p.prize||'')}">
-    <button type="button" class="pz-rm" aria-label="Remove prize">×</button></div>
-    <div class="pz-3"><input class="pz-name" placeholder="Winner name" value="${E(p.name||'')}"><input class="pz-room" placeholder="Room" value="${E(p.room||'')}"><input class="pz-num" placeholder="Winning no." value="${E(p.number||'')}"></div>
-  </div>`;
-}
-function read(w){
-  const q=s=>w.querySelector(s);
-  return {
-    game:q('#pz-game').value, gameName:q('#pz-gamename').value.trim(),
-    event:q('#pz-event').value.trim(), date:q('#pz-date').value,
-    prizes:[...w.querySelectorAll('.pz-row')].map(r=>({prize:r.querySelector('.pz-prize').value.trim(),name:r.querySelector('.pz-name').value.trim(),room:r.querySelector('.pz-room').value.trim(),number:r.querySelector('.pz-num').value.trim()})),
-    blanks:Math.max(0,Math.min(60,+q('#pz-blanks').value||0)), blankPrize:q('#pz-blankprize').value.trim(),
-    collect:q('#pz-collect').value.trim(), valid:q('#pz-valid').value.trim(),
-    signer:q('#pz-signer').value.trim(), role:q('#pz-role').value.trim(),
-    size:q('#pz-size').value
-  };
+function blankSet(){
+  const d=defaults(), s=(typeof S!=='undefined'&&S.session)||{}, studio=document.querySelector('.tk655-modal');
+  const ev=studio&&studio.querySelector('#rtitle')?studio.querySelector('#rtitle').value.trim():'';
+  const ty=studio&&studio.querySelector('#rtype')?studio.querySelector('#rtype').value:'';
+  const date=today();
+  return {id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),code:newCode(date),createdAt:Date.now(),
+    game:ty==='bingo'?'bingo':(d.game||'tombola'),gameName:d.gameName||'',event:ev||'',date,
+    prizes:[{prize:'',name:'',room:'',number:'',collected:false}],blanks:0,blankPrize:'',
+    collect:d.collect||'Entertainment desk',valid:d.valid||'End of your stay',signer:d.signer||s.name||'',role:d.role||'Entertainment Manager',
+    size:d.size||'large',style:d.style||'ivory'};
 }
 function open(){
-  const c=get(), studio=document.querySelector('.tk655-modal');
-  const fromStudio={
-    event:studio&&studio.querySelector('#rtitle')?studio.querySelector('#rtitle').value.trim():'',
-    game:studio&&studio.querySelector('#rtype')?studio.querySelector('#rtype').value:''
-  };
-  const s=(typeof S!=='undefined'&&S.session)||{};
-  const prizes=(c.prizes&&c.prizes.length)?c.prizes.map(p=>({prize:p.prize})):[{prize:''}];
-  const w=baseModal(`<div class="pz-modal">
-    <h3>Make prizes for the winners</h3>
-    <p class="mini">Print a prize card for each winner. Leave a name, room or number empty and the card gets a line to write it by hand.</p>
-    <div class="pz-2"><div><label>Game</label><select id="pz-game"><option value="tombola">Tombola</option><option value="bingo">Bingo</option><option value="other">Other game</option></select></div>
-      <div><label>Date</label><input id="pz-date" type="date" value="${E(today())}"></div></div>
-    <div id="pz-gamewrap" style="display:none"><label>Game name</label><input id="pz-gamename" value="${E(c.gameName||'')}" placeholder="e.g. Quiz night"></div>
-    <label>Event</label><input id="pz-event" value="${E(fromStudio.event||c.event||'')}" placeholder="e.g. Sunday Tombola night">
-    <label>Prizes</label><div id="pz-list">${prizes.map(prizeRow).join('')}</div>
-    <button type="button" class="btn sm ghost" id="pz-add">${ic('plus',14)} Add prize</button>
-    <div class="pz-2"><div><label>Blank cards</label><input id="pz-blanks" type="number" min="0" max="60" value="${+c.blanks||0}"></div>
-      <div><label>Prize on blank cards</label><input id="pz-blankprize" value="${E(c.blankPrize||'')}" placeholder="Empty = write by hand"></div></div>
-    <div class="pz-2"><div><label>Collect at</label><input id="pz-collect" value="${E(c.collect||'Entertainment desk')}"></div>
-      <div><label>Valid until</label><input id="pz-valid" value="${E(c.valid||'End of your stay')}"></div></div>
-    <div class="pz-2"><div><label>Signed by</label><input id="pz-signer" value="${E(c.signer||s.name||'')}"></div>
-      <div><label>Title</label><input id="pz-role" value="${E(c.role||'Entertainment Manager')}"></div></div>
-    <label>Card size</label><select id="pz-size"><option value="large">Large · 2 per A4 page</option><option value="small">Small · 4 per A4 page</option></select>
-    <label>Preview</label><div class="pz-prev"><iframe id="pz-frame" title="Prize card preview"></iframe></div>
-    <p class="mini" id="pz-count"></p>
-    <button class="btn" id="pz-print">${ic('download',16)} Print / PDF prize cards</button>
-    <button class="btn ghost" id="pz-close">Close</button>
-  </div>`);
-  const q=x=>w.querySelector(x);
-  q('#pz-game').value=fromStudio.game==='bingo'?'bingo':(c.game||'tombola');
-  q('#pz-size').value=c.size||'large';
-  const list=q('#pz-list');
-  function wireRows(){ list.querySelectorAll('.pz-rm').forEach(b=>b.onclick=()=>{ const rows=list.querySelectorAll('.pz-row'); if(rows.length>1) b.closest('.pz-row').remove(); else rows[0].querySelectorAll('input').forEach(i=>i.value=''); draw(); }); }
-  function draw(){
-    const o=read(w);
-    q('#pz-gamewrap').style.display=o.game==='other'?'block':'none';
-    const cards=allCards(o), n=cards.length;
-    q('#pz-count').textContent=n?(n+' card'+(n>1?'s':'')+' · '+Math.ceil(n/(o.size==='small'?4:2))+' A4 page'+(Math.ceil(n/(o.size==='small'?4:2))>1?'s':'')):'Add a prize or a blank card to print.';
-    const first=cards[0]||{prize:''};
-    const f=q('#pz-frame'), doc=f.contentDocument;
-    if(doc){ doc.open(); doc.write('<!doctype html><html><head><meta charset="utf-8"><style>'+css({...o,size:'large'})+' body{background:#fff;padding:0;margin:0}.sheet{width:194mm}</style></head><body><div class="sheet">'+cardHtml(o,first,0)+'</div></body></html>'); doc.close(); }
-    const box=q('.pz-prev'); const scale=Math.min(1,(box.clientWidth||320)/733);
-    f.style.transform='scale('+scale+')'; box.style.height=Math.round(514*scale+2)+'px';
+  const wrap=baseModal('<div class="pz2"></div>');
+  const box=wrap.querySelector('.pz2');
+  let view='list', cur=null, dirty=false, saving=null, tmr=null, status='';
+  const q=x=>box.querySelector(x);
+  async function flush(){
+    if(!cur || !dirty) return;
+    clearTimeout(tmr); dirty=false; status='Saving…'; paintStatus();
+    try{ saving=saveSet(cur); await saving; status='Saved'; }
+    catch(e){ dirty=true; status='Not saved — will retry'; tmr=setTimeout(flush,4000); }
+    saving=null; paintStatus();
   }
-  q('#pz-add').onclick=()=>{ list.insertAdjacentHTML('beforeend',prizeRow({})); wireRows(); draw(); const r=list.lastElementChild; if(r) r.querySelector('.pz-prize').focus(); };
-  w.addEventListener('input',draw); w.addEventListener('change',draw);
-  wireRows(); draw(); setTimeout(draw,60);
-  q('#pz-close').onclick=()=>w.remove();
-  q('#pz-print').onclick=()=>{
-    const o=read(w);
-    /* remember the set-up and the prize names, not the winners */
-    put({...o,prizes:o.prizes.map(p=>({prize:p.prize}))});
-    printCards(o);
-  };
+  function touch(){ dirty=true; status='Saving…'; paintStatus(); clearTimeout(tmr); tmr=setTimeout(flush,900); }
+  function paintStatus(){ const el=q('#pz-status'); if(el){ el.textContent=status; el.className='pz-status'+(/Not/.test(status)?' bad':/Saved/.test(status)?' ok':''); } }
+  const oldRemove=wrap.remove.bind(wrap);
+  wrap.remove=function(){ if(dirty) flush(); oldRemove(); };
+
+  function listView(){
+    const all=Object.values(sets()).filter(Boolean).sort((a,b)=>(b.updatedAt||b.createdAt||0)-(a.updatedAt||a.createdAt||0));
+    box.innerHTML=`<div class="pz-head"><p class="pz-eyebrow">Ticket Studio</p><h3>Prizes for the winners</h3><p class="mini">Every prize set is saved automatically. Open one to change it, print it again or tick the prizes that were collected.</p></div>
+      <button class="btn" id="pz-new">${ic('plus',16)} New prize set</button>
+      ${all.length?`<div class="pz-sets">${all.map(s=>{
+        const cards=cardsOf(s), got=(s.prizes||[]).filter(p=>p.collected).length, real=(s.prizes||[]).filter(p=>p.prize||p.name).length;
+        const game=s.game==='other'?(s.gameName||'Game'):GAMES[s.game]||'Tombola';
+        return `<button class="pz-set" data-pz-open="${E(s.id)}"><span class="pz-set-icon">${E(game.charAt(0))}</span><span class="pz-set-mid"><b>${E(s.event||game+' prizes')}</b><span>${E(game)} · ${E(niceDate(s.date,true))} · ${cards.length} card${cards.length===1?'':'s'}</span></span><span class="pz-set-got ${real&&got===real?'done':''}">${real?got+'/'+real+' collected':'Draft'}</span></button>`;
+      }).join('')}</div>`:`<div class="pz-empty">No prize sets yet. Create the first one for tonight's Tombola or Bingo.</div>`}
+      <button class="btn ghost" id="pz-close">Close</button>`;
+    q('#pz-new').onclick=()=>{ cur=blankSet(); dirty=true; editView(); flush(); };
+    box.querySelectorAll('[data-pz-open]').forEach(b=>b.onclick=()=>{ cur=clone(sets()[b.dataset.pzOpen]); dirty=false; status='Saved'; editView(); });
+    q('#pz-close').onclick=()=>wrap.remove();
+  }
+  function prizeRow(p,i){
+    return `<div class="pz-row${p.collected?' got':''}" data-i="${i}">
+      <div class="pz-top"><span class="pz-num">${i+1}</span><input class="pz-prize" placeholder="Prize, e.g. Dinner for two at the à la carte" value="${E(p.prize||'')}"><button type="button" class="pz-rm" aria-label="Remove prize">×</button></div>
+      <div class="pz-3"><input class="pz-name" placeholder="Winner name" value="${E(p.name||'')}"><input class="pz-room" placeholder="Room" value="${E(p.room||'')}"><input class="pz-nr" placeholder="Winning no." value="${E(p.number||'')}"></div>
+      <label class="pz-got"><input type="checkbox" class="pz-col" ${p.collected?'checked':''}> Prize collected</label>
+    </div>`;
+  }
+  function editView(){
+    const s=cur;
+    box.innerHTML=`<div class="pz-head"><button class="pz-back" id="pz-back">‹ All prize sets</button><span id="pz-status" class="pz-status"></span>
+      <h3>${E(s.event||'New prize set')}</h3><p class="mini">Voucher No. ${E('PRZ-'+s.code)} · saved automatically</p></div>
+      <section class="pz-sec"><h4>The game</h4>
+        <div class="pz-2"><div><label>Game</label><select id="pz-game"><option value="tombola">Tombola</option><option value="bingo">Bingo</option><option value="other">Other game</option></select></div>
+        <div><label>Date</label><input id="pz-date" type="date" value="${E(s.date||today())}"></div></div>
+        <div id="pz-gamewrap" style="display:${s.game==='other'?'block':'none'}"><label>Game name</label><input id="pz-gamename" value="${E(s.gameName||'')}" placeholder="e.g. Quiz night"></div>
+        <label>Event</label><input id="pz-event" value="${E(s.event||'')}" placeholder="e.g. Sunday Tombola night"></section>
+      <section class="pz-sec"><h4>Prizes and winners</h4><p class="mini">Leave a name, room or number empty and the voucher gets a line to write it by hand.</p>
+        <div id="pz-list">${(s.prizes||[]).map(prizeRow).join('')}</div>
+        <button type="button" class="btn sm ghost" id="pz-add">${ic('plus',14)} Add prize</button>
+        <div class="pz-2" style="margin-top:10px"><div><label>Extra blank vouchers</label><input id="pz-blanks" type="number" min="0" max="60" value="${+s.blanks||0}"></div>
+        <div><label>Prize on blank vouchers</label><input id="pz-blankprize" value="${E(s.blankPrize||'')}" placeholder="Empty = write by hand"></div></div></section>
+      <section class="pz-sec"><h4>On the voucher</h4>
+        <div class="pz-2"><div><label>Collect at</label><input id="pz-collect" value="${E(s.collect||'')}"></div><div><label>Valid until</label><input id="pz-valid" value="${E(s.valid||'')}"></div></div>
+        <div class="pz-2"><div><label>Signed by</label><input id="pz-signer" value="${E(s.signer||'')}"></div><div><label>Title</label><input id="pz-role" value="${E(s.role||'')}"></div></div></section>
+      <section class="pz-sec"><h4>Design</h4>
+        <div class="pz-styles">${Object.entries(STYLES).map(([k,v])=>`<button type="button" class="pz-style ${s.style===k?'on':''}" data-pz-style="${k}"><span style="background:${v.paper};border-color:${v.gold}"><i style="background:${v.gold}"></i></span>${E(v.label)}</button>`).join('')}</div>
+        <p class="mini" id="pz-stylehint" style="display:${s.style==='navy'?'block':'none'}">Midnight navy looks best when the winner's name is typed in — a pen hardly shows on dark paper. The signature box and the Entertainment copy stay light so you can sign.</p>
+        <label>Size</label><select id="pz-size"><option value="large">Large with Entertainment copy · 2 per A4</option><option value="small">Small · 4 per A4</option></select>
+        <label>Preview</label><div class="pz-prev"><iframe id="pz-frame" title="Voucher preview"></iframe></div>
+        <p class="mini" id="pz-count"></p></section>
+      <button class="btn" id="pz-print">${ic('download',16)} Print / PDF vouchers</button>
+      <button class="btn ghost danger" id="pz-del">Delete this prize set</button>`;
+    q('#pz-game').value=s.game||'tombola'; q('#pz-size').value=s.size||'large';
+    paintStatus(); preview();
+    const read=()=>{
+      s.game=q('#pz-game').value; s.gameName=q('#pz-gamename').value.trim(); s.date=q('#pz-date').value||today(); s.event=q('#pz-event').value.trim();
+      s.prizes=[...box.querySelectorAll('.pz-row')].map(r=>({prize:r.querySelector('.pz-prize').value.trim(),name:r.querySelector('.pz-name').value.trim(),room:r.querySelector('.pz-room').value.trim(),number:r.querySelector('.pz-nr').value.trim(),collected:r.querySelector('.pz-col').checked}));
+      s.blanks=Math.max(0,Math.min(60,+q('#pz-blanks').value||0)); s.blankPrize=q('#pz-blankprize').value.trim();
+      s.collect=q('#pz-collect').value.trim(); s.valid=q('#pz-valid').value.trim(); s.signer=q('#pz-signer').value.trim(); s.role=q('#pz-role').value.trim(); s.size=q('#pz-size').value;
+      q('#pz-gamewrap').style.display=s.game==='other'?'block':'none';
+      box.querySelectorAll('.pz-row').forEach(r=>r.classList.toggle('got',r.querySelector('.pz-col').checked));
+    };
+    const changed=()=>{ read(); touch(); preview(); };
+    box.addEventListener('input',changed); box.addEventListener('change',changed);
+    const wireRows=()=>box.querySelectorAll('.pz-rm').forEach(b=>b.onclick=()=>{ const rows=box.querySelectorAll('.pz-row'); if(rows.length>1) b.closest('.pz-row').remove(); else rows[0].querySelectorAll('input').forEach(i=>{ if(i.type==='checkbox') i.checked=false; else i.value=''; }); box.querySelectorAll('.pz-num').forEach((n,i)=>n.textContent=i+1); changed(); });
+    wireRows();
+    q('#pz-add').onclick=()=>{ q('#pz-list').insertAdjacentHTML('beforeend',prizeRow({},box.querySelectorAll('.pz-row').length)); wireRows(); changed(); const r=q('#pz-list').lastElementChild; if(r) r.querySelector('.pz-prize').focus(); };
+    box.querySelectorAll('[data-pz-style]').forEach(b=>b.onclick=()=>{ s.style=b.dataset.pzStyle; box.querySelectorAll('.pz-style').forEach(x=>x.classList.toggle('on',x===b)); const h=q('#pz-stylehint'); if(h) h.style.display=s.style==='navy'?'block':'none'; touch(); preview(); });
+    q('#pz-back').onclick=async()=>{ read(); await flush(); listView(); };
+    q('#pz-print').onclick=async()=>{ read(); dirty=true; putDefaults({game:s.game,gameName:s.gameName,collect:s.collect,valid:s.valid,signer:s.signer,role:s.role,size:s.size,style:s.style}); flush(); printSet(s); };
+    q('#pz-del').onclick=async()=>{ if(!confirm('Delete this prize set? Printed vouchers stay valid on paper.')) return; clearTimeout(tmr); dirty=false; try{ await deleteSet(s.id); toastOk('Prize set deleted'); }catch(e){ toastErr('Could not delete'); } cur=null; listView(); };
+  }
+  function preview(){
+    const s=cur; if(!s) return;
+    const cards=cardsOf(s), n=cards.length, per=s.size==='small'?4:2, pages=Math.ceil(n/per);
+    const c=q('#pz-count'); if(c) c.textContent=n?(n+' voucher'+(n>1?'s':'')+' · '+pages+' A4 page'+(pages>1?'s':'')):'Add a prize or a blank voucher to print.';
+    const f=q('#pz-frame'); if(!f) return;
+    const first=cards[0]||{prize:''}, big=s.size!=='small';
+    const W=big?733:360, H=big?514:518;
+    const doc=f.contentDocument; if(!doc) return;
+    doc.open(); doc.write('<!doctype html><html><head><meta charset="utf-8"><style>'+css(s)+' body{background:transparent;padding:0;margin:0}.sheet{display:block;width:'+(big?'194mm':'95mm')+'}</style></head><body><div class="sheet">'+cardHtml(s,first,0)+'</div></body></html>'); doc.close();
+    const pv=q('.pz-prev'), scale=Math.min(1,((pv&&pv.clientWidth)||320)/W);
+    f.style.width=W+'px'; f.style.height=H+'px'; f.style.transform='scale('+scale+')';
+    if(pv) pv.style.height=Math.round(H*scale+2)+'px';
+  }
+  listView();
 }
 window.openPrizeMakerV701=open;
-window.AUREA_PRIZES_V701={open,printCards,cardHtml};
+window.AUREA_PRIZES_V701=window.AUREA_PRIZES_V706={open,printSet,cardHtml,css,sets};
 
 /* entry inside the Ticket Studio */
 function addEntry(){
   const m=document.querySelector('.tk655-modal');
   if(!m || m.querySelector('#pz-entry')) return;
   const head=m.querySelector('.tk655-head');
-  const html=`<button type="button" id="pz-entry" class="pz-entry">
-      <span class="pz-entry-t">Make prizes for the winners</span>
-      <span class="pz-entry-s">Prize cards for Tombola and Bingo winners, with space for your signature</span>
-    </button>`;
+  const html=`<button type="button" id="pz-entry" class="pz-entry"><span class="pz-entry-ic">${laurel('currentColor')}</span><span><span class="pz-entry-t">Make prizes for the winners</span><span class="pz-entry-s">Tombola &amp; Bingo prize vouchers with your signature — saved automatically</span></span></button>`;
   if(head) head.insertAdjacentHTML('afterend',html); else m.insertAdjacentHTML('afterbegin',html);
   m.querySelector('#pz-entry').onclick=open;
 }
 new MutationObserver(()=>addEntry()).observe(document.body,{childList:true,subtree:true});
 
 const st=document.createElement('style'); st.id='pz-style';
-st.textContent=`.pz-entry{display:block;width:100%;text-align:left;margin:14px 0 6px;padding:14px 16px;border-radius:16px;border:1px solid var(--bronze);background:var(--card,#fff);color:var(--ink);cursor:pointer;box-shadow:inset 4px 0 0 var(--bronze)}
-.pz-entry-t{display:block;font-weight:700;font-size:15px}.pz-entry-s{display:block;margin-top:3px;font-size:12.5px;color:var(--muted)}
-.pz-modal h3{margin:0 0 4px}.pz-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pz-row{border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:8px;background:var(--card,#fff)}
+st.textContent=`.pz-entry{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:14px 0 6px;padding:14px 16px;border-radius:18px;border:1px solid var(--bronze);background:linear-gradient(135deg,rgba(185,138,92,.14),rgba(185,138,92,.03));color:var(--ink);cursor:pointer}
+.pz-entry-ic{flex:none;width:42px;height:32px;color:var(--bronze)}.pz-entry-ic svg{width:100%;height:100%}
+.pz-entry-t{display:block;font-weight:700;font-size:15px}.pz-entry-s{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
+.pz2 h3{margin:4px 0 2px}.pz-eyebrow{margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}
+.pz-head{margin-bottom:12px;position:relative}.pz-back{border:0;background:none;padding:0;color:var(--bronze);font-weight:600;font-size:14px;cursor:pointer}
+.pz-status{position:absolute;right:0;top:2px;font-size:12px;font-weight:600;color:var(--muted)}.pz-status.ok{color:#5E8A57}.pz-status.bad{color:#B0392B}
+.pz-sets{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.pz-set{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);cursor:pointer}
+.pz-set-icon{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--bronze);color:var(--bronze);font:400 18px 'DM Serif Display',Georgia,serif}
+.pz-set-mid{flex:1;min-width:0}.pz-set-mid b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pz-set-mid span{display:block;font-size:12.5px;color:var(--muted)}
+.pz-set-got{flex:none;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:99px;background:rgba(185,138,92,.14);color:var(--bronze)}.pz-set-got.done{background:rgba(94,138,87,.15);color:#4E7A48}
+.pz-empty{margin:14px 0;padding:18px;border-radius:16px;border:1px dashed var(--line);text-align:center;color:var(--muted);font-size:14px}
+.pz-sec{margin:0 0 14px;padding:14px;border-radius:18px;background:var(--card,#fff);border:1px solid var(--line)}
+.pz-sec h4{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze)}
+.pz-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pz-row{border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:8px;background:var(--bg,transparent)}.pz-row.got{border-color:#8DB387;background:rgba(94,138,87,.07)}
 .pz-top{display:flex;gap:8px;align-items:center}.pz-top input{flex:1;margin:0}
+.pz-num{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--bronze);color:#fff}
 .pz-rm{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
 .pz-3{display:grid;grid-template-columns:2fr 1fr 1.2fr;gap:6px;margin-top:6px}.pz-3 input{margin:0;min-width:0}
-.pz-prev{position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#fff;margin-bottom:6px}
-.pz-prev iframe{position:absolute;left:0;top:0;width:733px;height:514px;border:0;transform-origin:0 0;pointer-events:none}`;
+.pz-got{display:flex;align-items:center;gap:8px;margin:8px 0 0;font-size:13px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink)}.pz-got input{width:18px;height:18px;margin:0;accent-color:#5E8A57}
+.pz-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.pz-style{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:12px;font-weight:600;cursor:pointer}.pz-style.on{border-color:var(--bronze);box-shadow:0 0 0 2px rgba(185,138,92,.25)}
+.pz-style>span{width:44px;height:30px;border-radius:5px;border:2px solid;display:grid;place-items:center}.pz-style i{width:16px;height:3px;border-radius:2px;display:block}
+.pz-prev{position:relative;overflow:hidden;border-radius:12px;background:#e9e6e1;margin-bottom:6px}
+.pz-prev iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none}
+.pz2 .btn.danger{color:#B0392B;border-color:rgba(176,57,43,.35)}`;
 document.head.appendChild(st);
 })();
 </script>
