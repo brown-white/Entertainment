@@ -9755,7 +9755,7 @@ function dashView(){
     activities:()=>`<div class="sec"><h3>${ic("star",18)} ${t("activities")}</h3>
       ${top.length?top.map(x=>`<div class="card booking-line" style="padding:12px 14px">
         <span><b>${esc(x.a.name)}</b> · ${t("daysShort")[x.a.day]} ${x.a.time}</span>
-        <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">${ic("grid",30)}</div>${t("none")}</div>`}
+        <span class="pill">${x.n} ${t("guests")}</span></div>`).join(""):`<div class="empty"><div class="big">${ic("grid",30)}</div>No bookings yet — the most booked activities will show here.</div>`}
     </div>`,
     trends:    ()=>trendsCard()
   };
@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.26-offers-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.26-dayplan-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -13211,7 +13211,7 @@ function startRealtime(){
   function v4Owner(a,day){
     if(v4Special(a)){
       const dj=v4Dj();
-      if(!dj) return {name:"DJ not configured",raw:"",bad:true};
+      if(!dj) return {name:"No DJ (#3) in the team",raw:"",bad:true,nodj:true};
       const ok=typeof availableOn==="function" ? availableOn(dj,day,assignDateStr(day)) : true;
       return {name:(dj.display_name||dj.username)+" · DJ",raw:dj.username,bad:!ok};
     }
@@ -13272,7 +13272,7 @@ function startRealtime(){
       return `<div class="live-row-v4 ${cls}" data-actopen="${esc(String(a.id))}">
         <div><div class="live-eyebrow"><i></i>${esc(state)} · ${esc(cat)}</div><div class="live-name">${esc(a.name)}</div>
           <div class="live-meta">${esc((w.start||"")+(w.end?" – "+w.end:""))}${x.total>1?` · Set ${x.idx+1}/${x.total}`:""}${a.location?" · "+esc(a.location):""}</div>
-          <div class="live-owner ${own.bad?"unavailable":""}">${ic("user",13)} ${own.name?esc(own.name):t("liveNoStaff")}${own.bad?" · unavailable":""}</div></div>
+          <div class="live-owner ${own.bad?"unavailable":""}">${ic("user",13)} ${own.name?esc(own.name):t("liveNoStaff")}${own.bad&&!own.nodj?" · not working today":""}</div></div>
         <div class="live-clock-v4 ${live?"live":soon?"soon":finished?"finished":""}" data-live-s="${w.s0}" data-live-e="${w.e0}">${timer}</div>
       </div>`;
     };
@@ -15533,7 +15533,7 @@ function typeV621(a){return normCat(a)==="mEvents"?"Event":"Show";}
 window.tonightCard=tonightCard=function(){
   const list=todayRequirementItemsV621();
   if(!list.length)return"";
-  return `<div class="sec"><h3>${ic("sparkle",18)} ${t("today")}</h3><div class="v621-today-list">${list.map(a=>{
+  return `<div class="sec"><h3>${ic("clipboard",18)} Event preparation</h3><div class="v621-today-list">${list.map(a=>{
     const sh=reqSheetForAct(a), rows=(sh&&sh.rows)||[],done=rows.filter(r=>r.done).length,pct=rows.length?Math.round(done/rows.length*100):0;
     return `<div class="v621-today-item"><div class="v621-today-top" data-actopen="${esc(String(a.id))}"><div><div class="v621-today-type">${typeV621(a)}</div><div class="v621-today-name">${esc(a.name||"")}</div><div class="v621-today-meta">${esc(a.time||"")}${a.location?" · "+esc(a.location):""}</div><div class="v621-today-team">${ic("user",13)} ${esc(responsibleDisplayV621(a))}</div></div><span>${ic("back",16)}</span></div>
       <div class="v621-today-req">${sh?`<span class="mini">Requirements ${pct}% ready · ${done}/${rows.length}</span><button class="btn ghost sm" data-v621-openreq="${esc(String(sh.id))}">${ic("clipboard",13)} Open sheet</button>`:`<span class="mini">Requirement sheet suggested for this ${typeV621(a).toLowerCase()}.</span><button class="btn ghost sm" data-v621-makereq="${esc(String(a.id))}">${ic("clipboard",13)} Make sheet</button>`}</div></div>`;
@@ -22193,6 +22193,423 @@ st.textContent=`.th9{margin:18px 0 12px;padding:16px;border-radius:22px;backgrou
 .th9-detail .th9-count span{background:var(--card,#fff);border:1px solid var(--line)}
 .th9-evx{display:block;margin-top:2px;font-size:11.5px;color:var(--espresso)!important;font-weight:600}
 @media (max-width:360px){.th9-stats{grid-template-columns:repeat(2,1fr)}}`;
+document.head.appendChild(st);
+})();
+</script>
+<script id="aurea-dashboard-v710">
+/* ===== V7.10 DASHBOARD — smart attention center (2026-09-26) =====
+   Problems found:
+   1. The same event appeared up to 5 times (DJ card + one "needs preparation
+      check" card per event + one "Event tomorrow" card per event + the Today
+      section + Live operations). Now ONE card per problem type with the
+      events listed inside, sorted by time.
+   2. A missing DJ (#3) showed as a "DJ conflict" for today AND tomorrow and as
+      "DJ not configured · unavailable" on every event. Now one Setup card that
+      says exactly what to fix.
+   3. Activities with NOBODY assigned were never flagged. Now they are
+      (today and tomorrow).
+   4. Ticket orders counted every past week; ticket-pack money was missing.
+   5. "Tickets" / "Bookings this week" numbers counted everything ever.
+   6. Items were not in time order. */
+(function(){
+'use strict';
+if(window.__AUREA_DASH_V710) return; window.__AUREA_DASH_V710=true;
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DJN=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addDays=(s,n)=>{ const d=new Date(s+'T12:00:00'); d.setDate(d.getDate()+n); return iso(d); };
+const today=()=>hotelDateStr(), tomorrow=()=>addDays(today(),1);
+const dayIdx=s=>(new Date(s+'T12:00:00').getDay()+6)%7;
+const nowMin=()=>{ try{ return nowMinutes(); }catch(_){ const n=hotelNow(); return n.getHours()*60+n.getMinutes(); } };
+const wins=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w; }catch(_){} const s=timeToMin(a&&a.time); return s==null?[]:[{s0:s,e0:s+30}]; };
+const startOf=a=>{ const w=wins(a); return w.length?w[0].s0:9999; };
+const endOf=a=>{ const w=wins(a); return w.length?w[w.length-1].e0:null; };
+const hhmm=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const tm=a=>{ const s=startOf(a); return s<9999?hhmm(s):String(a.time||''); };
+const special=a=>normCat(a)!=='mAdult';
+const normal=a=>{ try{ const s=activitySlot(a); return s==='morning'||s==='afternoon'; }catch(_){ return !special(a); } };
+const KIND={mEvents:'Event',eShow:'Show',eParty:'Party',eLive:'Live music',eBefore:'Before the show',eAfter:'After show'};
+const kindOf=a=>KIND[normCat(a)]||'Event';
+const who=a=>{ try{ return entertainerName(a.entertainer); }catch(_){ return String(a.entertainer||''); } };
+function currentAccounts(){ const api=window.AUREA_GUEST_LIFECYCLE; if(api&&api.currentAccounts) return api.currentAccounts(); return (S.accounts||[]).filter(a=>a&&a.active!==false); }
+function currentRows(rows){ const api=window.AUREA_GUEST_LIFECYCLE, acs=currentAccounts(); if(!(api&&api.rowBelongs)) return rows||[]; return (rows||[]).filter(r=>acs.some(a=>api.rowBelongs(r,a))); }
+function userOf(raw){ const q=String(raw||'').split(/\s*[,;\/]\s*/)[0].trim().toLowerCase(); if(!q) return null; return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===q||String(u.display_name||'').toLowerCase()===q)||null; }
+function whyOff(u,day,date){
+  try{ const st=attStatus(u,date.slice(0,7),+date.slice(8,10)); if(st==='V') return 'on holiday'; if(st==='A') return 'absent'; }catch(_){}
+  try{ const dp=dayPlanFor(day); if((dp.off||[]).map(Number).includes(+u.number)) return 'day off'; }catch(_){}
+  return 'not working';
+}
+function working(u,day,date){ try{ return availableOn(u,day,date); }catch(_){ return true; } }
+function dj(){ return (S.users||[]).find(u=>u&&u.role==='staff'&&+u.number===DJN&&u.active!==false&&!(typeof hasLeft==='function'&&hasLeft(u)))||null; }
+function sheetState(a){
+  const sh=typeof reqSheetForAct==='function'?reqSheetForAct(a):null;
+  if(!sh) return {ok:false,txt:'no sheet'};
+  const rows=Array.isArray(sh.rows)?sh.rows:[], done=rows.filter(r=>r.done).length;
+  if(!rows.length) return {ok:false,txt:'empty sheet'};
+  return done<rows.length?{ok:false,txt:done+'/'+rows.length+' ready'}:{ok:true,txt:'ready'};
+}
+const money=(v,c)=>{ v=Math.round((+v||0)*100)/100; return (Number.isInteger(v)?v:v.toFixed(2))+' '+(c||'€'); };
+function item(group,tone,icon,title,detail,tag,nav,rank,list){ return {group,tone,icon,title,detail,tag,nav,rank,list:list||[]}; }
+const nav=(tab,sub,extra)=>({tab,sub:sub||'',extra:extra||{}});
+
+function build(){
+  const out=[], td=today(), tmw=tomorrow(), di=dayIdx(td), dt=dayIdx(tmw), now=nowMin();
+  const acts=d=>(S.activities||[]).filter(a=>a&&a.day===d).sort((a,b)=>startOf(a)-startOf(b));
+  const T=acts(di), M=acts(dt);
+  const notEnded=a=>{ const e=endOf(a); return e==null||e>now; };
+
+  /* ---- setup: DJ ---- */
+  const D=dj();
+  const evToday=T.filter(special), evTomorrow=M.filter(special);
+  if(!D && (evToday.length||evTomorrow.length)){
+    const staff3=(S.users||[]).find(u=>+u.number===DJN);
+    out.push(item('urgent','bad','music','No DJ in the team',
+      staff3?`Team member #${DJN} (${staff3.display_name||staff3.username}) is ${staff3.active===false?'switched off':staff3.role!=='staff'?'not an entertainer account':'marked as left'}. Events, shows and live music are run by #${DJN}.`
+            :`Events, shows and live music are run by team member #${DJN}. Nobody active has number ${DJN} — open Team and give the DJ number ${DJN}.`,
+      'Setup',nav('team','accounts'),1));
+  } else if(D){
+    [[td,di,evToday,'urgent','today'],[tmw,dt,evTomorrow,'tomorrow','tomorrow']].forEach(([date,day,ev,g,word])=>{
+      if(!ev.length||working(D,day,date)) return;
+      out.push(item(g,'bad','music',`DJ ${D.display_name||D.username} is ${whyOff(D,day,date)} ${word}`,`${ev.length} event${ev.length>1?'s':''} need a DJ — change the day off or find cover`,'DJ',nav('dayplan'),2,ev.map(a=>tm(a)+' · '+a.name)));
+    });
+  }
+
+  /* ---- people who cannot run what they are assigned ---- */
+  [[td,di,T,'urgent','today',true],[tmw,dt,M,'tomorrow','tomorrow',false]].forEach(([date,day,list,g,word,live])=>{
+    const bad=[];
+    list.filter(a=>normal(a)&&(!live||notEnded(a))).forEach(a=>{
+      const u=userOf(a.entertainer); if(!u) return;
+      let why=working(u,day,date)?'':whyOff(u,day,date);
+      try{ if(!why&&typeof entranceConflict==='function'&&entranceConflict(u,day,a)) why='on entrance duty'; }catch(_){}
+      if(why) bad.push(`${tm(a)} · ${a.name} — ${u.display_name||u.username} is ${why}`);
+    });
+    if(bad.length) out.push(item(g,'bad','users',`${bad.length} activit${bad.length>1?'ies':'y'} ${word} with someone who cannot work`,'Assign somebody else','Staff',nav('assign','',{day}),3,bad));
+  });
+
+  /* ---- activities with nobody ---- */
+  const emptyToday=T.filter(a=>normal(a)&&notEnded(a)&&!String(a.entertainer||'').trim());
+  if(emptyToday.length) out.push(item('urgent','bad','user',`${emptyToday.length} activit${emptyToday.length>1?'ies':'y'} today ${emptyToday.length>1?'have':'has'} nobody assigned`,'Open Assignments → Generate plans → Fill empty only','Assign',nav('assign','',{day:di}),4,emptyToday.map(a=>tm(a)+' · '+a.name)));
+  const emptyTom=M.filter(a=>normal(a)&&!String(a.entertainer||'').trim());
+  if(emptyTom.length) out.push(item('tomorrow','warn','user',`${emptyTom.length} activit${emptyTom.length>1?'ies':'y'} tomorrow without an entertainer`,'Plan them before the team leaves today','Assign',nav('assign','',{day:dt}),22,emptyTom.map(a=>tm(a)+' · '+a.name)));
+
+  /* ---- preparation sheets (one card per day) ---- */
+  const sheetList=list=>list.filter(special).map(a=>({a,s:sheetState(a)})).filter(x=>!x.s.ok);
+  const shT=sheetList(T.filter(notEnded));
+  if(shT.length) out.push(item('urgent',shT.some(x=>x.s.txt==='no sheet')?'bad':'warn','clipboard',`${shT.length} event${shT.length>1?'s':''} today not prepared`,'Make or finish the requirement sheet (music, props, setup)','Prepare',nav('req','',{date:td,actId:shT[0].a.id}),6,shT.map(x=>`${tm(x.a)} · ${x.a.name} — ${x.s.txt}`)));
+  const shM=sheetList(M);
+  if(shM.length) out.push(item('tomorrow','warn','calendar',`${shM.length} event${shM.length>1?'s':''} tomorrow to prepare`,'Requirement sheets for tomorrow','Prepare',nav('req','',{date:tmw,actId:shM[0].a.id}),25,shM.map(x=>`${tm(x.a)} · ${x.a.name} — ${x.s.txt}`)));
+
+  /* ---- tickets: guests waiting to pay (only upcoming dates) ---- */
+  const TK=window.AUREA_TICKETS_V707||{};
+  const orders=currentRows(S.orders||[]).filter(o=>String(o.status||'reserved').toLowerCase()!=='paid'&&(!TK.orderDate||!TK.orderDate(o)||TK.orderDate(o)>=td));
+  if(orders.length){
+    const by={}; orders.forEach(o=>{ const k=o.collect_from||'Entertainment Team'; by[k]=(by[k]||0)+(+o.qty||1); });
+    const q=orders.reduce((n,o)=>n+(+o.qty||1),0);
+    out.push(item('urgent','warn','ticket',`${q} ticket${q>1?'s':''} reserved, not paid yet`,'Guests pay the person they chose and get the paper ticket','Tickets',nav('guests','tickets'),7,Object.entries(by).map(([k,n])=>`${k}: ${n} ticket${n>1?'s':''}`)));
+  }
+  /* ---- ticket packs: money the team still has to hand in ---- */
+  const PK=window.AUREA_PACKS_V709;
+  if(PK){
+    const owe={}; let cur='€';
+    Object.values(PK.packs()).forEach(p=>{ if(!p) return; const x=PK.stats(p); if(x.closed||x.balance<=0) return; cur=p.currency||cur; const n=((S.users||[]).find(u=>u.username===p.user)||{}).display_name||p.user; owe[n]=(owe[n]||0)+x.balance; });
+    const total=Object.values(owe).reduce((a,b)=>a+b,0);
+    if(total>0) out.push(item('today','warn','ticket',`Collect ${money(total,cur)} ticket money from the team`,'Paper tickets sold from the packs you gave out','Money',nav('program','tickets'),20,Object.entries(owe).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`${n}: ${money(v,cur)}`)));
+  }
+
+  /* ---- requests ---- */
+  const gReq=currentRows(S.requests||[]).filter(r=>String(r.status||'new').toLowerCase()==='new');
+  if(gReq.length) out.push(item('urgent','bad','bell',`${gReq.length} guest request${gReq.length>1?'s':''} waiting`,'Reply or mark them done','Guests',nav('guests','requests'),5));
+  const sReq=(S.staffReqs||[]).filter(r=>String(r.status||'new').toLowerCase()==='new');
+  if(sReq.length) out.push(item('urgent','bad','users',`${sReq.length} team request${sReq.length>1?'s':''} waiting`,'Approve or reply','Team',nav('team','requests'),8));
+
+  /* ---- attendance not marked after an activity ---- */
+  const ended=new Set(T.filter(a=>{ const e=endOf(a); return e!=null&&now>=e+10; }).map(a=>String(a.id)));
+  const noShow=currentRows(S.bookings||[]).filter(b=>String(b.status||'booked')==='booked'&&ended.has(String(b.activity_id))&&!(S.attendance||[]).some(x=>String(x.booking_id)===String(b.id)&&String(x.date||'').slice(0,10)===td));
+  if(noShow.length) out.push(item('urgent','warn','check',`${noShow.length} booked guest${noShow.length>1?'s':''} not marked as attended`,'Tick who came, so the guest history stays correct','Attendance',nav('guests','bookings',{day:di}),12,noShow.slice(0,6).map(b=>{ const a=(S.activities||[]).find(x=>String(x.id)===String(b.activity_id)); return (b.guest_name||'Guest')+' · '+(a?a.name:''); })));
+
+  /* ---- tasks ---- */
+  const open=(S.tasks||[]).filter(x=>!['completed','verified','done'].includes(String(x.status||'').toLowerCase()));
+  const due=x=>String(x.due||x.deadline||'').slice(0,10);
+  const over=open.filter(x=>due(x)&&due(x)<td);
+  if(over.length) out.push(item('urgent','bad','clipboard',`${over.length} overdue task${over.length>1?'s':''}`,'Follow up with the team','Tasks',nav('assign'),9,over.slice(0,5).map(x=>String(x.title||x.text||'Task'))));
+  const dueT=open.filter(x=>due(x)===td);
+  if(dueT.length) out.push(item('today','warn','clipboard',`${dueT.length} task${dueT.length>1?'s':''} due today`,'Check they get done','Tasks',nav('assign'),28,dueT.slice(0,5).map(x=>String(x.title||x.text||'Task'))));
+
+  /* ---- guests ---- */
+  const acs=currentAccounts();
+  const inToday=acs.filter(a=>String(a.arrival||'').slice(0,10)===td);
+  if(inToday.length) out.push(item('today','info','user',`${inToday.length} guest${inToday.length>1?'s':''} arrived today`,'Say hello and invite them to tonight','New stay',nav('guests','crm'),35,inToday.slice(0,6).map(a=>`${a.name||'Guest'} · Room ${a.room}`)));
+  const outTom=acs.filter(a=>String(a.departure||'').slice(0,10)===tmw);
+  if(outTom.length) out.push(item('tomorrow','info','user',`${outTom.length} guest${outTom.length>1?'s':''} leave tomorrow`,'Last evening — ask for feedback and reviews','Last day',nav('guests','crm'),30,outTom.slice(0,6).map(a=>`${a.name||'Guest'} · Room ${a.room}`)));
+  const inTom=acs.filter(a=>String(a.arrival||'').slice(0,10)===tmw);
+  if(inTom.length) out.push(item('tomorrow','info','user',`${inTom.length} guest arrival${inTom.length>1?'s':''} tomorrow`,'Accounts are ready — check the welcome details','Arrival',nav('guests','crm'),38));
+
+  /* ---- feedback ---- */
+  const low=(S.feedback||[]).filter(f=>(+f.rate||5)<=3&&Date.parse(f.created_at)>Date.now()-7*864e5);
+  if(low.length) out.push(item('today','warn','star',`${low.length} low guest rating${low.length>1?'s':''} this week`,'3★ or below — read and react','Feedback',nav('guests','feedback'),32));
+
+  /* ---- promotion ---- */
+  const empty=T.filter(a=>{ const s=startOf(a); return s>now&&(+a.capacity)>0&&(typeof seatsTaken==='function'&&seatsTaken(a.id)===0); });
+  if(empty.length) out.push(item('today','info','grid',`${empty.length} upcoming activit${empty.length>1?'ies have':'y has'} no bookings yet`,'Promote them at the pool or in the app','Promote',nav('program','acts'),45,empty.map(a=>tm(a)+' · '+a.name)));
+
+  return out.sort((a,b)=>a.rank-b.rank||a.title.localeCompare(b.title));
+}
+window.managerAttentionItemsV627=build;
+window.managerAttentionItemsV710=build;
+
+/* ---------- reviewed reminders (same storage as before) ---------- */
+const ACK='attentionReviewedV628';
+const reviewable=it=>['new stay','last day','arrival','promote'].includes(String(it.tag||'').toLowerCase());
+function fp(it){ const raw=[today(),it.group,it.tag,it.title].join('|'); let h=2166136261; for(let i=0;i<raw.length;i++){ h^=raw.charCodeAt(i); h=Math.imul(h,16777619); } return 'a'+(h>>>0).toString(36); }
+const acks=()=>({...((S.settings&&S.settings[ACK])||{})});
+function items(){ const a=acks(), td=today(); return build().map(it=>({...it,_id:fp(it)})).filter(it=>!(reviewable(it)&&a[it._id]===td)); }
+async function ack(it){ if(!reviewable(it)) return; const td=today(), m=acks(), clean={}; m[it._id]=td; Object.keys(m).forEach(k=>{ if(m[k]===td) clean[k]=td; }); try{ await DB.saveSettings({...S.settings,[ACK]:clean}); }catch(_){} }
+window.managerAttentionItemsV628=items;
+window.attentionItems=items;
+
+const GROUPS=[['urgent','Do now','Problems that affect today'],['today','Later today','Good to handle before the evening'],['tomorrow','Prepare tomorrow','So tomorrow starts ready']];
+function card(){
+  const list=items();
+  const n=list.length;
+  if(!n) return `<section class="ac7"><div class="ac7-clear"><span class="ic">${ic('check',22)}</span><span><b>All clear</b><span>Nothing needs you right now — the team, programme, tickets and guests are in order.</span></span></div></section>`;
+  const first=list.find(x=>x.group==='urgent')||list[0];
+  let idx=0;
+  return `<section class="ac7">
+    <div class="ac7-head"><div><p class="ac7-kicker">Manager control center</p><h3>${n} thing${n>1?'s':''} need${n>1?'':'s'} you</h3><p class="ac7-start">Start with: <b>${E(first.title)}</b></p></div>
+      <div class="ac7-sum">${GROUPS.map(([g,l])=>{ const c=list.filter(x=>x.group===g).length; return `<span class="${g}${c?'':' zero'}"><b>${c}</b>${E(l)}</span>`; }).join('')}</div></div>
+    ${GROUPS.map(([g,label,sub])=>{ const gl=list.filter(x=>x.group===g); if(!gl.length) return '';
+      return `<div class="ac7-g ${g}"><p class="ac7-gt"><i></i>${E(label)}<span>${E(sub)}</span></p>${gl.map(x=>{ const i=idx++; const more=x.list.length>4?x.list.length-4:0;
+        return `<button type="button" class="ac7-item ${x.tone}" data-ac7="${i}"><span class="ac7-ico">${ic(x.icon||'bell',16)}</span>
+          <span class="ac7-copy"><b>${E(x.title)}</b>${x.list.length?`<span class="ac7-list">${x.list.slice(0,4).map(l=>`<span>${E(l)}</span>`).join('')}${more?`<span class="more">+${more} more</span>`:''}</span>`:''}<span class="ac7-next">${E(x.detail||'')}</span></span>
+          <span class="ac7-tag">${E(x.tag||'Open')} ›</span></button>`; }).join('')}</div>`; }).join('')}
+  </section>`;
+}
+window.attentionCard=card;
+try{ attentionCard=card; }catch(_){}
+
+function go(it){
+  if(!it||!it.nav) return; const n=it.nav;
+  ack(it);
+  if(n.extra&&Number.isInteger(n.extra.day)){ S.day=n.extra.day; S.assignDay=n.extra.day; S.planDay=n.extra.day; }
+  if(n.extra&&n.extra.date) S.reqDate=n.extra.date;
+  S.tab=n.tab; if(n.sub){ S.sub=S.sub||{}; S.sub[n.tab]=n.sub; }
+  render(); window.scrollTo(0,0);
+  if(n.tab==='req'&&n.extra&&n.extra.actId){ setTimeout(()=>{ const a=(S.activities||[]).find(x=>String(x.id)===String(n.extra.actId)); const sh=(typeof reqSheetForAct==='function'&&a)?reqSheetForAct(a):null; try{ if(sh) openReqEditor(sh.id); else if(a) openReqEditor(null,a.id); }catch(_){} },80); }
+}
+
+/* ---------- honest numbers ---------- */
+function stats(){
+  const td=today(), di=dayIdx(td);
+  const T=(S.activities||[]).filter(a=>a&&a.day===di);
+  const ids=new Set(T.map(a=>String(a.id)));
+  const bk=currentRows(S.bookings||[]).filter(b=>ids.has(String(b.activity_id)));
+  const booked=bk.filter(b=>String(b.status||'booked')==='booked'), wait=bk.filter(b=>b.status==='waitlist');
+  const people=booked.reduce((n,b)=>n+Math.max(1,(+b.adults||0)+(+b.children||0)),0);
+  const cap=T.filter(a=>+a.capacity>0), occ=cap.length?Math.round(cap.reduce((n,a)=>n+Math.min(1,(typeof seatsTaken==='function'?seatsTaken(a.id):0)/a.capacity),0)/cap.length*100):0;
+  const TK=window.AUREA_TICKETS_V707||{};
+  const up=currentRows(S.orders||[]).filter(o=>!TK.orderDate||(TK.orderDate(o)||'')>=td);
+  const tq=up.reduce((n,o)=>n+(+o.qty||1),0), tpend=up.filter(o=>String(o.status||'').toLowerCase()!=='paid').reduce((n,o)=>n+(+o.qty||1),0);
+  return `<div class="stat"><b>${currentAccounts().length}</b><span>Guest stays now</span></div>
+    <div class="stat"><b>${people}</b><span>Guests booked today</span></div>
+    <div class="stat accent"><b>${occ}%</b><span>Full today</span></div>
+    <div class="stat"><b>${wait.length}</b><span>Waiting list today</span></div>
+    <div class="stat"><b>${tq}</b><span>Tickets coming up</span></div>
+    <div class="stat ${tpend?'accent':''}"><b>${tpend}</b><span>Tickets not paid</span></div>`;
+}
+
+window.__wireSteps.push(function(){
+  if(!(S.session&&S.session.role==='manager')) return;
+  const list=document.querySelector('.ac7')?items():[];
+  document.querySelectorAll('[data-ac7]').forEach(b=>b.onclick=()=>go(list[+b.dataset.ac7]));
+  if(S.tab==='dash'){ const g=document.querySelector('.screen .stat-grid'); if(g&&!g.dataset.v710){ g.dataset.v710='1'; g.innerHTML=stats(); } }
+});
+
+const st=document.createElement('style'); st.id='ac7-style';
+st.textContent=`.ac7{margin:0 0 20px;border-radius:24px;background:var(--card,#fff);border:1px solid var(--line);overflow:hidden;box-shadow:0 12px 34px rgba(40,25,10,.06)}
+.ac7-head{padding:18px 18px 14px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--line)}
+.ac7-kicker{margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}
+.ac7-head h3{margin:4px 0 2px;font-family:var(--font-display);font-size:28px;font-weight:400;line-height:1.1}
+.ac7-start{margin:0;font-size:13px;color:var(--muted)}.ac7-start b{color:var(--ink)}
+.ac7-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ac7-sum span{display:flex;flex-direction:column;padding:9px 10px;border-radius:14px;background:var(--bg);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.ac7-sum b{font-family:var(--font-display);font-size:24px;font-weight:400;color:var(--ink);letter-spacing:0}
+.ac7-sum .urgent b{color:#B0392B}.ac7-sum .today b{color:#B06A12}.ac7-sum .tomorrow b{color:#4F6D8F}.ac7-sum .zero b{color:var(--muted)}
+.ac7-g{padding:12px 14px 4px}
+.ac7-gt{margin:0 0 8px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.ac7-gt i{width:8px;height:8px;border-radius:50%;background:#B0392B}.ac7-g.today .ac7-gt i{background:#D08526}.ac7-g.tomorrow .ac7-gt i{background:#4F6D8F}
+.ac7-gt span{font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted);font-size:12px}
+.ac7-item{display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;padding:12px;margin:0 0 8px;border-radius:16px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.ac7-item.bad{border-left:4px solid #B0392B}.ac7-item.warn{border-left:4px solid #D08526}.ac7-item.info{border-left:4px solid #8FA3B8}
+.ac7-ico{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--card,#fff);color:var(--espresso)}
+.ac7-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.ac7-copy b{font-size:14.5px;line-height:1.25}
+.ac7-list{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--ink)}.ac7-list span{overflow-wrap:anywhere}.ac7-list .more{color:var(--muted)}
+.ac7-next{font-size:12px;color:var(--muted);line-height:1.35}
+.ac7-tag{flex:none;align-self:center;font-size:11px;font-weight:700;padding:5px 9px;border-radius:99px;background:var(--card,#fff);color:var(--espresso);white-space:nowrap}
+.ac7-clear{display:flex;gap:12px;align-items:center;padding:18px}.ac7-clear .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(94,138,87,.15);color:#4E7A48;flex:none}.ac7-clear b{display:block;font-size:16px}.ac7-clear span span{font-size:13px;color:var(--muted)}`;
+document.head.appendChild(st);
+})();
+</script>
+<script id="aurea-dayplan-v711">
+/* ===== V7.11 DAY PLAN — clear, smart, no repeats (2026-09-26) =====
+   Found:
+   1. Day off names were shown twice (summary card + list) and entrance duty
+      was not shown anywhere on the Day Plan.
+   2. "CHANGED" appeared on almost every day — it only meant "this weekday was
+      edited once", which told nothing.
+   3. The date was a raw 2026-09-26 and the "Total team" box repeated the list.
+   4. The team list showed grey tick buttons that looked tappable but did
+      nothing, and it did not show what anybody is actually doing that day.
+   5. Nothing warned about someone assigned on their day off, entrance duty
+      on a day off, a missing entrance, or a DJ off on an event day.
+   6. Daily standards gave no hint which one is now / next.
+   Now: one "day at a glance" card with the checks, a team list that shows
+   each person's status and their activities, and standards with Now/Next. */
+(function(){
+'use strict';
+if(window.__AUREA_DAYPLAN_V711) return; window.__AUREA_DAYPLAN_V711=true;
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DJN=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+const LOC={en:'en-GB',de:'de-DE',ru:'ru-RU',pl:'pl-PL',cs:'cs-CZ',nl:'nl-NL',fr:'fr-FR',ar:'ar-EG'};
+const wins=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w; }catch(_){} const s=timeToMin(a&&a.time); return s==null?[]:[{s0:s,e0:s+30}]; };
+const startOf=a=>{ const w=wins(a); return w.length?w[0].s0:9999; };
+const hhmm=m=>m>=9999?'':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const special=a=>normCat(a)!=='mAdult';
+const normal=a=>{ try{ const s=activitySlot(a); return s==='morning'||s==='afternoon'; }catch(_){ return !special(a); } };
+const low=v=>String(v||'').trim().toLowerCase();
+function assignedTo(a,u){
+  const names=String(a&&a.entertainer||'').split(/\s*[,;\/]\s*/).map(low).filter(Boolean);
+  return names.some(n=>n===low(u.username)||n===low(u.display_name)||n===String(u.number));
+}
+function niceDate(s){ try{ return new Date(s+'T12:00:00').toLocaleDateString(LOC[S.lang]||'en-GB',{weekday:'long',day:'numeric',month:'long'}); }catch(_){ return s; } }
+function photo(u){ return u&&(u.photo||u.avatar)||''; }
+
+function model(day){
+  const dp=dayPlanFor(day), st=dayDutyStats(day), date=st.date;
+  const acts=(S.activities||[]).filter(a=>a&&a.day===day).sort((a,b)=>startOf(a)-startOf(b));
+  const statusOf=u=>st.vacation.includes(u)?'holiday':st.absent.includes(u)?'absent':st.off.includes(u)?'off':st.working.includes(u)?'working':'none';
+  const team=[...st.working,...st.off,...st.absent,...st.vacation].sort((a,b)=>(+a.number||(a.role==='manager'?1:99))-(+b.number||(b.role==='manager'?1:99)));
+  const people=team.map(u=>{
+    const num=+u.number||(u.role==='manager'?1:0);
+    const mine=acts.filter(a=>normal(a)&&assignedTo(a,u));
+    const isDJ=num===DJN;
+    return {u,num,status:statusOf(u),entrance:+dp.entrance===num&&num>0,dj:isDJ,makeup:dp.makeup&&+dp.makeup.num===num,acts:mine,events:isDJ?acts.filter(special):[],role:(typeof roleForNumber==='function'?roleForNumber(num):'')};
+  });
+  const checks=[];
+  const bad=people.filter(p=>p.status!=='working'&&p.acts.length);
+  bad.forEach(p=>checks.push({tone:'bad',text:`${p.u.display_name||p.u.username} is on ${p.status==='off'?'day off':p.status} but has ${p.acts.map(a=>hhmm(startOf(a))+' '+a.name).join(', ')}`}));
+  const ent=people.find(p=>p.entrance);
+  if(!dp.entrance) checks.push({tone:'warn',text:'No entrance duty set for this day'});
+  else if(!ent) checks.push({tone:'warn',text:`Entrance duty is #${dp.entrance}, but nobody active has that number`});
+  else if(ent.status!=='working') checks.push({tone:'bad',text:`${ent.u.display_name||ent.u.username} has entrance duty but is on ${ent.status==='off'?'day off':ent.status}`});
+  else { try{ const clash=ent.acts.filter(a=>entranceConflict(ent.u,day,a)); if(clash.length) checks.push({tone:'bad',text:`${ent.u.display_name||ent.u.username} has entrance duty and ${clash.map(a=>a.name).join(', ')} at the same time`}); }catch(_){} }
+  const evs=acts.filter(special), dj=people.find(p=>p.dj);
+  if(evs.length&&!dj) checks.push({tone:'bad',text:`${evs.length} event${evs.length>1?'s':''} but no DJ (#${DJN}) in the team`});
+  else if(evs.length&&dj&&dj.status!=='working') checks.push({tone:'bad',text:`DJ ${dj.u.display_name||dj.u.username} is on ${dj.status==='off'?'day off':dj.status} — ${evs.length} event${evs.length>1?'s':''} need him`});
+  const empty=acts.filter(a=>normal(a)&&!String(a.entertainer||'').trim());
+  if(empty.length) checks.push({tone:'warn',text:`${empty.length} activit${empty.length>1?'ies have':'y has'} nobody: ${empty.map(a=>hhmm(startOf(a))+' '+a.name).join(', ')}`,nav:'assign'});
+  const idle=people.filter(p=>p.status==='working'&&!p.dj&&p.u.role==='staff'&&+p.num>3&&!p.acts.length&&!p.entrance);
+  if(idle.length&&acts.some(normal)) checks.push({tone:'info',text:`Free — no activity: ${idle.map(p=>p.u.display_name||p.u.username).join(', ')}`});
+  return {dp,st,date,acts,people,checks,evs,dj};
+}
+
+function glance(day,m){
+  const {dp,st,date,checks,evs,dj}=m;
+  const probs=checks.filter(c=>c.tone!=='info').length;
+  const counts=[['working',st.workingCount,'Working'],['off',st.offCount,'Day off'],['holiday',st.vacationCount,'Holiday'],['absent',st.absentCount,'Absent']];
+  return `<section class="dp7-glance">
+    <div class="dp7-top"><div><p class="dp7-kicker">${day===todayIndex()?'Today':'Plan for'}</p><h3>${E(niceDate(date))}</h3>
+      <p class="dp7-sub">${dp.theme?`<span>${ic('star',13)} ${E(dp.theme)}</span>`:''}${dp.dress?`<span>${ic('user',13)} ${E(dp.dress)}</span>`:''}</p></div></div>
+    <div class="dp7-counts">${counts.map(([k,n,l])=>`<span class="${k}${n?'':' zero'}"><b>${n}</b>${E(l)}</span>`).join('')}</div>
+    ${evs.length?`<div class="dp7-events"><b>${ic('music',14)} Events & shows</b><span>${evs.map(a=>`${E(hhmm(startOf(a)))} ${E(a.name)}`).join(' · ')}</span><span class="mini">DJ: ${dj?E(dj.u.display_name||dj.u.username)+(dj.status==='working'?'':' — '+(dj.status==='off'?'day off':dj.status)):'not in the team'}</span></div>`:''}
+    <div class="dp7-checks ${probs?'':'ok'}">${probs?`<b>${probs} thing${probs>1?'s':''} to fix</b>`:`<b>${ic('check',14)} Everything fits</b><span>Entrance set, nobody works on a day off${evs.length?', DJ available':''}${m.acts.some(normal)?', all activities covered':''}.</span>`}
+      ${checks.map(c=>`<span class="dp7-chk ${c.tone}">${E(c.text)}</span>`).join('')}
+      ${checks.some(c=>c.nav==='assign')?`<button type="button" class="dp7-link" data-dp7-assign="${day}">Open Assignments ›</button>`:''}</div>
+    <div class="dp7-btns"><button class="btn sm" data-dutyedit="${day}">${ic('pen',14)} Day off & entrance</button><button class="btn sm ghost" data-dp7-info="${day}">${ic('calendar',14)} Day information</button></div>
+  </section>`;
+}
+
+function roster(day,m){
+  const chip={working:'',off:'<span class="dp7-st off">Day off</span>',holiday:'<span class="dp7-st hol">Holiday</span>',absent:'<span class="dp7-st abs">Absent</span>',none:''};
+  const rows=m.people.map(p=>{
+    const name=p.u.display_name||p.u.username, ph=photo(p.u);
+    const work=[];
+    if(p.entrance) work.push(`<span class="dp7-w ent">${ic('door',12)} Entrance duty</span>`);
+    if(p.dj&&p.events.length) work.push(`<span class="dp7-w ev">${ic('music',12)} ${p.events.length} event${p.events.length>1?'s':''} from ${E(hhmm(startOf(p.events[0])))}</span>`);
+    p.acts.forEach(a=>work.push(`<span class="dp7-w ${p.status!=='working'?'bad':''}">${E(hhmm(startOf(a)))} ${E(a.name)}</span>`));
+    if(p.makeup&&p.status==='working') work.push(`<span class="dp7-w mk">Make-up practice</span>`);
+    const empty=p.status==='working'&&!work.length&&p.u.role==='staff'&&p.num>3;
+    return `<div class="dp7-row ${p.status}">
+      <span class="dp7-av">${ph?`<img src="${E(ph)}" alt="">`:E(p.num||'')}</span>
+      <span class="dp7-mid"><b>${E(name)}</b><span class="dp7-role">#${E(p.num||'—')}${p.role?' · '+E(p.role):''}</span>
+        ${work.length?`<span class="dp7-work">${work.join('')}</span>`:empty?`<span class="dp7-free">Free — nothing assigned</span>`:''}</span>
+      ${chip[p.status]||''}</div>`;
+  }).join('');
+  return `<div class="sec"><h3>${ic('users',18)} Team this day</h3><div class="card dp7-roster">${rows||'<p class="mini" style="padding:14px">No team members.</p>'}</div></div>`;
+}
+
+managerDayPlanView=function(){
+  const day=(typeof S.planDay==='number')?S.planDay:todayIndex();
+  const m=model(day), dp=m.dp;
+  const parts={team:()=>roster(day,m),standards:()=>dayPlanStandards(day)};
+  return `<div class="screen fadein dp7">
+    ${topBar(t('dayPlan'),(t('days')[dp.day]||dp.name)+(dp.theme?' · '+dp.theme:''))}
+    ${dayChips()}
+    ${glance(day,m)}
+    ${renderParts('dayplan',parts)}
+    ${arrangeBtn('dayplan')}
+  </div>`;
+};
+window.managerDayPlanView=managerDayPlanView;
+
+/* standards: mark what is happening now and next (only for today) */
+function markStandards(){
+  if(!(S.tab==='dayplan'&&(typeof S.planDay!=='number'||S.planDay===todayIndex()))) return;
+  const rows=[...document.querySelectorAll('.dp7 .std-row-v2')]; if(!rows.length) return;
+  let now; try{ now=nowMinutes(); }catch(_){ const n=hotelNow(); now=n.getHours()*60+n.getMinutes(); }
+  const tm=r=>{ const x=timeToMin((r.querySelector('.std-time-v2')||{}).textContent||''); return x==null?-1:x; };
+  let cur=-1; rows.forEach((r,i)=>{ if(tm(r)>=0&&tm(r)<=now) cur=i; });
+  rows.forEach((r,i)=>{ r.classList.toggle('dp7-past',i<cur); r.classList.toggle('dp7-now',i===cur); r.classList.toggle('dp7-next',i===cur+1);
+    const tag=r.querySelector('.dp7-tag'); if(tag) tag.remove();
+    if(i===cur||i===cur+1){ const s=r.querySelector('.std-main-v2'); if(s) s.insertAdjacentHTML('afterbegin',`<em class="dp7-tag">${i===cur?'Now':'Next'}</em>`); } });
+}
+window.__wireSteps.push(function(){
+  document.querySelectorAll('[data-dp7-info]').forEach(b=>b.onclick=()=>{ if(typeof openDayInfoEditorV6==='function') openDayInfoEditorV6(+b.dataset.dp7Info); });
+  document.querySelectorAll('[data-dp7-assign]').forEach(b=>b.onclick=()=>{ S.assignDay=+b.dataset.dp7Assign; S.tab='assign'; render(); window.scrollTo(0,0); });
+  markStandards();
+});
+setInterval(()=>{ if(S&&S.tab==='dayplan') markStandards(); },60000);
+
+const st=document.createElement('style'); st.id='dp7-style';
+st.textContent=`.dp7-glance{margin:14px 0 18px;padding:16px;border-radius:24px;background:var(--card,#fff);border:1px solid var(--line);box-shadow:0 12px 30px rgba(40,25,10,.05)}
+.dp7-kicker{margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}
+.dp7-top h3{margin:3px 0 4px;font-family:var(--font-display);font-size:26px;font-weight:400;line-height:1.1}
+.dp7-sub{margin:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}.dp7-sub span{display:inline-flex;align-items:center;gap:5px}
+.dp7-counts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:14px 0 10px}
+.dp7-counts span{display:flex;flex-direction:column;align-items:center;padding:9px 4px;border-radius:14px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+.dp7-counts b{font-family:var(--font-display);font-size:24px;font-weight:400;color:var(--ink);letter-spacing:0}
+.dp7-counts .working{background:rgba(94,138,87,.12)}.dp7-counts .working b{color:#4E7A48}.dp7-counts .off{background:rgba(208,133,38,.1)}.dp7-counts .holiday{background:rgba(79,109,143,.1)}.dp7-counts .absent{background:rgba(176,57,43,.08)}.dp7-counts .zero{opacity:.55}
+.dp7-events{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:14px;background:var(--bg);font-size:13px;margin-bottom:10px}.dp7-events b{display:flex;align-items:center;gap:6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--bronze)}
+.dp7-checks{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:rgba(176,57,43,.06);border:1px solid rgba(176,57,43,.18);margin-bottom:12px}
+.dp7-checks.ok{background:rgba(94,138,87,.08);border-color:rgba(94,138,87,.25)}.dp7-checks>b{display:flex;align-items:center;gap:6px;font-size:14px}.dp7-checks.ok>b{color:#4E7A48}.dp7-checks>span{font-size:12.5px;color:var(--muted)}
+.dp7-chk{font-size:13px;line-height:1.4;padding-left:14px;position:relative}.dp7-chk:before{content:'';position:absolute;left:0;top:6px;width:7px;height:7px;border-radius:50%;background:#B0392B}
+.dp7-chk.warn:before{background:#D08526}.dp7-chk.info{color:var(--muted)}.dp7-chk.info:before{background:#8FA3B8}
+.dp7-link{align-self:flex-start;border:0;background:none;padding:0;color:var(--espresso);font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline}
+.dp7-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dp7-btns .btn{margin:0}
+.dp7-roster{padding:4px 14px}
+.dp7-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.dp7-row:first-child{border-top:0}
+.dp7-av{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:rgba(185,138,92,.16);color:var(--espresso);font-family:var(--font-display);font-size:18px}.dp7-av img{width:100%;height:100%;object-fit:cover}
+.dp7-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.dp7-mid b{font-size:15px;line-height:1.25}.dp7-role{font-size:12px;color:var(--muted)}
+.dp7-work{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.dp7-w{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--bg);color:var(--ink)}
+.dp7-w.ent{background:rgba(185,138,92,.18);color:var(--espresso)}.dp7-w.ev{background:#1F2430;color:#F7F3EC}.dp7-w.mk{background:rgba(79,109,143,.12);color:#3F5A78}.dp7-w.bad{background:rgba(176,57,43,.12);color:#9C2F23}
+.dp7-free{font-size:12px;color:#B06A12;font-weight:600}
+.dp7-st{flex:none;align-self:center;font-size:11px;font-weight:700;padding:5px 9px;border-radius:99px}
+.dp7-st.off{background:rgba(208,133,38,.14);color:#9A5B10}.dp7-st.hol{background:rgba(79,109,143,.14);color:#3F5A78}.dp7-st.abs{background:rgba(176,57,43,.12);color:#9C2F23}
+.dp7-row.off .dp7-mid b,.dp7-row.holiday .dp7-mid b,.dp7-row.absent .dp7-mid b{opacity:.6}
+.dp7 .std-row-v2.dp7-past{opacity:.45}.dp7 .std-row-v2.dp7-now{background:rgba(185,138,92,.12)}
+.dp7-tag{display:inline-block;align-self:flex-start;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:var(--espresso);color:#fff;margin-bottom:3px}
+.dp7 .std-row-v2.dp7-next .dp7-tag{background:transparent;color:var(--espresso);border:1px solid var(--bronze)}
+@media (max-width:360px){.dp7-counts{grid-template-columns:repeat(2,1fr)}.dp7-btns{grid-template-columns:1fr}}`;
 document.head.appendChild(st);
 })();
 </script>
