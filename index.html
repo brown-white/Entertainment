@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.25-export-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.26-fair-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -21419,7 +21419,7 @@ async function runJobs(jobs){
   return {ok,fail};
 }
 
-/* ---------- the planner ---------- */
+/* ---------- the planner (V7.05) ---------- */
 const api=()=>window.AUREA_SMART_ASSIGNMENT_V622||{};
 const uname=u=>String(u&&u.username||'').toLowerCase();
 const DJ=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
@@ -21428,20 +21428,40 @@ function userByName(v){
   return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===q||String(u.display_name||'').toLowerCase()===q)||null;
 }
 const firstUser=v=>String(v||'').split(/\s*[,;\/]\s*/).map(userByName).find(Boolean)||null;
-const startMin=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w[0].s0; }catch(_){} return timeToMin(a&&a.time); };
+const wins=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w; }catch(_){} const s=timeToMin(a&&a.time); return s==null?[]:[{s0:s,e0:s+45}]; };
+const startMin=a=>{ const w=wins(a); return w.length?w[0].s0:null; };
 const typeOf=a=>{ try{ return activityType(a); }catch(_){ return 'x'; } };
 const normal=a=>{ const s=activitySlot(a); return s==='morning'||s==='afternoon'; };
-
+const isDJuser=u=>!!u && +u.number===DJ;
+const djSport=()=>{ try{ return djWorkMode()==='sport_dj'; }catch(_){ return false; } };
+/* The DJ keeps his events: a daytime activity must end 60 min before any
+   event, show, live music or party of that day starts, and may start 30 min
+   after one ends. */
+const DJ_BEFORE=60, DJ_AFTER=30;
+function djEventBlocks(day){
+  const out=[];
+  (S.activities||[]).filter(a=>a&&a.day===day&&activitySlot(a)==='event').forEach(ev=>wins(ev).forEach(w=>out.push({s:w.s0-DJ_BEFORE,e:w.e0+DJ_AFTER,name:ev.name,time:ev.time})));
+  return out;
+}
+function djClash(a){
+  const blocks=djEventBlocks(a.day);
+  return wins(a).map(w=>blocks.find(b=>w.s0<b.e && w.e0>b.s)).find(Boolean)||null;
+}
 function eligible(w,anchor,day,a){
   return withWeek(w,anchor,()=>{
     const date=assignDateStr(day), h=api().hardAvailable;
-    return assignableStaff(day,date).filter(u=>+u.number!==DJ || isSportDJ(u)).filter(u=>h?h(u,a,day):true);
+    return assignableStaff(day,date)
+      .filter(u=>!isDJuser(u) || (djSport() && !djClash(a)))
+      .filter(u=>h?h(u,a,day):true);
   });
 }
 function djFor(w,anchor,day){
   return withWeek(w,anchor,()=>(eventsCrew(day,assignDateStr(day))||[]).find(u=>+u.number===DJ)||null);
 }
 function rng(seed){ let t=seed>>>0; return ()=>{ t+=0x6D2B79F5; let r=Math.imul(t^t>>>15,t|1); r^=r+Math.imul(r^r>>>7,r|61); return ((r^r>>>14)>>>0)/4294967296; }; }
+
+/* weights: lower score = better plan */
+const W={open:1e7, op:1e8, djDay:1e8, djWant:4e5, nb:1e6, gap2:4e4, gap3:8e3, load:1e4, act:6e3, time:900, type:300};
 
 /* opts: {scope:'day'|'week'|'two', day, week:'A'|'B'|null, onlyEmpty, seed} */
 function buildPlan(o){
@@ -21454,6 +21474,7 @@ function buildPlan(o){
   const G=(w,d)=>(w==='B'?7:0)+d;
   const items=[], fixed=[], events=[];
   const inPlan=new Set();
+  const djUsers=new Set((S.users||[]).filter(isDJuser).map(uname));
   weeks.forEach(w=>days.forEach(d=>{
     (S.activities||[]).filter(a=>a&&a.day===d).forEach(a=>{
       if(activitySlot(a)==='event'){
@@ -21469,7 +21490,6 @@ function buildPlan(o){
       items.push({...base,cands:eligible(w,anchor,d,a)});
     });
   }));
-  /* context: the rest of the same week (load + repeats) and the other week (repeats only) */
   const ctxWeeks=on?['A','B']:[null];
   ctxWeeks.forEach(w=>[0,1,2,3,4,5,6].forEach(d=>{
     (S.activities||[]).filter(a=>a&&a.day===d&&normal(a)).forEach(a=>{
@@ -21479,93 +21499,150 @@ function buildPlan(o){
       fixed.push({activity:a,w,day:d,g:G(w||'A',d),op:activitySlot(a),key:actKey(a.name),tm:startMin(a),type:typeOf(a),u:uname(cu),horizon:sameWeek&&o.scope==='day'});
     });
   }));
+  /* does the DJ have at least one possible activity on a day? */
+  const djCanDay={};
+  items.forEach(it=>{ if(it.cands.some(isDJuser)) djCanDay[(it.w||'-')+'|'+it.day]=true; });
 
-  /* counters */
-  const load={}, acts={}, times={}, types={}, ops={};
+  const load={}, acts={}, times={}, types={}, ops={}, dd={};
   const inc=(m,k,n)=>{ m[k]=(m[k]||0)+n; };
   const gap=(a,b)=>{ const x=Math.abs(a-b)%L; return Math.min(x,L-x); };
+  const dayKey=(p,it)=>p+'|'+(it.w||'-')+'|'+it.day;
   function add(p,it,n){
-    if(it.horizon!==false){ inc(load,p,n); if(it.tm!=null) inc(times,p+'|'+it.tm,n); inc(types,p+'|'+it.type,n); inc(ops,p+'|'+(it.w||'-')+'|'+it.day+'|'+it.op,n); }
+    if(it.horizon!==false){
+      if(!djUsers.has(p)) inc(load,p,n);
+      if(it.tm!=null) inc(times,p+'|'+it.tm,n);
+      inc(types,p+'|'+it.type,n);
+      inc(ops,dayKey(p,it)+'|'+it.op,n);
+      inc(dd,dayKey(p,it),n);
+    }
     const k=p+'|'+it.key; acts[k]=acts[k]||[];
     if(n>0) acts[k].push(it.g); else { const i=acts[k].indexOf(it.g); if(i>=0) acts[k].splice(i,1); }
   }
   function gain(p,it){
-    const Ld=load[p]||0, list=acts[p+'|'+it.key]||[];
-    let c=(2*Ld+1)*1e4 + (2*list.length+1)*1500;
-    list.forEach(g=>{ const x=gap(g,it.g); if(x<=1) c+=1e6; else if(x===2) c+=3000; else if(x===3) c+=600; });
-    if(it.tm!=null) c+=(2*(times[p+'|'+it.tm]||0)+1)*150;
-    c+=(2*(types[p+'|'+it.type]||0)+1)*250;
-    c+=(ops[p+'|'+(it.w||'-')+'|'+it.day+'|'+it.op]||0)*1e8;
+    const list=acts[p+'|'+it.key]||[];
+    let c=(2*list.length+1)*W.act;
+    list.forEach(g=>{ const x=gap(g,it.g); if(x<=1) c+=W.nb; else if(x===2) c+=W.gap2; else if(x===3) c+=W.gap3; });
+    if(it.tm!=null) c+=(2*(times[p+'|'+it.tm]||0)+1)*W.time;
+    c+=(2*(types[p+'|'+it.type]||0)+1)*W.type;
+    c+=(ops[dayKey(p,it)+'|'+it.op]||0)*W.op;
+    if(djUsers.has(p)){
+      const n=dd[dayKey(p,it)]||0;
+      c+= n ? n*W.djDay : -W.djWant;          // exactly one a day
+    } else c+=(2*(load[p]||0)+1)*W.load;
     return c;
   }
-  fixed.forEach(f=>add(f.u,{...f,horizon:f.horizon},1));
+  fixed.forEach(f=>add(f.u,f,1));
 
-  const R=rng((o.seed||1)*7919+items.length);
-  const asg=new Array(items.length).fill(null);
-  const order=items.map((_,i)=>i).sort((a,b)=>items[a].cands.length-items[b].cands.length||R()-.5);
-  order.forEach(i=>{
-    const it=items[i]; let best=null, bc=1e7;
-    it.cands.forEach(u=>{ const c=gain(uname(u),it)+R()*400; if(c<bc){ bc=c; best=u; } });
-    if(best){ asg[i]=best; add(uname(best),it,1); }
-  });
-  /* improve: move one activity to someone else, or swap two in the same operation */
-  for(let sweep=0;sweep<30;sweep++){
-    let better=false;
-    for(let i=0;i<items.length;i++){
-      const it=items[i], cur=asg[i];
-      let base;
-      if(cur){ add(uname(cur),it,-1); base=gain(uname(cur),it); } else base=1e7;
-      let best=cur, bc=base;
-      it.cands.forEach(u=>{ if(cur&&uname(u)===uname(cur)) return; const c=gain(uname(u),it); if(c<bc-1){ bc=c; best=u; } });
-      if(best){ add(uname(best),it,1); }
-      if(best!==cur) better=true;
-      asg[i]=best;
-    }
-    const groups={};
-    items.forEach((it,i)=>{ const k=(it.w||'-')+'|'+it.day+'|'+it.op; (groups[k]=groups[k]||[]).push(i); });
-    Object.values(groups).forEach(g=>{
-      for(let x=0;x<g.length;x++) for(let y=x+1;y<g.length;y++){
-        const i=g[x], j=g[y], pi=asg[i], pj=asg[j];
+  function solve(seed){
+    const R=rng(seed);
+    const asg=new Array(items.length).fill(null);
+    const saved={load:{...load},times:{...times},types:{...types},ops:{...ops},dd:{...dd},acts:Object.fromEntries(Object.entries(acts).map(([k,v])=>[k,v.slice()]))};
+    const order=items.map((_,i)=>i).sort((a,b)=>items[a].cands.length-items[b].cands.length||R()-.5);
+    order.forEach(i=>{
+      const it=items[i]; let best=null, bc=W.open;
+      it.cands.forEach(u=>{ const c=gain(uname(u),it)+R()*500; if(c<bc){ bc=c; best=u; } });
+      if(best){ asg[i]=best; add(uname(best),it,1); }
+    });
+    const eligibleFor=(i,u)=>items[i].cands.some(c=>uname(c)===uname(u));
+    for(let sweep=0;sweep<40;sweep++){
+      let better=false;
+      /* 1. give an activity to someone better placed */
+      for(let i=0;i<items.length;i++){
+        const it=items[i], cur=asg[i];
+        let base;
+        if(cur){ add(uname(cur),it,-1); base=gain(uname(cur),it); } else base=W.open;
+        let best=cur, bc=base;
+        it.cands.forEach(u=>{ if(cur&&uname(u)===uname(cur)) return; const c=gain(uname(u),it); if(c<bc-1){ bc=c; best=u; } });
+        if(best) add(uname(best),it,1);
+        if(best!==cur) better=true;
+        asg[i]=best;
+      }
+      /* 2. swap two people's activities (any two days) when both may do the other's */
+      for(let i=0;i<items.length;i++) for(let j=i+1;j<items.length;j++){
+        const pi=asg[i], pj=asg[j];
         if(!pi||!pj||uname(pi)===uname(pj)) continue;
-        if(!items[j].cands.some(u=>uname(u)===uname(pi)) || !items[i].cands.some(u=>uname(u)===uname(pj))) continue;
+        if(!eligibleFor(j,pi) || !eligibleFor(i,pj)) continue;
         add(uname(pi),items[i],-1); add(uname(pj),items[j],-1);
         const before=gain(uname(pi),items[i])+gain(uname(pj),items[j]);
         const after=gain(uname(pi),items[j])+gain(uname(pj),items[i]);
         if(after<before-1){ asg[i]=pj; asg[j]=pi; add(uname(pj),items[i],1); add(uname(pi),items[j],1); better=true; }
         else { add(uname(pi),items[i],1); add(uname(pj),items[j],1); }
       }
-    });
-    if(!better) break;
+      if(!better) break;
+    }
+    /* score this solution, then restore the counters for the next try */
+    const plan=items.map((it,i)=>({...it,username:asg[i]?asg[i].username:'',name:asg[i]?(asg[i].display_name||asg[i].username):'',slot:it.op}));
+    [['load',load],['times',times],['types',types],['ops',ops],['dd',dd]].forEach(([n,m])=>{ Object.keys(m).forEach(k=>delete m[k]); Object.assign(m,saved[n]); });
+    Object.keys(acts).forEach(k=>delete acts[k]); Object.assign(acts,saved.acts);
+    return plan;
   }
-  const plan=items.map((it,i)=>({...it,username:asg[i]?asg[i].username:'',name:asg[i]?(asg[i].display_name||asg[i].username):'',slot:it.op}));
+  const tries=items.length>60?3:5;
+  let best=null, bestScore=null;
+  for(let t=0;t<tries;t++){
+    const p=solve((o.seed||1)*7919+t*104729+items.length);
+    p.meta={L};
+    const s=scoreOf(p,fixed,djUsers,djCanDay);
+    if(!best || s<bestScore){ best=p; bestScore=s; }
+  }
+  const plan=best;
   fixed.filter(f=>f.keep).forEach(f=>plan.push({...f,slot:f.op,fixed:true}));
   events.forEach(e=>plan.push(e));
-  plan.sort((a,b)=>((a.w||'')>(b.w||'')?1:(a.w||'')<(b.w||'')?-1:0)||a.day-b.day||(startMin(a.activity)||0)-(startMin(b.activity)||0));
-  plan.meta={scope:o.scope,weeks,days,on,L,anchor,onlyEmpty:!!o.onlyEmpty};
+  plan.sort((a,b)=>((a.w||'')>(b.w||'')?1:(a.w||'')<(b.w||'')?-1:0)||a.day-b.day||(startMin(a.activity)??9999)-(startMin(b.activity)??9999));
+  plan.meta={scope:o.scope,weeks,days,on,L,anchor,onlyEmpty:!!o.onlyEmpty,context:fixed.filter(f=>!f.keep),djCanDay};
   return plan;
 }
+/* one number to compare tries: problems first, then fairness */
+function scoreOf(plan,fixed,djUsers,djCanDay){
+  const sm=summary(plan,fixed);
+  let djMiss=0;
+  Object.keys(djCanDay||{}).forEach(k=>{ if(!plan.some(x=>x.username&&djUsers.has(x.username.toLowerCase())&&((x.w||'-')+'|'+x.day)===k)) djMiss++; });
+  return sm.open*1e9 + sm.nb*1e8 + djMiss*1e7 + (sm.max-sm.min)*1e6 + sm.over*1e4 + sm.maxSame*1e3 + sm.timeRep;
+}
 
+const CAT_SHORT={mEvents:'Event',eBefore:'Before show',eLive:'Live music',eShow:'Show',eAfter:'After show',eParty:'Party'};
+function catShort(a){ const c=normCat(a); return CAT_SHORT[c]||(typeof catLabel==='function'?catLabel(c):'Event'); }
 /* fairness numbers she sees */
-function summary(plan){
-  const L=plan.meta.L, per={}, byAct={};
+function summary(plan,ctx){
+  const L=plan.meta.L, per={}, byAct={}, byTime={};
+  const djs=new Set((S.users||[]).filter(isDJuser).map(uname));
   const gap=(a,b)=>{ const x=Math.abs(a-b)%L; return Math.min(x,L-x); };
-  plan.filter(x=>x.slot!=='event'&&x.username).forEach(x=>{
-    const k=x.username.toLowerCase(); per[k]=(per[k]||0)+1;
-    (byAct[k+'|'+x.key]=byAct[k+'|'+x.key]||[]).push(x.g);
+  const all=plan.filter(x=>x.slot!=='event'&&x.username).map(x=>({u:x.username.toLowerCase(),key:x.key,g:x.g,tm:x.tm,ctx:false}));
+  (ctx||plan.meta.context||[]).forEach(f=>all.push({u:f.u,key:f.key,g:f.g,tm:f.tm,ctx:true}));
+  all.forEach(x=>{
+    if(!x.ctx){ if(!djs.has(x.u)) per[x.u]=(per[x.u]||0)+1; if(x.tm!=null) byTime[x.u+'|'+x.tm]=(byTime[x.u+'|'+x.tm]||0)+1; }
+    (byAct[x.u+'|'+x.key]=byAct[x.u+'|'+x.key]||[]).push(x);
   });
-  let nb=0, maxSame=0;
-  Object.values(byAct).forEach(gs=>{ maxSame=Math.max(maxSame,gs.length); for(let i=0;i<gs.length;i++) for(let j=i+1;j<gs.length;j++) if(gap(gs[i],gs[j])<=1) nb++; });
+  let nb=0, maxSame=0, over=0;
+  Object.values(byAct).forEach(xs=>{
+    const mine=xs.filter(x=>!x.ctx).length; if(!mine) return;
+    maxSame=Math.max(maxSame,xs.length); if(xs.length>2) over+=xs.length-2;
+    for(let i=0;i<xs.length;i++) for(let j=i+1;j<xs.length;j++) if((!xs[i].ctx||!xs[j].ctx) && gap(xs[i].g,xs[j].g)<=1) nb++;
+  });
+  const timeRep=Object.values(byTime).reduce((s,n)=>s+Math.max(0,n-2),0);
   const vals=Object.values(per);
-  const open=plan.filter(x=>x.slot!=='event'&&!x.username).length;
-  return {per,nb,maxSame,open,min:vals.length?Math.min(...vals):0,max:vals.length?Math.max(...vals):0};
+  const open=plan.filter(x=>x.slot!=='event'&&!x.fixed&&!x.username).length;
+  const dj={}; plan.filter(x=>x.slot!=='event'&&x.username&&djs.has(x.username.toLowerCase())).forEach(x=>{ dj[(x.w||'-')+'|'+x.day]=(dj[(x.w||'-')+'|'+x.day]||0)+1; });
+  return {per,nb,maxSame,over,timeRep,open,dj,min:vals.length?Math.min(...vals):0,max:vals.length?Math.max(...vals):0};
+}
+/* what is wrong with ONE row — shown under it in red / amber */
+function rowIssues(plan,i){
+  const x=plan[i]; if(!x||x.slot==='event'||!x.username) return {hard:[],soft:[]};
+  const p=x.username.toLowerCase(), L=plan.meta.L, dn=t('days'), hard=[], soft=[];
+  const gap=(a,b)=>{ const d=Math.abs(a-b)%L; return Math.min(d,L-d); };
+  const others=plan.map((y,j)=>({...y,j})).filter(y=>y.j!==i&&y.slot!=='event'&&y.username&&y.username.toLowerCase()===p);
+  others.filter(y=>(y.w||'-')===(x.w||'-')&&y.day===x.day&&y.slot===x.slot).forEach(y=>hard.push('already has '+y.activity.name+' '+(y.activity.time||'')+' this '+x.slot));
+  const u=userByName(p);
+  if(isDJuser(u)){
+    if(others.some(y=>(y.w||'-')===(x.w||'-')&&y.day===x.day)) hard.push('DJ already has an activity this day');
+    const c=djClash(x.activity); if(c) hard.push('too close to '+c.name+' '+(c.time||''));
+  }
+  const ctx=(plan.meta.context||[]).filter(f=>f.u===p).map(f=>({activity:f.activity,key:f.key,g:f.g,w:f.w,day:f.day}));
+  [...others,...ctx].filter(y=>y.key===x.key&&y.g!=null&&gap(y.g,x.g)<=1).forEach(y=>soft.push('also '+y.activity.name+' on '+((plan.meta.on&&y.w?WK[y.w]+' ':'')+(dn[y.day]||''))));
+  return {hard,soft};
 }
 function problems(plan){
-  const seenOp=new Map(), out=new Set();
-  plan.forEach((x,i)=>{
-    if(x.slot==='event'||!x.username) return;
-    const k=x.username.toLowerCase()+'|'+(x.w||'-')+'|'+x.day+'|'+x.slot;
-    if(seenOp.has(k)){ out.add(i); out.add(seenOp.get(k)); } else seenOp.set(k,i);
-  });
+  const out=new Set();
+  plan.forEach((x,i)=>{ if(rowIssues(plan,i).hard.length) out.add(i); });
   return out;
 }
 
@@ -21605,15 +21682,29 @@ window.openAutoAssignModal=function(day){
     const plan=plans[variant]||[], sm=summary(plan), bad=problems(plan);
     const dn=t('days');
     let lastHead='';
+    const L=(plan.meta&&plan.meta.L)||7;
+    const gp=(a,b)=>{ const d=Math.abs(a-b)%L; return Math.min(d,L-d); };
+    const ctx=(plan.meta&&plan.meta.context)||[];
+    function candNote(x,i,u){
+      const p=uname(u), notes=[];
+      if(plan.some((y,j)=>j!==i&&y.username&&y.username.toLowerCase()===p&&(y.w||'-')===(x.w||'-')&&y.day===x.day&&(y.slot===x.slot||(isDJuser(u)&&y.slot!=='event')))) notes.push('busy');
+      if(plan.some((y,j)=>j!==i&&y.username&&y.username.toLowerCase()===p&&y.key===x.key&&y.g!=null&&gp(y.g,x.g)<=1) || ctx.some(f=>f.u===p&&f.key===x.key&&gp(f.g,x.g)<=1)) notes.push('repeat');
+      if(isDJuser(u)) notes.push('DJ');
+      return notes.length?' · '+notes.join(', '):'';
+    }
     const list=plan.map((x,i)=>{
       const head=(plan.meta.on&&x.w?WK[x.w]+' · ':'')+(dn[x.day]||'');
       const h=head!==lastHead?`<div class="aa-day"><b>${E(head)}</b></div>`:''; lastHead=head;
-      if(x.slot==='event') return h+`<div class="aa-row"><span class="aa-slot event">DJ</span><span class="aa-mid"><b>${E(x.activity.name)}</b><span class="mini">${E(x.activity.time||'')}</span></span><span class="mini">${E(x.name||'DJ unavailable')}</span></div>`;
+      if(x.slot==='event') return h+`<div class="aa-row rt-ev"><span class="aa-slot event">${E(catShort(x.activity))}</span><span class="aa-mid"><b>${E(x.activity.name)}</b><span class="mini">${E(x.activity.time||'')}</span></span><span class="mini">${E(x.name||'DJ unavailable')}</span></div>`;
       if(x.fixed) return h+`<div class="aa-row"><span class="aa-slot ${x.slot}">${x.slot}</span><span class="aa-mid"><b>${E(x.activity.name)}</b><span class="mini">${E(x.activity.time||'')} · kept</span></span><span class="mini">${E(x.name)}</span></div>`;
-      const opts=(x.cands||[]).map(u=>`<option value="${E(u.username)}" ${u.username===x.username?'selected':''}>${E(u.display_name||u.username)}</option>`).join('');
-      return h+`<div class="aa-row${bad.has(i)?' rt-bad':''}"><span class="aa-slot ${x.slot}">${x.slot}</span><span class="aa-mid"><b>${E(x.activity.name)}</b><span class="mini">${E(x.activity.time||'')}${x.cands&&!x.cands.length?' · nobody available':''}</span></span><select class="aa-sel" data-rt-row="${i}"><option value="">Nobody</option>${opts}</select></div>`;
+      const iss=rowIssues(plan,i), dj=isDJuser(userByName(x.username));
+      const opts=(x.cands||[]).map(u=>`<option value="${E(u.username)}" ${u.username===x.username?'selected':''}>${E((u.display_name||u.username)+candNote(x,i,u))}</option>`).join('');
+      const note=[...iss.hard.map(s=>`<span class="rt-hard">${E(s)}</span>`),...iss.soft.map(s=>`<span class="rt-soft">${E(s)}</span>`)].join('');
+      return h+`<div class="aa-row${iss.hard.length?' rt-bad':iss.soft.length?' rt-warn':''}"><span class="aa-slot ${x.slot}">${x.slot}</span><span class="aa-mid"><b>${E(x.activity.name)}${dj?' <span class="rt-dj">DJ</span>':''}</b><span class="mini">${E(x.activity.time||'')}${x.cands&&!x.cands.length?' · nobody available':''}</span></span><select class="aa-sel" data-rt-row="${i}"><option value="">Nobody</option>${opts}</select>${note?`<span class="rt-notes">${note}</span>`:''}</div>`;
     }).join('');
     const people=Object.entries(sm.per).sort((a,b)=>b[1]-a[1]).map(([k,n])=>{ const u=userByName(k); return `<span class="rt-chip">${E(u?(u.display_name||u.username):k)} <b>${n}</b></span>`; }).join('');
+    const djDays=Object.keys(plan.meta.djCanDay||{}).length, djGot=Object.keys(sm.dj||{}).length;
+    const djLine=djSport()&&djDays?`<span class="rt-chip rt-chip-dj">DJ <b>${djGot}</b> of ${djDays} days</span>`:'';
     const r=rot();
     wrap.innerHTML=`<div class="modal rt-modal"><h3>${ic('users',20)} Smart plan generator</h3>
       <div class="bd-roles rt-scope"><button class="bd-role ${scope==='day'?'on':''}" data-rt-scope="day">This day</button><button class="bd-role ${scope==='week'?'on':''}" data-rt-scope="week">Whole week</button><button class="bd-role ${scope==='two'?'on':''}" data-rt-scope="two">Two weeks</button></div>
@@ -21623,8 +21714,9 @@ window.openAutoAssignModal=function(day){
         :(rotOn()?'Two-week rotation is on. You are planning '+WK[week]+'; the other week is taken into account so nobody repeats.':'Nobody gets the same activity two days in a row, and the work is shared evenly.')}</p>
       <div class="plan-mode-v5"><button class="${onlyEmpty?'on':''}" data-rt-mode="fill">Fill empty only</button><button class="${!onlyEmpty?'on':''}" data-rt-mode="new">Build a new plan</button></div>
       <div class="plan-tabs-v5">${[0,1,2].map(i=>`<button class="${variant===i?'on':''}" data-rt-plan="${i}">Plan ${String.fromCharCode(65+i)}</button>`).join('')}</div>
-      ${plan.length?`<div class="aa-bal ${sm.max-sm.min<=1&&!sm.nb?'good':'warn'}"><b>Fairness</b><span>${sm.min}–${sm.max} activities each · ${sm.nb?sm.nb+' same activity two days in a row':'no repeats on neighbouring days'}${sm.open?' · '+sm.open+' without anyone':''}</span></div>
-      <div class="rt-chips">${people}</div>
+      ${plan.length?`<div class="aa-bal ${sm.max-sm.min<=1&&!sm.nb&&!sm.open?'good':'warn'}"><b>Fairness</b><span>${sm.min}–${sm.max} activities each · ${sm.nb?sm.nb+' same activity two days in a row':'no repeats on neighbouring days'} · the same activity at most ${sm.maxSame||0}× per person${sm.open?' · '+sm.open+' without anyone':''}</span></div>
+      <div class="rt-chips">${people}${djLine}</div>
+      <p class="mini rt-how">Checked for every name: day off, holiday, entrance duty, Can/Can't, one activity per morning and per afternoon, no overlapping times, no same activity two days in a row${djSport()?', and the DJ gets one activity a day that stays clear of his events and shows (ends 1 hour before, starts 30 min after)':''}. In the list, “busy” and “repeat” warn you before you change a name.</p>
       <div class="card aa-list">${list}</div>
       <button class="btn" id="rt-apply">${ic('check',16)} Apply Plan ${String.fromCharCode(65+variant)}</button>`
       :`<div class="empty">No activities for this selection.</div>`}
@@ -21641,6 +21733,8 @@ window.openAutoAssignModal=function(day){
     });
     const ap=wrap.querySelector('#rt-apply');
     if(ap) ap.onclick=async()=>{
+      const soft=plan.filter((x,i)=>rowIssues(plan,i).soft.length).length;
+      if(soft && !confirm(soft+' row(s) give someone the same activity two days in a row. Apply anyway?')) return;
       ap.disabled=true; ap.textContent='Saving…';
       try{
         const res=await applyPlan(plan);
@@ -21682,23 +21776,29 @@ function exportData(){
       const holiday=(S.users||[]).filter(u=>u.role!=='guest'&&u.active!==false&&u.number).filter(u=>{ try{ return attStatus(u,date.slice(0,7),+date.slice(8,10))==='V'; }catch(_){ return false; } }).map(u=>u.display_name||u.username);
       const rows=(S.activities||[]).filter(a=>a&&a.day===d&&(normal(a)||activitySlot(a)==='event'))
         .sort((x,y)=>(startMin(x)??9999)-(startMin(y)??9999)||String(x.name).localeCompare(String(y.name)))
-        .map(a=>({time:a.time||'',name:a.name||'',place:a.location||'',slot:activitySlot(a),who:personName(rotOn()?entFor(a,wk.w):rawEnt(a))}));
+        .map(a=>({time:a.time||'',name:a.name||'',place:a.location||'',slot:activitySlot(a),cat:normCat(a),type:activitySlot(a)==='event'?catShort(a):'',who:personName(rotOn()?entFor(a,wk.w):rawEnt(a))}));
       return {d,date,dayName:dn[d]||'',entrance:numName(dp.entrance),off:(dp.off||[]).map(numName).filter(Boolean),holiday,rows};
     });
-    return {...wk,days,end:addDays(wk.mon,6)};
+    const load={};
+    days.forEach(d=>d.rows.forEach(x=>{ if(x.slot!=='event'&&x.who&&x.who!=='—') load[x.who]=(load[x.who]||0)+1; }));
+    return {...wk,days,end:addDays(wk.mon,6),load};
   });
 }
 const nice=(s,y)=>toD(s).toLocaleDateString('en-GB',y?{day:'numeric',month:'short',year:'numeric'}:{day:'numeric',month:'short'});
+const CAT_COL={mEvents:['#C86F5A','#FBEDE8'],eBefore:['#6F8A74','#EDF2EC'],eLive:['#2E4A6B','#E8EEF5'],eShow:['#B8914A','#F8F0DF'],eAfter:['#7A4E7E','#F3EBF3'],eParty:['#7A4E7E','#F3EBF3']};
+const LEGEND=[['mEvents','Event'],['eBefore','Before the show'],['eLive','Live music'],['eShow','Show'],['eParty','Party / after show']];
 function exportPdf(){
   const data=exportData(), hotel=(S.settings&&(S.settings.hotelName||S.settings.name))||'Entertainment';
   const cs=getComputedStyle(document.documentElement), ink=(cs.getPropertyValue('--espresso')||'').trim()||'#3E2A1E', gold=(cs.getPropertyValue('--bronze')||'').trim()||'#B98A5C';
   const block=day=>`<section class="day"><header><h3>${E(day.dayName)} <span>${E(nice(day.date))}</span></h3>
       <p><b>Entrance:</b> ${E(day.entrance||'—')}</p><p><b>Day off:</b> ${E(day.off.join(', ')||'—')}</p>${day.holiday.length?`<p><b>Holiday:</b> ${E(day.holiday.join(', '))}</p>`:''}</header>
       <table><thead><tr><th>Time</th><th>Activity</th><th>Place</th><th>Entertainer</th></tr></thead><tbody>
-      ${day.rows.length?day.rows.map(r=>`<tr class="${r.slot}"><td>${E(r.time)}</td><td>${E(r.name)}</td><td>${E(r.place)}</td><td class="who">${E(r.who||'—')}</td></tr>`).join(''):'<tr><td colspan="4" class="none">No activities</td></tr>'}
+      ${day.rows.length?day.rows.map(r=>`<tr class="${r.slot} c-${E(r.cat)}"><td>${E(r.time)}</td><td>${r.type?`<span class="tag">${E(r.type)}</span>`:''}${E(r.name)}</td><td>${E(r.place)}</td><td class="who">${E(r.who||'—')}</td></tr>`).join(''):'<tr><td colspan="4" class="none">No activities</td></tr>'}
       </tbody></table></section>`;
   const pages=data.map(wk=>`<div class="page"><div class="top"><div><h1>Assignments — ${E(wk.label)}</h1><p>${E(hotel)} · ${E(nice(wk.mon))} – ${E(nice(wk.end,true))}</p></div></div>
-      <div class="grid">${wk.days.map(block).join('')}</div></div>`).join('');
+      <div class="legend">${LEGEND.map(([c,l])=>`<span class="c-${c}"><i></i>${E(l)}</span>`).join('')}</div>
+      <div class="grid">${wk.days.map(block).join('')}</div>
+      <div class="load"><b>Activities this week:</b> ${Object.entries(wk.load).sort((a,b)=>b[1]-a[1]).map(([n,c])=>E(n)+' '+c).join(' · ')||'—'}</div></div>`).join('');
   const css=`@page{size:A4 portrait;margin:9mm}*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;color:${ink};-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .page{page-break-after:always}.page:last-child{page-break-after:auto}
 .top{border-bottom:2px solid ${gold};padding-bottom:6px;margin-bottom:8px}h1{font:700 17px Georgia,serif;margin:0}.top p{margin:2px 0 0;font-size:10px;opacity:.75}
@@ -21707,7 +21807,11 @@ function exportPdf(){
 .day header{background:#F5ECDF;padding:5px 8px}.day h3{margin:0 0 2px;font-size:12px}.day h3 span{font-weight:400;opacity:.7}
 .day header p{margin:0;font-size:9.5px;line-height:1.35}
 table{width:100%;border-collapse:collapse;font-size:9px}th{text-align:left;font-size:8px;padding:3px 6px;border-bottom:1px solid #E4D3BC;opacity:.8}
-td{padding:3px 6px;border-bottom:1px solid #F1E8DA;vertical-align:top}td.who{font-weight:700}tr.event td{opacity:.7;font-style:italic}td.none{opacity:.6}
+td{padding:3px 6px;border-bottom:1px solid #F1E8DA;vertical-align:top}td.who{font-weight:700}td.none{opacity:.6}
+${Object.entries(CAT_COL).map(([c,v])=>`tr.c-${c} td{background:${v[1]}}tr.c-${c} td:first-child{box-shadow:inset 3px 0 0 ${v[0]}}tr.c-${c} .tag{background:${v[0]}}.legend .c-${c} i{background:${v[0]}}`).join('')}
+.tag{display:inline-block;color:#fff;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 4px;border-radius:3px;margin-right:4px;vertical-align:1px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:9px;margin:0 0 7px}.legend span{display:inline-flex;align-items:center;gap:4px}.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.load{margin-top:7px;font-size:9.5px;line-height:1.4}
 @media screen{body{padding:14px;background:#eee}.page{background:#fff;max-width:210mm;margin:0 auto 14px;padding:10mm}}`;
   const w=window.open('','_blank');
   if(!w){ toastErr('Could not open the print window. Allow pop-ups and try again.'); return; }
@@ -21718,11 +21822,12 @@ async function exportXlsx(){
   const sets=exportData().map(wk=>{
     const rows=[];
     wk.days.forEach(day=>{
-      rows.push([day.dayName.toUpperCase()+' '+nice(day.date,true),'Entrance: '+(day.entrance||'—'),'Day off: '+(day.off.join(', ')||'—'),day.holiday.length?'Holiday: '+day.holiday.join(', '):'']);
-      day.rows.forEach(r=>rows.push([r.time,r.name,r.place,r.who||'—']));
-      rows.push(['','','','']);
+      rows.push([day.dayName.toUpperCase()+' '+nice(day.date,true),'Entrance: '+(day.entrance||'—'),'Day off: '+(day.off.join(', ')||'—'),day.holiday.length?'Holiday: '+day.holiday.join(', '):'','']);
+      day.rows.forEach(r=>rows.push([r.time,r.type||'Activity',r.name,r.place,r.who||'—']));
+      rows.push(['','','','','']);
     });
-    return {title:wk.label,headers:['Time','Activity','Place','Entertainer'],rows};
+    rows.push(['Activities this week',Object.entries(wk.load).sort((a,b)=>b[1]-a[1]).map(([n,c])=>n+' '+c).join(' · '),'','','']);
+    return {title:wk.label,headers:['Time','Type','Activity','Place','Entertainer'],rows};
   });
   await exportExcelSets(sets,'Assignments_'+mondayOf(hotelDateStr()));
 }
@@ -21764,6 +21869,10 @@ st.textContent=`.rt-modal .rt-scope{margin-bottom:8px}.rt-chips{display:flex;fle
 .rt-chip{font-size:12px;padding:4px 10px;border-radius:99px;border:1px solid var(--line);background:var(--card,#fff)}.rt-chip b{margin-left:4px}
 .aa-row.rt-bad{background:rgba(176,57,43,.08)}.aa-row.rt-bad .aa-sel{border-color:#B0392B}
 .aa-slot.event{background:rgba(120,120,120,.15)}
+.aa-row.rt-warn{background:rgba(208,133,38,.08)}.aa-row.rt-bad,.aa-row.rt-warn{flex-wrap:wrap}.rt-notes{flex-basis:100%;display:flex;flex-direction:column;gap:2px;margin-top:-2px}
+.rt-hard{font-size:11.5px;font-weight:600;color:#B0392B}.rt-soft{font-size:11.5px;font-weight:600;color:#B06A12}
+.rt-dj{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;background:#101820;color:#fff;vertical-align:middle}
+.rt-chip-dj{border-color:#101820}.rt-how{margin:0 0 10px}.aa-row.rt-ev{opacity:.85}
 .rt-rot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 4px;padding:10px 12px;border-radius:14px;background:rgba(185,138,92,.12);font-size:13px}.rt-rot span{flex:1 1 100%}
 .rt-weekbar{margin:0 0 10px}`;
 document.head.appendChild(st);
