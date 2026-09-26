@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.25-merge-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.25-export-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -19880,7 +19880,7 @@ DB.saveActivity=async function(act){
  await rawSave(clean);
  let id=clean.id!=null?clean.id:null;
  if(id==null){const fresh=[...(S.activities||[])].reverse().find(x=>x&&x.id!=null&&!before.has(String(x.id))&&String(x.name||'')===String(clean.name||'')&&+x.day===+clean.day);if(fresh)id=fresh.id}
- if(id!=null){const m=map();m[String(id)]=wanted;putLocal(m);const found=(S.activities||[]).find(x=>String(x.id)===String(id));if(found)found.customCategory=wanted;await saveMap(m)}
+ if(id!=null){const m=map();const found=(S.activities||[]).find(x=>String(x.id)===String(id));if(found)found.customCategory=wanted;/* V7.03: only touch settings when the category really changed (was: a full settings save after EVERY activity save) */if(String(m[String(id)]||'')!==wanted){m[String(id)]=wanted;putLocal(m);await saveMap(m)}}
  return id;
 };
 /* Hydrate assignments before every render and before opening an editor. */
@@ -21278,6 +21278,495 @@ setInterval(refresh,10000);
 window.addEventListener('focus',refresh);
 window.addEventListener('online',refresh);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refresh(); });
+})();
+</script>
+
+<script id="aurea-rotation-v703">
+/* ===== V7.03 ASSIGNMENTS: FAIR PLANNER + TWO-WEEK ROTATION (2026-09-25) =====
+   - New planner for one day, the whole week, or TWO WEEKS. It spreads the
+     work evenly, never gives the same person the same activity on two days
+     in a row (Sunday→Monday included), and spreads each activity across the
+     team over the whole rotation.
+   - Two-week rotation: Week 1 and Week 2 have their own assignments, stored
+     in settings (assignWeekAV703 / assignWeekBV703, one entry per activity).
+     Every screen automatically shows the week each day falls in.
+   - Applying saves only what changed, several at a time, and says exactly
+     how many were saved. */
+(function(){
+'use strict';
+if(window.__AUREA_ROTATION_V703) return; window.__AUREA_ROTATION_V703=true;
+
+const ROT='assignRotationV703', MAPK={A:'assignWeekAV703',B:'assignWeekBV703'};
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const has=(o,k)=>!!o && Object.prototype.hasOwnProperty.call(o,k);
+const DAY=86400000;
+const WK={A:'Week 1',B:'Week 2'};
+
+/* ---------- dates ---------- */
+const toD=s=>new Date(String(s)+'T12:00:00');
+const toS=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function mondayOf(s){ const d=toD(s); d.setDate(d.getDate()-((d.getDay()+6)%7)); return toS(d); }
+function addDays(s,n){ const d=toD(s); d.setDate(d.getDate()+n); return toS(d); }
+const rot=()=>{ const r=(S.settings&&S.settings[ROT])||{}; return {on:!!r.on,anchor:r.anchor||''}; };
+const rotOn=()=>{ const r=rot(); return r.on && /^\d{4}-\d{2}-\d{2}$/.test(r.anchor); };
+function letterOf(dateStr,anchor){
+  anchor=anchor||rot().anchor||mondayOf(hotelDateStr());
+  const w=Math.round((toD(mondayOf(dateStr))-toD(mondayOf(anchor)))/(7*DAY));
+  return (((w%2)+2)%2)===0?'A':'B';
+}
+const liveLetter=day=>letterOf(assignDateStr(day));
+/* the next date of weekday `day` that falls in week `w` */
+function dateFor(w,day,anchor){
+  anchor=anchor||rot().anchor||mondayOf(hotelDateStr());
+  const today=hotelDateStr();
+  let mon=mondayOf(today);
+  if(letterOf(mon,anchor)!==w) mon=addDays(mon,7);
+  let ds=addDays(mon,day);
+  if(ds<today) ds=addDays(ds,14);
+  return ds;
+}
+const origDate=assignDateStr;
+function withWeek(w,anchor,fn){
+  if(!w) return fn();
+  assignDateStr=function(day){ return dateFor(w,day,anchor); };
+  try{ return fn(); } finally{ assignDateStr=origDate; }
+}
+
+/* ---------- what the database holds vs what each week shows ---------- */
+const seen=new WeakSet(), dbEnt=new Map();
+const mapOf=w=>(S.settings&&S.settings[MAPK[w]])||{};
+function capture(){
+  (S.activities||[]).forEach(a=>{ if(a && a.id!=null && !seen.has(a)){ seen.add(a); dbEnt.set(String(a.id),a.entertainer||''); } });
+}
+const rawEnt=a=>dbEnt.has(String(a.id))?dbEnt.get(String(a.id)):(a.entertainer||'');
+function entFor(a,w){
+  if(!w) return rawEnt(a);
+  const m=mapOf(w), id=String(a.id);
+  return has(m,id)?(m[id]||''):rawEnt(a);
+}
+function viewWeek(){
+  return (rotOn() && S.session && S.session.role==='manager' && S.tab==='assign' && S.assignWeekViewV703) || null;
+}
+function hydrate(){
+  capture();
+  const on=rotOn(), vw=viewWeek();
+  (S.activities||[]).forEach(a=>{
+    if(!a || a.id==null) return;
+    a.entertainer=on ? entFor(a, vw||liveLetter(a.day)) : rawEnt(a);
+  });
+}
+window.hydrateRotationV703=hydrate;
+const r0=render;
+render=function(){ try{ hydrate(); }catch(e){ console.warn('rotation hydrate',e); } return r0.apply(this,arguments); };
+window.render=render;
+
+/* ---------- saving one activity ---------- */
+async function patchRaw(a,ent){
+  if(REMOTE) await sb('activities?id=eq.'+a.id,{method:'PATCH',body:JSON.stringify({entertainer:ent})});
+  dbEnt.set(String(a.id),ent);
+}
+const saveInner=DB.saveActivity.bind(DB);
+DB.saveActivity=async function(act){
+  if(!rotOn() || !act || act.id==null) return saveInner(act);
+  const id=String(act.id), orig=(S.activities||[]).find(x=>String(x.id)===id);
+  const target=viewWeek()||liveLetter(act.day), live=liveLetter(act.day);
+  const want=act.entertainer||'';
+  if(!orig || (orig.entertainer||'')!==want || !has(mapOf(target),id)){
+    const m={...mapOf(target),[id]:want};
+    await DB.saveSettings({...S.settings,[MAPK[target]]:m});
+  }
+  const raw=live===target?want:entFor({...act,id},live);
+  const r=await saveInner({...act,entertainer:raw});
+  dbEnt.set(id,raw);
+  hydrate();
+  return r;
+};
+
+/* ---------- turning the rotation on / off ---------- */
+async function enableRotation(){
+  capture();
+  const anchor=mondayOf(hotelDateStr());
+  const A={...mapOf('A')}, B={...mapOf('B')};
+  (S.activities||[]).forEach(a=>{ if(a&&a.id!=null){ const id=String(a.id), v=rawEnt(a); if(!has(A,id)) A[id]=v; if(!has(B,id)) B[id]=v; } });
+  await DB.saveSettings({...S.settings,[ROT]:{on:true,anchor},[MAPK.A]:A,[MAPK.B]:B});
+}
+async function setRotation(patch){
+  const r={...rot(),...patch};
+  await DB.saveSettings({...S.settings,[ROT]:r});
+  await syncLiveColumn();
+}
+/* keep the database column equal to the week that is running now */
+async function syncLiveColumn(){
+  capture();
+  const jobs=[];
+  (S.activities||[]).forEach(a=>{
+    if(!a||a.id==null) return;
+    const want=rotOn()?entFor(a,liveLetter(a.day)):rawEnt(a);
+    if(want!==rawEnt(a)) jobs.push(()=>patchRaw(a,want));
+  });
+  return runJobs(jobs);
+}
+async function runJobs(jobs){
+  let ok=0, fail=0, i=0;
+  async function worker(){
+    while(i<jobs.length){
+      const job=jobs[i++]; let done=false;
+      for(let t=0;t<3 && !done;t++){ try{ await job(); done=true; }catch(e){ await new Promise(r=>setTimeout(r,400*(t+1))); } }
+      done?ok++:fail++;
+    }
+  }
+  await Promise.all([0,1,2,3,4,5].map(worker));
+  return {ok,fail};
+}
+
+/* ---------- the planner ---------- */
+const api=()=>window.AUREA_SMART_ASSIGNMENT_V622||{};
+const uname=u=>String(u&&u.username||'').toLowerCase();
+const DJ=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+function userByName(v){
+  const q=String(v||'').trim().toLowerCase(); if(!q) return null;
+  return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===q||String(u.display_name||'').toLowerCase()===q)||null;
+}
+const firstUser=v=>String(v||'').split(/\s*[,;\/]\s*/).map(userByName).find(Boolean)||null;
+const startMin=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w[0].s0; }catch(_){} return timeToMin(a&&a.time); };
+const typeOf=a=>{ try{ return activityType(a); }catch(_){ return 'x'; } };
+const normal=a=>{ const s=activitySlot(a); return s==='morning'||s==='afternoon'; };
+
+function eligible(w,anchor,day,a){
+  return withWeek(w,anchor,()=>{
+    const date=assignDateStr(day), h=api().hardAvailable;
+    return assignableStaff(day,date).filter(u=>+u.number!==DJ || isSportDJ(u)).filter(u=>h?h(u,a,day):true);
+  });
+}
+function djFor(w,anchor,day){
+  return withWeek(w,anchor,()=>(eventsCrew(day,assignDateStr(day))||[]).find(u=>+u.number===DJ)||null);
+}
+function rng(seed){ let t=seed>>>0; return ()=>{ t+=0x6D2B79F5; let r=Math.imul(t^t>>>15,t|1); r^=r+Math.imul(r^r>>>7,r|61); return ((r^r>>>14)>>>0)/4294967296; }; }
+
+/* opts: {scope:'day'|'week'|'two', day, week:'A'|'B'|null, onlyEmpty, seed} */
+function buildPlan(o){
+  capture();
+  const on=rotOn()||o.scope==='two';
+  const anchor=rot().anchor||mondayOf(hotelDateStr());
+  const weeks=o.scope==='two'?['A','B']:[on?(o.week||'A'):null];
+  const days=o.scope==='day'?[o.day]:[0,1,2,3,4,5,6];
+  const L=on?14:7;
+  const G=(w,d)=>(w==='B'?7:0)+d;
+  const items=[], fixed=[], events=[];
+  const inPlan=new Set();
+  weeks.forEach(w=>days.forEach(d=>{
+    (S.activities||[]).filter(a=>a&&a.day===d).forEach(a=>{
+      if(activitySlot(a)==='event'){
+        const dj=djFor(w,anchor,d);
+        events.push({activity:a,w,day:d,slot:'event',username:dj?dj.username:'',name:dj?(dj.display_name||dj.username):'',fixed:false});
+        return;
+      }
+      if(!normal(a)) return;
+      const cur=on?entFor(a,w||'A'):rawEnt(a), cu=firstUser(cur);
+      const base={activity:a,w,day:d,g:G(w||'A',d),op:activitySlot(a),key:actKey(a.name),tm:startMin(a),type:typeOf(a)};
+      inPlan.add((w||'-')+'|'+a.id);
+      if(o.onlyEmpty && cu){ fixed.push({...base,u:uname(cu),horizon:true,keep:true,username:cu.username,name:cu.display_name||cu.username}); return; }
+      items.push({...base,cands:eligible(w,anchor,d,a)});
+    });
+  }));
+  /* context: the rest of the same week (load + repeats) and the other week (repeats only) */
+  const ctxWeeks=on?['A','B']:[null];
+  ctxWeeks.forEach(w=>[0,1,2,3,4,5,6].forEach(d=>{
+    (S.activities||[]).filter(a=>a&&a.day===d&&normal(a)).forEach(a=>{
+      if(inPlan.has((w||'-')+'|'+a.id)) return;
+      const cu=firstUser(on?entFor(a,w):rawEnt(a)); if(!cu) return;
+      const sameWeek=weeks.includes(w);
+      fixed.push({activity:a,w,day:d,g:G(w||'A',d),op:activitySlot(a),key:actKey(a.name),tm:startMin(a),type:typeOf(a),u:uname(cu),horizon:sameWeek&&o.scope==='day'});
+    });
+  }));
+
+  /* counters */
+  const load={}, acts={}, times={}, types={}, ops={};
+  const inc=(m,k,n)=>{ m[k]=(m[k]||0)+n; };
+  const gap=(a,b)=>{ const x=Math.abs(a-b)%L; return Math.min(x,L-x); };
+  function add(p,it,n){
+    if(it.horizon!==false){ inc(load,p,n); if(it.tm!=null) inc(times,p+'|'+it.tm,n); inc(types,p+'|'+it.type,n); inc(ops,p+'|'+(it.w||'-')+'|'+it.day+'|'+it.op,n); }
+    const k=p+'|'+it.key; acts[k]=acts[k]||[];
+    if(n>0) acts[k].push(it.g); else { const i=acts[k].indexOf(it.g); if(i>=0) acts[k].splice(i,1); }
+  }
+  function gain(p,it){
+    const Ld=load[p]||0, list=acts[p+'|'+it.key]||[];
+    let c=(2*Ld+1)*1e4 + (2*list.length+1)*1500;
+    list.forEach(g=>{ const x=gap(g,it.g); if(x<=1) c+=1e6; else if(x===2) c+=3000; else if(x===3) c+=600; });
+    if(it.tm!=null) c+=(2*(times[p+'|'+it.tm]||0)+1)*150;
+    c+=(2*(types[p+'|'+it.type]||0)+1)*250;
+    c+=(ops[p+'|'+(it.w||'-')+'|'+it.day+'|'+it.op]||0)*1e8;
+    return c;
+  }
+  fixed.forEach(f=>add(f.u,{...f,horizon:f.horizon},1));
+
+  const R=rng((o.seed||1)*7919+items.length);
+  const asg=new Array(items.length).fill(null);
+  const order=items.map((_,i)=>i).sort((a,b)=>items[a].cands.length-items[b].cands.length||R()-.5);
+  order.forEach(i=>{
+    const it=items[i]; let best=null, bc=1e7;
+    it.cands.forEach(u=>{ const c=gain(uname(u),it)+R()*400; if(c<bc){ bc=c; best=u; } });
+    if(best){ asg[i]=best; add(uname(best),it,1); }
+  });
+  /* improve: move one activity to someone else, or swap two in the same operation */
+  for(let sweep=0;sweep<30;sweep++){
+    let better=false;
+    for(let i=0;i<items.length;i++){
+      const it=items[i], cur=asg[i];
+      let base;
+      if(cur){ add(uname(cur),it,-1); base=gain(uname(cur),it); } else base=1e7;
+      let best=cur, bc=base;
+      it.cands.forEach(u=>{ if(cur&&uname(u)===uname(cur)) return; const c=gain(uname(u),it); if(c<bc-1){ bc=c; best=u; } });
+      if(best){ add(uname(best),it,1); }
+      if(best!==cur) better=true;
+      asg[i]=best;
+    }
+    const groups={};
+    items.forEach((it,i)=>{ const k=(it.w||'-')+'|'+it.day+'|'+it.op; (groups[k]=groups[k]||[]).push(i); });
+    Object.values(groups).forEach(g=>{
+      for(let x=0;x<g.length;x++) for(let y=x+1;y<g.length;y++){
+        const i=g[x], j=g[y], pi=asg[i], pj=asg[j];
+        if(!pi||!pj||uname(pi)===uname(pj)) continue;
+        if(!items[j].cands.some(u=>uname(u)===uname(pi)) || !items[i].cands.some(u=>uname(u)===uname(pj))) continue;
+        add(uname(pi),items[i],-1); add(uname(pj),items[j],-1);
+        const before=gain(uname(pi),items[i])+gain(uname(pj),items[j]);
+        const after=gain(uname(pi),items[j])+gain(uname(pj),items[i]);
+        if(after<before-1){ asg[i]=pj; asg[j]=pi; add(uname(pj),items[i],1); add(uname(pi),items[j],1); better=true; }
+        else { add(uname(pi),items[i],1); add(uname(pj),items[j],1); }
+      }
+    });
+    if(!better) break;
+  }
+  const plan=items.map((it,i)=>({...it,username:asg[i]?asg[i].username:'',name:asg[i]?(asg[i].display_name||asg[i].username):'',slot:it.op}));
+  fixed.filter(f=>f.keep).forEach(f=>plan.push({...f,slot:f.op,fixed:true}));
+  events.forEach(e=>plan.push(e));
+  plan.sort((a,b)=>((a.w||'')>(b.w||'')?1:(a.w||'')<(b.w||'')?-1:0)||a.day-b.day||(startMin(a.activity)||0)-(startMin(b.activity)||0));
+  plan.meta={scope:o.scope,weeks,days,on,L,anchor,onlyEmpty:!!o.onlyEmpty};
+  return plan;
+}
+
+/* fairness numbers she sees */
+function summary(plan){
+  const L=plan.meta.L, per={}, byAct={};
+  const gap=(a,b)=>{ const x=Math.abs(a-b)%L; return Math.min(x,L-x); };
+  plan.filter(x=>x.slot!=='event'&&x.username).forEach(x=>{
+    const k=x.username.toLowerCase(); per[k]=(per[k]||0)+1;
+    (byAct[k+'|'+x.key]=byAct[k+'|'+x.key]||[]).push(x.g);
+  });
+  let nb=0, maxSame=0;
+  Object.values(byAct).forEach(gs=>{ maxSame=Math.max(maxSame,gs.length); for(let i=0;i<gs.length;i++) for(let j=i+1;j<gs.length;j++) if(gap(gs[i],gs[j])<=1) nb++; });
+  const vals=Object.values(per);
+  const open=plan.filter(x=>x.slot!=='event'&&!x.username).length;
+  return {per,nb,maxSame,open,min:vals.length?Math.min(...vals):0,max:vals.length?Math.max(...vals):0};
+}
+function problems(plan){
+  const seenOp=new Map(), out=new Set();
+  plan.forEach((x,i)=>{
+    if(x.slot==='event'||!x.username) return;
+    const k=x.username.toLowerCase()+'|'+(x.w||'-')+'|'+x.day+'|'+x.slot;
+    if(seenOp.has(k)){ out.add(i); out.add(seenOp.get(k)); } else seenOp.set(k,i);
+  });
+  return out;
+}
+
+/* ---------- apply ---------- */
+async function applyPlan(plan){
+  const meta=plan.meta;
+  const bad=problems(plan);
+  if(bad.size){ toastErr('Someone has two activities in the same operation. Change the red rows first.'); return false; }
+  if(meta.on && !rotOn()){ await enableRotation(); }
+  const rows=plan.filter(x=>!x.fixed && (x.username || !meta.onlyEmpty));
+  if(rotOn()){
+    const maps={A:{...mapOf('A')},B:{...mapOf('B')}};
+    rows.forEach(x=>{ maps[x.w||liveLetter(x.day)][String(x.activity.id)]=x.username||''; });
+    await DB.saveSettings({...S.settings,[MAPK.A]:maps.A,[MAPK.B]:maps.B});
+    const res=await syncLiveColumn();
+    hydrate();
+    return res;
+  }
+  const jobs=rows.filter(x=>(x.username||'')!==rawEnt(x.activity)).map(x=>()=>patchRaw(x.activity,x.username||''));
+  const res=await runJobs(jobs);
+  hydrate();
+  return res;
+}
+
+/* ---------- the planner window ---------- */
+window.openAutoAssignModal=function(day){
+  if(day==null) day=(typeof assignDay==='function')?assignDay():todayIndex();
+  let scope='day', onlyEmpty=false, variant=0, gen=1, plans=[];
+  const wkDefault=()=>rotOn()?(S.assignWeekViewV703||liveLetter(day)):null;
+  let week=wkDefault();
+  const wrap=baseModal('');
+  function make(){
+    plans=[0,1,2].map(v=>buildPlan({scope,day,week,onlyEmpty,seed:gen*31+v*101}));
+    variant=0;
+  }
+  function draw(){
+    const plan=plans[variant]||[], sm=summary(plan), bad=problems(plan);
+    const dn=t('days');
+    let lastHead='';
+    const list=plan.map((x,i)=>{
+      const head=(plan.meta.on&&x.w?WK[x.w]+' · ':'')+(dn[x.day]||'');
+      const h=head!==lastHead?`<div class="aa-day"><b>${E(head)}</b></div>`:''; lastHead=head;
+      if(x.slot==='event') return h+`<div class="aa-row"><span class="aa-slot event">DJ</span><span class="aa-mid"><b>${E(x.activity.name)}</b><span class="mini">${E(x.activity.time||'')}</span></span><span class="mini">${E(x.name||'DJ unavailable')}</span></div>`;
+      if(x.fixed) return h+`<div class="aa-row"><span class="aa-slot ${x.slot}">${x.slot}</span><span class="aa-mid"><b>${E(x.activity.name)}</b><span class="mini">${E(x.activity.time||'')} · kept</span></span><span class="mini">${E(x.name)}</span></div>`;
+      const opts=(x.cands||[]).map(u=>`<option value="${E(u.username)}" ${u.username===x.username?'selected':''}>${E(u.display_name||u.username)}</option>`).join('');
+      return h+`<div class="aa-row${bad.has(i)?' rt-bad':''}"><span class="aa-slot ${x.slot}">${x.slot}</span><span class="aa-mid"><b>${E(x.activity.name)}</b><span class="mini">${E(x.activity.time||'')}${x.cands&&!x.cands.length?' · nobody available':''}</span></span><select class="aa-sel" data-rt-row="${i}"><option value="">Nobody</option>${opts}</select></div>`;
+    }).join('');
+    const people=Object.entries(sm.per).sort((a,b)=>b[1]-a[1]).map(([k,n])=>{ const u=userByName(k); return `<span class="rt-chip">${E(u?(u.display_name||u.username):k)} <b>${n}</b></span>`; }).join('');
+    const r=rot();
+    wrap.innerHTML=`<div class="modal rt-modal"><h3>${ic('users',20)} Smart plan generator</h3>
+      <div class="bd-roles rt-scope"><button class="bd-role ${scope==='day'?'on':''}" data-rt-scope="day">This day</button><button class="bd-role ${scope==='week'?'on':''}" data-rt-scope="week">Whole week</button><button class="bd-role ${scope==='two'?'on':''}" data-rt-scope="two">Two weeks</button></div>
+      ${rotOn()&&scope!=='two'?`<div class="bd-roles rt-scope"><button class="bd-role ${week==='A'?'on':''}" data-rt-week="A">Week 1</button><button class="bd-role ${week==='B'?'on':''}" data-rt-week="B">Week 2</button></div>`:''}
+      <p class="mini">${scope==='two'
+        ?(rotOn()?'Plans Week 1 and Week 2 together. This week is '+WK[letterOf(hotelDateStr())]+'.':'Plans two different weeks. Applying turns on the two-week rotation: this week becomes Week 1, next week Week 2, then it repeats.')
+        :(rotOn()?'Two-week rotation is on. You are planning '+WK[week]+'; the other week is taken into account so nobody repeats.':'Nobody gets the same activity two days in a row, and the work is shared evenly.')}</p>
+      <div class="plan-mode-v5"><button class="${onlyEmpty?'on':''}" data-rt-mode="fill">Fill empty only</button><button class="${!onlyEmpty?'on':''}" data-rt-mode="new">Build a new plan</button></div>
+      <div class="plan-tabs-v5">${[0,1,2].map(i=>`<button class="${variant===i?'on':''}" data-rt-plan="${i}">Plan ${String.fromCharCode(65+i)}</button>`).join('')}</div>
+      ${plan.length?`<div class="aa-bal ${sm.max-sm.min<=1&&!sm.nb?'good':'warn'}"><b>Fairness</b><span>${sm.min}–${sm.max} activities each · ${sm.nb?sm.nb+' same activity two days in a row':'no repeats on neighbouring days'}${sm.open?' · '+sm.open+' without anyone':''}</span></div>
+      <div class="rt-chips">${people}</div>
+      <div class="card aa-list">${list}</div>
+      <button class="btn" id="rt-apply">${ic('check',16)} Apply Plan ${String.fromCharCode(65+variant)}</button>`
+      :`<div class="empty">No activities for this selection.</div>`}
+      ${rotOn()?`<div class="rt-rot"><span>Two-week rotation is on. This week is <b>${WK[letterOf(hotelDateStr())]}</b>.</span><button class="btn ghost sm" id="rt-flip">Switch weeks</button><button class="btn ghost sm" id="rt-off">Turn off</button></div>`:''}
+      <button class="btn ghost" id="rt-exp">${ic('download',16)} Export ${rotOn()?'two weeks':'this week'}</button>
+      <button class="btn ghost" id="rt-close">${t('close')}</button></div>`;
+    wrap.querySelectorAll('[data-rt-scope]').forEach(b=>b.onclick=()=>{ scope=b.dataset.rtScope; make(); draw(); });
+    wrap.querySelectorAll('[data-rt-week]').forEach(b=>b.onclick=()=>{ week=b.dataset.rtWeek; make(); draw(); });
+    wrap.querySelectorAll('[data-rt-mode]').forEach(b=>b.onclick=()=>{ onlyEmpty=b.dataset.rtMode==='fill'; gen++; make(); draw(); });
+    wrap.querySelectorAll('[data-rt-plan]').forEach(b=>b.onclick=()=>{ variant=+b.dataset.rtPlan; draw(); });
+    wrap.querySelectorAll('[data-rt-row]').forEach(s=>s.onchange=()=>{
+      const x=plan[+s.dataset.rtRow], u=(x.cands||[]).find(c=>c.username===s.value);
+      x.username=u?u.username:''; x.name=u?(u.display_name||u.username):''; draw();
+    });
+    const ap=wrap.querySelector('#rt-apply');
+    if(ap) ap.onclick=async()=>{
+      ap.disabled=true; ap.textContent='Saving…';
+      try{
+        const res=await applyPlan(plan);
+        if(!res){ ap.disabled=false; draw(); return; }
+        if(res.fail) toastErr(res.fail+' could not be saved ('+res.ok+' saved). Check the internet and press Apply again.');
+        else{ toastOk('Plan applied'+(plan.meta.on?' — '+(scope==='two'?'both weeks':WK[week]):'')); wrap.remove(); }
+        render();
+      }catch(e){ console.error('V7.03 apply',e); toastErr('The plan was not saved: '+(e&&e.message||e)); ap.disabled=false; ap.textContent='Apply again'; }
+    };
+    const fl=wrap.querySelector('#rt-flip'); if(fl) fl.onclick=async()=>{ await setRotation({anchor:addDays(rot().anchor,7)}); week=wkDefault(); make(); draw(); render(); toastOk('This week is now '+WK[letterOf(hotelDateStr())]); };
+    const of=wrap.querySelector('#rt-off'); if(of) of.onclick=async()=>{ if(!confirm('Turn off the two-week rotation? Every week will use the assignments of the week running now.')) return; await setRotation({on:false}); S.assignWeekViewV703=null; week=null; make(); draw(); render(); };
+    wrap.querySelector('#rt-exp').onclick=()=>openAssignExport();
+    wrap.querySelector('#rt-close').onclick=()=>wrap.remove();
+  }
+  make(); draw();
+};
+window.AUREA_ROTATION_V703={exportData:()=>exportData(),buildPlan,summary,applyPlan,letterOf,dateFor,rotOn,enableRotation,syncLiveColumn};
+
+
+/* ---------- EXPORT: the two weeks, day by day, with entrance and day off ---------- */
+function weeksToExport(){
+  const mon=mondayOf(hotelDateStr());
+  if(!rotOn()) return [{w:null,mon,label:'This week'}];
+  const a=letterOf(mon), b=a==='A'?'B':'A';
+  return [{w:a,mon,label:WK[a]},{w:b,mon:addDays(mon,7),label:WK[b]}];
+}
+const personName=v=>{ const u=firstUser(v); return u?(u.display_name||u.username):String(v||''); };
+function numName(n){
+  if(!n) return '';
+  const u=(S.users||[]).find(x=>+x.number===+n && x.role!=='guest' && x.active!==false && !(typeof hasLeft==='function'&&hasLeft(x)));
+  return u?(u.display_name||u.username):('#'+n);
+}
+function exportData(){
+  capture();
+  const dn=t('days');
+  return weeksToExport().map(wk=>{
+    const days=[0,1,2,3,4,5,6].map(d=>{
+      const date=addDays(wk.mon,d), dp=(typeof dayPlanFor==='function'?dayPlanFor(d):{})||{};
+      const holiday=(S.users||[]).filter(u=>u.role!=='guest'&&u.active!==false&&u.number).filter(u=>{ try{ return attStatus(u,date.slice(0,7),+date.slice(8,10))==='V'; }catch(_){ return false; } }).map(u=>u.display_name||u.username);
+      const rows=(S.activities||[]).filter(a=>a&&a.day===d&&(normal(a)||activitySlot(a)==='event'))
+        .sort((x,y)=>(startMin(x)??9999)-(startMin(y)??9999)||String(x.name).localeCompare(String(y.name)))
+        .map(a=>({time:a.time||'',name:a.name||'',place:a.location||'',slot:activitySlot(a),who:personName(rotOn()?entFor(a,wk.w):rawEnt(a))}));
+      return {d,date,dayName:dn[d]||'',entrance:numName(dp.entrance),off:(dp.off||[]).map(numName).filter(Boolean),holiday,rows};
+    });
+    return {...wk,days,end:addDays(wk.mon,6)};
+  });
+}
+const nice=(s,y)=>toD(s).toLocaleDateString('en-GB',y?{day:'numeric',month:'short',year:'numeric'}:{day:'numeric',month:'short'});
+function exportPdf(){
+  const data=exportData(), hotel=(S.settings&&(S.settings.hotelName||S.settings.name))||'Entertainment';
+  const cs=getComputedStyle(document.documentElement), ink=(cs.getPropertyValue('--espresso')||'').trim()||'#3E2A1E', gold=(cs.getPropertyValue('--bronze')||'').trim()||'#B98A5C';
+  const block=day=>`<section class="day"><header><h3>${E(day.dayName)} <span>${E(nice(day.date))}</span></h3>
+      <p><b>Entrance:</b> ${E(day.entrance||'—')}</p><p><b>Day off:</b> ${E(day.off.join(', ')||'—')}</p>${day.holiday.length?`<p><b>Holiday:</b> ${E(day.holiday.join(', '))}</p>`:''}</header>
+      <table><thead><tr><th>Time</th><th>Activity</th><th>Place</th><th>Entertainer</th></tr></thead><tbody>
+      ${day.rows.length?day.rows.map(r=>`<tr class="${r.slot}"><td>${E(r.time)}</td><td>${E(r.name)}</td><td>${E(r.place)}</td><td class="who">${E(r.who||'—')}</td></tr>`).join(''):'<tr><td colspan="4" class="none">No activities</td></tr>'}
+      </tbody></table></section>`;
+  const pages=data.map(wk=>`<div class="page"><div class="top"><div><h1>Assignments — ${E(wk.label)}</h1><p>${E(hotel)} · ${E(nice(wk.mon))} – ${E(nice(wk.end,true))}</p></div></div>
+      <div class="grid">${wk.days.map(block).join('')}</div></div>`).join('');
+  const css=`@page{size:A4 portrait;margin:9mm}*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;color:${ink};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{page-break-after:always}.page:last-child{page-break-after:auto}
+.top{border-bottom:2px solid ${gold};padding-bottom:6px;margin-bottom:8px}h1{font:700 17px Georgia,serif;margin:0}.top p{margin:2px 0 0;font-size:10px;opacity:.75}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.day{border:1px solid #E4D3BC;border-radius:6px;overflow:hidden;break-inside:avoid}
+.day header{background:#F5ECDF;padding:5px 8px}.day h3{margin:0 0 2px;font-size:12px}.day h3 span{font-weight:400;opacity:.7}
+.day header p{margin:0;font-size:9.5px;line-height:1.35}
+table{width:100%;border-collapse:collapse;font-size:9px}th{text-align:left;font-size:8px;padding:3px 6px;border-bottom:1px solid #E4D3BC;opacity:.8}
+td{padding:3px 6px;border-bottom:1px solid #F1E8DA;vertical-align:top}td.who{font-weight:700}tr.event td{opacity:.7;font-style:italic}td.none{opacity:.6}
+@media screen{body{padding:14px;background:#eee}.page{background:#fff;max-width:210mm;margin:0 auto 14px;padding:10mm}}`;
+  const w=window.open('','_blank');
+  if(!w){ toastErr('Could not open the print window. Allow pop-ups and try again.'); return; }
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Assignments</title><style>'+css+'</style></head><body>'+pages+'<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print()},400)};<\/scr'+'ipt></body></html>');
+  w.document.close();
+}
+async function exportXlsx(){
+  const sets=exportData().map(wk=>{
+    const rows=[];
+    wk.days.forEach(day=>{
+      rows.push([day.dayName.toUpperCase()+' '+nice(day.date,true),'Entrance: '+(day.entrance||'—'),'Day off: '+(day.off.join(', ')||'—'),day.holiday.length?'Holiday: '+day.holiday.join(', '):'']);
+      day.rows.forEach(r=>rows.push([r.time,r.name,r.place,r.who||'—']));
+      rows.push(['','','','']);
+    });
+    return {title:wk.label,headers:['Time','Activity','Place','Entertainer'],rows};
+  });
+  await exportExcelSets(sets,'Assignments_'+mondayOf(hotelDateStr()));
+}
+function openAssignExport(){
+  const on=rotOn();
+  const w=baseModal(`<h3>${ic('download',20)} Export assignments</h3>
+    <p class="mini">${on?'Week 1 and Week 2, day by day: every activity with the entertainer, and at the top of each day who is on entrance and who has a day off.':'The two-week rotation is off, so this exports this week, day by day, with entrance and day off at the top of each day.'}</p>
+    <button class="btn" id="ax-pdf">${ic('download',16)} PDF (print)</button>
+    <button class="btn ghost" id="ax-xls">${ic('download',16)} Excel</button>
+    <button class="btn ghost" id="ax-x">${t('close')}</button>`);
+  w.querySelector('#ax-pdf').onclick=()=>{ exportPdf(); };
+  w.querySelector('#ax-xls').onclick=async()=>{ try{ await exportXlsx(); }catch(e){ toastErr('Excel export failed'); } };
+  w.querySelector('#ax-x').onclick=()=>w.remove();
+}
+window.openAssignExportV704=openAssignExport;
+window.__wireSteps && window.__wireSteps.push(function(){
+  if(!(S.session&&S.session.role==='manager'&&S.tab==='assign')) return;
+  const auto=document.getElementById('asg-auto'); if(!auto || document.getElementById('rt-export')) return;
+  const row=auto.parentElement;
+  row.insertAdjacentHTML('afterend',`<button type="button" class="btn ghost" id="rt-export" style="margin-top:8px">${ic('download',16)} Export ${rotOn()?'two weeks':'this week'}</button>`);
+  document.getElementById('rt-export').onclick=openAssignExport;
+});
+
+/* ---------- Week 1 / Week 2 switch on the Assignments page ---------- */
+window.__wireSteps && window.__wireSteps.push(function(){
+  if(!(S.session&&S.session.role==='manager'&&S.tab==='assign') || !rotOn()) return;
+  const days=document.getElementById('asg-days'); if(!days || document.getElementById('rt-weekbar')) return;
+  const d=(typeof assignDay==='function')?assignDay():todayIndex();
+  const shown=S.assignWeekViewV703||liveLetter(d), live=liveLetter(d);
+  days.insertAdjacentHTML('beforebegin',`<div id="rt-weekbar" class="bd-roles rt-weekbar"><button class="bd-role ${shown==='A'?'on':''}" data-rt-view="A">Week 1${live==='A'?' · now':''}</button><button class="bd-role ${shown==='B'?'on':''}" data-rt-view="B">Week 2${live==='B'?' · now':''}</button></div>`);
+  document.querySelectorAll('[data-rt-view]').forEach(b=>b.onclick=()=>{ S.assignWeekViewV703=b.dataset.rtView; render(); });
+});
+/* leaving the page shows the running week again everywhere */
+let lastTab=null;
+window.__wireSteps && window.__wireSteps.push(function(){ if(lastTab==='assign' && S.tab!=='assign') S.assignWeekViewV703=null; lastTab=S.tab; });
+
+const st=document.createElement('style');
+st.textContent=`.rt-modal .rt-scope{margin-bottom:8px}.rt-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.rt-chip{font-size:12px;padding:4px 10px;border-radius:99px;border:1px solid var(--line);background:var(--card,#fff)}.rt-chip b{margin-left:4px}
+.aa-row.rt-bad{background:rgba(176,57,43,.08)}.aa-row.rt-bad .aa-sel{border-color:#B0392B}
+.aa-slot.event{background:rgba(120,120,120,.15)}
+.rt-rot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 4px;padding:10px 12px;border-radius:14px;background:rgba(185,138,92,.12);font-size:13px}.rt-rot span{flex:1 1 100%}
+.rt-weekbar{margin:0 0 10px}`;
+document.head.appendChild(st);
 })();
 </script>
 
