@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.26-dayplan-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.26-program-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -22610,6 +22610,141 @@ st.textContent=`.dp7-glance{margin:14px 0 18px;padding:16px;border-radius:24px;b
 .dp7-tag{display:inline-block;align-self:flex-start;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:var(--espresso);color:#fff;margin-bottom:3px}
 .dp7 .std-row-v2.dp7-next .dp7-tag{background:transparent;color:var(--espresso);border:1px solid var(--bronze)}
 @media (max-width:360px){.dp7-counts{grid-template-columns:repeat(2,1fr)}.dp7-btns{grid-template-columns:1fr}}`;
+document.head.appendChild(st);
+})();
+</script>
+<script id="aurea-program-v712">
+/* ===== V7.12 PROGRAM (manager) — clear list + smart checks (2026-09-26) =====
+   Found:
+   1. The manager cards did not show WHO runs each activity.
+   2. "0/0" meant "0 booked, no limit" — nobody could read that.
+   3. Every card repeated "ACTIVITIES" under the "Daytime activities" heading.
+   4. Finished activities faded out completely (edit button too), and the red
+      dot had no explanation.
+   5. A broken photo link showed an empty grey box.
+   6. Duplicate entries (same activity, same day, same time — e.g. from
+      "repeat every day") were not noticed.
+   7. Activities outside the morning / afternoon / evening times are ignored
+      by the smart planner without any warning.
+   8. Two print buttons + add + categories took half a screen above the list.
+   9. The category picker in Edit activity was broken (q is not defined).
+   Now: day tabs first, one compact tool row, a "this day" check card, and
+   one clear row per activity with time, who, bookings and status. */
+(function(){
+'use strict';
+if(window.__AUREA_PROGRAM_V712) return; window.__AUREA_PROGRAM_V712=true;
+/* BUG FIX: two editor add-ons (display category, V6.67 / V6.74) call q(selector, root)
+   but q was never defined for them, so the category picker never appeared in
+   "Edit activity" (console: "q is not defined"). */
+if(typeof window.q!=='function') window.q=function(sel,root){ return (root||document).querySelector(sel); };
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const wins=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w; }catch(_){} const s=timeToMin(a&&a.time); return s==null?[]:[{s0:s,e0:s+30}]; };
+const startOf=a=>{ const w=wins(a); return w.length?w[0].s0:9999; };
+const endOf=a=>{ const w=wins(a); return w.length?w[w.length-1].e0:null; };
+const hhmm=m=>m==null||m>=9999?'—':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const special=a=>normCat(a)!=='mAdult';
+const slot=a=>{ try{ return activitySlot(a); }catch(_){ return ''; } };
+const who=a=>{ try{ return entertainerName(a.entertainer); }catch(_){ return String(a.entertainer||''); } };
+const nowMin=()=>{ try{ return nowMinutes(); }catch(_){ const n=hotelNow(); return n.getHours()*60+n.getMinutes(); } };
+const low=v=>String(v||'').trim().toLowerCase();
+const custom=a=>String(a&&a.customCategory||'').trim();
+
+function checks(day,acts){
+  const out=[], dup=new Map();
+  const groups={};
+  acts.forEach(a=>{ const k=low(a.name)+'|'+startOf(a); (groups[k]=groups[k]||[]).push(a); });
+  Object.values(groups).filter(g=>g.length>1).forEach(g=>{ g.slice(1).forEach(a=>dup.set(String(a.id),g[0])); out.push({tone:'bad',text:`${g[0].name} at ${hhmm(startOf(g[0]))} is in the programme ${g.length} times`,act:'dup',ids:g.slice(1).map(a=>a.id)}); });
+  const nobody=acts.filter(a=>!special(a)&&(slot(a)==='morning'||slot(a)==='afternoon')&&!String(a.entertainer||'').trim());
+  if(nobody.length) out.push({tone:'warn',text:`${nobody.length} activit${nobody.length>1?'ies have':'y has'} nobody assigned`,act:'assign'});
+  const outside=acts.filter(a=>!special(a)&&!['morning','afternoon','evening'].includes(slot(a)));
+  if(outside.length) out.push({tone:'warn',text:`Outside the operation times (planner skips ${outside.length>1?'them':'it'}): ${outside.map(a=>hhmm(startOf(a))+' '+a.name).join(', ')}`});
+  const same={};
+  acts.filter(a=>!special(a)&&a.location).forEach(a=>{ const k=low(a.location)+'|'+startOf(a); (same[k]=same[k]||[]).push(a); });
+  Object.values(same).filter(g=>g.length>1&&new Set(g.map(a=>low(a.name))).size>1).forEach(g=>out.push({tone:'info',text:`Same place and start: ${g.map(a=>a.name).join(' + ')} · ${g[0].location} ${hhmm(startOf(g[0]))}`}));
+  const noPlace=acts.filter(a=>!String(a.location||'').trim());
+  if(noPlace.length) out.push({tone:'info',text:`No place written: ${noPlace.map(a=>a.name).join(', ')}`});
+  return {list:out,dup};
+}
+
+function row(a,today,dupOf){
+  const s=startOf(a), e=endOf(a), now=nowMin();
+  const live=today&&s<=now&&e!=null&&now<e, done=today&&e!=null&&now>=e;
+  const cap=+a.capacity||0, taken=(typeof seatsTaken==='function'?seatsTaken(a.id):0);
+  const book=cap?`${taken} of ${cap} booked`:(taken?`${taken} booked · no limit`:'No limit');
+  const full=cap&&taken>=cap;
+  const person=special(a)?'':who(a);
+  const cc=custom(a);
+  const img=a.image||(typeof catImage==='function'?catImage(normCat(a)):IMG.show);
+  const fb=(typeof catImage==='function'?catImage(normCat(a)):IMG.show);
+  return `<div class="pg7-row${done?' done':''}${dupOf?' dup':''}" data-edit="${E(a.id)}">
+    <span class="pg7-time"><b>${E(hhmm(s))}</b><small>${E(e!=null?hhmm(e):'')}</small></span>
+    <img class="pg7-img" src="${E(img)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${E(fb)}'">
+    <span class="pg7-mid"><b>${E(a.name)}</b>
+      <span class="pg7-meta">${a.location?E(a.location):'<em>no place</em>'}${cc?` · <i class="pg7-cat">${E(cc)}</i>`:special(a)?` · <i class="pg7-cat ev">${E(catLabel(normCat(a)))}</i>`:''}</span>
+      <span class="pg7-chips">${special(a)?`<span class="pg7-c dj">${ic('music',11)} DJ</span>`:person?`<span class="pg7-c who">${ic('user',11)} ${E(person)}</span>`:`<span class="pg7-c none">Nobody assigned</span>`}
+        <span class="pg7-c ${full?'full':''}">${E(book)}</span>
+        ${live?'<span class="pg7-c live">Live now</span>':done?'<span class="pg7-c fin">Finished</span>':''}
+        ${dupOf?'<span class="pg7-c dupc">Duplicate</span>':''}</span></span>
+    <span class="pg7-edit">${ic('pen',15)}</span></div>`;
+}
+
+function inner(){
+  const day=S.day, today=day===todayIndex();
+  const acts=(S.activities||[]).filter(a=>a&&a.day===day).sort((a,b)=>startOf(a)-startOf(b)||String(a.name).localeCompare(String(b.name)));
+  const ck=checks(day,acts);
+  const n={acts:acts.filter(a=>!special(a)).length,ev:acts.filter(special).length,booked:acts.reduce((s,a)=>s+(typeof seatsTaken==='function'?seatsTaken(a.id):0),0),covered:acts.filter(a=>!special(a)&&String(a.entertainer||'').trim()).length};
+  const tools=`<div class="pg7-tools"><button class="btn" id="btn-add">${ic('plus',16)} Add activity</button><button class="btn ghost" id="btn-program-categories">${ic('grid',15)} Categories</button><button class="btn ghost" id="ib635-open">${ic('download',15)} Print</button></div>`;
+  const probs=ck.list.filter(c=>c.tone!=='info').length;
+  const summary=acts.length?`<section class="pg7-sum"><div class="pg7-nums"><span><b>${n.acts}</b>Activities</span><span><b>${n.ev}</b>Events & shows</span><span><b>${n.covered}/${n.acts}</b>With a person</span><span><b>${n.booked}</b>Bookings</span></div>
+    ${ck.list.length?`<div class="pg7-checks ${probs?'':'ok'}">${probs?`<b>${probs} thing${probs>1?'s':''} to check</b>`:`<b>${ic('check',14)} Programme looks right</b>`}${ck.list.map((c,i)=>`<span class="pg7-chk ${c.tone}">${E(c.text)}${c.act==='dup'?` <button type="button" class="pg7-mini" data-pg7-dup="${i}">Delete the extra</button>`:''}${c.act==='assign'?` <button type="button" class="pg7-mini" data-pg7-assign="${day}">Assign</button>`:''}</span>`).join('')}</div>`
+      :`<div class="pg7-checks ok"><b>${ic('check',14)} Programme looks right</b><span>No duplicates, every activity has a person, a place and a proper time.</span></div>`}</section>`:'';
+  const ops=(typeof OPS!=='undefined'?OPS:[{id:'daytime'},{id:'dayevents'},{id:'evening'},{id:'special'}]);
+  const sections=ops.map(o=>{ const list=acts.filter(a=>actOp(a)===o.id); if(!list.length) return '';
+    return `<div class="sec pg7-sec"><h3>${E(opLabel(o.id))}<span class="pg7-n">${list.length}</span></h3><div class="card pg7-list">${list.map(a=>row(a,today,ck.dup.get(String(a.id)))).join('')}</div></div>`; }).join('');
+  window.__pg7Checks=ck;
+  return dayTabs()+tools+(acts.length?summary+sections:`<div class="empty"><div class="big">${ic('pin',30)}</div>${t('noneToday')}<p class="mini">Add the first activity for this day.</p></div>`);
+}
+window.managerActsInner=inner;
+try{ managerActsInner=inner; }catch(_){}
+
+window.__wireSteps.push(function(){
+  const ck=window.__pg7Checks;
+  document.querySelectorAll('[data-pg7-dup]').forEach(b=>b.onclick=async e=>{
+    e.stopPropagation();
+    const c=ck&&ck.list[+b.dataset.pg7Dup]; if(!c||!c.ids) return;
+    const extra=c.ids.map(id=>(S.activities||[]).find(a=>String(a.id)===String(id))).filter(Boolean);
+    const withBookings=extra.filter(a=>(typeof seatsTaken==='function'?seatsTaken(a.id):0)>0);
+    if(!await confirmAction({question:`Delete ${extra.length} extra "${extra[0]?extra[0].name:''}"?`,detail:withBookings.length?`${withBookings.length} of them have bookings — those guests should be moved first.`:'One copy stays in the programme.',confirmLabel:'Delete extra',danger:true})) return;
+    b.disabled=true;
+    try{ for(const a of extra) await DB.deleteActivity(a.id); toastOk('Duplicate removed'); render(); }catch(err){ b.disabled=false; toastErr(t('errSave')); }
+  });
+  document.querySelectorAll('[data-pg7-assign]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); S.assignDay=+b.dataset.pg7Assign; S.tab='assign'; render(); window.scrollTo(0,0); });
+});
+
+const st=document.createElement('style'); st.id='pg7-style';
+st.textContent=`.pg7-tools{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px;margin:10px 0 12px}.pg7-tools .btn{margin:0;padding-left:8px;padding-right:8px;font-size:13.5px}
+.pg7-sum{margin:0 0 16px;padding:14px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}
+.pg7-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.pg7-nums span{display:flex;flex-direction:column;align-items:center;padding:8px 2px;border-radius:12px;background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-align:center}
+.pg7-nums b{font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--ink);letter-spacing:0}
+.pg7-checks{display:flex;flex-direction:column;gap:6px;padding:11px 12px;border-radius:14px;background:rgba(176,57,43,.06);border:1px solid rgba(176,57,43,.18)}
+.pg7-checks.ok{background:rgba(94,138,87,.08);border-color:rgba(94,138,87,.25)}.pg7-checks>b{display:flex;align-items:center;gap:6px;font-size:14px}.pg7-checks.ok>b{color:#4E7A48}.pg7-checks>span{font-size:12.5px;color:var(--muted)}
+.pg7-chk{font-size:13px;line-height:1.45;padding-left:14px;position:relative}.pg7-chk:before{content:'';position:absolute;left:0;top:6px;width:7px;height:7px;border-radius:50%;background:#B0392B}
+.pg7-chk.warn:before{background:#D08526}.pg7-chk.info{color:var(--muted)}.pg7-chk.info:before{background:#8FA3B8}
+.pg7-mini{border:0;border-radius:99px;padding:4px 10px;margin-left:4px;background:var(--espresso);color:#fff;font-size:11.5px;font-weight:700;cursor:pointer}
+.pg7-sec h3{display:flex;align-items:center;gap:8px}.pg7-n{font-size:12px;font-weight:700;letter-spacing:0;padding:2px 9px;border-radius:99px;background:rgba(185,138,92,.16);color:var(--espresso)}
+.pg7-list{padding:2px 12px}
+.pg7-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line);cursor:pointer}.pg7-row:first-child{border-top:0}
+.pg7-row.done{opacity:.62}.pg7-row.dup{background:rgba(176,57,43,.05);margin:0 -12px;padding-left:12px;padding-right:12px}
+.pg7-time{flex:none;width:44px;display:flex;flex-direction:column;line-height:1.15}.pg7-time b{font-size:14.5px}.pg7-time small{font-size:11.5px;color:var(--muted)}
+.pg7-img{flex:none;width:46px;height:46px;border-radius:12px;object-fit:cover;background:var(--bg)}
+.pg7-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.pg7-mid>b{font-size:15px;line-height:1.2}
+.pg7-meta{font-size:12px;color:var(--muted)}.pg7-meta em{color:#B06A12;font-style:normal}.pg7-cat{font-style:normal;color:var(--bronze);font-weight:600}.pg7-cat.ev{color:#7A4E7E}
+.pg7-chips{display:flex;flex-wrap:wrap;gap:4px}
+.pg7-c{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--bg);color:var(--muted)}
+.pg7-c.who{background:rgba(185,138,92,.16);color:var(--espresso)}.pg7-c.dj{background:#1F2430;color:#F7F3EC}.pg7-c.none{background:rgba(208,133,38,.14);color:#9A5B10}
+.pg7-c.full{background:rgba(176,57,43,.12);color:#9C2F23}.pg7-c.live{background:rgba(94,138,87,.16);color:#4E7A48}.pg7-c.fin{background:transparent;border:1px solid var(--line)}.pg7-c.dupc{background:rgba(176,57,43,.12);color:#9C2F23}
+.pg7-edit{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted)}`;
 document.head.appendChild(st);
 })();
 </script>
