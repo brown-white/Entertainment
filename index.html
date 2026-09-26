@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.26-packs-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.26-offers-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -21117,6 +21117,9 @@ function money(price,n){
   const v=parseFloat(m[1].replace(',','.'))*n, out=(Math.round(v*100)/100).toString().replace('.',m[1].includes(',')?',':'.');
   return s.replace(m[1],out);
 }
+/* offers (e.g. 3 for 10 €) are provided by the ticket-packs layer */
+function tkTotal(tk,n){ const f=window.__tk7Total; if(typeof f==='function'){ const r=f(tk,n); if(r) return r; } return money(tk.price,n); }
+function tkTotalNum(tk,n){ const f=window.__tk7TotalNum; if(typeof f==='function'){ const r=f(tk,n); if(r!=null) return r; } return priceNum(tk.price)*n; }
 const priceNum=p=>{ const m=String(p||'').match(/(\d+(?:[.,]\d{1,2})?)/); return m?parseFloat(m[1].replace(',','.')):0; };
 
 /* ---------- repeat orders ---------- */
@@ -21169,7 +21172,7 @@ function resCard(o){
   const tk=tkOf(o.ticket_id); if(!tk) return '';
   const d=orderDate(o), paid=isPaid(o), who=o.collect_from||g('team');
   return `<article class="tk7-res ${paid?'paid':''}" data-tk7-mine="${E(o.id)}">${dateBlock(d)}
-    <span class="tk7-res-mid"><b>${E(tk.name)}</b><span>${E(tk.time||'')}${tk.location?' · '+E(tk.location):''}</span><span class="tk7-res-q">×${qtyOf(o)}${tk.price?' · '+E(money(tk.price,qtyOf(o))):''}</span></span>
+    <span class="tk7-res-mid"><b>${E(tk.name)}</b><span>${E(tk.time||'')}${tk.location?' · '+E(tk.location):''}</span><span class="tk7-res-q">×${qtyOf(o)}${tk.price?' · '+E(tkTotal(tk,qtyOf(o))):''}</span></span>
     <span class="tk7-res-st">${paid?`<i class="ok">${ic('check',13)} ${E(g('handed'))}</i>`:`<i>${E(g('payAt',{p:who}))}</i>`}</span></article>`;
 }
 function evCard(tk){
@@ -21182,6 +21185,7 @@ function evCard(tk){
     <div class="tk7-ev-body">
       ${tk.location?`<p class="tk7-place">${mi('pin')}${E(tk.location)}</p>`:''}
       ${tk.desc?`<p class="tk7-desc">${E(tk.desc)}</p>`:''}
+      ${typeof window.__tk7OfferLine==='function'&&window.__tk7OfferLine(tk)?`<p class="tk7-offer">${ic('gift',14)} ${E(window.__tk7OfferLine(tk))}</p>`:''}
       ${cap?`<div class="tk7-bar"><i style="width:${pct}%"></i></div>`:''}
       <div class="tk7-ev-foot"><span class="tk7-left ${soldOut?'out':left!==null&&left<=3?'low':''}">${soldOut?E(g('sold')):left!==null?E(g('left',{n:left,c:cap})):E(g('avail'))}</span>
       ${mine?`<button class="tk7-btn ghost" data-tk7-buy="${E(tk.id)}">${E(g('reserved',{n:qtyOf(mine)}))} · ${E(g('change'))}</button>`:soldOut?(paidMine?`<span class="tk7-have">${ic('check',13)} ×${paidMine}</span>`:''):`<button class="tk7-btn${paidMine?' ghost':''}" data-tk7-buy="${E(tk.id)}">${paidMine?E(g('more')):E(g('reserve'))}</button>`}</div>
@@ -21216,7 +21220,8 @@ openTicketBuyModal=function(tk){
     ${existing?`<p class="tk7-note">${E(g('already',{n:qtyOf(existing)}))}</p>`:''}
     ${afterStay?`<p class="tk7-note bad">${E(g('afterStay'))}</p>`:''}
     <div class="tk7-qty"><span>${E(g('qty'))}</span><div class="tk7-step"><button type="button" data-q="-1" aria-label="−">−</button><b id="tk7-n">${qty}</b><button type="button" data-q="1" aria-label="+">+</button></div>
-      ${tk.price?`<span class="tk7-total"><small>${E(g('total'))}</small><b id="tk7-tot">${E(money(tk.price,qty))}</b></span>`:''}</div>
+      ${tk.price?`<span class="tk7-total"><small>${E(g('total'))}</small><b id="tk7-tot">${E(tkTotal(tk,qty))}</b></span>`:''}</div>
+    ${typeof window.__tk7OfferLine==='function'&&window.__tk7OfferLine(tk)?`<p class="tk7-offer">${ic('gift',14)} ${E(window.__tk7OfferLine(tk))}</p>`:''}
     ${cap&&maxLeft<=5?`<p class="tk7-note">${E(g('onlyLeft',{n:maxLeft}))}</p>`:''}
     <label class="tk7-lbl">${E(g('collect'))}</label>
     <div class="tk7-people">${people.map(p=>`<button type="button" class="tk7-person ${norm(p.name)===norm(who)?'on':''}" data-tk7-who="${E(p.name)}"><span class="av">${p.photo?`<img src="${E(p.photo)}" alt="">`:E(p.name.charAt(0).toUpperCase())}</span><span class="nm">${E(p.name)}</span>${offToday(p.u)?`<span class="off">${E(g('offToday'))}</span>`:''}</button>`).join('')}</div>
@@ -21226,7 +21231,7 @@ openTicketBuyModal=function(tk){
     ${existing?`<button class="btn ghost danger" id="tk7-cancel">${E(g('remove'))}</button>`:''}
     <button class="btn ghost" id="tk7-x">${E(g('close'))}</button></div>`);
   const q=s=>wrap.querySelector(s);
-  const paint=()=>{ q('#tk7-n').textContent=qty; const tt=q('#tk7-tot'); if(tt) tt.textContent=money(tk.price,qty); q('#tk7-go').textContent=existing?g('update',{n:qty}):g('confirm',{n:qty}); };
+  const paint=()=>{ q('#tk7-n').textContent=qty; const tt=q('#tk7-tot'); if(tt) tt.textContent=tkTotal(tk,qty); q('#tk7-go').textContent=existing?g('update',{n:qty}):g('confirm',{n:qty}); };
   wrap.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{ qty=Math.max(1,Math.min(max,qty+(+b.dataset.q))); paint(); });
   wrap.querySelectorAll('[data-tk7-who]').forEach(b=>b.onclick=()=>{ who=b.dataset.tk7Who; wrap.querySelectorAll('.tk7-person').forEach(x=>x.classList.toggle('on',x===b)); q('#tk7-err').textContent=''; });
   q('#tk7-x').onclick=()=>wrap.remove();
@@ -21256,7 +21261,7 @@ openTicketBuyModal=function(tk){
 };
 window.openTicketBuyModal=openTicketBuyModal;
 function done(tk,d,qty,who){
-  const w=baseModal(`<div class="tk7-done"><div class="tk7-stub"><span class="tk7-stub-ic">${ic('check',26)}</span><h3>${E(g('doneTitle'))}</h3><p class="tk7-stub-ev">${E(tk.name)}</p><p>${E(niceDate(d,{weekday:'long',day:'numeric',month:'long'}))} · ${E(tk.time||'')}</p><div class="tk7-perf"></div><p class="tk7-stub-q">×${qty}${tk.price?' · '+E(money(tk.price,qty)):''}</p><p class="tk7-stub-who">${E(g('doneBody',{p:who||g('team')}))}</p></div><button class="btn" id="tk7-ok">${E(g('close'))}</button></div>`);
+  const w=baseModal(`<div class="tk7-done"><div class="tk7-stub"><span class="tk7-stub-ic">${ic('check',26)}</span><h3>${E(g('doneTitle'))}</h3><p class="tk7-stub-ev">${E(tk.name)}</p><p>${E(niceDate(d,{weekday:'long',day:'numeric',month:'long'}))} · ${E(tk.time||'')}</p><div class="tk7-perf"></div><p class="tk7-stub-q">×${qty}${tk.price?' · '+E(tkTotal(tk,qty)):''}</p><p class="tk7-stub-who">${E(g('doneBody',{p:who||g('team')}))}</p></div><button class="btn" id="tk7-ok">${E(g('close'))}</button></div>`);
   w.querySelector('#tk7-ok').onclick=()=>w.remove();
 }
 
@@ -21271,7 +21276,7 @@ function staffPanel(){
   const got=list.filter(isPaid).sort((a,b)=>orderDate(b).localeCompare(orderDate(a))).slice(0,8);
   const rep=new Set(); duplicateGroups().forEach(l=>l.slice(1).forEach(o=>rep.add(String(o.id))));
   const row=o=>{ const tk=tkOf(o.ticket_id); const d=orderDate(o);
-    return `<div class="tk7-srow ${isPaid(o)?'paid':''}"><span class="tk7-srow-mid"><b>${E(o.guest_name||'Guest')} · Room ${E(roomOf(o)||'—')} · ×${qtyOf(o)}</b>${rep.has(String(o.id))?'<em class="tk7-rep">Repeat order — ask the manager before taking payment</em>':''}<span>${E(tk?tk.name:'Event deleted')}${d?' · '+E(niceDate(d)):''}${tk&&tk.time?' · '+E(tk.time):''}${tk&&tk.price?' · '+E(money(tk.price,qtyOf(o))):''}</span></span>
+    return `<div class="tk7-srow ${isPaid(o)?'paid':''}"><span class="tk7-srow-mid"><b>${E(o.guest_name||'Guest')} · Room ${E(roomOf(o)||'—')} · ×${qtyOf(o)}</b>${rep.has(String(o.id))?'<em class="tk7-rep">Repeat order — ask the manager before taking payment</em>':''}<span>${E(tk?tk.name:'Event deleted')}${d?' · '+E(niceDate(d)):''}${tk&&tk.time?' · '+E(tk.time):''}${tk&&tk.price?' · '+E(tkTotal(tk,qtyOf(o))):''}</span></span>
       ${isPaid(o)?`<button class="tk7-mini undo" data-tk7-status="${E(o.id)}" data-next="reserved">${ic('check',13)} Handed over</button>`:`<button class="tk7-mini" data-tk7-status="${E(o.id)}" data-next="paid">Paid & handed over</button>`}</div>`; };
   return `<section class="tk7-staff"><div class="tk7-staff-head"><h3>${ic('ticket',17)} Ticket collections</h3>${todo.length?`<span class="tk7-pill warn">${todo.length} to collect</span>`:''}</div>
     ${todo.length?todo.map(row).join(''):`<div class="tk7-empty sm">No guest is waiting to pay you for a ticket.</div>`}
@@ -21294,7 +21299,7 @@ window.guestTicketsManagerInnerV620=function(){
   const all=allOrders();
   const up=all.filter(o=>(orderDate(o)||'')>=today||!tkOf(o.ticket_id));
   const pending=up.filter(o=>!isPaid(o)), paid=up.filter(isPaid);
-  const revenue=paid.reduce((n,o)=>{ const tk=tkOf(o.ticket_id); return n+(tk?priceNum(tk.price)*qtyOf(o):0); },0);
+  const revenue=paid.reduce((n,o)=>{ const tk=tkOf(o.ticket_id); return n+(tk?tkTotalNum(tk,qtyOf(o)):0); },0);
   const cur=(()=>{ const tk=(S.tickets||[]).find(x=>priceNum(x.price)); const m=tk&&String(tk.price).replace(/[\d\s.,]/g,''); return m||''; })();
   const pool=mode==='past'?all.filter(o=>(orderDate(o)||'')<today&&tkOf(o.ticket_id)):mode==='pending'?pending:mode==='paid'?paid:up;
   const shown=pool.filter(o=>{ if(!qs) return true; const tk=tkOf(o.ticket_id); return [o.guest_name,roomOf(o),o.collect_from,tk&&tk.name].join(' ').toLowerCase().includes(qs); });
@@ -21435,6 +21440,7 @@ st.textContent=`
 .tk7-bar{display:block;height:5px;border-radius:9px;background:rgba(185,138,92,.18);overflow:hidden;margin:10px 0 0}.tk7-bar i{display:block;height:100%;border-radius:9px;background:var(--bronze)}
 .tk7-ev-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
 .tk7-have{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:#4E7A48}
+.tk7-offer{display:flex;align-items:center;gap:6px;margin:8px 0 0;font-size:13px;font-weight:700;color:#9A5B10}
 .tk7-left{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.tk7-left.low{color:#B06A12}.tk7-left.out{color:#B0392B}
 .tk7-btn{border:0;border-radius:99px;padding:10px 18px;background:var(--espresso);color:#fff;font-weight:700;font-size:14px;cursor:pointer}.tk7-btn.ghost{background:transparent;color:var(--espresso);border:1px solid var(--bronze)}
 .tk7-empty{padding:22px;border-radius:18px;border:1px dashed var(--line);text-align:center;color:var(--muted);font-size:14px}.tk7-empty.sm{padding:12px;font-size:13px}
@@ -21814,10 +21820,26 @@ function priceParse(s){ const m=String(s||'').match(/(\d+(?:[.,]\d{1,2})?)/); co
 /* ---------- numbers ---------- */
 function soldOf(p){ const m=obj((sales()[p.id]||{}).sold); const out={}; Object.keys(m).forEach(k=>{ if(+k>=p.from&&+k<=p.to) out[k]=m[k]; }); return out; }
 function payOf(p){ const x=obj(pays()[p.id]); return {payments:Array.isArray(x.payments)?x.payments:[],closedAt:x.closedAt||0,returned:+x.returned||0}; }
+/* ---------- offers, e.g. 3 tickets for 10 € (key ticketOffersV710) ---------- */
+const OK='ticketOffersV710';
+const offersAll=()=>obj(S.settings&&S.settings[OK]);
+const offerKey=x=>x&&x.ticketId!==undefined?(x.ticketId?String(x.ticketId):'pack:'+x.id):String(x&&x.id);
+function offersOf(x){ const l=offersAll()[offerKey(x)]; return (Array.isArray(l)?l:[]).filter(o=>+o.qty>1&&+o.price>0).map(o=>({qty:+o.qty,price:r2(o.price)})).sort((a,b)=>a.qty-b.qty); }
+async function saveOffers(x,list){ await DB.saveSettings({...S.settings,[OK]:{...offersAll(),[offerKey(x)]:list.filter(o=>+o.qty>1&&+o.price>0)}}); }
+/* cheapest way to sell n tickets: singles and offers */
+function best(n,unit,offers){
+  const cost=[0], pick=[null];
+  for(let i=1;i<=n;i++){ cost[i]=cost[i-1]+unit; pick[i]=null; offers.forEach((o,j)=>{ if(o.qty<=i && cost[i-o.qty]+o.price<cost[i]-1e-9){ cost[i]=cost[i-o.qty]+o.price; pick[i]=j; } }); }
+  const parts=[]; let i=n; while(i>0){ const j=pick[i]; if(j==null){ parts.push(null); i--; } else { parts.push(offers[j]); i-=offers[j].qty; } }
+  return {total:r2(cost[n]),parts};
+}
 function stats(p){
-  const n=Math.max(0,p.to-p.from+1), sold=Object.keys(soldOf(p)).length, pay=payOf(p);
-  const paid=r2(pay.payments.reduce((s,x)=>s+(+x.amount||0),0)), owed=r2(sold*(+p.price||0));
-  return {n,sold,left:n-sold,owed,paid,balance:r2(owed-paid),closed:!!pay.closedAt,returned:pay.returned};
+  const n=Math.max(0,p.to-p.from+1), m=soldOf(p), sold=Object.keys(m).length, pay=payOf(p);
+  const groups={}; let singles=0;
+  Object.values(m).forEach(v=>{ if(v&&v.grp) groups[v.grp]=+v.gp||0; else singles++; });
+  const offersSold=Object.keys(groups).length;
+  const paid=r2(pay.payments.reduce((s,x)=>s+(+x.amount||0),0)), owed=r2(singles*(+p.price||0)+Object.values(groups).reduce((s,v)=>s+v,0));
+  return {n,sold,left:n-sold,owed,paid,balance:r2(owed-paid),closed:!!pay.closedAt,returned:pay.returned,offersSold};
 }
 const openPacks=()=>Object.values(packs()).filter(p=>p&&!stats(p).closed);
 
@@ -21832,9 +21854,18 @@ async function flushSales(){
 }
 window.addEventListener('pagehide',()=>{ if(Object.keys(pendingSales).length) flushSales(); });
 function localSold(p){ return pendingSales[p.id]?obj(pendingSales[p.id].sold):obj((sales()[p.id]||{}).sold); }
+function sellOffer(p,nums,offer,info){
+  const m={...localSold(p)}, grp='g'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  /* numbers that were in another offer: that offer is broken up into singles */
+  nums.forEach(n=>{ const v=m[String(n)]; if(v&&v.grp){ Object.keys(m).forEach(k=>{ if(m[k]&&m[k].grp===v.grp){ const {grp,gq,gp,...rest}=m[k]; m[k]=rest; } }); } });
+  nums.forEach(n=>{ const old=m[String(n)]||{}; m[String(n)]={...old,t:old.t||Date.now(),...(info||{}),grp,gq:offer.qty,gp:offer.price}; });
+  queueSale(p,m); S.settings={...S.settings,[SK]:{...sales(),[p.id]:{sold:m,updatedAt:Date.now()}}};
+}
+function groupOf(p,n){ const v=localSold(p)[String(n)]; if(!v||!v.grp) return null; return Object.keys(localSold(p)).filter(k=>localSold(p)[k]&&localSold(p)[k].grp===v.grp).map(Number).sort((a,b)=>a-b); }
 function toggle(p,n,info){
   const m={...localSold(p)}, k=String(n);
-  if(m[k]) delete m[k]; else m[k]={t:Date.now(),...(info||{})};
+  if(m[k]&&m[k].grp){ const g=m[k].grp; Object.keys(m).forEach(x=>{ if(m[x]&&m[x].grp===g) delete m[x]; }); }
+  else if(m[k]) delete m[k]; else m[k]={t:Date.now(),...(info||{})};
   queueSale(p,m);
   /* show at once */
   S.settings={...S.settings,[SK]:{...sales(),[p.id]:{sold:m,updatedAt:Date.now()}}};
@@ -21858,7 +21889,9 @@ window.__tk7AfterStatus=async function(o,next){
     if(Object.values(m).some(v=>v&&String(v.orderId)===String(o.id))) return '';
     const q=Math.max(1,+o.qty||1), give=[];
     for(let n=p.from;n<=p.to&&give.length<q;n++) if(!m[String(n)]) give.push(n);
-    give.forEach(n=>{ m[String(n)]={t:Date.now(),orderId:o.id,guest:o.guest_name||'',room:(T().roomOf?T().roomOf(o):o.room)||''}; });
+    const info={t:Date.now(),orderId:o.id,guest:o.guest_name||'',room:(T().roomOf?T().roomOf(o):o.room)||''};
+    const plan=best(give.length,+p.price||0,offersOf(p)).parts; let i=0;
+    plan.forEach(part=>{ if(!part){ m[String(give[i++])]={...info}; } else { const grp='g'+Date.now().toString(36)+i; for(let k=0;k<part.qty;k++) m[String(give[i++])]={...info,grp,gq:part.qty,gp:part.price}; } });
     if(!give.length) return ' · pack is empty';
     queueSale(p,m); S.settings={...S.settings,[SK]:{...sales(),[p.id]:{sold:m,updatedAt:Date.now()}}}; await flushSales();
     return ' · give ticket '+give.map(n=>num(p,n)).join(', ');
@@ -21870,10 +21903,18 @@ window.__tk7AfterStatus=async function(o,next){
 };
 
 /* ============ ENTERTAINER ============ */
+let pick=null;   /* {id, offer, nums:[]} while choosing numbers for an offer */
 function chips(p,editable){
   const m=localSold(p); let h='';
-  for(let n=p.from;n<=p.to;n++){ const s=m[String(n)]; h+=`<button type="button" class="th9-n ${s?'sold':''}" ${editable?`data-th9-n="${E(p.id)}|${n}"`:''} title="${s&&s.guest?E(s.guest+' '+(s.room||'')):''}">${E(P(n).replace(/^0+(?=\d{2})/,''))}</button>`; }
-  return `<div class="th9-grid">${h}</div>`;
+  const sel=pick&&pick.id===p.id?pick.nums:[];
+  for(let n=p.from;n<=p.to;n++){ const s=m[String(n)]; h+=`<button type="button" class="th9-n ${s?'sold':''} ${s&&s.grp?'grp':''} ${sel.includes(n)?'pick':''}" ${editable?`data-th9-n="${E(p.id)}|${n}"`:''} title="${s&&s.guest?E(s.guest+' '+(s.room||'')):''}">${E(P(n).replace(/^0+(?=\d{2})/,''))}${s&&s.grp?'<i></i>':''}</button>`; }
+  return `<div class="th9-grid">${h}</div>${offersOf(p).length?'<p class="th9-legend"><i class="s"></i>sold <i class="o"></i>sold in an offer</p>':''}`;
+}
+function offerButtons(p){
+  const x=stats(p), offs=offersOf(p);
+  if(pick&&pick.id===p.id) return `<div class="th9-picking">Tap ${pick.offer.qty} numbers for the offer ${pick.offer.qty} for ${E(money(pick.offer.price,p.currency))} — ${pick.nums.length} of ${pick.offer.qty} chosen <button type="button" class="th9-mini ghost" data-th9-pickx="1">Cancel</button></div>`;
+  return `<div class="th9-sellrow"><button type="button" class="th9-plus" data-th9-plus="${E(p.id)}" ${x.left?'':'disabled'}>+ 1 ticket · ${E(money(p.price,p.currency))}</button>${offs.map((o,i)=>`<button type="button" class="th9-plus offer" data-th9-offer="${E(p.id)}|${i}" ${x.left>=o.qty?'':'disabled'}>+ Offer ${o.qty} for ${E(money(o.price,p.currency))}</button>`).join('')}</div>
+    ${offs.length?`<button type="button" class="th9-link" data-th9-pick="${E(p.id)}">Mark numbers already sold as an offer…</button>`:''}`;
 }
 function staffPanel(){
   if(!(S.session&&S.session.role==='staff')) return '';
@@ -21881,12 +21922,13 @@ function staffPanel(){
   if(!mine.length) return '';
   const tot=mine.reduce((s,p)=>{ const x=stats(p); s.owe+=x.balance; s.cur=p.currency||s.cur; return s; },{owe:0,cur:'€'});
   return `<section class="th9-staff"><div class="th9-shead"><h3>${ic('ticket',17)} My ticket packs</h3>${tot.owe>0?`<span class="th9-pill">${E(money(tot.owe,tot.cur))} to hand in</span>`:''}</div>
-    <p class="th9-hint">Tap a number when you sell that ticket. Tap again to undo. Hand the money to your manager.</p>
+    <p class="th9-hint">Tap a number when you sell that ticket, or use the buttons below — an offer takes the next numbers together. Tap again to undo. Hand the money to your manager.</p>
     ${mine.map(p=>{ const x=stats(p), tk=tkOf(p.ticketId);
-      return `<article class="th9-pack"><header><span><b>${E(p.name||(tk&&tk.name)||'Tickets')}</b><span>${p.date?E(nice(p.date))+' · ':''}${E(num(p,p.from))} – ${E(num(p,p.to))} · ${E(money(p.price,p.currency))} each</span></span></header>
+      return `<article class="th9-pack" data-pack="${E(p.id)}"><header><span><b>${E(p.name||(tk&&tk.name)||'Tickets')}</b><span>${p.date?E(nice(p.date))+' · ':''}${E(num(p,p.from))} – ${E(num(p,p.to))} · ${E(money(p.price,p.currency))} each</span></span></header>
+        ${offersOf(p).length?`<p class="th9-offers">${ic('gift',13)} ${offersOf(p).map(o=>`${o.qty} for ${E(money(o.price,p.currency))}`).join(' · ')}</p>`:''}
         <div class="th9-count"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>to hand in</span></div>
         ${chips(p,true)}
-        <button type="button" class="th9-plus" data-th9-plus="${E(p.id)}" ${x.left?'':'disabled'}>+ Sold one (next number)</button></article>`; }).join('')}
+        ${offerButtons(p)}</article>`; }).join('')}
   </section>`;
 }
 const wd0=myWorkDayView;
@@ -21918,7 +21960,7 @@ function teamSection(){
       return `<div class="th9-user"><header><span class="av">${E(userName(un).charAt(0).toUpperCase())}</span><b>${E(userName(un))}</b>${mode==='open'?`<span class="th9-owe ${owe>0?'':'zero'}">${owe>0?'Owes '+E(money(owe,ps[0].currency)):'Nothing to pay'}</span>`:''}</header>
         ${ps.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))).map(p=>{ const x=stats(p), tk=tkOf(p.ticketId), pct=x.n?Math.round(x.sold/x.n*100):0;
           return `<button type="button" class="th9-row" data-th9-open="${E(p.id)}"><span class="th9-row-mid"><b>${E(p.name||(tk&&tk.name)||'Tickets')}${p.date?' · '+E(nice(p.date)):''}</b><span>${E(num(p,p.from))} – ${E(num(p,p.to))} · ${x.n} tickets · ${E(money(p.price,p.currency))}</span>
-            <span class="th9-bar"><i style="width:${pct}%"></i></span><span class="th9-nums">Sold <b>${x.sold}</b> · Left <b>${x.left}</b> · Owes <b>${E(money(x.owed,p.currency))}</b> · Paid <b>${E(money(x.paid,p.currency))}</b>${x.closed?' · settled':''}</span></span></button>`; }).join('')}</div>`; }).join('')
+            <span class="th9-bar"><i style="width:${pct}%"></i></span><span class="th9-nums">Sold <b>${x.sold}</b> · Left <b>${x.left}</b> · Owes <b>${E(money(x.owed,p.currency))}</b>${x.offersSold?` (${x.offersSold} offer${x.offersSold>1?'s':''})`:''} · Paid <b>${E(money(x.paid,p.currency))}</b>${x.closed?' · settled':''}</span></span></button>`; }).join('')}</div>`; }).join('')
       :`<div class="th9-empty">${mode==='open'?'No tickets are out with the team.':'No settled packs yet.'}</div>`}
     ${all.length?`<button class="btn ghost" id="th9-xls">${ic('download',16)} Export packs to Excel</button>`:''}
   </section>`;
@@ -21935,6 +21977,15 @@ function nextFrom(ticketId,date,batch){
   const ps=Object.values(packs()).filter(p=>p&&String(p.ticketId)===String(ticketId)&&(p.date||'')===(date||'')&&String(p.batch||'').toUpperCase()===String(batch||'').toUpperCase());
   return ps.length?Math.max(...ps.map(p=>+p.to||0))+1:1;
 }
+function offersEditor(list,cur){
+  return `<div class="th9-ofl">${(list.length?list:[]).map(o=>offerRow(o,cur)).join('')}</div><button type="button" class="btn sm ghost th9-ofadd">${ic('plus',14)} Add offer</button>`;
+}
+function offerRow(o,cur){ return `<div class="th9-ofr"><input class="of-q" type="number" min="2" value="${E(o&&o.qty||3)}"><span>tickets for</span><input class="of-p" inputmode="decimal" value="${E(o&&o.price||'')}" placeholder="10"><span class="of-c">${E(cur||'€')}</span><button type="button" class="th9-x" aria-label="Remove">×</button></div>`; }
+function readOffers(root){ return [...root.querySelectorAll('.th9-ofr')].map(r=>({qty:parseInt(r.querySelector('.of-q').value,10)||0,price:r2(parseFloat(String(r.querySelector('.of-p').value).replace(',','.'))||0)})).filter(o=>o.qty>1&&o.price>0); }
+function wireOffers(root,cur,onChange){
+  const add=root.querySelector('.th9-ofadd'); if(add) add.onclick=()=>{ root.querySelector('.th9-ofl').insertAdjacentHTML('beforeend',offerRow(null,cur())); wireOffers(root,cur,onChange); onChange&&onChange(); };
+  root.querySelectorAll('.th9-ofr .th9-x').forEach(b=>b.onclick=()=>{ b.closest('.th9-ofr').remove(); onChange&&onChange(); });
+}
 function openEditor(p){
   const isNew=!p, tks=S.tickets||[], ppl=team();
   const tk0=p?tkOf(p.ticketId):tks[0];
@@ -21949,6 +22000,7 @@ function openEditor(p){
     <label>Entertainer</label><div class="th9-ppl">${ppl.map(u=>`<button type="button" class="th9-p ${String(u.username)===String(p.user)?'on':''}" data-u="${E(u.username)}"><span class="av">${E(String(u.display_name||u.username).charAt(0).toUpperCase())}</span><span>${E(u.display_name||u.username)}</span></button>`).join('')}</div>
     <div class="th9-3"><div><label>Batch</label><input id="th9-batch" value="${E(p.batch||'')}" placeholder="—" maxlength="3"></div><div><label>From number</label><input id="th9-from" type="number" min="1" value="${p.from}"></div><div><label>To number</label><input id="th9-to" type="number" min="1" value="${p.to}"></div></div>
     <div class="th9-2"><div><label>Price per ticket</label><input id="th9-price" inputmode="decimal" value="${E(p.price)}"></div><div><label>Currency</label><select id="th9-cur">${['€','$','EGP','£'].map(c=>`<option ${p.currency===c?'selected':''}>${c}</option>`).join('')}</select></div></div>
+    <label>Offers <span class="th9-lbl-note">for this event — e.g. 3 tickets for 10 €</span></label><div id="th9-offers">${offersEditor(offersOf(p),p.currency)}</div>
     <p class="th9-sum" id="th9-sum"></p><p class="th9-warn" id="th9-warn"></p>
     <label>Note</label><input id="th9-note" value="${E(p.note||'')}" placeholder="optional">
     <button class="btn" id="th9-save">${isNew?'Give tickets':'Save changes'}</button>
@@ -21964,14 +22016,16 @@ function openEditor(p){
   const check=()=>{
     read(); q('#th9-namew').style.display=p.ticketId?'none':'block';
     const n=p.to-p.from+1;
-    q('#th9-sum').textContent=`${num(p,p.from)} – ${num(p,p.to)} = ${n} ticket${n>1?'s':''} × ${money(p.price,p.currency)} = ${money(n*p.price,p.currency)}${p.user?' with '+userName(p.user):''}`;
+    const offs=q('#th9-offers')?readOffers(q('#th9-offers')):[];
+    q('#th9-sum').textContent=`${num(p,p.from)} – ${num(p,p.to)} = ${n} ticket${n>1?'s':''} × ${money(p.price,p.currency)} = ${money(n*p.price,p.currency)}${offs.length?' (less with offers)':''}${p.user?' with '+userName(p.user):''}`;
     const clash=Object.values(packs()).filter(x=>x&&x.id!==p.id&&String(x.ticketId)===String(p.ticketId)&&(x.date||'')===(p.date||'')&&String(x.batch||'').toUpperCase()===p.batch&&x.from<=p.to&&x.to>=p.from);
     q('#th9-warn').innerHTML=clash.length?`These numbers are already with ${clash.map(x=>E(userName(x.user))+' ('+E(num(x,x.from))+'–'+E(num(x,x.to))+')').join(', ')}. <button type="button" class="th9-mini" id="th9-nf">Use ${E(num(p,nextFrom(p.ticketId,p.date,p.batch)))} onwards</button>`:'';
     const nf=q('#th9-nf'); if(nf) nf.onclick=()=>{ const f=nextFrom(p.ticketId,p.date,p.batch), c=p.to-p.from; q('#th9-from').value=f; q('#th9-to').value=f+c; check(); };
     return clash.length;
   };
   w.querySelectorAll('.th9-p').forEach(b=>b.onclick=()=>{ p.user=b.dataset.u; w.querySelectorAll('.th9-p').forEach(x=>x.classList.toggle('on',x===b)); check(); });
-  q('#th9-ev').onchange=()=>{ const tk=tkOf(q('#th9-ev').value); if(tk){ q('#th9-date').value=nd(tk); const pp=priceParse(tk.price); if(pp.v){ q('#th9-price').value=pp.v; q('#th9-cur').value=pp.cur; } } if(isNew){ read(); const f=nextFrom(p.ticketId,p.date,p.batch), c=Math.max(0,p.to-p.from); q('#th9-from').value=f; q('#th9-to').value=f+c; } check(); };
+  wireOffers(q('#th9-offers'),()=>q('#th9-cur').value,check);
+  q('#th9-ev').onchange=()=>{ const tk=tkOf(q('#th9-ev').value); { const probe={id:p.id,ticketId:q('#th9-ev').value}; q('#th9-offers').innerHTML=offersEditor(offersOf(probe),q('#th9-cur').value); wireOffers(q('#th9-offers'),()=>q('#th9-cur').value,check); } if(tk){ q('#th9-date').value=nd(tk); const pp=priceParse(tk.price); if(pp.v){ q('#th9-price').value=pp.v; q('#th9-cur').value=pp.cur; } } if(isNew){ read(); const f=nextFrom(p.ticketId,p.date,p.batch), c=Math.max(0,p.to-p.from); q('#th9-from').value=f; q('#th9-to').value=f+c; } check(); };
   w.addEventListener('input',check); check();
   q('#th9-x').onclick=()=>w.remove();
   q('#th9-save').onclick=async()=>{
@@ -21980,10 +22034,42 @@ function openEditor(p){
     if(!p.ticketId&&!p.name){ q('#th9-warn').textContent='Give the tickets a name.'; return; }
     if(clash&&!confirm('Some of these numbers are already with someone else. Save anyway?')) return;
     const b=q('#th9-save'); b.disabled=true; b.textContent='Saving…';
-    try{ await savePack(p); w.remove(); toastOk(isNew?`${p.to-p.from+1} tickets given to ${userName(p.user)}`:'Saved'); render(); }
+    try{ await savePack(p); await saveOffers(p,readOffers(q('#th9-offers'))); w.remove(); toastOk(isNew?`${p.to-p.from+1} tickets given to ${userName(p.user)}`:'Saved'); render(); }
     catch(e){ b.disabled=false; b.textContent='Try again'; toastErr(t('errSave')); }
   };
   const d=q('#th9-del'); if(d) d.onclick=async()=>{ const x=stats(p); if(!await confirmAction({question:'Delete this ticket pack?',detail:`${userName(p.user)} · ${num(p,p.from)}–${num(p,p.to)}${x.sold?` · ${x.sold} sold, ${money(x.paid,p.currency)} paid`:''}. The sales and payments of this pack are deleted too.`,confirmLabel:'Delete pack',danger:true})) return; try{ await deletePack(p); w.remove(); toastOk('Pack deleted'); render(); }catch(e){ toastErr(t('errSave')); } };
+}
+const me=()=>({by:(S.session&&S.session.username)||''});
+function numberTap(p,n,redraw){
+  const m=localSold(p), cur=m[String(n)];
+  if(pick&&pick.id===p.id){
+    if(pick.nums.includes(n)) pick.nums=pick.nums.filter(x=>x!==n); else pick.nums.push(n);
+    if(pick.nums.length>=pick.offer.qty){ const o=pick.offer, nums=pick.nums.slice(0,o.qty).sort((a,b)=>a-b); pick=null; sellOffer(p,nums,o,me()); toastOk('Offer '+o.qty+' for '+money(o.price,p.currency)+': '+nums.map(x=>num(p,x)).join(', ')); }
+    redraw(); return;
+  }
+  if(cur&&cur.grp){ const g=groupOf(p,n)||[]; if(!confirm('Ticket '+num(p,n)+' was sold in an offer ('+g.map(x=>num(p,x)).join(', ')+' for '+money(cur.gp,p.currency)+'). Undo the whole offer?')) return; }
+  else if(cur&&cur.orderId&&!confirm('This ticket was given to a guest who ordered in the app ('+(cur.guest||'guest')+'). Undo the sale?')) return;
+  toggle(p,n,me()); redraw();
+}
+function plusTap(p,redraw){ const m=localSold(p); for(let n=p.from;n<=p.to;n++) if(!m[String(n)]){ toggle(p,n,me()); toastOk('Sold '+num(p,n)+' · '+money(p.price,p.currency)); redraw(); return; } }
+function offerTap(p,i,redraw){
+  const o=offersOf(p)[i]; if(!o) return; const m=localSold(p), nums=[];
+  for(let n=p.from;n<=p.to&&nums.length<o.qty;n++) if(!m[String(n)]) nums.push(n);
+  if(nums.length<o.qty){ toastErr('Only '+nums.length+' tickets left in this pack'); return; }
+  sellOffer(p,nums,o,me()); toastOk('Offer sold: '+nums.map(x=>num(p,x)).join(', ')+' = '+money(o.price,p.currency)); redraw();
+}
+function pickStart(p,redraw){
+  const offs=offersOf(p); if(!offs.length) return;
+  let o=offs[0];
+  if(offs.length>1){ const a=prompt('Which offer? '+offs.map((x,i)=>(i+1)+') '+x.qty+' for '+money(x.price,p.currency)).join('   '),'1'); const k=parseInt(a,10)-1; if(!(k>=0&&k<offs.length)) return; o=offs[k]; }
+  pick={id:p.id,offer:o,nums:[]}; redraw();
+}
+function wireSell(root,p,redraw){
+  root.querySelectorAll('[data-th9-n]').forEach(b=>{ const [id,n]=b.dataset.th9N.split('|'); if(id!==p.id) return; b.onclick=()=>numberTap(p,+n,redraw); });
+  root.querySelectorAll('[data-th9-plus]').forEach(b=>{ if(b.dataset.th9Plus!==p.id) return; b.onclick=()=>plusTap(p,redraw); });
+  root.querySelectorAll('[data-th9-offer]').forEach(b=>{ const [id,i]=b.dataset.th9Offer.split('|'); if(id!==p.id) return; b.onclick=()=>offerTap(p,+i,redraw); });
+  root.querySelectorAll('[data-th9-pick]').forEach(b=>{ if(b.dataset.th9Pick!==p.id) return; b.onclick=()=>pickStart(p,redraw); });
+  root.querySelectorAll('[data-th9-pickx]').forEach(b=>b.onclick=()=>{ pick=null; redraw(); });
 }
 function openPack(id){
   const p=packs()[id]; if(!p) return;
@@ -21993,14 +22079,15 @@ function openPack(id){
     box.innerHTML=`<p class="th9-eyebrow">${E(userName(p.user))}</p><h3>${E(p.name||(tk&&tk.name)||'Tickets')}${p.date?' · '+E(nice(p.date)):''}</h3>
       <p class="mini">${E(num(p,p.from))} – ${E(num(p,p.to))} · ${x.n} tickets · ${E(money(p.price,p.currency))} each${p.note?' · '+E(p.note):''}</p>
       <div class="th9-count big"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span><b>${E(money(x.owed,p.currency))}</b>owed</span><span><b>${E(money(x.paid,p.currency))}</b>paid</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>still to pay</span></div>
-      <p class="th9-hint">Numbers ${x.closed?'':'— tap to correct a sale'}</p>${chips(p,!x.closed)}
+      ${offersOf(p).length?`<p class="th9-offers">${ic('gift',13)} Offers: ${offersOf(p).map(o=>`${o.qty} for ${E(money(o.price,p.currency))}`).join(' · ')}${x.offersSold?` — ${x.offersSold} sold`:''}</p>`:''}
+      <p class="th9-hint">Numbers ${x.closed?'':'— tap to correct a sale'}</p>${chips(p,!x.closed)}${x.closed?'':offerButtons(p)}
       ${soldList?`<details class="th9-det"><summary>Sold to guests through the app</summary><ul>${soldList}</ul></details>`:''}
       ${pay.payments.length?`<div class="th9-pays"><b>Payments</b>${pay.payments.map(y=>`<span>${E(money(y.amount,p.currency))} · ${E(whenLabel(new Date(y.at).toISOString()))}${y.by?' · '+E(y.by):''}</span>`).join('')}</div>`:''}
       ${x.closed?`<p class="th9-ok">${ic('check',14)} Settled${pay.returned?` · ${pay.returned} unsold returned`:''}</p><button class="btn ghost" id="th9-reopen">Reopen pack</button>`
         :`<div class="th9-payrow"><input id="th9-amt" inputmode="decimal" value="${x.balance>0?x.balance:''}" placeholder="Amount"><button class="btn" id="th9-pay">Money received</button></div>
           <button class="btn ghost" id="th9-close">Unsold tickets returned — settle pack (${x.left} back)</button>`}
       <button class="btn ghost" id="th9-edit">Edit pack</button><button class="btn ghost" id="th9-cl">Close</button>`;
-    box.querySelectorAll('[data-th9-n]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.th9N.split('|')[1]; toggle(p,n,{by:(S.session&&S.session.username)||''}); draw(); });
+    wireSell(box,p,draw);
     const payB=box.querySelector('#th9-pay'); if(payB) payB.onclick=async()=>{ const a=r2(parseFloat(String(box.querySelector('#th9-amt').value).replace(',','.'))); if(!(a>0)) return; payB.disabled=true; const pay=payOf(p); try{ await savePay(p,{...pay,payments:[...pay.payments,{amount:a,at:Date.now(),by:(S.session&&S.session.name)||''}]}); toastOk(money(a,p.currency)+' received from '+userName(p.user)); draw(); render(); }catch(e){ payB.disabled=false; toastErr(t('errSave')); } };
     const cl=box.querySelector('#th9-close'); if(cl) cl.onclick=async()=>{ await flushSales(); const x2=stats(p); if(x2.balance>0&&!confirm(`${userName(p.user)} still has to pay ${money(x2.balance,p.currency)}. Settle the pack anyway?`)) return; const pay=payOf(p); try{ await savePay(p,{...pay,closedAt:Date.now(),returned:x2.left}); toastOk('Pack settled'); draw(); render(); }catch(e){ toastErr(t('errSave')); } };
     const ro=box.querySelector('#th9-reopen'); if(ro) ro.onclick=async()=>{ const pay=payOf(p); try{ await savePay(p,{...pay,closedAt:0,returned:0}); draw(); render(); }catch(e){ toastErr(t('errSave')); } };
@@ -22012,8 +22099,8 @@ function openPack(id){
 }
 async function exportXls(){
   const rows=Object.values(packs()).filter(Boolean).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||userName(a.user).localeCompare(userName(b.user))).map(p=>{ const x=stats(p), tk=tkOf(p.ticketId);
-    return [userName(p.user),p.name||(tk&&tk.name)||'',p.date||'',num(p,p.from)+' – '+num(p,p.to),x.n,p.price,p.currency,x.sold,x.left,x.owed,x.paid,x.balance,x.closed?'Settled':'Open',Object.keys(soldOf(p)).sort((a,b)=>a-b).map(n=>num(p,+n)).join(', ')]; });
-  await exportExcelSets([{title:'Ticket packs',headers:['Entertainer','Event','Date','Numbers','Tickets','Price','Currency','Sold','Left','Owed','Paid','Still to pay','Status','Sold numbers'],rows}],'Ticket_packs_'+today());
+    return [userName(p.user),p.name||(tk&&tk.name)||'',p.date||'',num(p,p.from)+' – '+num(p,p.to),x.n,p.price,p.currency,x.sold,x.offersSold,x.left,x.owed,x.paid,x.balance,x.closed?'Settled':'Open',Object.keys(soldOf(p)).sort((a,b)=>a-b).map(n=>num(p,+n)).join(', ')]; });
+  await exportExcelSets([{title:'Ticket packs',headers:['Entertainer','Event','Date','Numbers','Tickets','Price','Currency','Sold','Offers sold','Left','Owed','Paid','Still to pay','Status','Sold numbers'],rows}],'Ticket_packs_'+today());
 }
 
 /* ---------- wiring ---------- */
@@ -22022,17 +22109,31 @@ window.__wireSteps.push(function(){
   const xb=document.querySelector('#th9-xls'); if(xb) xb.onclick=()=>exportXls();
   document.querySelectorAll('[data-th9-mode]').forEach(b=>b.onclick=()=>{ S.th9Mode=b.dataset.th9Mode; render(); });
   document.querySelectorAll('[data-th9-open]').forEach(b=>b.onclick=()=>openPack(b.dataset.th9Open));
-  document.querySelectorAll('.th9-staff [data-th9-n]').forEach(b=>b.onclick=()=>{
-    const [id,n]=b.dataset.th9N.split('|'); const p=packs()[id]; if(!p) return;
-    const cur=localSold(p)[n]; if(cur&&cur.orderId&&!confirm('This ticket was given to a guest who ordered in the app ('+(cur.guest||'guest')+'). Undo the sale?')) return;
-    toggle(p,+n,{by:(S.session&&S.session.username)||''}); b.classList.toggle('sold');
-    const sec=b.closest('.th9-pack'); if(sec){ const x=stats(p), c=sec.querySelector('.th9-count'); if(c) c.innerHTML=`<span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>to hand in</span>`; const pl=sec.querySelector('.th9-plus'); if(pl) pl.disabled=!x.left; }
-  });
-  document.querySelectorAll('[data-th9-plus]').forEach(b=>b.onclick=()=>{
-    const p=packs()[b.dataset.th9Plus]; if(!p) return; const m=localSold(p);
-    for(let n=p.from;n<=p.to;n++) if(!m[String(n)]){ toggle(p,n,{by:(S.session&&S.session.username)||''}); toastOk('Sold '+num(p,n)); render(); return; }
-  });
+  document.querySelectorAll('.th9-staff .th9-pack').forEach(sec=>{ const id=sec.dataset.pack; const pk=packs()[id]; if(pk) wireSell(sec,pk,()=>render()); });
 });
+const OL={en:'Offer: {q} tickets for {p}',de:'Angebot: {q} Tickets für {p}',ru:'Акция: {q} билета за {p}',pl:'Oferta: {q} bilety za {p}',cs:'Nabídka: {q} vstupenky za {p}',nl:'Aanbieding: {q} tickets voor {p}',fr:'Offre : {q} billets pour {p}',ar:'عرض: {q} تذاكر مقابل {p}'};
+window.__tk7OfferLine=function(tk){ const offs=offersOf({ticketId:tk.id}); if(!offs.length) return ''; const cur=priceParse(tk.price).cur; const f=OL[S.lang]||OL.en; return offs.map(o=>f.replace('{q}',o.qty).replace('{p}',money(o.price,cur))).join(' · '); };
+window.__tk7TotalNum=function(tk,n){ const offs=offersOf({ticketId:tk.id}), pr=priceParse(tk.price); if(!offs.length||!pr.v) return null; return best(n,pr.v,offs).total; };
+window.__tk7Total=function(tk,n){ const v=window.__tk7TotalNum(tk,n); return v==null?null:money(v,priceParse(tk.price).cur); };
+/* offers in the ticket event editor */
+const tedit0=openTicketEditModal;
+openTicketEditModal=function(tk){
+  tedit0(tk);
+  const ws=document.querySelectorAll('.modal-bg'), w=ws[ws.length-1]; if(!w) return;
+  const save=w.querySelector('#k-save'); if(!save) return;
+  const cur=()=>priceParse(w.querySelector('#k-price')&&w.querySelector('#k-price').value).cur;
+  save.insertAdjacentHTML('beforebegin',`<label>Offers <span class="th9-lbl-note">e.g. 3 tickets for 10 € — used by the app and the ticket packs</span></label><div id="k-offers">${offersEditor(tk?offersOf({ticketId:tk.id}):[],cur())}</div>`);
+  const box=w.querySelector('#k-offers'); wireOffers(box,cur);
+  save.addEventListener('click',()=>{ pendingOffers=readOffers(box); pendingFor=tk&&tk.id!=null?tk.id:null; },true);
+};
+window.openTicketEditModal=openTicketEditModal;
+let pendingOffers=null, pendingFor=null;
+const st0=DB.saveTicket.bind(DB);
+DB.saveTicket=async function(tk){
+  const r=await st0(tk);
+  if(pendingOffers){ const id=tk.id!=null?tk.id:((S.tickets||[]).filter(x=>x.name===tk.name).slice(-1)[0]||{}).id; const list=pendingOffers; pendingOffers=null; if(id!=null){ try{ await saveOffers({ticketId:id},list); }catch(e){ console.warn('offers',e); } } }
+  return r;
+};
 window.__tk7EvExtra=function(tk,d){
   const ps=Object.values(packs()).filter(p=>p&&String(p.ticketId)===String(tk.id)&&(!p.date||p.date===d));
   if(!ps.length) return '';
@@ -22078,6 +22179,17 @@ st.textContent=`.th9{margin:18px 0 12px;padding:16px;border-radius:22px;backgrou
 .th9-det{margin:10px 0;font-size:13px}.th9-det summary{cursor:pointer;font-weight:600}.th9-det ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
 .th9-ok{margin:12px 0 6px;font-weight:700;color:#4E7A48;display:flex;gap:6px;align-items:center}
 .th9-ed .danger,.th9-detail .danger{color:#B0392B}
+.th9-lbl-note{font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted);font-size:11.5px}
+.th9-ofr{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:13px}.th9-ofr input{margin:0;width:64px;flex:none;text-align:center}.th9-ofr .of-p{width:76px}.th9-ofr span{color:var(--muted)}.th9-ofr .th9-x{margin-left:auto}
+.th9-x{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:18px;cursor:pointer}
+.th9-offers{margin:6px 0 0;font-size:12.5px;font-weight:700;color:#9A5B10;display:flex;align-items:center;gap:5px}
+.th9-sellrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.th9-sellrow .th9-plus{flex:1 1 45%;margin-top:0}.th9-plus.offer{border-style:solid;border-color:#D08526;color:#9A5B10;background:rgba(208,133,38,.08)}
+.th9-link{display:block;margin:8px auto 0;border:0;background:none;color:var(--muted);font-size:12.5px;text-decoration:underline;cursor:pointer}
+.th9-picking{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(208,133,38,.12);font-size:13px;font-weight:600;color:#9A5B10;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.th9-n{position:relative}.th9-n.grp{background:#9A5B10;border-color:#9A5B10}.th9-n.grp i{position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%;background:#FFD89A}
+.th9-legend{display:flex;align-items:center;gap:6px;margin:8px 0 0;font-size:11.5px;color:var(--muted)}.th9-legend i{width:12px;height:12px;border-radius:4px;display:inline-block}.th9-legend .s{background:var(--espresso)}.th9-legend .o{background:#9A5B10;margin-left:8px}
+.th9-n.pick{outline:3px solid #D08526;outline-offset:1px}
+.th9-mini.ghost{background:transparent;color:#9A5B10;border:1px solid rgba(208,133,38,.5)}
 .th9-detail .th9-count span{background:var(--card,#fff);border:1px solid var(--line)}
 .th9-evx{display:block;margin-top:2px;font-size:11.5px;color:var(--espresso)!important;font-weight:600}
 @media (max-width:360px){.th9-stats{grid-template-columns:repeat(2,1fr)}}`;
