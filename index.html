@@ -10927,7 +10927,7 @@ const REQ_TEMPLATES_DEFAULT={
 function reqCatsFor(kind){
   return kind==="activity" ? ["mAdult"]
        : kind==="party"    ? ["eParty","eShow"]
-       : ["mEvents"];
+       : ["mEvents","eLive","eBefore","eAfter"];
 }
 function reqStartTime(a){
   return String(a && a.time || "").split(/\s*[\u2013\u2014-]\s*/)[0].trim();
@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.26-program-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.27-scores-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -16278,7 +16278,7 @@ function attendanceForBooking627(b,iso){
   return (S.attendance||[]).some(x=>String(x.booking_id)===String(b.id)&&String(x.date||"").slice(0,10)===iso);
 }
 function requirementState627(a,iso){
-  const sh=typeof reqSheetForAct==="function"?reqSheetForAct(a):null;
+  const sh=typeof reqSheetForAct==="function"?reqSheetForAct(a,iso):null;
   if(!sh)return{status:"missing",detail:"No requirement sheet yet",sheet:null};
   const rows=Array.isArray(sh.rows)?sh.rows:[],done=rows.filter(r=>r.done).length,total=rows.length;
   if(!total)return{status:"missing",detail:"Requirement sheet has no checklist",sheet:sh};
@@ -20045,7 +20045,7 @@ function localWrite(configs,sessions,rev){try{localStorage.setItem(LOCAL,JSON.st
 function cloudSnapshot(){return{rev:+(S.settings&&S.settings[KEYR]||0)||0,configs:(S.settings&&Array.isArray(S.settings[KEYC]))?S.settings[KEYC]:[],sessions:(S.settings&&Array.isArray(S.settings[KEYS]))?S.settings[KEYS]:[]}}
 function hydrate(){
  const cloud=cloudSnapshot(),local=localRead();
- if(local&&(+local.rev||0)>cloud.rev){
+ if(local&&(+local.rev||0)>cloud.rev&&!(window.__AUREA_MERGE_V702&&typeof REMOTE!=='undefined'&&REMOTE)){
    S.settings={...(S.settings||{}),[KEYR]:+local.rev||0,[KEYC]:Array.isArray(local.configs)?local.configs:[],[KEYS]:Array.isArray(local.sessions)?local.sessions:[]};
    return{rev:+local.rev||0,configs:S.settings[KEYC],sessions:S.settings[KEYS],localNewer:true};
  }
@@ -20212,7 +20212,7 @@ function editor(existing){
  }
  function applyTemplate(k){
    currentTemplate=k;const tpl=template(k),name=q('#gs87-name').value.trim(),act=q('#gs87-act').value;
-   const c=migrateConfig({...tpl,id:start.id,templateKey:k,name:name||tpl.label.replace(/^.*?—\s*/,'').replace(/\s*\(.*/,'')||tpl.label,activity:act,enabled:true,teamNames:tpl.teamNames||['Team A','Team B'],rules:tpl.rules,order:start.order},start.order||0);
+   const c=migrateConfig({...tpl,id:start.id,templateKey:k,name:(name&&!(window.__gsAutoName&&window.__gsAutoName(name)))?name:((window.__gsNiceName&&window.__gsNiceName(k))||(k==='custom'?'':tpl.label)),activity:act,enabled:true,teamNames:tpl.teamNames||['Team A','Team B'],rules:tpl.rules,order:start.order},start.order||0);
    setValues(c)
  }
  function sync(){
@@ -20265,7 +20265,7 @@ window.activityScoresInner662=managerInner;window.openActivityScore662=()=>{if(S
 
 function blankGame(a,c){return{id:ID(),configId:c.id,activityId:a.id,activityName:a.name,date:sessionDate(),time:a.time||'',location:a.location||'',entertainer:S.session&&S.session.username||'',entertainerName:S.session&&S.session.display_name||S.session&&S.session.name||S.session&&S.session.username||'',status:'live',startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),players:[],engine:c.engine,teamNames:[...(c.teamNames||['Team A','Team B'])],ends:[],timer:{elapsed:0,running:false,startedAt:null}}}
 function normalPlayer(p,c,team='team1'){p=p||{};p.id=p.id||ID();p.name=p.name||'';p.room=p.room||'';p.team=p.team==='team2'?'team2':team;if(c.structure==='rounds')p.rounds=Array.from({length:c.rounds},(_,i)=>p.rounds&&p.rounds[i]!=null?p.rounds[i]:'');else p.score=p.score??'';p.remaining=p.remaining??c.startScore;p.lives=p.lives??c.lives;p.killer=!!p.killer;p.killerHits=p.killerHits||0;p.number=p.number||'';p.seq=p.seq||1;p.cricket=p.cricket||{};p.cricketScore=p.cricketScore||0;return p}
-async function saveGame(g){let ss=sessions().filter(x=>x.id!==g.id);ss.push(g);if(ss.length>500)ss=ss.slice(-500);return persistBoth(configs(),ss)}
+async function saveGame(g){let ss=sessions().filter(x=>x.id!==g.id);ss.push(g);ss=window.__gsTrim?window.__gsTrim(ss):(ss.length>500?ss.slice(-500):ss);return persistBoth(configs(),ss)}
 
 function timerHtml(c,g){
  if(c.timerMode==='none')return'';
@@ -20325,14 +20325,10 @@ function cricketWinner(g,c){
 function gameModal(a,c,preview=false){
  c=migrateConfig(c,0);const old=!preview?latestSession(a):null;let g=(old&&old.status!=='finished')?JSON.parse(JSON.stringify(old)):blankGame(a,c);g.players=(g.players||[]).map(p=>normalPlayer(p,c,p.team||'team1'));g.ends=g.ends||[];
  const w=baseModal(`<div class="gs87-game"><div class="gs87-gamehead"><div><span class="gs87-live">${preview?'Interactive preview':'Live scoring'}</span><h3>${E(a.name)}</h3><p class="mini">${E(template(c.templateKey).label)} · ${c.playMode==='teams'?E(c.teamNames[0])+' vs '+E(c.teamNames[1]):'Individual'}</p></div><span class="gs87-pill">${preview?'PREVIEW':'LIVE'}</span></div>${c.rules?`<div class="gs87-note"><b>Rules</b><br>${E(c.rules)}</div>`:''}${c.instructions?`<div class="gs87-note"><b>Hotel instructions</b><br>${E(c.instructions)}</div>`:''}${timerHtml(c,g)}<div id="gs87-body"></div><div class="gs87-bottom"><button class="btn" id="gs87-finish">${preview?'Show result':'Finish game'}</button><button class="btn ghost" id="gs87-close">Close</button></div></div>`);
- const body=$('#gs87-body',w),stopTimer=bindTimer(w,c,g);
+ const body=$('#gs87-body',w),stopTimer=bindTimer(w,c,g);let __as713=null,__dirty713=false;const __save713=()=>{if(preview)return;__dirty713=true;clearTimeout(__as713);__as713=setTimeout(()=>{if(g.status==='finished')return;g.updatedAt=new Date().toISOString();saveGame(JSON.parse(JSON.stringify(g)))},1200)};w.addEventListener('input',__save713);w.addEventListener('change',__save713);w.addEventListener('click',e=>{const bt=e.target.closest&&e.target.closest('button');if(bt&&bt.id!=='gs87-close'&&bt.id!=='gs87-finish')__save713()});w.onclick=e=>{if(e.target===w){const x=$('#gs87-close',w);if(x)x.click()}};
  function draw(){
-   if(c.engine==='countdown01')body.innerHTML=countdownBody(g,c);
-   else if(c.engine==='killer')body.innerHTML=killerBody(g,c);
-   else if(c.engine==='sequence')body.innerHTML=sequenceBody(g,c);
-   else if(c.engine==='cricket')body.innerHTML=cricketBody(g,c);
-   else if(c.engine==='ends')body.innerHTML=endsBody(g,c);
-   else body.innerHTML=genericBody(g,c);
+   const html=c.engine==='countdown01'?countdownBody(g,c):c.engine==='killer'?killerBody(g,c):c.engine==='sequence'?sequenceBody(g,c):c.engine==='cricket'?cricketBody(g,c):c.engine==='ends'?endsBody(g,c):genericBody(g,c);
+   if(window.__gsPaint)window.__gsPaint(body,html);else body.innerHTML=html;
    bind();
  }
  function bind(){
@@ -20352,7 +20348,7 @@ function gameModal(a,c,preview=false){
    $$('[data-gs87-endb]',body).forEach(el=>el.onchange=()=>{g.ends[+el.dataset.gs87Endb].b=Math.max(0,+el.value||0);draw()});
    const addEnd=$('#gs87-addend',body);if(addEnd)addEnd.onclick=()=>{g.ends.push({a:'',b:''});draw()}
  }
- $('#gs87-close',w).onclick=async()=>{stopTimer();g.updatedAt=new Date().toISOString();if(!preview)await saveGame(g);w.remove()};
+ $('#gs87-close',w).onclick=async()=>{clearTimeout(__as713);stopTimer();if(!preview&&__dirty713&&g.status!=='finished'){g.updatedAt=new Date().toISOString();await saveGame(g)}w.remove()};
  $('#gs87-finish',w).onclick=async()=>{
    let winner='',resultHtml='';
    if(c.engine==='countdown01'){
@@ -22293,7 +22289,7 @@ function build(){
   if(emptyTom.length) out.push(item('tomorrow','warn','user',`${emptyTom.length} activit${emptyTom.length>1?'ies':'y'} tomorrow without an entertainer`,'Plan them before the team leaves today','Assign',nav('assign','',{day:dt}),22,emptyTom.map(a=>tm(a)+' · '+a.name)));
 
   /* ---- preparation sheets (one card per day) ---- */
-  const sheetList=list=>list.filter(special).map(a=>({a,s:sheetState(a)})).filter(x=>!x.s.ok);
+  const sheetList=list=>list.filter(a=>typeof window.reqNeedsSheetV713==='function'?window.reqNeedsSheetV713(a):special(a)).map(a=>({a,s:sheetState(a)})).filter(x=>!x.s.ok);
   const shT=sheetList(T.filter(notEnded));
   if(shT.length) out.push(item('urgent',shT.some(x=>x.s.txt==='no sheet')?'bad':'warn','clipboard',`${shT.length} event${shT.length>1?'s':''} today not prepared`,'Make or finish the requirement sheet (music, props, setup)','Prepare',nav('req','',{date:td,actId:shT[0].a.id}),6,shT.map(x=>`${tm(x.a)} · ${x.a.name} — ${x.s.txt}`)));
   const shM=sheetList(M);
@@ -22394,7 +22390,7 @@ function go(it){
   if(n.extra&&n.extra.date) S.reqDate=n.extra.date;
   S.tab=n.tab; if(n.sub){ S.sub=S.sub||{}; S.sub[n.tab]=n.sub; }
   render(); window.scrollTo(0,0);
-  if(n.tab==='req'&&n.extra&&n.extra.actId){ setTimeout(()=>{ const a=(S.activities||[]).find(x=>String(x.id)===String(n.extra.actId)); const sh=(typeof reqSheetForAct==='function'&&a)?reqSheetForAct(a):null; try{ if(sh) openReqEditor(sh.id); else if(a) openReqEditor(null,a.id); }catch(_){} },80); }
+  if(n.tab==='req'&&n.extra&&n.extra.actId){ setTimeout(()=>{ const a=(S.activities||[]).find(x=>String(x.id)===String(n.extra.actId)); const sh=(typeof reqSheetForAct==='function'&&a)?reqSheetForAct(a,n.extra.date):null; try{ if(sh) openReqEditor(sh.id); }catch(_){} },80); }
 }
 
 /* ---------- honest numbers ---------- */
@@ -22748,6 +22744,372 @@ st.textContent=`.pg7-tools{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:
 document.head.appendChild(st);
 })();
 </script>
+<script id="aurea-score-req-v713">
+/* ===== V7.13 ACTIVITIES SCORE + REQUIREMENTS — checked & redesigned (2026-09-27) =====
+   ACTIVITIES SCORE — found:
+   1. Tapping outside the live game window closed it WITHOUT saving: every score
+      typed so far was lost. It also only saved when "Close" was pressed, so a
+      locked phone or a refresh lost the game too. Now it saves while you type
+      and when the window closes any way.
+   2. Two entertainers saving games at the same moment: one game disappeared.
+      (Fixed in the settings merge — lists with ids are now merged item by item.)
+   3. The automatic game name cut off the sport: "official team format",
+      "Killer", "501". Names are now "Boccia", "Darts Killer", "Darts 501".
+   4. Two games connected to the same activity both said READY, but only the
+      first one is ever used. Now the other one says "Not used" and why.
+   5. A game connected to an activity that is no longer in the programme still
+      said READY. Now it says "Check".
+   6. The manager could not see games running today — only finished ones.
+   7. Every finished game stored its full rule text again (the list slowly
+      made every settings save bigger). Now only what the result needs is kept.
+   REQUIREMENTS — found:
+   8. A sheet made LAST week for a weekly event counted as this week's sheet,
+      so the event looked prepared when it was not.
+   9. The date box was empty and ran off the iPhone screen; with no date the
+      page mixed every sheet ever made, oldest first.
+  10. Live music / before-show were demanded every single day although the
+      sheet editor could not even pick them. Now: events, shows and parties
+      need a sheet by default; anything else only if you switch it on.
+  11. Every new sheet started from the generic list, not from what the same
+      event needed last time. Now it copies last time's lines (unticked).
+  12. Purchase requests were only visible on the exact day they were issued,
+      and they were printed inside the requirement day pack. */
+(function(){
+'use strict';
+if(window.__AUREA_V713) return; window.__AUREA_V713=true;
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const low=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
+const LOC={en:'en-GB',de:'de-DE',ru:'ru-RU',pl:'pl-PL',cs:'cs-CZ',nl:'nl-NL',fr:'fr-FR',ar:'ar-EG'};
+const wins=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w; }catch(_){} const s=timeToMin(a&&a.time); return s==null?[]:[{s0:s,e0:s+30}]; };
+const startOf=a=>{ const w=wins(a); return w.length?w[0].s0:9999; };
+const hhmm=m=>m==null||m>=9999?'—':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const today=()=>hotelDateStr();
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addDays=(s,n)=>{ const d=new Date(s+'T12:00:00'); d.setDate(d.getDate()+n); return ymd(d); };
+const wdOf=s=>(new Date(s+'T12:00:00').getDay()+6)%7;
+function niceDay(s,long){ try{ return new Date(String(s).slice(0,10)+'T12:00:00').toLocaleDateString(LOC[S.lang]||'en-GB',long?{weekday:'long',day:'numeric',month:'long'}:{weekday:'short',day:'numeric',month:'short'}); }catch(_){ return s; } }
+function relDay(s){ const td=today(); return s===td?'Today':s===addDays(td,1)?'Tomorrow':s===addDays(td,-1)?'Yesterday':niceDay(s); }
+const who=a=>{ try{ return entertainerName(a.entertainer); }catch(_){ return String(a&&a.entertainer||''); } };
+
+/* ======================= ACTIVITIES SCORE ======================= */
+const NICE={boccia:'Boccia',cornhole:'Bean Bags',darts501:'Darts 501',darts301:'Darts 301',cricket:'Darts Cricket',killer:'Darts Killer',around:'Around the Clock',points:'Points race',timed:'Timed challenge',custom:''};
+const fragment=label=>String(label||'').replace(/^.*?—\s*/,'').replace(/\s*\(.*/,'');
+const T=()=>{ const L=window.AUREA_LIVE_SCORE_V688; return (L&&L.templates)||{}; };
+window.__gsNiceName=k=>Object.prototype.hasOwnProperty.call(NICE,k)?NICE[k]:'';
+window.__gsAutoName=function(name){
+  const n=low(name); if(!n) return true;
+  return Object.entries(T()).some(([k,v])=>n===low(NICE[k])||n===low(fragment(v.label))||n===low(v.label));
+};
+/* keep only what a finished result needs — the full rule text stays in the game setup */
+window.__gsTrim=function(ss){
+  ss=(ss||[]).map(g=>{ if(!g||!g.configSnapshot) return g; const c=g.configSnapshot;
+    return {...g,configSnapshot:{templateKey:c.templateKey,name:c.name,engine:c.engine,playMode:c.playMode,teamNames:c.teamNames,format:c.format,rule:c.rule,structure:c.structure,rounds:c.rounds,endMode:c.endMode,scoreLimit:c.scoreLimit,startScore:c.startScore,lives:c.lives}}; });
+  return ss.length>500?ss.slice(-500):ss;
+};
+/* live game screen: update the numbers WITHOUT rebuilding the boxes, so the
+   box you are typing in keeps the keyboard (before: typing "12" gave "1" and
+   the keyboard closed after every digit) */
+function morph(live,next){
+  if(live.nodeType!==next.nodeType||live.nodeName!==next.nodeName) return false;
+  if(live.nodeType===3||live.nodeType===8){ if(live.nodeValue!==next.nodeValue) live.nodeValue=next.nodeValue; return true; }
+  if(live.nodeType!==1) return true;
+  for(const a of [...live.attributes]) if(!next.hasAttribute(a.name)) live.removeAttribute(a.name);
+  for(const a of [...next.attributes]) if(live.getAttribute(a.name)!==a.value) live.setAttribute(a.name,a.value);
+  if(live.tagName==='INPUT'||live.tagName==='TEXTAREA'){
+    if(live!==document.activeElement){ const v=live.tagName==='TEXTAREA'?next.value:(next.getAttribute('value')||''); if(live.value!==v) live.value=v; }
+    return true;
+  }
+  const a=live.childNodes,b=next.childNodes; if(a.length!==b.length) return false;
+  for(let i=0;i<a.length;i++) if(!morph(a[i],b[i])) return false;
+  return true;
+}
+window.__gsPaint=function(body,html){
+  const tmp=document.createElement('div'); tmp.innerHTML=html;
+  if(body.childNodes.length&&body.childNodes.length===tmp.childNodes.length){
+    let ok=true; for(let i=0;i<tmp.childNodes.length&&ok;i++) ok=morph(body.childNodes[i],tmp.childNodes[i]);
+    if(ok) return;
+  }
+  const ae=document.activeElement; let sel='';
+  if(ae&&body.contains(ae)&&/^(INPUT|TEXTAREA)$/.test(ae.tagName)) sel=[...ae.attributes].filter(x=>x.name.startsWith('data-')).map(x=>`[${x.name}="${CSS.escape(x.value)}"]`).join('');
+  body.innerHTML=html;
+  if(sel){ const n=body.querySelector(sel); if(n){ try{ n.focus({preventScroll:true}); }catch(_){ n.focus(); } } }
+};
+function gameName(c){
+  const tl=(T()[c.templateKey]||{}).label||'';
+  if(!c.name||low(c.name)===low(fragment(tl))) return NICE[c.templateKey]||c.activity||tl||'Game';
+  return c.name;
+}
+const total=(p,c)=>c.structure==='rounds'?(p.rounds||[]).reduce((s,v)=>s+(+v||0),0):(+p.score||0);
+function started(g){ return !!g&&((g.players||[]).length>0||(g.ends||[]).some(x=>String(x.a)!==''||String(x.b)!=='')); }
+function leader(g,c){
+  const P=g.players||[];
+  if(c.engine==='ends'){ const a=(g.ends||[]).reduce((s,x)=>s+(+x.a||0),0), b=(g.ends||[]).reduce((s,x)=>s+(+x.b||0),0); return `${c.teamNames[0]} ${a} – ${b} ${c.teamNames[1]}`; }
+  if(c.engine==='countdown01'){ const p=P.slice().sort((x,y)=>(+x.remaining||0)-(+y.remaining||0))[0]; return p?`${p.name||'Guest'} needs ${p.remaining}`:''; }
+  if(c.engine==='killer'){ return `${P.filter(p=>(+p.lives||0)>0).length} of ${P.length} still in`; }
+  if(c.engine==='points'){
+    if(c.playMode==='teams'){ const t1=P.filter(p=>(p.team||'team1')==='team1').reduce((s,p)=>s+total(p,c),0), t2=P.filter(p=>p.team==='team2').reduce((s,p)=>s+total(p,c),0); return `${c.teamNames[0]} ${t1} – ${t2} ${c.teamNames[1]}`; }
+    const b=P.slice().sort((x,y)=>c.rule==='low'?total(x,c)-total(y,c):total(y,c)-total(x,c))[0]; return b&&b.name?`${b.name} leads · ${total(b,c)}`:'';
+  }
+  return P.length?`${P.length} players`:'';
+}
+function scoreInner(){
+  const L=window.AUREA_LIVE_SCORE_V688; if(!L) return `<div class="empty">Activities Score is loading…</div>`;
+  const Tp=T(), cs=L.configs(), ss=L.sessions(), td=today(), di=todayIndex();
+  const acts=new Map();
+  (S.activities||[]).forEach(a=>{ if(a&&a.name){ const k=low(a.name); if(!acts.has(k)) acts.set(k,{name:a.name,days:new Set()}); acts.get(k).days.add(+a.day); } });
+  const used=new Map(); cs.forEach(c=>{ if(c.enabled!==false&&c.activity&&!used.has(low(c.activity))) used.set(low(c.activity),c.id); });
+  const stateOf=c=>{
+    if(!c.activity) return {k:'draft',label:'Draft',why:'Not connected to an activity — entertainers do not see it yet.'};
+    const hit=acts.get(low(c.activity));
+    if(!hit) return {k:'warn',label:'Check',why:`“${c.activity}” is not in the programme any more. Open Edit and connect it to the right activity.`};
+    if(c.enabled===false) return {k:'off',label:'Off',why:`Switched off — nobody sees it at ${hit.name}.`};
+    if(used.get(low(c.activity))!==c.id){ const w=cs.find(x=>x.id===used.get(low(c.activity))); return {k:'warn',label:'Not used',why:`${hit.name} already uses the game “${w?gameName(w):'another game'}” (higher in the list). An activity plays one game — move this one above it to use it instead, or connect it to another activity.`}; }
+    const dd=[...hit.days].sort((a,b)=>a-b), days=dd.length>=7?'every day':dd.map(d=>(t('daysShort')||[])[d]).filter(Boolean).join(', ');
+    return {k:'ready',label:'Ready',why:`Played at ${hit.name}${days?' · '+days:''}`};
+  };
+  const states=cs.map(stateOf), checks=states.filter(s=>s.k==='warn').length;
+  const todayActs=(S.activities||[]).filter(a=>a&&a.day===di&&used.has(low(a.name))).sort((a,b)=>startOf(a)-startOf(b));
+  const todayRows=todayActs.map(a=>{
+    const c=cs.find(x=>x.id===used.get(low(a.name)));
+    const g=ss.filter(x=>String(x.activityId)===String(a.id)&&String(x.date||'')===td).sort((x,y)=>String(y.updatedAt||'').localeCompare(String(x.updatedAt||'')))[0]||null;
+    let st,btn;
+    if(g&&g.status==='finished'){ st=`<span class="gs8-st done">Winner · ${E(g.winner||'—')}</span>`; btn=`<button type="button" class="gs8-mini ghost" data-gs87-history="${E(g.id)}">Result</button>`; }
+    else if(started(g)){ const l=leader(g,c); st=`<span class="gs8-st live">Live now${l?' · '+E(l):''}</span>`; btn=`<button type="button" class="gs8-mini" data-gs87-start="${E(a.id)}">Open</button>`; }
+    else { st=`<span class="gs8-st wait">Not started</span>`; btn=`<button type="button" class="gs8-mini ghost" data-gs87-start="${E(a.id)}">Open</button>`; }
+    return `<div class="gs8-trow"><span class="gs8-time">${E(hhmm(startOf(a)))}</span><span class="gs8-tmid"><b>${E(a.name)}</b><span>${E(gameName(c))} · ${E(who(a)||'nobody assigned')}</span>${st}</span>${btn}</div>`;
+  }).join('');
+  const hist=ss.filter(x=>x.status==='finished').sort((a,b)=>String(b.finishedAt||'').localeCompare(String(a.finishedAt||''))).slice(0,S.gs8All?300:25);
+  let lastDay='';
+  const histRows=hist.map(g=>{ const d=String(g.date||String(g.finishedAt||'').slice(0,10)); const head=d!==lastDay?`<p class="gs8-hday">${E(relDay(d))}</p>`:''; lastDay=d;
+    const n=(g.players||[]).length;
+    return head+`<button type="button" class="gs8-hrow" data-gs87-history="${E(g.id)}"><span><b>${E(g.activityName||'Game')}</b><span>${E(g.entertainerName||'')}${n?' · '+n+' player'+(n>1?'s':''):''}</span></span><span class="gs8-win">${E(g.winner||'—')}</span></button>`; }).join('');
+  const allFinished=ss.filter(x=>x.status==='finished').length;
+  return `<div class="gs8">
+    <div class="gs8-head"><p class="gs8-kicker">Live scoring</p><h2>Activities Score</h2>
+      <p class="gs8-intro">Connect a game to an activity in the programme. Whoever runs that activity gets <b>Start game</b> on their work day, keeps the score on the phone, and the result is saved here.</p>
+      <button class="btn" id="gs87-new">${ic('plus',16)} Create game</button></div>
+    ${todayRows?`<section class="gs8-sec"><h3>Today</h3><div class="card gs8-today">${todayRows}</div></section>`:''}
+    <section class="gs8-sec"><h3>Games <span class="gs8-n">${cs.length}</span>${checks?`<span class="gs8-n warn">${checks} to check</span>`:''}</h3>
+    ${cs.length?cs.map((c,i)=>{ const s=states[i], tpl=Tp[c.templateKey]||{};
+      return `<article class="gs8-card ${s.k}"><div class="gs8-ctop"><span class="gs8-pill ${s.k}">${E(s.label)}</span>
+        <span class="gs8-move"><button type="button" aria-label="Move up" data-gs87-up="${E(c.id)}" ${i===0?'disabled':''}>↑</button><button type="button" aria-label="Move down" data-gs87-down="${E(c.id)}" ${i===cs.length-1?'disabled':''}>↓</button></span></div>
+        <h4>${E(gameName(c))}</h4>
+        <p class="gs8-type">${E(tpl.label||'Custom game')} · ${c.playMode==='teams'?E(c.teamNames[0])+' vs '+E(c.teamNames[1]):'Individual'}${c.timerMode&&c.timerMode!=='none'?' · '+Math.round((+c.timerSeconds||0)/60)+' min timer':''}</p>
+        <p class="gs8-why ${s.k}">${E(s.why)}</p>
+        <div class="gs8-tools"><button type="button" class="primary" data-gs87-edit="${E(c.id)}">Edit</button><button type="button" data-gs87-preview="${E(c.id)}">Try it</button><button type="button" class="danger" data-gs87-del="${E(c.id)}">Delete</button></div></article>`; }).join('')
+      :`<div class="gs8-empty">No games yet. Create one — for example Boccia or Darts — and connect it to the activity in the programme.</div>`}
+    </section>
+    <section class="gs8-sec"><h3>Results <span class="gs8-n">${allFinished}</span></h3>
+      ${histRows?`<div class="card gs8-hist">${histRows}</div>${allFinished>25?`<button type="button" class="btn ghost sm" id="gs8-all">${S.gs8All?'Show fewer':'Show all '+allFinished+' results'}</button>`:''}`:`<p class="mini">Finished games appear here with the winner.</p>`}
+    </section></div>`;
+}
+window.activityScoresInner662=scoreInner;
+
+/* ======================= REQUIREMENTS ======================= */
+const NEED_KEY='reqNeedV713';
+const DEFAULT_NEED=new Set(['mEvents','eShow','eParty']);
+const cat=a=>{ try{ return normCat(a); }catch(_){ return 'mAdult'; } };
+const special=a=>cat(a)!=='mAdult';
+const KIND_TXT={mEvents:'Event',eShow:'Show',eParty:'Party',eLive:'Live music',eBefore:'Before the show',eAfter:'After show',mAdult:'Activity'};
+function needsSheet(a){
+  if(!a) return false;
+  const m=(S.settings&&S.settings[NEED_KEY])||{}, k=low(a.name);
+  if(Object.prototype.hasOwnProperty.call(m,k)) return !!m[k];
+  return DEFAULT_NEED.has(cat(a));
+}
+window.reqNeedsSheetV713=needsSheet;
+async function setNeed(a,v){
+  const m={...((S.settings&&S.settings[NEED_KEY])||{})}, k=low(a.name);
+  if(v===DEFAULT_NEED.has(cat(a))) delete m[k]; else m[k]=!!v;
+  await DB.saveSettings({...S.settings,[NEED_KEY]:m});
+}
+const nextOcc=a=>nextDateForDay(a.day,today());
+const sheetsOn=date=>reqSheets().filter(sh=>sh.kind!=='purchase'&&String(sh.date||'')===date);
+function sheetFor(a,date){
+  if(!a) return null; date=date||nextOcc(a);
+  const on=sheetsOn(date);
+  return on.find(sh=>String(sh.actId||'')===String(a.id))||on.find(sh=>low(sh.title)===low(a.name))||null;
+}
+/* the sheet for an event is the sheet for THAT date — never last week's */
+window.reqSheetForAct=function(a,date){ return sheetFor(a,date); };
+function sheetState(sh){
+  if(!sh) return {k:'none',txt:'No sheet yet'};
+  const rows=(sh.rows||[]).filter(r=>String(r.need||r.item||'').trim()), done=rows.filter(r=>r.done).length;
+  if(!rows.length) return {k:'empty',txt:'Sheet has no lines'};
+  if(done===rows.length) return {k:'ok',txt:`Ready · all ${rows.length} confirmed`};
+  return {k:'part',txt:`${done} of ${rows.length} confirmed`};
+}
+const kindFor=a=>cat(a)==='mAdult'?'activity':(['eParty','eShow'].includes(cat(a))?'party':'event');
+function lastSheetFor(a,date){
+  const same=sh=>sh.kind!=='purchase'&&String(sh.date||'')!==date&&(sh.rows||[]).length&&(String(sh.actId||'')===String(a.id)||low(sh.title)===low(a.name));
+  const list=reqSheets().filter(same);
+  return list.filter(sh=>String(sh.date||'')<date).sort((x,y)=>String(y.date).localeCompare(String(x.date)))[0]
+      || list.sort((x,y)=>String(x.date).localeCompare(String(y.date)))[0] || null;
+}
+function newSheet(a,date){
+  const last=lastSheetFor(a,date), kind=kindFor(a);
+  const rows=last?(last.rows||[]).map(r=>({need:r.need||'',qty:r.qty||'',dept:r.dept||'',done:false})):reqTemplate(kind).map(r=>({...r,done:false}));
+  return {id:'rq'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),kind,actId:a.id,title:a.name||'',date,time:reqStartTime(a),location:a.location||'',responsible:last?(last.responsible||''):'',note:'',rows,copiedFrom:last?String(last.date||''):''};
+}
+/* "Make sheet" from the programme: fill it from the last time, save, open */
+const prevOpen=window.openReqEditor;
+window.openReqEditor=function(id,actId){
+  if(!id&&actId){
+    const a=(S.activities||[]).find(x=>String(x.id)===String(actId));
+    if(a){
+      const date=(S.reqDate&&wdOf(S.reqDate)===+a.day)?S.reqDate:nextOcc(a);
+      const ex=sheetFor(a,date); if(ex) return prevOpen(ex.id);
+      (async()=>{ try{ const sh=newSheet(a,date); await reqSave(reqSheets().concat([sh])); toastOk(sh.copiedFrom?`Sheet made — lines copied from ${niceDay(sh.copiedFrom)}`:'Sheet made from the standard list'); render(); prevOpen(sh.id); }catch(e){ console.error('V7.13 make sheet',e); toastErr(t('errSave')); } })();
+      return;
+    }
+  }
+  const r=prevOpen(id,actId);
+  if(!id&&!actId&&S.reqDate){ setTimeout(()=>{ const ws=document.querySelectorAll('.modal-bg'), w=ws[ws.length-1], d=w&&w.querySelector('#rq-d'); if(d&&!d.dataset.v713){ d.dataset.v713='1'; d.value=S.reqDate; } },30); }
+  return r;
+};
+/* the requirement day pack prints requirement sheets only (purchase requests have their own export) */
+try{ reqForDate=function(day){ const all=reqSorted().filter(x=>x.kind!=='purchase'); return day?all.filter(x=>String(x.date||'')===day):all; }; }catch(_){}
+
+function reqView(){
+  const td=today(), tmw=addDays(td,1);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(S.reqDate||''))) S.reqDate=td;
+  const date=S.reqDate, wd=wdOf(date);
+  const evs=(S.activities||[]).filter(a=>a&&a.day===wd&&(special(a)||needsSheet(a))).sort((a,b)=>startOf(a)-startOf(b));
+  const need=evs.filter(needsSheet), skip=evs.filter(a=>!needsSheet(a));
+  const linked=new Set(need.map(a=>{ const s=sheetFor(a,date); return s&&String(s.id); }).filter(Boolean));
+  const others=sheetsOn(date).filter(sh=>!linked.has(String(sh.id)));
+  const missing=need.filter(a=>!sheetFor(a,date)), ready=need.filter(a=>sheetState(sheetFor(a,date)).k==='ok').length;
+  const pur=reqSheets().filter(sh=>sh.kind==='purchase').sort((x,y)=>String(y.dateIssued||y.date||'').localeCompare(String(x.dateIssued||x.date||'')));
+  const purShown=S.rq8AllPur?pur:pur.slice(0,5);
+  const past=reqSheets().filter(sh=>sh.kind!=='purchase'&&sh.date&&sh.date!==date).sort((x,y)=>String(y.date).localeCompare(String(x.date))).slice(0,30);
+  const evRow=a=>{ const sh=sheetFor(a,date), st=sheetState(sh);
+    return `<div class="rq8-row ${st.k}"><span class="rq8-time">${E(hhmm(startOf(a)))}</span>
+      <span class="rq8-mid"><b>${E(a.name)}</b><span>${E(KIND_TXT[cat(a)]||'Event')}${a.location?' · '+E(a.location):''}</span>
+        <span class="rq8-st ${st.k}">${E(st.txt)}${sh&&sh.copiedFrom?` · copied from ${E(niceDay(sh.copiedFrom))}`:''}</span>
+        <button type="button" class="rq8-link" data-rq8-skip="${E(a.id)}">No sheet needed</button></span>
+      ${sh?`<button type="button" class="rq8-mini ghost" data-rqopen="${E(sh.id)}">Open</button>`:`<button type="button" class="rq8-mini" data-rq8-make="${E(a.id)}" data-rq8-on="${E(date)}">Make</button>`}</div>`; };
+  const sheetRow=sh=>{ const st=sheetState(sh);
+    return `<button type="button" class="rq8-srow" data-rqopen="${E(sh.id)}"><span class="rq8-mid"><b>${E(sh.title||reqSheetTitle(sh.kind))}</b><span>${E(reqKindLabel(sh.kind))}${sh.time?' · '+E(sh.time):''}${sh.location?' · '+E(sh.location):''}</span><span class="rq8-st ${st.k}">${E(st.txt)}</span></span><span class="rq8-go">›</span></button>`; };
+  const purRow=sh=>{ const items=(sh.rows||[]).filter(r=>String(r.item||r.need||'').trim()).length, d=sh.dateIssued||sh.date;
+    return `<button type="button" class="rq8-srow" data-rqopen="${E(sh.id)}"><span class="rq8-mid"><b>${E(sh.title||'Purchase request')}</b><span>${d?E(relDay(String(d).slice(0,10))):''} · ${items} item${items===1?'':'s'}</span>${sh.urgent?'<span class="rq8-st none">Urgent</span>':''}</span><span class="rq8-go">›</span></button>`; };
+  return `<div class="screen fadein rq8">
+    ${topBar(t('reqTab'),S.session.name)}
+    <p class="rq8-intro">What each event needs, how much, and which department provides it. Make the sheets the day before and tick a line when the department confirms it.</p>
+    <div class="rq8-datebar"><button type="button" class="rq8-nav" data-rq8-shift="-1" aria-label="Previous day">‹</button>
+      <div class="rq8-dates"><button type="button" class="${date===td?'on':''}" data-rq8-date="${E(td)}">Today</button><button type="button" class="${date===tmw?'on':''}" data-rq8-date="${E(tmw)}">Tomorrow</button><label class="rq8-pick ${date!==td&&date!==tmw?'on':''}">${ic('calendar',14)}<span>${date!==td&&date!==tmw?E(niceDay(date).replace(/^\w+,?\s*/,'')):'Pick day'}</span><input type="date" id="rq-date" value="${E(date)}" aria-label="Choose a date"></label></div>
+      <button type="button" class="rq8-nav" data-rq8-shift="1" aria-label="Next day">›</button></div>
+    <h3 class="rq8-day">${E(niceDay(date,true))}</h3>
+    <section class="rq8-card"><div class="rq8-head"><div><b>Events on this day</b><span>${need.length?`${ready} of ${need.length} ready`:'Nothing here needs a sheet'}</span></div>
+      ${missing.length?`<button type="button" class="rq8-mini" id="rq8-makeall" data-rq8-on="${E(date)}">Make ${missing.length} sheet${missing.length>1?'s':''}</button>`:''}</div>
+      ${need.map(evRow).join('')||`<p class="rq8-none">No event, show or party in the programme for this day.</p>`}
+      ${skip.length?`<p class="rq8-skip">No sheet needed — tap one to add it back: ${skip.map(a=>`<button type="button" data-rq8-need="${E(a.id)}">${E(a.name)} +</button>`).join(' ')}</p>`:''}
+    </section>
+    ${others.length?`<section class="rq8-card"><div class="rq8-head"><div><b>Other sheets on this day</b><span>Made by hand for this date</span></div></div>${others.map(sheetRow).join('')}</section>`:''}
+    <div class="rq8-tools"><button class="btn" id="rq-new">${ic('plus',15)} New sheet</button><button class="btn ghost" id="rq-purchase">${ic('plus',15)} Purchase request</button>
+      <button class="btn ghost" id="rq-pack">Export day</button><button class="btn ghost" id="rq-depts">Departments</button><button class="btn ghost" id="rq-tpl">Standard lists</button></div>
+    <section class="rq8-card"><div class="rq8-head"><div><b>Purchase requests</b><span>${pur.length?`${pur.length} request${pur.length>1?'s':''}, newest first`:'Things to buy for the team'}</span></div></div>
+      ${purShown.map(purRow).join('')||`<p class="rq8-none">No purchase requests yet.</p>`}
+      ${pur.length>5?`<button type="button" class="rq8-link more" id="rq8-purall">${S.rq8AllPur?'Show fewer':'Show all '+pur.length}</button>`:''}</section>
+    ${past.length?`<details class="rq8-past"><summary>Sheets on other dates (${past.length})</summary>${past.map(sh=>`<button type="button" class="rq8-srow" data-rqopen="${E(sh.id)}"><span class="rq8-mid"><b>${E(sh.title||reqSheetTitle(sh.kind))}</b><span>${E(relDay(sh.date))} · ${E(sheetState(sh).txt)}</span></span><span class="rq8-go">›</span></button>`).join('')}</details>`:''}
+  </div>`;
+}
+window.requirementsView=reqView;
+try{ requirementsView=reqView; }catch(_){}
+
+/* dashboard "Event preparation": same rules, today's date */
+function prepCard(){
+  const td=today(), di=todayIndex();
+  const evs=(S.activities||[]).filter(a=>a&&a.day===di&&needsSheet(a)).sort((a,b)=>startOf(a)-startOf(b));
+  if(!evs.length) return '';
+  return `<div class="sec"><h3>${ic('clipboard',18)} Event preparation</h3><div class="card rq8-prep">${evs.map(a=>{ const sh=sheetFor(a,td), st=sheetState(sh);
+    return `<div class="rq8-row ${st.k}"><span class="rq8-time">${E(hhmm(startOf(a)))}</span><span class="rq8-mid"><b>${E(a.name)}</b><span>${E(KIND_TXT[cat(a)]||'Event')}${a.location?' · '+E(a.location):''}</span><span class="rq8-st ${st.k}">${E(st.txt)}</span></span>${sh?`<button type="button" class="rq8-mini ghost" data-rqopen="${E(sh.id)}">Open</button>`:`<button type="button" class="rq8-mini" data-rq8-make="${E(a.id)}" data-rq8-on="${E(td)}">Make</button>`}</div>`; }).join('')}</div></div>`;
+}
+window.tonightCard=prepCard;
+try{ tonightCard=prepCard; }catch(_){}
+
+window.__wireSteps.push(function(){
+  const g8=document.getElementById('gs8-all'); if(g8) g8.onclick=()=>{ S.gs8All=!S.gs8All; render(); };
+  document.querySelectorAll('[data-rq8-date]').forEach(b=>b.onclick=()=>{ S.reqDate=b.dataset.rq8Date; render(); });
+  document.querySelectorAll('[data-rq8-shift]').forEach(b=>b.onclick=()=>{ S.reqDate=addDays(S.reqDate||today(),+b.dataset.rq8Shift); render(); });
+  document.querySelectorAll('[data-rq8-make]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); if(b.dataset.rq8On) S.reqDate=b.dataset.rq8On; b.disabled=true; window.openReqEditor(null,b.dataset.rq8Make); });
+  const all=document.getElementById('rq8-makeall');
+  if(all) all.onclick=async()=>{
+    const date=all.dataset.rq8On||S.reqDate||today(), wd=wdOf(date);
+    const list=(S.activities||[]).filter(a=>a&&a.day===wd&&needsSheet(a)&&!sheetFor(a,date)).map(a=>newSheet(a,date));
+    if(!list.length) return; all.disabled=true; all.textContent='Making…';
+    try{ await reqSave(reqSheets().concat(list)); const copied=list.filter(s=>s.copiedFrom).length;
+      toastOk(`${list.length} sheet${list.length>1?'s':''} made${copied?` · ${copied} copied from last time`:''} — open each to check the numbers`); render(); }
+    catch(e){ all.disabled=false; toastErr(t('errSave')); }
+  };
+  document.querySelectorAll('[data-rq8-skip]').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.rq8Skip)); if(!a) return;
+    b.disabled=true; try{ await setNeed(a,false); toastOk(`${a.name}: no sheet needed on any day — tap it under the list to change back`); render(); }catch(err){ b.disabled=false; toastErr(t('errSave')); } });
+  document.querySelectorAll('[data-rq8-need]').forEach(b=>b.onclick=async()=>{ const a=(S.activities||[]).find(x=>String(x.id)===String(b.dataset.rq8Need)); if(!a) return;
+    b.disabled=true; try{ await setNeed(a,true); render(); }catch(err){ b.disabled=false; toastErr(t('errSave')); } });
+  const pa=document.getElementById('rq8-purall'); if(pa) pa.onclick=()=>{ S.rq8AllPur=!S.rq8AllPur; render(); };
+});
+
+const st=document.createElement('style'); st.id='v713-style';
+st.textContent=`
+/* iPhone: date and time boxes kept their own minimum width and ran off the screen */
+input[type=date],input[type=time]{min-width:0;max-width:100%;-webkit-appearance:none;appearance:none}
+input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value{text-align:left}
+.gs8-head{margin:4px 0 18px}.gs8-kicker{margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}
+.gs8-head h2{margin:4px 0 6px;font-family:var(--font-display);font-size:30px;font-weight:400}
+.gs8-intro{margin:0 0 14px;font-size:14px;line-height:1.5;color:var(--muted)}.gs8-intro b{color:var(--ink)}
+.gs8-sec{margin:0 0 20px}.gs8-sec>h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.gs8-n{font-size:11.5px;letter-spacing:0;text-transform:none;padding:2px 9px;border-radius:99px;background:rgba(185,138,92,.16);color:var(--espresso)}.gs8-n.warn{background:rgba(208,133,38,.16);color:#9A5B10}
+.gs8-today{padding:2px 14px}
+.gs8-trow{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.gs8-trow:first-child{border-top:0}
+.gs8-time{flex:none;width:44px;font-weight:700;font-size:14px}
+.gs8-tmid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.gs8-tmid b{font-size:15px}.gs8-tmid>span{font-size:12px;color:var(--muted)}
+.gs8-st{align-self:flex-start;margin-top:3px;font-size:11.5px!important;font-weight:700;padding:3px 9px;border-radius:99px}
+.gs8-st.live{background:rgba(94,138,87,.16);color:#4E7A48!important}.gs8-st.done{background:rgba(185,138,92,.18);color:var(--espresso)!important}.gs8-st.wait{background:var(--bg);color:var(--muted)}
+.gs8-mini{flex:none;border:0;border-radius:99px;padding:8px 14px;background:var(--espresso);color:#fff;font-weight:700;font-size:12.5px;cursor:pointer}.gs8-mini.ghost{background:transparent;color:var(--espresso);border:1px solid var(--line)}
+.gs8-card{margin:0 0 10px;padding:14px 16px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}
+.gs8-card.warn{border-left:4px solid #D08526}.gs8-card.draft,.gs8-card.off{border-left:4px solid #8FA3B8}
+.gs8-ctop{display:flex;align-items:center;justify-content:space-between}
+.gs8-pill{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:99px}
+.gs8-pill.ready{background:rgba(94,138,87,.14);color:#4E7A48}.gs8-pill.warn{background:rgba(208,133,38,.16);color:#9A5B10}.gs8-pill.draft,.gs8-pill.off{background:var(--bg);color:var(--muted)}
+.gs8-move{display:flex;gap:4px}.gs8-move button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.gs8-move button:disabled{opacity:.3}
+.gs8-card h4{margin:8px 0 2px;font-family:var(--font-display);font-size:22px;font-weight:400}
+.gs8-type{margin:0;font-size:12.5px;color:var(--muted)}
+.gs8-why{margin:6px 0 0;font-size:13px;line-height:1.4}.gs8-why.warn{color:#9A5B10;font-weight:600}.gs8-why.draft,.gs8-why.off{color:var(--muted)}
+.gs8-tools{display:flex;gap:6px;margin-top:10px}.gs8-tools button{min-height:34px;padding:6px 13px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:700;font-size:13px;cursor:pointer}
+.gs8-tools .primary{background:var(--espresso);border-color:var(--espresso);color:#fff}.gs8-tools .danger{color:#A44C3D;margin-left:auto}
+.gs8-empty{padding:18px;border-radius:16px;border:1px dashed var(--line);text-align:center;color:var(--muted);font-size:14px}
+.gs8-hist{padding:2px 14px}.gs8-hday{margin:12px 0 2px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--bronze)}
+.gs8-hrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 0;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.gs8-hrow>span:first-child{flex:1;min-width:0;display:flex;flex-direction:column}.gs8-hrow b{font-size:14.5px}.gs8-hrow>span:first-child span{font-size:12px;color:var(--muted)}
+.gs8-win{flex:none;font-weight:700;font-size:13px;color:var(--espresso)}
+.rq8-intro{margin:-2px 0 14px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.rq8-datebar{display:flex;align-items:center;gap:6px}
+.rq8-nav{flex:none;width:40px;height:44px;min-height:44px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-size:20px;cursor:pointer}
+.rq8-dates{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.rq8-dates button,.rq8-pick{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;height:44px;min-height:44px;box-sizing:border-box;white-space:nowrap;border-radius:99px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:13px;cursor:pointer;margin:0;padding:0 8px;text-transform:none;letter-spacing:0}
+.rq8-dates .on{background:var(--espresso);border-color:var(--espresso);color:#fff}
+.rq8-pick{position:relative;overflow:hidden}.rq8-pick input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;padding:0;border:0;cursor:pointer}
+.rq8-day{margin:12px 0 10px;font-family:var(--font-display);font-size:24px;font-weight:400}
+.rq8-card{margin:0 0 14px;padding:4px 14px 8px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}
+.rq8-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0 8px}.rq8-head b{display:block;font-size:15px}.rq8-head span{font-size:12.5px;color:var(--muted)}
+.rq8-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.rq8-time{flex:none;width:44px;font-weight:700;font-size:14px}
+.rq8-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}.rq8-mid b{font-size:15px;line-height:1.25}.rq8-mid>span{font-size:12px;color:var(--muted)}
+.rq8-st{align-self:flex-start;margin-top:2px;font-size:11.5px!important;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--bg)}
+.rq8-st.ok{background:rgba(94,138,87,.14);color:#4E7A48!important}.rq8-st.part{background:rgba(208,133,38,.14);color:#9A5B10!important}.rq8-st.none,.rq8-st.empty{background:rgba(176,57,43,.1);color:#9C2F23!important}
+.rq8-link{align-self:flex-start;border:0;background:none;padding:2px 0 0;min-height:0;margin:0;font-size:11.5px;color:var(--muted);text-decoration:underline;cursor:pointer}.rq8-link.more{display:block;margin:6px auto 4px}
+.rq8-mini{flex:none;border:0;border-radius:99px;padding:8px 14px;background:var(--espresso);color:#fff;font-weight:700;font-size:12.5px;cursor:pointer}.rq8-mini.ghost{background:transparent;color:var(--espresso);border:1px solid var(--line)}.rq8-mini:disabled{opacity:.5}
+.rq8-skip{margin:6px 0 4px;font-size:12px;color:var(--muted);line-height:2}.rq8-skip button{border:1px dashed var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:3px 9px;font-size:12px;cursor:pointer;margin-right:2px}
+.rq8-none{margin:4px 0 10px;font-size:13px;color:var(--muted)}
+.rq8-srow{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.rq8-go{flex:none;font-size:20px;color:var(--muted)}
+.rq8-tools{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:0 0 14px}.rq8-tools .btn{margin:0;padding-left:6px;padding-right:6px;font-size:13px;white-space:nowrap}.rq8-tools .btn:nth-child(n+3){font-size:12.5px;min-height:40px}
+.rq8-tools .btn:nth-child(1),.rq8-tools .btn:nth-child(2){grid-column:span 3}.rq8-tools .btn:nth-child(n+3){grid-column:span 2}
+.rq8-past{margin:0 0 16px;padding:10px 14px;border-radius:18px;border:1px solid var(--line);background:var(--card,#fff)}.rq8-past summary{cursor:pointer;font-weight:700;font-size:14px}
+.rq8-prep{padding:2px 14px}.rq8-prep .rq8-row:first-child{border-top:0}`;
+document.head.appendChild(st);
+})();
+</script>
+
 <script id="aurea-cloud-guard">
 /* ===== V7.0 CLOUD SAVE GUARD (2026-09-25) =====
    1. A change the database refuses is never silent any more: a clear bar says
@@ -22944,6 +23306,8 @@ const J=v=>JSON.stringify(v===undefined?null:v);
 const clone=v=>v===undefined?undefined:JSON.parse(JSON.stringify(v));
 const isObj=v=>!!v && typeof v==='object' && !Array.isArray(v);
 const has=(o,k)=>!!o && Object.prototype.hasOwnProperty.call(o,k);
+/* V7.13: a list whose items all carry a unique id (games, sheets, standards…) is merged item by item */
+const idArr=v=>Array.isArray(v)&&v.every(x=>isObj(x)&&x.id!=null&&String(x.id)!=='')&&new Set(v.map(x=>String(x.id))).size===v.length;
 
 /* ---- a change = which keys (and, inside maps, which entries) moved ---- */
 function diff(a,b){
@@ -22953,6 +23317,13 @@ function diff(a,b){
     if(k===REVK || k==='_mergeV702') continue;
     if(J(a[k])===J(b[k])) continue;
     if(!has(b,k)){ out.del.push(k); continue; }
+    if(idArr(b[k]) && (a[k]==null || idArr(a[k]))){
+      const am=new Map((a[k]||[]).map(x=>[String(x.id),x])), o=b[k].map(x=>String(x.id)), ob=new Set(o), s={}, d=[];
+      for(const x of b[k]){ const id=String(x.id); if(!am.has(id) || J(am.get(id))!==J(x)) s[id]=clone(x); }
+      for(const id of am.keys()) if(!ob.has(id)) d.push(id);
+      out.set[k]={arr:{s,d,o}};
+      continue;
+    }
     if(isObj(b[k]) && (isObj(a[k]) || a[k]==null)){
       const ak=isObj(a[k])?a[k]:{}, s={}, d=[];
       for(const sk of new Set([...Object.keys(ak),...Object.keys(b[k])])){
@@ -22969,6 +23340,16 @@ function apply(obj,p){
   obj=obj||{}; if(!p) return obj;
   for(const k in (p.set||{})){
     const e=p.set[k];
+    if(e.arr){
+      const cur=Array.isArray(obj[k])?obj[k]:[], m=new Map(), loose=[];
+      cur.forEach(x=>{ if(isObj(x)&&x.id!=null) m.set(String(x.id),x); else loose.push(x); });
+      for(const id in e.arr.s) m.set(id,clone(e.arr.s[id]));
+      for(const id of e.arr.d) m.delete(id);
+      const res=[], seen=new Set(), put=id=>{ if(m.has(id)&&!seen.has(id)){ seen.add(id); res.push(m.get(id)); } };
+      e.arr.o.forEach(put); cur.forEach(x=>{ if(isObj(x)&&x.id!=null) put(String(x.id)); }); [...m.keys()].forEach(put);
+      obj[k]=res.concat(loose);
+      continue;
+    }
     if(e.sub){
       const t=isObj(obj[k])?{...obj[k]}:{};
       for(const sk in e.sub.s) t[sk]=clone(e.sub.s[sk]);
@@ -22985,6 +23366,13 @@ function valuesFrom(intent,st){
   for(const k in intent.set){
     if(DAYKEYS.includes(k)){ if(has(st,k)) out.set[k]={v:clone(st[k])}; continue; }
     const e=intent.set[k];
+    if(e.arr){
+      const src=Array.isArray(st[k])?st[k]:[], m=new Map(src.filter(x=>isObj(x)&&x.id!=null).map(x=>[String(x.id),x]));
+      const s={}, d=e.arr.d.filter(id=>!m.has(id));
+      for(const id in e.arr.s){ if(m.has(id)) s[id]=clone(m.get(id)); else d.push(id); }
+      out.set[k]={arr:{s,d,o:[...m.keys()]}};
+      continue;
+    }
     if(e.sub){
       const src=isObj(st[k])?st[k]:{}, s={}, d=[...e.sub.d.filter(sk=>!has(src,sk))];
       for(const sk in e.sub.s){ if(has(src,sk)) s[sk]=clone(src[sk]); else d.push(sk); }
