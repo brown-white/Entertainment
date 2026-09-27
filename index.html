@@ -12623,7 +12623,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.27-scores-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.27-tickets-quiz-v1";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -15408,7 +15408,7 @@ function extraDataset620(kind){
   }
   if(kind==="notifications")return{title:"Announcements / notifications",headers:["Created","Audience","Title","Message"],rows:(S.notes||[]).map(n=>[fmtDate(n.created_at),n.audience||"all",n.title||"",n.text||n.message||""])};
   if(kind==="quiz"){
-    const rows=(S.quizzes||[]).map(q=>[q.quiz_date||"",q.audience||"",q.question||"",q.hint||"",q.answer||q.correct_answer||"", (S.quizReplies||[]).filter(r=>String(r.quiz_id)===String(q.id)).length, q.active===false?"Inactive":"Active"]);
+    const rows=(S.quizzes||[]).map(q=>[q.quiz_date||"",q.audience||"",q.question||"",q.hint||"",q.answer_key||q.answer||q.correct_answer||"", (S.quizReplies||[]).filter(r=>String(r.quiz_id)===String(q.id)).length, q.active===false?"Inactive":"Active"]);
     return{title:"Daily quiz",headers:["Date","Audience","Question","Hint","Correct answer","Replies","Status"],rows};
   }
   if(kind==="buses")return{title:"Bus schedule",headers:["Direction","Time","Note"],rows:(S.buses||[]).map(b=>[b.direction||"",b.time||"",b.note||""])};
@@ -21220,7 +21220,7 @@ openTicketBuyModal=function(tk){
     ${typeof window.__tk7OfferLine==='function'&&window.__tk7OfferLine(tk)?`<p class="tk7-offer">${ic('gift',14)} ${E(window.__tk7OfferLine(tk))}</p>`:''}
     ${cap&&maxLeft<=5?`<p class="tk7-note">${E(g('onlyLeft',{n:maxLeft}))}</p>`:''}
     <label class="tk7-lbl">${E(g('collect'))}</label>
-    <div class="tk7-people">${people.map(p=>`<button type="button" class="tk7-person ${norm(p.name)===norm(who)?'on':''}" data-tk7-who="${E(p.name)}"><span class="av">${p.photo?`<img src="${E(p.photo)}" alt="">`:E(p.name.charAt(0).toUpperCase())}</span><span class="nm">${E(p.name)}</span>${offToday(p.u)?`<span class="off">${E(g('offToday'))}</span>`:''}</button>`).join('')}</div>
+    <div class="tk7-people">${people.map(p=>`<button type="button" class="tk7-person ${norm(p.name)===norm(who)?'on':''}" data-tk7-who="${E(p.name)}"><span class="av">${p.photo?`<img src="${E(p.photo)}" alt="">`:E(window.__initials714?window.__initials714(p.name):p.name.charAt(0).toUpperCase())}</span><span class="nm">${E(p.name)}</span>${offToday(p.u)?`<span class="off">${E(g('offToday'))}</span>`:''}</button>`).join('')}</div>
     <p class="tk7-fine">${E(g('noCharge'))}</p>
     <p class="tk7-err" id="tk7-err"></p>
     <button class="btn" id="tk7-go" ${afterStay?'disabled':''}>${E(existing?g('update',{n:qty}):g('confirm',{n:qty}))}</button>
@@ -21922,7 +21922,7 @@ function staffPanel(){
     ${mine.map(p=>{ const x=stats(p), tk=tkOf(p.ticketId);
       return `<article class="th9-pack" data-pack="${E(p.id)}"><header><span><b>${E(p.name||(tk&&tk.name)||'Tickets')}</b><span>${p.date?E(nice(p.date))+' · ':''}${E(num(p,p.from))} – ${E(num(p,p.to))} · ${E(money(p.price,p.currency))} each</span></span></header>
         ${offersOf(p).length?`<p class="th9-offers">${ic('gift',13)} ${offersOf(p).map(o=>`${o.qty} for ${E(money(o.price,p.currency))}`).join(' · ')}</p>`:''}
-        <div class="th9-count"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>to hand in</span></div>
+        <div class="th9-count"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span>${x.balance<0?`<span class="ahead"><b>${E(money(-x.balance,p.currency))}</b>paid ahead</span>`:`<span class="owe"><b>${E(money(x.balance,p.currency))}</b>to hand in</span>`}</div>
         ${chips(p,true)}
         ${offerButtons(p)}</article>`; }).join('')}
   </section>`;
@@ -21993,7 +21993,7 @@ function openEditor(p){
     <label>Event</label><select id="th9-ev">${tks.map(tk=>`<option value="${E(tk.id)}" ${String(tk.id)===String(p.ticketId)?'selected':''}>${E(tk.name)}</option>`).join('')}<option value="" ${!p.ticketId?'selected':''}>Other…</option></select>
     <div id="th9-namew" style="display:${p.ticketId?'none':'block'}"><label>Name on the list</label><input id="th9-name" value="${E(p.ticketId?'':p.name)}" placeholder="e.g. Tombola"></div>
     <label>For the date</label><input id="th9-date" type="date" value="${E(p.date||'')}">
-    <label>Entertainer</label><div class="th9-ppl">${ppl.map(u=>`<button type="button" class="th9-p ${String(u.username)===String(p.user)?'on':''}" data-u="${E(u.username)}"><span class="av">${E(String(u.display_name||u.username).charAt(0).toUpperCase())}</span><span>${E(u.display_name||u.username)}</span></button>`).join('')}</div>
+    <label>Entertainer</label><div class="th9-ppl">${ppl.map(u=>`<button type="button" class="th9-p ${String(u.username)===String(p.user)?'on':''}" data-u="${E(u.username)}"><span class="av">${E(window.__initials714?window.__initials714(u.display_name||u.username):String(u.display_name||u.username).charAt(0).toUpperCase())}</span><span>${E(u.display_name||u.username)}</span></button>`).join('')}</div>
     <div class="th9-3"><div><label>Batch</label><input id="th9-batch" value="${E(p.batch||'')}" placeholder="—" maxlength="3"></div><div><label>From number</label><input id="th9-from" type="number" min="1" value="${p.from}"></div><div><label>To number</label><input id="th9-to" type="number" min="1" value="${p.to}"></div></div>
     <div class="th9-2"><div><label>Price per ticket</label><input id="th9-price" inputmode="decimal" value="${E(p.price)}"></div><div><label>Currency</label><select id="th9-cur">${['€','$','EGP','£'].map(c=>`<option ${p.currency===c?'selected':''}>${c}</option>`).join('')}</select></div></div>
     <label>Offers <span class="th9-lbl-note">for this event — e.g. 3 tickets for 10 €</span></label><div id="th9-offers">${offersEditor(offersOf(p),p.currency)}</div>
@@ -22074,7 +22074,7 @@ function openPack(id){
     const soldList=Object.entries(m).filter(([k,v])=>v&&v.guest).map(([k,v])=>`<li>${E(num(p,+k))} · ${E(v.guest)}${v.room?' · Room '+E(v.room):''}</li>`).join('');
     box.innerHTML=`<p class="th9-eyebrow">${E(userName(p.user))}</p><h3>${E(p.name||(tk&&tk.name)||'Tickets')}${p.date?' · '+E(nice(p.date)):''}</h3>
       <p class="mini">${E(num(p,p.from))} – ${E(num(p,p.to))} · ${x.n} tickets · ${E(money(p.price,p.currency))} each${p.note?' · '+E(p.note):''}</p>
-      <div class="th9-count big"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span><b>${E(money(x.owed,p.currency))}</b>owed</span><span><b>${E(money(x.paid,p.currency))}</b>paid</span><span class="owe"><b>${E(money(x.balance,p.currency))}</b>still to pay</span></div>
+      <div class="th9-count big"><span><b>${x.sold}</b>sold</span><span><b>${x.left}</b>left</span><span><b>${E(money(x.owed,p.currency))}</b>sales</span><span><b>${E(money(x.paid,p.currency))}</b>paid</span>${x.balance<0?`<span class="ahead"><b>${E(money(-x.balance,p.currency))}</b>paid ahead</span>`:`<span class="owe"><b>${E(money(x.balance,p.currency))}</b>still to pay</span>`}</div>
       ${offersOf(p).length?`<p class="th9-offers">${ic('gift',13)} Offers: ${offersOf(p).map(o=>`${o.qty} for ${E(money(o.price,p.currency))}`).join(' · ')}${x.offersSold?` — ${x.offersSold} sold`:''}</p>`:''}
       <p class="th9-hint">Numbers ${x.closed?'':'— tap to correct a sale'}</p>${chips(p,!x.closed)}${x.closed?'':offerButtons(p)}
       ${soldList?`<details class="th9-det"><summary>Sold to guests through the app</summary><ul>${soldList}</ul></details>`:''}
@@ -22358,7 +22358,7 @@ const ACK='attentionReviewedV628';
 const reviewable=it=>['new stay','last day','arrival','promote'].includes(String(it.tag||'').toLowerCase());
 function fp(it){ const raw=[today(),it.group,it.tag,it.title].join('|'); let h=2166136261; for(let i=0;i<raw.length;i++){ h^=raw.charCodeAt(i); h=Math.imul(h,16777619); } return 'a'+(h>>>0).toString(36); }
 const acks=()=>({...((S.settings&&S.settings[ACK])||{})});
-function items(){ const a=acks(), td=today(); return build().map(it=>({...it,_id:fp(it)})).filter(it=>!(reviewable(it)&&a[it._id]===td)); }
+function items(){ const a=acks(), td=today(); return build().concat(typeof window.__dashExtraV714==='function'?window.__dashExtraV714():[]).map(it=>({...it,_id:fp(it)})).filter(it=>!(reviewable(it)&&a[it._id]===td)); }
 async function ack(it){ if(!reviewable(it)) return; const td=today(), m=acks(), clean={}; m[it._id]=td; Object.keys(m).forEach(k=>{ if(m[k]===td) clean[k]=td; }); try{ await DB.saveSettings({...S.settings,[ACK]:clean}); }catch(_){} }
 window.managerAttentionItemsV628=items;
 window.attentionItems=items;
@@ -23107,6 +23107,514 @@ input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and
 .rq8-past{margin:0 0 16px;padding:10px 14px;border-radius:18px;border:1px solid var(--line);background:var(--card,#fff)}.rq8-past summary{cursor:pointer;font-weight:700;font-size:14px}
 .rq8-prep{padding:2px 14px}.rq8-prep .rq8-row:first-child{border-top:0}`;
 document.head.appendChild(st);
+})();
+</script>
+
+<script id="aurea-tickets-quiz-v714">
+/* ===== V7.14 TICKET EVENTS + QUIZ CENTER — checked & redesigned (2026-09-27) =====
+   TICKET EVENTS — found:
+   1. Scrolling: the page slid up behind the phone clock above the menu bar
+      (every page). The strip above the bar is now covered.
+   2. Packs of events that are over stayed "Open" for ever, even when all the
+      money was in — the list grew every week. Now they say "Event over" with
+      a one-tap Settle, and "Settle all" for every fully paid one.
+   3. Money handed in before the sales were ticked showed "−44 € to collect"
+      and "−44 € to hand in". Now it says "paid ahead".
+   4. Everyone got the avatar letter "M" (from "Mr"). Now real initials: AM.
+   5. The event said "0 sold" while the team had sold 27 paper tickets — it
+      only counted app reservations. Each event now shows app reservations
+      and paper tickets separately, plus how last time went.
+   6. "Owes 44 €" was shown even when everything was paid — now "Sales".
+   QUIZ CENTER — found:
+   7. Only today's question could be written (no date) — no planning ahead
+      and no list of past questions and answers.
+   8. You saw the guests' message "No question today. Come back tomorrow!".
+   9. Guest answers showed a code (G$7$20260921$305) instead of the room.
+  10. Answers were never checked against the correct answer.
+  11. The Excel export's "Correct answer" column was always empty.
+  12. A double tap on Send could save the same answer twice.
+  13. Deleting a question left its answers in the database; two questions on
+      the same day hid one of them without a warning. */
+(function(){
+'use strict';
+if(window.__AUREA_V714) return; window.__AUREA_V714=true;
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LOC={en:'en-GB',de:'de-DE',ru:'ru-RU',pl:'pl-PL',cs:'cs-CZ',nl:'nl-NL',fr:'fr-FR',ar:'ar-EG'};
+const today=()=>hotelDateStr();
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addDays=(s,n)=>{ const d=new Date(s+'T12:00:00'); d.setDate(d.getDate()+n); return ymd(d); };
+function niceDay(s,long,lang){ try{ return new Date(String(s).slice(0,10)+'T12:00:00').toLocaleDateString(LOC[lang||'en']||'en-GB',long?{weekday:'long',day:'numeric',month:'long'}:{weekday:'short',day:'numeric',month:'short'}); }catch(_){ return s; } }
+function relDay(s){ const td=today(); return s===td?'Today':s===addDays(td,1)?'Tomorrow':s===addDays(td,-1)?'Yesterday':niceDay(s); }
+const r2=v=>Math.round((+v||0)*100)/100;
+const money=(v,c)=>{ v=r2(v); const s=Number.isInteger(v)?String(v):v.toFixed(2); return (c==='€'||c==='EGP'||!c)?s+' '+(c||'€'):c+s; };
+const curOf=s=>/\$/.test(s)?'$':/£/.test(s)?'£':/egp|le\b/i.test(s)?'EGP':'€';
+
+/* initials without Mr / Mrs / Ms */
+const TITLE=/^(mr|mrs|ms|miss|mx|dr|mme|mlle|herr|frau|sr|sra|sig|mister)\.?$/i;
+window.__initials714=function(name){
+  const w=String(name||'').trim().split(/\s+/).filter(x=>x&&!TITLE.test(x));
+  if(!w.length) return (String(name||'?').trim().charAt(0)||'?').toUpperCase();
+  return ((w[0].charAt(0))+(w.length>1?w[w.length-1].charAt(0):'')).toUpperCase();
+};
+const ini=window.__initials714;
+
+/* ---------- scrolling: nothing shows behind the phone clock ---------- */
+const onScroll=()=>{ try{ document.body.classList.toggle('v714-scrolled',(window.scrollY||document.documentElement.scrollTop||0)>4); }catch(_){} };
+window.addEventListener('scroll',onScroll,{passive:true}); setTimeout(onScroll,300);
+
+/* ======================= TICKET EVENTS ======================= */
+const TK=()=>window.AUREA_TICKETS_V707||{};
+const PK=()=>window.AUREA_PACKS_V709||null;
+const PAYK='ticketPaysV709', OFK='ticketOffersV710';
+const userName=un=>{ const u=(S.users||[]).find(x=>String(x.username)===String(un)); return u?(u.display_name||u.username):String(un||''); };
+const allPacks=()=>{ const P=PK(); return P?Object.values(P.packs()).filter(Boolean):[]; };
+const stats=p=>PK().stats(p);
+const qtyOf=o=>Math.max(1,+o.qty||1);
+const isPaidO=o=>String(o&&o.status||'').toLowerCase()==='paid';
+const numL=(p,n)=>(p.batch?String(p.batch).toUpperCase()+'-':'')+String(n).padStart(4,'0');
+function offersFor(tk){ const l=((S.settings&&S.settings[OFK])||{})[String(tk.id)]; return (Array.isArray(l)?l:[]).filter(o=>+o.qty>1&&+o.price>0).sort((a,b)=>a.qty-b.qty); }
+const isOver=p=>!!p.date&&p.date<today();
+const dayName=d=>{ try{ return (t('days')||[])[+d]||''; }catch(_){ return ''; } };
+
+function evCard(tk){
+  const T=TK(), d=T.nextDate?T.nextDate(tk):today(), cur=curOf(tk.price);
+  const orders=(T.allOrders?T.allOrders():(S.orders||[])).filter(o=>String(o.ticket_id)===String(tk.id)&&T.orderDate&&T.orderDate(o)===d);
+  const res=orders.reduce((n,o)=>n+qtyOf(o),0), paidN=orders.filter(isPaidO).reduce((n,o)=>n+qtyOf(o),0), cap=+tk.capacity||0;
+  const mine=allPacks().filter(p=>String(p.ticketId)===String(tk.id));
+  const nextP=mine.filter(p=>p.date===d), pn=nextP.reduce((s,p)=>s+stats(p).n,0), ps=nextP.reduce((s,p)=>s+stats(p).sold,0);
+  const lastDate=mine.filter(p=>p.date&&p.date<d&&p.date<=today()).map(p=>p.date).sort().pop()||'';
+  let last='';
+  if(lastDate){ const lp=mine.filter(p=>p.date===lastDate), x=lp.map(stats);
+    const sold=x.reduce((s,y)=>s+y.sold,0), sales=r2(x.reduce((s,y)=>s+y.owed,0)), paid=r2(x.reduce((s,y)=>s+y.paid,0)), due=r2(x.reduce((s,y)=>s+Math.max(0,y.balance),0));
+    last=`<p class="t14-last"><span>Last time · ${E(niceDay(lastDate))}</span><b>${sold} sold · ${E(money(sales,lp[0].currency||cur))} sales</b>${due>0?`<em>${E(money(due,lp[0].currency||cur))} still to collect</em>`:paid?`<i>all collected</i>`:''}</p>`; }
+  const offs=offersFor(tk);
+  const people=[...new Set(nextP.map(p=>userName(p.user)))];
+  return `<article class="t14-ev">
+    <div class="t14-ev-head"><img src="${E(tk.image||(typeof IMG!=='undefined'&&IMG.show)||'')}" alt="" loading="lazy">
+      <span class="t14-ev-t"><b>${E(tk.name||'Ticket event')}</b><span>Every ${E(dayName(tk.day))} · ${E(tk.time||'')}${tk.location?' · '+E(tk.location):''}</span>
+      <span class="t14-price">${tk.price?E(tk.price):'No price'}${offs.map(o=>` · <i>${o.qty} for ${E(money(o.price,cur))}</i>`).join('')}</span></span></div>
+    <div class="t14-next"><span class="t14-date"><small>Next</small><b>${E(niceDay(d))}</b></span>
+      <span class="t14-lines">
+        <span class="t14-line ${nextP.length?'ok':'none'}">${ic('ticket',14)}<span>${nextP.length?`Paper tickets: <b>${pn}</b> with ${E(people.join(', '))} · <b>${ps}</b> sold`:'Paper tickets: none given out yet'}</span></span>
+        <span class="t14-line">${ic('users',14)}<span>App reservations: <b>${res}</b>${cap?' of '+cap:''}${res?` · ${paidN} paid`:''}${res-paidN>0?` · <em>${res-paidN} to collect</em>`:''}</span></span>
+      </span></div>
+    ${last}
+    <div class="t14-act"><button type="button" class="t14-b main" data-t14-give="${E(tk.id)}">${ic('plus',14)} Give tickets</button><button type="button" class="t14-b" data-tk7-orders="${E(tk.id)}">App orders</button><button type="button" class="t14-b" data-tedit="${E(tk.id)}">Edit</button></div>
+  </article>`;
+}
+
+function todo(){
+  const out=[], open=allPacks().filter(p=>!stats(p).closed);
+  /* money to collect, per person */
+  const owe=new Map(); open.forEach(p=>{ const x=stats(p); if(x.balance>0){ const k=p.user; const o=owe.get(k)||{v:0,cur:p.currency||'€',id:p.id,over:false}; o.v=r2(o.v+x.balance); o.over=o.over||isOver(p); owe.set(k,o); } });
+  owe.forEach((o,un)=>out.push(`<div class="t14-todo warn"><span>${ic('ticket',15)}</span><span><b>Collect ${E(money(o.v,o.cur))} from ${E(userName(un))}</b><small>${o.over?'The event is over':'Tickets sold so far'}</small></span><button type="button" class="t14-b main" data-th9-open="${E(o.id)}">Money received</button></div>`));
+  /* finished and fully paid */
+  const done=open.filter(p=>isOver(p)&&stats(p).balance<=0);
+  if(done.length){ const back=done.reduce((s,p)=>s+stats(p).left,0);
+    out.push(`<div class="t14-todo"><span>${ic('check',15)}</span><span><b>${done.length} pack${done.length>1?'s':''} from past events fully paid</b><small>${back?`Take back ${back} unsold ticket${back>1?'s':''}, then settle`:'Nothing left over — settle to tidy the list'}</small></span><button type="button" class="t14-b main" id="t14-settleall">Settle ${done.length>1?'all '+done.length:''}</button></div>`); }
+  /* an event that uses packs, coming up in 2 days, with no tickets out */
+  const T=TK(), td=today();
+  (S.tickets||[]).forEach(tk=>{ const d=T.nextDate?T.nextDate(tk):''; if(!d||d>addDays(td,2)) return;
+    const used=allPacks().some(p=>String(p.ticketId)===String(tk.id)); if(!used) return;
+    if(allPacks().some(p=>String(p.ticketId)===String(tk.id)&&p.date===d)) return;
+    out.push(`<div class="t14-todo"><span>${ic('calendar',15)}</span><span><b>${E(tk.name)} ${E(relDay(d).toLowerCase()==='today'?'today':relDay(d)==='Tomorrow'?'tomorrow':'on '+niceDay(d))}</b><small>No paper tickets with the team yet</small></span><button type="button" class="t14-b main" data-t14-give="${E(tk.id)}">Give tickets</button></div>`); });
+  /* guests who reserved in the app and did not pay yet */
+  const pend=(T.allOrders?T.allOrders():(S.orders||[])).filter(o=>!isPaidO(o)&&T.orderDate&&(T.orderDate(o)||'')>=td);
+  if(pend.length){ const q=pend.reduce((n,o)=>n+qtyOf(o),0); out.push(`<div class="t14-todo"><span>${ic('users',15)}</span><span><b>${q} app reservation${q>1?'s':''} not paid yet</b><small>Guests pay the team member they chose</small></span><button type="button" class="t14-b" id="t14-pending">Open</button></div>`); }
+  return out.join('');
+}
+
+function packsSection(){
+  const all=allPacks(), mode=S.th9Mode||'open';
+  const open=all.filter(p=>!stats(p).closed), shut=all.filter(p=>stats(p).closed);
+  const list=(mode==='open'?open:shut).slice().sort((a,b)=>mode==='open'?String(a.date||'').localeCompare(String(b.date||'')):String(b.date||'').localeCompare(String(a.date||''))).slice(0,mode==='open'?200:40);
+  const xs=open.map(stats), cur=(open[0]&&open[0].currency)||'€';
+  const left=xs.reduce((s,x)=>s+x.left,0), sold=xs.reduce((s,x)=>s+x.sold,0), due=r2(xs.reduce((s,x)=>s+Math.max(0,x.balance),0)), got=r2(xs.reduce((s,x)=>s+x.paid,0));
+  const by=new Map(); list.forEach(p=>{ if(!by.has(p.user)) by.set(p.user,[]); by.get(p.user).push(p); });
+  const person=([un,ps])=>{ const bal=r2(ps.reduce((s,p)=>s+stats(p).balance,0)), c=ps[0].currency||'€', n=ps.reduce((s,p)=>s+stats(p).sold,0);
+    const chip=mode!=='open'?'':bal>0?`<span class="t14-chip warn">Owes ${E(money(bal,c))}</span>`:bal<0?`<span class="t14-chip info">Paid ahead ${E(money(-bal,c))}</span>`:`<span class="t14-chip ok">All paid</span>`;
+    return `<div class="t14-person"><header><span class="t14-av">${E(ini(userName(un)))}</span><span class="t14-pn"><b>${E(userName(un))}</b><small>${ps.length} pack${ps.length>1?'s':''} · ${n} sold</small></span>${chip}</header>
+      ${ps.map(p=>{ const x=stats(p), tk=(S.tickets||[]).find(k=>String(k.id)===String(p.ticketId)), pct=x.n?Math.round(x.sold/x.n*100):0, over=isOver(p);
+        const tag=x.closed?`<span class="t14-tag">Settled${x.returned?` · ${x.returned} back`:''}</span>`:over?`<span class="t14-tag over">Event over</span>`:p.date===today()?`<span class="t14-tag now">Today</span>`:'';
+        return `<div class="t14-pk"><button type="button" class="t14-pack" data-th9-open="${E(p.id)}">
+          <span class="t14-pack-top"><b>${E(p.name||(tk&&tk.name)||'Tickets')}${p.date?' · '+E(niceDay(p.date)):''}</b>${tag}</span>
+          <span class="t14-pack-sub">${E(numL(p,p.from))} – ${E(numL(p,p.to))} · ${x.n} × ${E(money(p.price,p.currency))}</span>
+          <span class="t14-bar"><i style="width:${pct}%"></i></span>
+          <span class="t14-kv"><span>Sold <b>${x.sold}</b></span><span>Left <b>${x.left}</b></span><span>Sales <b>${E(money(x.owed,p.currency))}</b>${x.offersSold?` <i>${x.offersSold} offer${x.offersSold>1?'s':''}</i>`:''}</span><span>Paid <b>${E(money(x.paid,p.currency))}</b></span></span></button>
+          ${!x.closed&&over&&x.balance<=0?`<button type="button" class="t14-settle" data-t14-settle="${E(p.id)}">${ic('check',14)} Settle${x.left?` · ${x.left} ticket${x.left>1?'s':''} back`:''}</button>`:''}</div>`; }).join('')}
+    </div>`; };
+  return `<section class="t14-packs">
+    <div class="t14-sh"><div><p class="t14-kick">With the team</p><h3>Ticket packs</h3></div><button class="t14-b main" id="th9-new">${ic('plus',14)} Give tickets</button></div>
+    <p class="t14-intro">Hand an entertainer numbered tickets. They tap each one they sell on their phone; you see who has to pay you and how much.</p>
+    ${open.length?`<div class="t14-stats"><span><b>${left}</b>Unsold, with the team</span><span><b>${sold}</b>Sold</span><span class="warn"><b>${E(money(due,cur))}</b>To collect</span><span class="ok"><b>${E(money(got,cur))}</b>Collected</span></div>`:''}
+    <div class="t14-seg"><button class="${mode==='open'?'on':''}" data-th9-mode="open">Open <i>${open.length}</i></button><button class="${mode==='closed'?'on':''}" data-th9-mode="closed">Settled <i>${shut.length}</i></button></div>
+    ${by.size?[...by.entries()].map(person).join(''):`<div class="t14-empty">${mode==='open'?'No tickets are out with the team. Tap <b>Give tickets</b> on an event.':'No settled packs yet.'}</div>`}
+  </section>`;
+}
+
+function ticketsPage(){
+  const T=TK(), list=(S.tickets||[]).slice().sort((a,b)=>{ const da=T.nextDate?T.nextDate(a):'', db=T.nextDate?T.nextDate(b):''; return (da+String(a.time||'')).localeCompare(db+String(b.time||'')); });
+  const td=PK()?todo():'';
+  return `<div class="t14">
+    <div class="t14-top"><div><h3>Ticket events</h3><p>Weekly events with paper tickets. Guests reserve in the app and pay the team; packs are the numbered tickets you give out.</p></div></div>
+    ${td?`<section class="t14-todos"><p class="t14-kick">To do</p>${td}</section>`:''}
+    ${list.length?list.map(evCard).join(''):`<div class="t14-empty">No ticket events yet. Add the first one — for example Tombola or Bingo.</div>`}
+    <button class="btn ghost t14-add" id="btn-addticket">${ic('plus',16)} Add ticket event</button>
+    ${PK()?packsSection():''}
+    <div class="t14-tools">${allPacks().length?`<button class="btn ghost" id="th9-xls">${ic('download',16)} Export packs to Excel</button>`:''}<button class="btn ghost" id="tk655-open" data-ticket-studio-page="program-tickets">${ic('download',16)} Ticket Production Studio</button></div>
+  </div>`;
+}
+window.managerTicketsInner=ticketsPage;
+try{ managerTicketsInner=ticketsPage; }catch(_){}
+
+async function settle(list){
+  const P=PK(); if(!P||!list.length) return;
+  try{ await P.flushSales(); }catch(_){}
+  const pays={...((S.settings&&S.settings[PAYK])||{})};
+  list.forEach(p=>{ const x=P.stats(p), c=pays[p.id]||{}; pays[p.id]={...c,payments:Array.isArray(c.payments)?c.payments:[],closedAt:Date.now(),returned:x.left}; });
+  await DB.saveSettings({...S.settings,[PAYK]:pays});
+}
+function giveFor(tkId){
+  const P=PK(); if(!P) return; P.openEditor(null);
+  setTimeout(()=>{ const ws=document.querySelectorAll('.modal-bg'), w=ws[ws.length-1], sel=w&&w.querySelector('#th9-ev'); if(sel&&String(sel.value)!==String(tkId)){ sel.value=String(tkId); sel.dispatchEvent(new Event('change')); } },30);
+}
+
+/* ======================= QUIZ ======================= */
+const MARK='quizMarksV714', WIN='quizWinnersV714', REVEAL='quizRevealV714';
+const QT={
+ en:{yq:"Yesterday's question",ans:'Answer',mine:'Your answer'},
+ de:{yq:'Frage von gestern',ans:'Antwort',mine:'Deine Antwort'},
+ ru:{yq:'Вчерашний вопрос',ans:'Ответ',mine:'Ваш ответ'},
+ pl:{yq:'Wczorajsze pytanie',ans:'Odpowiedź',mine:'Twoja odpowiedź'},
+ cs:{yq:'Včerejší otázka',ans:'Odpověď',mine:'Vaše odpověď'},
+ nl:{yq:'Vraag van gisteren',ans:'Antwoord',mine:'Jouw antwoord'},
+ fr:{yq:"Question d'hier",ans:'Réponse',mine:'Votre réponse'},
+ ar:{yq:'سؤال الأمس',ans:'الإجابة',mine:'إجابتك'}};
+const qt=k=>(QT[S.lang]||QT.en)[k]||QT.en[k];
+const quizzesOn=(aud,date)=>(S.quizzes||[]).filter(q=>q&&q.audience===aud&&String(q.quiz_date||'').slice(0,10)===date&&q.active!==false);
+const repliesOf=q=>(S.quizReplies||[]).filter(r=>String(r.quiz_id)===String(q.id));
+const qById=id=>(S.quizzes||[]).find(q=>String(q.id)===String(id))||null;
+const revealOn=()=>!(S.settings&&S.settings[REVEAL]===false);
+/* answer check: accents, capitals, "&"/"and", number words and small typos do not matter */
+const NUMW={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,twenty:20,hundred:100,eins:1,ein:1,eine:1,zwei:2,drei:3,vier:4,funf:5,fuenf:5,sechs:6,sieben:7,acht:8,neun:9,zehn:10,elf:11,zwolf:12,zwoelf:12,zwanzig:20,hundert:100};
+const STOP=new Set(['the','a','an','and','der','die','das','und','le','la','les','et','de','het','een','en']);
+function nrm(s){ return String(s||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/ß/g,'ss').replace(/&/g,' and ').replace(/[^a-z0-9Ѐ-ӿ؀-ۿ]+/g,' ').split(' ').filter(w=>w&&!STOP.has(w)).map(w=>NUMW[w]!=null?String(NUMW[w]):w).join(' ').trim(); }
+function lev(a,b){ if(Math.abs(a.length-b.length)>2) return 9; const d=[]; for(let i=0;i<=a.length;i++){ d[i]=[i]; } for(let j=1;j<=b.length;j++) d[0][j]=j; for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[a.length][b.length]; }
+function autoRight(ans,key){
+  const ks=String(key||'').split(/\s*[\/;|]\s*|\s+or\s+|\s+oder\s+/i).map(nrm).filter(Boolean); if(!ks.length) return null;
+  const a=nrm(ans); if(!a) return false;
+  return ks.some(k=>a===k||(a.split(' ').length<=k.split(' ').length+4&&(' '+a+' ').includes(' '+k+' '))||(k.length>=5&&lev(a,k)<=(k.length>=9?2:1)));
+}
+window.__quizAutoRight714=autoRight;
+function verdict(q,r){ const m=(S.settings&&S.settings[MARK])||{}; if(Object.prototype.hasOwnProperty.call(m,String(r.id))) return !!m[String(r.id)]; return autoRight(r.answer,q.answer_key); }
+function whoLabel(r){
+  if(r.audience==='guest'||/^g\$/.test(String(r.who||''))){ let room=String(r.who||''); try{ const L=window.AUREA_GUEST_LIFECYCLE; if(L&&L.visibleRoom) room=L.visibleRoom(r.who); }catch(_){} return {name:r.who_name||'Guest',sub:room?'Room '+room:''}; }
+  return {name:r.who_name||r.who||'Team member',sub:''};
+}
+const hm=s=>{ try{ return new Date(s).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }catch(_){ return ''; } };
+
+function quizCard(q,aud,date,opts){
+  opts=opts||{};
+  const label=aud==='guest'?'Guests':'Team';
+  const dup=quizzesOn(aud,date).length>1;
+  if(!q) return `<article class="qz4-card none"><header><span class="qz4-aud ${aud}">${label}</span></header>
+    <p class="qz4-miss">No ${aud==='guest'?'guest':'team'} question ${date===today()?'today':'on '+E(niceDay(date))}${date===today()?` — ${aud==='guest'?'guests':'the team'} see “come back tomorrow”`:''}.</p>
+    <button type="button" class="qz4-b main" data-qz4-new="${aud}|${date}">${ic('plus',14)} Write ${date===today()?"today's":'the'} question</button></article>`;
+  const rs=repliesOf(q).slice().sort((a,b)=>String(a.created_at||'').localeCompare(String(b.created_at||'')));
+  const hasKey=!!String(q.answer_key||'').trim();
+  const right=rs.filter(r=>verdict(q,r)===true).length;
+  const win=((S.settings&&S.settings[WIN])||{})[String(q.id)], wr=win&&rs.find(r=>String(r.id)===String(win));
+  const shown=opts.all||S.qz4All===String(q.id)?rs:rs.slice(0,12);
+  return `<article class="qz4-card">
+    <header><span class="qz4-aud ${aud}">${label}</span><span class="qz4-count">${rs.length} answer${rs.length===1?'':'s'}${hasKey&&rs.length?` · <b>${right} right</b>`:''}</span></header>
+    ${dup?`<p class="qz4-warn">There are ${quizzesOn(aud,date).length} ${label.toLowerCase()} questions on this day — only one is shown to them. Delete the extra one.</p>`:''}
+    <h4>${E(q.question)}</h4>${q.hint?`<p class="qz4-hint">Hint: ${E(q.hint)}</p>`:''}
+    <p class="qz4-key">${hasKey?`Correct answer: <b>${E(q.answer_key)}</b>${revealOn()?' <small>· shown to them the next day</small>':' <small>· only you see it</small>'}`:`<span class="qz4-nokey">No correct answer saved — answers cannot be checked.</span>`}</p>
+    ${wr?`<p class="qz4-win">🏆 Winner: <b>${E(whoLabel(wr).name)}</b>${whoLabel(wr).sub?' · '+E(whoLabel(wr).sub):''}</p>`:''}
+    <div class="qz4-tools"><button type="button" class="qz4-b" data-qz4-edit="${E(q.id)}">Edit</button>${rs.length?`<button type="button" class="qz4-b main" data-qz4-win="${E(q.id)}">${wr?'Pick again':'Pick a winner'}</button>`:''}<button type="button" class="qz4-b danger" data-qz4-del="${E(q.id)}">Delete</button></div>
+    ${rs.length?`<div class="qz4-ans">${shown.map(r=>{ const v=verdict(q,r), w=whoLabel(r);
+      return `<div class="qz4-a ${v===true?'ok':v===false?'no':''} ${wr&&String(wr.id)===String(r.id)?'win':''}"><button type="button" class="qz4-mark" data-qz4-mark="${E(r.id)}|${E(q.id)}" aria-label="Right or wrong">${v===true?'✓':v===false?'✗':'?'}</button>
+        <span class="qz4-am"><span class="qz4-who"><b>${E(w.name)}</b>${w.sub?' · '+E(w.sub):''}${r.created_at?' · '+E(hm(r.created_at)):''}</span><span class="qz4-txt">${E(r.answer)}</span></span></div>`; }).join('')}
+      ${rs.length>12&&!opts.all?`<button type="button" class="qz4-more" data-qz4-all="${E(q.id)}">${S.qz4All===String(q.id)?'Show fewer':'Show all '+rs.length+' answers'}</button>`:''}
+      ${hasKey?'<p class="qz4-tip">Tap ✓ / ✗ to correct the automatic check.</p>':''}</div>`
+      :`<p class="qz4-none">No answers yet.</p>`}
+  </article>`;
+}
+
+function quizCenter(){
+  const td=today();
+  const days=[1,2,3,4,5,6,7].map(i=>addDays(td,i));
+  const slot=(aud,date)=>{ const l=quizzesOn(aud,date), q=l[0];
+    return q?`<button type="button" class="qz4-slot ok ${l.length>1?'dup':''}" data-qz4-edit="${E(q.id)}"><i>${aud==='guest'?'Guests':'Team'}</i>${E(String(q.question).slice(0,60))}${l.length>1?' <em>×'+l.length+'</em>':''}</button>`
+      :`<button type="button" class="qz4-slot add" data-qz4-new="${aud}|${date}">+ ${aud==='guest'?'Guests':'Team'}</button>`; };
+  const gPlan=days.filter(d=>quizzesOn('guest',d).length).length, sPlan=days.filter(d=>quizzesOn('staff',d).length).length;
+  const past=(S.quizzes||[]).filter(q=>q&&String(q.quiz_date||'').slice(0,10)<td).sort((a,b)=>String(b.quiz_date).localeCompare(String(a.quiz_date))).slice(0,40);
+  return `<div class="screen fadein qz4">
+    ${topBar(t('quizCenter'),niceDay(td,true))}
+    ${hubBack()}
+    <p class="qz4-intro">One question a day for the guests and one for the team. Plan the week ahead — each question appears on its own date, and the app ticks the right answers for you.</p>
+    <h3 class="qz4-h">Today</h3>
+    ${quizCard(quizzesOn('guest',td)[0],'guest',td)}
+    ${quizCard(quizzesOn('staff',td)[0],'staff',td)}
+    <h3 class="qz4-h">Next 7 days <span>Guests ${gPlan}/7 · Team ${sPlan}/7</span></h3>
+    <div class="qz4-plan">${days.map(d=>`<div class="qz4-day"><span class="qz4-dl"><b>${E(niceDay(d).split(/,?\s/)[0])}</b><small>${E(niceDay(d).replace(/^\S+,?\s*/,''))}</small></span><span class="qz4-slots">${slot('guest',d)}${slot('staff',d)}</span></div>`).join('')}</div>
+    <label class="qz4-toggle"><input type="checkbox" id="qz4-reveal" ${revealOn()?'checked':''}><span><b>Show yesterday's answer</b><small>Guests and the team see the correct answer of yesterday's question under today's.</small></span></label>
+    ${past.length?`<details class="qz4-past"><summary>Past questions (${past.length})</summary>${past.map(q=>{ const rs=repliesOf(q), right=rs.filter(r=>verdict(q,r)===true).length, win=((S.settings&&S.settings[WIN])||{})[String(q.id)], wr=win&&rs.find(r=>String(r.id)===String(win));
+      return `<button type="button" class="qz4-prow" data-qz4-past="${E(q.id)}"><span class="qz4-aud ${q.audience}">${q.audience==='guest'?'Guests':'Team'}</span><span class="qz4-pm"><b>${E(q.question)}</b><small>${E(relDay(String(q.quiz_date).slice(0,10)))} · ${rs.length} answer${rs.length===1?'':'s'}${q.answer_key?' · '+right+' right':''}${wr?' · 🏆 '+E(whoLabel(wr).name):''}</small></span><span class="qz4-go">›</span></button>`; }).join('')}</details>`:''}
+  </div>`;
+}
+window.quizCenterView=quizCenter;
+try{ quizCenterView=quizCenter; }catch(_){}
+
+function openQuiz(q,aud,date){
+  const editing=!!q;
+  q=q||{audience:aud||'guest',question:'',hint:'',answer_key:'',quiz_date:date||today(),active:true};
+  let who=q.audience;
+  const w=baseModal(`<div class="qz4-ed"><h3>${editing?'Edit question':'New question'}</h3>
+    <label>For</label><div class="qz4-segm"><button type="button" data-aud="guest" class="${who==='guest'?'on':''}">Guests</button><button type="button" data-aud="staff" class="${who==='staff'?'on':''}">Team</button></div>
+    <label>Day</label><input id="qz4-d" type="date" value="${E(String(q.quiz_date||today()).slice(0,10))}">
+    <label>Question</label><textarea id="qz4-q" rows="3" placeholder="e.g. How many pyramids stand in Giza?">${E(q.question||'')}</textarea>
+    <label>Hint <span class="qz4-opt">optional</span></label><input id="qz4-h" value="${E(q.hint||'')}" placeholder="e.g. Count the big ones">
+    <label>Correct answer</label><input id="qz4-k" value="${E(q.answer_key||'')}" placeholder="e.g. 3 / three">
+    <p class="qz4-help">The app ticks the right answers automatically — capitals, accents, “&” and numbers written as words do not matter. Several right answers: separate them with / .</p>
+    <p class="qz4-err" id="qz4-err"></p>
+    <button class="btn" id="qz4-save">${editing?'Save changes':'Save question'}</button><button class="btn ghost" id="qz4-x">Close</button></div>`);
+  const $q=s=>w.querySelector(s);
+  w.querySelectorAll('[data-aud]').forEach(b=>b.onclick=()=>{ who=b.dataset.aud; w.querySelectorAll('[data-aud]').forEach(x=>x.classList.toggle('on',x===b)); });
+  $q('#qz4-x').onclick=()=>w.remove();
+  $q('#qz4-save').onclick=async()=>{
+    const rec={audience:who,question:$q('#qz4-q').value.trim(),hint:$q('#qz4-h').value.trim(),answer_key:$q('#qz4-k').value.trim(),quiz_date:$q('#qz4-d').value||today(),active:true};
+    if(!rec.question){ $q('#qz4-err').textContent='Write the question.'; return; }
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(rec.quiz_date)){ $q('#qz4-err').textContent='Choose the day.'; return; }
+    const other=quizzesOn(rec.audience,rec.quiz_date).filter(x=>!editing||String(x.id)!==String(q.id));
+    let target=editing?q.id:null, drop=null;
+    if(other.length){
+      const ok=await confirmAction({question:`There is already a ${rec.audience==='guest'?'guest':'team'} question on ${niceDay(rec.quiz_date)}`,detail:`“${String(other[0].question).slice(0,90)}” — replace it with this one?`,confirmLabel:'Replace it'});
+      if(!ok) return;
+      if(editing) drop=other[0]; else target=other[0].id;
+    }
+    const b=$q('#qz4-save'); b.disabled=true; b.textContent='Saving…';
+    try{
+      if(target!=null) rec.id=target;
+      await DB.saveQuiz(rec);
+      if(drop) await delQuiz(drop);
+      w.remove(); toastOk(rec.quiz_date===today()?'Saved — '+(rec.audience==='guest'?'guests':'the team')+' can answer now':'Saved for '+niceDay(rec.quiz_date)); render();
+    }catch(e){ console.error('V7.14 quiz save',e); b.disabled=false; b.textContent='Try again'; $q('#qz4-err').textContent=t('errSave'); }
+  };
+}
+async function delQuiz(q){
+  await DB.deleteQuiz(q.id);
+  if(typeof REMOTE!=='undefined'&&REMOTE){ try{ await sb('quiz_replies?quiz_id=eq.'+encodeURIComponent(q.id),{method:'DELETE'}); }catch(_){} }
+  S.quizReplies=(S.quizReplies||[]).filter(r=>String(r.quiz_id)!==String(q.id));
+}
+function openPast(q){
+  const aud=q.audience, d=String(q.quiz_date).slice(0,10);
+  const w=baseModal(`<div class="qz4 qz4-pastm"><p class="qz4-kick">${E(niceDay(d,true))}</p>${quizCard(q,aud,d,{all:true})}<button class="btn ghost" id="qz4-px">Close</button></div>`);
+  w.querySelector('#qz4-px').onclick=()=>w.remove();
+  wireQuiz(w,()=>{ w.remove(); openPast(qById(q.id)||q); });
+}
+async function pickWinner(q){
+  const rs=repliesOf(q); if(!rs.length) return;
+  let pool=rs.filter(r=>verdict(q,r)===true);
+  if(!pool.length){ if(!await confirmAction({question:'Nobody has a right answer',detail:String(q.answer_key||'').trim()?'Pick a winner from everyone who answered?':'There is no correct answer saved. Pick a winner from everyone who answered?',confirmLabel:'Pick from all'})) return; pool=rs; }
+  const cur=((S.settings&&S.settings[WIN])||{})[String(q.id)];
+  if(pool.length>1&&cur) pool=pool.filter(r=>String(r.id)!==String(cur));
+  const r=pool[Math.floor(Math.random()*pool.length)];
+  await DB.saveSettings({...S.settings,[WIN]:{...((S.settings&&S.settings[WIN])||{}),[String(q.id)]:String(r.id)}});
+  const wl=whoLabel(r); toastOk('Winner: '+wl.name+(wl.sub?' · '+wl.sub:''));
+}
+async function toggleMark(rid,qid){
+  const q=qById(qid), r=(S.quizReplies||[]).find(x=>String(x.id)===String(rid)); if(!q||!r) return;
+  const now=verdict(q,r), auto=autoRight(r.answer,q.answer_key), next=now===true?false:true;
+  const m={...((S.settings&&S.settings[MARK])||{})};
+  if(next===auto) delete m[String(rid)]; else m[String(rid)]=next?1:0;
+  await DB.saveSettings({...S.settings,[MARK]:m});
+}
+function wireQuiz(root,redraw){
+  const again=redraw||(()=>render());
+  root.querySelectorAll('[data-qz4-new]').forEach(b=>b.onclick=()=>{ const [a,d]=b.dataset.qz4New.split('|'); openQuiz(null,a,d); });
+  root.querySelectorAll('[data-qz4-edit]').forEach(b=>b.onclick=()=>{ const q=qById(b.dataset.qz4Edit); if(q) openQuiz(q); });
+  root.querySelectorAll('[data-qz4-del]').forEach(b=>b.onclick=async()=>{ const q=qById(b.dataset.qz4Del); if(!q) return; const n=repliesOf(q).length;
+    if(!await confirmAction({question:'Delete this question?',detail:`“${String(q.question).slice(0,90)}”${n?` and its ${n} answer${n>1?'s':''}`:''}. This cannot be undone.`,confirmLabel:'Delete',danger:true})) return;
+    b.disabled=true; try{ await delQuiz(q); toastOk(t('deleted')); const m=b.closest('.modal-bg'); if(m) m.remove(); render(); }catch(e){ b.disabled=false; toastErr(t('errSave')); } });
+  root.querySelectorAll('[data-qz4-win]').forEach(b=>b.onclick=async()=>{ const q=qById(b.dataset.qz4Win); if(!q) return; b.disabled=true; try{ await pickWinner(q); again(); }catch(e){ b.disabled=false; toastErr(t('errSave')); } });
+  root.querySelectorAll('[data-qz4-mark]').forEach(b=>b.onclick=async()=>{ const [rid,qid]=b.dataset.qz4Mark.split('|'); b.disabled=true; try{ await toggleMark(rid,qid); again(); }catch(e){ b.disabled=false; toastErr(t('errSave')); } });
+  root.querySelectorAll('[data-qz4-all]').forEach(b=>b.onclick=()=>{ S.qz4All=S.qz4All===b.dataset.qz4All?'':b.dataset.qz4All; again(); });
+}
+
+/* guests + team: today's question, and yesterday's answer underneath */
+function belongsToMe(r){
+  if(!S.session) return false;
+  if(S.session.role==='guest'){ try{ const L=window.AUREA_GUEST_LIFECYCLE, a=(S.accounts||[]).find(x=>x.id===S.session.accountId); if(a&&L&&L.rowBelongs&&L.rowBelongs(r,a,'who')) return true; }catch(_){} return String(r.who)===String(S.session.room||''); }
+  return String(r.who)===String(S.session.username||'');
+}
+function playerView(){
+  const aud=S.session&&S.session.role==='guest'?'guest':'staff', td=today();
+  const q=quizzesOn(aud,td)[0]||null, y=quizzesOn(aud,addDays(td,-1))[0]||null;
+  const mine=q?repliesOf(q).find(belongsToMe):null;
+  const ym=y?repliesOf(y).find(belongsToMe):null;
+  const yCard=(y&&revealOn()&&String(y.answer_key||'').trim())?`<div class="card qz4-y"><span class="type-meta">${E(qt('yq'))}</span><p class="qz4-yq">${E(y.question)}</p><p class="qz4-ya">${E(qt('ans'))}: <b>${E(y.answer_key)}</b></p>${ym?`<p class="mini">${E(qt('mine'))}: ${E(ym.answer)}</p>`:''}</div>`:'';
+  if(!q) return `<div class="screen fadein">${topBar(t('quizTab'),'')}<div class="empty"><div class="big">${ic('sparkle',30)}</div>${t('quizNone')}</div>${yCard}</div>`;
+  return `<div class="screen fadein">${topBar(t('quizTab'),'')}
+    <div class="card quizcard"><span class="type-meta">${t('quizToday')}</span><h3 class="quiz-q">${E(q.question)}</h3>${q.hint?`<p class="mini">${E(q.hint)}</p>`:''}
+      ${mine?`<div class="quiz-done">${ic('check',18)} <div><b>${t('quizDone')}</b><span class="mini">${t('quizMine')}: ${E(mine.answer)}</span></div></div>`
+        :`<textarea id="qz-ans" rows="3" placeholder="${E(t('quizAnswerPh'))}" style="margin-top:12px"></textarea><button class="btn" id="qz-send">${ic('sparkle',16)} ${t('quizSend')}</button>`}</div>
+    ${yCard}</div>`;
+}
+window.quizView=playerView;
+try{ quizView=playerView; }catch(_){}
+let sending=false;
+async function sendAnswer(){
+  if(sending) return;
+  const aud=S.session&&S.session.role==='guest'?'guest':'staff', q=quizzesOn(aud,today())[0]; if(!q) return;
+  if(repliesOf(q).some(belongsToMe)){ toastWarn(t('quizAlready')); render(); return; }
+  const el=document.querySelector('#qz-ans'), val=el?el.value.trim():'';
+  if(!val){ toastWarn(t('fieldRequired')); return; }
+  sending=true; const btn=document.querySelector('#qz-send'); if(btn) btn.disabled=true;
+  try{ await DB.addQuizReply({quiz_id:q.id,who:aud==='guest'?String(S.session.room||''):String(S.session.username||''),who_name:S.session.name||'',audience:aud,answer:val}); toastOk(t('quizDone')); render(); }
+  catch(e){ toastErr(t('errSave')); if(btn) btn.disabled=false; }
+  finally{ sending=false; }
+}
+window.submitQuizAnswer=sendAnswer;
+try{ submitQuizAnswer=sendAnswer; }catch(_){}
+
+/* new answers appear while the manager has the Quiz Center open */
+let qBusy=false;
+setInterval(async()=>{
+  if(qBusy||document.hidden||!S.session||S.session.role!=='manager'||S.tab!=='quiz'||typeof REMOTE==='undefined'||!REMOTE) return;
+  if(document.querySelector('.modal-bg')||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) return;
+  qBusy=true;
+  try{ const [qz,qr]=await Promise.all([sb('quizzes?select=*&order=quiz_date.desc'),sb('quiz_replies?select=*&order=created_at.desc')]);
+    if(Array.isArray(qz)&&Array.isArray(qr)&&(JSON.stringify(qz)!==JSON.stringify(S.quizzes)||JSON.stringify(qr)!==JSON.stringify(S.quizReplies))){ S.quizzes=qz; S.quizReplies=qr; if(typeof safeToRender!=='function'||safeToRender()) render(); } }
+  catch(_){}
+  qBusy=false;
+},20000);
+
+/* dashboard: quiz + ticket packs */
+window.__dashExtraV714=function(){
+  const out=[]; if(!S.session||S.session.role!=='manager') return out;
+  const it=(group,tone,icon,title,detail,tag,nav,rank,list)=>({group,tone,icon,title,detail,tag,nav,rank,list:list||[]});
+  try{
+    const on=typeof featureOn!=='function'||featureOn('quiz');
+    const td=today(), used=(S.quizzes||[]).some(q=>q&&q.audience==='guest'&&String(q.quiz_date||'')>=addDays(td,-14));
+    if(on&&used){
+      if(!quizzesOn('guest',td).length&&nowMinutes()<20*60) out.push(it('today','warn','sparkle','No guest quiz question today','Guests see “come back tomorrow”','Quiz',{tab:'quiz',sub:'',extra:{}},30));
+      if(!quizzesOn('guest',addDays(td,1)).length) out.push(it('tomorrow','warn','sparkle','No guest quiz question for tomorrow','Write it now — it appears in the morning','Quiz',{tab:'quiz',sub:'',extra:{}},31));
+    }
+  }catch(_){}
+  try{
+    if(PK()){ const done=allPacks().filter(p=>!stats(p).closed&&isOver(p)&&stats(p).balance<=0);
+      if(done.length){ const back=done.reduce((s,p)=>s+stats(p).left,0); out.push(it('today','warn','ticket',`${done.length} ticket pack${done.length>1?'s':''} to settle`,back?`Take back ${back} unsold ticket${back>1?'s':''} — the money is all in`:'The money is all in','Tickets',{tab:'program',sub:'tickets',extra:{}},32,done.map(p=>`${userName(p.user)} · ${p.name||'Tickets'} ${niceDay(p.date)}`))); } }
+  }catch(_){}
+  return out;
+};
+
+/* ---------- wiring ---------- */
+window.__wireSteps.push(function(){
+  document.querySelectorAll('[data-t14-give]').forEach(b=>b.onclick=()=>giveFor(b.dataset.t14Give));
+  document.querySelectorAll('[data-t14-settle]').forEach(b=>b.onclick=async()=>{ const p=(PK()&&PK().packs()[b.dataset.t14Settle]); if(!p) return; const x=stats(p);
+    if(x.left&&!await confirmAction({question:'Settle this pack?',detail:`${userName(p.user)} gives back ${x.left} unsold ticket${x.left>1?'s':''} (${numL(p,p.to-x.left+1)} …). The money is all in.`,confirmLabel:'Settle'})) return;
+    b.disabled=true; try{ await settle([p]); toastOk('Pack settled'); render(); }catch(e){ b.disabled=false; toastErr(t('errSave')); } });
+  const sa=document.getElementById('t14-settleall');
+  if(sa) sa.onclick=async()=>{ const list=allPacks().filter(p=>!stats(p).closed&&isOver(p)&&stats(p).balance<=0); if(!list.length) return; const back=list.reduce((s,p)=>s+stats(p).left,0);
+    if(!await confirmAction({question:`Settle ${list.length} pack${list.length>1?'s':''}?`,detail:back?`Make sure you have the ${back} unsold ticket${back>1?'s':''} back: ${[...new Set(list.map(p=>userName(p.user)))].join(', ')}.`:'All of them are paid.',confirmLabel:'Settle'})) return;
+    sa.disabled=true; try{ await settle(list); toastOk(list.length+' pack'+(list.length>1?'s':'')+' settled'); render(); }catch(e){ sa.disabled=false; toastErr(t('errSave')); } };
+  const pe=document.getElementById('t14-pending'); if(pe) pe.onclick=()=>{ S.tk7Mode='pending'; S.tk7Search=''; S.tab='guests'; S.sub=S.sub||{}; S.sub.guests='tickets'; render(); window.scrollTo(0,0); };
+  const qz=document.querySelector('.screen.qz4'); if(qz) wireQuiz(qz);
+  document.querySelectorAll('[data-qz4-past]').forEach(b=>b.onclick=()=>{ const q=qById(b.dataset.qz4Past); if(q) openPast(q); });
+  const rv=document.getElementById('qz4-reveal'); if(rv) rv.onchange=async()=>{ rv.disabled=true; try{ await DB.saveSettings({...S.settings,[REVEAL]:rv.checked}); toastOk(rv.checked?"Yesterday's answer is shown":"Yesterday's answer is hidden"); }catch(e){ toastErr(t('errSave')); } rv.disabled=false; render(); };
+});
+
+const css=document.createElement('style'); css.id='v714-style';
+css.textContent=`
+body.v714-scrolled::after{content:'';position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top) + 6px);background:var(--bg);z-index:5;pointer-events:none}
+.t14-top h3{margin:2px 0 4px;font-family:var(--font-display);font-size:26px;font-weight:400}.t14-top p{margin:0 0 14px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.t14-kick{margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}
+.t14-todos{margin:0 0 16px;padding:12px 14px 6px;border-radius:20px;background:rgba(208,133,38,.08);border:1px solid rgba(208,133,38,.3)}
+.t14-todo{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(208,133,38,.22)}.t14-todo:first-of-type{border-top:0}
+.t14-todo>span:first-child{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--card,#fff);color:var(--espresso)}
+.t14-todo.warn>span:first-child{color:#9A5B10}
+.t14-todo>span:nth-child(2){flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.t14-todo b{font-size:14px;line-height:1.3}.t14-todo small{font-size:12px;color:var(--muted)}
+.t14-b{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:36px;border:1px solid var(--line);border-radius:99px;padding:7px 13px;background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:12.5px;cursor:pointer;margin:0;white-space:nowrap}
+.t14-b.main{background:var(--espresso);border-color:var(--espresso);color:#fff}.t14-b:disabled{opacity:.5}
+.t14-ev{margin:0 0 12px;padding:14px;border-radius:22px;background:var(--card,#fff);border:1px solid var(--line)}
+.t14-ev-head{display:flex;gap:12px;align-items:center}.t14-ev-head img{flex:none;width:62px;height:62px;border-radius:16px;object-fit:cover;background:var(--bg)}
+.t14-ev-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.t14-ev-t b{font-family:var(--font-display);font-size:22px;font-weight:400;line-height:1.1}.t14-ev-t>span{font-size:12.5px;color:var(--muted)}
+.t14-price{color:var(--espresso)!important;font-weight:700}.t14-price i{font-style:normal;color:#9A5B10}
+.t14-next{display:flex;gap:12px;margin:12px 0 0;padding:12px;border-radius:16px;background:var(--bg)}
+.t14-date{flex:none;width:74px;display:flex;flex-direction:column;justify-content:center;padding-right:10px;border-right:1.5px dashed var(--line);line-height:1.2}
+.t14-date small{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--bronze)}.t14-date b{font-size:14px}
+.t14-lines{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.t14-line{display:flex;align-items:flex-start;gap:6px;font-size:12.5px;line-height:1.35;color:var(--ink)}.t14-line svg{flex:none;margin-top:1px;color:var(--bronze)}.t14-line.none{color:var(--muted)}.t14-line em{font-style:normal;color:#B06A12;font-weight:700}
+.t14-last{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:10px 2px 0;font-size:12.5px}.t14-last span{color:var(--muted)}.t14-last em{font-style:normal;font-weight:700;color:#B06A12}.t14-last i{font-style:normal;color:#4E7A48;font-weight:700}
+.t14-act{display:flex;gap:6px;margin-top:12px}.t14-act .t14-b{flex:1;justify-content:center}.t14-act .t14-b.main{flex:1.4}
+.t14-add{margin:0 0 6px}
+.t14-empty{padding:16px;border-radius:16px;border:1px dashed var(--line);text-align:center;color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.t14-packs{margin:16px 0 12px;padding:16px 14px;border-radius:22px;background:var(--card,#fff);border:1px solid var(--line)}
+.t14-sh{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.t14-sh h3{margin:0;font-family:var(--font-display);font-size:24px;font-weight:400}
+.t14-intro{margin:6px 0 12px;font-size:13px;line-height:1.5;color:var(--muted)}
+.t14-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 12px}.t14-stats span{display:flex;flex-direction:column;gap:3px;padding:10px 4px;border-radius:14px;background:var(--bg);text-align:center;font-size:10.5px;font-weight:700;line-height:1.25;color:var(--muted)}
+.t14-stats b{font-family:var(--font-display);font-size:21px;font-weight:400;color:var(--ink)}.t14-stats .warn b{color:#B06A12}.t14-stats .ok b{color:#4E7A48}
+.t14-seg{display:flex;gap:6px;margin:0 0 6px}.t14-seg button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:7px 14px;font-weight:700;font-size:13px;cursor:pointer;margin:0}
+.t14-seg button i{font-style:normal;font-size:11px;padding:1px 7px;border-radius:99px;background:rgba(185,138,92,.18)}.t14-seg button.on{background:var(--espresso);border-color:var(--espresso);color:#fff}.t14-seg button.on i{background:rgba(255,255,255,.2)}
+.t14-person{padding:8px 0 4px;border-top:1px solid var(--line);margin-top:8px}.t14-person>header{display:flex;align-items:center;gap:10px;padding:6px 0}
+.t14-av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(185,138,92,.18);color:var(--espresso);font-weight:700;font-size:13px;letter-spacing:.02em}
+.t14-pn{flex:1;min-width:0;display:flex;flex-direction:column}.t14-pn b{font-size:15px}.t14-pn small{font-size:12px;color:var(--muted)}
+.t14-chip{flex:none;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px}.t14-chip.warn{background:rgba(208,133,38,.14);color:#9A5B10}.t14-chip.ok{background:rgba(94,138,87,.14);color:#4E7A48}.t14-chip.info{background:rgba(70,110,160,.12);color:#3D5E86}
+.t14-pk{margin:6px 0}
+.t14-pack{display:flex;flex-direction:column;gap:4px;width:100%;text-align:left;padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;margin:0}
+.t14-pack-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.t14-pack-top b{font-size:14px}
+.t14-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(185,138,92,.16);color:var(--espresso)}.t14-tag.over{background:rgba(176,57,43,.1);color:#9C2F23}.t14-tag.now{background:rgba(94,138,87,.14);color:#4E7A48}
+.t14-pack-sub{font-size:12px;color:var(--muted)}
+.t14-bar{display:block;height:5px;border-radius:9px;background:rgba(185,138,92,.18);overflow:hidden}.t14-bar i{display:block;height:100%;background:var(--bronze);border-radius:9px}
+.t14-kv{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px;font-size:12px;color:var(--muted)}.t14-kv b{color:var(--ink);font-size:13px}.t14-kv i{font-style:normal;color:#9A5B10;font-size:11px}
+.t14-settle{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin:6px 0 0;padding:9px;border-radius:12px;border:1px dashed #4E7A48;background:rgba(94,138,87,.08);color:#4E7A48;font-weight:700;font-size:13px;cursor:pointer}
+.t14-tools{display:flex;flex-direction:column}
+@media (max-width:370px){.t14-stats{grid-template-columns:repeat(2,1fr)}.t14-kv{grid-template-columns:repeat(2,auto)}.t14-act{flex-wrap:wrap}}
+.qz4-intro{margin:4px 0 16px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.qz4-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:18px 0 10px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}.qz4-h span{font-size:12px;letter-spacing:0;text-transform:none;font-weight:600;color:var(--muted)}
+.qz4-kick{margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze)}
+.qz4-card{margin:0 0 12px;padding:14px 16px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}.qz4-card.none{border-style:dashed}
+.qz4-card>header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.qz4-aud{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:rgba(185,138,92,.16);color:var(--espresso)}.qz4-aud.staff{background:rgba(70,110,160,.12);color:#3D5E86}
+.qz4-count{font-size:12.5px;color:var(--muted)}.qz4-count b{color:#4E7A48}
+.qz4-card h4{margin:10px 0 2px;font-family:var(--font-display);font-size:22px;font-weight:400;line-height:1.2}
+.qz4-hint{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.qz4-key{margin:8px 0 0;font-size:13px}.qz4-key small{color:var(--muted)}.qz4-nokey{color:#9A5B10;font-weight:600}
+.qz4-win{margin:8px 0 0;padding:8px 10px;border-radius:12px;background:rgba(208,160,40,.14);font-size:13.5px}
+.qz4-warn{margin:8px 0 0;padding:8px 10px;border-radius:12px;background:rgba(176,57,43,.08);color:#9C2F23;font-size:12.5px;font-weight:600}
+.qz4-miss{margin:8px 0 10px;font-size:13.5px;color:var(--muted)}
+.qz4-tools{display:flex;gap:6px;margin:12px 0 4px;flex-wrap:wrap}
+.qz4-b{display:inline-flex;align-items:center;gap:5px;min-height:36px;border:1px solid var(--line);border-radius:99px;padding:7px 14px;background:transparent;color:var(--ink);font-weight:700;font-size:13px;cursor:pointer;margin:0}
+.qz4-b.main{background:var(--espresso);border-color:var(--espresso);color:#fff}.qz4-b.danger{color:#A44C3D;margin-left:auto}.qz4-b:disabled{opacity:.5}
+.qz4-ans{margin-top:8px;border-top:1px solid var(--line)}
+.qz4-a{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}.qz4-a.win{background:rgba(208,160,40,.08)}
+.qz4-mark{flex:none;width:30px;height:30px;min-height:30px;min-width:30px;line-height:1;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--muted);font-weight:800;font-size:14px;cursor:pointer;padding:0;margin:0}
+.qz4-a.ok .qz4-mark{background:rgba(94,138,87,.16);border-color:rgba(94,138,87,.4);color:#4E7A48}.qz4-a.no .qz4-mark{background:rgba(176,57,43,.08);border-color:rgba(176,57,43,.3);color:#9C2F23}
+.qz4-am{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.qz4-who{font-size:12px;color:var(--muted)}.qz4-who b{color:var(--ink);font-size:13px}.qz4-txt{font-size:14.5px;word-break:break-word}
+.qz4-more{display:block;margin:8px auto 0;border:0;background:none;color:var(--espresso);font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer}
+.qz4-tip{margin:8px 0 0;font-size:11.5px;color:var(--muted)}.qz4-none{margin:10px 0 2px;font-size:13px;color:var(--muted)}
+.qz4-plan{border-radius:20px;background:var(--card,#fff);border:1px solid var(--line);padding:2px 12px}
+.qz4-day{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}.qz4-day:first-child{border-top:0}
+.qz4-dl{flex:none;width:52px;display:flex;flex-direction:column;line-height:1.15}.qz4-dl b{font-size:14px}.qz4-dl small{font-size:11.5px;color:var(--muted)}
+.qz4-slots{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.qz4-slot{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:12px;line-height:1.3;text-align:left;cursor:pointer;margin:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%}
+.qz4-slot i{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--bronze)}
+.qz4-slot.ok{display:block}.qz4-slot.ok i{display:block}
+.qz4-slot.add{border-style:dashed;background:transparent;color:var(--muted);font-weight:700;align-items:center;justify-content:center;flex-direction:row}
+.qz4-slot.dup{border-color:rgba(176,57,43,.5)}.qz4-slot em{font-style:normal;color:#9C2F23;font-weight:800}
+.qz4-toggle{display:flex;align-items:flex-start;gap:10px;margin:14px 0;padding:12px 14px;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400}
+.qz4-toggle input{flex:none;width:20px;height:20px;margin:2px 0 0;accent-color:var(--espresso)}.qz4-toggle span{display:flex;flex-direction:column;gap:2px}.qz4-toggle b{font-size:14px;color:var(--ink)}.qz4-toggle small{font-size:12px;color:var(--muted);line-height:1.4}
+.qz4-past{margin:0 0 16px;padding:10px 14px;border-radius:18px;background:var(--card,#fff);border:1px solid var(--line)}.qz4-past summary{cursor:pointer;font-weight:700;font-size:14px;padding:4px 0}
+.qz4-prow{display:flex;align-items:center;gap:10px;width:100%;padding:10px 0;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;cursor:pointer;margin:0}
+.qz4-pm{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.qz4-pm b{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.qz4-pm small{font-size:12px;color:var(--muted)}.qz4-go{flex:none;font-size:20px;color:var(--muted)}
+.qz4-segm{display:grid;grid-template-columns:1fr 1fr;gap:6px}.qz4-segm button{min-height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;cursor:pointer;margin:0}.qz4-segm button.on{background:var(--espresso);border-color:var(--espresso);color:#fff}
+.qz4-opt{font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)}
+.qz4-help{margin:6px 0 4px;font-size:12px;line-height:1.45;color:var(--muted)}.qz4-err{min-height:1px;margin:4px 0;color:#B0392B;font-size:13px;font-weight:600}
+.qz4-y{margin-top:12px}.qz4-yq{margin:6px 0 4px;font-size:15px}.qz4-ya{margin:0 0 4px;font-size:14px}
+.qz4-pastm .qz4-card{border:0;padding:0}
+.th9-count .ahead b{color:#3D5E86}`;
+document.head.appendChild(css);
 })();
 </script>
 
