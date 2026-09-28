@@ -9955,7 +9955,8 @@ function applyRealtimeChange(payload){
       }
       return false;
     }
-    if(GUEST_TABLES.includes(table)) return true;           // old guest tables: nothing to show
+    if(table==="ticket_orders" && window.AUREA_GUEST_TICKETS_V723 && typeof window.AUREA_GUEST_TICKETS_V723.applyRealtime==="function") return window.AUREA_GUEST_TICKETS_V723.applyRealtime(payload);
+    if(GUEST_TABLES.includes(table)) return true;           // other legacy guest tables: nothing to show
     if(table==="messages" && payload.new && !String(payload.new.room||"").startsWith("staff:")) return true;
     const key=RT_TABLES[table]; if(!key || !Array.isArray(S[key])) return false;
     const list=S[key];
@@ -17366,7 +17367,7 @@ function packsSection(){
     </div>`; };
   return `<section class="t14-packs">
     <div class="t14-sh"><div><p class="t14-kick">With the team</p><h3>Ticket packs</h3></div><button class="t14-b main" id="th9-new">${ic('plus',14)} Give tickets</button></div>
-    <p class="t14-intro">Hand an entertainer numbered tickets. They tap each one they sell on their phone; you see who has to pay you and how much.</p>
+    <p class="t14-intro">Hand each entertainer their numbered paper tickets. Guest-created orders are assigned automatically; the entertainer only confirms the physical handover.</p>
     ${open.length?`<div class="t14-stats"><span><b>${left}</b>Unsold, with the team</span><span><b>${sold}</b>Sold</span><span class="warn"><b>${E(money(due,cur))}</b>To collect</span><span class="ok"><b>${E(money(got,cur))}</b>Collected</span></div>`:''}
     <div class="t14-seg"><button class="${mode==='open'?'on':''}" data-th9-mode="open">Open <i>${open.length}</i></button><button class="${mode==='closed'?'on':''}" data-th9-mode="closed">Settled <i>${shut.length}</i></button></div>
     ${by.size?[...by.entries()].map(person).join(''):`<div class="t14-empty">${mode==='open'?'No tickets are out with the team. Tap <b>Give tickets</b> on an event.':'No settled packs yet.'}</div>`}
@@ -17377,7 +17378,7 @@ function ticketsPage(){
   const T=TK(), list=(S.tickets||[]).slice().sort((a,b)=>{ const da=T.nextDate?T.nextDate(a):'', db=T.nextDate?T.nextDate(b):''; return (da+String(a.time||'')).localeCompare(db+String(b.time||'')); });
   const td=PK()?todo():'';
   return `<div class="t14">
-    <div class="t14-top"><div><h3>Ticket events</h3><p>Weekly events with paper tickets. Guests see them on the Explore page and buy the paper ticket from the team; packs are the numbered tickets you give out.</p></div></div>
+    <div class="t14-top"><div><h3>Ticket events</h3><p>Weekly Tombola, Bingo and Disco tickets. Guests create the order themselves on Explore and choose the entertainer who will hand over the physical ticket.</p></div></div>
     ${td?`<section class="t14-todos"><p class="t14-kick">To do</p>${td}</section>`:''}
     ${list.length?list.map(evCard).join(''):`<div class="t14-empty">No ticket events yet. Add the first one — for example Tombola or Bingo.</div>`}
     <button class="btn ghost t14-add" id="btn-addticket">${ic('plus',16)} Add ticket event</button>
@@ -19770,23 +19771,25 @@ const CUR={EUR:'€',USD:'$',GBP:'£'};
 function priceText(p){ const s=String(p||'').trim(); if(!s) return ''; if(!/^\d+([.,]\d{1,2})?$/.test(s)) return s; const c=String((S.settings&&S.settings.currency)||'').trim()||'€'; return s+' '+(CUR[c.toUpperCase()]||c); }
 function tixSection(){
   let on=true; try{ on=featureOn('tickets'); }catch(_){}
-  const list=(S.tickets||[]).filter(Boolean); if(!on||!list.length) return '';
+  const list=(S.tickets||[]).filter(tk=>{ const x=String((tk&&(tk.ticketType||tk.type||tk.name))||'').toLowerCase(); return /tombola|bingo|disco|club/.test(x); }); if(!on||!list.length) return '';
   const T=window.AUREA_TICKETS_V707||{}, days=t('days')||[];
   const nd=tk=>{ try{ return T.nextDate?T.nextDate(tk):''; }catch(_){ return ''; } };
   const sorted=list.slice().sort((a,b)=>(nd(a)+String(a.time||'')).localeCompare(nd(b)+String(b.time||'')));
   return `<section class="ex21-sec" id="ex21-tix">
-    <div class="ex21-h"><h2>${ic('ticket',19)} ${E(L('tix'))}</h2><p>${E(L('tixSub'))}</p></div>
-    <div class="ex21-tixlist">${sorted.map(tk=>{ const d=nd(tk), offer=(typeof window.__tk7OfferLine==='function'?window.__tk7OfferLine(tk):''), price=priceText(tk.price);
+    <div class="ex21-h"><h2>${ic('ticket',19)} ${E(L('tix'))}</h2><p>Choose your ticket event. The price is shown only after your room, nationality and phone number are confirmed.</p></div>
+    <div class="ex21-tixlist">${sorted.map(tk=>{ const d=nd(tk);
       return `<article class="ex21-tk">${tk.image?`<img src="${E(tk.image)}" alt="" loading="lazy">`:''}
         <div class="ex21-tkb"><b>${E(tk.name||'')}</b>
           <span>${ic('calendar',13)} ${E(L('every',{d:days[+tk.day]||''}))}${tk.time?' · '+E(tk.time):''}</span>
           ${tk.location?`<span>${ic('pin',13)} ${E(tk.location)}</span>`:''}
           ${d?`<span class="nx">${E(L('nextOn',{d:niceDate(d,{weekday:'long',day:'numeric',month:'long'})}))}</span>`:''}
           ${tk.desc?`<p>${E(tk.desc)}</p>`:''}
-          <div class="ex21-price">${price?`<strong>${E(price)}</strong><small>${E(L('perTicket'))}</small>`:''}${offer?`<em>${E(offer)}</em>`:''}</div>
-          <p class="ex21-buy">${ic('users',13)} ${E(L('buy'))}</p></div></article>`; }).join('')}</div>
+          <div class="gto23-lockedprice">${ic('lock',13)} Price available after guest details are confirmed</div>
+          <button type="button" class="ex21-buybtn" data-gto23-buy="${E(tk.id)}">${ic('ticket',13)} Buy / request ticket</button></div></article>`; }).join('')}</div>
+    ${window.AUREA_GUEST_TICKETS_V723?window.AUREA_GUEST_TICKETS_V723.guestOrdersHtml():''}
   </section>`;
 }
+
 function teamList(){
   return (S.users||[]).filter(u=>u&&(u.role==='staff'||u.role==='manager')&&u.active!==false&&!hasLeft(u)&&!isAttOnly(u))
     .sort((a,b)=>(a.role==='manager'?0:1)-(b.role==='manager'?0:1)||(+a.number||99)-(+b.number||99)||String(a.display_name||a.username).localeCompare(String(b.display_name||b.username)));
@@ -19921,6 +19924,7 @@ function wireExplore(){
   root.querySelectorAll('[data-ex21-day]').forEach(b=>b.onclick=()=>{ X.day=+b.dataset.ex21Day; X.week=false; redraw('ex21-prog'); });
   root.querySelectorAll('[data-ex21-week]').forEach(b=>b.onclick=()=>{ X.week=true; redraw('ex21-prog'); });
   root.querySelectorAll('[data-ex21-act]').forEach(b=>b.onclick=()=>openDetail((S.activities||[]).find(a=>String(a.id)===String(b.dataset.ex21Act))));
+  root.querySelectorAll('[data-gto23-buy]').forEach(b=>b.onclick=()=>{ const tk=(S.tickets||[]).find(x=>String(x.id)===String(b.dataset.gto23Buy)); if(tk&&window.AUREA_GUEST_TICKETS_V723) window.AUREA_GUEST_TICKETS_V723.openGuestOrder(tk); });
   root.querySelectorAll('[data-ex21-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); const el=document.getElementById(a.dataset.ex21Go); if(el) try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){ el.scrollIntoView(); } });
   const pr=Q('#ex21-print'); if(pr) pr.onclick=()=>{ if(typeof window.printInfoBoardProgram635==='function') window.printInfoBoardProgram635({scope:'week',includeWho:false}); };
   const ap=Q('#ex21-allph'); if(ap) ap.onclick=()=>{ X.allPhotos=!X.allPhotos; redraw(X.allPhotos?null:'ex21-photos'); };
@@ -20203,5 +20207,366 @@ window.addEventListener('unhandledrejection',e=>console.error('AUREA unhandled p
 window.AUREA_TEAMONLY_V721={version:'7.21',L,exploreView,loginView,teamSignIn,dayInfo};
 })();
 </script>
+<script id="aurea-guest-ticket-flow-v723">
+/* ===== AUREA V7.23 · GUEST-CREATED TICKET ORDERS (2026-09-28) =====
+   Guest flow: event info (without price) -> room -> nationality -> automatic dial code -> phone -> confirm details -> price/quantity -> entertainer -> confirm.
+   Entertainers do not create or claim sales. They only see orders guests assigned to them and confirm physical handover.
+   Uses the existing ticket_orders table and existing V7.09 paper-ticket packs without requiring a database schema change.
+*/
+(function(){
+'use strict';
+if(window.__AUREA_GUEST_TICKETS_V723) return;
+window.__AUREA_GUEST_TICKETS_V723=true;
+
+const VERSION='7.23';
+const PREFIX='@A723@';
+const OWNKEY='aurea.guest.ticketOrders.v723';
+const PROFILEKEY='aurea.guest.ticketProfile.v723';
+const LOCALKEY='aurea.local.ticketOrders.v723';
+const HK='ticketHandoutsV709', SK='ticketSalesV709', PK='ticketPaysV709', OK='ticketOffersV710';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const obj=v=>(v&&typeof v==='object'&&!Array.isArray(v))?v:{};
+const arr=v=>Array.isArray(v)?v:[];
+const same=(a,b)=>String(a??'').trim().toLowerCase()===String(b??'').trim().toLowerCase();
+const r2=n=>Math.round((+n||0)*100)/100;
+const money=(n,c)=>{n=r2(n);const x=Number.isInteger(n)?String(n):n.toFixed(2);return c==='€'||c==='EUR'?x+' €':c==='EGP'?x+' EGP':c==='USD'||c==='$'?'$'+x:c==='GBP'||c==='£'?'£'+x:x+' '+(c||'€');};
+const nowIso=()=>new Date().toISOString();
+const icon=(name,size)=>{try{return typeof ic==='function'?ic(name,size||15):'';}catch(_){return '';}};
+const notify=(kind,msg)=>{try{ if(kind==='ok'&&typeof toastOk==='function') return toastOk(msg); if(kind==='err'&&typeof toastErr==='function') return toastErr(msg); if(typeof toast==='function') return toast(msg); }catch(_){} };
+
+/* ISO / nationality / international dial-code list. The nationality drives the prefix; no guessing from the room or device. */
+const COUNTRIES=[
+['AF','Afghanistan','+93'],['AL','Albania','+355'],['DZ','Algeria','+213'],['AD','Andorra','+376'],['AO','Angola','+244'],['AG','Antigua and Barbuda','+1'],['AR','Argentina','+54'],['AM','Armenia','+374'],['AU','Australia','+61'],['AT','Austria','+43'],['AZ','Azerbaijan','+994'],['BS','Bahamas','+1'],['BH','Bahrain','+973'],['BD','Bangladesh','+880'],['BB','Barbados','+1'],['BY','Belarus','+375'],['BE','Belgium','+32'],['BZ','Belize','+501'],['BJ','Benin','+229'],['BT','Bhutan','+975'],['BO','Bolivia','+591'],['BA','Bosnia and Herzegovina','+387'],['BW','Botswana','+267'],['BR','Brazil','+55'],['BN','Brunei','+673'],['BG','Bulgaria','+359'],['BF','Burkina Faso','+226'],['BI','Burundi','+257'],['KH','Cambodia','+855'],['CM','Cameroon','+237'],['CA','Canada','+1'],['CV','Cape Verde','+238'],['CF','Central African Republic','+236'],['TD','Chad','+235'],['CL','Chile','+56'],['CN','China','+86'],['CO','Colombia','+57'],['KM','Comoros','+269'],['CG','Congo','+242'],['CD','DR Congo','+243'],['CR','Costa Rica','+506'],['CI','Côte d’Ivoire','+225'],['HR','Croatia','+385'],['CU','Cuba','+53'],['CY','Cyprus','+357'],['CZ','Czech Republic','+420'],['DK','Denmark','+45'],['DJ','Djibouti','+253'],['DM','Dominica','+1'],['DO','Dominican Republic','+1'],['EC','Ecuador','+593'],['EG','Egypt','+20'],['SV','El Salvador','+503'],['GQ','Equatorial Guinea','+240'],['ER','Eritrea','+291'],['EE','Estonia','+372'],['SZ','Eswatini','+268'],['ET','Ethiopia','+251'],['FJ','Fiji','+679'],['FI','Finland','+358'],['FR','France','+33'],['GA','Gabon','+241'],['GM','Gambia','+220'],['GE','Georgia','+995'],['DE','Germany','+49'],['GH','Ghana','+233'],['GR','Greece','+30'],['GD','Grenada','+1'],['GT','Guatemala','+502'],['GN','Guinea','+224'],['GW','Guinea-Bissau','+245'],['GY','Guyana','+592'],['HT','Haiti','+509'],['HN','Honduras','+504'],['HU','Hungary','+36'],['IS','Iceland','+354'],['IN','India','+91'],['ID','Indonesia','+62'],['IR','Iran','+98'],['IQ','Iraq','+964'],['IE','Ireland','+353'],['IL','Israel','+972'],['IT','Italy','+39'],['JM','Jamaica','+1'],['JP','Japan','+81'],['JO','Jordan','+962'],['KZ','Kazakhstan','+7'],['KE','Kenya','+254'],['KI','Kiribati','+686'],['KP','North Korea','+850'],['KR','South Korea','+82'],['KW','Kuwait','+965'],['KG','Kyrgyzstan','+996'],['LA','Laos','+856'],['LV','Latvia','+371'],['LB','Lebanon','+961'],['LS','Lesotho','+266'],['LR','Liberia','+231'],['LY','Libya','+218'],['LI','Liechtenstein','+423'],['LT','Lithuania','+370'],['LU','Luxembourg','+352'],['MG','Madagascar','+261'],['MW','Malawi','+265'],['MY','Malaysia','+60'],['MV','Maldives','+960'],['ML','Mali','+223'],['MT','Malta','+356'],['MH','Marshall Islands','+692'],['MR','Mauritania','+222'],['MU','Mauritius','+230'],['MX','Mexico','+52'],['FM','Micronesia','+691'],['MD','Moldova','+373'],['MC','Monaco','+377'],['MN','Mongolia','+976'],['ME','Montenegro','+382'],['MA','Morocco','+212'],['MZ','Mozambique','+258'],['MM','Myanmar','+95'],['NA','Namibia','+264'],['NR','Nauru','+674'],['NP','Nepal','+977'],['NL','Netherlands','+31'],['NZ','New Zealand','+64'],['NI','Nicaragua','+505'],['NE','Niger','+227'],['NG','Nigeria','+234'],['MK','North Macedonia','+389'],['NO','Norway','+47'],['OM','Oman','+968'],['PK','Pakistan','+92'],['PW','Palau','+680'],['PS','Palestine','+970'],['PA','Panama','+507'],['PG','Papua New Guinea','+675'],['PY','Paraguay','+595'],['PE','Peru','+51'],['PH','Philippines','+63'],['PL','Poland','+48'],['PT','Portugal','+351'],['QA','Qatar','+974'],['RO','Romania','+40'],['RU','Russia','+7'],['RW','Rwanda','+250'],['KN','Saint Kitts and Nevis','+1'],['LC','Saint Lucia','+1'],['VC','Saint Vincent and the Grenadines','+1'],['WS','Samoa','+685'],['SM','San Marino','+378'],['ST','São Tomé and Príncipe','+239'],['SA','Saudi Arabia','+966'],['SN','Senegal','+221'],['RS','Serbia','+381'],['SC','Seychelles','+248'],['SL','Sierra Leone','+232'],['SG','Singapore','+65'],['SK','Slovakia','+421'],['SI','Slovenia','+386'],['SB','Solomon Islands','+677'],['SO','Somalia','+252'],['ZA','South Africa','+27'],['SS','South Sudan','+211'],['ES','Spain','+34'],['LK','Sri Lanka','+94'],['SD','Sudan','+249'],['SR','Suriname','+597'],['SE','Sweden','+46'],['CH','Switzerland','+41'],['SY','Syria','+963'],['TW','Taiwan','+886'],['TJ','Tajikistan','+992'],['TZ','Tanzania','+255'],['TH','Thailand','+66'],['TL','Timor-Leste','+670'],['TG','Togo','+228'],['TO','Tonga','+676'],['TT','Trinidad and Tobago','+1'],['TN','Tunisia','+216'],['TR','Türkiye','+90'],['TM','Turkmenistan','+993'],['TV','Tuvalu','+688'],['UG','Uganda','+256'],['UA','Ukraine','+380'],['AE','United Arab Emirates','+971'],['GB','United Kingdom','+44'],['US','United States','+1'],['UY','Uruguay','+598'],['UZ','Uzbekistan','+998'],['VU','Vanuatu','+678'],['VA','Vatican City','+39'],['VE','Venezuela','+58'],['VN','Vietnam','+84'],['YE','Yemen','+967'],['ZM','Zambia','+260'],['ZW','Zimbabwe','+263']
+].sort((a,b)=>a[1].localeCompare(b[1]));
+const flag=iso=>String(iso||'').toUpperCase().replace(/[A-Z]/g,c=>String.fromCodePoint(127397+c.charCodeAt(0)));
+const country=iso=>COUNTRIES.find(x=>x[0]===String(iso||'').toUpperCase())||null;
+
+function isTicketType(tk){ const x=String((tk&&(tk.ticketType||tk.type||tk.name))||'').toLowerCase(); return /tombola|bingo|disco|club/.test(x); }
+function ticketType(tk){ const x=String((tk&&(tk.ticketType||tk.type||tk.name))||'').toLowerCase(); return x.includes('tombola')?'tombola':x.includes('bingo')?'bingo':(x.includes('disco')||x.includes('club'))?'disco':'ticket'; }
+function eventDate(tk){try{return window.AUREA_TICKETS_V707&&window.AUREA_TICKETS_V707.nextDate?window.AUREA_TICKETS_V707.nextDate(tk):'';}catch(_){return '';}}
+function parsePrice(tk){ const s=String(tk&&tk.price||'').trim().replace(',','.'); const m=s.match(/-?\d+(?:\.\d+)?/); const n=m?Math.max(0,+m[0]):0; let c=String((S.settings&&S.settings.currency)||'€').trim()||'€'; if(/EGP/i.test(s))c='EGP';else if(/USD|\$/i.test(s))c='USD';else if(/GBP|£/i.test(s))c='GBP';else if(/EUR|€/i.test(s))c='€'; return {price:r2(n),currency:c}; }
+function offersForTicket(id,state){ const map=obj((state||S.settings||{})[OK]); const v=map[String(id)]; return arr(v).filter(o=>+o.qty>1&&+o.price>0).map(o=>({qty:+o.qty,price:r2(o.price)})).sort((a,b)=>a.qty-b.qty); }
+function totalFor(tk,qty,state){ const p=parsePrice(tk), offers=offersForTicket(tk.id,state); const exact=offers.find(o=>o.qty===qty); return {each:p.price,currency:p.currency,total:exact?exact.price:r2(p.price*qty),offer:exact||null}; }
+function encodeMeta(m){ return PREFIX+JSON.stringify(m||{}); }
+function metaOf(o){ const raw=String(o&&o.nationality||''), old='@A722@'; const p=raw.startsWith(PREFIX)?PREFIX:(raw.startsWith(old)?old:''); if(p){try{return obj(JSON.parse(raw.slice(p.length)));}catch(_){}} return {nationality:raw}; }
+function natOf(o){ return metaOf(o).nationality||(!String(o&&o.nationality||'').startsWith(PREFIX)?String(o&&o.nationality||''):''); }
+function currentUser(){ return S&&S.session?S.session:null; }
+function isTeam(){ const x=currentUser(); return !!(x&&(x.role==='staff'||x.role==='manager')); }
+function isStaff(){ const x=currentUser(); return !!(x&&x.role==='staff'); }
+function myNames(){ const s=currentUser()||{}, out=[s.username,s.name].filter(Boolean); const u=(S.users||[]).find(x=>same(x.username,s.username)); if(u) out.push(u.display_name,u.username); return out.filter(Boolean); }
+function isMine(o){ if(!isStaff())return false; const m=metaOf(o), names=myNames(); return (m.entertainerUsername&&same(m.entertainerUsername,currentUser().username)) || names.some(n=>same(n,o.collect_from)) || names.some(n=>same(n,m.entertainerName)); }
+function teamForGuest(){ return (S.users||[]).filter(u=>u&&u.role==='staff'&&u.active!==false&&!(typeof hasLeft==='function'&&hasLeft(u))&&!(typeof isAttOnly==='function'&&isAttOnly(u))).map(u=>({username:String(u.username||''),name:String(u.display_name||u.username||''),photo:String(u.photo||'')})).filter(x=>x.username&&x.name); }
+function tkById(id){ return (S.tickets||[]).find(x=>String(x.id)===String(id))||null; }
+
+function ownedIds(){ try{return arr(JSON.parse(localStorage.getItem(OWNKEY)||'[]')).map(String).slice(-30);}catch(_){return [];} }
+function saveOwned(id){ if(id==null)return; const x=ownedIds().filter(v=>v!==String(id)); x.push(String(id)); try{localStorage.setItem(OWNKEY,JSON.stringify(x.slice(-30)));}catch(_){} }
+function guestProfile(){ try{return obj(JSON.parse(localStorage.getItem(PROFILEKEY)||'{}'));}catch(_){return {};} }
+function saveProfile(p){ try{localStorage.setItem(PROFILEKEY,JSON.stringify(p));}catch(_){} }
+function localOrders(){try{return arr(JSON.parse(localStorage.getItem(LOCALKEY)||'[]'));}catch(_){return [];} }
+function saveLocalOrders(v){try{localStorage.setItem(LOCALKEY,JSON.stringify(v));}catch(_){} }
+function queryIds(ids){ return ids.map(id=>/^\d+(?:\.\d+)?$/.test(id)?id:'"'+String(id).replace(/["\\]/g,'')+'"').join(','); }
+function rowFromResult(r,fallback){return r&&r[0]&&typeof r[0]==='object'?r[0]:{...fallback,id:(fallback&&fallback.id)||Date.now()+Math.random(),created_at:(fallback&&fallback.created_at)||nowIso()};}
+
+async function refreshOrders(renderAfter=false){
+  try{
+    let rows=[];
+    if(typeof REMOTE!=='undefined'&&REMOTE){
+      if(isTeam()) rows=arr(await sb('ticket_orders?select=*&order=created_at.desc'));
+      else { const ids=ownedIds(); rows=ids.length?arr(await sb('ticket_orders?select=*&id=in.('+encodeURIComponent(queryIds(ids))+')&order=created_at.desc')):[]; }
+    } else rows=localOrders();
+    const old=JSON.stringify(arr(S.orders)); S.orders=rows;
+    if(renderAfter&&old!==JSON.stringify(rows)&&typeof render==='function') render();
+    return rows;
+  }catch(e){ console.warn('V7.23 ticket refresh',e); return arr(S.orders); }
+}
+async function addOrder(row){
+  if(typeof REMOTE!=='undefined'&&REMOTE){ const r=await sb('ticket_orders',{method:'POST',body:JSON.stringify(row)}); return rowFromResult(r,row); }
+  const x={...row,id:Date.now()+Math.floor(Math.random()*1000),created_at:nowIso()}; const l=localOrders(); l.unshift(x); saveLocalOrders(l); return x;
+}
+async function patchOrder(id,patch){
+  let out=null;
+  if(typeof REMOTE!=='undefined'&&REMOTE){ const r=await sb('ticket_orders?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(patch)}); out=rowFromResult(r,{id,...patch}); }
+  else { const l=localOrders().map(x=>String(x.id)===String(id)?{...x,...patch}:x); saveLocalOrders(l); out=l.find(x=>String(x.id)===String(id))||{id,...patch}; }
+  S.orders=arr(S.orders).map(x=>String(x.id)===String(id)?{...x,...patch}:x); return out;
+}
+async function deleteOrder(id){
+  if(typeof REMOTE!=='undefined'&&REMOTE) await sb('ticket_orders?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
+  else saveLocalOrders(localOrders().filter(x=>String(x.id)!==String(id)));
+  S.orders=arr(S.orders).filter(x=>String(x.id)!==String(id));
+}
+
+function guestOrdersHtml(){
+  if(isTeam())return '';
+  const ids=new Set(ownedIds()), list=arr(S.orders).filter(o=>ids.has(String(o.id))&&isTicketType(tkById(o.ticket_id))).slice(0,8);
+  if(!list.length)return '';
+  return `<div class="gto23-mine"><h3>${icon('ticket',16)} Your ticket requests</h3>${list.map(o=>{const tk=tkById(o.ticket_id),m=metaOf(o),paid=String(o.status||'reserved').toLowerCase()==='paid';return `<div class="gto23-own"><span class="gto23-state ${paid?'done':'wait'}">${paid?'Handed over':'Waiting for handover'}</span><b>${esc(tk&&tk.name||'Ticket')} · ×${Math.max(1,+o.qty||1)}</b><small>Room ${esc(o.room||'—')} · ${esc(m.entertainerName||o.collect_from||'Entertainment Team')}</small>${paid&&arr(m.ticketNumbers).length?`<small>Tickets: ${arr(m.ticketNumbers).map(esc).join(' · ')}</small>`:''}</div>`;}).join('')}</div>`;
+}
+
+function openGuestOrder(tk){
+  if(!tk||!isTicketType(tk))return;
+  const team=teamForGuest();
+  if(!team.length){notify('err','No entertainer is available for ticket handover right now.');return;}
+  const prof=guestProfile(); let selected='', iso=country(prof.countryIso)?prof.countryIso:'', detailsConfirmed=false;
+  const max=10;
+  const cOpts=`<option value="" ${iso?'':'selected'} disabled>Choose nationality</option>`+COUNTRIES.map(c=>`<option value="${c[0]}" ${c[0]===iso?'selected':''}>${flag(c[0])} ${esc(c[1])}</option>`).join('');
+  const next=eventDate(tk);
+  const niceNext=next?(typeof niceDate==='function'?niceDate(next,{weekday:'long',day:'numeric',month:'long'}):next):'';
+  const w=baseModal(`<div class="gto23-buy">
+    <div class="gto23-kick">Guest ticket</div>
+    <h3>${esc(tk.name||'Ticket')}</h3>
+    <p class="gto23-gate">You can see the event information now. The ticket price stays private until you confirm your room, nationality and phone number.</p>
+    <div class="gto23-ticketbox gto23-publicinfo">
+      <b>${esc(tk.name||'Ticket')}</b>
+      ${niceNext?`<span>${icon('calendar',13)} ${esc(niceNext)}</span>`:''}
+      ${tk.time?`<span>${icon('clock',13)} ${esc(tk.time)}</span>`:''}
+      ${tk.location?`<span>${icon('pin',13)} ${esc(tk.location)}</span>`:''}
+      ${tk.desc?`<div class="gto23-included"><small>What is included / details</small><p>${esc(tk.desc)}</p></div>`:''}
+      <div class="gto23-priceprivacy">${icon('lock',13)} Price hidden until your guest details are confirmed</div>
+    </div>
+    <div class="gto23-step"><b>1</b><span><strong>Your details</strong><small>Confirm these details before the price can be shown.</small></span></div>
+    <label>Room number</label>
+    <input id="gto23-room" autocomplete="off" maxlength="12" value="${esc(prof.room||'')}" placeholder="e.g. 2101">
+    <label>Nationality</label>
+    <select id="gto23-country">${cOpts}</select>
+    <div id="gto23-phonewrap" ${iso?'':'hidden'}>
+      <label>Phone number</label>
+      <div class="gto23-phone">
+        <input id="gto23-code" readonly value="${esc((country(iso)||['','',''])[2])}" aria-label="Country calling code">
+        <input id="gto23-phone" type="tel" inputmode="tel" autocomplete="tel-national" value="${esc(prof.localPhone||'')}" placeholder="Mobile number">
+      </div>
+      <p class="gto23-help">The international calling code is selected automatically from your nationality.</p>
+    </div>
+    <button class="btn" id="gto23-verify">Confirm details &amp; show price</button>
+    <div id="gto23-afterdetails" hidden>
+      <div class="gto23-unlocked">${icon('check',14)} Guest details confirmed · price unlocked</div>
+      <div class="gto23-step"><b>2</b><span><strong>Price &amp; quantity</strong><small>Choose how many tickets you want.</small></span></div>
+      <div class="gto23-qty">
+        <div><label>Quantity</label><input id="gto23-qty" type="number" min="1" max="${max}" value="1"></div>
+        <div class="gto23-total"><small>Price per ticket</small><span id="gto23-each">—</span><small>Total</small><strong id="gto23-total">—</strong><em id="gto23-offer"></em></div>
+      </div>
+      <div class="gto23-step"><b>3</b><span><strong>Who will give you the ticket?</strong><small>Choose the entertainer you will collect the physical ticket from.</small></span></div>
+      <div class="gto23-team">${team.map(m=>`<button type="button" class="gto23-person" data-gto23-person="${esc(m.username)}"><span>${m.photo?`<img src="${esc(m.photo)}" alt="">`:esc(m.name.charAt(0).toUpperCase())}</span><b>${esc(m.name)}</b></button>`).join('')}</div>
+      <button class="btn" id="gto23-confirm">Confirm ticket request</button>
+    </div>
+    <div class="err" id="gto23-err"></div>
+    <button class="btn ghost" id="gto23-close">Close</button>
+  </div>`);
+  const q=s=>w.querySelector(s), err=q('#gto23-err'), after=q('#gto23-afterdetails'), verify=q('#gto23-verify');
+
+  function details(){
+    const room=String(q('#gto23-room').value||'').trim();
+    const c=country(q('#gto23-country').value);
+    const ph=q('#gto23-phone');
+    const raw=ph?String(ph.value||'').replace(/[^0-9]/g,''):'';
+    const local=raw.replace(/^0+/,'');
+    return {room,c,raw,local,valid:!!room&&!!c&&local.length>=5&&local.length<=15};
+  }
+  function clearSelection(){
+    selected='';
+    w.querySelectorAll('[data-gto23-person]').forEach(x=>x.classList.remove('on'));
+  }
+  function lockPrice(){
+    if(!detailsConfirmed)return;
+    detailsConfirmed=false;
+    after.hidden=true;
+    q('#gto23-each').textContent='—';
+    q('#gto23-total').textContent='—';
+    q('#gto23-offer').textContent='';
+    verify.disabled=false;
+    verify.innerHTML='Confirm details &amp; show price';
+    clearSelection();
+  }
+  function updateCountry(){
+    lockPrice();
+    const c=country(q('#gto23-country').value);
+    q('#gto23-phonewrap').hidden=!c;
+    q('#gto23-code').value=c?c[2]:'';
+    err.textContent='';
+  }
+  function updateTotal(){
+    if(!detailsConfirmed)return;
+    const qty=Math.max(1,Math.min(max,+q('#gto23-qty').value||1));
+    q('#gto23-qty').value=qty;
+    const x=totalFor(tk,qty);
+    q('#gto23-each').textContent=money(x.each,x.currency);
+    q('#gto23-total').textContent=money(x.total,x.currency);
+    q('#gto23-offer').textContent=x.offer?`Offer applied: ${x.offer.qty} tickets for ${money(x.offer.price,x.currency)}`:'';
+  }
+
+  q('#gto23-country').onchange=updateCountry;
+  q('#gto23-room').oninput=()=>{lockPrice();err.textContent='';};
+  q('#gto23-phone').oninput=()=>{lockPrice();err.textContent='';};
+  q('#gto23-qty').oninput=updateTotal;
+  verify.onclick=()=>{
+    err.textContent='';
+    const d=details();
+    if(!d.room){err.textContent='Please enter your room number.';return;}
+    if(!d.c){err.textContent='Please choose your nationality.';return;}
+    if(d.local.length<5||d.local.length>15){err.textContent='Please enter a valid mobile phone number.';return;}
+    detailsConfirmed=true;
+    after.hidden=false;
+    verify.disabled=true;
+    verify.textContent='Details confirmed ✓';
+    updateTotal();
+    try{after.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(_){}
+  };
+  w.querySelectorAll('[data-gto23-person]').forEach(b=>b.onclick=()=>{
+    if(!detailsConfirmed)return;
+    selected=b.dataset.gto23Person;
+    w.querySelectorAll('[data-gto23-person]').forEach(x=>x.classList.toggle('on',x===b));
+    err.textContent='';
+  });
+  q('#gto23-close').onclick=()=>w.remove();
+  q('#gto23-confirm').onclick=async()=>{
+    const btn=q('#gto23-confirm'); if(btn.disabled)return; err.textContent='';
+    if(!detailsConfirmed){err.textContent='Please confirm your guest details first.';return;}
+    const d=details();
+    if(!d.valid){lockPrice();err.textContent='Your guest details changed. Please confirm them again.';return;}
+    const qty=Math.max(1,Math.min(max,+q('#gto23-qty').value||1));
+    const member=team.find(x=>x.username===selected);
+    if(!member){err.textContent='Please choose the entertainer who will give you the ticket.';return;}
+    const full=d.c[2]+d.local, price=totalFor(tk,qty);
+    const m={version:VERSION,nationality:d.c[1],countryIso:d.c[0],dialCode:d.c[2],phone:full,entertainerUsername:member.username,entertainerName:member.name,eventDate:eventDate(tk),ticketType:ticketType(tk),priceEach:price.each,currency:price.currency,total:price.total,offer:price.offer||null,orderedAt:nowIso(),ticketNumbers:[]};
+    const row={ticket_id:tk.id,room:d.room,guest_name:'Guest',nationality:encodeMeta(m),qty,status:'reserved',collect_from:member.name};
+    btn.disabled=true; btn.textContent='Saving…';
+    try{
+      const created=await addOrder(row);
+      saveOwned(created.id);
+      saveProfile({room:d.room,countryIso:d.c[0],localPhone:d.raw});
+      S.orders=[created,...arr(S.orders).filter(x=>String(x.id)!==String(created.id))];
+      w.remove();
+      notify('ok','Ticket request sent to '+member.name+'.');
+      if(typeof render==='function')render();
+    }catch(e){
+      console.error('V7.23 guest ticket order',e);
+      btn.disabled=false; btn.textContent='Confirm ticket request';
+      err.textContent='Your ticket request could not be saved. Please check the internet and try again.';
+    }
+  };
+  updateCountry();
+}
+
+async function freshPackState(){
+  if(typeof REMOTE!=='undefined'&&REMOTE){ const rows=arr(await sb('app_settings?id=eq.1&select=id,data')); return obj(rows[0]&&rows[0].data); }
+  return obj(S.settings);
+}
+async function saveSalesState(state,newSales){
+  const merged={...state,[SK]:newSales};
+  if(typeof REMOTE!=='undefined'&&REMOTE){ await sb('app_settings?id=eq.1',{method:'PATCH',body:JSON.stringify({data:merged})}); }
+  else if(DB&&typeof DB.saveSettings==='function') await DB.saveSettings(merged);
+  S.settings={...S.settings,[SK]:newSales};
+  return merged;
+}
+function packClosed(state,p){ return !!obj(obj(state[PK])[p.id]).closedAt; }
+function saleMap(state,p){ return obj(obj(obj(state[SK])[p.id]).sold); }
+function allPacks(state){ return Object.values(obj(state[HK])).filter(Boolean); }
+function numLabel(p,n){return (p.batch?String(p.batch).toUpperCase()+'-':'')+String(n).padStart(4,'0');}
+function soldForOrder(state,orderId){
+  const out=[]; allPacks(state).forEach(p=>{ const m=saleMap(state,p); Object.keys(m).forEach(k=>{const v=m[k];if(v&&String(v.orderId)===String(orderId))out.push({pack:p,n:+k,label:numLabel(p,+k),sale:v});}); }); return out.sort((a,b)=>String(a.pack.id).localeCompare(String(b.pack.id))||a.n-b.n);
+}
+function eligiblePacks(state,o){
+  const m=metaOf(o), user=m.entertainerUsername||String(currentUser()&&currentUser().username||'');
+  const all=allPacks(state).filter(p=>!packClosed(state,p)&&String(p.ticketId)===String(o.ticket_id)&&same(p.user,user));
+  if(!m.eventDate)return all;
+  return all.filter(p=>String(p.date||'')===String(m.eventDate));
+}
+function availableSlots(state,p){ const sold=saleMap(state,p), out=[]; for(let n=+p.from||1;n<=+p.to;n++)if(!sold[String(n)])out.push(n); return out; }
+function allocate(state,o){
+  const need=Math.max(1,+o.qty||1), packs=eligiblePacks(state,o), meta=metaOf(o);
+  /* An advertised multi-ticket offer must stay inside one physical pack so the existing pack accounting records the exact offer price. */
+  if(meta.offer&&+meta.offer.qty===need){ const p=packs.find(x=>availableSlots(state,x).length>=need); if(!p)return []; return availableSlots(state,p).slice(0,need).map(n=>({p,n})); }
+  let left=need, picks=[];
+  for(const p of packs){ for(const n of availableSlots(state,p)){picks.push({p,n});if(--left===0)break;} if(left===0)break; }
+  return left===0?picks:[];
+}
+function offersForPack(state,p){ const map=obj(state[OK]), k=p.ticketId?String(p.ticketId):'pack:'+p.id; return arr(map[k]).filter(o=>+o.qty>1&&+o.price>0).map(o=>({qty:+o.qty,price:r2(o.price)})); }
+async function handoverOrder(id){
+  await refreshOrders(false); const o=arr(S.orders).find(x=>String(x.id)===String(id)); if(!o||!isMine(o))throw new Error('This order is not assigned to your account.'); if(String(o.status).toLowerCase()==='paid')return;
+  let state=await freshPackState(); const old=soldForOrder(state,o.id), meta=metaOf(o);
+  if(old.length>=Math.max(1,+o.qty||1)){
+    const next={...meta,ticketNumbers:old.slice(0,+o.qty||1).map(x=>x.label),handedAt:meta.handedAt||nowIso(),handedBy:String(currentUser().username||'')}; await patchOrder(o.id,{status:'paid',nationality:encodeMeta(next)}); return;
+  }
+  const picks=allocate(state,o); if(!picks.length)throw new Error('Not enough paper tickets are assigned to you for this event. Ask the manager to give you a ticket pack first.');
+  const sales={...obj(state[SK])}, stamp=Date.now(), baseInfo={t:stamp,guest:'Guest',room:o.room,phone:meta.phone||'',nationality:meta.nationality||'',orderId:String(o.id),source:'guest-order-v723'};
+  /* If one exact offer applies and all selected numbers come from one pack, keep the pack accounting consistent with that offer. */
+  const onePack=picks.every(x=>String(x.p.id)===String(picks[0].p.id)); const off=onePack?offersForPack(state,picks[0].p).find(x=>x.qty===picks.length):null; const grp=off?'g'+stamp.toString(36)+Math.random().toString(36).slice(2,5):'';
+  const byPack=new Map(); picks.forEach(x=>{if(!byPack.has(String(x.p.id)))byPack.set(String(x.p.id),{p:x.p,nums:[]});byPack.get(String(x.p.id)).nums.push(x.n);});
+  byPack.forEach(({p,nums},pid)=>{ const rec=obj(sales[pid]), map={...obj(rec.sold)}; nums.forEach(n=>{map[String(n)]={...baseInfo,...(off?{grp,gq:off.qty,gp:off.price}:{})};}); sales[pid]={...rec,sold:map,updatedAt:Date.now(),by:String(currentUser().username||'')}; });
+  state=await saveSalesState(state,sales);
+  const numbers=picks.map(x=>numLabel(x.p,x.n)); const nextMeta={...meta,ticketNumbers:numbers,handedAt:nowIso(),handedBy:String(currentUser().username||'')};
+  await patchOrder(o.id,{status:'paid',nationality:encodeMeta(nextMeta)});
+}
+
+function staffOrdersHtml(){
+  if(!isStaff())return '';
+  const list=arr(S.orders).filter(o=>isMine(o)&&isTicketType(tkById(o.ticket_id))).sort((a,b)=>{const ap=String(a.status)!=='paid',bp=String(b.status)!=='paid';return ap!==bp?(ap?-1:1):String(b.created_at||'').localeCompare(String(a.created_at||''));});
+  const pending=list.filter(o=>String(o.status||'reserved')!=='paid').length;
+  return `<section class="gto23-staff"><div class="gto23-head"><div><p>Guest-created sales</p><h3>${icon('ticket',17)} My ticket orders</h3></div>${pending?`<span>${pending} waiting</span>`:''}</div><p class="gto23-help">Guests choose you themselves. You cannot create or claim a sale here — only confirm the physical ticket handover.</p>${list.length?list.slice(0,30).map(o=>{const tk=tkById(o.ticket_id),m=metaOf(o),paid=String(o.status)==='paid',nums=arr(m.ticketNumbers);return `<article class="gto23-order ${paid?'done':''}"><div class="gto23-order-top"><span><b>${esc(tk&&tk.name||'Ticket')} · ×${Math.max(1,+o.qty||1)}</b><small>Room ${esc(o.room||'—')} · ${m.countryIso?flag(m.countryIso)+' ':''}${esc(m.nationality||natOf(o)||'—')}</small></span><strong>${esc(money(m.total||0,m.currency||'€'))}</strong></div><div class="gto23-contact">${icon('phone',13)} <a href="tel:${esc(m.phone||'')}">${esc(m.phone||'No phone')}</a>${m.eventDate?`<span>${icon('calendar',13)} ${esc(m.eventDate)}${tk&&tk.time?' · '+esc(tk.time):''}</span>`:''}</div>${paid?`<div class="gto23-complete">✓ Handed over${nums.length?` · ${nums.map(esc).join(' · ')}`:''}</div>`:`<div class="gto23-actions"><button type="button" class="btn sm" data-gto23-hand="${esc(o.id)}">Handed over</button><button type="button" class="btn ghost sm" data-gto23-cancel="${esc(o.id)}">Guest didn’t take ticket</button></div>`}</article>`;}).join(''):`<div class="gto23-empty">No guest has assigned a ticket to you yet.</div>`}</section>`;
+}
+function wireStaff(){
+  document.querySelectorAll('[data-gto23-hand]').forEach(b=>b.onclick=async()=>{if(b.disabled)return;b.disabled=true;const old=b.textContent;b.textContent='Saving…';try{await handoverOrder(b.dataset.gto23Hand);notify('ok','Ticket handed over and sale recorded.');if(typeof render==='function')render();}catch(e){console.error('V7.23 handover',e);b.disabled=false;b.textContent=old;notify('err',e.message||'Could not save the handover.');}});
+  document.querySelectorAll('[data-gto23-cancel]').forEach(b=>b.onclick=async()=>{let yes=true;try{yes=typeof confirmAction==='function'?await confirmAction({question:'Remove this guest ticket request?',danger:true}):window.confirm('Remove this guest ticket request?');}catch(_){yes=false;}if(!yes)return;try{await deleteOrder(b.dataset.gto23Cancel);notify('ok','Ticket request removed.');if(typeof render==='function')render();}catch(e){notify('err','Could not remove the ticket request.');}});
+}
+
+function moneyTotals(rows){ const by={}; arr(rows).forEach(o=>{const m=metaOf(o),c=m.currency||'€';by[c]=r2((by[c]||0)+(+m.total||0));}); const parts=Object.entries(by).filter(([,v])=>v).map(([c,v])=>money(v,c)); return parts.length?parts.join(' · '):money(0,'€'); }
+function managerOrdersHtml(){
+  if(!(currentUser()&&currentUser().role==='manager'))return '';
+  const list=arr(S.orders).filter(o=>isTicketType(tkById(o.ticket_id))); const pending=list.filter(o=>String(o.status)!=='paid').length, paid=list.filter(o=>String(o.status)==='paid'); const revenue=moneyTotals(paid);
+  const groups=new Map(); list.forEach(o=>{const m=metaOf(o),key=m.entertainerUsername||o.collect_from||'Unassigned';if(!groups.has(key))groups.set(key,{name:m.entertainerName||o.collect_from||'Unassigned',rows:[]});groups.get(key).rows.push(o);});
+  return `<section class="gto23-manager"><div class="gto23-head"><div><p>Guest-created orders</p><h3>Ticket sales by entertainer</h3></div></div><p class="gto23-help">The guest chooses the entertainer. Team members cannot assign sales to themselves.</p><div class="gto23-stats"><span><b>${list.length}</b>Orders</span><span><b>${pending}</b>Waiting</span><span><b>${paid.length}</b>Handed over</span><span><b>${esc(revenue)}</b>Sales</span></div>${groups.size?[...groups.values()].map(g=>{const gp=g.rows.filter(o=>String(o.status)==='paid'),sum=moneyTotals(gp);return `<div class="gto23-group"><div class="gto23-group-h"><span><b>${esc(g.name)}</b><small>${g.rows.length-gp.length} waiting · ${gp.length} handed over</small></span><strong>${esc(sum)}</strong></div>${g.rows.slice(0,40).map(o=>{const tk=tkById(o.ticket_id),m=metaOf(o),done=String(o.status)==='paid';return `<div class="gto23-manager-row"><span><b>${esc(tk&&tk.name||'Ticket')} ×${Math.max(1,+o.qty||1)}</b><small>Room ${esc(o.room||'—')} · ${m.countryIso?flag(m.countryIso)+' ':''}${esc(m.nationality||natOf(o)||'—')} · ${esc(m.phone||'No phone')}</small><small>${m.eventDate?esc(m.eventDate)+(tk&&tk.time?' · '+esc(tk.time):'')+' · ':''}${esc(money(m.total||0,m.currency||'€'))}</small>${arr(m.ticketNumbers).length?`<small>Tickets: ${arr(m.ticketNumbers).map(esc).join(' · ')}</small>`:''}</span><em class="${done?'done':'wait'}">${done?'Handed over':'Waiting'}</em></div>`;}).join('')}</div>`;}).join(''):`<div class="gto23-empty">No guest ticket orders yet.</div>`}</section>`;
+}
+
+/* Realtime hook: team gets all ticket orders; a public guest only keeps orders created on this device. */
+function applyRealtime(payload){
+  try{
+    const ev=payload.eventType||payload.type, row=payload.new||payload.old; if(!row)return true;
+    if(!isTeam()&&!new Set(ownedIds()).has(String(row.id)))return true;
+    S.orders=arr(S.orders); const i=S.orders.findIndex(x=>String(x.id)===String(row.id));
+    if(ev==='DELETE'){if(i>=0)S.orders.splice(i,1);}
+    else if(i>=0)S.orders[i]={...S.orders[i],...row}; else S.orders.unshift(row);
+    return true;
+  }catch(e){console.warn('V7.23 realtime',e);return true;}
+}
+
+/* Replace the old manual entertainer sales card with guest-created order cards. Manager keeps pack allocation/settlement. */
+function installViews(){
+  const wd=window.myWorkDayView;
+  if(typeof wd==='function'&&!wd.__gto23){ const wrapped=function(){const html=wd.apply(this,arguments);if(!isStaff())return html;const p=staffOrdersHtml();const pos=html.lastIndexOf('</div>');return pos<0?html+p:html.slice(0,pos)+p+html.slice(pos);}; wrapped.__gto23=true;window.myWorkDayView=wrapped;try{myWorkDayView=wrapped;}catch(_){} }
+  const mt=window.managerTicketsInner;
+  if(typeof mt==='function'&&!mt.__gto23){ const wrapped=function(){const html=mt.apply(this,arguments);const panel=managerOrdersHtml();if(!panel)return html;const pos=html.indexOf('<section class="t14-packs">');return pos>=0?html.slice(0,pos)+panel+html.slice(pos):html+panel;};wrapped.__gto23=true;window.managerTicketsInner=wrapped;try{managerTicketsInner=wrapped;}catch(_){} }
+  const wc=window.wireCommon;
+  if(typeof wc==='function'&&!wc.__gto23){ const wrapped=function(){const v=wc.apply(this,arguments);wireStaff();return v;};wrapped.__gto23=true;window.wireCommon=wrapped;try{wireCommon=wrapped;}catch(_){} }
+}
+
+const st=document.createElement('style');st.id='aurea-guest-ticket-flow-v723-css';st.textContent=`
+/* V7.23: old manual entertainer ticket-selling UI is deliberately disabled. */
+.th9-staff{display:none!important}
+.ex21-buybtn{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin-top:12px;width:100%;min-height:44px;padding:10px 14px;border:0;border-radius:13px;background:var(--x-ink,#2b1f16);color:#fff;font-size:13px;font-weight:800}
+.gto23-mine{margin-top:14px;padding:14px;border:1px solid var(--x-line,var(--line));border-radius:18px;background:var(--x-card,var(--card))}.gto23-mine h3{margin:0 0 10px;font:700 14px/1.3 var(--font-body);display:flex;align-items:center;gap:6px}.gto23-own{display:grid;gap:3px;padding:10px 0;border-top:1px solid var(--x-line,var(--line))}.gto23-own:first-of-type{border-top:0}.gto23-own b{font-size:13.5px}.gto23-own small{font-size:11.5px;color:var(--x-mut,var(--muted))}.gto23-state{justify-self:start;padding:4px 9px;border-radius:99px;font-size:10px;font-weight:800}.gto23-state.wait{background:#fff2d7;color:#8a6212}.gto23-state.done{background:#e7f3eb;color:#2e6347}
+.gto23-buy{padding-bottom:4px}.gto23-kick{text-transform:uppercase;letter-spacing:.13em;font-size:10px;font-weight:900;color:var(--bronze)}.gto23-buy h3{margin:5px 0 7px}.gto23-gate{margin:5px 0 0;padding:9px 11px;border-radius:12px;background:var(--sand);font-size:12px;line-height:1.45;color:var(--muted)}.gto23-step{display:flex;gap:10px;align-items:center;margin:17px 0 6px}.gto23-step>b{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:var(--espresso);color:#fff;font-size:12px;flex:none}.gto23-step>span{display:flex;flex-direction:column}.gto23-step strong{font-size:13.5px}.gto23-step small{font-size:11.5px;color:var(--muted)}.gto23-buy [hidden]{display:none!important}.gto23-phone{display:grid;grid-template-columns:82px 1fr;gap:8px}.gto23-phone #gto23-code{text-align:center;font-weight:800;background:var(--sand)}.gto23-ticketbox{display:flex;flex-wrap:wrap;gap:6px 12px;margin:8px 0 2px;padding:11px 12px;border-radius:13px;background:var(--sand);font-size:12px}.gto23-ticketbox>b{width:100%;font-size:14px}.gto23-ticketbox span{display:flex;align-items:center;gap:4px;color:var(--muted)}.gto23-ticketbox p{width:100%;margin:2px 0 0;font-size:12px;line-height:1.4}.gto23-qty{display:grid;grid-template-columns:100px 1fr;gap:14px;align-items:end}.gto23-total{text-align:end;padding-bottom:4px;display:flex;flex-direction:column;align-items:flex-end}.gto23-total small{font-size:11px;color:var(--muted)}.gto23-total span{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:3px}.gto23-total strong{font:700 25px/1.1 var(--font-display);color:var(--cacao)}.gto23-total em{font-size:11px;color:var(--ok);font-style:normal;margin-top:3px}.gto23-team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}.gto23-person{min-height:88px;padding:9px 5px;border:1px solid var(--line);border-radius:14px;background:var(--card);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink)}.gto23-person>span{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:var(--sand);font:700 17px var(--font-display)}.gto23-person img{width:100%;height:100%;object-fit:cover}.gto23-person b{font-size:11.5px;text-align:center;line-height:1.15}.gto23-person.on{border-color:var(--bronze);box-shadow:0 0 0 2px rgba(185,138,92,.22);background:var(--sand)}
+.gto23-staff,.gto23-manager{margin-top:18px;padding:15px;border:1px solid var(--line);border-radius:20px;background:var(--card)}.gto23-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.gto23-head p{margin:0 0 2px;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--bronze)}.gto23-head h3{margin:0;display:flex;align-items:center;gap:6px;font-size:18px}.gto23-head>span{padding:5px 9px;border-radius:99px;background:#fff2d7;color:#8a6212;font-size:10px;font-weight:800}.gto23-help{margin:8px 0 12px;font-size:12px;line-height:1.45;color:var(--muted)}.gto23-order{padding:12px 0;border-top:1px solid var(--line)}.gto23-order-top{display:flex;justify-content:space-between;gap:10px}.gto23-order-top>span{display:flex;flex-direction:column;min-width:0}.gto23-order-top b{font-size:13.5px}.gto23-order-top small{font-size:11.5px;color:var(--muted)}.gto23-order-top>strong{font-size:13px;white-space:nowrap}.gto23-contact{display:flex;flex-wrap:wrap;align-items:center;gap:5px 11px;margin-top:7px;font-size:11.5px;color:var(--muted)}.gto23-contact a{color:var(--cacao);font-weight:700;text-decoration:none}.gto23-contact span{display:flex;align-items:center;gap:4px}.gto23-actions{display:flex;gap:7px;margin-top:10px}.gto23-actions .btn{margin:0;flex:1}.gto23-complete{margin-top:8px;padding:7px 10px;border-radius:10px;background:#e7f3eb;color:#2e6347;font-size:11.5px;font-weight:800}.gto23-empty{padding:20px 8px;text-align:center;color:var(--muted);font-size:12px}
+.gto23-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:12px 0}.gto23-stats span{padding:10px 7px;border-radius:13px;background:var(--sand);display:flex;flex-direction:column;gap:2px;text-align:center;font-size:9.5px;color:var(--muted)}.gto23-stats b{font-size:15px;color:var(--ink)}.gto23-group{margin-top:10px;border:1px solid var(--line);border-radius:15px;overflow:hidden}.gto23-group-h{display:flex;justify-content:space-between;gap:10px;padding:11px 12px;background:var(--sand)}.gto23-group-h>span{display:flex;flex-direction:column}.gto23-group-h b{font-size:13px}.gto23-group-h small{font-size:10.5px;color:var(--muted)}.gto23-group-h strong{font-size:12px}.gto23-manager-row{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.gto23-manager-row>span{display:flex;flex-direction:column;min-width:0}.gto23-manager-row b{font-size:12.5px}.gto23-manager-row small{font-size:10.5px;color:var(--muted);overflow-wrap:anywhere}.gto23-manager-row em{align-self:center;padding:4px 8px;border-radius:99px;font-style:normal;font-size:9.5px;font-weight:800;white-space:nowrap}.gto23-manager-row em.done{background:#e7f3eb;color:#2e6347}.gto23-manager-row em.wait{background:#fff2d7;color:#8a6212}
+
+.gto23-lockedprice{display:flex;align-items:center;gap:6px;margin-top:8px;padding:8px 10px;border:1px dashed var(--line);border-radius:11px;color:var(--muted);font-size:11.5px;background:var(--card)}
+.gto23-publicinfo{margin-top:12px}
+.gto23-included{width:100%;padding-top:5px;border-top:1px solid var(--line)}.gto23-included small{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.gto23-priceprivacy{width:100%;display:flex;align-items:center;gap:6px;margin-top:4px;padding:8px 9px;border-radius:10px;background:var(--card);color:var(--muted);font-size:11.5px;border:1px dashed var(--line)}
+.gto23-buy #gto23-verify{margin-top:14px}
+.gto23-unlocked{display:flex;align-items:center;gap:6px;margin:14px 0 4px;padding:9px 10px;border-radius:11px;background:#e7f3eb;color:#2e6347;font-size:11.5px;font-weight:800}
+.gto23-help{font-size:11.5px;color:var(--muted);margin:6px 0 0}
+@media(max-width:380px){.gto23-team{grid-template-columns:repeat(2,minmax(0,1fr))}.gto23-stats{grid-template-columns:1fr 1fr}.gto23-actions{flex-direction:column}.gto23-phone{grid-template-columns:76px 1fr}}
+`;
+document.head.appendChild(st);
+
+installViews();
+S.orders=arr(S.orders);
+setTimeout(()=>{installViews();refreshOrders(true);},300);
+setInterval(()=>{if(document.visibilityState==='visible')refreshOrders(true);},7000);
+window.addEventListener('focus',()=>refreshOrders(true));
+
+window.AUREA_GUEST_TICKETS_V723={version:VERSION,isTicketType,openGuestOrder,guestOrdersHtml,staffOrdersHtml,managerOrdersHtml,wireStaff,applyRealtime,refreshOrders,metaOf,natOf,handoverOrder};
+})();
+</script>
+
 </body>
 </html>
