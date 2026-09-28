@@ -4023,7 +4023,6 @@ html[data-theme="dark"] .rv-c2 em{color:#C98B82!important}
 html[data-theme="dark"] .rv-okline{color:#8EA78B!important}
 html[data-theme="dark"] .th9-n.resv{color:#C7AC8D!important}
 html[data-theme="dark"] .th9-count .resv b{color:#C59252!important}
-html[data-theme="dark"] .rv-banner>svg{color:#C59252!important}
 html:not([data-theme="dark"]) .err{color:#A64832!important}
 html:not([data-theme="dark"]) .chip.res{color:#755C28!important}
 html:not([data-theme="dark"]) .stat-pill.todo{color:#7F5A11!important}
@@ -4138,7 +4137,6 @@ html:not([data-theme="dark"]) .rv-st.ok{color:#3A6235!important}
 html:not([data-theme="dark"]) .rv-n.own{color:#3A6235!important}
 html:not([data-theme="dark"]) .th9-n.resv{color:#7F4B0F!important}
 html:not([data-theme="dark"]) .th9-count .resv b{color:#89530F!important}
-html:not([data-theme="dark"]) .rv-banner>svg{color:#89530F!important}
 </style>
 
 
@@ -9998,7 +9996,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.29-tickets-v1";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.29-tickets-v2";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -12933,16 +12931,10 @@ function mySalaryCard630(){
   </section>`;
 }
 
-/* Add salary to entertainer My Attendance and My Work Day without replacing their existing content. */
+/* Add salary to the entertainer's My Attendance page (not on My Work Day). */
 const oldMyPage630=window.myPageView;
 window.myPageView=myPageView=function(){
   const html=oldMyPage630();
-  const card=mySalaryCard630();
-  return card?html.replace(/<\/div>\s*$/i,card+'</div>'):html;
-};
-const oldWorkday630=window.myWorkDayView;
-window.myWorkDayView=myWorkDayView=function(){
-  const html=oldWorkday630();
   const card=mySalaryCard630();
   return card?html.replace(/<\/div>\s*$/i,card+'</div>'):html;
 };
@@ -16455,8 +16447,7 @@ myWorkDayView=function(){
   const html=wd0.apply(this,arguments);
   if(!(S.session&&S.session.role==='staff')) return html;
   const panel=staffPanel(); if(!panel) return html;
-  const i=html.indexOf('<section class="tk7-staff">');
-  if(i>=0) return html.slice(0,i)+panel+html.slice(i);
+  for(const mark of ['<div class="daychips">','<div class="sec wd17">','<section class="tk7-staff">']){ const i=html.indexOf(mark); if(i>=0) return html.slice(0,i)+panel+html.slice(i); }
   const pos=html.lastIndexOf('</div>'); return pos<0?html+panel:html.slice(0,pos)+panel+html.slice(pos);
 };
 window.myWorkDayView=myWorkDayView;
@@ -18320,7 +18311,8 @@ function yourDay(day,acts){
   standardsFor(day).forEach(s=>{ const m=toMin(s.time); if(m!=null) items.push({k:'team',st:m,en:m+15,title:s.name,sub:[s.location,s.note].filter(Boolean).join(' · ')}); });
   const ids=new Set((acts||[]).map(a=>String(a.id)));
   (acts||[]).forEach(a=>{ const w=span(a); items.push({k:'mine',st:w.st,en:w.en,a,title:a.name,sub:a.location||'',label:KIND[cat(a)]?KIND[cat(a)]+' · yours':'Your activity'}); });
-  (S.activities||[]).filter(a=>a&&a.day===day&&!ids.has(String(a.id))&&['mEvents','eParty','eShow'].includes(cat(a))).forEach(a=>{ const w=span(a); items.push({k:'event',st:w.st,en:w.en,title:a.name,sub:[a.location,who(a)].filter(Boolean).join(' · '),label:KIND[cat(a)]||'Event'}); });
+  const PROG={mAdult:'Activity',mKids:'Kids club',mTeen:'Teens',eLive:'Live music',eBefore:'Before the show',eAfter:'After show'};
+  (S.activities||[]).filter(a=>a&&a.day===day&&!ids.has(String(a.id))).forEach(a=>{ const w=span(a), c=cat(a), ev=['mEvents','eParty','eShow'].includes(c); items.push({k:ev?'event':'prog',st:w.st,en:w.en,a,title:a.name,sub:[a.location,who(a)].filter(Boolean).join(' · '),label:KIND[c]||PROG[c]||'Programme'}); });
   if(info&&info.isEntrance) items.push({k:'duty',st:16*60,en:18*60+30,title:t('youHaveEntrance'),sub:info.entranceWindow||'',label:'Entrance duty'});
   let tasks=[]; try{ tasks=(S.tasks||[]).filter(x=>taskBelongsToDay(x,day)); }catch(_){}
   tasks.forEach(x=>{ let m=null; if(x.due){ const d=new Date(String(x.due).replace(' ','T')); if(!isNaN(d)) m=d.getHours()*60+d.getMinutes(); } items.push({k:'task',st:m,en:m==null?null:m+30,x,title:x.title||taskTypeLabel(x.type),sub:[x.location,(()=>{ try{ return taskStatusLabel(taskStatus(x)); }catch(_){ return ''; } })()].filter(Boolean).join(' · '),label:'Task'}); });
@@ -18328,13 +18320,13 @@ function yourDay(day,acts){
   let nextSet=false;
   const rows=items.map(it=>{
     let state='';
-    if(isT&&it.st!=null){ if(it.en!=null&&now>=it.en) state='done'; else if(now>=it.st) state='now'; else if(!nextSet&&it.k!=='team'){ state='next'; nextSet=true; } }
-    const open=it.k==='mine'?`data-actopen="${E(it.a.id)}"`:it.k==='task'?`data-taskopen="${E(it.x.id)}"`:'';
+    if(isT&&it.st!=null){ if(it.en!=null&&now>=it.en) state='done'; else if(now>=it.st) state='now'; else if(!nextSet&&it.k!=='team'&&it.k!=='prog'){ state='next'; nextSet=true; } }
+    const open=it.k==='mine'?`data-actopen="${E(it.a.id)}"`:it.k==='task'?`data-taskopen="${E(it.x.id)}"`:(it.k==='prog'||it.k==='event')&&it.a?`data-actinfo="${E(it.a.id)}"`:'';
     return `<div class="wd17-row ${it.k} ${state}"><span class="wd17-time">${it.st==null?'—':E(hm(it.st))}</span><span class="wd17-dot"></span>
       <div class="wd17-body ${it.k==='mine'?'tlx-body':''}" ${open}>${state==='now'?'<span class="wd17-now">Now</span>':state==='next'?'<span class="wd17-next">Next</span>':''}${it.label?`<span class="wd17-kind">${E(it.label)}</span>`:''}<b>${E(it.title)}</b>${it.sub?`<small>${E(it.sub)}</small>`:''}</div></div>`; }).join('');
   const own=(acts||[]).length;
   return `<div class="sec wd17"><h3>${ic('clock',18)} ${t('yourDay')}</h3>
-    <p class="wd17-sub">${isT?'':'Plan for '+E(niceDay(dateOf(day),true))+' · '}${own?`${own} activit${own>1?'ies':'y'} for you`:'No activity for you'}${tasks.length?` · ${tasks.length} task${tasks.length>1?'s':''}`:''} · team times included</p>
+    <p class="wd17-sub">${isT?'':'Plan for '+E(niceDay(dateOf(day),true))+' · '}${own?`${own} activit${own>1?'ies':'y'} for you`:'No activity for you'}${tasks.length?` · ${tasks.length} task${tasks.length>1?'s':''}`:''} · day programme and team times included</p>
     <div class="wd17-list">${rows||'<div class="wd17-empty">Nothing planned yet.</div>'}</div></div>`;
 }
 window.workdayUnifiedTimeline=yourDay; try{ workdayUnifiedTimeline=yourDay; }catch(_){}
@@ -20395,6 +20387,8 @@ window.AUREA_TEAMONLY_V721={version:'7.21',L,exploreView,loginView,teamSignIn,da
    The manager sees every reservation — waiting, confirmed, cancelled — in
    Program → Tickets and can cancel any of them. A guest can cancel his own
    reservation until it is confirmed.
+   A guest is recognised on any phone by room + mobile number: the same
+   details show his tickets again ("My tickets").
    Storage: one row per ticket number in ticket_orders (res_id groups the
    numbers of one reservation). Confirmed numbers are also written into the
    pack's sales (ticketSalesV709), so money, settling and Excel keep working. */
@@ -20443,8 +20437,11 @@ const NAT2CODE={German:'+49',British:'+44',Russian:'+7',Kazakh:'+7',Polish:'+48'
 
 /* ---------- the guest on this phone ---------- */
 const GK='ent_tk_guest_v722';
+const CODES_LONG=()=>CODES.map(x=>x[0]).sort((a,b)=>b.length-a.length);
+function fmtPhone(p){ p=String(p||'').trim(); if(!/^\+\d{6,}$/.test(p)) return p; const c=CODES_LONG().find(x=>p.startsWith(x)); return c?c+' '+p.slice(c.length):p; }
+const canonPhone=p=>{ const d=String(p||'').replace(/[^\d]/g,''); return d?'+'+d:''; };
 let memG=null;
-function guest(){ try{ const x=JSON.parse(localStorage.getItem(GK)||'null'); if(x&&x.room) return x; }catch(_){} return memG; }
+function guest(){ try{ const x=JSON.parse(localStorage.getItem(GK)||'null'); if(x&&x.room){ if(x.phone) x.phone=canonPhone(x.phone); return x; } }catch(_){} return memG; }
 function saveGuest(g){ memG=g; try{ localStorage.setItem(GK,JSON.stringify(g)); }catch(_){} }
 
 /* ---------- packs ---------- */
@@ -20497,8 +20494,10 @@ async function load(){
     } else {
       const ids=packsAll().filter(p=>!closed(p)&&(p.date||'')>=addDays(today(),-1)).map(p=>String(p.id).replace(/[^\w-]/g,'')).filter(Boolean);
       RS.pub=ids.length?((await sb('ticket_orders?select=id,res_id,pack_id,ticket_no,status&status=in.(reserved,confirmed)&pack_id=in.('+ids.join(',')+')'))||[]):[];
-      const g=guest(), mine=((g&&g.res)||[]).map(x=>String(x).replace(/[^\w-]/g,'')).filter(Boolean);
-      RS.mine=mine.length?((await sb('ticket_orders?select=*&res_id=in.('+mine.join(',')+')'))||[]):[];
+      const g=guest(), mine=((g&&g.res)||[]).map(x=>String(x).replace(/[^\w-]/g,'')).filter(Boolean), who=[];
+      if(mine.length) who.push('res_id.in.('+mine.join(',')+')');
+      if(g&&/^\d{3,4}$/.test(String(g.room||''))&&canonPhone(g.phone)) who.push('and(room.eq.'+g.room+',phone.eq.'+enc(canonPhone(g.phone))+')');
+      RS.mine=who.length?((await sb('ticket_orders?select=*&pack_id=not.is.null&or=('+who.join(',')+')&order=created_at.desc&limit=300'))||[]):[];
     }
     RS.state='ok';
   }catch(e){ if(missing(e)) RS.state='missing'; else if(RS.state!=='ok') RS.state='offline'; }
@@ -20661,12 +20660,12 @@ function checkReg(){
   if(!RG.nat) return {err:G('natErr'),f:'#rv-nat'};
   const digits=RG.local.replace(/[^\d]/g,'');
   let phone='';
-  if(RG.code){ const d=digits.replace(/^0+/,''); if(/^\+/.test(RG.local.trim())){ if(digits.length<8||digits.length>15) return {err:G('phoneErr'),f:'#rv-phone'}; phone='+'+digits; } else { if(d.length<6||d.length>12) return {err:G('phoneErr'),f:'#rv-phone'}; phone=RG.code+' '+d; } }
+  if(RG.code){ const d=digits.replace(/^0+/,''); if(/^\+/.test(RG.local.trim())){ if(digits.length<8||digits.length>15) return {err:G('phoneErr'),f:'#rv-phone'}; phone='+'+digits; } else { if(d.length<6||d.length>12) return {err:G('phoneErr'),f:'#rv-phone'}; phone=canonPhone(RG.code+d); } }
   else { if(!/^\+/.test(RG.local.trim())||digits.length<8||digits.length>15) return {err:G('phoneErr'),f:'#rv-phone'}; phone='+'+digits; }
   return {g:{room:RG.room,nat:RG.nat,code:RG.code,local:RG.local,phone}};
 }
 function meLine(g){
-  return `<div class="rv-me">${ic('door',16)}<span><b>${E(G('roomN',{r:g.room}))}</b><small>${E(g.nat)} · ${E(g.phone)}</small></span><button type="button" id="rv-edit">${E(G('change'))}</button></div>`;
+  return `<div class="rv-me">${ic('door',16)}<span><b>${E(G('roomN',{r:g.room}))}</b><small>${E(g.nat)} · ${E(fmtPhone(g.phone))}</small></span><button type="button" id="rv-edit">${E(G('change'))}</button></div>`;
 }
 function myCard(x){
   const p=x.pack||{}, cur=p.currency||'€', nm=nameOf(x.user), u=userOf(x.user), past=!!x.date&&x.date<today();
@@ -20817,7 +20816,7 @@ function resCard(x,who){
     <div class="rv-c2">${E(evName(x))} · ${E(niceDay(x.date))}${over&&x.status==='reserved'?' · <em>event over</em>':''}${who==='mgr'?` · <span class="rv-who">${E(nameOf(x.user))}</span>`:''}</div>
     <div class="rv-nums">${x.nums.map(n=>`<span>${E(num(p,n))}</span>`).join('')}</div>
     <div class="rv-c4">${sum}</div>
-    ${x.phone?`<a class="rv-call" href="tel:${E(String(x.phone).replace(/[^\d+]/g,''))}">${PHONE} ${E(x.phone)}</a>`:''}
+    ${x.phone?`<a class="rv-call" href="tel:${E(String(x.phone).replace(/[^\d+]/g,''))}">${PHONE} ${E(fmtPhone(x.phone))}</a>`:''}
     ${x.status==='confirmed'?`<p class="rv-okline">${ic('check',13)} Paid &amp; handed over · ${E(ago(f.confirmed_at))}${f.confirmed_by&&low(f.confirmed_by)!==low(x.user)?' · confirmed by '+E(nameOf(f.confirmed_by)):''}</p>`:''}
     ${x.status==='cancelled'?`<p class="rv-offline">Cancelled ${f.cancelled_by==='guest'?'by the guest':f.cancelled_by?'by '+E(f.cancelled_by):''}${f.cancelled_at?' · '+E(ago(f.cancelled_at)):''}</p>`:''}
     ${x.status==='reserved'||(who==='mgr'&&x.status==='confirmed')?`<div class="rv-acts">${x.status==='reserved'?`<button type="button" class="btn rv-confirm" data-rv-confirm="${E(x.id)}">${ic('check',15)} ${who==='mgr'?'Paid — confirm':'Confirm — paid &amp; ticket given'}</button>`:''}${who==='mgr'?`<button type="button" class="btn ghost rv-cancel" data-rv-cancel="${E(x.id)}">Cancel</button>`:''}</div>`:''}
@@ -20830,7 +20829,7 @@ function staffPanel(){
   if(!mine.length&&!waiting.length) return '';
   const tot=mine.reduce((s,p)=>{ const x=P.stats(p); s.owe+=x.balance; s.cur=p.currency||s.cur; return s; },{owe:0,cur:'€'});
   return `<section class="th9-staff rv-staff" id="rv-staff"><div class="th9-shead"><h3>${ic('ticket',17)} My tickets</h3>${tot.owe>0?`<span class="th9-pill">${E(money(tot.owe,tot.cur))} to hand in</span>`:''}</div>
-    <p class="th9-hint">Guests reserve their numbers on the Explore page. When the guest comes to you: give the paper ticket, take the money, then tap <b>Confirm</b>.</p>
+    <p class="th9-hint">Guests reserve on the Explore page. When a guest pays you and gets the paper ticket, tap <b>Confirm</b>.</p>
     ${RS.state==='missing'?'<p class="rv-warnline">Guest reservations are not switched on yet — the manager has to do the one-time database step.</p>':''}
     ${waiting.length?`<div class="rv-wait"><h4>Waiting for you <i>${waiting.length}</i></h4>${waiting.map(x=>resCard(x,'staff')).join('')}</div>`:'<p class="rv-empty">No reservations waiting.</p>'}
     ${mine.map(p=>{ const x=P.stats(p), tk=tkOf(p.ticketId), w=waitCount(p);
@@ -20838,7 +20837,7 @@ function staffPanel(){
       return `<article class="th9-pack" data-pack="${E(p.id)}"><header><span><b>${E(p.name||(tk&&tk.name)||'Tickets')}</b><span>${p.date?E(niceDay(p.date))+' · ':''}${E(num(p,p.from))} – ${E(num(p,p.to))} · ${E(money(p.price,p.currency))} each</span></span></header>
         ${offersOf(p).length?`<p class="th9-offers">${ic('gift',13)} ${offersOf(p).map(o=>`${o.qty} for ${E(money(o.price,p.currency))}`).join(' · ')}</p>`:''}
         <div class="th9-count"><span><b>${x.sold}</b>sold</span><span class="resv"><b>${w}</b>reserved</span><span><b>${Math.max(0,x.left-w)}</b>free</span>${x.balance<0?`<span class="ahead"><b>${E(money(-x.balance,p.currency))}</b>paid ahead</span>`:`<span class="owe"><b>${E(money(x.balance,p.currency))}</b>to hand in</span>`}</div>
-        ${chips(p)}
+        <details class="rv-numsd"><summary>Numbers ${E(num(p,p.from))} – ${E(num(p,p.to))}</summary>${chips(p)}</details>
         ${done.length?`<details class="rv-donelist"><summary>Confirmed · ${done.length}</summary>${done.map(y=>resCard(y,'staff')).join('')}</details>`:''}</article>`; }).join('')}
   </section>`;
 }
@@ -20885,22 +20884,8 @@ window.__wireSteps.push(function(){
   wireTeam(document);
   document.querySelectorAll('[data-rv-mode]').forEach(b=>b.onclick=()=>{ S.rvMode=b.dataset.rvMode; render(); });
   const cp=Q('#rv-cancel-past'); if(cp) cp.onclick=()=>cancelPast();
-  const jb=Q('[data-rv-jump]'); if(jb) jb.onclick=()=>{ const el=Q('#rv-staff .rv-wait')||Q('#rv-staff'); if(el) try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){ el.scrollIntoView(); } };
+  document.querySelectorAll('[data-actinfo]').forEach(el=>el.onclick=()=>{ const a=(S.activities||[]).find(x=>String(x.id)===String(el.dataset.actinfo)); if(a&&typeof window.openActInfo==='function') window.openActInfo(a); });
 });
-
-/* the entertainer's work day: a line at the top when guests are waiting for him */
-const wdv0=window.myWorkDayView;
-if(typeof wdv0==='function'){
-  const wdv=function(){
-    const html=wdv0.apply(this,arguments);
-    if(!(S.session&&S.session.role==='staff')||html.indexOf('id="rv-staff"')<0) return html;
-    const n=groups(RS.team.filter(r=>r.status==='reserved'&&low(r.collect_from)===low(me()))).length; if(!n) return html;
-    const bar=`<button type="button" class="wd-banner rv-banner" data-rv-jump="1">${ic('ticket',18)}<span><b>${n} guest${n>1?'s are':' is'} waiting for ${n>1?'their tickets':'a ticket'}</b><small>Confirm when you hand over the ticket and get the money</small></span></button>`;
-    const i=html.indexOf('<div class="sec wd17">'); if(i>=0) return html.slice(0,i)+bar+html.slice(i);
-    const j=html.indexOf('<section class="th9-staff rv-staff"'); return j>=0?html.slice(0,j)+bar+html.slice(j):html;
-  };
-  window.myWorkDayView=wdv; try{ myWorkDayView=wdv; }catch(_){}
-}
 
 /* ---------- hooks ---------- */
 /* the Explore page: wire the ticket part after every paint */
@@ -20919,7 +20904,7 @@ if(typeof applyRealtimeChange==='function'){
     if(payload&&payload.table==='ticket_orders'){
       const r=payload.new&&payload.new.id!=null?payload.new:null; if(!r||r.pack_id==null) return true;
       if(isTeam()){ upsert(RS.team,r); notifyNew(); syncLedger(); }
-      else { if(live(r)||RS.pub.some(x=>String(x.id)===String(r.id))) upsert(RS.pub,pubOf(r)); if(RS.mine.some(x=>String(x.id)===String(r.id))||((guest()||{}).res||[]).includes(r.res_id)) upsert(RS.mine,r); repaint(); }
+      else { if(live(r)||RS.pub.some(x=>String(x.id)===String(r.id))) upsert(RS.pub,pubOf(r)); const g=guest()||{}; if(RS.mine.some(x=>String(x.id)===String(r.id))||(g.res||[]).includes(r.res_id)||(g.room&&String(r.room)===String(g.room)&&canonPhone(r.phone)===canonPhone(g.phone))) upsert(RS.mine,r); repaint(); }
       return true;
     }
     return rt0(payload);
@@ -21011,8 +20996,9 @@ css.textContent=`
 .rv-past{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;padding:10px 12px;border-radius:14px;background:rgba(176,57,43,.08);font-size:13px}.rv-past span{flex:1 1 180px}
 .rv-sql{margin-top:10px;padding:14px;border-radius:16px;background:rgba(208,133,38,.1);border:1px solid rgba(208,133,38,.4)}.rv-sql b{display:flex;align-items:center;gap:6px}.rv-sql p{margin:6px 0 0;font-size:13.5px;line-height:1.5}
 .rv-inpack{margin:12px 0}
+.wd17-row.prog .wd17-body{background:transparent;padding:7px 12px;cursor:pointer}.wd17-row.prog .wd17-body b{font-size:14px;font-weight:600}.wd17-row.prog .wd17-dot{border-color:var(--muted)}.wd17-row.event .wd17-body{cursor:pointer}
+.rv-numsd{margin-top:8px}.rv-numsd>summary{cursor:pointer;font-weight:700;font-size:13px;padding:6px 0}.rv-numsd .th9-grid{margin-top:4px}
 .t14-todos .t14-kick,.t14-todo small{color:var(--ink)!important;opacity:.8}
-.rv-banner.wd-banner{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid rgba(208,133,38,.55)!important;background:rgba(208,133,38,.13)!important;color:var(--ink);cursor:pointer;margin:0 0 12px;min-height:0}.rv-banner>svg{flex:none;color:#B06A12}.rv-banner span{display:flex;flex-direction:column;gap:2px}.rv-banner b{font-size:14px}.rv-banner small{font-size:12px;color:var(--ink);opacity:.8;font-weight:500}
 `;
 document.head.appendChild(css);
 })();
