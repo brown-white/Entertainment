@@ -4021,6 +4021,7 @@ html[data-theme="dark"] .t14-b.danger{color:#C98B82!important}
 html[data-theme="dark"] .pg7-c.tk{color:#C7AC8D!important}
 html[data-theme="dark"] .pg17-tags .kind.tk{color:#C7AC8D!important}
 html[data-theme="dark"] .rv-acts .rv-del{color:#C98B82!important}
+html[data-theme="dark"] .rv-call.wa svg{color:#52AB7B!important}
 html:not([data-theme="dark"]) .err{color:#A64832!important}
 html:not([data-theme="dark"]) .stat-pill.todo{color:#7F5A11!important}
 html:not([data-theme="dark"]) .cf-ic.danger{color:#A33025!important}
@@ -4124,6 +4125,7 @@ html:not([data-theme="dark"]) .th9-n.resv{color:#7F4B0F!important}
 html:not([data-theme="dark"]) .th9-count .resv b{color:#89530F!important}
 html:not([data-theme="dark"]) .pg7-c.tk{color:#7F4B0F!important}
 html:not([data-theme="dark"]) .pg17-tags .kind.tk{color:#7F4B0F!important}
+html:not([data-theme="dark"]) .rv-call.wa svg{color:#0F6D3A!important}
 </style>
 
 
@@ -9983,7 +9985,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.29-v723";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.29-v724";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -16163,25 +16165,26 @@ async function record(o){
 /* ---------- printed tickets ---------- */
 function mono(st){ const b=brand(); return b.logo?`<img class="lg" src="${E(b.logo)}" alt="">`:`<span class="mn">${E(b.name.trim().charAt(0)||'E')}</span>`; }
 function serial(o,n){ return TYPES[o.type].code+'-'+String(o.batch).toUpperCase()+'-'+P(n); }
+function gst(o,n){ const g=o&&o.guests&&o.guests[n]; return g?`<p class="gst">${E(g)}</p>`:''; }
 function tombola(o,n){
-  const b=brand();
+  const b=brand(), gn=o&&o.guests&&o.guests[n];
   return `<article class="tk tom"><div class="main"><div class="fr"></div><header>${mono()}<span class="ht">${E(b.name)}</span></header>
-    <p class="kick">Tombola</p><div class="big">${P(n)}</div><p class="ev">${E(o.title||'Tombola night')}</p><p class="meta">${[o.time,o.place].filter(Boolean).map(E).join(' · ')}</p>
+    <p class="kick">Tombola</p><div class="big">${P(n)}</div><p class="ev">${E(o.title||'Tombola night')}</p><p class="meta">${[o.time,o.place].filter(Boolean).map(E).join(' · ')}</p>${gst(o,n)}
     <p class="sn">${E(serial(o,n))}</p></div>
-    <aside class="stub"><small>Entertainment copy</small><b>${P(n)}</b><em>${E(serial(o,n))}</em><span class="nm">Name / room</span></aside></article>`;
+    <aside class="stub"><small>Entertainment copy</small><b>${P(n)}</b><em>${E(serial(o,n))}</em><span class="nm${gn?' on':''}">${gn?E(gn):'Name / room'}</span></aside></article>`;
 }
 function bingo(o,n){
   const g=card90(o,n), b=brand();
   return `<article class="tk bin" style="--c:${E(o.color||'#E9D06B')}"><header><span class="bw">Bingo</span><span class="ht">${E(b.name)}</span><span class="sn">${E(serial(o,n))}</span></header>
     <div class="info"><span><small>Event</small><b>${E(o.title||'Bingo night')}</b></span><span><small>Time</small><b>${E(o.time||'—')}</b></span><span><small>Place</small><b>${E(o.place||'—')}</b></span>${o.price?`<span><small>Price</small><b>${E(o.price+' '+(o.currency||''))}</b></span>`:''}</div>
-    <div class="g">${g.flat().map(v=>`<i class="${v===''?'x':''}">${v===''?'':v}</i>`).join('')}</div>
+    ${gst(o,n)}<div class="g">${g.flat().map(v=>`<i class="${v===''?'x':''}">${v===''?'':v}</i>`).join('')}</div>
     <footer>Good luck! · 90-ball · unique card</footer></article>`;
 }
 function disco(o,n){
   const b=brand();
   return `<article class="tk dis"><div class="main"><div class="fr"></div><header>${mono()}<span class="ht">${E(b.name)}</span></header>
     <p class="kick">Admission</p><h1>${E(o.club||'Club night')}</h1><p class="ev">${E(o.title||'')}</p>
-    <p class="meta">${[o.time&&('Time '+o.time),o.place&&('Meet at '+o.place),o.price&&(o.price+' '+(o.currency||''))].filter(Boolean).map(E).join(' · ')}</p>
+    <p class="meta">${[o.time&&('Time '+o.time),o.place&&('Meet at '+o.place),o.price&&(o.price+' '+(o.currency||''))].filter(Boolean).map(E).join(' · ')}</p>${gst(o,n)}
     ${(o.offers||[]).length?`<ul>${o.offers.map(x=>`<li>${E(x)}</li>`).join('')}</ul>`:''}<p class="foot">Show this ticket at the meeting point</p></div>
     <aside class="stub"><small>Admission</small><b>${P(n)}</b><em>${E(serial(o,n))}</em></aside></article>`;
 }
@@ -16207,6 +16210,9 @@ header{display:flex;align-items:center;gap:2mm;font-size:5.8pt;font-weight:700;l
 .stub small{font-size:5.4pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:${s.gold}}
 .stub b{font:400 20pt/1 'DM Serif Display',Georgia,serif}.stub em{font-style:normal;font-size:5.6pt;opacity:.8}
 .stub .nm{margin-top:7mm;width:100%;border-top:.25mm solid currentColor;padding-top:.8mm;font-size:5pt;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+.stub .nm.on{opacity:1;font-size:6pt;font-weight:700;letter-spacing:.02em;text-transform:none;line-height:1.25;overflow-wrap:anywhere}
+.gst{align-self:flex-start;margin:1.6mm 0 0;padding:.7mm 2.2mm;border:.3mm solid ${s.gold};border-radius:1mm;font-size:8pt;font-weight:700;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bin .gst{display:block;margin:0 3.5mm 1.5mm;border-color:color-mix(in srgb,var(--c) 70%,#3E2A1E);color:#2B1F16}
 .dis h1{margin:.4mm 0 0;font:400 20pt/1.05 'DM Serif Display',Georgia,serif}
 .dis ul{margin:1.6mm 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.8mm 3mm;font-size:6.8pt}
 .dis li:before{content:'✓ ';color:${s.gold};font-weight:700}
@@ -20410,14 +20416,14 @@ const PHONE='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke=
 
 /* ---------- words for guests (8 languages) ---------- */
 const W={
-en:{subLocked:'Reserve your paper tickets for our games and parties.',subOpen:'Choose your entertainer, mark your numbers and reserve. You pay when you get your paper ticket.',lockText:'Enter your room number and nationality to see the tickets.',room:'Room number',nat:'Nationality',natPick:'Choose your nationality',common:'Most common',allNat:'All nationalities',phone:'Mobile number',phonePh:'Mobile number',otherCode:'Other — type +code',phoneNote:'Only for the entertainer, if there is a question about your ticket.',roomErr:'Please enter your room number (3 or 4 digits).',natErr:'Please choose your nationality.',phoneErr:'Please enter your mobile number with the country code.',showTix:'Show the tickets',roomN:'Room {r}',change:'Change',myTix:'My tickets',chooseEnt:'Choose your entertainer',left:'{n} left',soldOut:'Sold out',notOut:'Tickets for this event are not out yet — please look again later.',single:'Single tickets',each:'{p} each',offer:'{q} for {p}',tapNums:'Tap the numbers you want.',tapOffer:'Tap {q} numbers for this offer.',free:'Free',taken:'Taken',yours:'Yours',chosen:'Chosen',none:'No numbers chosen yet.',more:'Choose {n} more.',maxN:'Up to {n} tickets at a time.',reserve:'Reserve',busy:'Reserving…',payNote:'You pay {name} when you get your paper ticket.',takenNow:'Sorry — {nums} was just taken by another guest. Please choose another number.',done:'Reserved!',doneText:'Go to {name}, pay {p} and get your paper tickets: {nums}.',ok:'OK',waiting:'Not paid yet',payText:'Pay {name} {p} and get your paper ticket.',paid:'Paid',paidText:'Your ticket is paid — good luck!',cancelled:'Cancelled',cancelRes:'Cancel reservation',cancelQ:'Cancel this reservation?',cancelD:'The numbers become free for other guests.',keep:'Keep it',cancelYes:'Yes, cancel',cancelLate:'This ticket is already paid. Please speak to {name}.',cancelDone:'Reservation cancelled',notOpen:'Online reservation opens soon — for now, buy your paper ticket from the entertainment team.',netErr:'No connection — please try again.',offerOf:'offer of {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Special event',tag_tombola:'Win great prizes',tag_bingo:'Eyes down — who fills the card first?',tag_disco:'Dance all night',tag_other:'Don’t miss it',tonight:'Tonight',save:'save {p}',onlyLeft:'Only {n} left!',soon:'Tickets go on sale soon — check back later.',getTix:'Get your tickets',teaserT:'Prize games & party nights'},
-de:{subLocked:'Reserviere deine Papiertickets für unsere Spiele und Partys.',subOpen:'Wähle deinen Animateur, markiere deine Nummern und reserviere. Bezahlt wird, wenn du dein Papierticket bekommst.',lockText:'Gib deine Zimmernummer und Nationalität ein, um die Tickets zu sehen.',room:'Zimmernummer',nat:'Nationalität',natPick:'Nationalität wählen',common:'Am häufigsten',allNat:'Alle Nationalitäten',phone:'Handynummer',phonePh:'Handynummer',otherCode:'Andere — +Vorwahl eintippen',phoneNote:'Nur für den Animateur, falls es eine Frage zu deinem Ticket gibt.',roomErr:'Bitte gib deine Zimmernummer ein (3 oder 4 Ziffern).',natErr:'Bitte wähle deine Nationalität.',phoneErr:'Bitte gib deine Handynummer mit Ländervorwahl ein.',showTix:'Tickets anzeigen',roomN:'Zimmer {r}',change:'Ändern',myTix:'Meine Tickets',chooseEnt:'Wähle deinen Animateur',left:'noch {n}',soldOut:'Ausverkauft',notOut:'Die Tickets für dieses Event sind noch nicht verteilt — schau später noch einmal.',single:'Einzeltickets',each:'je {p}',offer:'{q} für {p}',tapNums:'Tippe die Nummern an, die du möchtest.',tapOffer:'Tippe {q} Nummern für dieses Angebot an.',free:'Frei',taken:'Vergeben',yours:'Deine',chosen:'Gewählt',none:'Noch keine Nummer gewählt.',more:'Wähle noch {n}.',maxN:'Bis zu {n} Tickets auf einmal.',reserve:'Reservieren',busy:'Wird reserviert…',payNote:'Du bezahlst {name}, wenn du dein Papierticket bekommst.',takenNow:'Leider wurde {nums} gerade von einem anderen Gast genommen. Bitte wähle eine andere Nummer.',done:'Reserviert!',doneText:'Geh zu {name}, bezahle {p} und hol dir deine Papiertickets: {nums}.',ok:'OK',waiting:'Noch nicht bezahlt',payText:'Bezahle {name} {p} und hol dir dein Papierticket.',paid:'Bezahlt',paidText:'Dein Ticket ist bezahlt — viel Glück!',cancelled:'Storniert',cancelRes:'Reservierung stornieren',cancelQ:'Diese Reservierung stornieren?',cancelD:'Die Nummern werden für andere Gäste wieder frei.',keep:'Behalten',cancelYes:'Ja, stornieren',cancelLate:'Dieses Ticket ist schon bezahlt. Bitte sprich mit {name}.',cancelDone:'Reservierung storniert',notOpen:'Die Online-Reservierung startet bald — bis dahin bekommst du dein Papierticket beim Animationsteam.',netErr:'Keine Verbindung — bitte versuche es noch einmal.',offerOf:'Angebot {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Special-Event',tag_tombola:'Tolle Preise gewinnen',tag_bingo:'Wer hat zuerst die volle Karte?',tag_disco:'Tanzen bis in die Nacht',tag_other:'Nicht verpassen',tonight:'Heute Abend',save:'{p} gespart',onlyLeft:'Nur noch {n}!',soon:'Der Ticketverkauf startet bald – schau später wieder vorbei.',getTix:'Tickets holen',teaserT:'Gewinnspiele & Partynächte'},
-ru:{subLocked:'Бронируйте бумажные билеты на наши игры и вечеринки.',subOpen:'Выберите аниматора, отметьте номера и забронируйте. Оплата — при получении бумажного билета.',lockText:'Введите номер комнаты и гражданство, чтобы увидеть билеты.',room:'Номер комнаты',nat:'Гражданство',natPick:'Выберите гражданство',common:'Чаще всего',allNat:'Все страны',phone:'Мобильный номер',phonePh:'Мобильный номер',otherCode:'Другой — введите +код',phoneNote:'Только для аниматора, если будет вопрос по вашему билету.',roomErr:'Введите номер комнаты (3 или 4 цифры).',natErr:'Выберите гражданство.',phoneErr:'Введите мобильный номер с кодом страны.',showTix:'Показать билеты',roomN:'Комната {r}',change:'Изменить',myTix:'Мои билеты',chooseEnt:'Выберите аниматора',left:'осталось {n}',soldOut:'Всё продано',notOut:'Билеты на это мероприятие ещё не выданы — загляните позже.',single:'Отдельные билеты',each:'{p} за билет',offer:'{q} за {p}',tapNums:'Нажмите на нужные номера.',tapOffer:'Нажмите {q} номера для этой акции.',free:'Свободно',taken:'Занято',yours:'Ваши',chosen:'Выбрано',none:'Номера ещё не выбраны.',more:'Выберите ещё {n}.',maxN:'Не больше {n} билетов за раз.',reserve:'Забронировать',busy:'Бронируем…',payNote:'Вы платите аниматору {name} при получении бумажного билета.',takenNow:'Извините — {nums} только что занял другой гость. Выберите другой номер.',done:'Забронировано!',doneText:'Подойдите к {name}, оплатите {p} и получите бумажные билеты: {nums}.',ok:'OK',waiting:'Ещё не оплачено',payText:'Оплатите {p} аниматору {name} и получите бумажный билет.',paid:'Оплачено',paidText:'Билет оплачен — удачи!',cancelled:'Отменено',cancelRes:'Отменить бронь',cancelQ:'Отменить эту бронь?',cancelD:'Номера снова станут свободными для других гостей.',keep:'Оставить',cancelYes:'Да, отменить',cancelLate:'Этот билет уже оплачен. Поговорите с {name}.',cancelDone:'Бронь отменена',notOpen:'Онлайн-бронирование скоро откроется — пока покупайте бумажный билет у команды аниматоров.',netErr:'Нет соединения — попробуйте ещё раз.',offerOf:'акция {q}',ty_tombola:'Томбола',ty_bingo:'Бинго',ty_disco:'Дискотека',ty_other:'Особое событие',tag_tombola:'Выигрывайте отличные призы',tag_bingo:'Кто первым заполнит карточку?',tag_disco:'Танцы всю ночь',tag_other:'Не пропустите',tonight:'Сегодня вечером',save:'экономия {p}',onlyLeft:'Осталось всего {n}!',soon:'Продажа билетов скоро начнётся — загляните позже.',getTix:'Получить билеты',teaserT:'Игры с призами и вечеринки'},
-pl:{subLocked:'Rezerwuj papierowe bilety na nasze gry i imprezy.',subOpen:'Wybierz animatora, zaznacz numery i zarezerwuj. Płacisz przy odbiorze papierowego biletu.',lockText:'Wpisz numer pokoju i narodowość, aby zobaczyć bilety.',room:'Numer pokoju',nat:'Narodowość',natPick:'Wybierz narodowość',common:'Najczęstsze',allNat:'Wszystkie narodowości',phone:'Numer komórki',phonePh:'Numer komórki',otherCode:'Inny — wpisz +kierunkowy',phoneNote:'Tylko dla animatora, gdyby było pytanie o Twój bilet.',roomErr:'Wpisz numer pokoju (3 lub 4 cyfry).',natErr:'Wybierz narodowość.',phoneErr:'Wpisz numer komórki z numerem kierunkowym kraju.',showTix:'Pokaż bilety',roomN:'Pokój {r}',change:'Zmień',myTix:'Moje bilety',chooseEnt:'Wybierz animatora',left:'zostało {n}',soldOut:'Wyprzedane',notOut:'Bilety na to wydarzenie nie zostały jeszcze wydane — zajrzyj później.',single:'Pojedyncze bilety',each:'{p} za bilet',offer:'{q} za {p}',tapNums:'Dotknij numerów, które chcesz.',tapOffer:'Dotknij {q} numerów do tej oferty.',free:'Wolne',taken:'Zajęte',yours:'Twoje',chosen:'Wybrane',none:'Nie wybrano jeszcze numerów.',more:'Wybierz jeszcze {n}.',maxN:'Najwyżej {n} biletów naraz.',reserve:'Zarezerwuj',busy:'Rezerwuję…',payNote:'Płacisz animatorowi {name} przy odbiorze papierowego biletu.',takenNow:'Przepraszamy — {nums} właśnie zajął inny gość. Wybierz inny numer.',done:'Zarezerwowano!',doneText:'Idź do {name}, zapłać {p} i odbierz papierowe bilety: {nums}.',ok:'OK',waiting:'Jeszcze nie zapłacono',payText:'Zapłać {p} animatorowi {name} i odbierz papierowy bilet.',paid:'Zapłacono',paidText:'Bilet zapłacony — powodzenia!',cancelled:'Anulowano',cancelRes:'Anuluj rezerwację',cancelQ:'Anulować tę rezerwację?',cancelD:'Numery znów będą wolne dla innych gości.',keep:'Zostaw',cancelYes:'Tak, anuluj',cancelLate:'Ten bilet jest już zapłacony. Porozmawiaj z {name}.',cancelDone:'Rezerwacja anulowana',notOpen:'Rezerwacja online ruszy wkrótce — na razie kup papierowy bilet u animatorów.',netErr:'Brak połączenia — spróbuj ponownie.',offerOf:'oferta {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Dyskoteka',ty_other:'Wyjątkowe wydarzenie',tag_tombola:'Wygraj świetne nagrody',tag_bingo:'Kto pierwszy zapełni kartę?',tag_disco:'Taniec do białego rana',tag_other:'Nie przegap',tonight:'Dziś wieczorem',save:'oszczędzasz {p}',onlyLeft:'Zostało tylko {n}!',soon:'Sprzedaż biletów wkrótce — zajrzyj później.',getTix:'Kup bilety',teaserT:'Gry z nagrodami i imprezy'},
-cs:{subLocked:'Rezervujte si papírové vstupenky na naše hry a večírky.',subOpen:'Vyberte animátora, označte čísla a rezervujte. Platíte při převzetí papírové vstupenky.',lockText:'Zadejte číslo pokoje a národnost, abyste viděli vstupenky.',room:'Číslo pokoje',nat:'Národnost',natPick:'Vyberte národnost',common:'Nejčastější',allNat:'Všechny národnosti',phone:'Číslo mobilu',phonePh:'Číslo mobilu',otherCode:'Jiná — napište +předvolbu',phoneNote:'Jen pro animátora, kdyby byl dotaz k vaší vstupence.',roomErr:'Zadejte číslo pokoje (3 nebo 4 číslice).',natErr:'Vyberte národnost.',phoneErr:'Zadejte číslo mobilu s předvolbou země.',showTix:'Zobrazit vstupenky',roomN:'Pokoj {r}',change:'Změnit',myTix:'Moje vstupenky',chooseEnt:'Vyberte animátora',left:'zbývá {n}',soldOut:'Vyprodáno',notOut:'Vstupenky na tuto akci ještě nebyly vydány — podívejte se později.',single:'Jednotlivé vstupenky',each:'{p} za kus',offer:'{q} za {p}',tapNums:'Klepněte na čísla, která chcete.',tapOffer:'Klepněte na {q} čísla pro tuto nabídku.',free:'Volné',taken:'Obsazené',yours:'Vaše',chosen:'Vybrané',none:'Zatím nejsou vybraná žádná čísla.',more:'Vyberte ještě {n}.',maxN:'Nejvýše {n} vstupenek najednou.',reserve:'Rezervovat',busy:'Rezervuji…',payNote:'Zaplatíte animátorovi {name} při převzetí papírové vstupenky.',takenNow:'Omlouváme se — {nums} právě obsadil jiný host. Vyberte jiné číslo.',done:'Rezervováno!',doneText:'Jděte za {name}, zaplaťte {p} a převezměte papírové vstupenky: {nums}.',ok:'OK',waiting:'Zatím nezaplaceno',payText:'Zaplaťte {p} animátorovi {name} a převezměte papírovou vstupenku.',paid:'Zaplaceno',paidText:'Vstupenka je zaplacená — hodně štěstí!',cancelled:'Zrušeno',cancelRes:'Zrušit rezervaci',cancelQ:'Zrušit tuto rezervaci?',cancelD:'Čísla budou opět volná pro ostatní hosty.',keep:'Ponechat',cancelYes:'Ano, zrušit',cancelLate:'Tato vstupenka je už zaplacená. Promluvte si s {name}.',cancelDone:'Rezervace zrušena',notOpen:'Online rezervace brzy začne — zatím si kupte papírovou vstupenku u animátorů.',netErr:'Bez připojení — zkuste to znovu.',offerOf:'nabídka {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Diskotéka',ty_other:'Zvláštní akce',tag_tombola:'Vyhrajte skvělé ceny',tag_bingo:'Kdo první zaplní kartu?',tag_disco:'Tanec celou noc',tag_other:'Nenechte si ujít',tonight:'Dnes večer',save:'ušetříte {p}',onlyLeft:'Zbývá jen {n}!',soon:'Prodej vstupenek brzy začne — podívejte se později.',getTix:'Získat vstupenky',teaserT:'Hry o ceny a párty večery'},
-nl:{subLocked:'Reserveer je papieren tickets voor onze spellen en feesten.',subOpen:'Kies je animator, markeer je nummers en reserveer. Je betaalt wanneer je je papieren ticket krijgt.',lockText:'Vul je kamernummer en nationaliteit in om de tickets te zien.',room:'Kamernummer',nat:'Nationaliteit',natPick:'Kies je nationaliteit',common:'Meest gekozen',allNat:'Alle nationaliteiten',phone:'Mobiel nummer',phonePh:'Mobiel nummer',otherCode:'Anders — typ +landcode',phoneNote:'Alleen voor de animator, als er een vraag is over je ticket.',roomErr:'Vul je kamernummer in (3 of 4 cijfers).',natErr:'Kies je nationaliteit.',phoneErr:'Vul je mobiele nummer met landcode in.',showTix:'Toon de tickets',roomN:'Kamer {r}',change:'Wijzigen',myTix:'Mijn tickets',chooseEnt:'Kies je animator',left:'nog {n}',soldOut:'Uitverkocht',notOut:'De tickets voor dit event zijn nog niet uitgedeeld — kijk later nog eens.',single:'Losse tickets',each:'{p} per stuk',offer:'{q} voor {p}',tapNums:'Tik op de nummers die je wilt.',tapOffer:'Tik op {q} nummers voor deze aanbieding.',free:'Vrij',taken:'Bezet',yours:'Van jou',chosen:'Gekozen',none:'Nog geen nummers gekozen.',more:'Kies er nog {n}.',maxN:'Maximaal {n} tickets per keer.',reserve:'Reserveren',busy:'Bezig met reserveren…',payNote:'Je betaalt {name} wanneer je je papieren ticket krijgt.',takenNow:'Sorry — {nums} is net door een andere gast genomen. Kies een ander nummer.',done:'Gereserveerd!',doneText:'Ga naar {name}, betaal {p} en haal je papieren tickets: {nums}.',ok:'OK',waiting:'Nog niet betaald',payText:'Betaal {name} {p} en haal je papieren ticket.',paid:'Betaald',paidText:'Je ticket is betaald — veel succes!',cancelled:'Geannuleerd',cancelRes:'Reservering annuleren',cancelQ:'Deze reservering annuleren?',cancelD:'De nummers komen weer vrij voor andere gasten.',keep:'Houden',cancelYes:'Ja, annuleren',cancelLate:'Dit ticket is al betaald. Spreek met {name}.',cancelDone:'Reservering geannuleerd',notOpen:'Online reserveren kan binnenkort — koop je papieren ticket voorlopig bij het entertainmentteam.',netErr:'Geen verbinding — probeer het opnieuw.',offerOf:'aanbieding {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Speciaal event',tag_tombola:'Win mooie prijzen',tag_bingo:'Wie heeft als eerste een volle kaart?',tag_disco:'De hele nacht dansen',tag_other:'Mis het niet',tonight:'Vanavond',save:'bespaar {p}',onlyLeft:'Nog maar {n}!',soon:'De ticketverkoop start binnenkort — kijk later nog eens.',getTix:'Haal je tickets',teaserT:'Prijsspellen & feestavonden'},
-fr:{subLocked:'Réservez vos billets papier pour nos jeux et soirées.',subOpen:'Choisissez votre animateur, cochez vos numéros et réservez. Vous payez en recevant votre billet papier.',lockText:'Saisissez votre numéro de chambre et votre nationalité pour voir les billets.',room:'Numéro de chambre',nat:'Nationalité',natPick:'Choisissez votre nationalité',common:'Les plus fréquentes',allNat:'Toutes les nationalités',phone:'Numéro de portable',phonePh:'Numéro de portable',otherCode:'Autre — tapez +indicatif',phoneNote:'Uniquement pour l’animateur, en cas de question sur votre billet.',roomErr:'Saisissez votre numéro de chambre (3 ou 4 chiffres).',natErr:'Choisissez votre nationalité.',phoneErr:'Saisissez votre numéro de portable avec l’indicatif du pays.',showTix:'Voir les billets',roomN:'Chambre {r}',change:'Modifier',myTix:'Mes billets',chooseEnt:'Choisissez votre animateur',left:'encore {n}',soldOut:'Complet',notOut:'Les billets de cet événement ne sont pas encore distribués — revenez plus tard.',single:'Billets à l’unité',each:'{p} l’unité',offer:'{q} pour {p}',tapNums:'Touchez les numéros que vous voulez.',tapOffer:'Touchez {q} numéros pour cette offre.',free:'Libre',taken:'Pris',yours:'Les vôtres',chosen:'Choisi',none:'Aucun numéro choisi.',more:'Encore {n} à choisir.',maxN:'{n} billets au maximum à la fois.',reserve:'Réserver',busy:'Réservation…',payNote:'Vous payez {name} en recevant votre billet papier.',takenNow:'Désolé — {nums} vient d’être pris par un autre client. Choisissez un autre numéro.',done:'Réservé !',doneText:'Allez voir {name}, payez {p} et recevez vos billets papier : {nums}.',ok:'OK',waiting:'Pas encore payé',payText:'Payez {p} à {name} et recevez votre billet papier.',paid:'Payé',paidText:'Votre billet est payé — bonne chance !',cancelled:'Annulé',cancelRes:'Annuler la réservation',cancelQ:'Annuler cette réservation ?',cancelD:'Les numéros redeviennent libres pour les autres clients.',keep:'La garder',cancelYes:'Oui, annuler',cancelLate:'Ce billet est déjà payé. Parlez-en à {name}.',cancelDone:'Réservation annulée',notOpen:'La réservation en ligne ouvre bientôt — en attendant, achetez votre billet papier auprès de l’équipe d’animation.',netErr:'Pas de connexion — réessayez.',offerOf:'offre de {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Événement spécial',tag_tombola:'De superbes lots à gagner',tag_bingo:'Qui remplira sa carte en premier ?',tag_disco:'Dansez toute la nuit',tag_other:'À ne pas manquer',tonight:'Ce soir',save:'économisez {p}',onlyLeft:'Plus que {n} !',soon:'La vente des billets commence bientôt — revenez plus tard.',getTix:'Obtenir mes billets',teaserT:'Jeux à gagner & soirées'},
-ar:{subLocked:'احجز تذاكرك الورقية لألعابنا وحفلاتنا.',subOpen:'اختر المنشط وحدّد أرقامك واحجز. تدفع عند استلام تذكرتك الورقية.',lockText:'أدخل رقم غرفتك وجنسيتك لرؤية التذاكر.',room:'رقم الغرفة',nat:'الجنسية',natPick:'اختر جنسيتك',common:'الأكثر شيوعاً',allNat:'كل الجنسيات',phone:'رقم الجوال',phonePh:'رقم الجوال',otherCode:'أخرى — اكتب +رمز الدولة',phoneNote:'للمنشط فقط، إذا كان هناك سؤال عن تذكرتك.',roomErr:'أدخل رقم غرفتك (3 أو 4 أرقام).',natErr:'اختر جنسيتك.',phoneErr:'أدخل رقم جوالك مع رمز الدولة.',showTix:'عرض التذاكر',roomN:'غرفة {r}',change:'تغيير',myTix:'تذاكري',chooseEnt:'اختر المنشط',left:'متبقٍ {n}',soldOut:'نفدت',notOut:'لم تُوزَّع تذاكر هذه الفعالية بعد — عد لاحقاً.',single:'تذاكر فردية',each:'{p} للتذكرة',offer:'{q} مقابل {p}',tapNums:'اضغط على الأرقام التي تريدها.',tapOffer:'اضغط على {q} أرقام لهذا العرض.',free:'متاح',taken:'محجوز',yours:'لك',chosen:'مختار',none:'لم تختر أي رقم بعد.',more:'اختر {n} أخرى.',maxN:'حتى {n} تذاكر في المرة.',reserve:'احجز',busy:'جارٍ الحجز…',payNote:'تدفع للمنشط {name} عند استلام تذكرتك الورقية.',takenNow:'عذراً — الرقم {nums} حجزه ضيف آخر للتو. اختر رقماً آخر.',done:'تم الحجز!',doneText:'اذهب إلى {name}، ادفع {p} واستلم تذاكرك الورقية: {nums}.',ok:'حسناً',waiting:'لم يُدفع بعد',payText:'ادفع {p} للمنشط {name} واستلم تذكرتك الورقية.',paid:'مدفوع',paidText:'تذكرتك مدفوعة — حظاً سعيداً!',cancelled:'ملغى',cancelRes:'إلغاء الحجز',cancelQ:'إلغاء هذا الحجز؟',cancelD:'ستصبح الأرقام متاحة لضيوف آخرين.',keep:'احتفظ به',cancelYes:'نعم، ألغِ',cancelLate:'هذه التذكرة مدفوعة بالفعل. تحدث مع {name}.',cancelDone:'تم إلغاء الحجز',notOpen:'الحجز عبر الإنترنت يبدأ قريباً — حالياً اشترِ تذكرتك الورقية من فريق الترفيه.',netErr:'لا يوجد اتصال — حاول مرة أخرى.',offerOf:'عرض {q}',ty_tombola:'تومبولا',ty_bingo:'بينغو',ty_disco:'ديسكو',ty_other:'فعالية خاصة',tag_tombola:'اربح جوائز رائعة',tag_bingo:'من يكمل بطاقته أولاً؟',tag_disco:'رقص طوال الليل',tag_other:'لا تفوّتها',tonight:'الليلة',save:'وفّر {p}',onlyLeft:'متبقٍ {n} فقط!',soon:'يبدأ بيع التذاكر قريباً — عد لاحقاً.',getTix:'احصل على تذاكرك',teaserT:'ألعاب بجوائز وسهرات'}
+en:{subLocked:'Reserve your paper tickets for our games and parties.',subOpen:'Choose your entertainer, mark your numbers and reserve. You pay when you get your paper ticket.',lockText:'Enter your room number and nationality to see the tickets.',room:'Room number',nat:'Nationality',natPick:'Choose your nationality',common:'Most common',allNat:'All nationalities',phone:'Mobile number',phonePh:'Mobile number',otherCode:'Other — type +code',phoneNote:'Only for the entertainer, if there is a question about your ticket.',roomErr:'Please enter your room number (3 or 4 digits).',natErr:'Please choose your nationality.',phoneErr:'Please enter your mobile number with the country code.',showTix:'Show the tickets',roomN:'Room {r}',change:'Change',myTix:'My tickets',chooseEnt:'Choose your entertainer',left:'{n} left',soldOut:'Sold out',notOut:'Tickets for this event are not out yet — please look again later.',single:'Single tickets',each:'{p} each',offer:'{q} for {p}',tapNums:'Tap the numbers you want.',tapOffer:'Tap {q} numbers for this offer.',free:'Free',taken:'Taken',yours:'Yours',chosen:'Chosen',none:'No numbers chosen yet.',more:'Choose {n} more.',maxN:'Up to {n} tickets at a time.',reserve:'Reserve',busy:'Reserving…',payNote:'You pay {name} when you get your paper ticket.',takenNow:'Sorry — {nums} was just taken by another guest. Please choose another number.',done:'Reserved!',doneText:'Go to {name}, pay {p} and get your paper tickets: {nums}.',ok:'OK',waiting:'Not paid yet',payText:'Pay {name} {p} and get your paper ticket.',paid:'Paid',paidText:'Your ticket is paid — good luck!',cancelled:'Cancelled',cancelRes:'Cancel reservation',cancelQ:'Cancel this reservation?',cancelD:'The numbers become free for other guests.',keep:'Keep it',cancelYes:'Yes, cancel',cancelLate:'This ticket is already paid. Please speak to {name}.',cancelDone:'Reservation cancelled',notOpen:'Online reservation opens soon — for now, buy your paper ticket from the entertainment team.',netErr:'No connection — please try again.',offerOf:'offer of {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Special event',tag_tombola:'Win great prizes',tag_bingo:'Eyes down — who fills the card first?',tag_disco:'Dance all night',tag_other:'Don’t miss it',tonight:'Tonight',save:'save {p}',onlyLeft:'Only {n} left!',soon:'Tickets go on sale soon — check back later.',getTix:'Get your tickets',teaserT:'Prize games & party nights',gName:'Your name',nameErr:'Please enter your name.',arr:'Arrival',dep:'Departure',datesErr:'Please enter your arrival and departure dates.',depErr:'The departure date must be after the arrival date — and not in the past.',stayTill:'until {d}'},
+de:{subLocked:'Reserviere deine Papiertickets für unsere Spiele und Partys.',subOpen:'Wähle deinen Animateur, markiere deine Nummern und reserviere. Bezahlt wird, wenn du dein Papierticket bekommst.',lockText:'Gib deine Zimmernummer und Nationalität ein, um die Tickets zu sehen.',room:'Zimmernummer',nat:'Nationalität',natPick:'Nationalität wählen',common:'Am häufigsten',allNat:'Alle Nationalitäten',phone:'Handynummer',phonePh:'Handynummer',otherCode:'Andere — +Vorwahl eintippen',phoneNote:'Nur für den Animateur, falls es eine Frage zu deinem Ticket gibt.',roomErr:'Bitte gib deine Zimmernummer ein (3 oder 4 Ziffern).',natErr:'Bitte wähle deine Nationalität.',phoneErr:'Bitte gib deine Handynummer mit Ländervorwahl ein.',showTix:'Tickets anzeigen',roomN:'Zimmer {r}',change:'Ändern',myTix:'Meine Tickets',chooseEnt:'Wähle deinen Animateur',left:'noch {n}',soldOut:'Ausverkauft',notOut:'Die Tickets für dieses Event sind noch nicht verteilt — schau später noch einmal.',single:'Einzeltickets',each:'je {p}',offer:'{q} für {p}',tapNums:'Tippe die Nummern an, die du möchtest.',tapOffer:'Tippe {q} Nummern für dieses Angebot an.',free:'Frei',taken:'Vergeben',yours:'Deine',chosen:'Gewählt',none:'Noch keine Nummer gewählt.',more:'Wähle noch {n}.',maxN:'Bis zu {n} Tickets auf einmal.',reserve:'Reservieren',busy:'Wird reserviert…',payNote:'Du bezahlst {name}, wenn du dein Papierticket bekommst.',takenNow:'Leider wurde {nums} gerade von einem anderen Gast genommen. Bitte wähle eine andere Nummer.',done:'Reserviert!',doneText:'Geh zu {name}, bezahle {p} und hol dir deine Papiertickets: {nums}.',ok:'OK',waiting:'Noch nicht bezahlt',payText:'Bezahle {name} {p} und hol dir dein Papierticket.',paid:'Bezahlt',paidText:'Dein Ticket ist bezahlt — viel Glück!',cancelled:'Storniert',cancelRes:'Reservierung stornieren',cancelQ:'Diese Reservierung stornieren?',cancelD:'Die Nummern werden für andere Gäste wieder frei.',keep:'Behalten',cancelYes:'Ja, stornieren',cancelLate:'Dieses Ticket ist schon bezahlt. Bitte sprich mit {name}.',cancelDone:'Reservierung storniert',notOpen:'Die Online-Reservierung startet bald — bis dahin bekommst du dein Papierticket beim Animationsteam.',netErr:'Keine Verbindung — bitte versuche es noch einmal.',offerOf:'Angebot {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Special-Event',tag_tombola:'Tolle Preise gewinnen',tag_bingo:'Wer hat zuerst die volle Karte?',tag_disco:'Tanzen bis in die Nacht',tag_other:'Nicht verpassen',tonight:'Heute Abend',save:'{p} gespart',onlyLeft:'Nur noch {n}!',soon:'Der Ticketverkauf startet bald – schau später wieder vorbei.',getTix:'Tickets holen',teaserT:'Gewinnspiele & Partynächte',gName:'Dein Name',nameErr:'Bitte gib deinen Namen ein.',arr:'Anreise',dep:'Abreise',datesErr:'Bitte gib dein Anreise- und Abreisedatum ein.',depErr:'Das Abreisedatum muss nach der Anreise liegen und darf nicht in der Vergangenheit sein.',stayTill:'bis {d}'},
+ru:{subLocked:'Бронируйте бумажные билеты на наши игры и вечеринки.',subOpen:'Выберите аниматора, отметьте номера и забронируйте. Оплата — при получении бумажного билета.',lockText:'Введите номер комнаты и гражданство, чтобы увидеть билеты.',room:'Номер комнаты',nat:'Гражданство',natPick:'Выберите гражданство',common:'Чаще всего',allNat:'Все страны',phone:'Мобильный номер',phonePh:'Мобильный номер',otherCode:'Другой — введите +код',phoneNote:'Только для аниматора, если будет вопрос по вашему билету.',roomErr:'Введите номер комнаты (3 или 4 цифры).',natErr:'Выберите гражданство.',phoneErr:'Введите мобильный номер с кодом страны.',showTix:'Показать билеты',roomN:'Комната {r}',change:'Изменить',myTix:'Мои билеты',chooseEnt:'Выберите аниматора',left:'осталось {n}',soldOut:'Всё продано',notOut:'Билеты на это мероприятие ещё не выданы — загляните позже.',single:'Отдельные билеты',each:'{p} за билет',offer:'{q} за {p}',tapNums:'Нажмите на нужные номера.',tapOffer:'Нажмите {q} номера для этой акции.',free:'Свободно',taken:'Занято',yours:'Ваши',chosen:'Выбрано',none:'Номера ещё не выбраны.',more:'Выберите ещё {n}.',maxN:'Не больше {n} билетов за раз.',reserve:'Забронировать',busy:'Бронируем…',payNote:'Вы платите аниматору {name} при получении бумажного билета.',takenNow:'Извините — {nums} только что занял другой гость. Выберите другой номер.',done:'Забронировано!',doneText:'Подойдите к {name}, оплатите {p} и получите бумажные билеты: {nums}.',ok:'OK',waiting:'Ещё не оплачено',payText:'Оплатите {p} аниматору {name} и получите бумажный билет.',paid:'Оплачено',paidText:'Билет оплачен — удачи!',cancelled:'Отменено',cancelRes:'Отменить бронь',cancelQ:'Отменить эту бронь?',cancelD:'Номера снова станут свободными для других гостей.',keep:'Оставить',cancelYes:'Да, отменить',cancelLate:'Этот билет уже оплачен. Поговорите с {name}.',cancelDone:'Бронь отменена',notOpen:'Онлайн-бронирование скоро откроется — пока покупайте бумажный билет у команды аниматоров.',netErr:'Нет соединения — попробуйте ещё раз.',offerOf:'акция {q}',ty_tombola:'Томбола',ty_bingo:'Бинго',ty_disco:'Дискотека',ty_other:'Особое событие',tag_tombola:'Выигрывайте отличные призы',tag_bingo:'Кто первым заполнит карточку?',tag_disco:'Танцы всю ночь',tag_other:'Не пропустите',tonight:'Сегодня вечером',save:'экономия {p}',onlyLeft:'Осталось всего {n}!',soon:'Продажа билетов скоро начнётся — загляните позже.',getTix:'Получить билеты',teaserT:'Игры с призами и вечеринки',gName:'Ваше имя',nameErr:'Введите ваше имя.',arr:'Заезд',dep:'Выезд',datesErr:'Укажите даты заезда и выезда.',depErr:'Дата выезда должна быть позже даты заезда и не в прошлом.',stayTill:'до {d}'},
+pl:{subLocked:'Rezerwuj papierowe bilety na nasze gry i imprezy.',subOpen:'Wybierz animatora, zaznacz numery i zarezerwuj. Płacisz przy odbiorze papierowego biletu.',lockText:'Wpisz numer pokoju i narodowość, aby zobaczyć bilety.',room:'Numer pokoju',nat:'Narodowość',natPick:'Wybierz narodowość',common:'Najczęstsze',allNat:'Wszystkie narodowości',phone:'Numer komórki',phonePh:'Numer komórki',otherCode:'Inny — wpisz +kierunkowy',phoneNote:'Tylko dla animatora, gdyby było pytanie o Twój bilet.',roomErr:'Wpisz numer pokoju (3 lub 4 cyfry).',natErr:'Wybierz narodowość.',phoneErr:'Wpisz numer komórki z numerem kierunkowym kraju.',showTix:'Pokaż bilety',roomN:'Pokój {r}',change:'Zmień',myTix:'Moje bilety',chooseEnt:'Wybierz animatora',left:'zostało {n}',soldOut:'Wyprzedane',notOut:'Bilety na to wydarzenie nie zostały jeszcze wydane — zajrzyj później.',single:'Pojedyncze bilety',each:'{p} za bilet',offer:'{q} za {p}',tapNums:'Dotknij numerów, które chcesz.',tapOffer:'Dotknij {q} numerów do tej oferty.',free:'Wolne',taken:'Zajęte',yours:'Twoje',chosen:'Wybrane',none:'Nie wybrano jeszcze numerów.',more:'Wybierz jeszcze {n}.',maxN:'Najwyżej {n} biletów naraz.',reserve:'Zarezerwuj',busy:'Rezerwuję…',payNote:'Płacisz animatorowi {name} przy odbiorze papierowego biletu.',takenNow:'Przepraszamy — {nums} właśnie zajął inny gość. Wybierz inny numer.',done:'Zarezerwowano!',doneText:'Idź do {name}, zapłać {p} i odbierz papierowe bilety: {nums}.',ok:'OK',waiting:'Jeszcze nie zapłacono',payText:'Zapłać {p} animatorowi {name} i odbierz papierowy bilet.',paid:'Zapłacono',paidText:'Bilet zapłacony — powodzenia!',cancelled:'Anulowano',cancelRes:'Anuluj rezerwację',cancelQ:'Anulować tę rezerwację?',cancelD:'Numery znów będą wolne dla innych gości.',keep:'Zostaw',cancelYes:'Tak, anuluj',cancelLate:'Ten bilet jest już zapłacony. Porozmawiaj z {name}.',cancelDone:'Rezerwacja anulowana',notOpen:'Rezerwacja online ruszy wkrótce — na razie kup papierowy bilet u animatorów.',netErr:'Brak połączenia — spróbuj ponownie.',offerOf:'oferta {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Dyskoteka',ty_other:'Wyjątkowe wydarzenie',tag_tombola:'Wygraj świetne nagrody',tag_bingo:'Kto pierwszy zapełni kartę?',tag_disco:'Taniec do białego rana',tag_other:'Nie przegap',tonight:'Dziś wieczorem',save:'oszczędzasz {p}',onlyLeft:'Zostało tylko {n}!',soon:'Sprzedaż biletów wkrótce — zajrzyj później.',getTix:'Kup bilety',teaserT:'Gry z nagrodami i imprezy',gName:'Twoje imię i nazwisko',nameErr:'Wpisz swoje imię i nazwisko.',arr:'Przyjazd',dep:'Wyjazd',datesErr:'Podaj daty przyjazdu i wyjazdu.',depErr:'Data wyjazdu musi być po dacie przyjazdu i nie może być w przeszłości.',stayTill:'do {d}'},
+cs:{subLocked:'Rezervujte si papírové vstupenky na naše hry a večírky.',subOpen:'Vyberte animátora, označte čísla a rezervujte. Platíte při převzetí papírové vstupenky.',lockText:'Zadejte číslo pokoje a národnost, abyste viděli vstupenky.',room:'Číslo pokoje',nat:'Národnost',natPick:'Vyberte národnost',common:'Nejčastější',allNat:'Všechny národnosti',phone:'Číslo mobilu',phonePh:'Číslo mobilu',otherCode:'Jiná — napište +předvolbu',phoneNote:'Jen pro animátora, kdyby byl dotaz k vaší vstupence.',roomErr:'Zadejte číslo pokoje (3 nebo 4 číslice).',natErr:'Vyberte národnost.',phoneErr:'Zadejte číslo mobilu s předvolbou země.',showTix:'Zobrazit vstupenky',roomN:'Pokoj {r}',change:'Změnit',myTix:'Moje vstupenky',chooseEnt:'Vyberte animátora',left:'zbývá {n}',soldOut:'Vyprodáno',notOut:'Vstupenky na tuto akci ještě nebyly vydány — podívejte se později.',single:'Jednotlivé vstupenky',each:'{p} za kus',offer:'{q} za {p}',tapNums:'Klepněte na čísla, která chcete.',tapOffer:'Klepněte na {q} čísla pro tuto nabídku.',free:'Volné',taken:'Obsazené',yours:'Vaše',chosen:'Vybrané',none:'Zatím nejsou vybraná žádná čísla.',more:'Vyberte ještě {n}.',maxN:'Nejvýše {n} vstupenek najednou.',reserve:'Rezervovat',busy:'Rezervuji…',payNote:'Zaplatíte animátorovi {name} při převzetí papírové vstupenky.',takenNow:'Omlouváme se — {nums} právě obsadil jiný host. Vyberte jiné číslo.',done:'Rezervováno!',doneText:'Jděte za {name}, zaplaťte {p} a převezměte papírové vstupenky: {nums}.',ok:'OK',waiting:'Zatím nezaplaceno',payText:'Zaplaťte {p} animátorovi {name} a převezměte papírovou vstupenku.',paid:'Zaplaceno',paidText:'Vstupenka je zaplacená — hodně štěstí!',cancelled:'Zrušeno',cancelRes:'Zrušit rezervaci',cancelQ:'Zrušit tuto rezervaci?',cancelD:'Čísla budou opět volná pro ostatní hosty.',keep:'Ponechat',cancelYes:'Ano, zrušit',cancelLate:'Tato vstupenka je už zaplacená. Promluvte si s {name}.',cancelDone:'Rezervace zrušena',notOpen:'Online rezervace brzy začne — zatím si kupte papírovou vstupenku u animátorů.',netErr:'Bez připojení — zkuste to znovu.',offerOf:'nabídka {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Diskotéka',ty_other:'Zvláštní akce',tag_tombola:'Vyhrajte skvělé ceny',tag_bingo:'Kdo první zaplní kartu?',tag_disco:'Tanec celou noc',tag_other:'Nenechte si ujít',tonight:'Dnes večer',save:'ušetříte {p}',onlyLeft:'Zbývá jen {n}!',soon:'Prodej vstupenek brzy začne — podívejte se později.',getTix:'Získat vstupenky',teaserT:'Hry o ceny a párty večery',gName:'Vaše jméno',nameErr:'Zadejte své jméno.',arr:'Příjezd',dep:'Odjezd',datesErr:'Zadejte datum příjezdu a odjezdu.',depErr:'Datum odjezdu musí být po příjezdu a nesmí být v minulosti.',stayTill:'do {d}'},
+nl:{subLocked:'Reserveer je papieren tickets voor onze spellen en feesten.',subOpen:'Kies je animator, markeer je nummers en reserveer. Je betaalt wanneer je je papieren ticket krijgt.',lockText:'Vul je kamernummer en nationaliteit in om de tickets te zien.',room:'Kamernummer',nat:'Nationaliteit',natPick:'Kies je nationaliteit',common:'Meest gekozen',allNat:'Alle nationaliteiten',phone:'Mobiel nummer',phonePh:'Mobiel nummer',otherCode:'Anders — typ +landcode',phoneNote:'Alleen voor de animator, als er een vraag is over je ticket.',roomErr:'Vul je kamernummer in (3 of 4 cijfers).',natErr:'Kies je nationaliteit.',phoneErr:'Vul je mobiele nummer met landcode in.',showTix:'Toon de tickets',roomN:'Kamer {r}',change:'Wijzigen',myTix:'Mijn tickets',chooseEnt:'Kies je animator',left:'nog {n}',soldOut:'Uitverkocht',notOut:'De tickets voor dit event zijn nog niet uitgedeeld — kijk later nog eens.',single:'Losse tickets',each:'{p} per stuk',offer:'{q} voor {p}',tapNums:'Tik op de nummers die je wilt.',tapOffer:'Tik op {q} nummers voor deze aanbieding.',free:'Vrij',taken:'Bezet',yours:'Van jou',chosen:'Gekozen',none:'Nog geen nummers gekozen.',more:'Kies er nog {n}.',maxN:'Maximaal {n} tickets per keer.',reserve:'Reserveren',busy:'Bezig met reserveren…',payNote:'Je betaalt {name} wanneer je je papieren ticket krijgt.',takenNow:'Sorry — {nums} is net door een andere gast genomen. Kies een ander nummer.',done:'Gereserveerd!',doneText:'Ga naar {name}, betaal {p} en haal je papieren tickets: {nums}.',ok:'OK',waiting:'Nog niet betaald',payText:'Betaal {name} {p} en haal je papieren ticket.',paid:'Betaald',paidText:'Je ticket is betaald — veel succes!',cancelled:'Geannuleerd',cancelRes:'Reservering annuleren',cancelQ:'Deze reservering annuleren?',cancelD:'De nummers komen weer vrij voor andere gasten.',keep:'Houden',cancelYes:'Ja, annuleren',cancelLate:'Dit ticket is al betaald. Spreek met {name}.',cancelDone:'Reservering geannuleerd',notOpen:'Online reserveren kan binnenkort — koop je papieren ticket voorlopig bij het entertainmentteam.',netErr:'Geen verbinding — probeer het opnieuw.',offerOf:'aanbieding {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Speciaal event',tag_tombola:'Win mooie prijzen',tag_bingo:'Wie heeft als eerste een volle kaart?',tag_disco:'De hele nacht dansen',tag_other:'Mis het niet',tonight:'Vanavond',save:'bespaar {p}',onlyLeft:'Nog maar {n}!',soon:'De ticketverkoop start binnenkort — kijk later nog eens.',getTix:'Haal je tickets',teaserT:'Prijsspellen & feestavonden',gName:'Je naam',nameErr:'Vul je naam in.',arr:'Aankomst',dep:'Vertrek',datesErr:'Vul je aankomst- en vertrekdatum in.',depErr:'De vertrekdatum moet na de aankomst liggen en mag niet in het verleden zijn.',stayTill:'tot {d}'},
+fr:{subLocked:'Réservez vos billets papier pour nos jeux et soirées.',subOpen:'Choisissez votre animateur, cochez vos numéros et réservez. Vous payez en recevant votre billet papier.',lockText:'Saisissez votre numéro de chambre et votre nationalité pour voir les billets.',room:'Numéro de chambre',nat:'Nationalité',natPick:'Choisissez votre nationalité',common:'Les plus fréquentes',allNat:'Toutes les nationalités',phone:'Numéro de portable',phonePh:'Numéro de portable',otherCode:'Autre — tapez +indicatif',phoneNote:'Uniquement pour l’animateur, en cas de question sur votre billet.',roomErr:'Saisissez votre numéro de chambre (3 ou 4 chiffres).',natErr:'Choisissez votre nationalité.',phoneErr:'Saisissez votre numéro de portable avec l’indicatif du pays.',showTix:'Voir les billets',roomN:'Chambre {r}',change:'Modifier',myTix:'Mes billets',chooseEnt:'Choisissez votre animateur',left:'encore {n}',soldOut:'Complet',notOut:'Les billets de cet événement ne sont pas encore distribués — revenez plus tard.',single:'Billets à l’unité',each:'{p} l’unité',offer:'{q} pour {p}',tapNums:'Touchez les numéros que vous voulez.',tapOffer:'Touchez {q} numéros pour cette offre.',free:'Libre',taken:'Pris',yours:'Les vôtres',chosen:'Choisi',none:'Aucun numéro choisi.',more:'Encore {n} à choisir.',maxN:'{n} billets au maximum à la fois.',reserve:'Réserver',busy:'Réservation…',payNote:'Vous payez {name} en recevant votre billet papier.',takenNow:'Désolé — {nums} vient d’être pris par un autre client. Choisissez un autre numéro.',done:'Réservé !',doneText:'Allez voir {name}, payez {p} et recevez vos billets papier : {nums}.',ok:'OK',waiting:'Pas encore payé',payText:'Payez {p} à {name} et recevez votre billet papier.',paid:'Payé',paidText:'Votre billet est payé — bonne chance !',cancelled:'Annulé',cancelRes:'Annuler la réservation',cancelQ:'Annuler cette réservation ?',cancelD:'Les numéros redeviennent libres pour les autres clients.',keep:'La garder',cancelYes:'Oui, annuler',cancelLate:'Ce billet est déjà payé. Parlez-en à {name}.',cancelDone:'Réservation annulée',notOpen:'La réservation en ligne ouvre bientôt — en attendant, achetez votre billet papier auprès de l’équipe d’animation.',netErr:'Pas de connexion — réessayez.',offerOf:'offre de {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Événement spécial',tag_tombola:'De superbes lots à gagner',tag_bingo:'Qui remplira sa carte en premier ?',tag_disco:'Dansez toute la nuit',tag_other:'À ne pas manquer',tonight:'Ce soir',save:'économisez {p}',onlyLeft:'Plus que {n} !',soon:'La vente des billets commence bientôt — revenez plus tard.',getTix:'Obtenir mes billets',teaserT:'Jeux à gagner & soirées',gName:'Votre nom',nameErr:'Saisissez votre nom.',arr:'Arrivée',dep:'Départ',datesErr:'Indiquez vos dates d’arrivée et de départ.',depErr:'La date de départ doit être après l’arrivée et pas dans le passé.',stayTill:'jusqu’au {d}'},
+ar:{subLocked:'احجز تذاكرك الورقية لألعابنا وحفلاتنا.',subOpen:'اختر المنشط وحدّد أرقامك واحجز. تدفع عند استلام تذكرتك الورقية.',lockText:'أدخل رقم غرفتك وجنسيتك لرؤية التذاكر.',room:'رقم الغرفة',nat:'الجنسية',natPick:'اختر جنسيتك',common:'الأكثر شيوعاً',allNat:'كل الجنسيات',phone:'رقم الجوال',phonePh:'رقم الجوال',otherCode:'أخرى — اكتب +رمز الدولة',phoneNote:'للمنشط فقط، إذا كان هناك سؤال عن تذكرتك.',roomErr:'أدخل رقم غرفتك (3 أو 4 أرقام).',natErr:'اختر جنسيتك.',phoneErr:'أدخل رقم جوالك مع رمز الدولة.',showTix:'عرض التذاكر',roomN:'غرفة {r}',change:'تغيير',myTix:'تذاكري',chooseEnt:'اختر المنشط',left:'متبقٍ {n}',soldOut:'نفدت',notOut:'لم تُوزَّع تذاكر هذه الفعالية بعد — عد لاحقاً.',single:'تذاكر فردية',each:'{p} للتذكرة',offer:'{q} مقابل {p}',tapNums:'اضغط على الأرقام التي تريدها.',tapOffer:'اضغط على {q} أرقام لهذا العرض.',free:'متاح',taken:'محجوز',yours:'لك',chosen:'مختار',none:'لم تختر أي رقم بعد.',more:'اختر {n} أخرى.',maxN:'حتى {n} تذاكر في المرة.',reserve:'احجز',busy:'جارٍ الحجز…',payNote:'تدفع للمنشط {name} عند استلام تذكرتك الورقية.',takenNow:'عذراً — الرقم {nums} حجزه ضيف آخر للتو. اختر رقماً آخر.',done:'تم الحجز!',doneText:'اذهب إلى {name}، ادفع {p} واستلم تذاكرك الورقية: {nums}.',ok:'حسناً',waiting:'لم يُدفع بعد',payText:'ادفع {p} للمنشط {name} واستلم تذكرتك الورقية.',paid:'مدفوع',paidText:'تذكرتك مدفوعة — حظاً سعيداً!',cancelled:'ملغى',cancelRes:'إلغاء الحجز',cancelQ:'إلغاء هذا الحجز؟',cancelD:'ستصبح الأرقام متاحة لضيوف آخرين.',keep:'احتفظ به',cancelYes:'نعم، ألغِ',cancelLate:'هذه التذكرة مدفوعة بالفعل. تحدث مع {name}.',cancelDone:'تم إلغاء الحجز',notOpen:'الحجز عبر الإنترنت يبدأ قريباً — حالياً اشترِ تذكرتك الورقية من فريق الترفيه.',netErr:'لا يوجد اتصال — حاول مرة أخرى.',offerOf:'عرض {q}',ty_tombola:'تومبولا',ty_bingo:'بينغو',ty_disco:'ديسكو',ty_other:'فعالية خاصة',tag_tombola:'اربح جوائز رائعة',tag_bingo:'من يكمل بطاقته أولاً؟',tag_disco:'رقص طوال الليل',tag_other:'لا تفوّتها',tonight:'الليلة',save:'وفّر {p}',onlyLeft:'متبقٍ {n} فقط!',soon:'يبدأ بيع التذاكر قريباً — عد لاحقاً.',getTix:'احصل على تذاكرك',teaserT:'ألعاب بجوائز وسهرات',gName:'اسمك',nameErr:'أدخل اسمك.',arr:'الوصول',dep:'المغادرة',datesErr:'أدخل تاريخي الوصول والمغادرة.',depErr:'يجب أن يكون تاريخ المغادرة بعد الوصول وليس في الماضي.',stayTill:'حتى {d}'}
 };
 window.__rvW=W;
 function G(k,v){ const d=W[S.lang]||W.en; let s=d[k]!=null?d[k]:W.en[k]; if(s==null) s=k; if(v) Object.keys(v).forEach(x=>{ s=s.split('{'+x+'}').join(String(v[x])); }); return s; }
@@ -20434,7 +20440,10 @@ const CODES_LONG=()=>CODES.map(x=>x[0]).sort((a,b)=>b.length-a.length);
 function fmtPhone(p){ p=String(p||'').trim(); if(!/^\+\d{6,}$/.test(p)) return p; const c=CODES_LONG().find(x=>p.startsWith(x)); return c?c+' '+p.slice(c.length):p; }
 const canonPhone=p=>{ const d=String(p||'').replace(/[^\d]/g,''); return d?'+'+d:''; };
 let memG=null;
-function guest(){ try{ const x=JSON.parse(localStorage.getItem(GK)||'null'); if(x&&x.room){ if(x.phone) x.phone=canonPhone(x.phone); return x; } }catch(_){} return memG; }
+function rawGuest(){ try{ const x=JSON.parse(localStorage.getItem(GK)||'null'); if(x&&x.room){ if(x.phone) x.phone=canonPhone(x.phone); return x; } }catch(_){} return memG; }
+const complete=g=>!!(g&&g.room&&g.nat&&g.phone&&g.name&&g.arr&&g.dep);
+/* signed in = all details given and the stay not over; after the departure date the phone starts fresh */
+function guest(){ const g=rawGuest(); if(!g) return null; if(g.dep&&String(g.dep)<today()){ forgetGuest(); return null; } return complete(g)?g:null; }
 function saveGuest(g){ memG=g; try{ localStorage.setItem(GK,JSON.stringify(g)); }catch(_){} }
 
 /* ---------- packs ---------- */
@@ -20595,7 +20604,7 @@ async function reserve(p,nums,offer){
   const tk=tkOf(p.ticketId);
   const id='r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   const total=offer?r2(offer.price):r2(nums.length*(+p.price||0));
-  const rows=nums.map(n=>({ticket_id:tk?tk.id:p.ticketId,pack_id:String(p.id),ticket_no:n,res_id:id,room:g.room,guest_name:'Room '+g.room,nationality:g.nat,phone:g.phone,qty:1,status:'reserved',collect_from:p.user,event_date:p.date||null,res_total:total,offer_qty:offer?offer.qty:0,lang:S.lang||'en'}));
+  const rows=nums.map(n=>({ticket_id:tk?tk.id:p.ticketId,pack_id:String(p.id),ticket_no:n,res_id:id,room:g.room,guest_name:g.name||('Room '+g.room),nationality:g.nat,phone:g.phone,qty:1,status:'reserved',collect_from:p.user,event_date:p.date||null,res_total:total,offer_qty:offer?offer.qty:0,lang:S.lang||'en'}));
   let out;
   try{ out=await sb('ticket_orders',{method:'POST',body:JSON.stringify(rows)}); }
   catch(e){
@@ -20635,32 +20644,40 @@ function codeSelect(code){
 function regForm(g){
   g=g||{};
   const room=RG.room!=null?RG.room:(g.room||''), nat=RG.nat!=null?RG.nat:(g.nat||''), code=RG.code!=null?RG.code:(g.code!=null?g.code:(NAT2CODE[nat]||'')), local=RG.local!=null?RG.local:(g.local||'');
+  const name=RG.name!=null?RG.name:(g.name||''), arr=RG.arr!=null?RG.arr:(g.arr||today()), dep=RG.dep!=null?RG.dep:(g.dep||'');
   return `<div class="rv-reg">
     ${g.room?'':`<div class="rv-teaser"><div class="rv-teaser-art"><span class="tt-tombola">${ART.tombola}</span><span class="tt-bingo">${ART.bingo}</span><span class="tt-disco">${ART.disco}</span></div><b>${E(G('teaserT'))}</b><span>${ic('lock',14)} ${E(G('lockText'))}</span></div>`}
     <label for="rv-room">${E(G('room'))}</label><input id="rv-room" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" enterkeyhint="next" value="${E(room)}">
+    <label for="rv-name">${E(G('gName'))}</label><input id="rv-name" type="text" autocomplete="name" autocapitalize="words" enterkeyhint="next" maxlength="60" value="${E(name)}">
     <label for="rv-nat">${E(G('nat'))}</label>${natSelect(nat)}
     <div id="rv-phonebox" ${nat?'':'hidden'}><label for="rv-phone">${E(G('phone'))}</label><div class="rv-phone">${codeSelect(code)}<input id="rv-phone" type="tel" inputmode="tel" autocomplete="tel-national" enterkeyhint="go" value="${E(local)}" placeholder="${E(G('phonePh'))}"></div><p class="rv-small">${E(G('phoneNote'))}</p></div>
+    <div class="rv-dates2"><div><label for="rv-arr">${E(G('arr'))}</label><input id="rv-arr" type="date" value="${E(arr)}" min="${E(addDays(today(),-60))}" max="${E(addDays(today(),60))}"></div><div><label for="rv-dep">${E(G('dep'))}</label><input id="rv-dep" type="date" value="${E(dep)}" min="${E(today())}" max="${E(addDays(today(),120))}"></div></div>
     <p class="rv-err" id="rv-err" role="alert" aria-live="polite"></p>
     <button type="button" class="btn" id="rv-reg-go">${E(G('showTix'))}</button>
-    ${g.room?`<button type="button" class="btn ghost" id="rv-reg-x">${E(t('cancelBtn'))}</button>`:''}
+    ${complete(g)?`<button type="button" class="btn ghost" id="rv-reg-x">${E(t('cancelBtn'))}</button>`:''}
   </div>`;
 }
 function readReg(){
   const v=id=>{ const el=document.getElementById(id); return el?String(el.value||''):''; };
   RG.room=v('rv-room').replace(/\s/g,''); RG.nat=v('rv-nat'); RG.code=v('rv-code'); RG.local=v('rv-phone').trim();
+  RG.name=v('rv-name').replace(/\s+/g,' ').trim(); RG.arr=v('rv-arr'); RG.dep=v('rv-dep');
 }
 function checkReg(){
   readReg();
   if(!/^\d{3,4}$/.test(RG.room)) return {err:G('roomErr'),f:'#rv-room'};
+  if(RG.name.length<2) return {err:G('nameErr'),f:'#rv-name'};
   if(!RG.nat) return {err:G('natErr'),f:'#rv-nat'};
   const digits=RG.local.replace(/[^\d]/g,'');
   let phone='';
   if(RG.code){ const d=digits.replace(/^0+/,''); if(/^\+/.test(RG.local.trim())){ if(digits.length<8||digits.length>15) return {err:G('phoneErr'),f:'#rv-phone'}; phone='+'+digits; } else { if(d.length<6||d.length>12) return {err:G('phoneErr'),f:'#rv-phone'}; phone=canonPhone(RG.code+d); } }
   else { if(!/^\+/.test(RG.local.trim())||digits.length<8||digits.length>15) return {err:G('phoneErr'),f:'#rv-phone'}; phone='+'+digits; }
-  return {g:{room:RG.room,nat:RG.nat,code:RG.code,local:RG.local,phone}};
+  const iso=/^\d{4}-\d{2}-\d{2}$/;
+  if(!iso.test(RG.arr)||!iso.test(RG.dep)) return {err:G('datesErr'),f:iso.test(RG.arr)?'#rv-dep':'#rv-arr'};
+  if(RG.dep<RG.arr||RG.dep<today()||RG.dep>addDays(RG.arr,120)) return {err:G('depErr'),f:'#rv-dep'};
+  return {g:{room:RG.room,name:RG.name,nat:RG.nat,code:RG.code,local:RG.local,phone,arr:RG.arr,dep:RG.dep}};
 }
 function meLine(g){
-  return `<div class="rv-me">${ic('door',16)}<span><b>${E(G('roomN',{r:g.room}))}</b><small>${E(g.nat)} · ${E(fmtPhone(g.phone))}</small></span><button type="button" id="rv-edit">${E(G('change'))}</button></div>`;
+  return `<div class="rv-me">${ic('door',16)}<span><b>${E(G('roomN',{r:g.room}))}${g.name?' · '+E(g.name):''}</b><small>${E(g.nat)} · ${E(fmtPhone(g.phone))}${g.dep?' · '+E(G('stayTill',{d:niceDay(g.dep)})):''}</small></span><button type="button" id="rv-edit">${E(G('change'))}</button></div>`;
 }
 function myCard(x){
   const p=x.pack||{}, cur=p.currency||'€', nm=nameOf(x.user), u=userOf(x.user), past=!!x.date&&x.date<today();
@@ -20715,7 +20732,7 @@ function exploreSection(){
   const g=guest(), open=!!g&&!XS.edit&&RS.state!=='missing';
   let body;
   if(RS.state==='missing') body=`<p class="rv-soon">${ic('ticket',16)}<span>${E(G('notOpen'))}</span></p>`;
-  else if(!g||XS.edit) body=regForm(g);
+  else if(!g||XS.edit) body=regForm(g||rawGuest());
   else { const T=TT(), nd=tk=>{ try{ return T.nextDate?T.nextDate(tk):''; }catch(_){ return ''; } };
     body=meLine(g)+myTickets()+`<div class="ex21-tixlist">${list.slice().sort((a,b)=>(nd(a)+String(a.time||'')).localeCompare(nd(b)+String(b.time||''))).map(tk=>eventCard(tk,nd(tk))).join('')}</div>`; }
   return `<section class="ex21-sec rv" id="ex21-tix">
@@ -20730,7 +20747,7 @@ function wireExploreTix(){
   const room=Q('#rv-room'); if(room) room.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if(nat) try{ nat.focus(); }catch(_){} } });
   const go=Q('#rv-reg-go');
   const submit=async()=>{ const r=checkReg(); if(r.err){ if(err) err.textContent=r.err; const f=Q(r.f); if(f) try{ f.focus(); }catch(_){} return; }
-    const old=guest()||{}; saveGuest({...old,...r.g,res:old.res||[],at:Date.now()}); XS.edit=false; Object.keys(RG).forEach(k=>delete RG[k]);
+    const old=rawGuest()||{}; saveGuest({...old,...r.g,res:old.res||[],at:Date.now()}); XS.edit=false; Object.keys(RG).forEach(k=>delete RG[k]);
     go.disabled=true; const pid=await gpSave(guest()); gpChecked=Date.now(); if(pid!=null&&guest()) saveGuest({...guest(),pid}); await load(); repaint(true,'ex21-tix'); };
   if(go) go.onclick=submit;
   const ph=Q('#rv-phone'); if(ph) ph.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } });
@@ -20812,16 +20829,18 @@ function chips(p){
   return `<div class="th9-grid">${h}</div><p class="th9-legend"><i class="f"></i>free <i class="r"></i>reserved <i class="s"></i>sold${offersOf(p).length?' <i class="o"></i>sold in an offer':''}</p>`;
 }
 const waitCount=p=>Object.values(heldMap(p)).filter(r=>r.status==='reserved').length;
+const gName=x=>{ const n=String((x.first&&x.first.guest_name)||'').trim(); return n&&!/^Room\s/i.test(n)?n:''; };
 function resCard(x,who){
   const p=x.pack||{}, cur=p.currency||'€', over=!!x.date&&x.date<today();
   const sum=x.offer>1?`Offer ${x.offer} for <b>${E(money(x.total,cur))}</b>`:`${x.nums.length} × ${E(money(p.price||r2(x.total/(x.nums.length||1)),cur))} = <b>${E(money(x.total,cur))}</b>`;
   const f=x.first;
   return `<article class="rv-card ${x.status}${over?' over':''}">
-    <div class="rv-c1"><b>Room ${E(x.room)}</b>${x.nat?`<span>${E(x.nat)}</span>`:''}<small>${E(ago(x.at))}</small></div>
+    <div class="rv-c1"><b>Room ${E(x.room)}</b>${who==='mgr'&&gName(x)?`<span class="rv-gname">${E(gName(x))}</span>`:''}${x.nat?`<span>${E(x.nat)}</span>`:''}<small>${E(ago(x.at))}</small></div>
     <div class="rv-c2">${E(evName(x))} · ${E(niceDay(x.date))}${over&&x.status==='reserved'?' · <em>event over</em>':''}${who==='mgr'?` · <span class="rv-who">${E(nameOf(x.user))}</span>`:''}</div>
     <div class="rv-nums">${x.nums.map(n=>`<span>${E(num(p,n))}</span>`).join('')}</div>
     <div class="rv-c4">${sum}</div>
-    ${x.phone?`<a class="rv-call" href="tel:${E(String(x.phone).replace(/[^\d+]/g,''))}">${PHONE} ${E(fmtPhone(x.phone))}</a>`:''}
+    ${who==='mgr'?`<div class="rv-links">${x.phone?waBtn(x.phone):''}${x.status!=='cancelled'?`<button type="button" class="rv-call rv-print" data-rv-print1="${E(x.id)}">${ic('print',15)} Print with name</button>`:''}</div>`
+      :x.phone?`<a class="rv-call" href="tel:${E(String(x.phone).replace(/[^\d+]/g,''))}">${PHONE} ${E(fmtPhone(x.phone))}</a>`:''}
     ${x.status==='confirmed'?`<p class="rv-okline">${ic('check',13)} Paid &amp; handed over · ${E(ago(f.confirmed_at))}${f.confirmed_by&&low(f.confirmed_by)!==low(x.user)?' · confirmed by '+E(nameOf(f.confirmed_by)):''}</p>`:''}
     ${x.status==='cancelled'?`<p class="rv-offline">Cancelled ${f.cancelled_by==='guest'?'by the guest':f.cancelled_by?'by '+E(f.cancelled_by):''}${f.cancelled_at?' · '+E(ago(f.cancelled_at)):''}</p>`:''}
     ${x.status==='reserved'||who==='mgr'?`<div class="rv-acts">${x.status==='reserved'?`<button type="button" class="btn rv-confirm" data-rv-confirm="${E(x.id)}">${ic('check',15)} ${who==='mgr'?'Paid — confirm':'Confirm — paid &amp; ticket given'}</button>`:''}${who==='mgr'&&x.status!=='cancelled'?`<button type="button" class="btn ghost rv-cancel" data-rv-cancel="${E(x.id)}">Cancel</button>`:''}${who==='mgr'?`<button type="button" class="btn ghost rv-del" data-rv-del="${E(x.id)}" aria-label="Delete">${ic('trash',15)}${x.status==='cancelled'?' Delete':''}</button>`:''}</div>`:''}
@@ -20862,14 +20881,15 @@ function evLine(tk,d){
 function managerSection(){
   if(!isMgr()) return '';
   const head=`<div class="t14-sh"><div><p class="t14-kick">From the Explore page</p><h3>Guest reservations</h3></div></div>`;
-  if(RS.state==='missing') return `<section class="rv-mgr">${head}<div class="rv-sql"><b>${ic('bell',15)} One-time step needed</b><p>So that guests can reserve their numbers, open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v723.sql</b> and tap <b>Run</b>. Until then guests see “Online reservation opens soon”.</p></div></section>`;
+  if(RS.state==='missing') return `<section class="rv-mgr">${head}<div class="rv-sql"><b>${ic('bell',15)} One-time step needed</b><p>So that guests can reserve their numbers, open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v724.sql</b> and tap <b>Run</b>. Until then guests see “Online reservation opens soon”.</p></div></section>`;
   const all=groups(RS.team.filter(r=>r.pack_id!=null)), mode=S.rvMode||'reserved';
   const cnt=k=>all.filter(x=>x.status===k).length;
   const list=all.filter(x=>x.status===mode).sort((a,b)=>mode==='reserved'?(String(a.date).localeCompare(String(b.date))||String(a.at).localeCompare(String(b.at))):String(b.at).localeCompare(String(a.at)));
   const past=all.filter(x=>x.status==='reserved'&&x.date&&x.date<today());
-  const by=new Map(); list.forEach(x=>{ const k=evName(x)+'|'+x.date; if(!by.has(k)) by.set(k,[]); by.get(k).push(x); });
+  const by=new Map(); list.forEach(x=>{ const k=evName(x)+'|'+x.date; if(!by.has(k)) by.set(k,[]); by.get(k).push(x); }); PRINTS=[];
   const body=by.size?[...by.entries()].map(([k,xs])=>{ const [ev,d]=k.split('|'), cur=(xs[0].pack&&xs[0].pack.currency)||'€', n=xs.reduce((s,x)=>s+x.nums.length,0), sum=r2(xs.reduce((s,x)=>s+x.total,0));
-      return `<div class="rv-group"><h4>${E(ev)} · ${E(niceDay(d))}<small>${xs.length} guest${xs.length>1?'s':''} · ${n} ticket${n>1?'s':''} · ${E(money(sum,cur))}</small></h4>${xs.map(x=>resCard(x,'mgr')).join('')}</div>`; }).join('')
+      const pi=PRINTS.push(xs)-1;
+      return `<div class="rv-group"><h4>${E(ev)} · ${E(niceDay(d))}<small>${xs.length} guest${xs.length>1?'s':''} · ${n} ticket${n>1?'s':''} · ${E(money(sum,cur))}</small></h4>${mode!=='cancelled'?`<button type="button" class="t14-b rv-printall" data-rv-print="${pi}">${ic('print',14)} Print ${n} ticket${n>1?'s':''} with guest names</button>`:''}${xs.map(x=>resCard(x,'mgr')).join('')}</div>`; }).join('')
     :`<div class="t14-empty">${mode==='reserved'?'No reservations waiting.':mode==='confirmed'?'No paid reservations in the last 45 days.':'No cancelled reservations in the last 45 days.'}</div>`;
   return `<section class="rv-mgr" id="rv-mgr">${head}
     <p class="t14-intro">Guests reserve with room, nationality and phone. The entertainer confirms when he hands over the paper ticket and gets the money. You can cancel any reservation.</p>
@@ -21070,17 +21090,31 @@ window.__wireSteps.push(function(){
 });
 
 /* ======================= GUEST ACCOUNTS ======================= */
-/* A guest who unlocks the tickets (room + nationality + mobile) gets an account
-   (table guest_profiles). The manager sees every guest in Program → Guests and can
-   edit or delete the account. A deleted guest has to enter the details again; an
-   edited one gets the new details on his phone the next time it checks (≤ 1 min). */
+/* A guest who unlocks the tickets (room, name, nationality, mobile, arrival and
+   departure) gets an account (table guest_profiles). The manager sees every guest in
+   Program → Guests: "In the hotel" and "History" (after the departure date). History
+   is deleted automatically 45 days after the departure; the manager can edit or delete
+   any account. After the departure date the guest's phone starts fresh; a deleted
+   guest has to sign in again; an edited one gets the new details within a minute. */
+try{ if(typeof ICONS==='object'&&!ICONS.print) ICONS.print='<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>'; }catch(_){}
 const GS={list:[],state:''};
+const KEEP_DAYS=45;
+const dOnly=v=>v?String(v).slice(0,10):'';
+const is400=e=>/Supabase 400\b/.test(String(e&&e.message||e));
 async function gpSave(g){
   if(typeof REMOTE==='undefined'||!REMOTE||GS.state==='missing'||!g) return null;
-  const body={room:String(g.room),nationality:g.nat||'',phone:canonPhone(g.phone),lang:S.lang||'en',last_seen:new Date().toISOString()};
-  if(g.pid!=null){ try{ const r=await sb('guest_profiles?id=eq.'+enc(g.pid),{method:'PATCH',body:JSON.stringify(body)}); GS.state='ok'; if(r&&r.length) return r[0].id; }catch(e){ if(missing(e)){ GS.state='missing'; return null; } } }
-  try{ const r=await sb('guest_profiles?on_conflict=room,phone',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify(body)}); GS.state='ok'; return r&&r[0]?r[0].id:null; }
-  catch(e){ if(missing(e)) GS.state='missing'; return null; }
+  const base={room:String(g.room),nationality:g.nat||'',phone:canonPhone(g.phone),lang:S.lang||'en',last_seen:new Date().toISOString()};
+  const full={...base,name:g.name||'',arrival:g.arr||null,departure:g.dep||null};
+  const send=async body=>{
+    if(g.pid!=null){ const r=await sb('guest_profiles?id=eq.'+enc(g.pid),{method:'PATCH',body:JSON.stringify(body)}); if(r&&r.length) return r[0].id; }
+    const r=await sb('guest_profiles?on_conflict=room,phone',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify(body)}); return r&&r[0]?r[0].id:null;
+  };
+  try{ const id=await send(GS.old?base:full); GS.state='ok'; return id; }
+  catch(e){
+    /* database-v724.sql not run yet: the table has no name / arrival / departure — save the rest */
+    if(!GS.old&&is400(e)){ GS.old=true; try{ const id=await send(base); GS.state='ok'; return id; }catch(e2){ if(missing(e2)) GS.state='missing'; return null; } }
+    if(missing(e)) GS.state='missing'; return null;
+  }
 }
 function forgetGuest(){ memG=null; try{ localStorage.removeItem(GK); }catch(_){} RS.mine=[]; XS.edit=false; }
 let gpChecked=0;
@@ -21093,40 +21127,67 @@ async function gpCheck(){
     if(!r||!r.length){ forgetGuest(); return; }                 // the manager deleted the account
     const p=r[0], upd={...g};
     if(p.room&&String(p.room)!==String(g.room)) upd.room=String(p.room);
+    if(p.name&&p.name!==g.name) upd.name=p.name;
     if(p.nationality&&p.nationality!==g.nat) upd.nat=p.nationality;
+    if(p.arrival&&dOnly(p.arrival)!==g.arr) upd.arr=dOnly(p.arrival);
+    if(p.departure&&dOnly(p.departure)!==g.dep) upd.dep=dOnly(p.departure);
     if(p.phone&&canonPhone(p.phone)!==canonPhone(g.phone)){ upd.phone=canonPhone(p.phone); const c=CODES_LONG().find(x=>upd.phone.startsWith(x))||''; upd.code=c; upd.local=c?upd.phone.slice(c.length):upd.phone; }
     if(JSON.stringify(upd)!==JSON.stringify(g)) saveGuest(upd);
     if(Date.now()-(Date.parse(p.last_seen||'')||0)>6*3600e3) sb('guest_profiles?id=eq.'+enc(g.pid),{method:'PATCH',body:JSON.stringify({last_seen:new Date().toISOString(),lang:S.lang||'en'})}).catch(()=>{});
   }catch(e){ if(missing(e)) GS.state='missing'; }
 }
+let gpCleaned=false;
 async function gpLoad(){
   if(!isMgr()||typeof REMOTE==='undefined'||!REMOTE) return;
-  try{ GS.list=(await sb('guest_profiles?select=*&order=last_seen.desc.nullslast&limit=2000'))||[]; GS.state='ok'; }
-  catch(e){ if(missing(e)) GS.state='missing'; }
+  const ord='&order=last_seen.desc.nullslast&limit=2000';
+  try{ GS.list=(await sb('guest_profiles?select=id,created_at,room,name,nationality,phone,lang,last_seen,arrival,departure'+ord))||[]; GS.state='ok'; GS.old=false; }
+  catch(e){
+    if(!is400(e)){ if(missing(e)) GS.state='missing'; return; }
+    /* the table is there but without the new columns (database-v724.sql not run yet) */
+    try{ GS.list=(await sb('guest_profiles?select=*'+ord))||[]; GS.state='ok'; GS.old=true; }catch(e2){ if(missing(e2)) GS.state='missing'; return; }
+  }
+  /* history is kept for 45 days after the departure, then deleted */
+  if(!gpCleaned&&!GS.old){ gpCleaned=true; const cut=addDays(today(),-KEEP_DAYS);
+    if(GS.list.some(p=>p.departure&&dOnly(p.departure)<cut)){ try{ await sb('guest_profiles?departure=lt.'+cut,{method:'DELETE'}); GS.list=GS.list.filter(p=>!(p.departure&&dOnly(p.departure)<cut)); }catch(_){} } }
 }
 /* tickets in the programme only for guests who unlocked them */
 window.__tkHidden=function(a){ return guestView()&&!guest()&&!!tkOfAct(a); };
 
 /* ---- the manager's page: Program → Guests ---- */
+const WA='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>';
+const waLinkOf=ph=>'https://wa.me/'+canonPhone(ph).replace(/^\+/,'');
+const waBtn=ph=>`<a class="rv-call wa" href="${E(waLinkOf(ph))}" target="_blank" rel="noopener">${WA} ${E(fmtPhone(ph))}</a>`;
+const isPast=p=>!!p.departure&&dOnly(p.departure)<today();
+function nights(a,d){ const x=Date.parse(dOnly(a)+'T12:00:00'), y=Date.parse(dOnly(d)+'T12:00:00'); return x&&y?Math.round((y-x)/864e5):null; }
 function gpRes(p){ const rows=RS.team.filter(r=>r.pack_id!=null&&String(r.room)===String(p.room)&&canonPhone(r.phone)===canonPhone(p.phone)); const g=groups(rows); return {w:g.filter(x=>x.status==='reserved').length,c:g.filter(x=>x.status==='confirmed').length,rows,g}; }
-function gpFilter(){ const q=low(S.gpq||'').replace(/\s/g,''); return GS.list.filter(p=>!q||low(p.room).includes(q)||canonPhone(p.phone).includes(q.replace(/^\+/,''))||low(p.nationality).replace(/\s/g,'').includes(q)); }
+function gpFilter(){
+  const mode=S.gpMode||'now', q=low(S.gpq||'').replace(/\s/g,'');
+  return GS.list.filter(p=>(mode==='past')===isPast(p)).filter(p=>!q||low(p.room).includes(q)||canonPhone(p.phone).includes(q.replace(/^\+/,''))||low(p.nationality).replace(/\s/g,'').includes(q)||low(p.name).replace(/\s/g,'').includes(q))
+    .sort((a,b)=>mode==='past'?dOnly(b.departure).localeCompare(dOnly(a.departure)):String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
+}
 function gpList(list){
-  if(!list.length) return `<div class="t14-empty">${GS.list.length?'No guest matches your search.':'No guest accounts yet. A guest appears here as soon as he unlocks the tickets on the Explore page.'}</div>`;
-  return list.map(p=>{ const r=gpRes(p), lang=(LANGS.find(x=>x[0]===p.lang)||[])[1]||'';
-    return `<article class="gp-card"><div class="gp-top"><span class="gp-room">${ic('door',16)}<b>Room ${E(p.room)}</b></span><span class="gp-nat">${E(p.nationality||'—')}</span><small>${E(ago(p.last_seen||p.created_at))}</small></div>
-      <a class="rv-call" href="tel:${E(canonPhone(p.phone))}">${PHONE} ${E(fmtPhone(p.phone))}</a>
-      <p class="gp-meta">Joined ${E(niceDay(String(p.created_at||'').slice(0,10)))}${lang?` · ${E(lang)}`:''}${r.w||r.c?` · tickets: <b>${r.w}</b> waiting · <b>${r.c}</b> paid`:''}</p>
+  const mode=S.gpMode||'now';
+  if(!list.length) return `<div class="t14-empty">${S.gpq?'No guest matches your search.':mode==='past'?'No guests in the history. Guests move here after their departure date and are deleted 45 days later.':'No guests in the hotel yet. A guest appears here as soon as he unlocks the tickets on the Explore page.'}</div>`;
+  return list.map(p=>{ const r=gpRes(p), lang=(LANGS.find(x=>x[0]===p.lang)||[])[1]||'', n=p.arrival&&p.departure?nights(p.arrival,p.departure):null, past=isPast(p);
+    return `<article class="gp-card${past?' past':''}"><div class="gp-top"><span class="gp-room">${ic('door',16)}<b>Room ${E(p.room)}</b></span><span class="gp-nat">${E(p.nationality||'—')}</span><small>${E(ago(p.last_seen||p.created_at))}</small></div>
+      ${p.name?`<p class="gp-name">${E(p.name)}</p>`:''}
+      <p class="gp-stay">${ic('calendar',14)} ${p.arrival||p.departure?`${E(p.arrival?niceDay(dOnly(p.arrival)):'?')} → ${E(p.departure?niceDay(dOnly(p.departure)):'?')}${n!=null&&n>=0?` · ${n} night${n===1?'':'s'}`:''}`:'Stay dates not given'}</p>
+      ${waBtn(p.phone)}
+      <p class="gp-meta">Joined ${E(niceDay(dOnly(p.created_at)))}${lang?` · ${E(lang)}`:''}${r.w||r.c?` · tickets: <b>${r.w}</b> waiting · <b>${r.c}</b> paid`:''}${past?` · <b>deleted automatically on ${E(niceDay(addDays(dOnly(p.departure),KEEP_DAYS)))}</b>`:''}</p>
       <div class="rv-acts"><button type="button" class="btn ghost" data-gp-edit="${E(p.id)}">${ic('pen',14)} Edit</button><button type="button" class="btn ghost rv-del" data-gp-del="${E(p.id)}">${ic('trash',14)} Delete</button></div></article>`; }).join('');
 }
 function guestsPage(){
   if(!isMgr()) return '';
   const head=`<div class="t14-sh"><div><p class="t14-kick">From the Explore page</p><h3>Guest accounts</h3></div></div>`;
-  if(GS.state==='missing') return `<section class="gp">${head}<div class="rv-sql"><b>${ic('bell',15)} One-time step needed</b><p>To keep guest accounts, open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v723.sql</b> and tap <b>Run</b>. Guests can still unlock the tickets meanwhile.</p></div></section>`;
-  const today=GS.list.filter(p=>Date.now()-(Date.parse(p.last_seen||p.created_at||'')||0)<864e5).length;
+  if(GS.state==='missing') return `<section class="gp">${head}<div class="rv-sql"><b>${ic('bell',15)} One-time step needed</b><p>To keep guest accounts, open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v724.sql</b> and tap <b>Run</b>. Guests can still unlock the tickets meanwhile.</p></div></section>`;
+  const mode=S.gpMode||'now', now=GS.list.filter(p=>!isPast(p)), past=GS.list.filter(isPast);
+  const arriving=now.filter(p=>p.arrival&&dOnly(p.arrival)===today()).length, leaving=now.filter(p=>p.departure&&dOnly(p.departure)===today()).length;
   return `<section class="gp" id="gp">${head}
-    <p class="t14-intro">Guests who unlocked the tickets with room number, nationality and mobile number. Edit or delete an account here — a deleted guest has to enter the details again to see the tickets.</p>
-    <div class="gp-stats"><span><b>${GS.list.length}</b>guest${GS.list.length===1?'':'s'}</span><span><b>${today}</b>active today</span></div>
-    ${GS.list.length?`<input id="gp-q" class="gp-q" type="search" placeholder="Search room, mobile or nationality" value="${E(S.gpq||'')}">`:''}
+    ${GS.old?`<div class="rv-sql"><b>${ic('bell',15)} One-time step needed</b><p>To save the guests' <b>names and stay dates</b>, open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v724.sql</b> and tap <b>Run</b>. Until then History and the automatic delete after 45 days do not work.</p></div>`:''}
+    <p class="t14-intro">Every guest who unlocked the tickets — name, room, nationality, mobile and stay. Tap a number to chat on WhatsApp. After the departure date a guest moves to History and is deleted automatically 45 days later.</p>
+    <div class="gp-stats"><span><b>${now.length}</b>in the hotel</span><span><b>${arriving}</b>arrived today</span><span><b>${leaving}</b>leaving today</span></div>
+    <div class="t14-seg"><button class="${mode==='now'?'on':''}" data-gp-mode="now">In the hotel <i>${now.length}</i></button><button class="${mode==='past'?'on':''}" data-gp-mode="past">History <i>${past.length}</i></button></div>
+    ${GS.list.length?`<input id="gp-q" class="gp-q" type="search" placeholder="Search name, room, mobile or nationality" value="${E(S.gpq||'')}">`:''}
     <div id="gp-list">${gpList(gpFilter())}</div></section>`;
 }
 function wireGp(root){
@@ -21137,37 +21198,41 @@ function gpEdit(id){
   const p=GS.list.find(x=>String(x.id)===String(id)); if(!p) return;
   const ph=canonPhone(p.phone), c=CODES_LONG().find(x=>ph.startsWith(x))||'';
   const w=baseModal(`<div class="gp-ed"><h3>Edit guest</h3>
+    <label>Name</label><input id="gp-name" maxlength="60" value="${E(p.name||'')}">
     <label>Room number</label><input id="gp-room" inputmode="numeric" maxlength="4" value="${E(p.room)}">
     <label>Nationality</label>${natSelect(p.nationality||'').replace('id="rv-nat"','id="gp-nat"')}
     <label>Mobile number</label><div class="rv-phone">${codeSelect(c).replace('id="rv-code"','id="gp-code"')}<input id="gp-phone" type="tel" value="${E(c?ph.slice(c.length):ph)}"></div>
-    <p class="mini">The guest's reservations are changed too, and his phone shows the new details within a minute.</p>
+    <div class="rv-dates2"><div><label>Arrival</label><input id="gp-arr" type="date" value="${E(dOnly(p.arrival))}"></div><div><label>Departure</label><input id="gp-dep" type="date" value="${E(dOnly(p.departure))}"></div></div>
+    <p class="mini">The guest's reservations are changed too, and his phone shows the new details within a minute. A later departure date brings a guest back from History.</p>
     <p class="rv-err" id="gp-err" role="alert"></p>
     <button class="btn" id="gp-save">Save</button><button class="btn ghost" id="gp-x">Close</button></div>`);
   const q=s=>w.querySelector(s), err=q('#gp-err');
   q('#gp-x').onclick=()=>w.remove();
   q('#gp-save').onclick=async()=>{
-    const room=String(q('#gp-room').value||'').replace(/\s/g,''), nat=q('#gp-nat').value, code=q('#gp-code').value, loc=String(q('#gp-phone').value||'').trim(), dg=loc.replace(/[^\d]/g,'');
+    const name=String(q('#gp-name').value||'').replace(/\s+/g,' ').trim(), room=String(q('#gp-room').value||'').replace(/\s/g,''), nat=q('#gp-nat').value, code=q('#gp-code').value, loc=String(q('#gp-phone').value||'').trim(), dg=loc.replace(/[^\d]/g,''), arr=q('#gp-arr').value, dep=q('#gp-dep').value;
+    if(name.length<2){ err.textContent='Write the guest’s name.'; return; }
     if(!/^\d{3,4}$/.test(room)){ err.textContent='Room number: 3 or 4 digits.'; return; }
     if(!nat){ err.textContent='Choose the nationality.'; return; }
     let phone=''; if(/^\+/.test(loc)||!code){ if(!/^\+/.test(loc)||dg.length<8||dg.length>15){ err.textContent='Mobile number with the country code, e.g. +49 151 2345678.'; return; } phone='+'+dg; }
     else { const d=dg.replace(/^0+/,''); if(d.length<6||d.length>12){ err.textContent='Check the mobile number.'; return; } phone=canonPhone(code+d); }
+    if(!arr||!dep||dep<arr){ err.textContent='Arrival and departure: the departure cannot be before the arrival.'; return; }
     const b=q('#gp-save'); b.disabled=true;
     try{
-      const r=await sb('guest_profiles?id=eq.'+enc(p.id),{method:'PATCH',body:JSON.stringify({room,nationality:nat,phone})});
+      const r=await sb('guest_profiles?id=eq.'+enc(p.id),{method:'PATCH',body:JSON.stringify({name,room,nationality:nat,phone,arrival:arr,departure:dep})});
       if(!r||!r.length){ err.textContent='This account was deleted in the meantime.'; b.disabled=false; await gpLoad(); render(); return; }
-      if(String(p.room)!==room||canonPhone(p.phone)!==phone||p.nationality!==nat){
-        const up=await sb('ticket_orders?room=eq.'+enc(p.room)+'&phone=eq.'+enc(canonPhone(p.phone)),{method:'PATCH',body:JSON.stringify({room,phone,nationality:nat,guest_name:'Room '+room})}).catch(()=>[]);
+      if(String(p.room)!==room||canonPhone(p.phone)!==phone||p.nationality!==nat||p.name!==name){
+        const up=await sb('ticket_orders?room=eq.'+enc(p.room)+'&phone=eq.'+enc(canonPhone(p.phone)),{method:'PATCH',body:JSON.stringify({room,phone,nationality:nat,guest_name:name})}).catch(()=>[]);
         (up||[]).forEach(x=>upsert(RS.team,x));
       }
       Object.assign(p,r[0]); w.remove(); toastOk('Guest updated'); render();
-    }catch(e){ b.disabled=false; err.textContent=/409/.test(String(e&&e.message))?'Another account already has this room and mobile number.':'Not saved — check the internet and try again.'; }
+    }catch(e){ b.disabled=false; err.textContent=/409/.test(String(e&&e.message))?'Another account already has this room and mobile number.':is400(e)?'Run database-v724.sql in Supabase first (one-time step), then try again.':'Not saved — check the internet and try again.'; }
   };
 }
 async function gpDelete(id){
   const p=GS.list.find(x=>String(x.id)===String(id)); if(!p) return;
   const r=gpRes(p), n=r.g.length, paid=r.g.filter(x=>x.status==='confirmed').length;
   const ok=await new Promise(res=>{
-    const w=baseModal(`<div class="rv-ask"><h3>Delete this guest account?</h3><p>Room <b>${E(p.room)}</b> · ${E(p.nationality||'')} · ${E(fmtPhone(p.phone))}. The guest has to enter the details again to see the tickets.</p>
+    const w=baseModal(`<div class="rv-ask"><h3>Delete this guest account?</h3><p>${p.name?`<b>${E(p.name)}</b> · `:''}Room <b>${E(p.room)}</b> · ${E(p.nationality||'')} · ${E(fmtPhone(p.phone))}. ${isPast(p)?'All his information is removed.':'The guest has to sign in again to see the tickets.'}</p>
       ${n?`<label class="gp-chk"><input type="checkbox" id="gp-alsores"> Also delete ${n===1?'the reservation':'all '+n+' reservations'} of this guest${paid?` <small>(${paid} paid — taken out of the packs; give the money back)</small>`:''}</label>`:''}
       <button class="btn warn" data-a="y">Delete account</button><button class="btn ghost" data-a="n">Keep it</button></div>`);
     const done=v=>{ const c=w.querySelector('#gp-alsores'); const withRes=!!(c&&c.checked); w.remove(); res(v?{withRes}:null); };
@@ -21181,10 +21246,34 @@ async function gpDelete(id){
     GS.list=GS.list.filter(x=>x!==p); toastOk('Guest account deleted'); render();
   }catch(e){ toastErr('Not saved — check the internet and try again.'); }
 }
+
+/* ---- printing the tickets of a reservation with the guest's name and room ---- */
+const guestLabel=x=>{ const nm=String(x.first.guest_name||'').trim(); return [nm&&!/^Room\s/i.test(nm)?nm:'','Room '+x.room].filter(Boolean).join(' · '); };
+function printRes(list){
+  const ST=window.AUREA_STUDIO_V708; if(!ST||!ST.ticket||!ST.css){ toastErr('Ticket printing is not available.'); return; }
+  let c={}; try{ c=JSON.parse(localStorage.getItem('aurea.tickets.v657')||'{}')||{}; }catch(_){}
+  let html='', first=null;
+  /* a Bingo card must be the same card that was printed for this number */
+  const hist=(S.settings&&S.settings.ticketPrintsV708)||{};
+  const seedFor=(batch,n)=>{ const h=Object.values(hist).filter(h=>h&&h.type==='bingo'&&String(h.batch).toUpperCase()===String(batch).toUpperCase()&&n>=+h.start&&n<=+h.end).sort((a,b)=>(b.printedAt||0)-(a.printedAt||0))[0]; return h?(+h.seed||8260):(+c.seed||8260); };
+  list.filter(x=>x.status!=='cancelled').forEach(x=>{
+    const p=x.pack||{}, tk=x.tk||tkOf(p.ticketId), ty=typeOf(tk), type=ty==='bingo'?'bingo':ty==='disco'?'disco':'tombola';
+    const o={type,style:c.style||'ivory',color:c.color||'#E9D06B',title:(tk&&tk.name)||p.name||'',time:[niceDay(x.date),tk&&tk.time].filter(Boolean).join(' · '),place:(tk&&tk.location)||'',batch:p.batch||c.batch||'A',price:p.price!=null?String(p.price):'',currency:p.currency||'',club:(tk&&tk.name)||'',offers:[],guests:{}};
+    x.nums.forEach(n=>{ o.guests[n]=guestLabel(x); if(type==='bingo') o.seed=seedFor(o.batch,+n); html+=ST.ticket(o,+n); }); first=first||o;
+  });
+  if(!html){ toastErr('Nothing to print.'); return; }
+  const w=window.open('','_blank'); if(!w){ toastErr('Could not open the print window. Allow pop-ups and try again.'); return; }
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Tickets with guest names</title><style>'+ST.css(first)+'</style></head><body><div class="sheet">'+html+'</div><scr'+'ipt>window.onload=function(){setTimeout(function(){window.print()},500)};<\/scr'+'ipt></body></html>');
+  w.document.close();
+}
+let PRINTS=[];
 window.__wireSteps.push(function(){
   if(!isMgr()) return;
   wireGp(document);
   const q=Q('#gp-q'); if(q) q.oninput=()=>{ S.gpq=q.value; const box=Q('#gp-list'); if(box){ box.innerHTML=gpList(gpFilter()); wireGp(box); } };
+  document.querySelectorAll('[data-gp-mode]').forEach(b=>b.onclick=()=>{ S.gpMode=b.dataset.gpMode; render(); });
+  document.querySelectorAll('[data-rv-print]').forEach(b=>b.onclick=()=>{ const l=PRINTS[+b.dataset.rvPrint]; if(l) printRes(l); });
+  document.querySelectorAll('[data-rv-print1]').forEach(b=>b.onclick=()=>{ const x=findRes(b.dataset.rvPrint1); if(x) printRes([x]); });
 });
 
 /* ---------- hooks ---------- */
@@ -21231,7 +21320,7 @@ css.textContent=`
 .rv-reg .btn{margin-top:12px}
 .rv-soon{display:flex;gap:8px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:var(--x-card);border:1px dashed var(--x-line);font-size:13.5px;line-height:1.5;margin:0}
 .rv-me{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--x-card);border:1px solid var(--x-line);margin-bottom:12px}
-.rv-me>svg{flex:none;color:var(--accent-text,var(--x-acc))}.rv-me span{flex:1;min-width:0;display:flex;flex-direction:column}.rv-me b{font-size:14px}.rv-me small{font-size:12px;color:var(--x-mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv-me>svg{flex:none;color:var(--accent-text,var(--x-acc))}.rv-me span{flex:1;min-width:0;display:flex;flex-direction:column}.rv-me b{font-size:14px}.rv-me small{font-size:12px;line-height:1.4;color:var(--x-mut);overflow-wrap:anywhere}
 .rv-me button{flex:none;border:1px solid var(--x-line);background:transparent;color:var(--x-ink);border-radius:99px;padding:7px 12px;font-size:12.5px;font-weight:700;width:auto;margin:0;min-height:0}
 .rv-my{margin:0 0 14px}.rv-my h3{display:flex;align-items:center;gap:6px;margin:4px 0 8px;font-size:15px}
 .rv-mine{padding:12px;border-radius:16px;background:var(--x-card);border:1px solid var(--x-line);margin-bottom:8px}
@@ -21378,6 +21467,15 @@ css.textContent=`
 .gp-top{display:flex;align-items:center;gap:8px}.gp-room{display:inline-flex;align-items:center;gap:6px}.gp-room b{font-size:16px}.gp-nat{font-size:12.5px;font-weight:600;color:var(--muted)}.gp-top small{margin-inline-start:auto;font-size:11.5px;color:var(--muted)}
 .gp-meta{margin:8px 0 0;font-size:12.5px;color:var(--muted)}.gp-meta b{color:var(--ink)}
 .gp-chk{display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:14px;line-height:1.45;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:500}.gp-chk input{width:auto;margin:3px 0 0;flex:none}.gp-chk small{color:var(--muted)}
+.rv-dates2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rv-dates2>div{min-width:0}.rv-dates2 input{width:100%;min-width:0;box-sizing:border-box}
+.gp-name{margin:6px 0 0;font-size:15.5px;font-weight:700;color:var(--ink)}
+.gp-stay{display:flex;align-items:center;gap:6px;margin:4px 0 0;font-size:13px;color:var(--ink)}.gp-stay svg{flex:none;color:var(--muted)}
+.gp-card.past{background:var(--bg);border-style:dashed}
+.rv-call.wa{background:#E7F8EE;border-color:#25D366;color:#0B5E2E}.rv-call.wa svg{color:#128C4A}
+.rv-c1{flex-wrap:wrap}.rv-c1 .rv-gname{color:var(--ink);font-weight:700;font-size:13.5px}
+.rv-printall{margin:0 0 10px}
+.rv-links{display:flex;flex-wrap:wrap;gap:0 8px;align-items:center}
+button.rv-call{width:auto;min-height:0;background:transparent;font:inherit;font-size:13px;font-weight:700;line-height:1.2;cursor:pointer;box-shadow:none}
 .pg17-intro{margin:-2px 2px 10px;font-size:13px;color:var(--muted)}
 .pg17-day.open>.pg17-wk{background:transparent}.pg17-day.open .pg17-go{transform:rotate(90deg);color:var(--ink)}.pg17-go{transition:transform .2s}
 .pg17-open{padding:2px 0 14px}.pg17-open .pg17-theme span{background:var(--bg);color:var(--ink);border:1px solid var(--line)}.pg17-open .pg17-theme small{color:var(--muted);opacity:1}
@@ -21452,6 +21550,9 @@ hi:{days:['सोमवार','मंगलवार','बुधवार','ग
 
 const TX=window.__ex21TX, W=window.__rvW;
 Object.keys(EX).forEach(l=>{ if(TX) TX[l]=EX[l]; });
+/* V7.24: name and stay dates at sign-in */
+const RV24={"it": {"gName": "Il tuo nome", "nameErr": "Inserisci il tuo nome.", "arr": "Arrivo", "dep": "Partenza", "datesErr": "Inserisci le date di arrivo e di partenza.", "depErr": "La data di partenza deve essere dopo l’arrivo e non nel passato.", "stayTill": "fino al {d}"}, "ro": {"gName": "Numele tău", "nameErr": "Introdu numele tău.", "arr": "Sosire", "dep": "Plecare", "datesErr": "Introdu datele de sosire și de plecare.", "depErr": "Data plecării trebuie să fie după sosire și nu în trecut.", "stayTill": "până la {d}"}, "tr": {"gName": "Adınız", "nameErr": "Lütfen adınızı girin.", "arr": "Giriş", "dep": "Çıkış", "datesErr": "Lütfen giriş ve çıkış tarihlerinizi girin.", "depErr": "Çıkış tarihi girişten sonra olmalı ve geçmişte olmamalı.", "stayTill": "{d} tarihine kadar"}, "sk": {"gName": "Vaše meno", "nameErr": "Zadajte svoje meno.", "arr": "Príchod", "dep": "Odchod", "datesErr": "Zadajte dátum príchodu a odchodu.", "depErr": "Dátum odchodu musí byť po príchode a nesmie byť v minulosti.", "stayTill": "do {d}"}, "sr": {"gName": "Vaše ime", "nameErr": "Unesite svoje ime.", "arr": "Dolazak", "dep": "Odlazak", "datesErr": "Unesite datum dolaska i odlaska.", "depErr": "Datum odlaska mora biti posle dolaska i ne sme biti u prošlosti.", "stayTill": "do {d}"}, "uk": {"gName": "Ваше ім’я", "nameErr": "Введіть своє ім’я.", "arr": "Заїзд", "dep": "Виїзд", "datesErr": "Вкажіть дати заїзду та виїзду.", "depErr": "Дата виїзду має бути пізніше заїзду і не в минулому.", "stayTill": "до {d}"}, "zh": {"gName": "您的姓名", "nameErr": "请输入您的姓名。", "arr": "入住日期", "dep": "离店日期", "datesErr": "请输入入住和离店日期。", "depErr": "离店日期必须晚于入住日期，且不能是过去的日期。", "stayTill": "至 {d}"}, "hi": {"gName": "आपका नाम", "nameErr": "कृपया अपना नाम डालें।", "arr": "आगमन", "dep": "प्रस्थान", "datesErr": "कृपया आगमन और प्रस्थान की तारीख डालें।", "depErr": "प्रस्थान की तारीख आगमन के बाद होनी चाहिए और बीती हुई नहीं।", "stayTill": "{d} तक"}};
+Object.keys(RV24).forEach(l=>{ if(RV[l]) Object.assign(RV[l],RV24[l]); });
 Object.keys(RV).forEach(l=>{ if(W) W[l]=Object.assign({},W.en,RV[l]); });
 Object.keys(CORE).forEach(l=>{ DICT[l]=Object.assign({},DICT[l]||{},CORE[l]); });
 ['ar-tn','ar-dz'].forEach(l=>{ if(TX) TX[l]=TX.ar; if(W) W[l]=W.ar; DICT[l]=DICT.ar; });
