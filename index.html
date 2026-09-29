@@ -7731,10 +7731,9 @@ function myWorkDayView(){
     ${dayChips()}
     ${photoBlock}
     ${banner}
-    ${info.makeupForMe?`<div class="wd-banner makeup">${ic("star",18)} ${t("makeupPractice")}: ${esc(makeupText(info.makeupForMe))}</div>`:""}
     ${info.isDJ?`<div class="wd-banner dj">${ic("bell",18)} ${t("djSchedule")}: ${esc(info.djNote)}</div>`:""}
-    ${workdayUnifiedTimeline(day,myActs)}
     ${workdayCompactInfo(day)}
+    ${workdayUnifiedTimeline(day,myActs)}
     ${dayPlanStandards(day)}
   </div>`;
 }
@@ -9996,7 +9995,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.29-tickets-v2";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.29-tickets-v4";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -10703,7 +10702,7 @@ function startRealtime(){
     return `<div class="sec">${managerHead(day,esc(t('days')[dp.day]||dp.name))}${v6DayInfoHtml(day)}</div>`;
   };
   window.workdayCompactInfo=function(day){
-    return `<div class="sec wd-dayinfo">${managerHead(day,t('dayInfoSec'))}${v6DayInfoHtml(day)}</div>`;
+    return `<div class="sec wd-dayinfo">${managerHead(day,t('dayInfoSec'))}${v6DayInfoHtml(day,true)}</div>`;
   };
   window.openDayInfoEditorV6=function(day){
     if(!(S.session&&S.session.role==='manager')) return;
@@ -10791,14 +10790,14 @@ function startRealtime(){
     };
   }
   function v63Val(v){ return `<b>${v||'—'}</b>`; }
-  window.v6DayInfoHtml=function(day){
+  window.v6DayInfoHtml=function(day,compact){
     const d=v63DayInfo(day);
     return `<div class="card dayinfo-v6"><div class="dayinfo-grid-v6">
       <div class="dayinfo-item-v6"><span>${t('restaurantTheme')}</span>${v63Val(d.theme)}</div>
       <div class="dayinfo-item-v6"><span>${t('dressCode')}</span>${v63Val(d.dress)}</div>
-      <div class="dayinfo-item-v6 wide"><span>${t('eventsToday')}</span>${v63Val(d.events)}</div>
+      ${compact?'':`<div class="dayinfo-item-v6 wide"><span>${t('eventsToday')}</span>${v63Val(d.events)}</div>
       <div class="dayinfo-item-v6"><span>Live music</span>${v63Val(d.live)}</div>
-      <div class="dayinfo-item-v6"><span>Show time</span>${v63Val(d.show)}</div>
+      <div class="dayinfo-item-v6"><span>Show time</span>${v63Val(d.show)}</div>`}
       <div class="dayinfo-item-v6"><span>${t('entranceDuty')}</span>${v63Val(d.entrance)}</div>
       <div class="dayinfo-item-v6"><span>${t('dayOff')}</span>${v63Val(d.off)}</div>
     </div></div>`;
@@ -11194,8 +11193,8 @@ function startRealtime(){
   /* Add Day Identity to the Manager/Staff Day Information card without changing its data source. */
   if(typeof window.v6DayInfoHtml==='function'){
     var baseV6DayInfoHtml613=window.v6DayInfoHtml;
-    window.v6DayInfoHtml=function(day){
-      var html=baseV6DayInfoHtml613(day), nm=dayName(day);
+    window.v6DayInfoHtml=function(day,compact){
+      var html=baseV6DayInfoHtml613(day,compact), nm=dayName(day);
       if(!nm) return html;
       var label=String((t('days')||[])[day]||'Day')+' · '+nm;
       return html.replace('<div class="dayinfo-grid-v6">','<div class="dayinfo-grid-v6"><div class="dayinfo-item-v6 wide"><span>Day Identity</span><b>'+esc(label)+'</b></div>');
@@ -16849,7 +16848,6 @@ function roster(day,m){
     if(p.entrance) work.push(`<span class="dp7-w ent">${ic('door',12)} Entrance duty</span>`);
     if(p.dj&&p.events.length) work.push(`<span class="dp7-w ev">${ic('music',12)} ${p.events.length} event${p.events.length>1?'s':''} from ${E(hhmm(startOf(p.events[0])))}</span>`);
     p.acts.forEach(a=>work.push(`<span class="dp7-w ${p.status!=='working'?'bad':''}">${E(hhmm(startOf(a)))} ${E(a.name)}</span>`));
-    if(p.makeup&&p.status==='working') work.push(`<span class="dp7-w mk">Make-up practice</span>`);
     const empty=p.status==='working'&&!work.length&&p.u.role==='staff'&&p.num>3;
     return `<div class="dp7-row ${p.status}">
       <span class="dp7-av">${ph?`<img src="${E(ph)}" alt="">`:E(p.num||'')}</span>
@@ -18349,7 +18347,7 @@ function rows(day){
   let nextSet=false;
   return acts.map(({a,st,en})=>{ const my=mine(a), c=cat(a); let state='';
     if(isT&&st!=null){ if(en!=null&&now>=en) state='done'; else if(now>=st) state='now'; else if(!nextSet){ state='next'; nextSet=true; } }
-    return `<div class="pg17-row ${my?'mine':''} ${state} k-${KIND[c]?'special':'act'}" ${my?`data-actopen="${E(a.id)}"`:''}><span class="pg17-time">${E(hm(st))}${en!=null?`<small>${E(hm(en%1440))}</small>`:''}</span>
+    return `<div class="pg17-row ${my?'mine':''} ${state} k-${KIND[c]?'special':'act'}" ${my?`data-actopen="${E(a.id)}"`:`data-actinfo="${E(a.id)}"`}><span class="pg17-time">${E(hm(st))}${en!=null?`<small>${E(hm(en%1440))}</small>`:''}</span>
       <span class="pg17-body"><span class="pg17-tags">${state==='now'?'<i class="now">Now</i>':state==='next'?'<i class="next">Next</i>':''}${KIND[c]?`<i class="kind">${E(KIND[c])}</i>`:''}${my?'<i class="you">You</i>':''}</span>
         <b>${E(a.name)}</b><small>${[a.location,my?'':who(a)].filter(Boolean).map(E).join(' · ')}</small></span></div>`; }).join('');
 }
@@ -18366,18 +18364,17 @@ function todayPage(){
 function weekPage(){
   const num=me().number, td=today();
   const days=[0,1,2,3,4,5,6].map(i=>addDays(td,i));
+  const openDay=typeof S.pgOpen==='number'?S.pgOpen:(S.pgOpen===null?-1:todayIndex());
   const card=d=>{ const day=(new Date(d+'T12:00:00').getDay()+6)%7; let info=null; try{ info=num?personDayInfo(num,day):null; }catch(_){}
     const my=(S.activities||[]).filter(a=>a&&a.day===day&&mine(a)).map(a=>({a,...span(a)})).sort((x,y)=>(x.st??9999)-(y.st??9999));
     const ev=(S.activities||[]).filter(a=>a&&a.day===day&&['mEvents','eParty'].includes(cat(a))).length;
     const st=info&&info.isVacation?['vac','Vacation']:info&&info.isAbsent?['abs','Absent']:info&&info.isOff?['off','Day off']:info&&info.isEntrance?['ent','Entrance duty']:['on','Working'];
-    return `<button type="button" class="pg17-wk ${st[0]} ${day===S.day?'sel':''}" data-pg17-day="${day}"><span class="pg17-wd"><b>${E(niceDay(d).split(/,?\s/)[0])}</b><small>${E(niceDay(d).replace(/^\S+,?\s*/,''))}</small></span>
-      <span class="pg17-wm"><i class="st ${st[0]}">${d===td?'Today · ':''}${st[1]}</i>${st[0]==='off'||st[0]==='vac'||st[0]==='abs'?'':(my.length?my.map(x=>`<small>${E(hm(x.st))} ${E(x.a.name)}</small>`).join(''):'<small class="none">No activity for you</small>')}${ev&&st[0]!=='off'&&st[0]!=='vac'?`<small class="ev">+ ${ev} team event${ev>1?'s':''}</small>`:''}</span><span class="pg17-go">›</span></button>`; };
-  const day=typeof S.day==='number'?S.day:todayIndex();
+    const open=day===openDay;
+    return `<div class="pg17-day ${open?'open':''}" id="pg17-d${day}"><button type="button" class="pg17-wk ${st[0]} ${open?'sel':''}" data-pg17-day="${day}" aria-expanded="${open}"><span class="pg17-wd"><b>${E(niceDay(d).split(/,?\s/)[0])}</b><small>${E(niceDay(d).replace(/^\S+,?\s*/,''))}</small></span>
+      <span class="pg17-wm"><i class="st ${st[0]}">${d===td?'Today · ':''}${st[1]}</i>${st[0]==='off'||st[0]==='vac'||st[0]==='abs'?'':(my.length?my.map(x=>`<small>${E(hm(x.st))} ${E(x.a.name)}</small>`).join(''):'<small class="none">No activity for you</small>')}${ev&&st[0]!=='off'&&st[0]!=='vac'?`<small class="ev">+ ${ev} team event${ev>1?'s':''}</small>`:''}</span><span class="pg17-go">›</span></button>${open?`<div class="pg17-open">${dayHead(day)}<p class="pg17-h2">Full programme</p><div class="pg17-list">${rows(day)||`<div class="pg17-empty">${E(t('noneToday'))}</div>`}</div></div>`:''}</div>`; };
   return `<div class="screen fadein pg17">${topBar(t('program'),'Your week and the full programme')}
-    <h3 class="pg17-h">My week</h3><div class="pg17-week">${days.map(card).join('')}</div>
-    <h3 class="pg17-h" id="pg17-full">Full programme · ${E(niceDay(dateOf(day),true))}</h3>
-    ${dayTabs()}${dayHead(day)}
-    <div class="pg17-list">${rows(day)||`<div class="pg17-empty">${E(t('noneToday'))}</div>`}</div>
+    <p class="pg17-intro">Tap a day to see its full programme.</p>
+    <div class="pg17-week">${days.map(card).join('')}</div>
     ${printBtn}</div>`;
 }
 const sv0=window.staffView||staffView;
@@ -18388,7 +18385,7 @@ const sv=function(){
 window.staffView=sv; try{ staffView=sv; }catch(_){}
 
 window.__wireSteps.push(function(){
-  document.querySelectorAll('[data-pg17-day]').forEach(b=>b.onclick=()=>{ S.day=+b.dataset.pg17Day; render(); setTimeout(()=>{ const h=document.getElementById('pg17-full'); if(h) h.scrollIntoView({behavior:'smooth',block:'start'}); },60); });
+  document.querySelectorAll('[data-pg17-day]').forEach(b=>b.onclick=()=>{ const d=+b.dataset.pg17Day, was=typeof S.pgOpen==='number'?S.pgOpen:(S.pgOpen===null?-1:todayIndex()); S.pgOpen=was===d?null:d; render(); if(S.pgOpen!==null) setTimeout(()=>{ const h=document.getElementById('pg17-d'+d); if(h) h.scrollIntoView({behavior:'smooth',block:'start'}); },60); });
 });
 
 const css=document.createElement('style'); css.id='v717-style';
@@ -18420,9 +18417,9 @@ css.textContent=`
 .pg17-row.mine{margin:0 -8px;padding:11px 8px;border-radius:14px;background:rgba(185,138,92,.1);cursor:pointer}.pg17-row.done{opacity:.45}
 .pg17-empty{padding:16px 0;text-align:center;color:var(--muted);font-size:13.5px}
 .pg17-note{margin:0 2px 12px;font-size:12.5px;color:var(--muted);line-height:1.45}
-.pg17-h{margin:14px 0 8px;font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+
 .pg17-week{margin:0 0 14px;padding:2px 12px;border-radius:20px;background:var(--card,#fff);border:1px solid var(--line)}
-.pg17-wk{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;cursor:pointer;margin:0}.pg17-week>.pg17-wk:first-child{border-top:0}
+.pg17-wk{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;cursor:pointer;margin:0}.pg17-week>.pg17-day:first-child>.pg17-wk{border-top:0}
 .pg17-wd{flex:none;width:50px;display:flex;flex-direction:column;line-height:1.15}.pg17-wd b{font-size:14px}.pg17-wd small{font-size:11.5px;color:var(--muted)}
 .pg17-wm{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.pg17-wm small{font-size:12.5px}.pg17-wm small.none{color:var(--muted)}.pg17-wm small.ev{color:#9A5B10;font-weight:600}
 .pg17-wm .st{align-self:flex-start;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(94,138,87,.14);color:#4E7A48}
@@ -20996,6 +20993,13 @@ css.textContent=`
 .rv-past{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;padding:10px 12px;border-radius:14px;background:rgba(176,57,43,.08);font-size:13px}.rv-past span{flex:1 1 180px}
 .rv-sql{margin-top:10px;padding:14px;border-radius:16px;background:rgba(208,133,38,.1);border:1px solid rgba(208,133,38,.4)}.rv-sql b{display:flex;align-items:center;gap:6px}.rv-sql p{margin:6px 0 0;font-size:13.5px;line-height:1.5}
 .rv-inpack{margin:12px 0}
+.pg17-intro{margin:-2px 2px 10px;font-size:13px;color:var(--muted)}
+.pg17-day.open>.pg17-wk{background:transparent}.pg17-day.open .pg17-go{transform:rotate(90deg);color:var(--ink)}.pg17-go{transition:transform .2s}
+.pg17-open{padding:2px 0 14px}.pg17-open .pg17-theme span{background:var(--bg);color:var(--ink);border:1px solid var(--line)}.pg17-open .pg17-theme small{color:var(--muted);opacity:1}
+.pg17-h2{margin:4px 0 2px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pg17-open .pg17-list{margin:0;padding:0;border:0;border-radius:0;background:transparent}
+.pg17-row[data-actinfo]{cursor:pointer}
+.wd-dayinfo .dayinfo-grid-v6{grid-template-columns:1fr 1fr!important}.wd-dayinfo .dayinfo-item-v6{padding:14px 16px!important;border-right:0!important}.wd-dayinfo .dayinfo-item-v6.wide{grid-column:1/-1!important}.wd-dayinfo .dayinfo-item-v6 b{font-size:14.5px}
 .wd17-row.prog .wd17-body{background:transparent;padding:7px 12px;cursor:pointer}.wd17-row.prog .wd17-body b{font-size:14px;font-weight:600}.wd17-row.prog .wd17-dot{border-color:var(--muted)}.wd17-row.event .wd17-body{cursor:pointer}
 .rv-numsd{margin-top:8px}.rv-numsd>summary{cursor:pointer;font-weight:700;font-size:13px;padding:6px 0}.rv-numsd .th9-grid{margin-top:4px}
 .t14-todos .t14-kick,.t14-todo small{color:var(--ink)!important;opacity:.8}
