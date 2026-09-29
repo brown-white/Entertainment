@@ -4023,6 +4023,12 @@ html[data-theme="dark"] .rv-c2 em{color:#C98B82!important}
 html[data-theme="dark"] .rv-okline{color:#8EA78B!important}
 html[data-theme="dark"] .th9-n.resv{color:#C7AC8D!important}
 html[data-theme="dark"] .th9-count .resv b{color:#C59252!important}
+html[data-theme="dark"] .rv-of small{color:#8EA78B!important}
+html[data-theme="dark"] .rv-hot{color:#CE978E!important}
+html[data-theme="dark"] .t14-b.danger{color:#C98B82!important}
+html[data-theme="dark"] .pg7-c.tk{color:#C7AC8D!important}
+html[data-theme="dark"] .pg17-tags .kind.tk{color:#C7AC8D!important}
+html[data-theme="dark"] .rv-acts .rv-del{color:#C98B82!important}
 html:not([data-theme="dark"]) .err{color:#A64832!important}
 html:not([data-theme="dark"]) .chip.res{color:#755C28!important}
 html:not([data-theme="dark"]) .stat-pill.todo{color:#7F5A11!important}
@@ -4137,6 +4143,8 @@ html:not([data-theme="dark"]) .rv-st.ok{color:#3A6235!important}
 html:not([data-theme="dark"]) .rv-n.own{color:#3A6235!important}
 html:not([data-theme="dark"]) .th9-n.resv{color:#7F4B0F!important}
 html:not([data-theme="dark"]) .th9-count .resv b{color:#89530F!important}
+html:not([data-theme="dark"]) .pg7-c.tk{color:#7F4B0F!important}
+html:not([data-theme="dark"]) .pg17-tags .kind.tk{color:#7F4B0F!important}
 </style>
 
 
@@ -9337,7 +9345,7 @@ function openTicketEditModal(tk){
   };
   const del=wrap.querySelector("#k-del");
   if(del){ del.textContent="Delete ticket event"; del.onclick=async()=>{
-    if(!await confirmAction({question:'Delete "'+(tk.name||"this event")+'"?',detail:"It disappears from the Explore page. This cannot be undone.",confirmLabel:"Delete event",danger:true})) return;
+    if(!await confirmAction({question:'Delete "'+(tk.name||"this event")+'"?',detail:"It disappears from the Explore page and from the programme. This cannot be undone.",confirmLabel:"Delete event",danger:true})) return;
     del.disabled=true;
     try{ await DB.deleteTicket(tk.id); wrap.remove(); toastOk(t("deleted")); render(); }
     catch(e){ del.disabled=false; toastErr(t("errSave")); }
@@ -9995,7 +10003,7 @@ let SW_READY=false;
    is confirmed uploaded next to index.html and the app logs in fine.
    While false, this actively REMOVES any old/stuck service worker and
    clears its caches, so a bad cached copy can never keep the app broken. */
-const APP_BUILD = "2026.09.29-tickets-v4";   // shown in the menu, so an upload can be checked at a glance
+const APP_BUILD = "2026.09.29-tickets-v5";   // shown in the menu, so an upload can be checked at a glance
 const USE_SERVICE_WORKER = false;
 
 function cleanupServiceWorkers(){
@@ -16984,12 +16992,13 @@ function row(a,today,dupOf){
   const cc=custom(a);
   const img=a.image||(typeof catImage==='function'?catImage(normCat(a)):IMG.show);
   const fb=(typeof catImage==='function'?catImage(normCat(a)):IMG.show);
-  return `<div class="pg7-row${done?' done':''}${dupOf?' dup':''}" data-edit="${E(a.id)}">
+  const tkx=window.__tkOfAct?window.__tkOfAct(a):null;
+  return `<div class="pg7-row${done?' done':''}${dupOf?' dup':''}${tkx?' tkev':''}" ${tkx?`data-tkedit="${E(tkx.tk.id)}"`:`data-edit="${E(a.id)}"`}>
     <span class="pg7-time"><b>${E(hhmm(s))}</b><small>${E(e!=null?hhmm(e):'')}</small></span>
     <img class="pg7-img" src="${E(img)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${E(fb)}'">
     <span class="pg7-mid"><b>${E(a.name)}</b>
       <span class="pg7-meta">${a.location?E(a.location):'<em>no place</em>'}${cc?` · <i class="pg7-cat">${E(cc)}</i>`:special(a)?` · <i class="pg7-cat ev">${E(catLabel(normCat(a)))}</i>`:''}</span>
-      <span class="pg7-chips">${special(a)?`<span class="pg7-c dj">${ic('music',11)} DJ</span>`:person?`<span class="pg7-c who">${ic('user',11)} ${E(person)}</span>`:`<span class="pg7-c none">Nobody assigned</span>`}
+      <span class="pg7-chips">${tkx?`<span class="pg7-c tk">${ic('ticket',11)} Ticket event${tkx.priceText?' · '+E(tkx.priceText):''} · edit in Tickets</span>`:special(a)?`<span class="pg7-c dj">${ic('music',11)} DJ</span>`:person?`<span class="pg7-c who">${ic('user',11)} ${E(person)}</span>`:`<span class="pg7-c none">Nobody assigned</span>`}
         ${live?'<span class="pg7-c live">Live now</span>':done?'<span class="pg7-c fin">Finished</span>':''}
         ${dupOf?'<span class="pg7-c dupc">Duplicate</span>':''}</span></span>
     <span class="pg7-edit">${ic('pen',15)}</span></div>`;
@@ -17496,16 +17505,17 @@ function evCard(tk){
   const offs=offersFor(tk);
   const people=[...new Set(nextP.map(p=>userName(p.user)))];
   return `<article class="t14-ev">
-    <div class="t14-ev-head"><img src="${E(tk.image||(typeof IMG!=='undefined'&&IMG.show)||'')}" alt="" loading="lazy">
+    <div class="t14-ev-head">${window.AUREA_RESV?window.AUREA_RESV.evThumb(tk):`<img src="${E(tk.image||(typeof IMG!=='undefined'&&IMG.show)||'')}" alt="" loading="lazy">`}
       <span class="t14-ev-t"><b>${E(tk.name||'Ticket event')}</b><span>Every ${E(dayName(tk.day))} · ${E(tk.time||'')}${tk.location?' · '+E(tk.location):''}</span>
-      <span class="t14-price">${tk.price?E(tk.price):'No price'}${offs.map(o=>` · <i>${o.qty} for ${E(money(o.price,cur))}</i>`).join('')}</span></span></div>
+      <span class="t14-price">${E(window.AUREA_RESV?window.AUREA_RESV.priceLabel(tk):(tk.price||'No price'))}${offs.map(o=>` · <i>${o.qty} for ${E(money(o.price,cur))}</i>`).join('')}</span></span></div>
     <div class="t14-next"><span class="t14-date"><small>Next</small><b>${E(niceDay(d))}</b></span>
       <span class="t14-lines">
         <span class="t14-line ${nextP.length?'ok':'none'}">${ic('ticket',14)}<span>${nextP.length?`Paper tickets: <b>${pn}</b> with ${E(people.join(', '))} · <b>${ps}</b> sold`:'Paper tickets: none given out yet'}</span></span>
         ${window.AUREA_RESV?window.AUREA_RESV.evLine(tk,d):''}
+        ${window.AUREA_RESV?window.AUREA_RESV.progLine(tk):''}
       </span></div>
     ${last}
-    <div class="t14-act"><button type="button" class="t14-b main" data-t14-give="${E(tk.id)}">${ic('plus',14)} Give tickets</button><button type="button" class="t14-b" data-tedit="${E(tk.id)}">Edit</button></div>
+    <div class="t14-act"><button type="button" class="t14-b main" data-t14-give="${E(tk.id)}">${ic('plus',14)} Give tickets</button><button type="button" class="t14-b" data-tedit="${E(tk.id)}">Edit</button><button type="button" class="t14-b danger" data-tdel="${E(tk.id)}" aria-label="Delete">${ic('trash',14)}</button></div>
   </article>`;
 }
 
@@ -17518,12 +17528,11 @@ function todo(){
   const done=open.filter(p=>isOver(p)&&stats(p).balance<=0);
   if(done.length){ const back=done.reduce((s,p)=>s+stats(p).left,0);
     out.push(`<div class="t14-todo"><span>${ic('check',15)}</span><span><b>${done.length} pack${done.length>1?'s':''} from past events fully paid</b><small>${back?`Take back ${back} unsold ticket${back>1?'s':''}, then settle`:'Nothing left over — settle to tidy the list'}</small></span><button type="button" class="t14-b main" id="t14-settleall">Settle ${done.length>1?'all '+done.length:''}</button></div>`); }
-  /* an event that uses packs, coming up in 2 days, with no tickets out */
+  /* a ticket event in the next 2 days with no tickets handed out: guests cannot reserve */
   const T=TK(), td=today();
   (S.tickets||[]).forEach(tk=>{ const d=T.nextDate?T.nextDate(tk):''; if(!d||d>addDays(td,2)) return;
-    const used=allPacks().some(p=>String(p.ticketId)===String(tk.id)); if(!used) return;
     if(allPacks().some(p=>String(p.ticketId)===String(tk.id)&&p.date===d)) return;
-    out.push(`<div class="t14-todo"><span>${ic('calendar',15)}</span><span><b>${E(tk.name)} ${E(relDay(d).toLowerCase()==='today'?'today':relDay(d)==='Tomorrow'?'tomorrow':'on '+niceDay(d))}</b><small>No paper tickets with the team yet</small></span><button type="button" class="t14-b main" data-t14-give="${E(tk.id)}">Give tickets</button></div>`); });
+    out.push(`<div class="t14-todo"><span>${ic('calendar',15)}</span><span><b>${E(tk.name)} ${E(relDay(d).toLowerCase()==='today'?'today':relDay(d)==='Tomorrow'?'tomorrow':'on '+niceDay(d))}</b><small>No tickets given out yet — guests cannot reserve</small></span><button type="button" class="t14-b main" data-t14-give="${E(tk.id)}">Give tickets</button></div>`); });
   return out.join('');
 }
 
@@ -18310,7 +18319,7 @@ function yourDay(day,acts){
   const ids=new Set((acts||[]).map(a=>String(a.id)));
   (acts||[]).forEach(a=>{ const w=span(a); items.push({k:'mine',st:w.st,en:w.en,a,title:a.name,sub:a.location||'',label:KIND[cat(a)]?KIND[cat(a)]+' · yours':'Your activity'}); });
   const PROG={mAdult:'Activity',mKids:'Kids club',mTeen:'Teens',eLive:'Live music',eBefore:'Before the show',eAfter:'After show'};
-  (S.activities||[]).filter(a=>a&&a.day===day&&!ids.has(String(a.id))).forEach(a=>{ const w=span(a), c=cat(a), ev=['mEvents','eParty','eShow'].includes(c); items.push({k:ev?'event':'prog',st:w.st,en:w.en,a,title:a.name,sub:[a.location,who(a)].filter(Boolean).join(' · '),label:KIND[c]||PROG[c]||'Programme'}); });
+  (S.activities||[]).filter(a=>a&&a.day===day&&!ids.has(String(a.id))).forEach(a=>{ const w=span(a), c=cat(a), ev=['mEvents','eParty','eShow'].includes(c); const tkx=window.__tkOfAct?window.__tkOfAct(a):null; items.push({k:ev||tkx?'event':'prog',st:w.st,en:w.en,a,title:a.name,sub:[a.location,who(a)].filter(Boolean).join(' · '),label:tkx?'Ticket event':KIND[c]||PROG[c]||'Programme'}); });
   if(info&&info.isEntrance) items.push({k:'duty',st:16*60,en:18*60+30,title:t('youHaveEntrance'),sub:info.entranceWindow||'',label:'Entrance duty'});
   let tasks=[]; try{ tasks=(S.tasks||[]).filter(x=>taskBelongsToDay(x,day)); }catch(_){}
   tasks.forEach(x=>{ let m=null; if(x.due){ const d=new Date(String(x.due).replace(' ','T')); if(!isNaN(d)) m=d.getHours()*60+d.getMinutes(); } items.push({k:'task',st:m,en:m==null?null:m+30,x,title:x.title||taskTypeLabel(x.type),sub:[x.location,(()=>{ try{ return taskStatusLabel(taskStatus(x)); }catch(_){ return ''; } })()].filter(Boolean).join(' · '),label:'Task'}); });
@@ -18348,7 +18357,7 @@ function rows(day){
   return acts.map(({a,st,en})=>{ const my=mine(a), c=cat(a); let state='';
     if(isT&&st!=null){ if(en!=null&&now>=en) state='done'; else if(now>=st) state='now'; else if(!nextSet){ state='next'; nextSet=true; } }
     return `<div class="pg17-row ${my?'mine':''} ${state} k-${KIND[c]?'special':'act'}" ${my?`data-actopen="${E(a.id)}"`:`data-actinfo="${E(a.id)}"`}><span class="pg17-time">${E(hm(st))}${en!=null?`<small>${E(hm(en%1440))}</small>`:''}</span>
-      <span class="pg17-body"><span class="pg17-tags">${state==='now'?'<i class="now">Now</i>':state==='next'?'<i class="next">Next</i>':''}${KIND[c]?`<i class="kind">${E(KIND[c])}</i>`:''}${my?'<i class="you">You</i>':''}</span>
+      <span class="pg17-body"><span class="pg17-tags">${state==='now'?'<i class="now">Now</i>':state==='next'?'<i class="next">Next</i>':''}${window.__tkOfAct&&window.__tkOfAct(a)?`<i class="kind tk">${ic('ticket',11)} Ticket event</i>`:KIND[c]?`<i class="kind">${E(KIND[c])}</i>`:''}${my?'<i class="you">You</i>':''}</span>
         <b>${E(a.name)}</b><small>${[a.location,my?'':who(a)].filter(Boolean).map(E).join(' · ')}</small></span></div>`; }).join('');
 }
 function dayHead(day){ let dp={}; try{ dp=dayPlanFor(day)||{}; }catch(_){} return (dp.theme||dp.dress)?`<div class="pg17-theme">${dp.theme?`<span><small>${E(t('restaurantTheme'))}</small><b>${E(dp.theme)}</b></span>`:''}${dp.dress?`<span><small>Dress code</small><b>${E(dp.dress)}</b></span>`:''}</div>`:''; }
@@ -19908,11 +19917,12 @@ function row(a,isT,now,nextId){
   if(isT&&s!=null){ if(w.some(x=>now>=x.s0&&now<x.e0)) st='now'; else if(e!=null&&now>=e) st='done'; else if(String(a.id)===nextId) st='next'; }
   const many=w.length>1;
   const badge=st==='now'?`<em class="ex21-st now">${E(L('nowOn'))}</em>`:st==='next'?`<em class="ex21-st next">${E(L('nextUp'))} · ${E(L('startsIn',{m:inTxt(s-now)}))}</em>`:st==='done'?`<em class="ex21-st done">${E(L('done'))}</em>`:'';
-  return `<button type="button" class="ex21-row k-${kindOf(a)} ${st}" data-ex21-act="${E(String(a.id))}">
+  const tkx=window.__tkOfAct?window.__tkOfAct(a):null;
+  return `<button type="button" class="ex21-row k-${kindOf(a)} ${st}${tkx?' tkev tt-'+tkx.type:''}" data-ex21-act="${E(String(a.id))}">
     <span class="ex21-time"><b>${s!=null?hm(s):'—'}</b>${e!=null&&!many?`<small>${hm(e)}</small>`:''}</span>
-    <img class="ex21-thumb" src="${E(coverOf(a))}" alt="" loading="lazy" onerror="this.style.display='none'">
-    <span class="ex21-mid"><span class="ex21-type">${E(typeL(a))}${a.highlight?` · <i>${E(L('hl'))}</i>`:''}</span><b>${E(a.name||'')}</b>
-      <small>${many?E(timeText(a))+(a.location?' · ':''):''}${a.location?E(a.location):''}</small>${badge}</span>
+    ${tkx&&!a.image?window.__tkRowArt(tkx):`<img class="ex21-thumb" src="${E(coverOf(a))}" alt="" loading="lazy" onerror="this.style.display='none'">`}
+    <span class="ex21-mid"><span class="ex21-type">${E(tkx?tkx.label:typeL(a))}${a.highlight?` · <i>${E(L('hl'))}</i>`:''}</span><b>${E(a.name||'')}</b>
+      <small>${many?E(timeText(a))+(a.location?' · ':''):''}${a.location?E(a.location):''}</small>${badge}${tkx?window.__tkRowCta(tkx):''}</span>
   </button>`;
 }
 function dayList(day,compact){
@@ -20048,13 +20058,15 @@ function openDetail(a,forTeam){
   const img=coverOf(a), days=t('days')||[];
   const who=forTeam?(()=>{ const raw=String(a.entertainer||'').trim(); if(normCat(a)!=='mAdult'){ const dj=(S.users||[]).find(u=>u.role==='staff'&&+u.number===3&&u.active!==false&&!hasLeft(u)); return dj?(dj.display_name||dj.username)+' · DJ':''; } try{ return raw?entertainerName(raw):t('allTeam'); }catch(_){ return raw; } })():'';
   const wrap=baseModal(`<div class="ex21-detail">${img?`<div class="ph"><img src="${E(img)}" alt=""></div>`:''}
-    <span class="ex21-type">${E(typeL(a))}${a.highlight?' · '+E(L('hl')):''}</span><h3>${E(a.name||'')}</h3>
+    <span class="ex21-type">${E((window.__tkOfAct&&window.__tkOfAct(a)||{}).label||typeL(a))}${a.highlight?' · '+E(L('hl')):''}</span><h3>${E(a.name||'')}</h3>
     <dl><div><dt>${ic('calendar',14)} ${E(L('when'))}</dt><dd>${E(days[+a.day]||'')} · ${E(timeText(a)||L('tba'))}</dd></div>
       ${a.location?`<div><dt>${ic('pin',14)} ${E(L('where'))}</dt><dd>${E(a.location)}</dd></div>`:''}
       ${who?`<div><dt>${ic('user',14)} ${E(L('runBy'))}</dt><dd>${E(who)}</dd></div>`:''}</dl>
     ${a.desc?`<p>${E(a.desc)}</p>`:''}
+    ${!forTeam&&window.__tkDetail?window.__tkDetail(a):''}
     <button class="btn ghost" id="ex21-dx">${E(t('close'))}</button></div>`);
   wrap.querySelector('#ex21-dx').onclick=()=>wrap.remove();
+  const tg=wrap.querySelector('#ex21-dtk-go'); if(tg) tg.onclick=()=>{ wrap.remove(); const el=document.getElementById('ex21-tix'); if(el) try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){ el.scrollIntoView(); } };
 }
 /* an entertainer taps an activity in the app: its details (the programme is the manager's) */
 window.openActInfo=function(a){ openDetail(a,true); };
@@ -20415,14 +20427,14 @@ const PHONE='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke=
 
 /* ---------- words for guests (8 languages) ---------- */
 const W={
-en:{subLocked:'Reserve your paper tickets for our games and parties.',subOpen:'Choose your entertainer, mark your numbers and reserve. You pay when you get your paper ticket.',lockText:'Enter your room number and nationality to see the tickets.',room:'Room number',nat:'Nationality',natPick:'Choose your nationality',common:'Most common',allNat:'All nationalities',phone:'Mobile number',phonePh:'Mobile number',otherCode:'Other — type +code',phoneNote:'Only for the entertainer, if there is a question about your ticket.',roomErr:'Please enter your room number (3 or 4 digits).',natErr:'Please choose your nationality.',phoneErr:'Please enter your mobile number with the country code.',showTix:'Show the tickets',roomN:'Room {r}',change:'Change',myTix:'My tickets',chooseEnt:'Choose your entertainer',left:'{n} left',soldOut:'Sold out',notOut:'Tickets for this event are not out yet — please look again later.',single:'Single tickets',each:'{p} each',offer:'{q} for {p}',tapNums:'Tap the numbers you want.',tapOffer:'Tap {q} numbers for this offer.',free:'Free',taken:'Taken',yours:'Yours',chosen:'Chosen',none:'No numbers chosen yet.',more:'Choose {n} more.',maxN:'Up to {n} tickets at a time.',reserve:'Reserve',busy:'Reserving…',payNote:'You pay {name} when you get your paper ticket.',takenNow:'Sorry — {nums} was just taken by another guest. Please choose another number.',done:'Reserved!',doneText:'Go to {name}, pay {p} and get your paper tickets: {nums}.',ok:'OK',waiting:'Not paid yet',payText:'Pay {name} {p} and get your paper ticket.',paid:'Paid',paidText:'Your ticket is paid — good luck!',cancelled:'Cancelled',cancelRes:'Cancel reservation',cancelQ:'Cancel this reservation?',cancelD:'The numbers become free for other guests.',keep:'Keep it',cancelYes:'Yes, cancel',cancelLate:'This ticket is already paid. Please speak to {name}.',cancelDone:'Reservation cancelled',notOpen:'Online reservation opens soon — for now, buy your paper ticket from the entertainment team.',netErr:'No connection — please try again.',offerOf:'offer of {q}'},
-de:{subLocked:'Reserviere deine Papiertickets für unsere Spiele und Partys.',subOpen:'Wähle deinen Animateur, markiere deine Nummern und reserviere. Bezahlt wird, wenn du dein Papierticket bekommst.',lockText:'Gib deine Zimmernummer und Nationalität ein, um die Tickets zu sehen.',room:'Zimmernummer',nat:'Nationalität',natPick:'Nationalität wählen',common:'Am häufigsten',allNat:'Alle Nationalitäten',phone:'Handynummer',phonePh:'Handynummer',otherCode:'Andere — +Vorwahl eintippen',phoneNote:'Nur für den Animateur, falls es eine Frage zu deinem Ticket gibt.',roomErr:'Bitte gib deine Zimmernummer ein (3 oder 4 Ziffern).',natErr:'Bitte wähle deine Nationalität.',phoneErr:'Bitte gib deine Handynummer mit Ländervorwahl ein.',showTix:'Tickets anzeigen',roomN:'Zimmer {r}',change:'Ändern',myTix:'Meine Tickets',chooseEnt:'Wähle deinen Animateur',left:'noch {n}',soldOut:'Ausverkauft',notOut:'Die Tickets für dieses Event sind noch nicht verteilt — schau später noch einmal.',single:'Einzeltickets',each:'je {p}',offer:'{q} für {p}',tapNums:'Tippe die Nummern an, die du möchtest.',tapOffer:'Tippe {q} Nummern für dieses Angebot an.',free:'Frei',taken:'Vergeben',yours:'Deine',chosen:'Gewählt',none:'Noch keine Nummer gewählt.',more:'Wähle noch {n}.',maxN:'Bis zu {n} Tickets auf einmal.',reserve:'Reservieren',busy:'Wird reserviert…',payNote:'Du bezahlst {name}, wenn du dein Papierticket bekommst.',takenNow:'Leider wurde {nums} gerade von einem anderen Gast genommen. Bitte wähle eine andere Nummer.',done:'Reserviert!',doneText:'Geh zu {name}, bezahle {p} und hol dir deine Papiertickets: {nums}.',ok:'OK',waiting:'Noch nicht bezahlt',payText:'Bezahle {name} {p} und hol dir dein Papierticket.',paid:'Bezahlt',paidText:'Dein Ticket ist bezahlt — viel Glück!',cancelled:'Storniert',cancelRes:'Reservierung stornieren',cancelQ:'Diese Reservierung stornieren?',cancelD:'Die Nummern werden für andere Gäste wieder frei.',keep:'Behalten',cancelYes:'Ja, stornieren',cancelLate:'Dieses Ticket ist schon bezahlt. Bitte sprich mit {name}.',cancelDone:'Reservierung storniert',notOpen:'Die Online-Reservierung startet bald — bis dahin bekommst du dein Papierticket beim Animationsteam.',netErr:'Keine Verbindung — bitte versuche es noch einmal.',offerOf:'Angebot {q}'},
-ru:{subLocked:'Бронируйте бумажные билеты на наши игры и вечеринки.',subOpen:'Выберите аниматора, отметьте номера и забронируйте. Оплата — при получении бумажного билета.',lockText:'Введите номер комнаты и гражданство, чтобы увидеть билеты.',room:'Номер комнаты',nat:'Гражданство',natPick:'Выберите гражданство',common:'Чаще всего',allNat:'Все страны',phone:'Мобильный номер',phonePh:'Мобильный номер',otherCode:'Другой — введите +код',phoneNote:'Только для аниматора, если будет вопрос по вашему билету.',roomErr:'Введите номер комнаты (3 или 4 цифры).',natErr:'Выберите гражданство.',phoneErr:'Введите мобильный номер с кодом страны.',showTix:'Показать билеты',roomN:'Комната {r}',change:'Изменить',myTix:'Мои билеты',chooseEnt:'Выберите аниматора',left:'осталось {n}',soldOut:'Всё продано',notOut:'Билеты на это мероприятие ещё не выданы — загляните позже.',single:'Отдельные билеты',each:'{p} за билет',offer:'{q} за {p}',tapNums:'Нажмите на нужные номера.',tapOffer:'Нажмите {q} номера для этой акции.',free:'Свободно',taken:'Занято',yours:'Ваши',chosen:'Выбрано',none:'Номера ещё не выбраны.',more:'Выберите ещё {n}.',maxN:'Не больше {n} билетов за раз.',reserve:'Забронировать',busy:'Бронируем…',payNote:'Вы платите аниматору {name} при получении бумажного билета.',takenNow:'Извините — {nums} только что занял другой гость. Выберите другой номер.',done:'Забронировано!',doneText:'Подойдите к {name}, оплатите {p} и получите бумажные билеты: {nums}.',ok:'OK',waiting:'Ещё не оплачено',payText:'Оплатите {p} аниматору {name} и получите бумажный билет.',paid:'Оплачено',paidText:'Билет оплачен — удачи!',cancelled:'Отменено',cancelRes:'Отменить бронь',cancelQ:'Отменить эту бронь?',cancelD:'Номера снова станут свободными для других гостей.',keep:'Оставить',cancelYes:'Да, отменить',cancelLate:'Этот билет уже оплачен. Поговорите с {name}.',cancelDone:'Бронь отменена',notOpen:'Онлайн-бронирование скоро откроется — пока покупайте бумажный билет у команды аниматоров.',netErr:'Нет соединения — попробуйте ещё раз.',offerOf:'акция {q}'},
-pl:{subLocked:'Rezerwuj papierowe bilety na nasze gry i imprezy.',subOpen:'Wybierz animatora, zaznacz numery i zarezerwuj. Płacisz przy odbiorze papierowego biletu.',lockText:'Wpisz numer pokoju i narodowość, aby zobaczyć bilety.',room:'Numer pokoju',nat:'Narodowość',natPick:'Wybierz narodowość',common:'Najczęstsze',allNat:'Wszystkie narodowości',phone:'Numer komórki',phonePh:'Numer komórki',otherCode:'Inny — wpisz +kierunkowy',phoneNote:'Tylko dla animatora, gdyby było pytanie o Twój bilet.',roomErr:'Wpisz numer pokoju (3 lub 4 cyfry).',natErr:'Wybierz narodowość.',phoneErr:'Wpisz numer komórki z numerem kierunkowym kraju.',showTix:'Pokaż bilety',roomN:'Pokój {r}',change:'Zmień',myTix:'Moje bilety',chooseEnt:'Wybierz animatora',left:'zostało {n}',soldOut:'Wyprzedane',notOut:'Bilety na to wydarzenie nie zostały jeszcze wydane — zajrzyj później.',single:'Pojedyncze bilety',each:'{p} za bilet',offer:'{q} za {p}',tapNums:'Dotknij numerów, które chcesz.',tapOffer:'Dotknij {q} numerów do tej oferty.',free:'Wolne',taken:'Zajęte',yours:'Twoje',chosen:'Wybrane',none:'Nie wybrano jeszcze numerów.',more:'Wybierz jeszcze {n}.',maxN:'Najwyżej {n} biletów naraz.',reserve:'Zarezerwuj',busy:'Rezerwuję…',payNote:'Płacisz animatorowi {name} przy odbiorze papierowego biletu.',takenNow:'Przepraszamy — {nums} właśnie zajął inny gość. Wybierz inny numer.',done:'Zarezerwowano!',doneText:'Idź do {name}, zapłać {p} i odbierz papierowe bilety: {nums}.',ok:'OK',waiting:'Jeszcze nie zapłacono',payText:'Zapłać {p} animatorowi {name} i odbierz papierowy bilet.',paid:'Zapłacono',paidText:'Bilet zapłacony — powodzenia!',cancelled:'Anulowano',cancelRes:'Anuluj rezerwację',cancelQ:'Anulować tę rezerwację?',cancelD:'Numery znów będą wolne dla innych gości.',keep:'Zostaw',cancelYes:'Tak, anuluj',cancelLate:'Ten bilet jest już zapłacony. Porozmawiaj z {name}.',cancelDone:'Rezerwacja anulowana',notOpen:'Rezerwacja online ruszy wkrótce — na razie kup papierowy bilet u animatorów.',netErr:'Brak połączenia — spróbuj ponownie.',offerOf:'oferta {q}'},
-cs:{subLocked:'Rezervujte si papírové vstupenky na naše hry a večírky.',subOpen:'Vyberte animátora, označte čísla a rezervujte. Platíte při převzetí papírové vstupenky.',lockText:'Zadejte číslo pokoje a národnost, abyste viděli vstupenky.',room:'Číslo pokoje',nat:'Národnost',natPick:'Vyberte národnost',common:'Nejčastější',allNat:'Všechny národnosti',phone:'Číslo mobilu',phonePh:'Číslo mobilu',otherCode:'Jiná — napište +předvolbu',phoneNote:'Jen pro animátora, kdyby byl dotaz k vaší vstupence.',roomErr:'Zadejte číslo pokoje (3 nebo 4 číslice).',natErr:'Vyberte národnost.',phoneErr:'Zadejte číslo mobilu s předvolbou země.',showTix:'Zobrazit vstupenky',roomN:'Pokoj {r}',change:'Změnit',myTix:'Moje vstupenky',chooseEnt:'Vyberte animátora',left:'zbývá {n}',soldOut:'Vyprodáno',notOut:'Vstupenky na tuto akci ještě nebyly vydány — podívejte se později.',single:'Jednotlivé vstupenky',each:'{p} za kus',offer:'{q} za {p}',tapNums:'Klepněte na čísla, která chcete.',tapOffer:'Klepněte na {q} čísla pro tuto nabídku.',free:'Volné',taken:'Obsazené',yours:'Vaše',chosen:'Vybrané',none:'Zatím nejsou vybraná žádná čísla.',more:'Vyberte ještě {n}.',maxN:'Nejvýše {n} vstupenek najednou.',reserve:'Rezervovat',busy:'Rezervuji…',payNote:'Zaplatíte animátorovi {name} při převzetí papírové vstupenky.',takenNow:'Omlouváme se — {nums} právě obsadil jiný host. Vyberte jiné číslo.',done:'Rezervováno!',doneText:'Jděte za {name}, zaplaťte {p} a převezměte papírové vstupenky: {nums}.',ok:'OK',waiting:'Zatím nezaplaceno',payText:'Zaplaťte {p} animátorovi {name} a převezměte papírovou vstupenku.',paid:'Zaplaceno',paidText:'Vstupenka je zaplacená — hodně štěstí!',cancelled:'Zrušeno',cancelRes:'Zrušit rezervaci',cancelQ:'Zrušit tuto rezervaci?',cancelD:'Čísla budou opět volná pro ostatní hosty.',keep:'Ponechat',cancelYes:'Ano, zrušit',cancelLate:'Tato vstupenka je už zaplacená. Promluvte si s {name}.',cancelDone:'Rezervace zrušena',notOpen:'Online rezervace brzy začne — zatím si kupte papírovou vstupenku u animátorů.',netErr:'Bez připojení — zkuste to znovu.',offerOf:'nabídka {q}'},
-nl:{subLocked:'Reserveer je papieren tickets voor onze spellen en feesten.',subOpen:'Kies je animator, markeer je nummers en reserveer. Je betaalt wanneer je je papieren ticket krijgt.',lockText:'Vul je kamernummer en nationaliteit in om de tickets te zien.',room:'Kamernummer',nat:'Nationaliteit',natPick:'Kies je nationaliteit',common:'Meest gekozen',allNat:'Alle nationaliteiten',phone:'Mobiel nummer',phonePh:'Mobiel nummer',otherCode:'Anders — typ +landcode',phoneNote:'Alleen voor de animator, als er een vraag is over je ticket.',roomErr:'Vul je kamernummer in (3 of 4 cijfers).',natErr:'Kies je nationaliteit.',phoneErr:'Vul je mobiele nummer met landcode in.',showTix:'Toon de tickets',roomN:'Kamer {r}',change:'Wijzigen',myTix:'Mijn tickets',chooseEnt:'Kies je animator',left:'nog {n}',soldOut:'Uitverkocht',notOut:'De tickets voor dit event zijn nog niet uitgedeeld — kijk later nog eens.',single:'Losse tickets',each:'{p} per stuk',offer:'{q} voor {p}',tapNums:'Tik op de nummers die je wilt.',tapOffer:'Tik op {q} nummers voor deze aanbieding.',free:'Vrij',taken:'Bezet',yours:'Van jou',chosen:'Gekozen',none:'Nog geen nummers gekozen.',more:'Kies er nog {n}.',maxN:'Maximaal {n} tickets per keer.',reserve:'Reserveren',busy:'Bezig met reserveren…',payNote:'Je betaalt {name} wanneer je je papieren ticket krijgt.',takenNow:'Sorry — {nums} is net door een andere gast genomen. Kies een ander nummer.',done:'Gereserveerd!',doneText:'Ga naar {name}, betaal {p} en haal je papieren tickets: {nums}.',ok:'OK',waiting:'Nog niet betaald',payText:'Betaal {name} {p} en haal je papieren ticket.',paid:'Betaald',paidText:'Je ticket is betaald — veel succes!',cancelled:'Geannuleerd',cancelRes:'Reservering annuleren',cancelQ:'Deze reservering annuleren?',cancelD:'De nummers komen weer vrij voor andere gasten.',keep:'Houden',cancelYes:'Ja, annuleren',cancelLate:'Dit ticket is al betaald. Spreek met {name}.',cancelDone:'Reservering geannuleerd',notOpen:'Online reserveren kan binnenkort — koop je papieren ticket voorlopig bij het entertainmentteam.',netErr:'Geen verbinding — probeer het opnieuw.',offerOf:'aanbieding {q}'},
-fr:{subLocked:'Réservez vos billets papier pour nos jeux et soirées.',subOpen:'Choisissez votre animateur, cochez vos numéros et réservez. Vous payez en recevant votre billet papier.',lockText:'Saisissez votre numéro de chambre et votre nationalité pour voir les billets.',room:'Numéro de chambre',nat:'Nationalité',natPick:'Choisissez votre nationalité',common:'Les plus fréquentes',allNat:'Toutes les nationalités',phone:'Numéro de portable',phonePh:'Numéro de portable',otherCode:'Autre — tapez +indicatif',phoneNote:'Uniquement pour l’animateur, en cas de question sur votre billet.',roomErr:'Saisissez votre numéro de chambre (3 ou 4 chiffres).',natErr:'Choisissez votre nationalité.',phoneErr:'Saisissez votre numéro de portable avec l’indicatif du pays.',showTix:'Voir les billets',roomN:'Chambre {r}',change:'Modifier',myTix:'Mes billets',chooseEnt:'Choisissez votre animateur',left:'encore {n}',soldOut:'Complet',notOut:'Les billets de cet événement ne sont pas encore distribués — revenez plus tard.',single:'Billets à l’unité',each:'{p} l’unité',offer:'{q} pour {p}',tapNums:'Touchez les numéros que vous voulez.',tapOffer:'Touchez {q} numéros pour cette offre.',free:'Libre',taken:'Pris',yours:'Les vôtres',chosen:'Choisi',none:'Aucun numéro choisi.',more:'Encore {n} à choisir.',maxN:'{n} billets au maximum à la fois.',reserve:'Réserver',busy:'Réservation…',payNote:'Vous payez {name} en recevant votre billet papier.',takenNow:'Désolé — {nums} vient d’être pris par un autre client. Choisissez un autre numéro.',done:'Réservé !',doneText:'Allez voir {name}, payez {p} et recevez vos billets papier : {nums}.',ok:'OK',waiting:'Pas encore payé',payText:'Payez {p} à {name} et recevez votre billet papier.',paid:'Payé',paidText:'Votre billet est payé — bonne chance !',cancelled:'Annulé',cancelRes:'Annuler la réservation',cancelQ:'Annuler cette réservation ?',cancelD:'Les numéros redeviennent libres pour les autres clients.',keep:'La garder',cancelYes:'Oui, annuler',cancelLate:'Ce billet est déjà payé. Parlez-en à {name}.',cancelDone:'Réservation annulée',notOpen:'La réservation en ligne ouvre bientôt — en attendant, achetez votre billet papier auprès de l’équipe d’animation.',netErr:'Pas de connexion — réessayez.',offerOf:'offre de {q}'},
-ar:{subLocked:'احجز تذاكرك الورقية لألعابنا وحفلاتنا.',subOpen:'اختر المنشط وحدّد أرقامك واحجز. تدفع عند استلام تذكرتك الورقية.',lockText:'أدخل رقم غرفتك وجنسيتك لرؤية التذاكر.',room:'رقم الغرفة',nat:'الجنسية',natPick:'اختر جنسيتك',common:'الأكثر شيوعاً',allNat:'كل الجنسيات',phone:'رقم الجوال',phonePh:'رقم الجوال',otherCode:'أخرى — اكتب +رمز الدولة',phoneNote:'للمنشط فقط، إذا كان هناك سؤال عن تذكرتك.',roomErr:'أدخل رقم غرفتك (3 أو 4 أرقام).',natErr:'اختر جنسيتك.',phoneErr:'أدخل رقم جوالك مع رمز الدولة.',showTix:'عرض التذاكر',roomN:'غرفة {r}',change:'تغيير',myTix:'تذاكري',chooseEnt:'اختر المنشط',left:'متبقٍ {n}',soldOut:'نفدت',notOut:'لم تُوزَّع تذاكر هذه الفعالية بعد — عد لاحقاً.',single:'تذاكر فردية',each:'{p} للتذكرة',offer:'{q} مقابل {p}',tapNums:'اضغط على الأرقام التي تريدها.',tapOffer:'اضغط على {q} أرقام لهذا العرض.',free:'متاح',taken:'محجوز',yours:'لك',chosen:'مختار',none:'لم تختر أي رقم بعد.',more:'اختر {n} أخرى.',maxN:'حتى {n} تذاكر في المرة.',reserve:'احجز',busy:'جارٍ الحجز…',payNote:'تدفع للمنشط {name} عند استلام تذكرتك الورقية.',takenNow:'عذراً — الرقم {nums} حجزه ضيف آخر للتو. اختر رقماً آخر.',done:'تم الحجز!',doneText:'اذهب إلى {name}، ادفع {p} واستلم تذاكرك الورقية: {nums}.',ok:'حسناً',waiting:'لم يُدفع بعد',payText:'ادفع {p} للمنشط {name} واستلم تذكرتك الورقية.',paid:'مدفوع',paidText:'تذكرتك مدفوعة — حظاً سعيداً!',cancelled:'ملغى',cancelRes:'إلغاء الحجز',cancelQ:'إلغاء هذا الحجز؟',cancelD:'ستصبح الأرقام متاحة لضيوف آخرين.',keep:'احتفظ به',cancelYes:'نعم، ألغِ',cancelLate:'هذه التذكرة مدفوعة بالفعل. تحدث مع {name}.',cancelDone:'تم إلغاء الحجز',notOpen:'الحجز عبر الإنترنت يبدأ قريباً — حالياً اشترِ تذكرتك الورقية من فريق الترفيه.',netErr:'لا يوجد اتصال — حاول مرة أخرى.',offerOf:'عرض {q}'}
+en:{subLocked:'Reserve your paper tickets for our games and parties.',subOpen:'Choose your entertainer, mark your numbers and reserve. You pay when you get your paper ticket.',lockText:'Enter your room number and nationality to see the tickets.',room:'Room number',nat:'Nationality',natPick:'Choose your nationality',common:'Most common',allNat:'All nationalities',phone:'Mobile number',phonePh:'Mobile number',otherCode:'Other — type +code',phoneNote:'Only for the entertainer, if there is a question about your ticket.',roomErr:'Please enter your room number (3 or 4 digits).',natErr:'Please choose your nationality.',phoneErr:'Please enter your mobile number with the country code.',showTix:'Show the tickets',roomN:'Room {r}',change:'Change',myTix:'My tickets',chooseEnt:'Choose your entertainer',left:'{n} left',soldOut:'Sold out',notOut:'Tickets for this event are not out yet — please look again later.',single:'Single tickets',each:'{p} each',offer:'{q} for {p}',tapNums:'Tap the numbers you want.',tapOffer:'Tap {q} numbers for this offer.',free:'Free',taken:'Taken',yours:'Yours',chosen:'Chosen',none:'No numbers chosen yet.',more:'Choose {n} more.',maxN:'Up to {n} tickets at a time.',reserve:'Reserve',busy:'Reserving…',payNote:'You pay {name} when you get your paper ticket.',takenNow:'Sorry — {nums} was just taken by another guest. Please choose another number.',done:'Reserved!',doneText:'Go to {name}, pay {p} and get your paper tickets: {nums}.',ok:'OK',waiting:'Not paid yet',payText:'Pay {name} {p} and get your paper ticket.',paid:'Paid',paidText:'Your ticket is paid — good luck!',cancelled:'Cancelled',cancelRes:'Cancel reservation',cancelQ:'Cancel this reservation?',cancelD:'The numbers become free for other guests.',keep:'Keep it',cancelYes:'Yes, cancel',cancelLate:'This ticket is already paid. Please speak to {name}.',cancelDone:'Reservation cancelled',notOpen:'Online reservation opens soon — for now, buy your paper ticket from the entertainment team.',netErr:'No connection — please try again.',offerOf:'offer of {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Special event',tag_tombola:'Win great prizes',tag_bingo:'Eyes down — who fills the card first?',tag_disco:'Dance all night',tag_other:'Don’t miss it',tonight:'Tonight',save:'save {p}',onlyLeft:'Only {n} left!',soon:'Tickets go on sale soon — check back later.',getTix:'Get your tickets',teaserT:'Prize games & party nights'},
+de:{subLocked:'Reserviere deine Papiertickets für unsere Spiele und Partys.',subOpen:'Wähle deinen Animateur, markiere deine Nummern und reserviere. Bezahlt wird, wenn du dein Papierticket bekommst.',lockText:'Gib deine Zimmernummer und Nationalität ein, um die Tickets zu sehen.',room:'Zimmernummer',nat:'Nationalität',natPick:'Nationalität wählen',common:'Am häufigsten',allNat:'Alle Nationalitäten',phone:'Handynummer',phonePh:'Handynummer',otherCode:'Andere — +Vorwahl eintippen',phoneNote:'Nur für den Animateur, falls es eine Frage zu deinem Ticket gibt.',roomErr:'Bitte gib deine Zimmernummer ein (3 oder 4 Ziffern).',natErr:'Bitte wähle deine Nationalität.',phoneErr:'Bitte gib deine Handynummer mit Ländervorwahl ein.',showTix:'Tickets anzeigen',roomN:'Zimmer {r}',change:'Ändern',myTix:'Meine Tickets',chooseEnt:'Wähle deinen Animateur',left:'noch {n}',soldOut:'Ausverkauft',notOut:'Die Tickets für dieses Event sind noch nicht verteilt — schau später noch einmal.',single:'Einzeltickets',each:'je {p}',offer:'{q} für {p}',tapNums:'Tippe die Nummern an, die du möchtest.',tapOffer:'Tippe {q} Nummern für dieses Angebot an.',free:'Frei',taken:'Vergeben',yours:'Deine',chosen:'Gewählt',none:'Noch keine Nummer gewählt.',more:'Wähle noch {n}.',maxN:'Bis zu {n} Tickets auf einmal.',reserve:'Reservieren',busy:'Wird reserviert…',payNote:'Du bezahlst {name}, wenn du dein Papierticket bekommst.',takenNow:'Leider wurde {nums} gerade von einem anderen Gast genommen. Bitte wähle eine andere Nummer.',done:'Reserviert!',doneText:'Geh zu {name}, bezahle {p} und hol dir deine Papiertickets: {nums}.',ok:'OK',waiting:'Noch nicht bezahlt',payText:'Bezahle {name} {p} und hol dir dein Papierticket.',paid:'Bezahlt',paidText:'Dein Ticket ist bezahlt — viel Glück!',cancelled:'Storniert',cancelRes:'Reservierung stornieren',cancelQ:'Diese Reservierung stornieren?',cancelD:'Die Nummern werden für andere Gäste wieder frei.',keep:'Behalten',cancelYes:'Ja, stornieren',cancelLate:'Dieses Ticket ist schon bezahlt. Bitte sprich mit {name}.',cancelDone:'Reservierung storniert',notOpen:'Die Online-Reservierung startet bald — bis dahin bekommst du dein Papierticket beim Animationsteam.',netErr:'Keine Verbindung — bitte versuche es noch einmal.',offerOf:'Angebot {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Special-Event',tag_tombola:'Tolle Preise gewinnen',tag_bingo:'Wer hat zuerst die volle Karte?',tag_disco:'Tanzen bis in die Nacht',tag_other:'Nicht verpassen',tonight:'Heute Abend',save:'{p} gespart',onlyLeft:'Nur noch {n}!',soon:'Der Ticketverkauf startet bald – schau später wieder vorbei.',getTix:'Tickets holen',teaserT:'Gewinnspiele & Partynächte'},
+ru:{subLocked:'Бронируйте бумажные билеты на наши игры и вечеринки.',subOpen:'Выберите аниматора, отметьте номера и забронируйте. Оплата — при получении бумажного билета.',lockText:'Введите номер комнаты и гражданство, чтобы увидеть билеты.',room:'Номер комнаты',nat:'Гражданство',natPick:'Выберите гражданство',common:'Чаще всего',allNat:'Все страны',phone:'Мобильный номер',phonePh:'Мобильный номер',otherCode:'Другой — введите +код',phoneNote:'Только для аниматора, если будет вопрос по вашему билету.',roomErr:'Введите номер комнаты (3 или 4 цифры).',natErr:'Выберите гражданство.',phoneErr:'Введите мобильный номер с кодом страны.',showTix:'Показать билеты',roomN:'Комната {r}',change:'Изменить',myTix:'Мои билеты',chooseEnt:'Выберите аниматора',left:'осталось {n}',soldOut:'Всё продано',notOut:'Билеты на это мероприятие ещё не выданы — загляните позже.',single:'Отдельные билеты',each:'{p} за билет',offer:'{q} за {p}',tapNums:'Нажмите на нужные номера.',tapOffer:'Нажмите {q} номера для этой акции.',free:'Свободно',taken:'Занято',yours:'Ваши',chosen:'Выбрано',none:'Номера ещё не выбраны.',more:'Выберите ещё {n}.',maxN:'Не больше {n} билетов за раз.',reserve:'Забронировать',busy:'Бронируем…',payNote:'Вы платите аниматору {name} при получении бумажного билета.',takenNow:'Извините — {nums} только что занял другой гость. Выберите другой номер.',done:'Забронировано!',doneText:'Подойдите к {name}, оплатите {p} и получите бумажные билеты: {nums}.',ok:'OK',waiting:'Ещё не оплачено',payText:'Оплатите {p} аниматору {name} и получите бумажный билет.',paid:'Оплачено',paidText:'Билет оплачен — удачи!',cancelled:'Отменено',cancelRes:'Отменить бронь',cancelQ:'Отменить эту бронь?',cancelD:'Номера снова станут свободными для других гостей.',keep:'Оставить',cancelYes:'Да, отменить',cancelLate:'Этот билет уже оплачен. Поговорите с {name}.',cancelDone:'Бронь отменена',notOpen:'Онлайн-бронирование скоро откроется — пока покупайте бумажный билет у команды аниматоров.',netErr:'Нет соединения — попробуйте ещё раз.',offerOf:'акция {q}',ty_tombola:'Томбола',ty_bingo:'Бинго',ty_disco:'Дискотека',ty_other:'Особое событие',tag_tombola:'Выигрывайте отличные призы',tag_bingo:'Кто первым заполнит карточку?',tag_disco:'Танцы всю ночь',tag_other:'Не пропустите',tonight:'Сегодня вечером',save:'экономия {p}',onlyLeft:'Осталось всего {n}!',soon:'Продажа билетов скоро начнётся — загляните позже.',getTix:'Получить билеты',teaserT:'Игры с призами и вечеринки'},
+pl:{subLocked:'Rezerwuj papierowe bilety na nasze gry i imprezy.',subOpen:'Wybierz animatora, zaznacz numery i zarezerwuj. Płacisz przy odbiorze papierowego biletu.',lockText:'Wpisz numer pokoju i narodowość, aby zobaczyć bilety.',room:'Numer pokoju',nat:'Narodowość',natPick:'Wybierz narodowość',common:'Najczęstsze',allNat:'Wszystkie narodowości',phone:'Numer komórki',phonePh:'Numer komórki',otherCode:'Inny — wpisz +kierunkowy',phoneNote:'Tylko dla animatora, gdyby było pytanie o Twój bilet.',roomErr:'Wpisz numer pokoju (3 lub 4 cyfry).',natErr:'Wybierz narodowość.',phoneErr:'Wpisz numer komórki z numerem kierunkowym kraju.',showTix:'Pokaż bilety',roomN:'Pokój {r}',change:'Zmień',myTix:'Moje bilety',chooseEnt:'Wybierz animatora',left:'zostało {n}',soldOut:'Wyprzedane',notOut:'Bilety na to wydarzenie nie zostały jeszcze wydane — zajrzyj później.',single:'Pojedyncze bilety',each:'{p} za bilet',offer:'{q} za {p}',tapNums:'Dotknij numerów, które chcesz.',tapOffer:'Dotknij {q} numerów do tej oferty.',free:'Wolne',taken:'Zajęte',yours:'Twoje',chosen:'Wybrane',none:'Nie wybrano jeszcze numerów.',more:'Wybierz jeszcze {n}.',maxN:'Najwyżej {n} biletów naraz.',reserve:'Zarezerwuj',busy:'Rezerwuję…',payNote:'Płacisz animatorowi {name} przy odbiorze papierowego biletu.',takenNow:'Przepraszamy — {nums} właśnie zajął inny gość. Wybierz inny numer.',done:'Zarezerwowano!',doneText:'Idź do {name}, zapłać {p} i odbierz papierowe bilety: {nums}.',ok:'OK',waiting:'Jeszcze nie zapłacono',payText:'Zapłać {p} animatorowi {name} i odbierz papierowy bilet.',paid:'Zapłacono',paidText:'Bilet zapłacony — powodzenia!',cancelled:'Anulowano',cancelRes:'Anuluj rezerwację',cancelQ:'Anulować tę rezerwację?',cancelD:'Numery znów będą wolne dla innych gości.',keep:'Zostaw',cancelYes:'Tak, anuluj',cancelLate:'Ten bilet jest już zapłacony. Porozmawiaj z {name}.',cancelDone:'Rezerwacja anulowana',notOpen:'Rezerwacja online ruszy wkrótce — na razie kup papierowy bilet u animatorów.',netErr:'Brak połączenia — spróbuj ponownie.',offerOf:'oferta {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Dyskoteka',ty_other:'Wyjątkowe wydarzenie',tag_tombola:'Wygraj świetne nagrody',tag_bingo:'Kto pierwszy zapełni kartę?',tag_disco:'Taniec do białego rana',tag_other:'Nie przegap',tonight:'Dziś wieczorem',save:'oszczędzasz {p}',onlyLeft:'Zostało tylko {n}!',soon:'Sprzedaż biletów wkrótce — zajrzyj później.',getTix:'Kup bilety',teaserT:'Gry z nagrodami i imprezy'},
+cs:{subLocked:'Rezervujte si papírové vstupenky na naše hry a večírky.',subOpen:'Vyberte animátora, označte čísla a rezervujte. Platíte při převzetí papírové vstupenky.',lockText:'Zadejte číslo pokoje a národnost, abyste viděli vstupenky.',room:'Číslo pokoje',nat:'Národnost',natPick:'Vyberte národnost',common:'Nejčastější',allNat:'Všechny národnosti',phone:'Číslo mobilu',phonePh:'Číslo mobilu',otherCode:'Jiná — napište +předvolbu',phoneNote:'Jen pro animátora, kdyby byl dotaz k vaší vstupence.',roomErr:'Zadejte číslo pokoje (3 nebo 4 číslice).',natErr:'Vyberte národnost.',phoneErr:'Zadejte číslo mobilu s předvolbou země.',showTix:'Zobrazit vstupenky',roomN:'Pokoj {r}',change:'Změnit',myTix:'Moje vstupenky',chooseEnt:'Vyberte animátora',left:'zbývá {n}',soldOut:'Vyprodáno',notOut:'Vstupenky na tuto akci ještě nebyly vydány — podívejte se později.',single:'Jednotlivé vstupenky',each:'{p} za kus',offer:'{q} za {p}',tapNums:'Klepněte na čísla, která chcete.',tapOffer:'Klepněte na {q} čísla pro tuto nabídku.',free:'Volné',taken:'Obsazené',yours:'Vaše',chosen:'Vybrané',none:'Zatím nejsou vybraná žádná čísla.',more:'Vyberte ještě {n}.',maxN:'Nejvýše {n} vstupenek najednou.',reserve:'Rezervovat',busy:'Rezervuji…',payNote:'Zaplatíte animátorovi {name} při převzetí papírové vstupenky.',takenNow:'Omlouváme se — {nums} právě obsadil jiný host. Vyberte jiné číslo.',done:'Rezervováno!',doneText:'Jděte za {name}, zaplaťte {p} a převezměte papírové vstupenky: {nums}.',ok:'OK',waiting:'Zatím nezaplaceno',payText:'Zaplaťte {p} animátorovi {name} a převezměte papírovou vstupenku.',paid:'Zaplaceno',paidText:'Vstupenka je zaplacená — hodně štěstí!',cancelled:'Zrušeno',cancelRes:'Zrušit rezervaci',cancelQ:'Zrušit tuto rezervaci?',cancelD:'Čísla budou opět volná pro ostatní hosty.',keep:'Ponechat',cancelYes:'Ano, zrušit',cancelLate:'Tato vstupenka je už zaplacená. Promluvte si s {name}.',cancelDone:'Rezervace zrušena',notOpen:'Online rezervace brzy začne — zatím si kupte papírovou vstupenku u animátorů.',netErr:'Bez připojení — zkuste to znovu.',offerOf:'nabídka {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Diskotéka',ty_other:'Zvláštní akce',tag_tombola:'Vyhrajte skvělé ceny',tag_bingo:'Kdo první zaplní kartu?',tag_disco:'Tanec celou noc',tag_other:'Nenechte si ujít',tonight:'Dnes večer',save:'ušetříte {p}',onlyLeft:'Zbývá jen {n}!',soon:'Prodej vstupenek brzy začne — podívejte se později.',getTix:'Získat vstupenky',teaserT:'Hry o ceny a párty večery'},
+nl:{subLocked:'Reserveer je papieren tickets voor onze spellen en feesten.',subOpen:'Kies je animator, markeer je nummers en reserveer. Je betaalt wanneer je je papieren ticket krijgt.',lockText:'Vul je kamernummer en nationaliteit in om de tickets te zien.',room:'Kamernummer',nat:'Nationaliteit',natPick:'Kies je nationaliteit',common:'Meest gekozen',allNat:'Alle nationaliteiten',phone:'Mobiel nummer',phonePh:'Mobiel nummer',otherCode:'Anders — typ +landcode',phoneNote:'Alleen voor de animator, als er een vraag is over je ticket.',roomErr:'Vul je kamernummer in (3 of 4 cijfers).',natErr:'Kies je nationaliteit.',phoneErr:'Vul je mobiele nummer met landcode in.',showTix:'Toon de tickets',roomN:'Kamer {r}',change:'Wijzigen',myTix:'Mijn tickets',chooseEnt:'Kies je animator',left:'nog {n}',soldOut:'Uitverkocht',notOut:'De tickets voor dit event zijn nog niet uitgedeeld — kijk later nog eens.',single:'Losse tickets',each:'{p} per stuk',offer:'{q} voor {p}',tapNums:'Tik op de nummers die je wilt.',tapOffer:'Tik op {q} nummers voor deze aanbieding.',free:'Vrij',taken:'Bezet',yours:'Van jou',chosen:'Gekozen',none:'Nog geen nummers gekozen.',more:'Kies er nog {n}.',maxN:'Maximaal {n} tickets per keer.',reserve:'Reserveren',busy:'Bezig met reserveren…',payNote:'Je betaalt {name} wanneer je je papieren ticket krijgt.',takenNow:'Sorry — {nums} is net door een andere gast genomen. Kies een ander nummer.',done:'Gereserveerd!',doneText:'Ga naar {name}, betaal {p} en haal je papieren tickets: {nums}.',ok:'OK',waiting:'Nog niet betaald',payText:'Betaal {name} {p} en haal je papieren ticket.',paid:'Betaald',paidText:'Je ticket is betaald — veel succes!',cancelled:'Geannuleerd',cancelRes:'Reservering annuleren',cancelQ:'Deze reservering annuleren?',cancelD:'De nummers komen weer vrij voor andere gasten.',keep:'Houden',cancelYes:'Ja, annuleren',cancelLate:'Dit ticket is al betaald. Spreek met {name}.',cancelDone:'Reservering geannuleerd',notOpen:'Online reserveren kan binnenkort — koop je papieren ticket voorlopig bij het entertainmentteam.',netErr:'Geen verbinding — probeer het opnieuw.',offerOf:'aanbieding {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Speciaal event',tag_tombola:'Win mooie prijzen',tag_bingo:'Wie heeft als eerste een volle kaart?',tag_disco:'De hele nacht dansen',tag_other:'Mis het niet',tonight:'Vanavond',save:'bespaar {p}',onlyLeft:'Nog maar {n}!',soon:'De ticketverkoop start binnenkort — kijk later nog eens.',getTix:'Haal je tickets',teaserT:'Prijsspellen & feestavonden'},
+fr:{subLocked:'Réservez vos billets papier pour nos jeux et soirées.',subOpen:'Choisissez votre animateur, cochez vos numéros et réservez. Vous payez en recevant votre billet papier.',lockText:'Saisissez votre numéro de chambre et votre nationalité pour voir les billets.',room:'Numéro de chambre',nat:'Nationalité',natPick:'Choisissez votre nationalité',common:'Les plus fréquentes',allNat:'Toutes les nationalités',phone:'Numéro de portable',phonePh:'Numéro de portable',otherCode:'Autre — tapez +indicatif',phoneNote:'Uniquement pour l’animateur, en cas de question sur votre billet.',roomErr:'Saisissez votre numéro de chambre (3 ou 4 chiffres).',natErr:'Choisissez votre nationalité.',phoneErr:'Saisissez votre numéro de portable avec l’indicatif du pays.',showTix:'Voir les billets',roomN:'Chambre {r}',change:'Modifier',myTix:'Mes billets',chooseEnt:'Choisissez votre animateur',left:'encore {n}',soldOut:'Complet',notOut:'Les billets de cet événement ne sont pas encore distribués — revenez plus tard.',single:'Billets à l’unité',each:'{p} l’unité',offer:'{q} pour {p}',tapNums:'Touchez les numéros que vous voulez.',tapOffer:'Touchez {q} numéros pour cette offre.',free:'Libre',taken:'Pris',yours:'Les vôtres',chosen:'Choisi',none:'Aucun numéro choisi.',more:'Encore {n} à choisir.',maxN:'{n} billets au maximum à la fois.',reserve:'Réserver',busy:'Réservation…',payNote:'Vous payez {name} en recevant votre billet papier.',takenNow:'Désolé — {nums} vient d’être pris par un autre client. Choisissez un autre numéro.',done:'Réservé !',doneText:'Allez voir {name}, payez {p} et recevez vos billets papier : {nums}.',ok:'OK',waiting:'Pas encore payé',payText:'Payez {p} à {name} et recevez votre billet papier.',paid:'Payé',paidText:'Votre billet est payé — bonne chance !',cancelled:'Annulé',cancelRes:'Annuler la réservation',cancelQ:'Annuler cette réservation ?',cancelD:'Les numéros redeviennent libres pour les autres clients.',keep:'La garder',cancelYes:'Oui, annuler',cancelLate:'Ce billet est déjà payé. Parlez-en à {name}.',cancelDone:'Réservation annulée',notOpen:'La réservation en ligne ouvre bientôt — en attendant, achetez votre billet papier auprès de l’équipe d’animation.',netErr:'Pas de connexion — réessayez.',offerOf:'offre de {q}',ty_tombola:'Tombola',ty_bingo:'Bingo',ty_disco:'Disco',ty_other:'Événement spécial',tag_tombola:'De superbes lots à gagner',tag_bingo:'Qui remplira sa carte en premier ?',tag_disco:'Dansez toute la nuit',tag_other:'À ne pas manquer',tonight:'Ce soir',save:'économisez {p}',onlyLeft:'Plus que {n} !',soon:'La vente des billets commence bientôt — revenez plus tard.',getTix:'Obtenir mes billets',teaserT:'Jeux à gagner & soirées'},
+ar:{subLocked:'احجز تذاكرك الورقية لألعابنا وحفلاتنا.',subOpen:'اختر المنشط وحدّد أرقامك واحجز. تدفع عند استلام تذكرتك الورقية.',lockText:'أدخل رقم غرفتك وجنسيتك لرؤية التذاكر.',room:'رقم الغرفة',nat:'الجنسية',natPick:'اختر جنسيتك',common:'الأكثر شيوعاً',allNat:'كل الجنسيات',phone:'رقم الجوال',phonePh:'رقم الجوال',otherCode:'أخرى — اكتب +رمز الدولة',phoneNote:'للمنشط فقط، إذا كان هناك سؤال عن تذكرتك.',roomErr:'أدخل رقم غرفتك (3 أو 4 أرقام).',natErr:'اختر جنسيتك.',phoneErr:'أدخل رقم جوالك مع رمز الدولة.',showTix:'عرض التذاكر',roomN:'غرفة {r}',change:'تغيير',myTix:'تذاكري',chooseEnt:'اختر المنشط',left:'متبقٍ {n}',soldOut:'نفدت',notOut:'لم تُوزَّع تذاكر هذه الفعالية بعد — عد لاحقاً.',single:'تذاكر فردية',each:'{p} للتذكرة',offer:'{q} مقابل {p}',tapNums:'اضغط على الأرقام التي تريدها.',tapOffer:'اضغط على {q} أرقام لهذا العرض.',free:'متاح',taken:'محجوز',yours:'لك',chosen:'مختار',none:'لم تختر أي رقم بعد.',more:'اختر {n} أخرى.',maxN:'حتى {n} تذاكر في المرة.',reserve:'احجز',busy:'جارٍ الحجز…',payNote:'تدفع للمنشط {name} عند استلام تذكرتك الورقية.',takenNow:'عذراً — الرقم {nums} حجزه ضيف آخر للتو. اختر رقماً آخر.',done:'تم الحجز!',doneText:'اذهب إلى {name}، ادفع {p} واستلم تذاكرك الورقية: {nums}.',ok:'حسناً',waiting:'لم يُدفع بعد',payText:'ادفع {p} للمنشط {name} واستلم تذكرتك الورقية.',paid:'مدفوع',paidText:'تذكرتك مدفوعة — حظاً سعيداً!',cancelled:'ملغى',cancelRes:'إلغاء الحجز',cancelQ:'إلغاء هذا الحجز؟',cancelD:'ستصبح الأرقام متاحة لضيوف آخرين.',keep:'احتفظ به',cancelYes:'نعم، ألغِ',cancelLate:'هذه التذكرة مدفوعة بالفعل. تحدث مع {name}.',cancelDone:'تم إلغاء الحجز',notOpen:'الحجز عبر الإنترنت يبدأ قريباً — حالياً اشترِ تذكرتك الورقية من فريق الترفيه.',netErr:'لا يوجد اتصال — حاول مرة أخرى.',offerOf:'عرض {q}',ty_tombola:'تومبولا',ty_bingo:'بينغو',ty_disco:'ديسكو',ty_other:'فعالية خاصة',tag_tombola:'اربح جوائز رائعة',tag_bingo:'من يكمل بطاقته أولاً؟',tag_disco:'رقص طوال الليل',tag_other:'لا تفوّتها',tonight:'الليلة',save:'وفّر {p}',onlyLeft:'متبقٍ {n} فقط!',soon:'يبدأ بيع التذاكر قريباً — عد لاحقاً.',getTix:'احصل على تذاكرك',teaserT:'ألعاب بجوائز وسهرات'}
 };
 function G(k,v){ const d=W[S.lang]||W.en; let s=d[k]!=null?d[k]:W.en[k]; if(s==null) s=k; if(v) Object.keys(v).forEach(x=>{ s=s.split('{'+x+'}').join(String(v[x])); }); return s; }
 
@@ -20638,7 +20650,7 @@ function regForm(g){
   g=g||{};
   const room=RG.room!=null?RG.room:(g.room||''), nat=RG.nat!=null?RG.nat:(g.nat||''), code=RG.code!=null?RG.code:(g.code!=null?g.code:(NAT2CODE[nat]||'')), local=RG.local!=null?RG.local:(g.local||'');
   return `<div class="rv-reg">
-    <p class="rv-lock">${ic('lock',15)}<span>${E(G('lockText'))}</span></p>
+    ${g.room?'':`<div class="rv-teaser"><div class="rv-teaser-art"><span class="tt-tombola">${ART.tombola}</span><span class="tt-bingo">${ART.bingo}</span><span class="tt-disco">${ART.disco}</span></div><b>${E(G('teaserT'))}</b><span>${ic('lock',14)} ${E(G('lockText'))}</span></div>`}
     <label for="rv-room">${E(G('room'))}</label><input id="rv-room" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" enterkeyhint="next" value="${E(room)}">
     <label for="rv-nat">${E(G('nat'))}</label>${natSelect(nat)}
     <div id="rv-phonebox" ${nat?'':'hidden'}><label for="rv-phone">${E(G('phone'))}</label><div class="rv-phone">${codeSelect(code)}<input id="rv-phone" type="tel" inputmode="tel" autocomplete="tel-national" enterkeyhint="go" value="${E(local)}" placeholder="${E(G('phonePh'))}"></div><p class="rv-small">${E(G('phoneNote'))}</p></div>
@@ -20685,20 +20697,30 @@ function entBtn(p){
   const u=userOf(p.user), nm=nameOf(p.user), left=freeCount(p), many=packsAll().filter(x=>x.ticketId===p.ticketId&&x.date===p.date&&x.user===p.user).length>1;
   return `<button type="button" class="rv-ent" data-rv-pack="${E(p.id)}" ${left?'':'disabled'}>${av(u,nm)}<b>${E(nm)}</b>${many?`<small>${E(short(p.from))}–${E(short(p.to))}</small>`:''}<em>${E(left?G('left',{n:left}):G('soldOut'))}</em></button>`;
 }
+function relWhen(d,time){
+  if(!d) return '';
+  const td=today(), tm=t2m(time), at=tm!=null?' · '+m2t(tm):'';
+  if(d===td) return (tm!=null&&tm>=17*60?G('tonight'):t('today'))+at;
+  if(d===addDays(td,1)) return L0('tomorrow')+at;
+  return niceDay(d)+at;
+}
 function eventCard(tk,next){
-  const ps=eventPacks(tk), dates=[...new Set(ps.map(p=>p.date))].sort();
+  const ty=typeOf(tk), ps=eventPacks(tk), dates=[...new Set(ps.map(p=>p.date))].sort();
   let d=XS.date[tk.id]; if(!dates.includes(d)) d=dates[0]||'';
   const here=ps.filter(p=>p.date===d).sort((a,b)=>((+(userOf(a.user)||{}).number||99)-(+(userOf(b.user)||{}).number||99))||(a.from-b.from));
-  const days=t('days')||[], offer=typeof window.__tk7OfferLine==='function'?window.__tk7OfferLine(tk):'', price=priceText(tk.price);
-  const when=d||next;
-  return `<article class="ex21-tk rv-ev">${tk.image?`<img src="${E(tk.image)}" alt="" loading="lazy" onerror="this.style.display='none'">`:''}
-    <div class="ex21-tkb"><b>${E(tk.name||'')}</b>
-      <span>${ic('calendar',13)} ${E(L0('every',{d:days[+tk.day]||''}))}${tk.time?' · '+E(tk.time):''}</span>
-      ${tk.location?`<span>${ic('pin',13)} ${E(tk.location)}</span>`:''}
-      ${tk.desc?`<p>${E(tk.desc)}</p>`:''}
-      <div class="ex21-price">${price?`<strong>${E(price)}</strong><small>${E(L0('perTicket'))}</small>`:''}${offer?`<em>${E(offer)}</em>`:''}</div>
-      ${dates.length>1?`<div class="rv-dates">${dates.map(x=>`<button type="button" class="${x===d?'on':''}" data-rv-date="${E(tk.id)}|${E(x)}">${E(niceDay(x))}</button>`).join('')}</div>`:when?`<span class="nx">${E(L0('nextOn',{d:niceDate(when)}))}</span>`:''}
-      ${here.length?`<p class="rv-choose">${E(G('chooseEnt'))}</p><div class="rv-ents">${here.map(entBtn).join('')}</div>`:`<p class="rv-none">${E(G('notOut'))}</p>`}
+  const days=t('days')||[], price=priceText(tk.price), cur=evCur(tk), unit=evPrice(tk), offs=evOffers(tk);
+  const when=d||next, left=here.reduce((n,p)=>n+freeCount(p),0);
+  return `<article class="rv-ev2 tt-${ty}">
+    <div class="rv-hero ${tk.image?'has-img':''}">${tk.image?`<img src="${E(tk.image)}" alt="" loading="lazy" onerror="this.remove()">`:''}<span class="rv-shade"></span><span class="rv-glow">${ART[ty]}</span>
+      <div class="rv-hero-top"><span class="rv-badge">${ART[ty]}${E(typeName(ty))}</span>${when?`<span class="rv-when">${E(relWhen(when,tk.time))}</span>`:''}</div>
+      <div class="rv-hero-t"><h3>${E(tk.name||'')}</h3><p>${E(G('tag_'+ty))}</p></div></div>
+    <div class="rv-evb">
+      ${price||offs.length?`<div class="rv-prices">${price?`<span class="rv-p1"><b>${E(price)}</b><small>${E(L0('perTicket'))}</small></span>`:''}${offs.map(o=>{ const sv=unit?r2(o.qty*unit-o.price):0; return `<span class="rv-of"><b>${E(G('offer',{q:o.qty,p:money(o.price,cur)}))}</b>${sv>0?`<small>${E(G('save',{p:money(sv,cur)}))}</small>`:''}</span>`; }).join('')}</div>`:''}
+      ${tk.desc?`<p class="rv-evdesc">${E(tk.desc)}</p>`:''}
+      <div class="rv-evmeta"><span>${ic('calendar',14)} ${E(L0('every',{d:days[+tk.day]||''}))}${tk.time?' · '+E(tk.time):''}</span>${tk.location?`<span>${ic('pin',14)} ${E(tk.location)}</span>`:''}</div>
+      ${dates.length>1?`<div class="rv-dates">${dates.map(x=>`<button type="button" class="${x===d?'on':''}" data-rv-date="${E(tk.id)}|${E(x)}">${E(niceDay(x))}</button>`).join('')}</div>`:''}
+      ${here.length?`<div class="rv-pickhead"><p class="rv-choose">${E(G('chooseEnt'))}</p>${left&&left<=10?`<em class="rv-hot">${E(G('onlyLeft',{n:left}))}</em>`:''}</div><div class="rv-ents">${here.map(entBtn).join('')}</div>`
+        :`<p class="rv-soon2">${ic('clock',16)}<span>${E(G('soon'))}</span></p>`}
     </div></article>`;
 }
 function exploreSection(){
@@ -20816,7 +20838,7 @@ function resCard(x,who){
     ${x.phone?`<a class="rv-call" href="tel:${E(String(x.phone).replace(/[^\d+]/g,''))}">${PHONE} ${E(fmtPhone(x.phone))}</a>`:''}
     ${x.status==='confirmed'?`<p class="rv-okline">${ic('check',13)} Paid &amp; handed over · ${E(ago(f.confirmed_at))}${f.confirmed_by&&low(f.confirmed_by)!==low(x.user)?' · confirmed by '+E(nameOf(f.confirmed_by)):''}</p>`:''}
     ${x.status==='cancelled'?`<p class="rv-offline">Cancelled ${f.cancelled_by==='guest'?'by the guest':f.cancelled_by?'by '+E(f.cancelled_by):''}${f.cancelled_at?' · '+E(ago(f.cancelled_at)):''}</p>`:''}
-    ${x.status==='reserved'||(who==='mgr'&&x.status==='confirmed')?`<div class="rv-acts">${x.status==='reserved'?`<button type="button" class="btn rv-confirm" data-rv-confirm="${E(x.id)}">${ic('check',15)} ${who==='mgr'?'Paid — confirm':'Confirm — paid &amp; ticket given'}</button>`:''}${who==='mgr'?`<button type="button" class="btn ghost rv-cancel" data-rv-cancel="${E(x.id)}">Cancel</button>`:''}</div>`:''}
+    ${x.status==='reserved'||who==='mgr'?`<div class="rv-acts">${x.status==='reserved'?`<button type="button" class="btn rv-confirm" data-rv-confirm="${E(x.id)}">${ic('check',15)} ${who==='mgr'?'Paid — confirm':'Confirm — paid &amp; ticket given'}</button>`:''}${who==='mgr'&&x.status!=='cancelled'?`<button type="button" class="btn ghost rv-cancel" data-rv-cancel="${E(x.id)}">Cancel</button>`:''}${who==='mgr'?`<button type="button" class="btn ghost rv-del" data-rv-del="${E(x.id)}" aria-label="Delete">${ic('trash',15)}${x.status==='cancelled'?' Delete':''}</button>`:''}</div>`:''}
   </article>`;
 }
 function staffPanel(){
@@ -20867,6 +20889,7 @@ function managerSection(){
     <p class="t14-intro">Guests reserve with room, nationality and phone. The entertainer confirms when he hands over the paper ticket and gets the money. You can cancel any reservation.</p>
     ${RS.state==='offline'?'<p class="rv-warnline">No connection — the list may be old.</p>':''}
     <div class="t14-seg"><button class="${mode==='reserved'?'on':''}" data-rv-mode="reserved">Waiting <i>${cnt('reserved')}</i></button><button class="${mode==='confirmed'?'on':''}" data-rv-mode="confirmed">Paid <i>${cnt('confirmed')}</i></button><button class="${mode==='cancelled'?'on':''}" data-rv-mode="cancelled">Cancelled <i>${cnt('cancelled')}</i></button></div>
+    ${mode==='cancelled'&&cnt('cancelled')?`<div class="rv-past"><span>Cancelled reservations stay here for 45 days.</span><button type="button" class="t14-b" id="rv-del-cancelled">${ic('trash',14)} Delete all ${cnt('cancelled')}</button></div>`:''}
     ${mode==='reserved'&&past.length?`<div class="rv-past"><span>${past.length} reservation${past.length>1?'s':''} for events that are over ${past.length>1?'were':'was'} never paid.</span><button type="button" class="t14-b" id="rv-cancel-past">Cancel ${past.length>1?'them':'it'}</button></div>`:''}
     ${body}</section>`;
 }
@@ -20874,6 +20897,7 @@ function wireTeam(root,after){
   root=root||document;
   root.querySelectorAll('[data-rv-confirm]').forEach(b=>b.onclick=async()=>{ b.disabled=true; const ok=await confirmRes(b.dataset.rvConfirm); b.disabled=false; if(after) after(); else if(ok!==undefined) render(); });
   root.querySelectorAll('[data-rv-cancel]').forEach(b=>b.onclick=async()=>{ b.disabled=true; await mgrCancel(b.dataset.rvCancel); b.disabled=false; if(after) after(); else render(); });
+  root.querySelectorAll('[data-rv-del]').forEach(b=>b.onclick=async()=>{ await mgrDelete(b.dataset.rvDel); if(after) after(); });
 }
 window.__wireSteps.push(function(){
   if(!isTeam()) return;
@@ -20882,6 +20906,181 @@ window.__wireSteps.push(function(){
   document.querySelectorAll('[data-rv-mode]').forEach(b=>b.onclick=()=>{ S.rvMode=b.dataset.rvMode; render(); });
   const cp=Q('#rv-cancel-past'); if(cp) cp.onclick=()=>cancelPast();
   document.querySelectorAll('[data-actinfo]').forEach(el=>el.onclick=()=>{ const a=(S.activities||[]).find(x=>String(x.id)===String(el.dataset.actinfo)); if(a&&typeof window.openActInfo==='function') window.openActInfo(a); });
+});
+
+/* ======================= TICKET EVENTS: type, programme, delete ======================= */
+/* Each ticket event (Tombola, Bingo, Disco …) has a type (its look) and is part of the
+   programme as a special event: created, changed and removed together with the event.
+   Kept in settings (ticketMetaV722): {type, end, actId, off}. off = removed from the
+   programme by hand — it stays out until the event is saved again. */
+const MK='ticketMetaV722';
+const objv=v=>(v&&typeof v==='object'&&!Array.isArray(v))?v:{};
+const metaAll=()=>objv(S.settings&&S.settings[MK]);
+const metaOf=id=>objv(metaAll()[String(id)]);
+async function saveMeta(id,m){ const all={...metaAll()}; if(m) all[String(id)]=m; else delete all[String(id)]; await DB.saveSettings({...S.settings,[MK]:all}); }
+const ART={
+ tombola:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="11" y="27" width="42" height="29" rx="4"/><rect x="7" y="19" width="50" height="10" rx="3"/><path d="M32 19v37"/><path d="M32 19c-4-8-14-10-15-4s9 5 15 4zM32 19c4-8 14-10 15-4s-9 5-15 4z"/></svg>',
+ bingo:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><circle cx="20" cy="40" r="12"/><circle cx="44" cy="40" r="12"/><circle cx="32" cy="19" r="11"/><g fill="currentColor" stroke="none" font-family="Arial,sans-serif" font-weight="800" font-size="11" text-anchor="middle"><text x="20" y="44">7</text><text x="44" y="44">21</text><text x="32" y="23">45</text></g></svg>',
+ disco:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M32 4v12"/><circle cx="32" cy="36" r="18"/><path d="M14 36h36M17 27h30M17 45h30M32 18c-7 5-7 31 0 36M32 18c7 5 7 31 0 36M24 20c-5 8-5 24 0 32M40 20c5 8 5 24 0 32"/><path d="M54 8l1.6 3.8L59.5 13.4l-3.9 1.6L54 18.8l-1.6-3.8-3.9-1.6 3.9-1.6z" fill="currentColor" stroke="none"/></svg>',
+ other:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" aria-hidden="true"><path d="M8 20a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v6a6 6 0 0 0 0 12v6a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4v-6a6 6 0 0 0 0-12z"/><path d="M40 17v30" stroke-dasharray="3 4"/></svg>'};
+const TYPES={tombola:{name:'Tombola',desc:'Our big raffle night with great prizes — every ticket can win!'},bingo:{name:'Bingo',desc:'Get your card ready, listen for the numbers and shout BINGO!'},disco:{name:'Disco',desc:'Dance the night away — music, lights and the best party vibes.'},other:{name:'',desc:''}};
+function typeOf(tk){
+  if(!tk) return 'other';
+  const m=tk.id!=null?metaOf(tk.id).type:''; if(m&&TYPES[m]) return m;
+  const n=low(tk.name); if(/tombola|raffle|lotter|lotto/.test(n)) return 'tombola'; if(/bingo/.test(n)) return 'bingo'; if(/disco|night ?life|club|party/.test(n)) return 'disco'; return 'other';
+}
+const typeName=ty=>G('ty_'+ty);
+/* ---- the programme entry of a ticket event ---- */
+const DJN=()=>typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+const djUser=()=>(((S.users||[]).find(u=>u&&u.role==='staff'&&+u.number===DJN()))||{}).username||'';
+const normName=s=>low(s).replace(/[^a-z0-9Ѐ-ӿ؀-ۿ]+/g,'');
+const t2m=s=>{ const m=String(s||'').match(/(\d{1,2})[:.](\d{2})/); return m?(+m[1])*60+(+m[2]):null; };
+const m2t=m=>{ m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
+function linkedAct(tk){ const id=metaOf(tk.id).actId; return id==null?null:((S.activities||[]).find(a=>a&&String(a.id)===String(id))||null); }
+function nameMatch(tk){ const n=normName(tk.name); if(!n) return null;
+  return (S.activities||[]).find(a=>{ if(!a||+a.day!==+tk.day) return false; const an=normName(a.name); return !!an&&(an===n||(an.length>=4&&n.includes(an))||(n.length>=4&&an.includes(n))); })||null; }
+function actFor(tk){ const m=metaOf(tk.id); if(m.off) return null; return linkedAct(tk)||(m.actId==null?nameMatch(tk):null); }
+function actTime(tk,m,a){
+  const st=t2m(tk.time); if(st==null) return (a&&a.time)||'20:00';
+  const en=t2m(m.end);
+  if(en==null&&a&&t2m(a.time)===st&&/[–-]\s*\d/.test(String(a.time))) return a.time;   // keep the end time written in the programme
+  return m2t(st)+' – '+m2t(en!=null?en:st+60);
+}
+async function syncTicketAct(tk,force){
+  if(!isMgr()||!tk) return false;
+  const m={...metaOf(tk.id)};
+  if(m.off&&!force) return false;
+  let a=linkedAct(tk);
+  if(!a&&m.actId!=null&&!force){ await saveMeta(tk.id,{...m,actId:null,off:true}); return true; }   // taken out of the programme by hand
+  if(!a) a=nameMatch(tk);
+  const f={name:tk.name,desc:tk.desc||'',day:+tk.day,category:'eParty',time:actTime(tk,m,a),capacity:0,location:tk.location||''};
+  let changed=false;
+  if(a){ const upd={...a,...f,image:tk.image||a.image||'',entertainer:a.entertainer||djUser()};
+    if(['name','desc','day','category','time','location','image'].some(k=>String(a[k]??'')!==String(upd[k]??''))){ await DB.saveActivity(upd); changed=true; } }
+  else { await DB.saveActivity({...f,entertainer:djUser(),image:tk.image||'',highlight:false,customCategory:''}); a=(S.activities||[]).filter(x=>x&&x.name===f.name&&+x.day===f.day).slice(-1)[0]||null; changed=true; }
+  const nm={...m,actId:a?a.id:null}; delete nm.off;
+  if(JSON.stringify(nm)!==JSON.stringify(metaOf(tk.id))){ await saveMeta(tk.id,nm); changed=true; }
+  return changed;
+}
+let progSynced=false, progSyncing=false;
+async function syncAllTicketActs(){
+  if(progSynced||progSyncing||!isMgr()||!(S.activities||[]).length||!S.settings) return;
+  progSyncing=true; let ch=false;
+  try{ for(const tk of (S.tickets||[]).slice()) ch=(await syncTicketAct(tk,false))||ch; progSynced=true; }catch(e){ console.warn('ticket events → programme',e); }
+  progSyncing=false; if(ch) repaint();
+}
+/* which ticket event an activity of the programme belongs to (for the special look) */
+function tkOfAct(a){
+  if(!a) return null; const tks=(S.tickets||[]).filter(Boolean); let tk=null;
+  for(const x of tks){ const m=metaOf(x.id); if(m.actId!=null&&String(m.actId)===String(a.id)){ tk=x; break; } }
+  if(!tk) tk=tks.find(x=>{ const m=metaOf(x.id); return !m.off&&m.actId==null&&nameMatch(x)===a; })||null;
+  if(!tk) return null;
+  const ty=typeOf(tk);
+  return {tk,type:ty,label:typeName(ty),priceText:priceText(tk.price)};
+}
+window.__tkOfAct=tkOfAct;
+const evCur=tk=>{ const p=packsAll().find(x=>String(x.ticketId)===String(tk.id)); if(p&&p.currency) return p.currency; const s=String(tk.price||''); return /\$/.test(s)?'$':/£/.test(s)?'£':/egp|le\b/i.test(s)?'EGP':(CUR[String((S.settings&&S.settings.currency)||'').toUpperCase()]||'€'); };
+const evPrice=tk=>{ const m=String(tk.price||'').match(/(\d+(?:[.,]\d{1,2})?)/); return m?parseFloat(m[1].replace(',','.')):0; };
+const evOffers=tk=>offersOf({ticketId:tk.id});
+/* the Explore programme: a ticket event row opens this at the bottom of its details */
+window.__tkDetail=function(a){
+  const x=tkOfAct(a); if(!x) return '';
+  const cur=evCur(x.tk), offs=evOffers(x.tk);
+  return `<div class="ex21-dtk tt-${x.type}"><span class="ex21-dtk-art">${ART[x.type]}</span><span class="ex21-dtk-t"><b>${E(x.priceText||x.label)}${x.priceText?` <small>${E(L0('perTicket'))}</small>`:''}</b>${offs.length?`<small>${offs.map(o=>E(G('offer',{q:o.qty,p:money(o.price,cur)}))).join(' · ')}</small>`:''}</span><button type="button" class="btn" id="ex21-dtk-go">${E(G('getTix'))}</button></div>`;
+};
+window.__tkRowArt=function(x){ return `<span class="ex21-thumb rv-art tt-${x.type}">${ART[x.type]}</span>`; };
+window.__tkRowCta=function(x){ return `<em class="ex21-tkcta">${ic('ticket',12)} ${E(L0('tix'))}${x.priceText?' · '+E(x.priceText):''}</em>`; };
+
+/* ---- the manager's ticket event card ---- */
+function evThumb(tk){ const ty=typeOf(tk); return tk.image?`<img src="${E(tk.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:`<span class="t14-art tt-${ty}">${ART[ty]}</span>`; }
+function progLine(tk){
+  const a=actFor(tk), days=t('days')||[];
+  if(a) return `<span class="t14-line ok">${ic('calendar',14)}<span>In the programme: <b>${E(days[+a.day]||'')} ${E(a.time||'')}</b> · Special events</span></span>`;
+  return `<span class="t14-line none">${ic('calendar',14)}<span>Not in the programme <button type="button" class="t14-mini" data-tkprog="${E(tk.id)}">Add it</button></span></span>`;
+}
+function priceLabel(tk){ const s=String(tk.price||'').trim(); if(!s) return 'No price'; return /^\d+([.,]\d{1,2})?$/.test(s)?s+' '+evCur(tk):s; }
+async function deleteEvent(id){
+  const tk=(S.tickets||[]).find(x=>String(x.id)===String(id)); if(!tk) return;
+  const open=packsAll().filter(p=>String(p.ticketId)===String(id)&&!closed(p)).length, wait=RS.team.filter(r=>String(r.ticket_id)===String(id)&&r.status==='reserved').length;
+  if(!await ask(`Delete “${tk.name}”?`,`It disappears from the Explore page and from the programme.${open||wait?` <b>${open?open+' open ticket pack'+(open>1?'s':''):''}${open&&wait?' and ':''}${wait?wait+' waiting reservation'+(wait>1?'s':''):''}</b> stay in the lists below — cancel or settle them there.`:''}`,'Delete event','Keep it',true)) return;
+  try{ await DB.deleteTicket(tk.id); toastOk('Ticket event deleted'); render(); }catch(e){ toastErr(t('errSave')); }
+}
+/* ---- deleting reservations for good ---- */
+async function ledgerRemove(resIds){
+  const P=PK(); if(!P) return; const ids=new Set(resIds.map(String)), upd={};
+  packsAll().forEach(p=>{ if(closed(p)) return; const cur={...rawSold(p)}; let ch=false; Object.keys(cur).forEach(k=>{ if(cur[k]&&ids.has(String(cur[k].orderId))){ delete cur[k]; ch=true; } }); if(ch) upd[p.id]={sold:cur,updatedAt:Date.now(),by:me()}; });
+  if(Object.keys(upd).length) await DB.saveSettings({...S.settings,[SK]:{...P.sales(),...upd}});
+}
+async function mgrDelete(id){
+  const x=findRes(id); if(!x) return;
+  const cur=(x.pack&&x.pack.currency)||'€';
+  if(!await ask('Delete this reservation for good?',`Room ${E(x.room)} · ${E(evName(x))} · ${x.nums.map(n=>E(num(x.pack,n))).join(', ')} · ${E(money(x.total,cur))}. It is removed from every list and the numbers become free.${x.status==='confirmed'?' <b>It is paid</b> — it is taken out of the pack; give the money back to the guest.':''}`,'Delete','Keep it',true)) return;
+  try{ if(x.status==='confirmed') await ledgerRemove([id]); await sb('ticket_orders?res_id=eq.'+enc(id),{method:'DELETE'}); RS.team=RS.team.filter(r=>r.res_id!==id); toastOk('Reservation deleted'); render(); }
+  catch(e){ toastErr('Not saved — check the internet and try again.'); }
+}
+async function deleteCancelled(){
+  const n=groups(RS.team.filter(r=>r.pack_id!=null&&r.status==='cancelled')).length; if(!n) return;
+  if(!await ask(`Delete ${n} cancelled reservation${n>1?'s':''}?`,'They are removed from the list for good.','Delete','Keep them',true)) return;
+  try{ await sb('ticket_orders?status=eq.cancelled&pack_id=not.is.null',{method:'DELETE'}); RS.team=RS.team.filter(r=>r.status!=='cancelled'); toastOk('Deleted'); render(); }
+  catch(e){ toastErr('Not saved — check the internet and try again.'); }
+}
+
+/* ---- the ticket event editor: choose Tombola / Bingo / Disco, end time ---- */
+let pendingMeta=null, deletingEvent=false;
+const tem0=window.openTicketEditModal||(typeof openTicketEditModal==='function'?openTicketEditModal:null);
+if(typeof tem0==='function'){
+  window.openTicketEditModal=function(tk){
+    pendingMeta=null;
+    tem0(tk);
+    const ws=document.querySelectorAll('.modal-bg'), w=ws[ws.length-1]; if(!w) return;
+    const name=w.querySelector('#k-name'), desc=w.querySelector('#k-desc'), timeEl=w.querySelector('#k-time'), save=w.querySelector('#k-save'), h=w.querySelector('h3');
+    if(!name||!save||!h) return;
+    const m=tk&&tk.id!=null?metaOf(tk.id):{}; let ty=tk?typeOf(tk):'';
+    h.insertAdjacentHTML('afterend',`<label>Type</label><div class="tkt-types">${['tombola','bingo','disco','other'].map(k=>`<button type="button" class="tkt-t tt-${k} ${ty===k?'on':''}" data-tt="${k}"><span>${ART[k]}</span><b>${k==='other'?'Other':TYPES[k].name}</b></button>`).join('')}</div><p class="mini tkt-note">${ic('calendar',13)} It is added to the programme as a special event — and removed again when you delete it.</p>`);
+    const row=timeEl&&timeEl.closest('.row2');
+    if(row) row.insertAdjacentHTML('afterend',`<div class="row2"><div><label>Ends at</label><input id="k-end" type="time" value="${E(m.end||'')}"></div><div><label>&nbsp;</label><p class="mini" style="margin:10px 0 0">Empty = 1 hour</p></div></div>`);
+    const TN=Object.values(TYPES).map(x=>x.name).filter(Boolean), TD=Object.values(TYPES).map(x=>x.desc).filter(Boolean);
+    w.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>{ ty=b.dataset.tt; w.querySelectorAll('[data-tt]').forEach(x=>x.classList.toggle('on',x===b));
+      const T=TYPES[ty]; if(T.name&&(!name.value.trim()||TN.includes(name.value.trim()))) name.value=T.name; if(T.desc&&desc&&(!desc.value.trim()||TD.includes(desc.value.trim()))) desc.value=T.desc; });
+    save.addEventListener('click',()=>{ const en=w.querySelector('#k-end'); pendingMeta={type:ty||typeOf({name:name.value}),end:en?en.value:''}; },true);
+  };
+  try{ openTicketEditModal=window.openTicketEditModal; }catch(_){}
+}
+/* saving / deleting an event keeps the programme in step */
+if(typeof DB!=='undefined'&&DB.saveTicket){
+  const st1=DB.saveTicket.bind(DB);
+  DB.saveTicket=async function(tk){
+    const r=await st1(tk);
+    try{ const id=tk.id!=null?tk.id:((S.tickets||[]).filter(x=>x.name===tk.name).slice(-1)[0]||{}).id, cur=(S.tickets||[]).find(x=>String(x.id)===String(id));
+      if(cur){ if(pendingMeta){ const nm={...metaOf(id),type:pendingMeta.type,end:pendingMeta.end}; delete nm.off; pendingMeta=null; await saveMeta(id,nm); } await syncTicketAct(cur,true); } }
+    catch(e){ console.warn('ticket event → programme',e); }
+    return r;
+  };
+}
+if(typeof DB!=='undefined'&&DB.deleteTicket){
+  const dt1=DB.deleteTicket.bind(DB);
+  DB.deleteTicket=async function(id){
+    const tk=(S.tickets||[]).find(x=>String(x.id)===String(id)), a=tk?actFor(tk):null;
+    const r=await dt1(id);
+    try{ if(a){ deletingEvent=true; await DB.deleteActivity(a.id); } if(Object.keys(metaOf(id)).length) await saveMeta(id,null); }catch(e){ console.warn('ticket event programme entry',e); }
+    deletingEvent=false; return r;
+  };
+}
+if(typeof DB!=='undefined'&&DB.deleteActivity){
+  const da1=DB.deleteActivity.bind(DB);
+  DB.deleteActivity=async function(id){
+    const r=await da1(id);
+    if(!deletingEvent&&isMgr()){ const hit=Object.entries(metaAll()).find(([k,m])=>m&&m.actId!=null&&String(m.actId)===String(id)); if(hit){ try{ await saveMeta(hit[0],{...hit[1],actId:null,off:true}); }catch(_){} } }
+    return r;
+  };
+}
+window.__wireSteps.push(function(){
+  if(!isMgr()) return;
+  setTimeout(syncAllTicketActs,0);
+  document.querySelectorAll('[data-tdel]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); deleteEvent(b.dataset.tdel); });
+  document.querySelectorAll('[data-tkprog]').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); const tk=(S.tickets||[]).find(x=>String(x.id)===String(b.dataset.tkprog)); if(!tk) return; b.disabled=true; try{ await syncTicketAct(tk,true); toastOk('Added to the programme'); render(); }catch(err){ b.disabled=false; toastErr(t('errSave')); } });
+  document.querySelectorAll('[data-tkedit]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const tk=(S.tickets||[]).find(x=>String(x.id)===String(b.dataset.tkedit)); if(tk) window.openTicketEditModal(tk); });
+  const dc=Q('#rv-del-cancelled'); if(dc) dc.onclick=()=>deleteCancelled();
 });
 
 /* ---------- hooks ---------- */
@@ -20913,7 +21112,7 @@ setInterval(async()=>{ try{ if(!guestView()||S.teamLogin||document.visibilitySta
 /* first start: the data is still loading when this runs */
 let tries=0; (function boot(){ if(!(S.users&&S.users.length)&&tries++<60){ setTimeout(boot,300); return; } load().then(()=>repaint()); })();
 
-window.AUREA_RESV={exploreSection,staffPanel,packBlock,managerSection,evLine,chips,waitCount,wireTeam,load,state:()=>RS.state,rows:()=>RS};
+window.AUREA_RESV={evThumb,progLine,priceLabel,typeOf,exploreSection,staffPanel,packBlock,managerSection,evLine,chips,waitCount,wireTeam,load,state:()=>RS.state,rows:()=>RS};
 
 /* ---------- styles ---------- */
 const css=document.createElement('style'); css.id='aurea-reservations-v722-css';
@@ -20993,6 +21192,55 @@ css.textContent=`
 .rv-past{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;padding:10px 12px;border-radius:14px;background:rgba(176,57,43,.08);font-size:13px}.rv-past span{flex:1 1 180px}
 .rv-sql{margin-top:10px;padding:14px;border-radius:16px;background:rgba(208,133,38,.1);border:1px solid rgba(208,133,38,.4)}.rv-sql b{display:flex;align-items:center;gap:6px}.rv-sql p{margin:6px 0 0;font-size:13.5px;line-height:1.5}
 .rv-inpack{margin:12px 0}
+/* team photos fill their circle (some showed a gap at the top) */
+.ex21-av{position:relative}.ex21-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* ticket event types */
+.tt-tombola{--tg1:#5C0F1E;--tg2:#9A2420;--tg3:#A4501B;--tgc:#F6CF6E}.tt-bingo{--tg1:#2A1660;--tg2:#62288F;--tg3:#9E2C63;--tgc:#FFC7E3}
+.tt-disco{--tg1:#090E2A;--tg2:#27165A;--tg3:#0A6573;--tgc:#7DF3FF}.tt-other{--tg1:#3A271B;--tg2:#6B4629;--tg3:#86572F;--tgc:#EFCB93}
+.rv-ev2{border-radius:24px;overflow:hidden;background:var(--x-card);border:1px solid var(--x-line);box-shadow:0 12px 30px rgba(0,0,0,.08)}
+.rv-ev2 .rv-hero{position:relative;min-height:176px;padding:14px 16px 16px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;background:linear-gradient(135deg,var(--tg1) 0%,var(--tg2) 55%,var(--tg3) 100%);overflow:hidden}
+.rv-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rv-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.66))}.rv-hero:not(.has-img) .rv-shade{display:none}
+.rv-glow{position:absolute;right:-16px;bottom:-22px;width:156px;height:156px;color:var(--tgc);opacity:.32;transform:rotate(-12deg);pointer-events:none}.rv-glow svg{width:100%;height:100%}.rv-hero.has-img .rv-glow{display:none}
+.rv-hero-top{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.rv-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px 5px 7px;border-radius:99px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.3);font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.rv-badge svg{width:18px;height:18px;color:var(--tgc)}
+.rv-when{flex:none;padding:5px 11px;border-radius:99px;background:#fff;color:var(--tg1);font-size:12.5px;font-weight:800;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.rv-ev2 .rv-hero-t{position:relative;margin-top:28px}.rv-ev2 .rv-hero-t h3{margin:0;font:600 31px/1.05 var(--font-display,serif);color:#fff;letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.25)}
+.rv-ev2 .rv-hero-t p{margin:6px 0 0;font-size:14px;font-weight:700;color:#fff;opacity:.95}
+.rv-evb{padding:14px 16px 16px}
+.rv-prices{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:0 0 12px}
+.rv-p1{display:flex;align-items:baseline;gap:6px;margin-right:6px}.rv-p1 b{font-size:31px;line-height:1;font-weight:800;color:var(--x-ink)}.rv-p1 small{font-size:12px;color:var(--x-mut)}
+.rv-of{display:flex;flex-direction:column;justify-content:center;gap:1px;padding:6px 11px;border-radius:12px;background:rgba(208,133,38,.1);border:1px dashed rgba(208,133,38,.6)}
+.rv-of b{font-size:13.5px;color:var(--x-ink)}.rv-of small{font-size:11.5px;font-weight:800;color:#3F6A3A;text-transform:uppercase;letter-spacing:.04em}
+.rv-ev2 .rv-evdesc{margin:0 0 10px;font-size:14px;line-height:1.5;color:var(--x-ink)}
+.rv-evmeta{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 4px;font-size:13px;color:var(--x-mut)}.rv-evmeta span{display:inline-flex;align-items:center;gap:5px}
+.rv-pickhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px}.rv-pickhead .rv-choose{margin:0!important}
+.rv-hot{flex:none;font-style:normal;font-size:12px;font-weight:800;color:#A33A2C;background:rgba(176,57,43,.1);padding:3px 10px;border-radius:99px}
+.rv-ev2 .rv-ents{margin-top:8px}
+.rv-soon2{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;padding:12px 14px;border-radius:14px;background:var(--x-bg);border:1px dashed var(--x-line);font-size:13.5px;line-height:1.45;color:var(--x-ink)}.rv-soon2 svg{flex:none;margin-top:2px}
+.rv-teaser{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;margin:-16px -16px 14px;padding:22px 16px 18px;border-radius:19px 19px 0 0;background:linear-gradient(135deg,#2A1660 0%,#5C0F1E 55%,#0A6573 100%);color:#fff}
+.rv-teaser-art{display:flex;gap:10px}.rv-teaser-art span{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:rgba(255,255,255,.14);color:var(--tgc)}.rv-teaser-art svg{width:30px;height:30px}
+.rv-teaser b{font:600 23px/1.15 var(--font-display,serif);color:#fff}.rv-teaser>span{display:flex;align-items:center;gap:6px;font-size:13px;line-height:1.4;color:#fff}
+/* ticket events in the Explore programme */
+.ex21-row.tkev{background:linear-gradient(135deg,var(--tg1),var(--tg2) 60%,var(--tg3))!important;border-color:transparent!important;color:#fff}
+.ex21-row.tkev .ex21-time b,.ex21-row.tkev .ex21-time small,.ex21-row.tkev .ex21-mid b,.ex21-row.tkev .ex21-mid small,.ex21-row.tkev .ex21-type,.ex21-row.tkev .ex21-type i{color:#fff!important;opacity:1}
+.ex21-thumb.rv-art{display:grid;place-items:center;background:rgba(255,255,255,.14);color:var(--tgc)}.ex21-thumb.rv-art svg{width:62%;height:62%}
+.ex21-tkcta{display:inline-flex;align-self:flex-start;align-items:center;gap:5px;margin-top:6px;padding:3px 10px;border-radius:99px;background:#fff;color:var(--tg1);font-style:normal;font-size:11.5px;font-weight:800}
+.ex21-dtk{display:flex;align-items:center;gap:12px;margin:12px 0;padding:12px;border-radius:16px;background:linear-gradient(135deg,var(--tg1),var(--tg2) 60%,var(--tg3));color:#fff}
+.ex21-dtk-art{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.14);color:var(--tgc)}.ex21-dtk-art svg{width:28px;height:28px}
+.ex21-dtk-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.ex21-dtk-t b{font-size:17px;color:#fff}.ex21-dtk-t b small{font-size:11.5px;font-weight:600}.ex21-dtk-t>small{font-size:12px;color:#fff}
+.ex21-dtk .btn{flex:none;width:auto;margin:0;padding:10px 14px;min-height:0;background:#fff!important;color:var(--tg1)!important;border-color:#fff!important}
+/* manager */
+.t14-art{flex:none;width:62px;height:62px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--tg1),var(--tg2) 60%,var(--tg3));color:var(--tgc)}.t14-art svg{width:36px;height:36px}
+.t14-b.danger{color:#A33A2C}.t14-act .t14-b.danger{flex:0 0 50px;padding-left:0;padding-right:0}.t14-mini{border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:700;margin:0 0 0 6px;cursor:pointer;min-height:0;width:auto}
+.tkt-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 2px}
+.tkt-t{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px 8px;border-radius:14px;border:3px solid transparent;background:linear-gradient(135deg,var(--tg1),var(--tg2) 60%,var(--tg3));color:#fff;cursor:pointer;margin:0;width:auto;min-height:0}
+.tkt-t span{width:30px;height:30px;color:var(--tgc)}.tkt-t svg{width:100%;height:100%}.tkt-t b{font-size:12px;color:#fff}.tkt-t:not(.on){opacity:.72}.tkt-t.on{border-color:var(--espresso);opacity:1}
+.tkt-note{display:flex;align-items:center;gap:5px;margin:6px 0 2px}
+.pg7-row.tkev{box-shadow:inset 3px 0 0 #D08526;cursor:pointer}.pg7-c.tk{background:rgba(208,133,38,.14);color:#8A5210}
+.pg17-tags .kind.tk{display:inline-flex;align-items:center;gap:3px;background:rgba(208,133,38,.18);color:#8A5210}
+.rv-acts .rv-del{flex:0 0 auto;width:auto;padding-left:12px;padding-right:12px;color:#A33A2C}
 .pg17-intro{margin:-2px 2px 10px;font-size:13px;color:var(--muted)}
 .pg17-day.open>.pg17-wk{background:transparent}.pg17-day.open .pg17-go{transform:rotate(90deg);color:var(--ink)}.pg17-go{transition:transform .2s}
 .pg17-open{padding:2px 0 14px}.pg17-open .pg17-theme span{background:var(--bg);color:var(--ink);border:1px solid var(--line)}.pg17-open .pg17-theme small{color:var(--muted);opacity:1}
