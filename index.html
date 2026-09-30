@@ -4782,7 +4782,7 @@ function initPhotoTaps(){
     const target=ev.target;
     if(!target || !target.closest) return;
     // never inside the viewer itself, an upload box, the crop tool or an editor thumbnail
-    if(target.closest(".pv-bg,.photo-pick,.photo-box,.pedit,.crop-stage,.brandmark,.ex21-row,.ex21-mark,.lg21-mark,.ex21-av")) return;
+    if(target.closest(".pv-bg,.photo-pick,.photo-box,.pedit,.crop-stage,.brandmark,.ex21-row,.ex21-mark,.lg21-mark,.ex21-av,.rv-ent,.rv-av,.ex26-tile,.modal-bg .ph")) return;
     const holder=target.closest("[data-pv],[data-pvsingle]");
     let urls=[], start=0;
     if(holder && holder.hasAttribute("data-pvsingle")){
@@ -4826,6 +4826,16 @@ function openPhotoViewer(urls, start){
     const pv=wrap.querySelector(".prev"); if(pv) pv.onclick=e=>{ e.stopPropagation(); i=(i-1+list.length)%list.length; draw(); };
     const nx=wrap.querySelector(".next"); if(nx) nx.onclick=e=>{ e.stopPropagation(); i=(i+1)%list.length; draw(); };
   };
+  /* V7.26: "close" was never defined here, so the button ran window.close() and left the app */
+  let closed=false;
+  function close(fromBack){
+    if(closed) return; closed=true;
+    document.removeEventListener("keydown",onKey); window.removeEventListener("popstate",onBack); wrap.remove();
+    if(!fromBack){ try{ if(history.state&&history.state.pv) history.back(); }catch(_){} }
+  }
+  function onBack(){ close(true); }
+  try{ history.pushState({...(history.state||{}),pv:1},""); }catch(_){}
+  window.addEventListener("popstate",onBack);
   function onKey(e){
     if(e.key==="Escape") close();
     if(e.key==="ArrowLeft"){ i=(i-1+list.length)%list.length; draw(); }
@@ -20032,18 +20042,60 @@ function exploreView(){
   const st=S.settings||{}, preview=!!(S.session&&S.explorePreview);
   const secs=[['me',window.__g25Section&&!preview?window.__g25Section():''],['prog',progSection()],['tix',tixSection()],['team',teamSection()],['info',infoSection()],['photos',photoSection()],['wxs',wxSection()],['contact',contactSection()]].filter(x=>x[1]);
   const NAV={me:'__g25me',prog:'prog',tix:'tix',team:'team',info:'info',photos:'photos',wxs:'wx',contact:'contact'};
-  return `<main class="ex21 fadein">
-    ${preview?`<div class="ex21-preview"><span>${E(L('previewBar'))}</span><button type="button" id="ex21-endpreview">${E(L('backApp'))}</button></div>`:''}
+  const G5T=(k,v)=>window.GUEST25?window.GUEST25.t(k,v):k;
+  const label=k=>NAV[k]==='__g25me'?G5T('me'):L(NAV[k]);
+  const cur=secs.some(x=>x[0]===X.sec)?X.sec:'home';
+  const head=`${preview?`<div class="ex21-preview"><span>${E(L('previewBar'))}</span><button type="button" id="ex21-endpreview">${E(L('backApp'))}</button></div>`:''}
     <header class="ex21-top">
       <div class="ex21-brand">${brandMark('ex21-mark')}<span><b>${E(st.name||'Entertainment')}</b>${st.hotelName||st.subtitle?`<small>${E(st.hotelName||st.subtitle)}</small>`:''}</span></div>
       <div class="ex21-tools">${langSelect('ex21-langsel')}${preview?'':`<button type="button" class="ex21-teambtn" id="ex21-signin">${ic('lock',13)} ${E(L('teamSignIn'))}</button>`}</div>
-    </header>
-    <section class="ex21-hero"><p class="ey">${E(P('ey'))}</p><h1>${E(P('title'))}</h1><p>${E(P('intro'))}</p>${todayStrip()}</section>
-    <nav class="ex21-nav">${secs.map(([k])=>`<a href="#ex21-${k}" data-ex21-go="ex21-${k}">${E(NAV[k]==='__g25me'&&window.GUEST25?window.GUEST25.t('me'):L(NAV[k]))}</a>`).join('')}</nav>
-    ${secs.map(x=>x[1]).join('')}
-    <footer class="ex21-foot"><span>${E(st.name||'Entertainment')}</span>${preview?'':`<button type="button" id="ex21-signin2">${ic('lock',12)} ${E(L('teamSignIn'))}</button><small>${E(L('teamOnly'))}</small>`}</footer>
-  </main>`;
+    </header>`;
+  const foot=`<footer class="ex21-foot"><span>${E(st.name||'Entertainment')}</span>${preview?'':`<button type="button" id="ex21-signin2">${ic('lock',12)} ${E(L('teamSignIn'))}</button><small>${E(L('teamOnly'))}</small>`}</footer>`;
+  if(cur==='home'){
+    const has=k=>secs.some(x=>x[0]===k);
+    const g=window.GUEST25&&window.GUEST25.signedIn()?window.GUEST25.profile():null;
+    const n=dayActs(todayIndex()).length, team=teamList();
+    const ini=nm=>window.__initials714?window.__initials714(nm):String(nm||'?').trim().charAt(0).toUpperCase();
+    const faces=`<span class="ex26-faces">${team.slice(0,4).map(u=>`<i>${u.photo?`<img src="${E(u.photo)}" alt="" loading="lazy">`:E(ini(u.display_name||u.username))}</i>`).join('')}</span>`;
+    const w=S.weather&&S.weather.cur;
+    const T=[
+      ['me','user',label('me'),g?G5T('meInS',{n:String(g.name||'').split(' ')[0]}):G5T('meOutS'),'big'],
+      ['prog','calendar',label('prog'),G5T('progS',{n}),'big'],
+      ['tix','ticket',label('tix'),g?G5T('tixIn'):G5T('tixOut'),''],
+      ['team','users',label('team'),G5T('teamS',{n:team.length}),'',faces],
+      ['info','pin',label('info'),L('infoSub'),''],
+      ['photos','sparkle',label('photos'),L('photosSub'),''],
+      ['wxs','sun',label('wxs'),w?Math.round(w.temperature_2m)+'° · '+wmoLabel(w.weather_code):L('wxSub'),''],
+      ['contact','chat',label('contact'),G5T('contactS'),'']
+    ].filter(x=>has(x[0]));
+    return `<main class="ex21 ex26 fadein">${head}
+      <section class="ex21-hero ex26-hero"><p class="ey">${E(P('ey'))}</p><h1>${E(P('title'))}</h1>${todayStrip()}</section>
+      <h2 class="ex26-q">${E(G5T('homeQ'))}</h2>
+      <nav class="ex26-tiles">${T.map(([k,i,l,sub,cls,extra])=>`<button type="button" class="ex26-tile t-${k} ${cls}" data-ex21-go="${k}"><span class="ex26-ic">${extra||ic(i,22)}</span><span class="ex26-tt"><b>${E(l)}</b><small>${E(sub||'')}</small></span><span class="ex26-go" aria-hidden="true">›</span></button>`).join('')}</nav>
+      ${foot}</main>`;
+  }
+  return `<main class="ex21 ex26 fadein">${head}
+    <nav class="ex21-nav ex26-nav"><button type="button" class="ex26-home" data-ex21-go="home">${ic('home',15)} ${E(G5T('home'))}</button>${secs.map(([k])=>`<button type="button" class="${k===cur?'on':''}" aria-current="${k===cur?'page':'false'}" data-ex21-go="${k}">${E(label(k))}</button>`).join('')}</nav>
+    ${secs.find(x=>x[0]===cur)[1]}
+    <button type="button" class="ex26-back" data-ex21-go="home">${ic('back',15)} ${E(G5T('home'))}</button>
+    ${foot}</main>`;
 }
+/* open one part of the page; the phone's Back button returns to the home screen */
+window.__ex21Show=function(k,fromBack){
+  k=k||'home'; const prev=X.sec||'home';
+  if(prev===k&&!fromBack){ try{ window.scrollTo(0,0); }catch(_){} return; }
+  X.sec=k;
+  if(!fromBack){ try{ history.pushState({...(history.state||{}),pv:0,ex21:k},''); }catch(_){} }
+  render(); try{ window.scrollTo(0,0); }catch(_){}
+};
+try{ history.replaceState({...(history.state||{}),ex21:history.state&&history.state.ex21||'home'},''); }catch(_){}
+window.addEventListener('popstate',e=>{
+  if(S.session&&!S.explorePreview) return;
+  if(document.querySelector('.pv-bg')) return;
+  const k=(e.state&&e.state.ex21)||'home';
+  document.querySelectorAll('.modal-bg').forEach(w=>w.remove());
+  if(k!==(X.sec||'home')) window.__ex21Show(k,true);
+});
 function openDetail(a,forTeam){
   if(!a) return;
   const img=coverOf(a), days=t('days')||[];
@@ -20057,7 +20109,7 @@ function openDetail(a,forTeam){
     ${!forTeam&&window.__tkDetail?window.__tkDetail(a):''}
     <button class="btn ghost" id="ex21-dx">${E(t('close'))}</button></div>`);
   wrap.querySelector('#ex21-dx').onclick=()=>wrap.remove();
-  const tg=wrap.querySelector('#ex21-dtk-go'); if(tg) tg.onclick=()=>{ wrap.remove(); const el=document.getElementById('ex21-tix'); if(el) try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){ el.scrollIntoView(); } };
+  const tg=wrap.querySelector('#ex21-dtk-go'); if(tg) tg.onclick=()=>{ wrap.remove(); window.__ex21Show('tix'); };
 }
 /* an entertainer taps an activity in the app: its details (the programme is the manager's) */
 window.openActInfo=function(a){ openDetail(a,true); };
@@ -20084,11 +20136,12 @@ function wireExplore(){
   const goTeam=()=>{ S.teamLogin=true; render(); try{ window.scrollTo(0,0); }catch(_){} };
   const tb=Q('#ex21-signin'); if(tb) tb.onclick=goTeam;
   const tb2=Q('#ex21-signin2'); if(tb2) tb2.onclick=goTeam;
-  const ep=Q('#ex21-endpreview'); if(ep) ep.onclick=()=>{ S.explorePreview=false; render(); try{ window.scrollTo(0,0); }catch(_){} };
+  const ep=Q('#ex21-endpreview'); if(ep) ep.onclick=()=>{ S.explorePreview=false; X.sec='home'; render(); try{ window.scrollTo(0,0); }catch(_){} };
   root.querySelectorAll('[data-ex21-day]').forEach(b=>b.onclick=()=>{ X.day=+b.dataset.ex21Day; X.week=false; redraw('ex21-prog'); });
   root.querySelectorAll('[data-ex21-week]').forEach(b=>b.onclick=()=>{ X.week=true; redraw('ex21-prog'); });
   root.querySelectorAll('[data-ex21-act]').forEach(b=>b.onclick=()=>openDetail((S.activities||[]).find(a=>String(a.id)===String(b.dataset.ex21Act))));
-  root.querySelectorAll('[data-ex21-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); const el=document.getElementById(a.dataset.ex21Go); if(el) try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){ el.scrollIntoView(); } });
+  root.querySelectorAll('[data-ex21-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); window.__ex21Show(a.dataset.ex21Go); });
+  const on=root.querySelector('.ex26-nav .on'); if(on) try{ on.scrollIntoView({block:'nearest',inline:'center'}); }catch(_){}
   const pr=Q('#ex21-print'); if(pr) pr.onclick=()=>{ if(typeof window.printInfoBoardProgram635!=='function') return; const all=S.activities; try{ if(window.__tkHidden) S.activities=(all||[]).filter(a=>!window.__tkHidden(a)); window.printInfoBoardProgram635({scope:'week',includeWho:false}); } finally{ S.activities=all; } };
   const ap=Q('#ex21-allph'); if(ap) ap.onclick=()=>{ X.allPhotos=!X.allPhotos; redraw(X.allPhotos?null:'ex21-photos'); };
   refreshWeather();
@@ -20765,7 +20818,9 @@ function exploreSection(){
     const T=TT(), nd=tk=>{ try{ return T.nextDate?T.nextDate(tk):''; }catch(_){ return ''; } };
     /* V7.25: everybody sees the ticket events; reserving needs the guest's sign-in */
     let head;
-    if(!g) head=`<div class="g25-lockline">${ic('lock',16)}<span>${E(GA()?GA().t('signInToRes'):G('lockText'))}</span><button type="button" class="btn" data-g25-signin="tix">${E(GA()?GA().t('signIn'):'Sign in')}</button></div>`;
+    if(!g) return `<section class="ex21-sec rv" id="ex21-tix"><div class="ex21-h"><h2>${ic('ticket',19)} ${E(L0('tix'))}</h2><p>${E(G('subLocked'))}</p></div>
+      <div class="g25-tixlock"><div class="rv-teaser"><div class="rv-teaser-art"><span class="tt-tombola">${ART.tombola}</span><span class="tt-bingo">${ART.bingo}</span><span class="tt-disco">${ART.disco}</span></div><b>${E(G('teaserT'))}</b><span>${ic('lock',14)} ${E(GA()?GA().t('tixLocked'):G('lockText'))}</span></div>
+      <button type="button" class="btn" data-g25-signin="tix">${E(GA()?GA().t('signIn'):'Sign in')}</button></div></section>`;
     else { const n=groups(RS.mine.filter(r=>r.pack_id!=null&&live(r))).length;
       head=meLine(g)+(n&&GA()?`<p class="g25-youhave"><button type="button" class="rv-link g25-plain" data-g25-tab="tickets">${ic('ticket',14)} ${E(GA().t('youHave',{n}))}</button></p>`:''); }
     body=head+`<div class="ex21-tixlist">${list.slice().sort((a,b)=>(nd(a)+String(a.time||'')).localeCompare(nd(b)+String(b.time||''))).map(tk=>eventCard(tk,nd(tk))).join('')}</div>`;
@@ -21036,11 +21091,12 @@ const evOffers=tk=>offersOf({ticketId:tk.id});
 /* the Explore programme: a ticket event row opens this at the bottom of its details */
 window.__tkDetail=function(a){
   const x=tkOfAct(a); if(!x) return '';
+  if(!guest()) return `<div class="g25-lockline">${ic('lock',16)}<span>${E(GA()?GA().t('tixLocked'):G('lockText'))}</span><button type="button" class="btn" data-g25-signin="tix">${E(GA()?GA().t('signIn'):'Sign in')}</button></div>`;
   const cur=evCur(x.tk), offs=evOffers(x.tk);
   return `<div class="ex21-dtk tt-${x.type}"><span class="ex21-dtk-art">${ART[x.type]}</span><span class="ex21-dtk-t"><b>${E(x.priceText||x.label)}${x.priceText?` <small>${E(L0('perTicket'))}</small>`:''}</b>${offs.length?`<small>${offs.map(o=>E(G('offer',{q:o.qty,p:money(o.price,cur)}))).join(' · ')}</small>`:''}</span><button type="button" class="btn" id="ex21-dtk-go">${E(G('getTix'))}</button></div>`;
 };
 window.__tkRowArt=function(x){ return `<span class="ex21-thumb rv-art tt-${x.type}">${ART[x.type]}</span>`; };
-window.__tkRowCta=function(x){ return `<em class="ex21-tkcta">${ic('ticket',12)} ${E(L0('tix'))}${x.priceText?' · '+E(x.priceText):''}</em>`; };
+window.__tkRowCta=function(x){ if(!guest()) return ''; return `<em class="ex21-tkcta">${ic('ticket',12)} ${E(L0('tix'))}${x.priceText?' · '+E(x.priceText):''}</em>`; };
 
 /* ---- the manager's ticket event card ---- */
 function evThumb(tk){ const ty=typeOf(tk); return tk.image?`<img src="${E(tk.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:`<span class="t14-art tt-${ty}">${ART[ty]}</span>`; }
@@ -21522,7 +21578,7 @@ function ago(ts){ const t0=Date.parse(ts||''); if(!t0) return ''; const m=Math.r
 
 /* ======================= WORDS (guests) ======================= */
 const T25={
-en:{me:'My stay',meOut:'Sign in once to book activities, keep favourites, see your tickets and message the Entertainment Manager. The programme stays open to everybody.',meIn:'Your bookings, favourites and tickets for this stay.',
+en:{home:'Home',homeQ:'What would you like to see?',meOutS:'Sign in to book, save favourites and more',meInS:'Hello {n} — your bookings and tickets',progS:'Today: {n} activities and shows',tixOut:'Sign in to see and reserve tickets',tixIn:'Reserve your paper tickets',teamS:'{n} people — tap to meet them',contactS:'WhatsApp, social media and reviews',tixLocked:'Tickets, prices and offers are shown after you sign in.',me:'My stay',meOut:'Sign in once to book activities, keep favourites, see your tickets and message the Entertainment Manager. The programme stays open to everybody.',meIn:'Your bookings, favourites and tickets for this stay.',
   f1:'Book activities',f2:'Save favourites',f3:'Your tickets',f4:'Message the Entertainment Manager',signIn:'Sign in',save:'Save',signOut:'Sign out',change:'Change details',
   tBooked:'Booked activities',tFavs:'Favourites',tTix:'Tickets',tContact:'Contact',book:'Book',booked:'Booked ✓',cancelBooking:'Cancel booking',full:'Full',left:'{n} places left',left1:'1 place left',
   favAdd:'Add to favourites',favDel:'Remove from favourites',favOn:'In your favourites',needSign:'Please sign in first — it takes a minute.',
@@ -21536,7 +21592,7 @@ en:{me:'My stay',meOut:'Sign in once to book activities, keep favourites, see yo
   signInToRes:'Sign in to reserve tickets.',youHave:'{n} ticket reservation(s) — see My stay › Tickets',welcome:'Welcome, {n}!',net:'No connection — please try again.',
   notReady:'Guest sign-in opens soon.',notBookable:'This activity cannot be booked.',earlier:'Earlier and cancelled',upcoming:'Coming up',open:'Open',signOutQ:'Sign out on this phone?',
   stay:'{a} → {d}',noLimit:'Free booking',bookFor:'Booking for {d}',when:'When',where:'Where',bookedFor:'Booked for {d}',privacy:'Only you and the Entertainment Manager see these details.',close:'Close'},
-de:{me:'Mein Aufenthalt',meOut:'Einmal anmelden, um Aktivitäten zu buchen, Favoriten zu speichern, deine Tickets zu sehen und dem Entertainment Manager zu schreiben. Das Programm bleibt für alle offen.',meIn:'Deine Buchungen, Favoriten und Tickets für diesen Aufenthalt.',
+de:{home:'Start',homeQ:'Was möchtest du sehen?',meOutS:'Anmelden zum Buchen, Favoriten und mehr',meInS:'Hallo {n} — deine Buchungen und Tickets',progS:'Heute: {n} Aktivitäten und Shows',tixOut:'Anmelden, um Tickets zu sehen und zu reservieren',tixIn:'Reserviere deine Papiertickets',teamS:'{n} Personen — tippe, um sie kennenzulernen',contactS:'WhatsApp, Social Media und Bewertungen',tixLocked:'Tickets, Preise und Angebote siehst du nach der Anmeldung.',me:'Mein Aufenthalt',meOut:'Einmal anmelden, um Aktivitäten zu buchen, Favoriten zu speichern, deine Tickets zu sehen und dem Entertainment Manager zu schreiben. Das Programm bleibt für alle offen.',meIn:'Deine Buchungen, Favoriten und Tickets für diesen Aufenthalt.',
   f1:'Aktivitäten buchen',f2:'Favoriten speichern',f3:'Deine Tickets',f4:'Dem Entertainment Manager schreiben',signIn:'Anmelden',save:'Speichern',signOut:'Abmelden',change:'Angaben ändern',
   tBooked:'Gebuchte Aktivitäten',tFavs:'Favoriten',tTix:'Tickets',tContact:'Kontakt',book:'Buchen',booked:'Gebucht ✓',cancelBooking:'Buchung stornieren',full:'Ausgebucht',left:'noch {n} Plätze',left1:'noch 1 Platz',
   favAdd:'Zu Favoriten',favDel:'Aus Favoriten entfernen',favOn:'In deinen Favoriten',needSign:'Bitte zuerst anmelden — dauert eine Minute.',
@@ -21550,7 +21606,7 @@ de:{me:'Mein Aufenthalt',meOut:'Einmal anmelden, um Aktivitäten zu buchen, Favo
   signInToRes:'Zum Reservieren von Tickets bitte anmelden.',youHave:'{n} Ticket-Reservierung(en) — siehe Mein Aufenthalt › Tickets',welcome:'Willkommen, {n}!',net:'Keine Verbindung — bitte erneut versuchen.',
   notReady:'Die Gast-Anmeldung öffnet bald.',notBookable:'Diese Aktivität kann nicht gebucht werden.',earlier:'Früher und storniert',upcoming:'Demnächst',open:'Öffnen',signOutQ:'Auf diesem Handy abmelden?',
   noLimit:'Freie Buchung',bookFor:'Buchung für {d}',when:'Wann',where:'Wo',bookedFor:'Gebucht für {d}',privacy:'Nur du und der Entertainment Manager sehen diese Angaben.',close:'Schließen'},
-ru:{me:'Моё пребывание',meOut:'Войдите один раз, чтобы бронировать активности, сохранять избранное, видеть свои билеты и писать менеджеру анимации. Программа открыта для всех.',meIn:'Ваши брони, избранное и билеты на это пребывание.',
+ru:{home:'Главная',homeQ:'Что вы хотите посмотреть?',meOutS:'Войдите, чтобы бронировать и сохранять избранное',meInS:'Здравствуйте, {n} — ваши брони и билеты',progS:'Сегодня: {n} активностей и шоу',tixOut:'Войдите, чтобы увидеть и забронировать билеты',tixIn:'Бронируйте бумажные билеты',teamS:'{n} человек — нажмите, чтобы познакомиться',contactS:'WhatsApp, соцсети и отзывы',tixLocked:'Билеты, цены и предложения видны после входа.',me:'Моё пребывание',meOut:'Войдите один раз, чтобы бронировать активности, сохранять избранное, видеть свои билеты и писать менеджеру анимации. Программа открыта для всех.',meIn:'Ваши брони, избранное и билеты на это пребывание.',
   f1:'Бронировать активности',f2:'Избранное',f3:'Ваши билеты',f4:'Написать менеджеру анимации',signIn:'Войти',save:'Сохранить',signOut:'Выйти',change:'Изменить данные',
   tBooked:'Мои брони',tFavs:'Избранное',tTix:'Билеты',tContact:'Контакт',book:'Забронировать',booked:'Забронировано ✓',cancelBooking:'Отменить бронь',full:'Мест нет',left:'осталось мест: {n}',left1:'осталось 1 место',
   favAdd:'В избранное',favDel:'Убрать из избранного',favOn:'В избранном',needSign:'Сначала войдите — это займёт минуту.',
@@ -21564,7 +21620,7 @@ ru:{me:'Моё пребывание',meOut:'Войдите один раз, чт
   signInToRes:'Войдите, чтобы бронировать билеты.',youHave:'Брони билетов: {n} — см. Моё пребывание › Билеты',welcome:'Добро пожаловать, {n}!',net:'Нет связи — попробуйте ещё раз.',
   notReady:'Вход для гостей скоро откроется.',notBookable:'Эту активность нельзя забронировать.',earlier:'Прошедшие и отменённые',upcoming:'Скоро',open:'Открыть',signOutQ:'Выйти на этом телефоне?',
   noLimit:'Свободная запись',bookFor:'Бронь на {d}',when:'Когда',where:'Где',bookedFor:'Забронировано на {d}',privacy:'Эти данные видите только вы и менеджер анимации.',close:'Закрыть'},
-pl:{me:'Mój pobyt',meOut:'Zaloguj się raz, aby rezerwować zajęcia, zapisywać ulubione, widzieć bilety i pisać do Entertainment Managera. Program jest otwarty dla wszystkich.',meIn:'Twoje rezerwacje, ulubione i bilety na ten pobyt.',
+pl:{home:'Start',homeQ:'Co chcesz zobaczyć?',meOutS:'Zaloguj się, aby rezerwować i zapisywać ulubione',meInS:'Cześć {n} — Twoje rezerwacje i bilety',progS:'Dziś: {n} zajęć i show',tixOut:'Zaloguj się, aby zobaczyć i zarezerwować bilety',tixIn:'Rezerwuj papierowe bilety',teamS:'{n} osób — dotknij, aby ich poznać',contactS:'WhatsApp, media społecznościowe i opinie',tixLocked:'Bilety, ceny i oferty zobaczysz po zalogowaniu.',me:'Mój pobyt',meOut:'Zaloguj się raz, aby rezerwować zajęcia, zapisywać ulubione, widzieć bilety i pisać do Entertainment Managera. Program jest otwarty dla wszystkich.',meIn:'Twoje rezerwacje, ulubione i bilety na ten pobyt.',
   f1:'Rezerwuj zajęcia',f2:'Zapisuj ulubione',f3:'Twoje bilety',f4:'Napisz do Entertainment Managera',signIn:'Zaloguj się',save:'Zapisz',signOut:'Wyloguj',change:'Zmień dane',
   tBooked:'Zarezerwowane',tFavs:'Ulubione',tTix:'Bilety',tContact:'Kontakt',book:'Rezerwuj',booked:'Zarezerwowano ✓',cancelBooking:'Anuluj rezerwację',full:'Brak miejsc',left:'wolne miejsca: {n}',left1:'1 wolne miejsce',
   favAdd:'Do ulubionych',favDel:'Usuń z ulubionych',favOn:'W ulubionych',needSign:'Najpierw się zaloguj — to minuta.',
@@ -21578,7 +21634,7 @@ pl:{me:'Mój pobyt',meOut:'Zaloguj się raz, aby rezerwować zajęcia, zapisywa�
   signInToRes:'Zaloguj się, aby rezerwować bilety.',youHave:'Rezerwacje biletów: {n} — zob. Mój pobyt › Bilety',welcome:'Witaj, {n}!',net:'Brak połączenia — spróbuj ponownie.',
   notReady:'Logowanie gości wkrótce.',notBookable:'Tych zajęć nie można zarezerwować.',earlier:'Wcześniejsze i anulowane',upcoming:'Wkrótce',open:'Otwórz',signOutQ:'Wylogować na tym telefonie?',
   noLimit:'Wolna rezerwacja',bookFor:'Rezerwacja na {d}',when:'Kiedy',where:'Gdzie',bookedFor:'Zarezerwowano na {d}',privacy:'Te dane widzisz tylko Ty i Entertainment Manager.',close:'Zamknij'},
-cs:{me:'Můj pobyt',meOut:'Přihlaste se jednou a můžete rezervovat aktivity, ukládat oblíbené, vidět své vstupenky a psát Entertainment Managerovi. Program je otevřený všem.',meIn:'Vaše rezervace, oblíbené a vstupenky pro tento pobyt.',
+cs:{home:'Domů',homeQ:'Co chcete vidět?',meOutS:'Přihlaste se k rezervacím a oblíbeným',meInS:'Dobrý den, {n} — vaše rezervace a vstupenky',progS:'Dnes: {n} aktivit a show',tixOut:'Přihlaste se a uvidíte vstupenky',tixIn:'Rezervujte si papírové vstupenky',teamS:'{n} lidí — klepněte a poznejte je',contactS:'WhatsApp, sociální sítě a recenze',tixLocked:'Vstupenky, ceny a nabídky uvidíte po přihlášení.',me:'Můj pobyt',meOut:'Přihlaste se jednou a můžete rezervovat aktivity, ukládat oblíbené, vidět své vstupenky a psát Entertainment Managerovi. Program je otevřený všem.',meIn:'Vaše rezervace, oblíbené a vstupenky pro tento pobyt.',
   f1:'Rezervovat aktivity',f2:'Ukládat oblíbené',f3:'Vaše vstupenky',f4:'Napsat Entertainment Managerovi',signIn:'Přihlásit',save:'Uložit',signOut:'Odhlásit',change:'Změnit údaje',
   tBooked:'Rezervované',tFavs:'Oblíbené',tTix:'Vstupenky',tContact:'Kontakt',book:'Rezervovat',booked:'Rezervováno ✓',cancelBooking:'Zrušit rezervaci',full:'Obsazeno',left:'volná místa: {n}',left1:'1 volné místo',
   favAdd:'Do oblíbených',favDel:'Odebrat z oblíbených',favOn:'V oblíbených',needSign:'Nejdřív se přihlaste — zabere to minutu.',
@@ -21592,7 +21648,7 @@ cs:{me:'Můj pobyt',meOut:'Přihlaste se jednou a můžete rezervovat aktivity, 
   signInToRes:'Pro rezervaci vstupenek se přihlaste.',youHave:'Rezervace vstupenek: {n} — viz Můj pobyt › Vstupenky',welcome:'Vítejte, {n}!',net:'Bez připojení — zkuste to znovu.',
   notReady:'Přihlášení hostů brzy.',notBookable:'Tuto aktivitu nelze rezervovat.',earlier:'Dřívější a zrušené',upcoming:'Brzy',open:'Otevřít',signOutQ:'Odhlásit na tomto telefonu?',
   noLimit:'Volná rezervace',bookFor:'Rezervace na {d}',when:'Kdy',where:'Kde',bookedFor:'Rezervováno na {d}',privacy:'Tyto údaje vidíte jen vy a Entertainment Manager.',close:'Zavřít'},
-nl:{me:'Mijn verblijf',meOut:'Log één keer in om activiteiten te boeken, favorieten te bewaren, je tickets te zien en de Entertainment Manager te appen. Het programma blijft voor iedereen open.',meIn:'Je boekingen, favorieten en tickets voor dit verblijf.',
+nl:{home:'Start',homeQ:'Wat wil je zien?',meOutS:'Log in om te boeken en favorieten te bewaren',meInS:'Hallo {n} — je boekingen en tickets',progS:'Vandaag: {n} activiteiten en shows',tixOut:'Log in om tickets te zien en te reserveren',tixIn:'Reserveer je papieren tickets',teamS:'{n} mensen — tik om ze te leren kennen',contactS:'WhatsApp, sociale media en reviews',tixLocked:'Tickets, prijzen en aanbiedingen zie je na het inloggen.',me:'Mijn verblijf',meOut:'Log één keer in om activiteiten te boeken, favorieten te bewaren, je tickets te zien en de Entertainment Manager te appen. Het programma blijft voor iedereen open.',meIn:'Je boekingen, favorieten en tickets voor dit verblijf.',
   f1:'Activiteiten boeken',f2:'Favorieten bewaren',f3:'Je tickets',f4:'De Entertainment Manager appen',signIn:'Inloggen',save:'Opslaan',signOut:'Uitloggen',change:'Gegevens wijzigen',
   tBooked:'Geboekt',tFavs:'Favorieten',tTix:'Tickets',tContact:'Contact',book:'Boeken',booked:'Geboekt ✓',cancelBooking:'Boeking annuleren',full:'Vol',left:'nog {n} plaatsen',left1:'nog 1 plaats',
   favAdd:'Aan favorieten',favDel:'Uit favorieten',favOn:'In je favorieten',needSign:'Log eerst in — het duurt een minuut.',
@@ -21606,7 +21662,7 @@ nl:{me:'Mijn verblijf',meOut:'Log één keer in om activiteiten te boeken, favor
   signInToRes:'Log in om tickets te reserveren.',youHave:'{n} ticketreservering(en) — zie Mijn verblijf › Tickets',welcome:'Welkom, {n}!',net:'Geen verbinding — probeer opnieuw.',
   notReady:'Inloggen voor gasten opent binnenkort.',notBookable:'Deze activiteit kan niet worden geboekt.',earlier:'Eerder en geannuleerd',upcoming:'Binnenkort',open:'Openen',signOutQ:'Uitloggen op deze telefoon?',
   noLimit:'Vrij boeken',bookFor:'Boeking voor {d}',when:'Wanneer',where:'Waar',bookedFor:'Geboekt voor {d}',privacy:'Alleen jij en de Entertainment Manager zien deze gegevens.',close:'Sluiten'},
-fr:{me:'Mon séjour',meOut:'Connectez-vous une fois pour réserver des activités, garder vos favoris, voir vos billets et écrire à l’Entertainment Manager. Le programme reste ouvert à tous.',meIn:'Vos réservations, favoris et billets pour ce séjour.',
+fr:{home:'Accueil',homeQ:'Que voulez-vous voir ?',meOutS:'Connectez-vous pour réserver et garder vos favoris',meInS:'Bonjour {n} — vos réservations et billets',progS:'Aujourd’hui : {n} activités et spectacles',tixOut:'Connectez-vous pour voir et réserver les billets',tixIn:'Réservez vos billets papier',teamS:'{n} personnes — touchez pour les rencontrer',contactS:'WhatsApp, réseaux sociaux et avis',tixLocked:'Billets, prix et offres visibles après connexion.',me:'Mon séjour',meOut:'Connectez-vous une fois pour réserver des activités, garder vos favoris, voir vos billets et écrire à l’Entertainment Manager. Le programme reste ouvert à tous.',meIn:'Vos réservations, favoris et billets pour ce séjour.',
   f1:'Réserver des activités',f2:'Garder des favoris',f3:'Vos billets',f4:'Écrire à l’Entertainment Manager',signIn:'Se connecter',save:'Enregistrer',signOut:'Se déconnecter',change:'Modifier',
   tBooked:'Réservées',tFavs:'Favoris',tTix:'Billets',tContact:'Contact',book:'Réserver',booked:'Réservé ✓',cancelBooking:'Annuler la réservation',full:'Complet',left:'{n} places restantes',left1:'1 place restante',
   favAdd:'Ajouter aux favoris',favDel:'Retirer des favoris',favOn:'Dans vos favoris',needSign:'Connectez-vous d’abord — une minute suffit.',
@@ -21620,7 +21676,7 @@ fr:{me:'Mon séjour',meOut:'Connectez-vous une fois pour réserver des activité
   signInToRes:'Connectez-vous pour réserver des billets.',youHave:'{n} réservation(s) de billets — voir Mon séjour › Billets',welcome:'Bienvenue, {n} !',net:'Pas de connexion — réessayez.',
   notReady:'La connexion client ouvre bientôt.',notBookable:'Cette activité ne peut pas être réservée.',earlier:'Passées et annulées',upcoming:'À venir',open:'Ouvrir',signOutQ:'Se déconnecter sur ce téléphone ?',
   noLimit:'Réservation libre',bookFor:'Réservation pour {d}',when:'Quand',where:'Où',bookedFor:'Réservé pour {d}',privacy:'Seuls vous et l’Entertainment Manager voyez ces données.',close:'Fermer'},
-ar:{me:'إقامتي',meOut:'سجّل الدخول مرة واحدة لحجز الأنشطة وحفظ المفضلة ورؤية تذاكرك ومراسلة مدير الترفيه. البرنامج مفتوح للجميع.',meIn:'حجوزاتك ومفضلتك وتذاكرك لهذه الإقامة.',
+ar:{home:'الرئيسية',homeQ:'ماذا تريد أن ترى؟',meOutS:'سجّل الدخول للحجز وحفظ المفضلة',meInS:'مرحباً {n} — حجوزاتك وتذاكرك',progS:'اليوم: {n} أنشطة وعروض',tixOut:'سجّل الدخول لرؤية التذاكر وحجزها',tixIn:'احجز تذاكرك الورقية',teamS:'{n} أشخاص — اضغط للتعرف عليهم',contactS:'واتساب ووسائل التواصل والتقييمات',tixLocked:'تظهر التذاكر والأسعار والعروض بعد تسجيل الدخول.',me:'إقامتي',meOut:'سجّل الدخول مرة واحدة لحجز الأنشطة وحفظ المفضلة ورؤية تذاكرك ومراسلة مدير الترفيه. البرنامج مفتوح للجميع.',meIn:'حجوزاتك ومفضلتك وتذاكرك لهذه الإقامة.',
   f1:'حجز الأنشطة',f2:'حفظ المفضلة',f3:'تذاكرك',f4:'مراسلة مدير الترفيه',signIn:'تسجيل الدخول',save:'حفظ',signOut:'تسجيل الخروج',change:'تعديل البيانات',
   tBooked:'الأنشطة المحجوزة',tFavs:'المفضلة',tTix:'التذاكر',tContact:'تواصل',book:'احجز',booked:'تم الحجز ✓',cancelBooking:'إلغاء الحجز',full:'مكتمل',left:'متبقٍ {n} أماكن',left1:'متبقٍ مكان واحد',
   favAdd:'أضف إلى المفضلة',favDel:'إزالة من المفضلة',favOn:'في مفضلتك',needSign:'سجّل الدخول أولاً — يستغرق دقيقة.',
@@ -21634,7 +21690,7 @@ ar:{me:'إقامتي',meOut:'سجّل الدخول مرة واحدة لحجز ا
   signInToRes:'سجّل الدخول لحجز التذاكر.',youHave:'حجوزات التذاكر: {n} — انظر إقامتي › التذاكر',welcome:'أهلاً {n}!',net:'لا يوجد اتصال — حاول مرة أخرى.',
   notReady:'تسجيل دخول الضيوف قريباً.',notBookable:'لا يمكن حجز هذا النشاط.',earlier:'السابقة والملغاة',upcoming:'القادمة',open:'فتح',signOutQ:'تسجيل الخروج على هذا الهاتف؟',
   noLimit:'حجز مفتوح',bookFor:'الحجز ليوم {d}',when:'متى',where:'أين',bookedFor:'محجوز ليوم {d}',privacy:'لا يرى هذه البيانات إلا أنت ومدير الترفيه.',close:'إغلاق'},
-it:{me:'Il mio soggiorno',meOut:'Accedi una volta per prenotare attività, salvare i preferiti, vedere i tuoi biglietti e scrivere all’Entertainment Manager. Il programma resta aperto a tutti.',meIn:'Le tue prenotazioni, i preferiti e i biglietti di questo soggiorno.',
+it:{home:'Home',homeQ:'Cosa vuoi vedere?',meOutS:'Accedi per prenotare e salvare i preferiti',meInS:'Ciao {n} — prenotazioni e biglietti',progS:'Oggi: {n} attività e spettacoli',tixOut:'Accedi per vedere e prenotare i biglietti',tixIn:'Prenota i biglietti cartacei',teamS:'{n} persone — tocca per conoscerle',contactS:'WhatsApp, social e recensioni',tixLocked:'Biglietti, prezzi e offerte sono visibili dopo l’accesso.',me:'Il mio soggiorno',meOut:'Accedi una volta per prenotare attività, salvare i preferiti, vedere i tuoi biglietti e scrivere all’Entertainment Manager. Il programma resta aperto a tutti.',meIn:'Le tue prenotazioni, i preferiti e i biglietti di questo soggiorno.',
   f1:'Prenota attività',f2:'Salva i preferiti',f3:'I tuoi biglietti',f4:'Scrivi all’Entertainment Manager',signIn:'Accedi',save:'Salva',signOut:'Esci',change:'Modifica dati',
   tBooked:'Prenotate',tFavs:'Preferiti',tTix:'Biglietti',tContact:'Contatto',book:'Prenota',booked:'Prenotato ✓',cancelBooking:'Annulla prenotazione',full:'Completo',left:'{n} posti liberi',left1:'1 posto libero',
   favAdd:'Aggiungi ai preferiti',favDel:'Rimuovi dai preferiti',favOn:'Nei tuoi preferiti',needSign:'Prima accedi — ci vuole un minuto.',
@@ -21727,8 +21783,8 @@ async function register(g){
   await refresh(true);
   try{ if(R().load) await R().load(); }catch(_){}
   if(first) ok(T('welcome',{n:String(r.stay.name||'').split(' ')[0]})); else ok(T('save')+' ✓');
-  const p=G5.pending; G5.pending=null;
-  paint('ex21-me');
+  const p=G5.pending, back=G5.back; G5.pending=null; G5.back='';
+  paint(back?'ex21-'+back:'ex21-me');
   if(p) setTimeout(()=>runPending(p),50);
   return {ok:true};
 }
@@ -21803,7 +21859,7 @@ async function toggleFav(id){
 function runPending(p){ if(!p||!signedIn()) return; if(p.type==='book') book(p.id,p.date); else if(p.type==='fav') toggleFav(p.id); }
 function askSignIn(from){
   document.querySelectorAll('.modal-bg').forEach(w=>{ if(w.querySelector('.ex21-detail')||w.querySelector('.rv-pack')) w.remove(); });
-  G5.form=true; G5.note=from?T('needSign'):'';
+  G5.form=true; G5.note=from?T('needSign'):''; G5.back=from==='tix'?'tix':'';
   paint('ex21-me');
   setTimeout(()=>{ const r=Q('#rv-room'); if(r) try{ r.focus({preventScroll:true}); }catch(_){ } },120);
 }
@@ -21817,6 +21873,8 @@ function contactMgr(){
 /* ======================= EXPLORE PAGE: "My stay" ======================= */
 function paint(anchor){
   if(S.session&&!S.explorePreview) return;
+  const m=/^ex21-(\w+)$/.exec(anchor||'');
+  if(m&&window.__ex21Show&&!document.getElementById(anchor)){ window.__ex21Show(m[1]); return; }
   const y=window.scrollY; try{ render(); }catch(e){ console.error(e); }
   const el=anchor&&document.getElementById(anchor);
   if(el){ try{ el.scrollIntoView({block:'start'}); }catch(_){ } } else window.scrollTo(0,y);
@@ -22533,6 +22591,25 @@ css.textContent=`
 .g25-seg3 button{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:13px;width:auto;margin:0;min-height:0;cursor:pointer}
 .g25-seg3 button.on{background:var(--espresso);border-color:var(--espresso);color:var(--theme-button-text,#fff)}
 .gp-stats{flex-wrap:wrap}.gp-stats span{min-width:70px}
+/* V7.26 home screen */
+.ex26-hero{padding-bottom:6px}
+.ex26-q{margin:18px 0 10px;font:600 20px/1.2 var(--font-display,serif);color:var(--x-ink,var(--ink))}
+.ex26-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 22px}
+.ex26-tile{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:128px;padding:14px;border-radius:20px;border:1px solid var(--x-line,var(--line));background:var(--x-card,var(--card,#fff));color:var(--x-ink,var(--ink));text-align:start;width:auto;margin:0;cursor:pointer;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+.ex26-tile.big{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0;padding:16px}
+.ex26-tile.t-prog{background:var(--x-pri,var(--espresso));border-color:transparent;color:var(--theme-button-text,#fff)}
+.ex26-tile.t-prog .ex26-ic{background:rgba(255,255,255,.16);color:inherit}.ex26-tile.t-prog small{color:inherit;opacity:.85}
+.ex26-ic{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--x-bg,var(--bg));color:var(--accent-text,var(--x-acc,var(--accent)))}
+.ex26-tt{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.ex26-tt b{font-size:16px;line-height:1.2}.ex26-tt small{font-size:12.5px;line-height:1.35;color:var(--x-mut,var(--muted))}
+.ex26-go{position:absolute;top:10px;inset-inline-end:14px;font-size:22px;line-height:1;opacity:.35}.ex26-tile.big .ex26-go{position:static;font-size:26px}
+.ex26-faces{display:flex;width:auto!important;background:none!important}.ex26-faces i{width:30px;height:30px;border-radius:50%;margin-inline-end:-8px;overflow:hidden;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;background:rgba(185,138,92,.25);border:2px solid var(--x-card,#fff)}
+.ex26-faces img{width:100%;height:100%;object-fit:cover}
+.t-team .ex26-ic{width:auto;padding:0 12px 0 4px}
+.ex26-nav{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.ex26-nav::-webkit-scrollbar{display:none}
+.ex26-nav button{flex:none;display:inline-flex;align-items:center;gap:5px;padding:9px 15px;border-radius:99px;border:1px solid var(--x-line,var(--line));background:var(--x-card,var(--card,#fff));color:var(--x-ink,var(--ink));font-weight:700;font-size:14px;width:auto;margin:0;min-height:0;cursor:pointer}
+.ex26-nav button.on{background:var(--x-pri,var(--espresso));border-color:var(--x-pri,var(--espresso));color:var(--theme-button-text,#fff)}
+.ex26-back{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin:18px 0 8px;padding:12px;border-radius:16px;border:1px dashed var(--x-line,var(--line));background:transparent;color:var(--x-ink,var(--ink));font-weight:700;cursor:pointer}
+.g25-tixlock{display:flex;flex-direction:column;gap:12px}.g25-tixlock .rv-teaser{margin:0;border-radius:22px;padding:26px 16px}.g25-tixlock .btn{margin:0}
 @media (max-width:380px){.g25-feats{grid-template-columns:1fr}.g25-tabs span{font-size:10.5px}}
 `;
 document.head.appendChild(css);
