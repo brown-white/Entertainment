@@ -4751,6 +4751,8 @@ function __row(res, sent){
   if(res && res[0] && typeof res[0]==="object") return res[0];
   return {...sent, id:(sent && sent.id) || Date.now()+Math.random()};
 }
+/* V7.25: call a checked database function (Supabase RPC). */
+async function rpc(fn, args){ return sb("rpc/"+fn,{method:"POST",body:JSON.stringify(args||{})}); }
 function __sbParse(txt){
   return txt ? JSON.parse(txt) : null;
 }
@@ -9485,7 +9487,7 @@ function openUserEditModal(u){
       <input type="file" accept="image/*" data-photoinput hidden></div>
     <label>${t("user")}</label><input id="ue-user" value="${esc(u.username)}" autocapitalize="none">
     <label>${t("displayName")}</label><input id="ue-disp" value="${esc(u.display_name||"")}">
-    <label>${t("pass")}</label><input id="ue-pass" value="${esc(u.password||"")}">
+    <label>${t("pass")}</label><input id="ue-pass" value="" autocomplete="new-password" placeholder="Leave empty to keep the current password">
     <label>${t("roleLabel")}</label>
     <select id="ue-role" ${lastManager?"disabled":""}>
       <option value="staff" ${u.role==="staff"?"selected":""}>${t("staff")}</option>
@@ -9549,7 +9551,7 @@ function openUserEditModal(u){
       if(S.users.some(x=>x.id!==u.id && String(x.username).toLowerCase()===newUser.toLowerCase())){ toast(t("userExists")); return; }
       patch.username=newUser;
     }
-    if(!patch.password){ return; }
+    if(!String(patch.password||"").trim()) delete patch.password;
     await DB.updateUser(u.id,patch);
     const djModeEl=wrap.querySelector("#ue-djmode");
     if(djModeEl){ await DB.saveSettings({...S.settings,djWorkMode:djModeEl.value==="sport_dj"?"sport_dj":"dj"}); }
@@ -19911,7 +19913,7 @@ function row(a,isT,now,nextId){
     <span class="ex21-time"><b>${s!=null?hm(s):'—'}</b>${e!=null&&!many?`<small>${hm(e)}</small>`:''}</span>
     ${tkx&&!a.image?window.__tkRowArt(tkx):`<img class="ex21-thumb" src="${E(coverOf(a))}" alt="" loading="lazy" onerror="this.style.display='none'">`}
     <span class="ex21-mid"><span class="ex21-type">${E(tkx?tkx.label:typeL(a))}${a.highlight?` · <i>${E(L('hl'))}</i>`:''}</span><b>${E(a.name||'')}</b>
-      <small>${many?E(timeText(a))+(a.location?' · ':''):''}${a.location?E(a.location):''}</small>${badge}${tkx?window.__tkRowCta(tkx):''}</span>
+      <small>${many?E(timeText(a))+(a.location?' · ':''):''}${a.location?E(a.location):''}</small>${badge}${tkx?window.__tkRowCta(tkx):''}${!tkx&&window.__g25Row?window.__g25Row(a):''}</span>
   </button>`;
 }
 function dayList(day,compact){
@@ -20028,8 +20030,8 @@ function todayStrip(){
 /* ---------- the page ---------- */
 function exploreView(){
   const st=S.settings||{}, preview=!!(S.session&&S.explorePreview);
-  const secs=[['prog',progSection()],['tix',tixSection()],['team',teamSection()],['info',infoSection()],['photos',photoSection()],['wxs',wxSection()],['contact',contactSection()]].filter(x=>x[1]);
-  const NAV={prog:'prog',tix:'tix',team:'team',info:'info',photos:'photos',wxs:'wx',contact:'contact'};
+  const secs=[['me',window.__g25Section&&!preview?window.__g25Section():''],['prog',progSection()],['tix',tixSection()],['team',teamSection()],['info',infoSection()],['photos',photoSection()],['wxs',wxSection()],['contact',contactSection()]].filter(x=>x[1]);
+  const NAV={me:'__g25me',prog:'prog',tix:'tix',team:'team',info:'info',photos:'photos',wxs:'wx',contact:'contact'};
   return `<main class="ex21 fadein">
     ${preview?`<div class="ex21-preview"><span>${E(L('previewBar'))}</span><button type="button" id="ex21-endpreview">${E(L('backApp'))}</button></div>`:''}
     <header class="ex21-top">
@@ -20037,7 +20039,7 @@ function exploreView(){
       <div class="ex21-tools">${langSelect('ex21-langsel')}${preview?'':`<button type="button" class="ex21-teambtn" id="ex21-signin">${ic('lock',13)} ${E(L('teamSignIn'))}</button>`}</div>
     </header>
     <section class="ex21-hero"><p class="ey">${E(P('ey'))}</p><h1>${E(P('title'))}</h1><p>${E(P('intro'))}</p>${todayStrip()}</section>
-    <nav class="ex21-nav">${secs.map(([k])=>`<a href="#ex21-${k}" data-ex21-go="ex21-${k}">${E(L(NAV[k]))}</a>`).join('')}</nav>
+    <nav class="ex21-nav">${secs.map(([k])=>`<a href="#ex21-${k}" data-ex21-go="ex21-${k}">${E(NAV[k]==='__g25me'&&window.GUEST25?window.GUEST25.t('me'):L(NAV[k]))}</a>`).join('')}</nav>
     ${secs.map(x=>x[1]).join('')}
     <footer class="ex21-foot"><span>${E(st.name||'Entertainment')}</span>${preview?'':`<button type="button" id="ex21-signin2">${ic('lock',12)} ${E(L('teamSignIn'))}</button><small>${E(L('teamOnly'))}</small>`}</footer>
   </main>`;
@@ -20059,6 +20061,7 @@ function openDetail(a,forTeam){
 }
 /* an entertainer taps an activity in the app: its details (the programme is the manager's) */
 window.openActInfo=function(a){ openDetail(a,true); };
+window.__ex21OpenDetail=function(a){ openDetail(a,false); };
 try{ openActInfo=window.openActInfo; }catch(_){}
 
 function refreshWeather(){
@@ -20116,23 +20119,45 @@ function teamSignIn(say){
   TEAM.user=raw;
   if(!u||!p) return say(L('teamNeed'), !u?'#f-user':'#f-pass');
   if(tooManyAttempts()) return say(L('tooMany'));
-  const cands=(S.users||[]).filter(x=>x&&low(x.username)===u);
-  const found=cands.find(x=>(x.role==='manager'||x.role==='staff')&&!isAttOnly(x));
-  const pwOk=x=>String(x&&x.password!=null?x.password:'').trim()===p;
-  if(!found){
-    const att=cands.find(x=>isAttOnly(x));
-    if(att&&pwOk(att)) return say(L('attOnly'));
-    noteFailedAttempt(); return say(L('teamWrong'),'#f-pass');
-  }
-  if(!pwOk(found)){ noteFailedAttempt(); return say(L('teamWrong'),'#f-pass'); }
-  if(!accountActive(found)) return say(t('accountOff'));
-  clearAttempts();
-  const role=found.role==='manager'?'manager':'staff';
-  TEAM.user=''; S.remember=true; S.explorePreview=false;
-  S.session={role,name:found.display_name||found.username,username:found.username||u,userId:found.id,number:found.number||null,photo:found.photo||''};
-  S.tab=defaultTabFor(role); navReset(); persist();
-  try{ render(); }catch(e){ console.error('login render failed',e); S.tab=role==='manager'?'dash':'today'; persist(); render(); }
-  try{ askNotifPermission(); }catch(_){}
+  const btn=Q('#btn-login'); if(btn) btn.disabled=true;
+  const done=()=>{ if(btn) btn.disabled=false; };
+  const enter=(found,token)=>{
+    clearAttempts();
+    const role=found.role==='manager'?'manager':'staff';
+    TEAM.user=''; S.remember=true; S.explorePreview=false;
+    S.session={role,name:found.display_name||found.username,username:found.username||u,userId:found.id,accountId:found.id,number:found.number||null,photo:found.photo||'',token:token||''};
+    S.tab=defaultTabFor(role); navReset(); persist();
+    try{ render(); }catch(e){ console.error('login render failed',e); S.tab=role==='manager'?'dash':'today'; persist(); render(); }
+    try{ askNotifPermission(); }catch(_){}
+  };
+  /* V7.25: the password is checked by the database (hashed there); the app never sees it */
+  const local=()=>{
+    const cands=(S.users||[]).filter(x=>x&&low(x.username)===u);
+    const found=cands.find(x=>(x.role==='manager'||x.role==='staff')&&!isAttOnly(x));
+    const pwOk=x=>{ const v=String(x&&x.password!=null?x.password:'').trim(); return !!v&&v===p; };
+    if(!found){ const att=cands.find(x=>isAttOnly(x)); if(att&&pwOk(att)) return say(L('attOnly')); noteFailedAttempt(); return say(L('teamWrong'),'#f-pass'); }
+    if(!pwOk(found)){ noteFailedAttempt(); return say(L('teamWrong'),'#f-pass'); }
+    if(!accountActive(found)) return say(t('accountOff'));
+    enter(found,'');
+  };
+  if(typeof REMOTE==='undefined'||!REMOTE){ done(); return local(); }
+  rpc('team_login',{p_username:raw.trim(),p_password:p}).then(r=>{
+    done();
+    if(r&&r.ok&&r.user){
+      const found={...((S.users||[]).find(x=>String(x.id)===String(r.user.id))||{}),...r.user};
+      return enter(found,r.token);
+    }
+    const e=r&&r.error;
+    if(e==='attendance') return say(L('attOnly'));
+    if(e==='inactive') return say(t('accountOff'));
+    if(e==='locked') return say(L('tooMany'));
+    noteFailedAttempt(); say(L('teamWrong'),'#f-pass');
+  }).catch(err=>{
+    done();
+    /* database-v725.sql not run yet: the old check still works until then */
+    if(/Supabase (404|400)\b/.test(String(err&&err.message||err))) return local();
+    say(t('loadErr')||'No connection — please try again.');
+  });
 }
 function wireLogin(){
   const root=Q('.lg21'); if(!root) return;
@@ -20434,17 +20459,16 @@ const CODES=[['+49','Germany'],['+44','United Kingdom'],['+7','Russia / Kazakhst
  ['+213','Algeria'],['+54','Argentina'],['+374','Armenia'],['+61','Australia'],['+994','Azerbaijan'],['+973','Bahrain'],['+375','Belarus'],['+55','Brazil'],['+359','Bulgaria'],['+86','China'],['+385','Croatia'],['+357','Cyprus'],['+45','Denmark'],['+372','Estonia'],['+358','Finland'],['+995','Georgia'],['+30','Greece'],['+36','Hungary'],['+354','Iceland'],['+91','India'],['+964','Iraq'],['+972','Israel'],['+81','Japan'],['+962','Jordan'],['+965','Kuwait'],['+371','Latvia'],['+961','Lebanon'],['+218','Libya'],['+370','Lithuania'],['+352','Luxembourg'],['+356','Malta'],['+52','Mexico'],['+373','Moldova'],['+212','Morocco'],['+64','New Zealand'],['+47','Norway'],['+968','Oman'],['+351','Portugal'],['+974','Qatar'],['+40','Romania'],['+381','Serbia'],['+386','Slovenia'],['+27','South Africa'],['+82','South Korea'],['+34','Spain'],['+249','Sudan'],['+46','Sweden'],['+216','Tunisia'],['+90','Turkey'],['+1','USA / Canada'],['+998','Uzbekistan']];
 const NAT2CODE={German:'+49',British:'+44',Russian:'+7',Kazakh:'+7',Polish:'+48',Czech:'+420',Slovak:'+421',Dutch:'+31',Belgian:'+32',French:'+33',Italian:'+39',Spanish:'+34',Swiss:'+41',Austrian:'+43',Ukrainian:'+380',Irish:'+353',Egyptian:'+20',Saudi:'+966',Emirati:'+971',Kuwaiti:'+965',Qatari:'+974',Jordanian:'+962',Lebanese:'+961',Moroccan:'+212',Algerian:'+213',Tunisian:'+216',Greek:'+30',Turkish:'+90',Romanian:'+40',Hungarian:'+36',Bulgarian:'+359',Serbian:'+381',Croatian:'+385',Slovenian:'+386',Swedish:'+46',Norwegian:'+47',Danish:'+45',Finnish:'+358',Portuguese:'+351',Lithuanian:'+370',Latvian:'+371',Estonian:'+372',Belarusian:'+375',Moldovan:'+373',Georgian:'+995',Armenian:'+374',Azerbaijani:'+994',Uzbek:'+998',American:'+1',Canadian:'+1',Australian:'+61','New Zealander':'+64','South African':'+27',Indian:'+91',Chinese:'+86',Japanese:'+81','South Korean':'+82',Brazilian:'+55',Mexican:'+52',Argentine:'+54',Israeli:'+972',Omani:'+968',Bahraini:'+973',Iraqi:'+964',Libyan:'+218',Sudanese:'+249',Luxembourgish:'+352',Maltese:'+356',Cypriot:'+357',Icelandic:'+354'};
 
-/* ---------- the guest on this phone ---------- */
-const GK='ent_tk_guest_v722';
+/* ---------- the guest on this phone ----------
+   V7.25: the guest's stay account (token + details) lives in GUEST25
+   (script aurea-guests-v725). These helpers only read it. */
 const CODES_LONG=()=>CODES.map(x=>x[0]).sort((a,b)=>b.length-a.length);
 function fmtPhone(p){ p=String(p||'').trim(); if(!/^\+\d{6,}$/.test(p)) return p; const c=CODES_LONG().find(x=>p.startsWith(x)); return c?c+' '+p.slice(c.length):p; }
 const canonPhone=p=>{ const d=String(p||'').replace(/[^\d]/g,''); return d?'+'+d:''; };
-let memG=null;
-function rawGuest(){ try{ const x=JSON.parse(localStorage.getItem(GK)||'null'); if(x&&x.room){ if(x.phone) x.phone=canonPhone(x.phone); return x; } }catch(_){} return memG; }
-const complete=g=>!!(g&&g.room&&g.nat&&g.phone&&g.name&&g.arr&&g.dep);
-/* signed in = all details given and the stay not over; after the departure date the phone starts fresh */
-function guest(){ const g=rawGuest(); if(!g) return null; if(g.dep&&String(g.dep)<today()){ forgetGuest(); return null; } return complete(g)?g:null; }
-function saveGuest(g){ memG=g; try{ localStorage.setItem(GK,JSON.stringify(g)); }catch(_){} }
+const GA=()=>window.GUEST25||null;
+function rawGuest(){ const m=GA(); return m?m.profile():null; }
+function guest(){ const m=GA(); return m&&m.signedIn()?m.profile():null; }
+const teamTok=()=>(S.session&&S.session.token)||'';
 
 /* ---------- packs ---------- */
 const packsAll=()=>{ const P=PK(); return P?Object.values(P.packs()).filter(Boolean):[]; };
@@ -20484,7 +20508,7 @@ const pubOf=r=>({id:r.id,res_id:r.res_id,pack_id:r.pack_id,ticket_no:r.ticket_no
 
 /* ---------- loading ---------- */
 const missing=e=>/Supabase (400|404)\b/.test(String(e&&e.message||e));
-const sig=()=>(isTeam()?RS.team:RS.pub.concat(RS.mine)).map(r=>r.id+':'+r.status).sort().join(',')+'|'+RS.state+'|'+(guest()?1:0)+'|'+GS.list.map(p=>p.id+':'+p.room+':'+p.phone+':'+(p.last_seen||'')).join(',');
+const sig=()=>(isTeam()?RS.team:RS.pub.concat(RS.mine)).map(r=>r.id+':'+r.status).sort().join(',')+'|'+RS.state+'|'+(guest()?1:0)+'|'+(GA()&&GA().sig?GA().sig():'');
 let busy=false;
 async function load(){
   if(typeof REMOTE==='undefined'||!REMOTE){ RS.state='missing'; return false; }
@@ -20492,16 +20516,15 @@ async function load(){
   const before=sig();
   try{
     if(isTeam()){
-      RS.team=(await sb('ticket_orders?select=*&pack_id=not.is.null&or=(status.eq.reserved,created_at.gte.'+addDays(today(),-45)+')&order=created_at.desc&limit=5000'))||[];
+      const r=await rpc('team_ticket_orders',{p_token:teamTok()});
+      if(r&&r.ok) RS.team=r.rows||[];
+      else if(r&&r.error==='signin'&&GA()) GA().teamExpired();
       await gpLoad();
     } else {
-      const ids=packsAll().filter(p=>!closed(p)&&(p.date||'')>=addDays(today(),-1)).map(p=>String(p.id).replace(/[^\w-]/g,'')).filter(Boolean);
-      RS.pub=ids.length?((await sb('ticket_orders?select=id,res_id,pack_id,ticket_no,status&status=in.(reserved,confirmed)&pack_id=in.('+ids.join(',')+')'))||[]):[];
-      await gpCheck();
-      const g=guest(), mine=((g&&g.res)||[]).map(x=>String(x).replace(/[^\w-]/g,'')).filter(Boolean), who=[];
-      if(mine.length) who.push('res_id.in.('+mine.join(',')+')');
-      if(g&&/^\d{3,4}$/.test(String(g.room||''))&&canonPhone(g.phone)) who.push('and(room.eq.'+g.room+',phone.eq.'+enc(canonPhone(g.phone))+')');
-      RS.mine=who.length?((await sb('ticket_orders?select=*&pack_id=not.is.null&or=('+who.join(',')+')&order=created_at.desc&limit=300'))||[]):[];
+      const ids=packsAll().filter(p=>!closed(p)&&(p.date||'')>=addDays(today(),-1)).map(p=>String(p.id)).filter(Boolean);
+      RS.pub=ids.length?((await rpc('public_ticket_taken',{p_packs:ids}))||[]):[];
+      const m=GA();
+      if(m&&m.signedIn()){ await m.refresh(); RS.mine=m.tickets(); } else RS.mine=[];
     }
     RS.state='ok';
   }catch(e){ if(missing(e)) RS.state='missing'; else if(RS.state!=='ok') RS.state='offline'; }
@@ -20561,13 +20584,18 @@ function ask(q,d,yes,no,danger){
   });
 }
 function findRes(id){ const rows=(isTeam()?RS.team:RS.mine).filter(r=>r.res_id===id); return rows.length?resOf(id,rows):null; }
+async function teamStatus(ids,status){
+  const r=await rpc('team_ticket_status',{p_token:teamTok(),p_res:ids,p_status:status});
+  if(r&&r.error==='signin'&&GA()) GA().teamExpired();
+  return (r&&r.ok&&r.rows)||[];
+}
 async function confirmRes(id){
   const x=findRes(id); if(!x||x.status!=='reserved') return false;
   const cur=(x.pack&&x.pack.currency)||'€';
   if(!await ask(`Room ${x.room} paid ${money(x.total,cur)}?`,`Only confirm when you have handed over the paper ticket${x.nums.length>1?'s':''} <b>${x.nums.map(n=>E(num(x.pack,n))).join(', ')}</b> and taken the money. The ${x.nums.length>1?'tickets count':'ticket counts'} as sold in ${isMgr()&&low(x.user)!==low(me())?E(nameOf(x.user))+'’s':'your'} pack.`,'Yes — paid & handed over','Not yet')) return false;
   try{
-    const res=await sb('ticket_orders?res_id=eq.'+enc(id)+'&status=eq.reserved',{method:'PATCH',body:JSON.stringify({status:'confirmed',confirmed_at:new Date().toISOString(),confirmed_by:me()})});
-    if(!res||!res.length){ await load(); toastErr('This reservation was already cancelled or confirmed.'); render(); return false; }
+    const res=await teamStatus([id],'confirmed');
+    if(!res.length){ await load(); toastErr('This reservation was already cancelled or confirmed.'); render(); return false; }
     res.forEach(r=>upsert(RS.team,r));
     await syncLedger();
     toastOk('Confirmed · '+x.nums.map(n=>num(x.pack,n)).join(', ')+' · '+money(x.total,cur));
@@ -20579,9 +20607,9 @@ async function mgrCancel(id){
   const cur=(x.pack&&x.pack.currency)||'€';
   if(!await ask('Cancel this reservation?',`Room ${E(x.room)} · ${E(evName(x))} · ${x.nums.map(n=>E(num(x.pack,n))).join(', ')} · ${E(money(x.total,cur))}. The numbers become free again.${x.status==='confirmed'?' <b>It is already paid</b> — it is taken out of the pack; give the money back to the guest.':''}`,'Cancel reservation','Keep it',true)) return false;
   try{
-    const res=await sb('ticket_orders?res_id=eq.'+enc(id)+'&status=in.(reserved,confirmed)',{method:'PATCH',body:JSON.stringify({status:'cancelled',cancelled_at:new Date().toISOString(),cancelled_by:(S.session&&S.session.name)||me()})});
-    (res||[]).forEach(r=>upsert(RS.team,r));
-    if(!res||!res.length) await load();
+    const res=await teamStatus([id],'cancelled');
+    res.forEach(r=>upsert(RS.team,r));
+    if(!res.length) await load();
     await syncLedger();
     toastOk('Reservation cancelled'); return true;
   }catch(e){ toastErr('Not saved — check the internet and try again.'); return false; }
@@ -20591,40 +20619,42 @@ async function cancelPast(){
   if(!list.length) return;
   if(!await ask(`Cancel ${list.length} unpaid reservation${list.length>1?'s':''}?`,'These guests reserved for events that are over and never paid.','Cancel them','Keep them',true)) return;
   try{
-    const res=await sb('ticket_orders?res_id=in.('+list.map(x=>String(x.id).replace(/[^\w-]/g,'')).join(',')+')&status=eq.reserved',{method:'PATCH',body:JSON.stringify({status:'cancelled',cancelled_at:new Date().toISOString(),cancelled_by:(S.session&&S.session.name)||me()})});
-    (res||[]).forEach(r=>upsert(RS.team,r)); toastOk('Cancelled'); render();
+    const res=await teamStatus(list.map(x=>String(x.id)),'cancelled');
+    res.forEach(r=>upsert(RS.team,r)); toastOk('Cancelled'); render();
   }catch(e){ toastErr('Not saved — check the internet and try again.'); }
 }
 async function reserve(p,nums,offer){
-  const g=guest(); if(!g) return {err:true};
+  const g=guest(); if(!g) return {signin:true};
   await load();
   if(RS.state==='missing') return {missing:true};
   const taken=takenSet(p), clash=nums.filter(n=>taken.has(String(n)));
   if(clash.length) return {clash};
   const tk=tkOf(p.ticketId);
-  const id='r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   const total=offer?r2(offer.price):r2(nums.length*(+p.price||0));
-  const rows=nums.map(n=>({ticket_id:tk?tk.id:p.ticketId,pack_id:String(p.id),ticket_no:n,res_id:id,room:g.room,guest_name:g.name||('Room '+g.room),nationality:g.nat,phone:g.phone,qty:1,status:'reserved',collect_from:p.user,event_date:p.date||null,res_total:total,offer_qty:offer?offer.qty:0,lang:S.lang||'en'}));
+  /* the guest's name, room, nationality and mobile are added by the database from his verified stay */
+  const rows=nums.map(n=>({ticket_id:tk?tk.id:p.ticketId,pack_id:String(p.id),ticket_no:n,collect_from:p.user,event_date:p.date||null,res_total:total,offer_qty:offer?offer.qty:0,lang:S.lang||'en'}));
   let out;
-  try{ out=await sb('ticket_orders',{method:'POST',body:JSON.stringify(rows)}); }
-  catch(e){
-    const m=String(e&&e.message||e);
-    if(/Supabase 409\b/.test(m)){ await load(); const t2=takenSet(p); const c=nums.filter(n=>t2.has(String(n))); return {clash:c.length?c:nums}; }
-    if(missing(e)){ RS.state='missing'; return {missing:true}; }
+  try{ out=await rpc('guest_reserve',{p_token:g.token,p_rows:rows}); }
+  catch(e){ if(missing(e)){ RS.state='missing'; return {missing:true}; } return {err:true}; }
+  if(!out||!out.ok){
+    if(out&&out.error==='clash'){ await load(); const c=(out.nums||[]).map(Number).filter(n=>nums.includes(n)); return {clash:c.length?c:nums}; }
+    if(out&&out.error==='signin'){ if(GA()) GA().serverSignedOut(); return {signin:true}; }
     return {err:true};
   }
-  saveGuest({...g,res:[...(g.res||[]),id].slice(-40)});
-  (Array.isArray(out)&&out.length?out:rows.map((r,i)=>({...r,id:'tmp'+i+id,created_at:new Date().toISOString()}))).forEach(r=>{ upsert(RS.mine,r); upsert(RS.pub,pubOf(r)); if(isTeam()) upsert(RS.team,r); });
-  return {ok:true,id,total};
+  (out.rows||[]).forEach(r=>{ upsert(RS.mine,r); upsert(RS.pub,pubOf(r)); if(isTeam()) upsert(RS.team,r); });
+  if(GA()) GA().addTickets(out.rows||[]);
+  return {ok:true,id:out.res_id,total};
 }
 async function guestCancel(id){
   const x=findRes(id); if(!x) return;
   const nm=nameOf(x.user);
   if(!await ask(G('cancelQ'),E(G('cancelD')),G('cancelYes'),G('keep'),true)) return;
   try{
-    const res=await sb('ticket_orders?res_id=eq.'+enc(id)+'&status=eq.reserved',{method:'PATCH',body:JSON.stringify({status:'cancelled',cancelled_at:new Date().toISOString(),cancelled_by:'guest'})});
-    if(!res||!res.length){ await load(); toastErr(G('cancelLate',{name:nm})); repaint(true); return; }
+    const g=guest(); if(!g) return;
+    const out=await rpc('guest_ticket_cancel',{p_token:g.token,p_res:id}), res=(out&&out.rows)||[];
+    if(!res.length){ await load(); toastErr(G('cancelLate',{name:nm})); repaint(true); return; }
     res.forEach(r=>{ upsert(RS.mine,r); upsert(RS.pub,pubOf(r)); if(isTeam()) upsert(RS.team,r); });
+    if(GA()) GA().addTickets(res);
     toastOk(G('cancelDone')); repaint(true);
   }catch(e){ toastErr(G('netErr')); }
 }
@@ -20641,30 +20671,29 @@ function natSelect(v){
 function codeSelect(code){
   return `<select id="rv-code" aria-label="${E(G('phone'))}"><option value="" ${code?'':'selected'}>${E(G('otherCode'))}</option>${CODES.map(([c,n])=>`<option value="${c}" ${c===code?'selected':''}>${c} ${E(n)}</option>`).join('')}</select>`;
 }
-function regForm(g){
+function regForm(g,btnText,withCancel){
   g=g||{};
   const room=RG.room!=null?RG.room:(g.room||''), nat=RG.nat!=null?RG.nat:(g.nat||''), code=RG.code!=null?RG.code:(g.code!=null?g.code:(NAT2CODE[nat]||'')), local=RG.local!=null?RG.local:(g.local||'');
   const name=RG.name!=null?RG.name:(g.name||''), arr=RG.arr!=null?RG.arr:(g.arr||today()), dep=RG.dep!=null?RG.dep:(g.dep||'');
   return `<div class="rv-reg">
-    ${g.room?'':`<div class="rv-teaser"><div class="rv-teaser-art"><span class="tt-tombola">${ART.tombola}</span><span class="tt-bingo">${ART.bingo}</span><span class="tt-disco">${ART.disco}</span></div><b>${E(G('teaserT'))}</b><span>${ic('lock',14)} ${E(G('lockText'))}</span></div>`}
-    <label for="rv-room">${E(G('room'))}</label><input id="rv-room" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" enterkeyhint="next" value="${E(room)}">
+    <label for="rv-room">${E(G('room'))}</label><input id="rv-room" type="text" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="12" autocomplete="off" enterkeyhint="next" placeholder="H1234" value="${E(room)}">
     <label for="rv-name">${E(G('gName'))}</label><input id="rv-name" type="text" autocomplete="name" autocapitalize="words" enterkeyhint="next" maxlength="60" value="${E(name)}">
     <label for="rv-nat">${E(G('nat'))}</label>${natSelect(nat)}
     <div id="rv-phonebox" ${nat?'':'hidden'}><label for="rv-phone">${E(G('phone'))}</label><div class="rv-phone">${codeSelect(code)}<input id="rv-phone" type="tel" inputmode="tel" autocomplete="tel-national" enterkeyhint="go" value="${E(local)}" placeholder="${E(G('phonePh'))}"></div><p class="rv-small">${E(G('phoneNote'))}</p></div>
     <div class="rv-dates2"><div><label for="rv-arr">${E(G('arr'))}</label><input id="rv-arr" type="date" value="${E(arr)}" min="${E(addDays(today(),-60))}" max="${E(addDays(today(),60))}"></div><div><label for="rv-dep">${E(G('dep'))}</label><input id="rv-dep" type="date" value="${E(dep)}" min="${E(today())}" max="${E(addDays(today(),120))}"></div></div>
     <p class="rv-err" id="rv-err" role="alert" aria-live="polite"></p>
-    <button type="button" class="btn" id="rv-reg-go">${E(G('showTix'))}</button>
-    ${complete(g)?`<button type="button" class="btn ghost" id="rv-reg-x">${E(t('cancelBtn'))}</button>`:''}
+    <button type="button" class="btn" id="rv-reg-go">${E(btnText||G('showTix'))}</button>
+    ${withCancel?`<button type="button" class="btn ghost" id="rv-reg-x">${E(t('cancelBtn'))}</button>`:''}
   </div>`;
 }
 function readReg(){
   const v=id=>{ const el=document.getElementById(id); return el?String(el.value||''):''; };
-  RG.room=v('rv-room').replace(/\s/g,''); RG.nat=v('rv-nat'); RG.code=v('rv-code'); RG.local=v('rv-phone').trim();
+  RG.room=v('rv-room').replace(/\s/g,'').toUpperCase(); RG.nat=v('rv-nat'); RG.code=v('rv-code'); RG.local=v('rv-phone').trim();
   RG.name=v('rv-name').replace(/\s+/g,' ').trim(); RG.arr=v('rv-arr'); RG.dep=v('rv-dep');
 }
 function checkReg(){
   readReg();
-  if(!/^\d{3,4}$/.test(RG.room)) return {err:G('roomErr'),f:'#rv-room'};
+  if(!/^[A-Z0-9./-]{1,12}$/.test(RG.room)) return {err:GA()?GA().t('roomFmt'):G('roomErr'),f:'#rv-room'};
   if(RG.name.length<2) return {err:G('nameErr'),f:'#rv-name'};
   if(!RG.nat) return {err:G('natErr'),f:'#rv-nat'};
   const digits=RG.local.replace(/[^\d]/g,'');
@@ -20677,7 +20706,7 @@ function checkReg(){
   return {g:{room:RG.room,name:RG.name,nat:RG.nat,code:RG.code,local:RG.local,phone,arr:RG.arr,dep:RG.dep}};
 }
 function meLine(g){
-  return `<div class="rv-me">${ic('door',16)}<span><b>${E(G('roomN',{r:g.room}))}${g.name?' · '+E(g.name):''}</b><small>${E(g.nat)} · ${E(fmtPhone(g.phone))}${g.dep?' · '+E(G('stayTill',{d:niceDay(g.dep)})):''}</small></span><button type="button" id="rv-edit">${E(G('change'))}</button></div>`;
+  return `<div class="rv-me">${ic('door',16)}<span><b>${E(G('roomN',{r:g.room}))}${g.name?' · '+E(g.name):''}</b><small>${E(g.nat)} · ${E(fmtPhone(g.phone))}${g.dep?' · '+E(G('stayTill',{d:niceDay(g.dep)})):''}</small></span><button type="button" data-g25-tab="stay">${E(G('change'))}</button></div>`;
 }
 function myCard(x){
   const p=x.pack||{}, cur=p.currency||'€', nm=nameOf(x.user), u=userOf(x.user), past=!!x.date&&x.date<today();
@@ -20687,7 +20716,7 @@ function myCard(x){
     <div class="rv-mine-top">${av(u,nm,'sm')}<span><b>${E(evName(x))}</b><small>${E(niceDate(x.date,{weekday:'long',day:'numeric',month:'long'}))}${x.tk&&x.tk.time?' · '+E(x.tk.time):''} · ${E(nm)}</small></span>${st}</div>
     <div class="rv-nums">${x.nums.map(n=>`<span>${E(num(p,n))}</span>`).join('')}<b>${E(money(x.total,cur))}${x.offer>1?` <small>(${E(G('offerOf',{q:x.offer}))})</small>`:''}</b></div>
     ${line?`<p class="rv-line">${E(line)}</p>`:''}
-    ${x.status==='reserved'&&!past?`<button type="button" class="rv-link" data-rv-gcancel="${E(x.id)}">${E(G('cancelRes'))}</button>`:''}
+    <div class="g25-tkacts">${x.status!=='cancelled'?`<button type="button" class="rv-link g25-plain" data-g25-voucher="${E(x.id)}">${ic('ticket',13)} ${E(GA()?GA().t('showTicket'):'Show ticket')}</button>`:''}${x.status==='reserved'&&!past?`<button type="button" class="rv-link" data-rv-gcancel="${E(x.id)}">${E(G('cancelRes'))}</button>`:''}</div>
   </article>`;
 }
 function myTickets(){
@@ -20729,33 +20758,48 @@ function eventCard(tk,next){
 function exploreSection(){
   let on=true; try{ on=featureOn('tickets'); }catch(_){}
   const list=(S.tickets||[]).filter(Boolean); if(!on||!list.length) return '';
-  const g=guest(), open=!!g&&!XS.edit&&RS.state!=='missing';
+  const g=guest(), open=!!g&&RS.state!=='missing';
   let body;
   if(RS.state==='missing') body=`<p class="rv-soon">${ic('ticket',16)}<span>${E(G('notOpen'))}</span></p>`;
-  else if(!g||XS.edit) body=regForm(g||rawGuest());
-  else { const T=TT(), nd=tk=>{ try{ return T.nextDate?T.nextDate(tk):''; }catch(_){ return ''; } };
-    body=meLine(g)+myTickets()+`<div class="ex21-tixlist">${list.slice().sort((a,b)=>(nd(a)+String(a.time||'')).localeCompare(nd(b)+String(b.time||''))).map(tk=>eventCard(tk,nd(tk))).join('')}</div>`; }
+  else {
+    const T=TT(), nd=tk=>{ try{ return T.nextDate?T.nextDate(tk):''; }catch(_){ return ''; } };
+    /* V7.25: everybody sees the ticket events; reserving needs the guest's sign-in */
+    let head;
+    if(!g) head=`<div class="g25-lockline">${ic('lock',16)}<span>${E(GA()?GA().t('signInToRes'):G('lockText'))}</span><button type="button" class="btn" data-g25-signin="tix">${E(GA()?GA().t('signIn'):'Sign in')}</button></div>`;
+    else { const n=groups(RS.mine.filter(r=>r.pack_id!=null&&live(r))).length;
+      head=meLine(g)+(n&&GA()?`<p class="g25-youhave"><button type="button" class="rv-link g25-plain" data-g25-tab="tickets">${ic('ticket',14)} ${E(GA().t('youHave',{n}))}</button></p>`:''); }
+    body=head+`<div class="ex21-tixlist">${list.slice().sort((a,b)=>(nd(a)+String(a.time||'')).localeCompare(nd(b)+String(b.time||''))).map(tk=>eventCard(tk,nd(tk))).join('')}</div>`;
+  }
   return `<section class="ex21-sec rv" id="ex21-tix">
     <div class="ex21-h"><h2>${ic('ticket',19)} ${E(L0('tix'))}</h2><p>${E(open?G('subOpen'):G('subLocked'))}</p></div>${body}</section>`;
 }
 function wireExploreTix(){
   const root=Q('#ex21-tix'); if(!root) return;
-  const nat=Q('#rv-nat'), code=Q('#rv-code'), box=Q('#rv-phonebox'), err=Q('#rv-err');
-  if(nat) nat.onchange=()=>{ readReg(); if(box) box.hidden=!nat.value; if(code&&!RG.codeTouched){ code.value=NAT2CODE[nat.value]||''; RG.code=code.value; } if(err) err.textContent=''; const ph=Q('#rv-phone'); if(ph&&!box.hidden) try{ ph.focus(); }catch(_){} };
+  root.querySelectorAll('[data-rv-date]').forEach(b=>b.onclick=()=>{ const [id,d]=b.dataset.rvDate.split('|'); XS.date[id]=d; repaint(true); });
+  root.querySelectorAll('[data-rv-pack]').forEach(b=>b.onclick=()=>{ if(!guest()){ if(GA()) GA().askSignIn('tix'); return; } openGuestPack(b.dataset.rvPack); });
+  root.querySelectorAll('[data-rv-gcancel]').forEach(b=>b.onclick=()=>guestCancel(b.dataset.rvGcancel));
+}
+/* the guest sign-in form (shown in "My stay"): checks in the app, then GUEST25 asks the database */
+function wireReg(root,onSubmit,onCancel){
+  if(!root) return;
+  const W1=s=>root.querySelector(s);
+  const nat=W1('#rv-nat'), code=W1('#rv-code'), box=W1('#rv-phonebox'), err=W1('#rv-err');
+  if(nat) nat.onchange=()=>{ readReg(); if(box) box.hidden=!nat.value; if(code&&!RG.codeTouched){ code.value=NAT2CODE[nat.value]||''; RG.code=code.value; } if(err) err.textContent=''; const ph=W1('#rv-phone'); if(ph&&box&&!box.hidden) try{ ph.focus(); }catch(_){} };
   if(code) code.onchange=()=>{ RG.codeTouched=true; readReg(); };
   root.querySelectorAll('.rv-reg input').forEach(i=>i.addEventListener('input',()=>{ readReg(); if(err) err.textContent=''; }));
-  const room=Q('#rv-room'); if(room) room.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if(nat) try{ nat.focus(); }catch(_){} } });
-  const go=Q('#rv-reg-go');
-  const submit=async()=>{ const r=checkReg(); if(r.err){ if(err) err.textContent=r.err; const f=Q(r.f); if(f) try{ f.focus(); }catch(_){} return; }
-    const old=rawGuest()||{}; saveGuest({...old,...r.g,res:old.res||[],at:Date.now()}); XS.edit=false; Object.keys(RG).forEach(k=>delete RG[k]);
-    go.disabled=true; const pid=await gpSave(guest()); gpChecked=Date.now(); if(pid!=null&&guest()) saveGuest({...guest(),pid}); await load(); repaint(true,'ex21-tix'); };
+  const room=W1('#rv-room'); if(room) room.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const nm=W1('#rv-name'); if(nm) try{ nm.focus(); }catch(_){} } });
+  const go=W1('#rv-reg-go');
+  const submit=async()=>{
+    const r=checkReg(); if(r.err){ if(err) err.textContent=r.err; const f=W1(r.f); if(f) try{ f.focus(); }catch(_){} return; }
+    if(go) go.disabled=true; if(err) err.textContent='';
+    let res; try{ res=await onSubmit(r.g); }catch(e){ res={err:G('netErr')}; }
+    if(go&&document.body.contains(go)) go.disabled=false;
+    if(res&&res.err){ if(err&&document.body.contains(err)) err.textContent=res.err; const f=res.f&&W1(res.f); if(f) try{ f.focus(); }catch(_){} return; }
+    Object.keys(RG).forEach(k=>delete RG[k]);
+  };
   if(go) go.onclick=submit;
-  const ph=Q('#rv-phone'); if(ph) ph.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } });
-  const x=Q('#rv-reg-x'); if(x) x.onclick=()=>{ XS.edit=false; Object.keys(RG).forEach(k=>delete RG[k]); repaint(true,'ex21-tix'); };
-  const ed=Q('#rv-edit'); if(ed) ed.onclick=()=>{ XS.edit=true; repaint(true,'ex21-tix'); };
-  root.querySelectorAll('[data-rv-date]').forEach(b=>b.onclick=()=>{ const [id,d]=b.dataset.rvDate.split('|'); XS.date[id]=d; repaint(true); });
-  root.querySelectorAll('[data-rv-pack]').forEach(b=>b.onclick=()=>openGuestPack(b.dataset.rvPack));
-  root.querySelectorAll('[data-rv-gcancel]').forEach(b=>b.onclick=()=>guestCancel(b.dataset.rvGcancel));
+  const ph=W1('#rv-phone'); if(ph) ph.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } });
+  const x=W1('#rv-reg-x'); if(x) x.onclick=()=>{ Object.keys(RG).forEach(k=>delete RG[k]); if(onCancel) onCancel(); };
 }
 /* the numbers of one entertainer: choose, mark, reserve */
 function openGuestPack(pid){
@@ -20806,6 +20850,7 @@ function openGuestPack(pid){
       if(r.ok){ st.done={nums,total:r.total}; st.sel=[]; }
       else if(r.clash){ st.sel=st.sel.filter(n=>!r.clash.includes(n)); st.msg=G('takenNow',{nums:r.clash.map(n=>num(p,n)).join(', ')}); }
       else if(r.missing) st.msg=G('notOpen');
+      else if(r.signin){ close(); if(GA()) GA().askSignIn('tix'); return; }
       else st.msg=G('netErr');
       draw();
     };
@@ -21021,13 +21066,13 @@ async function mgrDelete(id){
   const x=findRes(id); if(!x) return;
   const cur=(x.pack&&x.pack.currency)||'€';
   if(!await ask('Delete this reservation for good?',`Room ${E(x.room)} · ${E(evName(x))} · ${x.nums.map(n=>E(num(x.pack,n))).join(', ')} · ${E(money(x.total,cur))}. It is removed from every list and the numbers become free.${x.status==='confirmed'?' <b>It is paid</b> — it is taken out of the pack; give the money back to the guest.':''}`,'Delete','Keep it',true)) return;
-  try{ if(x.status==='confirmed') await ledgerRemove([id]); await sb('ticket_orders?res_id=eq.'+enc(id),{method:'DELETE'}); RS.team=RS.team.filter(r=>r.res_id!==id); toastOk('Reservation deleted'); render(); }
+  try{ const out=await rpc('mgr_ticket_delete',{p_token:teamTok(),p_res:[id],p_all_cancelled:false}); if(!out||!out.ok) throw new Error('forbidden'); if(x.status==='confirmed') await ledgerRemove([id]); RS.team=RS.team.filter(r=>r.res_id!==id); toastOk('Reservation deleted'); render(); }
   catch(e){ toastErr('Not saved — check the internet and try again.'); }
 }
 async function deleteCancelled(){
   const n=groups(RS.team.filter(r=>r.pack_id!=null&&r.status==='cancelled')).length; if(!n) return;
   if(!await ask(`Delete ${n} cancelled reservation${n>1?'s':''}?`,'They are removed from the list for good.','Delete','Keep them',true)) return;
-  try{ await sb('ticket_orders?status=eq.cancelled&pack_id=not.is.null',{method:'DELETE'}); RS.team=RS.team.filter(r=>r.status!=='cancelled'); toastOk('Deleted'); render(); }
+  try{ const out=await rpc('mgr_ticket_delete',{p_token:teamTok(),p_res:[],p_all_cancelled:true}); if(!out||!out.ok) throw new Error('forbidden'); RS.team=RS.team.filter(r=>r.status!=='cancelled'); toastOk('Deleted'); render(); }
   catch(e){ toastErr('Not saved — check the internet and try again.'); }
 }
 
@@ -21089,166 +21134,21 @@ window.__wireSteps.push(function(){
   const dc=Q('#rv-del-cancelled'); if(dc) dc.onclick=()=>deleteCancelled();
 });
 
-/* ======================= GUEST ACCOUNTS ======================= */
-/* A guest who unlocks the tickets (room, name, nationality, mobile, arrival and
-   departure) gets an account (table guest_profiles). The manager sees every guest in
-   Program → Guests: "In the hotel" and "History" (after the departure date). History
-   is deleted automatically 45 days after the departure; the manager can edit or delete
-   any account. After the departure date the guest's phone starts fresh; a deleted
-   guest has to sign in again; an edited one gets the new details within a minute. */
+/* ======================= GUEST ACCOUNTS =======================
+   V7.25: guest stays, the manager's Guests page, the room list, bookings and
+   the 45-day history live in aurea-guests-v725 and in the database
+   (database-v725.sql). What stays here: the WhatsApp button used on the
+   reservation cards. */
 try{ if(typeof ICONS==='object'&&!ICONS.print) ICONS.print='<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>'; }catch(_){}
-const GS={list:[],state:''};
-const KEEP_DAYS=45;
-const dOnly=v=>v?String(v).slice(0,10):'';
-const is400=e=>/Supabase 400\b/.test(String(e&&e.message||e));
-async function gpSave(g){
-  if(typeof REMOTE==='undefined'||!REMOTE||GS.state==='missing'||!g) return null;
-  const base={room:String(g.room),nationality:g.nat||'',phone:canonPhone(g.phone),lang:S.lang||'en',last_seen:new Date().toISOString()};
-  const full={...base,name:g.name||'',arrival:g.arr||null,departure:g.dep||null};
-  const send=async body=>{
-    if(g.pid!=null){ const r=await sb('guest_profiles?id=eq.'+enc(g.pid),{method:'PATCH',body:JSON.stringify(body)}); if(r&&r.length) return r[0].id; }
-    const r=await sb('guest_profiles?on_conflict=room,phone',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify(body)}); return r&&r[0]?r[0].id:null;
-  };
-  try{ const id=await send(GS.old?base:full); GS.state='ok'; return id; }
-  catch(e){
-    /* database-v724.sql not run yet: the table has no name / arrival / departure — save the rest */
-    if(!GS.old&&is400(e)){ GS.old=true; try{ const id=await send(base); GS.state='ok'; return id; }catch(e2){ if(missing(e2)) GS.state='missing'; return null; } }
-    if(missing(e)) GS.state='missing'; return null;
-  }
-}
-function forgetGuest(){ memG=null; try{ localStorage.removeItem(GK); }catch(_){} RS.mine=[]; XS.edit=false; }
-let gpChecked=0;
-async function gpCheck(){
-  const g=guest(); if(!g||GS.state==='missing'||typeof REMOTE==='undefined'||!REMOTE) return;
-  if(Date.now()-gpChecked<60000) return; gpChecked=Date.now();
-  if(g.pid==null){ const id=await gpSave(g); const cur=guest(); if(id!=null&&cur) saveGuest({...cur,pid:id}); return; }
-  try{
-    const r=await sb('guest_profiles?select=*&id=eq.'+enc(g.pid)); GS.state='ok';
-    if(!r||!r.length){ forgetGuest(); return; }                 // the manager deleted the account
-    const p=r[0], upd={...g};
-    if(p.room&&String(p.room)!==String(g.room)) upd.room=String(p.room);
-    if(p.name&&p.name!==g.name) upd.name=p.name;
-    if(p.nationality&&p.nationality!==g.nat) upd.nat=p.nationality;
-    if(p.arrival&&dOnly(p.arrival)!==g.arr) upd.arr=dOnly(p.arrival);
-    if(p.departure&&dOnly(p.departure)!==g.dep) upd.dep=dOnly(p.departure);
-    if(p.phone&&canonPhone(p.phone)!==canonPhone(g.phone)){ upd.phone=canonPhone(p.phone); const c=CODES_LONG().find(x=>upd.phone.startsWith(x))||''; upd.code=c; upd.local=c?upd.phone.slice(c.length):upd.phone; }
-    if(JSON.stringify(upd)!==JSON.stringify(g)) saveGuest(upd);
-    if(Date.now()-(Date.parse(p.last_seen||'')||0)>6*3600e3) sb('guest_profiles?id=eq.'+enc(g.pid),{method:'PATCH',body:JSON.stringify({last_seen:new Date().toISOString(),lang:S.lang||'en'})}).catch(()=>{});
-  }catch(e){ if(missing(e)) GS.state='missing'; }
-}
-let gpCleaned=false;
-async function gpLoad(){
-  if(!isMgr()||typeof REMOTE==='undefined'||!REMOTE) return;
-  const ord='&order=last_seen.desc.nullslast&limit=2000';
-  try{ GS.list=(await sb('guest_profiles?select=id,created_at,room,name,nationality,phone,lang,last_seen,arrival,departure'+ord))||[]; GS.state='ok'; GS.old=false; }
-  catch(e){
-    if(!is400(e)){ if(missing(e)) GS.state='missing'; return; }
-    /* the table is there but without the new columns (database-v724.sql not run yet) */
-    try{ GS.list=(await sb('guest_profiles?select=*'+ord))||[]; GS.state='ok'; GS.old=true; }catch(e2){ if(missing(e2)) GS.state='missing'; return; }
-  }
-  /* history is kept for 45 days after the departure, then deleted */
-  if(!gpCleaned&&!GS.old){ gpCleaned=true; const cut=addDays(today(),-KEEP_DAYS);
-    if(GS.list.some(p=>p.departure&&dOnly(p.departure)<cut)){ try{ await sb('guest_profiles?departure=lt.'+cut,{method:'DELETE'}); GS.list=GS.list.filter(p=>!(p.departure&&dOnly(p.departure)<cut)); }catch(_){} } }
-}
-/* tickets in the programme only for guests who unlocked them */
-window.__tkHidden=function(a){ return guestView()&&!guest()&&!!tkOfAct(a); };
-
-/* ---- the manager's page: Program → Guests ---- */
+async function gpLoad(){ if(isMgr()&&GA()&&GA().mgrLoad) await GA().mgrLoad(); }
+/* ticket events are part of the public programme; reserving needs the sign-in */
+window.__tkHidden=function(){ return false; };
 const WA='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>';
-const waLinkOf=ph=>'https://wa.me/'+canonPhone(ph).replace(/^\+/,'');
-const waBtn=ph=>`<a class="rv-call wa" href="${E(waLinkOf(ph))}" target="_blank" rel="noopener">${WA} ${E(fmtPhone(ph))}</a>`;
-const isPast=p=>!!p.departure&&dOnly(p.departure)<today();
-function nights(a,d){ const x=Date.parse(dOnly(a)+'T12:00:00'), y=Date.parse(dOnly(d)+'T12:00:00'); return x&&y?Math.round((y-x)/864e5):null; }
-function gpRes(p){ const rows=RS.team.filter(r=>r.pack_id!=null&&String(r.room)===String(p.room)&&canonPhone(r.phone)===canonPhone(p.phone)); const g=groups(rows); return {w:g.filter(x=>x.status==='reserved').length,c:g.filter(x=>x.status==='confirmed').length,rows,g}; }
-function gpFilter(){
-  const mode=S.gpMode||'now', q=low(S.gpq||'').replace(/\s/g,'');
-  return GS.list.filter(p=>(mode==='past')===isPast(p)).filter(p=>!q||low(p.room).includes(q)||canonPhone(p.phone).includes(q.replace(/^\+/,''))||low(p.nationality).replace(/\s/g,'').includes(q)||low(p.name).replace(/\s/g,'').includes(q))
-    .sort((a,b)=>mode==='past'?dOnly(b.departure).localeCompare(dOnly(a.departure)):String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
-}
-function gpList(list){
-  const mode=S.gpMode||'now';
-  if(!list.length) return `<div class="t14-empty">${S.gpq?'No guest matches your search.':mode==='past'?'No guests in the history. Guests move here after their departure date and are deleted 45 days later.':'No guests in the hotel yet. A guest appears here as soon as he unlocks the tickets on the Explore page.'}</div>`;
-  return list.map(p=>{ const r=gpRes(p), lang=(LANGS.find(x=>x[0]===p.lang)||[])[1]||'', n=p.arrival&&p.departure?nights(p.arrival,p.departure):null, past=isPast(p);
-    return `<article class="gp-card${past?' past':''}"><div class="gp-top"><span class="gp-room">${ic('door',16)}<b>Room ${E(p.room)}</b></span><span class="gp-nat">${E(p.nationality||'—')}</span><small>${E(ago(p.last_seen||p.created_at))}</small></div>
-      ${p.name?`<p class="gp-name">${E(p.name)}</p>`:''}
-      <p class="gp-stay">${ic('calendar',14)} ${p.arrival||p.departure?`${E(p.arrival?niceDay(dOnly(p.arrival)):'?')} → ${E(p.departure?niceDay(dOnly(p.departure)):'?')}${n!=null&&n>=0?` · ${n} night${n===1?'':'s'}`:''}`:'Stay dates not given'}</p>
-      ${waBtn(p.phone)}
-      <p class="gp-meta">Joined ${E(niceDay(dOnly(p.created_at)))}${lang?` · ${E(lang)}`:''}${r.w||r.c?` · tickets: <b>${r.w}</b> waiting · <b>${r.c}</b> paid`:''}${past?` · <b>deleted automatically on ${E(niceDay(addDays(dOnly(p.departure),KEEP_DAYS)))}</b>`:''}</p>
-      <div class="rv-acts"><button type="button" class="btn ghost" data-gp-edit="${E(p.id)}">${ic('pen',14)} Edit</button><button type="button" class="btn ghost rv-del" data-gp-del="${E(p.id)}">${ic('trash',14)} Delete</button></div></article>`; }).join('');
-}
-function guestsPage(){
-  if(!isMgr()) return '';
-  const head=`<div class="t14-sh"><div><p class="t14-kick">From the Explore page</p><h3>Guest accounts</h3></div></div>`;
-  if(GS.state==='missing') return `<section class="gp">${head}<div class="rv-sql"><b>${ic('bell',15)} One-time step needed</b><p>To keep guest accounts, open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v724.sql</b> and tap <b>Run</b>. Guests can still unlock the tickets meanwhile.</p></div></section>`;
-  const mode=S.gpMode||'now', now=GS.list.filter(p=>!isPast(p)), past=GS.list.filter(isPast);
-  const arriving=now.filter(p=>p.arrival&&dOnly(p.arrival)===today()).length, leaving=now.filter(p=>p.departure&&dOnly(p.departure)===today()).length;
-  return `<section class="gp" id="gp">${head}
-    ${GS.old?`<div class="rv-sql"><b>${ic('bell',15)} One-time step needed</b><p>To save the guests' <b>names and stay dates</b>, open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v724.sql</b> and tap <b>Run</b>. Until then History and the automatic delete after 45 days do not work.</p></div>`:''}
-    <p class="t14-intro">Every guest who unlocked the tickets — name, room, nationality, mobile and stay. Tap a number to chat on WhatsApp. After the departure date a guest moves to History and is deleted automatically 45 days later.</p>
-    <div class="gp-stats"><span><b>${now.length}</b>in the hotel</span><span><b>${arriving}</b>arrived today</span><span><b>${leaving}</b>leaving today</span></div>
-    <div class="t14-seg"><button class="${mode==='now'?'on':''}" data-gp-mode="now">In the hotel <i>${now.length}</i></button><button class="${mode==='past'?'on':''}" data-gp-mode="past">History <i>${past.length}</i></button></div>
-    ${GS.list.length?`<input id="gp-q" class="gp-q" type="search" placeholder="Search name, room, mobile or nationality" value="${E(S.gpq||'')}">`:''}
-    <div id="gp-list">${gpList(gpFilter())}</div></section>`;
-}
-function wireGp(root){
-  (root||document).querySelectorAll('[data-gp-edit]').forEach(b=>b.onclick=()=>gpEdit(b.dataset.gpEdit));
-  (root||document).querySelectorAll('[data-gp-del]').forEach(b=>b.onclick=()=>gpDelete(b.dataset.gpDel));
-}
-function gpEdit(id){
-  const p=GS.list.find(x=>String(x.id)===String(id)); if(!p) return;
-  const ph=canonPhone(p.phone), c=CODES_LONG().find(x=>ph.startsWith(x))||'';
-  const w=baseModal(`<div class="gp-ed"><h3>Edit guest</h3>
-    <label>Name</label><input id="gp-name" maxlength="60" value="${E(p.name||'')}">
-    <label>Room number</label><input id="gp-room" inputmode="numeric" maxlength="4" value="${E(p.room)}">
-    <label>Nationality</label>${natSelect(p.nationality||'').replace('id="rv-nat"','id="gp-nat"')}
-    <label>Mobile number</label><div class="rv-phone">${codeSelect(c).replace('id="rv-code"','id="gp-code"')}<input id="gp-phone" type="tel" value="${E(c?ph.slice(c.length):ph)}"></div>
-    <div class="rv-dates2"><div><label>Arrival</label><input id="gp-arr" type="date" value="${E(dOnly(p.arrival))}"></div><div><label>Departure</label><input id="gp-dep" type="date" value="${E(dOnly(p.departure))}"></div></div>
-    <p class="mini">The guest's reservations are changed too, and his phone shows the new details within a minute. A later departure date brings a guest back from History.</p>
-    <p class="rv-err" id="gp-err" role="alert"></p>
-    <button class="btn" id="gp-save">Save</button><button class="btn ghost" id="gp-x">Close</button></div>`);
-  const q=s=>w.querySelector(s), err=q('#gp-err');
-  q('#gp-x').onclick=()=>w.remove();
-  q('#gp-save').onclick=async()=>{
-    const name=String(q('#gp-name').value||'').replace(/\s+/g,' ').trim(), room=String(q('#gp-room').value||'').replace(/\s/g,''), nat=q('#gp-nat').value, code=q('#gp-code').value, loc=String(q('#gp-phone').value||'').trim(), dg=loc.replace(/[^\d]/g,''), arr=q('#gp-arr').value, dep=q('#gp-dep').value;
-    if(name.length<2){ err.textContent='Write the guest’s name.'; return; }
-    if(!/^\d{3,4}$/.test(room)){ err.textContent='Room number: 3 or 4 digits.'; return; }
-    if(!nat){ err.textContent='Choose the nationality.'; return; }
-    let phone=''; if(/^\+/.test(loc)||!code){ if(!/^\+/.test(loc)||dg.length<8||dg.length>15){ err.textContent='Mobile number with the country code, e.g. +49 151 2345678.'; return; } phone='+'+dg; }
-    else { const d=dg.replace(/^0+/,''); if(d.length<6||d.length>12){ err.textContent='Check the mobile number.'; return; } phone=canonPhone(code+d); }
-    if(!arr||!dep||dep<arr){ err.textContent='Arrival and departure: the departure cannot be before the arrival.'; return; }
-    const b=q('#gp-save'); b.disabled=true;
-    try{
-      const r=await sb('guest_profiles?id=eq.'+enc(p.id),{method:'PATCH',body:JSON.stringify({name,room,nationality:nat,phone,arrival:arr,departure:dep})});
-      if(!r||!r.length){ err.textContent='This account was deleted in the meantime.'; b.disabled=false; await gpLoad(); render(); return; }
-      if(String(p.room)!==room||canonPhone(p.phone)!==phone||p.nationality!==nat||p.name!==name){
-        const up=await sb('ticket_orders?room=eq.'+enc(p.room)+'&phone=eq.'+enc(canonPhone(p.phone)),{method:'PATCH',body:JSON.stringify({room,phone,nationality:nat,guest_name:name})}).catch(()=>[]);
-        (up||[]).forEach(x=>upsert(RS.team,x));
-      }
-      Object.assign(p,r[0]); w.remove(); toastOk('Guest updated'); render();
-    }catch(e){ b.disabled=false; err.textContent=/409/.test(String(e&&e.message))?'Another account already has this room and mobile number.':is400(e)?'Run database-v724.sql in Supabase first (one-time step), then try again.':'Not saved — check the internet and try again.'; }
-  };
-}
-async function gpDelete(id){
-  const p=GS.list.find(x=>String(x.id)===String(id)); if(!p) return;
-  const r=gpRes(p), n=r.g.length, paid=r.g.filter(x=>x.status==='confirmed').length;
-  const ok=await new Promise(res=>{
-    const w=baseModal(`<div class="rv-ask"><h3>Delete this guest account?</h3><p>${p.name?`<b>${E(p.name)}</b> · `:''}Room <b>${E(p.room)}</b> · ${E(p.nationality||'')} · ${E(fmtPhone(p.phone))}. ${isPast(p)?'All his information is removed.':'The guest has to sign in again to see the tickets.'}</p>
-      ${n?`<label class="gp-chk"><input type="checkbox" id="gp-alsores"> Also delete ${n===1?'the reservation':'all '+n+' reservations'} of this guest${paid?` <small>(${paid} paid — taken out of the packs; give the money back)</small>`:''}</label>`:''}
-      <button class="btn warn" data-a="y">Delete account</button><button class="btn ghost" data-a="n">Keep it</button></div>`);
-    const done=v=>{ const c=w.querySelector('#gp-alsores'); const withRes=!!(c&&c.checked); w.remove(); res(v?{withRes}:null); };
-    w.querySelector('[data-a="y"]').onclick=()=>done(true); w.querySelector('[data-a="n"]').onclick=()=>done(false); w.onclick=e=>{ if(e.target===w) done(false); };
-  });
-  if(!ok) return;
-  try{
-    await sb('guest_profiles?id=eq.'+enc(p.id),{method:'DELETE'});
-    if(ok.withRes&&n){ const ids=r.g.map(x=>x.id); const paidIds=r.g.filter(x=>x.status==='confirmed').map(x=>x.id); if(paidIds.length) await ledgerRemove(paidIds);
-      await sb('ticket_orders?res_id=in.('+ids.map(x=>String(x).replace(/[^\w-]/g,'')).join(',')+')',{method:'DELETE'}); RS.team=RS.team.filter(x=>!ids.includes(x.res_id)); }
-    GS.list=GS.list.filter(x=>x!==p); toastOk('Guest account deleted'); render();
-  }catch(e){ toastErr('Not saved — check the internet and try again.'); }
-}
+const waLinkOf=ph=>(window.GUEST25?window.GUEST25.waLink(ph):'')||'#';
+const waBtn=ph=>{ const l=window.GUEST25?window.GUEST25.waLink(ph):''; return l?`<a class="rv-call wa" href="${E(l)}" target="_blank" rel="noopener">${WA} ${E(fmtPhone(ph))}</a>`:`<span class="rv-call">${E(fmtPhone(ph)||'—')}</span>`; };
 
 /* ---- printing the tickets of a reservation with the guest's name and room ---- */
-const guestLabel=x=>{ const nm=String(x.first.guest_name||'').trim(); return [nm&&!/^Room\s/i.test(nm)?nm:'','Room '+x.room].filter(Boolean).join(' · '); };
+const guestLabel=x=>{ const nm=String(x.first.guest_name||'').trim(); return [nm&&!/^Room\s/i.test(nm)?'Guest: '+nm:'',x.room?'Room: '+x.room:''].filter(Boolean).join(' · '); };
 function printRes(list){
   const ST=window.AUREA_STUDIO_V708; if(!ST||!ST.ticket||!ST.css){ toastErr('Ticket printing is not available.'); return; }
   let c={}; try{ c=JSON.parse(localStorage.getItem('aurea.tickets.v657')||'{}')||{}; }catch(_){}
@@ -21269,9 +21169,6 @@ function printRes(list){
 let PRINTS=[];
 window.__wireSteps.push(function(){
   if(!isMgr()) return;
-  wireGp(document);
-  const q=Q('#gp-q'); if(q) q.oninput=()=>{ S.gpq=q.value; const box=Q('#gp-list'); if(box){ box.innerHTML=gpList(gpFilter()); wireGp(box); } };
-  document.querySelectorAll('[data-gp-mode]').forEach(b=>b.onclick=()=>{ S.gpMode=b.dataset.gpMode; render(); });
   document.querySelectorAll('[data-rv-print]').forEach(b=>b.onclick=()=>{ const l=PRINTS[+b.dataset.rvPrint]; if(l) printRes(l); });
   document.querySelectorAll('[data-rv-print1]').forEach(b=>b.onclick=()=>{ const x=findRes(b.dataset.rvPrint1); if(x) printRes([x]); });
 });
@@ -21293,7 +21190,7 @@ if(typeof applyRealtimeChange==='function'){
     if(payload&&payload.table==='ticket_orders'){
       const r=payload.new&&payload.new.id!=null?payload.new:null; if(!r||r.pack_id==null) return true;
       if(isTeam()){ upsert(RS.team,r); notifyNew(); syncLedger(); }
-      else { if(live(r)||RS.pub.some(x=>String(x.id)===String(r.id))) upsert(RS.pub,pubOf(r)); const g=guest()||{}; if(RS.mine.some(x=>String(x.id)===String(r.id))||(g.res||[]).includes(r.res_id)||(g.room&&String(r.room)===String(g.room)&&canonPhone(r.phone)===canonPhone(g.phone))) upsert(RS.mine,r); repaint(); }
+      else { if(live(r)||RS.pub.some(x=>String(x.id)===String(r.id))) upsert(RS.pub,pubOf(r)); if(RS.mine.some(x=>String(x.id)===String(r.id))) upsert(RS.mine,r); repaint(); }
       return true;
     }
     return rt0(payload);
@@ -21305,7 +21202,7 @@ setInterval(async()=>{ try{ if(!guestView()||S.teamLogin||document.visibilitySta
 /* first start: the data is still loading when this runs */
 let tries=0; (function boot(){ if(!(S.users&&S.users.length)&&tries++<60){ setTimeout(boot,300); return; } load().then(()=>repaint()); })();
 
-window.AUREA_RESV={guestsPage,evThumb,progLine,priceLabel,typeOf,exploreSection,staffPanel,packBlock,managerSection,evLine,chips,waitCount,wireTeam,load,state:()=>RS.state,rows:()=>RS};
+window.AUREA_RESV={regForm,wireReg,myCard,groups,num,evName,money,live,ledgerRemove,guestsPage:()=>'',evThumb,progLine,priceLabel,typeOf,exploreSection,staffPanel,packBlock,managerSection,evLine,chips,waitCount,wireTeam,load,state:()=>RS.state,rows:()=>RS};
 
 /* ---------- styles ---------- */
 const css=document.createElement('style'); css.id='aurea-reservations-v722-css';
@@ -21570,6 +21467,1077 @@ try{
 }catch(_){}
 if(NEW.some(([l])=>l===S.lang)){ try{ document.documentElement.dir=/^ar/.test(S.lang)?'rtl':'ltr'; }catch(_){} }
 })();
+</script>
+
+<script id="aurea-guests-v725">
+/* ===== V7.25 GUEST STAYS · ROOM LIST · ACTIVITY BOOKING · FAVOURITES · SECURE ACCESS (2026-09-30) =====
+   Guests
+   • The programme stays public. A guest signs in ("My stay" on the Explore
+     page) with name, room, nationality, mobile, arrival and departure. The
+     database checks the room against the manager's Room list and returns a
+     private stay key; every personal action (book, favourite, tickets) is
+     done with that key and only ever sees this one stay.
+   • An account belongs to the STAY, not to the room: a new guest in the same
+     room gets a fresh stay and never sees anything of the previous one.
+   • Active through the whole departure day (hotel time), then History;
+     deleted automatically 45 days after the departure (database, hourly).
+   Activities
+   • The manager chooses per activity: not bookable / bookable, no limit /
+     bookable, limited to N places. The database locks the activity while
+     booking, so the limit can never be passed and a guest can never book the
+     same activity on the same date twice.
+   Manager
+   • Program → Guests: in the hotel, history, bookings, room list, settings
+     (Entertainment Manager WhatsApp) and one search for everything.
+   Team
+   • Sign-in is checked by the database (hashed passwords, session keys).
+     Entertainers keep everything they had; they never load guest data.
+   Storage: database-v725.sql. */
+(function(){
+'use strict';
+if(window.__AUREA_V725) return; window.__AUREA_V725=true;
+
+const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const Q=s=>document.querySelector(s);
+const low=x=>String(x??'').trim().toLowerCase();
+const enc=encodeURIComponent;
+const REM=()=>typeof REMOTE!=='undefined'&&!!REMOTE;
+const isMgr=()=>!!(S.session&&S.session.role==='manager');
+const isTeam=()=>!!(S.session&&(S.session.role==='manager'||S.session.role==='staff'));
+const teamTok=()=>(S.session&&S.session.token)||'';
+const R=()=>window.AUREA_RESV||{};
+const missing=e=>/Supabase (400|404)\b/.test(String(e&&e.message||e));
+const today=()=>{ try{ return hotelDateStr(); }catch(_){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); } };
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addDays=(s,n)=>{ const d=new Date(String(s).slice(0,10)+'T12:00:00'); d.setDate(d.getDate()+n); return ymd(d); };
+const dOnly=v=>v?String(v).slice(0,10):'';
+const dayIdx=()=>{ try{ return todayIndex(); }catch(_){ return (new Date().getDay()+6)%7; } };
+const nowMin=()=>{ try{ return nowMinutes(); }catch(_){ const d=new Date(); return d.getHours()*60+d.getMinutes(); } };
+const LOC={en:'en-GB',de:'de-DE',ru:'ru-RU',pl:'pl-PL',cs:'cs-CZ',nl:'nl-NL',fr:'fr-FR',ar:'ar-EG',it:'it-IT',ro:'ro-RO',tr:'tr-TR',sk:'sk-SK',sr:'sr-Latn-RS',uk:'uk-UA',zh:'zh-CN',hi:'hi-IN','ar-tn':'ar-TN','ar-dz':'ar-DZ'};
+function niceDate(s,o){ if(!s) return ''; try{ return new Date(dOnly(s)+'T12:00:00').toLocaleDateString(LOC[S.lang]||'en-GB',o||{weekday:'short',day:'numeric',month:'short'}); }catch(_){ return dOnly(s); } }
+const longDate=s=>niceDate(s,{weekday:'long',day:'numeric',month:'long'});
+const icn=(n,z)=>{ try{ return ic(n,z); }catch(_){ return ''; } };
+const ok=m=>{ try{ toastOk(m); }catch(_){ } }, bad=m=>{ try{ toastErr(m); }catch(_){ } }, warn=m=>{ try{ toastWarn(m); }catch(_){ } };
+function ago(ts){ const t0=Date.parse(ts||''); if(!t0) return ''; const m=Math.round((Date.now()-t0)/60000); if(m<1) return 'just now'; if(m<60) return m+' min ago'; const h=Math.round(m/60); if(h<24) return h+' h ago'; return niceDate(new Date(t0).toISOString()); }
+
+/* ======================= WORDS (guests) ======================= */
+const T25={
+en:{me:'My stay',meOut:'Sign in once to book activities, keep favourites, see your tickets and message the Entertainment Manager. The programme stays open to everybody.',meIn:'Your bookings, favourites and tickets for this stay.',
+  f1:'Book activities',f2:'Save favourites',f3:'Your tickets',f4:'Message the Entertainment Manager',signIn:'Sign in',save:'Save',signOut:'Sign out',change:'Change details',
+  tBooked:'Booked activities',tFavs:'Favourites',tTix:'Tickets',tContact:'Contact',book:'Book',booked:'Booked ✓',cancelBooking:'Cancel booking',full:'Full',left:'{n} places left',left1:'1 place left',
+  favAdd:'Add to favourites',favDel:'Remove from favourites',favOn:'In your favourites',needSign:'Please sign in first — it takes a minute.',
+  roomBad:'This room number could not be verified. Please check your room number or contact the Entertainment Team.',roomFmt:'Please enter your room number (letters and numbers, e.g. H1234).',
+  checkName:'Please enter your name.',checkPhone:'Please check your mobile number.',checkDates:'Please check your arrival and departure dates.',checkNat:'Please choose your nationality.',
+  noBooked:'No bookings yet. Open an activity in the programme and tap Book.',noFavs:'No favourites yet. Open an activity and tap the heart.',noTix:'No tickets yet.',
+  contactMgr:'Contact Entertainment Manager',contactOff:'The Entertainment Manager contact number is currently unavailable.',waHello:'Hello {m}, this is {n} from room {r}.',
+  started:'Already started — booking is closed.',afterStay:'This date is after your departure.',isFull:'Sorry — this activity is full.',bookOk:'Booked ✓',already:'You have already booked this.',
+  unbookQ:'Cancel this booking?',byTeam:'Cancelled by the Entertainment Team',cancelled:'Cancelled',gone:'No longer in the programme',ended:'Your stay has ended — thank you for being our guest!',
+  expired:'Please sign in again.',showTicket:'Show ticket',guestL:'Guest',roomL:'Room',dateL:'Date',timeL:'Time',meet:'Meeting point',nums:'Ticket number',print:'Print',
+  signInToRes:'Sign in to reserve tickets.',youHave:'{n} ticket reservation(s) — see My stay › Tickets',welcome:'Welcome, {n}!',net:'No connection — please try again.',
+  notReady:'Guest sign-in opens soon.',notBookable:'This activity cannot be booked.',earlier:'Earlier and cancelled',upcoming:'Coming up',open:'Open',signOutQ:'Sign out on this phone?',
+  stay:'{a} → {d}',noLimit:'Free booking',bookFor:'Booking for {d}',when:'When',where:'Where',bookedFor:'Booked for {d}',privacy:'Only you and the Entertainment Manager see these details.',close:'Close'},
+de:{me:'Mein Aufenthalt',meOut:'Einmal anmelden, um Aktivitäten zu buchen, Favoriten zu speichern, deine Tickets zu sehen und dem Entertainment Manager zu schreiben. Das Programm bleibt für alle offen.',meIn:'Deine Buchungen, Favoriten und Tickets für diesen Aufenthalt.',
+  f1:'Aktivitäten buchen',f2:'Favoriten speichern',f3:'Deine Tickets',f4:'Dem Entertainment Manager schreiben',signIn:'Anmelden',save:'Speichern',signOut:'Abmelden',change:'Angaben ändern',
+  tBooked:'Gebuchte Aktivitäten',tFavs:'Favoriten',tTix:'Tickets',tContact:'Kontakt',book:'Buchen',booked:'Gebucht ✓',cancelBooking:'Buchung stornieren',full:'Ausgebucht',left:'noch {n} Plätze',left1:'noch 1 Platz',
+  favAdd:'Zu Favoriten',favDel:'Aus Favoriten entfernen',favOn:'In deinen Favoriten',needSign:'Bitte zuerst anmelden — dauert eine Minute.',
+  roomBad:'Diese Zimmernummer konnte nicht bestätigt werden. Bitte prüfe deine Zimmernummer oder wende dich an das Entertainment-Team.',roomFmt:'Bitte gib deine Zimmernummer ein (Buchstaben und Zahlen, z. B. H1234).',
+  checkName:'Bitte gib deinen Namen ein.',checkPhone:'Bitte prüfe deine Handynummer.',checkDates:'Bitte prüfe An- und Abreisedatum.',checkNat:'Bitte wähle deine Nationalität.',
+  noBooked:'Noch keine Buchungen. Öffne eine Aktivität im Programm und tippe auf Buchen.',noFavs:'Noch keine Favoriten. Öffne eine Aktivität und tippe auf das Herz.',noTix:'Noch keine Tickets.',
+  contactMgr:'Entertainment Manager kontaktieren',contactOff:'Die Kontaktnummer des Entertainment Managers ist derzeit nicht verfügbar.',waHello:'Hallo {m}, hier ist {n} aus Zimmer {r}.',
+  started:'Hat schon begonnen — Buchung geschlossen.',afterStay:'Dieses Datum ist nach deiner Abreise.',isFull:'Leider ausgebucht.',bookOk:'Gebucht ✓',already:'Das hast du schon gebucht.',
+  unbookQ:'Diese Buchung stornieren?',byTeam:'Vom Entertainment-Team storniert',cancelled:'Storniert',gone:'Nicht mehr im Programm',ended:'Dein Aufenthalt ist zu Ende — danke, dass du unser Gast warst!',
+  expired:'Bitte melde dich erneut an.',showTicket:'Ticket zeigen',guestL:'Gast',roomL:'Zimmer',dateL:'Datum',timeL:'Uhrzeit',meet:'Treffpunkt',nums:'Ticketnummer',print:'Drucken',
+  signInToRes:'Zum Reservieren von Tickets bitte anmelden.',youHave:'{n} Ticket-Reservierung(en) — siehe Mein Aufenthalt › Tickets',welcome:'Willkommen, {n}!',net:'Keine Verbindung — bitte erneut versuchen.',
+  notReady:'Die Gast-Anmeldung öffnet bald.',notBookable:'Diese Aktivität kann nicht gebucht werden.',earlier:'Früher und storniert',upcoming:'Demnächst',open:'Öffnen',signOutQ:'Auf diesem Handy abmelden?',
+  noLimit:'Freie Buchung',bookFor:'Buchung für {d}',when:'Wann',where:'Wo',bookedFor:'Gebucht für {d}',privacy:'Nur du und der Entertainment Manager sehen diese Angaben.',close:'Schließen'},
+ru:{me:'Моё пребывание',meOut:'Войдите один раз, чтобы бронировать активности, сохранять избранное, видеть свои билеты и писать менеджеру анимации. Программа открыта для всех.',meIn:'Ваши брони, избранное и билеты на это пребывание.',
+  f1:'Бронировать активности',f2:'Избранное',f3:'Ваши билеты',f4:'Написать менеджеру анимации',signIn:'Войти',save:'Сохранить',signOut:'Выйти',change:'Изменить данные',
+  tBooked:'Мои брони',tFavs:'Избранное',tTix:'Билеты',tContact:'Контакт',book:'Забронировать',booked:'Забронировано ✓',cancelBooking:'Отменить бронь',full:'Мест нет',left:'осталось мест: {n}',left1:'осталось 1 место',
+  favAdd:'В избранное',favDel:'Убрать из избранного',favOn:'В избранном',needSign:'Сначала войдите — это займёт минуту.',
+  roomBad:'Не удалось подтвердить номер комнаты. Проверьте номер или обратитесь к команде анимации.',roomFmt:'Введите номер комнаты (буквы и цифры, напр. H1234).',
+  checkName:'Введите ваше имя.',checkPhone:'Проверьте номер телефона.',checkDates:'Проверьте даты заезда и выезда.',checkNat:'Выберите гражданство.',
+  noBooked:'Пока нет броней. Откройте активность в программе и нажмите «Забронировать».',noFavs:'Пока нет избранного. Откройте активность и нажмите на сердечко.',noTix:'Пока нет билетов.',
+  contactMgr:'Связаться с менеджером анимации',contactOff:'Контактный номер менеджера анимации сейчас недоступен.',waHello:'Здравствуйте, {m}! Это {n} из комнаты {r}.',
+  started:'Уже началось — бронирование закрыто.',afterStay:'Эта дата после вашего выезда.',isFull:'К сожалению, мест нет.',bookOk:'Забронировано ✓',already:'Вы уже забронировали это.',
+  unbookQ:'Отменить эту бронь?',byTeam:'Отменено командой анимации',cancelled:'Отменено',gone:'Больше нет в программе',ended:'Ваше пребывание завершено — спасибо, что были нашим гостем!',
+  expired:'Пожалуйста, войдите снова.',showTicket:'Показать билет',guestL:'Гость',roomL:'Комната',dateL:'Дата',timeL:'Время',meet:'Место встречи',nums:'Номер билета',print:'Печать',
+  signInToRes:'Войдите, чтобы бронировать билеты.',youHave:'Брони билетов: {n} — см. Моё пребывание › Билеты',welcome:'Добро пожаловать, {n}!',net:'Нет связи — попробуйте ещё раз.',
+  notReady:'Вход для гостей скоро откроется.',notBookable:'Эту активность нельзя забронировать.',earlier:'Прошедшие и отменённые',upcoming:'Скоро',open:'Открыть',signOutQ:'Выйти на этом телефоне?',
+  noLimit:'Свободная запись',bookFor:'Бронь на {d}',when:'Когда',where:'Где',bookedFor:'Забронировано на {d}',privacy:'Эти данные видите только вы и менеджер анимации.',close:'Закрыть'},
+pl:{me:'Mój pobyt',meOut:'Zaloguj się raz, aby rezerwować zajęcia, zapisywać ulubione, widzieć bilety i pisać do Entertainment Managera. Program jest otwarty dla wszystkich.',meIn:'Twoje rezerwacje, ulubione i bilety na ten pobyt.',
+  f1:'Rezerwuj zajęcia',f2:'Zapisuj ulubione',f3:'Twoje bilety',f4:'Napisz do Entertainment Managera',signIn:'Zaloguj się',save:'Zapisz',signOut:'Wyloguj',change:'Zmień dane',
+  tBooked:'Zarezerwowane',tFavs:'Ulubione',tTix:'Bilety',tContact:'Kontakt',book:'Rezerwuj',booked:'Zarezerwowano ✓',cancelBooking:'Anuluj rezerwację',full:'Brak miejsc',left:'wolne miejsca: {n}',left1:'1 wolne miejsce',
+  favAdd:'Do ulubionych',favDel:'Usuń z ulubionych',favOn:'W ulubionych',needSign:'Najpierw się zaloguj — to minuta.',
+  roomBad:'Nie udało się potwierdzić numeru pokoju. Sprawdź numer pokoju lub skontaktuj się z zespołem animacji.',roomFmt:'Wpisz numer pokoju (litery i cyfry, np. H1234).',
+  checkName:'Wpisz swoje imię.',checkPhone:'Sprawdź numer telefonu.',checkDates:'Sprawdź daty przyjazdu i wyjazdu.',checkNat:'Wybierz narodowość.',
+  noBooked:'Brak rezerwacji. Otwórz zajęcia w programie i dotknij Rezerwuj.',noFavs:'Brak ulubionych. Otwórz zajęcia i dotknij serca.',noTix:'Brak biletów.',
+  contactMgr:'Kontakt z Entertainment Managerem',contactOff:'Numer kontaktowy Entertainment Managera jest obecnie niedostępny.',waHello:'Dzień dobry {m}, tu {n} z pokoju {r}.',
+  started:'Już się zaczęło — rezerwacja zamknięta.',afterStay:'Ta data jest po Twoim wyjeździe.',isFull:'Niestety brak miejsc.',bookOk:'Zarezerwowano ✓',already:'To już zarezerwowałeś.',
+  unbookQ:'Anulować tę rezerwację?',byTeam:'Anulowane przez zespół animacji',cancelled:'Anulowano',gone:'Już nie w programie',ended:'Twój pobyt się zakończył — dziękujemy!',
+  expired:'Zaloguj się ponownie.',showTicket:'Pokaż bilet',guestL:'Gość',roomL:'Pokój',dateL:'Data',timeL:'Godzina',meet:'Miejsce zbiórki',nums:'Numer biletu',print:'Drukuj',
+  signInToRes:'Zaloguj się, aby rezerwować bilety.',youHave:'Rezerwacje biletów: {n} — zob. Mój pobyt › Bilety',welcome:'Witaj, {n}!',net:'Brak połączenia — spróbuj ponownie.',
+  notReady:'Logowanie gości wkrótce.',notBookable:'Tych zajęć nie można zarezerwować.',earlier:'Wcześniejsze i anulowane',upcoming:'Wkrótce',open:'Otwórz',signOutQ:'Wylogować na tym telefonie?',
+  noLimit:'Wolna rezerwacja',bookFor:'Rezerwacja na {d}',when:'Kiedy',where:'Gdzie',bookedFor:'Zarezerwowano na {d}',privacy:'Te dane widzisz tylko Ty i Entertainment Manager.',close:'Zamknij'},
+cs:{me:'Můj pobyt',meOut:'Přihlaste se jednou a můžete rezervovat aktivity, ukládat oblíbené, vidět své vstupenky a psát Entertainment Managerovi. Program je otevřený všem.',meIn:'Vaše rezervace, oblíbené a vstupenky pro tento pobyt.',
+  f1:'Rezervovat aktivity',f2:'Ukládat oblíbené',f3:'Vaše vstupenky',f4:'Napsat Entertainment Managerovi',signIn:'Přihlásit',save:'Uložit',signOut:'Odhlásit',change:'Změnit údaje',
+  tBooked:'Rezervované',tFavs:'Oblíbené',tTix:'Vstupenky',tContact:'Kontakt',book:'Rezervovat',booked:'Rezervováno ✓',cancelBooking:'Zrušit rezervaci',full:'Obsazeno',left:'volná místa: {n}',left1:'1 volné místo',
+  favAdd:'Do oblíbených',favDel:'Odebrat z oblíbených',favOn:'V oblíbených',needSign:'Nejdřív se přihlaste — zabere to minutu.',
+  roomBad:'Číslo pokoje se nepodařilo ověřit. Zkontrolujte číslo pokoje nebo kontaktujte animační tým.',roomFmt:'Zadejte číslo pokoje (písmena a čísla, např. H1234).',
+  checkName:'Zadejte své jméno.',checkPhone:'Zkontrolujte telefonní číslo.',checkDates:'Zkontrolujte datum příjezdu a odjezdu.',checkNat:'Vyberte národnost.',
+  noBooked:'Zatím žádné rezervace. Otevřete aktivitu v programu a klepněte na Rezervovat.',noFavs:'Zatím žádné oblíbené. Otevřete aktivitu a klepněte na srdce.',noTix:'Zatím žádné vstupenky.',
+  contactMgr:'Kontaktovat Entertainment Managera',contactOff:'Kontaktní číslo Entertainment Managera momentálně není k dispozici.',waHello:'Dobrý den {m}, tady {n} z pokoje {r}.',
+  started:'Už začalo — rezervace uzavřena.',afterStay:'Toto datum je po vašem odjezdu.',isFull:'Bohužel obsazeno.',bookOk:'Rezervováno ✓',already:'Tohle už máte rezervované.',
+  unbookQ:'Zrušit tuto rezervaci?',byTeam:'Zrušeno animačním týmem',cancelled:'Zrušeno',gone:'Už není v programu',ended:'Váš pobyt skončil — děkujeme!',
+  expired:'Přihlaste se prosím znovu.',showTicket:'Ukázat vstupenku',guestL:'Host',roomL:'Pokoj',dateL:'Datum',timeL:'Čas',meet:'Místo setkání',nums:'Číslo vstupenky',print:'Tisk',
+  signInToRes:'Pro rezervaci vstupenek se přihlaste.',youHave:'Rezervace vstupenek: {n} — viz Můj pobyt › Vstupenky',welcome:'Vítejte, {n}!',net:'Bez připojení — zkuste to znovu.',
+  notReady:'Přihlášení hostů brzy.',notBookable:'Tuto aktivitu nelze rezervovat.',earlier:'Dřívější a zrušené',upcoming:'Brzy',open:'Otevřít',signOutQ:'Odhlásit na tomto telefonu?',
+  noLimit:'Volná rezervace',bookFor:'Rezervace na {d}',when:'Kdy',where:'Kde',bookedFor:'Rezervováno na {d}',privacy:'Tyto údaje vidíte jen vy a Entertainment Manager.',close:'Zavřít'},
+nl:{me:'Mijn verblijf',meOut:'Log één keer in om activiteiten te boeken, favorieten te bewaren, je tickets te zien en de Entertainment Manager te appen. Het programma blijft voor iedereen open.',meIn:'Je boekingen, favorieten en tickets voor dit verblijf.',
+  f1:'Activiteiten boeken',f2:'Favorieten bewaren',f3:'Je tickets',f4:'De Entertainment Manager appen',signIn:'Inloggen',save:'Opslaan',signOut:'Uitloggen',change:'Gegevens wijzigen',
+  tBooked:'Geboekt',tFavs:'Favorieten',tTix:'Tickets',tContact:'Contact',book:'Boeken',booked:'Geboekt ✓',cancelBooking:'Boeking annuleren',full:'Vol',left:'nog {n} plaatsen',left1:'nog 1 plaats',
+  favAdd:'Aan favorieten',favDel:'Uit favorieten',favOn:'In je favorieten',needSign:'Log eerst in — het duurt een minuut.',
+  roomBad:'Dit kamernummer kon niet worden bevestigd. Controleer je kamernummer of neem contact op met het entertainmentteam.',roomFmt:'Vul je kamernummer in (letters en cijfers, bijv. H1234).',
+  checkName:'Vul je naam in.',checkPhone:'Controleer je mobiele nummer.',checkDates:'Controleer aankomst- en vertrekdatum.',checkNat:'Kies je nationaliteit.',
+  noBooked:'Nog geen boekingen. Open een activiteit en tik op Boeken.',noFavs:'Nog geen favorieten. Open een activiteit en tik op het hartje.',noTix:'Nog geen tickets.',
+  contactMgr:'Contact met de Entertainment Manager',contactOff:'Het contactnummer van de Entertainment Manager is momenteel niet beschikbaar.',waHello:'Hallo {m}, dit is {n} uit kamer {r}.',
+  started:'Al begonnen — boeken is gesloten.',afterStay:'Deze datum ligt na je vertrek.',isFull:'Helaas vol.',bookOk:'Geboekt ✓',already:'Dit heb je al geboekt.',
+  unbookQ:'Deze boeking annuleren?',byTeam:'Geannuleerd door het entertainmentteam',cancelled:'Geannuleerd',gone:'Niet meer in het programma',ended:'Je verblijf is voorbij — bedankt!',
+  expired:'Log opnieuw in.',showTicket:'Ticket tonen',guestL:'Gast',roomL:'Kamer',dateL:'Datum',timeL:'Tijd',meet:'Verzamelpunt',nums:'Ticketnummer',print:'Afdrukken',
+  signInToRes:'Log in om tickets te reserveren.',youHave:'{n} ticketreservering(en) — zie Mijn verblijf › Tickets',welcome:'Welkom, {n}!',net:'Geen verbinding — probeer opnieuw.',
+  notReady:'Inloggen voor gasten opent binnenkort.',notBookable:'Deze activiteit kan niet worden geboekt.',earlier:'Eerder en geannuleerd',upcoming:'Binnenkort',open:'Openen',signOutQ:'Uitloggen op deze telefoon?',
+  noLimit:'Vrij boeken',bookFor:'Boeking voor {d}',when:'Wanneer',where:'Waar',bookedFor:'Geboekt voor {d}',privacy:'Alleen jij en de Entertainment Manager zien deze gegevens.',close:'Sluiten'},
+fr:{me:'Mon séjour',meOut:'Connectez-vous une fois pour réserver des activités, garder vos favoris, voir vos billets et écrire à l’Entertainment Manager. Le programme reste ouvert à tous.',meIn:'Vos réservations, favoris et billets pour ce séjour.',
+  f1:'Réserver des activités',f2:'Garder des favoris',f3:'Vos billets',f4:'Écrire à l’Entertainment Manager',signIn:'Se connecter',save:'Enregistrer',signOut:'Se déconnecter',change:'Modifier',
+  tBooked:'Réservées',tFavs:'Favoris',tTix:'Billets',tContact:'Contact',book:'Réserver',booked:'Réservé ✓',cancelBooking:'Annuler la réservation',full:'Complet',left:'{n} places restantes',left1:'1 place restante',
+  favAdd:'Ajouter aux favoris',favDel:'Retirer des favoris',favOn:'Dans vos favoris',needSign:'Connectez-vous d’abord — une minute suffit.',
+  roomBad:'Ce numéro de chambre n’a pas pu être vérifié. Vérifiez votre numéro de chambre ou contactez l’équipe d’animation.',roomFmt:'Entrez votre numéro de chambre (lettres et chiffres, ex. H1234).',
+  checkName:'Entrez votre nom.',checkPhone:'Vérifiez votre numéro de mobile.',checkDates:'Vérifiez vos dates d’arrivée et de départ.',checkNat:'Choisissez votre nationalité.',
+  noBooked:'Aucune réservation. Ouvrez une activité et touchez Réserver.',noFavs:'Aucun favori. Ouvrez une activité et touchez le cœur.',noTix:'Aucun billet.',
+  contactMgr:'Contacter l’Entertainment Manager',contactOff:'Le numéro de l’Entertainment Manager n’est pas disponible pour le moment.',waHello:'Bonjour {m}, c’est {n}, chambre {r}.',
+  started:'Déjà commencé — réservation fermée.',afterStay:'Cette date est après votre départ.',isFull:'Désolé, c’est complet.',bookOk:'Réservé ✓',already:'Vous l’avez déjà réservé.',
+  unbookQ:'Annuler cette réservation ?',byTeam:'Annulé par l’équipe d’animation',cancelled:'Annulé',gone:'Plus au programme',ended:'Votre séjour est terminé — merci !',
+  expired:'Veuillez vous reconnecter.',showTicket:'Afficher le billet',guestL:'Client',roomL:'Chambre',dateL:'Date',timeL:'Heure',meet:'Point de rencontre',nums:'Numéro du billet',print:'Imprimer',
+  signInToRes:'Connectez-vous pour réserver des billets.',youHave:'{n} réservation(s) de billets — voir Mon séjour › Billets',welcome:'Bienvenue, {n} !',net:'Pas de connexion — réessayez.',
+  notReady:'La connexion client ouvre bientôt.',notBookable:'Cette activité ne peut pas être réservée.',earlier:'Passées et annulées',upcoming:'À venir',open:'Ouvrir',signOutQ:'Se déconnecter sur ce téléphone ?',
+  noLimit:'Réservation libre',bookFor:'Réservation pour {d}',when:'Quand',where:'Où',bookedFor:'Réservé pour {d}',privacy:'Seuls vous et l’Entertainment Manager voyez ces données.',close:'Fermer'},
+ar:{me:'إقامتي',meOut:'سجّل الدخول مرة واحدة لحجز الأنشطة وحفظ المفضلة ورؤية تذاكرك ومراسلة مدير الترفيه. البرنامج مفتوح للجميع.',meIn:'حجوزاتك ومفضلتك وتذاكرك لهذه الإقامة.',
+  f1:'حجز الأنشطة',f2:'حفظ المفضلة',f3:'تذاكرك',f4:'مراسلة مدير الترفيه',signIn:'تسجيل الدخول',save:'حفظ',signOut:'تسجيل الخروج',change:'تعديل البيانات',
+  tBooked:'الأنشطة المحجوزة',tFavs:'المفضلة',tTix:'التذاكر',tContact:'تواصل',book:'احجز',booked:'تم الحجز ✓',cancelBooking:'إلغاء الحجز',full:'مكتمل',left:'متبقٍ {n} أماكن',left1:'متبقٍ مكان واحد',
+  favAdd:'أضف إلى المفضلة',favDel:'إزالة من المفضلة',favOn:'في مفضلتك',needSign:'سجّل الدخول أولاً — يستغرق دقيقة.',
+  roomBad:'تعذّر التحقق من رقم الغرفة. يرجى التحقق من رقم غرفتك أو التواصل مع فريق الترفيه.',roomFmt:'أدخل رقم غرفتك (حروف وأرقام، مثل H1234).',
+  checkName:'أدخل اسمك.',checkPhone:'تحقق من رقم هاتفك.',checkDates:'تحقق من تاريخي الوصول والمغادرة.',checkNat:'اختر جنسيتك.',
+  noBooked:'لا حجوزات بعد. افتح نشاطاً في البرنامج واضغط احجز.',noFavs:'لا مفضلة بعد. افتح نشاطاً واضغط على القلب.',noTix:'لا تذاكر بعد.',
+  contactMgr:'التواصل مع مدير الترفيه',contactOff:'رقم التواصل مع مدير الترفيه غير متاح حالياً.',waHello:'مرحباً {m}، معك {n} من الغرفة {r}.',
+  started:'بدأ النشاط — الحجز مغلق.',afterStay:'هذا التاريخ بعد مغادرتك.',isFull:'عذراً، النشاط مكتمل.',bookOk:'تم الحجز ✓',already:'لقد حجزت هذا مسبقاً.',
+  unbookQ:'إلغاء هذا الحجز؟',byTeam:'ألغاه فريق الترفيه',cancelled:'ملغى',gone:'لم يعد في البرنامج',ended:'انتهت إقامتك — شكراً لكونك ضيفنا!',
+  expired:'يرجى تسجيل الدخول مرة أخرى.',showTicket:'عرض التذكرة',guestL:'الضيف',roomL:'الغرفة',dateL:'التاريخ',timeL:'الوقت',meet:'نقطة اللقاء',nums:'رقم التذكرة',print:'طباعة',
+  signInToRes:'سجّل الدخول لحجز التذاكر.',youHave:'حجوزات التذاكر: {n} — انظر إقامتي › التذاكر',welcome:'أهلاً {n}!',net:'لا يوجد اتصال — حاول مرة أخرى.',
+  notReady:'تسجيل دخول الضيوف قريباً.',notBookable:'لا يمكن حجز هذا النشاط.',earlier:'السابقة والملغاة',upcoming:'القادمة',open:'فتح',signOutQ:'تسجيل الخروج على هذا الهاتف؟',
+  noLimit:'حجز مفتوح',bookFor:'الحجز ليوم {d}',when:'متى',where:'أين',bookedFor:'محجوز ليوم {d}',privacy:'لا يرى هذه البيانات إلا أنت ومدير الترفيه.',close:'إغلاق'},
+it:{me:'Il mio soggiorno',meOut:'Accedi una volta per prenotare attività, salvare i preferiti, vedere i tuoi biglietti e scrivere all’Entertainment Manager. Il programma resta aperto a tutti.',meIn:'Le tue prenotazioni, i preferiti e i biglietti di questo soggiorno.',
+  f1:'Prenota attività',f2:'Salva i preferiti',f3:'I tuoi biglietti',f4:'Scrivi all’Entertainment Manager',signIn:'Accedi',save:'Salva',signOut:'Esci',change:'Modifica dati',
+  tBooked:'Prenotate',tFavs:'Preferiti',tTix:'Biglietti',tContact:'Contatto',book:'Prenota',booked:'Prenotato ✓',cancelBooking:'Annulla prenotazione',full:'Completo',left:'{n} posti liberi',left1:'1 posto libero',
+  favAdd:'Aggiungi ai preferiti',favDel:'Rimuovi dai preferiti',favOn:'Nei tuoi preferiti',needSign:'Prima accedi — ci vuole un minuto.',
+  roomBad:'Non è stato possibile verificare questo numero di camera. Controlla il numero della camera o contatta il team di animazione.',roomFmt:'Inserisci il numero della camera (lettere e numeri, es. H1234).',
+  checkName:'Inserisci il tuo nome.',checkPhone:'Controlla il numero di cellulare.',checkDates:'Controlla le date di arrivo e partenza.',checkNat:'Scegli la nazionalità.',
+  noBooked:'Nessuna prenotazione. Apri un’attività e tocca Prenota.',noFavs:'Nessun preferito. Apri un’attività e tocca il cuore.',noTix:'Nessun biglietto.',
+  contactMgr:'Contatta l’Entertainment Manager',contactOff:'Il numero dell’Entertainment Manager al momento non è disponibile.',waHello:'Ciao {m}, sono {n} della camera {r}.',
+  started:'Già iniziata — prenotazione chiusa.',afterStay:'Questa data è dopo la tua partenza.',isFull:'Purtroppo è completo.',bookOk:'Prenotato ✓',already:'L’hai già prenotato.',
+  unbookQ:'Annullare questa prenotazione?',byTeam:'Annullato dal team di animazione',cancelled:'Annullato',gone:'Non più in programma',ended:'Il tuo soggiorno è finito — grazie!',
+  expired:'Accedi di nuovo.',showTicket:'Mostra biglietto',guestL:'Ospite',roomL:'Camera',dateL:'Data',timeL:'Ora',meet:'Punto d’incontro',nums:'Numero biglietto',print:'Stampa',
+  signInToRes:'Accedi per prenotare i biglietti.',youHave:'{n} prenotazione/i di biglietti — vedi Il mio soggiorno › Biglietti',welcome:'Benvenuto, {n}!',net:'Nessuna connessione — riprova.',
+  notReady:'L’accesso ospiti apre presto.',notBookable:'Questa attività non si può prenotare.',earlier:'Passate e annullate',upcoming:'In arrivo',open:'Apri',signOutQ:'Uscire su questo telefono?',
+  noLimit:'Prenotazione libera',bookFor:'Prenotazione per {d}',when:'Quando',where:'Dove',bookedFor:'Prenotato per {d}',privacy:'Solo tu e l’Entertainment Manager vedete questi dati.',close:'Chiudi'}
+};
+T25['ar-tn']=T25.ar; T25['ar-dz']=T25.ar;
+function T(k,v){ const l=String(S.lang||'en'); const d=T25[l]||T25[l.split('-')[0]]||T25.en; let s=d[k]!=null?d[k]:T25.en[k]; if(s==null) s=k; if(v) Object.keys(v).forEach(x=>{ s=s.split('{'+x+'}').join(String(v[x])); }); return s; }
+
+/* ======================= WHATSAPP ======================= */
+/* Only real international numbers become links: "+20 (100) 123-4567",
+   "0020 100 1234567" → wa.me/201001234567. A local number without country
+   code (e.g. "0100 …") is not guessed. */
+function waDigits(raw){
+  let s=String(raw||'').replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g,'').trim(); if(!s) return '';
+  s=s.replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c)));
+  const plus=/^\+/.test(s), dz=/^00/.test(s.replace(/[^\d+]/g,''));
+  let d=s.replace(/\D/g,'');
+  if(!plus&&!dz) return '';
+  if(dz) d=d.replace(/^00/,'');
+  if(d.length<8||d.length>15||/^0/.test(d)) return '';
+  return d;
+}
+function waLink(raw,text){ const d=waDigits(raw); return d?'https://wa.me/'+d+(text?'?text='+enc(text):''):''; }
+
+/* ======================= THE GUEST'S STAY (this phone) ======================= */
+const GK='ent_guest_v725', OLD='ent_tk_guest_v722';
+const G5={token:'',stay:null,bookings:[],favs:[],tickets:[],mgrWa:'',mgrName:'',checked:0,state:'',
+          ver:0,counts:{},countsAt:0,countsBusy:false,tab:'booked',form:false,pending:null,busy:false,prefill:null,note:''};
+(function loadLocal(){
+  try{ const x=JSON.parse(localStorage.getItem(GK)||'null');
+    if(x&&x.token&&x.stay){ Object.assign(G5,{token:x.token,stay:x.stay,bookings:x.bookings||[],favs:(x.favs||[]).map(String),tickets:x.tickets||[],mgrWa:x.mgrWa||'',mgrName:x.mgrName||''}); } }catch(_){}
+  /* a guest from the old version on this phone: keep his details to fill the form once */
+  try{ const o=JSON.parse(localStorage.getItem(OLD)||'null');
+    if(o&&o.room&&(!o.dep||String(o.dep)>=today())) G5.prefill={room:o.room,name:o.name||'',nat:o.nat||'',code:o.code||'',local:o.local||'',arr:o.arr||'',dep:o.dep||''};
+    localStorage.removeItem(OLD); }catch(_){}
+})();
+function saveLocal(){ try{ if(G5.token&&G5.stay) localStorage.setItem(GK,JSON.stringify({token:G5.token,stay:G5.stay,bookings:G5.bookings,favs:G5.favs,tickets:G5.tickets,mgrWa:G5.mgrWa,mgrName:G5.mgrName})); else localStorage.removeItem(GK); }catch(_){} }
+function clearLocal(){ Object.assign(G5,{token:'',stay:null,bookings:[],favs:[],tickets:[],form:false,pending:null}); saveLocal(); try{ const r=R().rows&&R().rows(); if(r) r.mine=[]; }catch(_){} }
+function signedIn(){
+  if(!G5.token||!G5.stay) return false;
+  const dep=dOnly(G5.stay.departure);
+  if(dep&&dep<today()){ clearLocal(); warn(T('ended')); return false; }     // the same day rule as the database
+  return true;
+}
+function profile(){
+  if(!G5.token||!G5.stay) return G5.prefill||null;
+  const s=G5.stay;
+  return {token:G5.token,stayId:s.id,room:s.room||'',name:s.name||'',nat:s.nationality||'',phone:s.phone||'',code:'',local:s.phone||'',arr:dOnly(s.arrival),dep:dOnly(s.departure)};
+}
+function sigG(){ return [G5.token?1:0,G5.bookings.map(b=>b.id+b.status).join(','),G5.favs.join(','),G5.tickets.map(t=>t.id+t.status).join(','),G5.mgrWa].join('|'); }
+async function refresh(force){
+  if(!G5.token||!REM()) return false;
+  if(!force&&Date.now()-G5.checked<45000) return false;
+  G5.checked=Date.now(); const v0=G5.ver, tk0=G5.token;
+  let r; try{ r=await rpc('guest_me',{p_token:G5.token}); }catch(e){ if(missing(e)) G5.state='missing'; return false; }
+  if(!r||tk0!==G5.token) return false;
+  if(r.ok&&v0!==G5.ver){ G5.checked=0; return refresh(true); }   // something changed while loading: load again
+  if(!r.ok){ serverSignedOut(); return true; }
+  const before=sigG();
+  G5.stay=r.stay; G5.bookings=r.bookings||[]; G5.favs=(r.favorites||[]).map(String); G5.tickets=r.tickets||[];
+  G5.mgrWa=r.manager_whatsapp||''; G5.mgrName=r.manager_name||''; G5.state='ok'; saveLocal();
+  return sigG()!==before;
+}
+function serverSignedOut(){
+  const was=!!G5.token, dep=G5.stay&&dOnly(G5.stay.departure);
+  clearLocal();
+  if(was) warn(dep&&dep<today()?T('ended'):T('expired'));
+}
+function addTickets(rows){ G5.ver++; (rows||[]).forEach(r=>{ const i=G5.tickets.findIndex(x=>String(x.id)===String(r.id)); if(i>=0) G5.tickets[i]={...G5.tickets[i],...r}; else G5.tickets.unshift(r); }); saveLocal(); }
+async function register(g){
+  if(!REM()) return {err:T('notReady')};
+  let r;
+  try{ r=await rpc('guest_register',{p_token:G5.token||null,p_room:g.room,p_name:g.name,p_nationality:g.nat,p_phone:g.phone,p_arrival:g.arr,p_departure:g.dep,p_lang:S.lang||'en'}); }
+  catch(e){ return {err:missing(e)?T('notReady'):T('net')}; }
+  if(!r||!r.ok){
+    const m={room:['roomBad','#rv-room'],name:['checkName','#rv-name'],phone:['checkPhone','#rv-phone'],dates:['checkDates','#rv-dep'],nationality:['checkNat','#rv-nat']}[r&&r.error];
+    return m?{err:T(m[0]),f:m[1]}:{err:T('net')};
+  }
+  const first=!G5.token;
+  G5.token=r.token; G5.stay=r.stay; G5.checked=0; G5.form=false; G5.prefill=null; G5.note=''; saveLocal();
+  await refresh(true);
+  try{ if(R().load) await R().load(); }catch(_){}
+  if(first) ok(T('welcome',{n:String(r.stay.name||'').split(' ')[0]})); else ok(T('save')+' ✓');
+  const p=G5.pending; G5.pending=null;
+  paint('ex21-me');
+  if(p) setTimeout(()=>runPending(p),50);
+  return {ok:true};
+}
+async function signOut(){
+  let yes=true; try{ yes=await confirmAction({question:T('signOutQ'),detail:T('privacy'),confirmLabel:T('signOut')}); }catch(_){}
+  if(!yes) return;
+  const tk=G5.token; clearLocal(); paint('ex21-me');
+  if(tk&&REM()) rpc('guest_sign_out',{p_token:tk}).catch(()=>{});
+}
+
+/* ---------- activities, dates, places ---------- */
+const act=id=>(S.activities||[]).find(a=>a&&String(a.id)===String(id))||null;
+const isTkAct=a=>{ try{ return !!(window.__tkOfAct&&window.__tkOfAct(a)); }catch(_){ return false; } };
+const bookable=a=>!!a&&a.booking_enabled===true&&!isTkAct(a);
+const limited=a=>bookable(a)&&a.capacity_type==='limited'&&+a.booking_capacity>0;
+const occDate=a=>addDays(today(),(((+a.day)-dayIdx())%7+7)%7);
+function actWins(a){ try{ const w=activityWindows(a); if(w&&w.length) return w; }catch(_){} const m=String(a&&a.time||'').match(/(\d{1,2})[:.](\d{2})/); if(!m) return []; const s=(+m[1])*60+(+m[2]); return [{s0:s,e0:s+45}]; }
+const firstTime=a=>{ const w=actWins(a); if(!w.length) return String(a&&a.time||''); const m=w[0].s0; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
+const started=(a,date)=>{ if(date!==today()) return false; const w=actWins(a); return !!w.length&&nowMin()>=w[0].s0; };
+const ckey=(id,d)=>String(id)+'|'+d;
+const countOf=(id,d)=>+G5.counts[ckey(id,d)]||0;
+const leftOf=(a,d)=>limited(a)?Math.max(0,+a.booking_capacity-countOf(a.id,d)):null;
+const myBooking=(id,d)=>G5.bookings.find(b=>b.status==='booked'&&String(b.activity_id)===String(id)&&dOnly(b.occurrence_date)===d)||null;
+const isFav=id=>G5.favs.includes(String(id));
+async function loadCounts(force){
+  if(!REM()||G5.countsBusy) return false;
+  if(!(S.activities||[]).some(bookable)) return false;
+  if(!force&&Date.now()-G5.countsAt<60000) return false;
+  G5.countsBusy=true; const before=JSON.stringify(G5.counts);
+  try{ const list=(await rpc('public_booking_counts',{p_from:today(),p_to:addDays(today(),7)}))||[]; const m={}; list.forEach(x=>{ m[ckey(x.activity_id,dOnly(x.date))]=+x.booked||0; }); G5.counts=m; G5.countsAt=Date.now(); }
+  catch(_){ }
+  G5.countsBusy=false;
+  return JSON.stringify(G5.counts)!==before;
+}
+function upsertBooking(b){ if(!b) return; G5.ver++; const i=G5.bookings.findIndex(x=>String(x.id)===String(b.id)); if(i>=0) G5.bookings[i]={...G5.bookings[i],...b}; else G5.bookings.push(b); saveLocal(); }
+
+async function book(id,date){
+  const a=act(id); if(!a) return;
+  if(!signedIn()){ G5.pending={type:'book',id:String(id),date}; askSignIn('book'); return; }
+  if(G5.busy) return;
+  if(myBooking(id,date)){ ok(T('already')); return; }
+  G5.busy=true; paintDetail();
+  let r=null; try{ r=await rpc('guest_book',{p_token:G5.token,p_activity:String(id),p_date:date}); }catch(e){ r=null; }
+  G5.busy=false;
+  if(!r) bad(T('net'));
+  else if(r.ok){ upsertBooking(r.booking); if(r.booked!=null) G5.counts[ckey(id,date)]=+r.booked; ok(r.already?T('already'):T('bookOk')); }
+  else if(r.error==='full'){ if(r.booked!=null) G5.counts[ckey(id,date)]=+r.booked; bad(T('isFull')); }
+  else if(r.error==='signin'){ serverSignedOut(); askSignIn('book'); }
+  else if(r.error==='afterstay') bad(T('afterStay'));
+  else if(r.error==='notbookable'){ bad(T('notBookable')); }
+  else bad(T('net'));
+  await loadCounts(true); paintDetail(); softPaint();
+}
+async function unbook(bid){
+  const b=G5.bookings.find(x=>String(x.id)===String(bid)); if(!b) return;
+  let yes=true; try{ yes=await confirmAction({question:T('unbookQ'),detail:(b.act_name||'')+' · '+niceDate(b.occurrence_date),confirmLabel:T('cancelBooking'),danger:true}); }catch(_){}
+  if(!yes) return;
+  let r=null; try{ r=await rpc('guest_unbook',{p_token:G5.token,p_booking:+b.id}); }catch(_){ }
+  if(r&&r.error==='signin'){ serverSignedOut(); paint('ex21-me'); return; }
+  if(!r){ bad(T('net')); return; }
+  b.status='cancelled'; b.cancelled_by='guest'; G5.ver++; saveLocal();
+  await refresh(true); await loadCounts(true); paintDetail(); softPaint();
+}
+async function toggleFav(id){
+  if(!signedIn()){ G5.pending={type:'fav',id:String(id)}; askSignIn('fav'); return; }
+  const on=!isFav(id); G5.ver++;
+  if(on) G5.favs.push(String(id)); else G5.favs=G5.favs.filter(x=>x!==String(id));
+  saveLocal(); paintDetail(); softPaint();
+  let r=null; try{ r=await rpc('guest_fav',{p_token:G5.token,p_activity:String(id),p_on:on}); }catch(_){ }
+  if(!r||!r.ok){ if(r&&r.error==='signin') serverSignedOut(); else bad(T('net')); await refresh(true); paintDetail(); softPaint(); }
+}
+function runPending(p){ if(!p||!signedIn()) return; if(p.type==='book') book(p.id,p.date); else if(p.type==='fav') toggleFav(p.id); }
+function askSignIn(from){
+  document.querySelectorAll('.modal-bg').forEach(w=>{ if(w.querySelector('.ex21-detail')||w.querySelector('.rv-pack')) w.remove(); });
+  G5.form=true; G5.note=from?T('needSign'):'';
+  paint('ex21-me');
+  setTimeout(()=>{ const r=Q('#rv-room'); if(r) try{ r.focus({preventScroll:true}); }catch(_){ } },120);
+}
+function contactMgr(){
+  const s=G5.stay||{}, nm=G5.mgrName||'Mr Hassan Amer';
+  const l=waLink(G5.mgrWa,T('waHello',{m:nm,n:s.name||'',r:s.room||''}));
+  if(!l){ warn(T('contactOff')); return; }
+  try{ window.open(l,'_blank','noopener'); }catch(_){ location.href=l; }
+}
+
+/* ======================= EXPLORE PAGE: "My stay" ======================= */
+function paint(anchor){
+  if(S.session&&!S.explorePreview) return;
+  const y=window.scrollY; try{ render(); }catch(e){ console.error(e); }
+  const el=anchor&&document.getElementById(anchor);
+  if(el){ try{ el.scrollIntoView({block:'start'}); }catch(_){ } } else window.scrollTo(0,y);
+}
+/* repaint only when nothing is being typed or opened */
+function softPaint(){
+  if(S.session&&!S.explorePreview) return;
+  if(document.querySelector('.modal-bg')) return;
+  const ae=document.activeElement; if(ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)) return;
+  paint();
+}
+/* the page behind an open window is repainted when the last window closes */
+let dirty=false;
+try{ new MutationObserver(()=>{ if(dirty&&!document.querySelector('.modal-bg')){ dirty=false; setTimeout(softPaint,30); } }).observe(document.body,{childList:true}); }catch(_){}
+function paintDetail(){
+  dirty=true;
+  document.querySelectorAll('.g25-dbox').forEach(el=>{ const a=act(el.dataset.g25Act); if(a) el.outerHTML=detailBox(a); });
+}
+const HEART_ON='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.5.7-1.3 2.2-2.5 4.3-2.5 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+const HEART_OFF='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.5.7-1.3 2.2-2.5 4.3-2.5 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+
+/* the small state on a programme row (the row itself opens the details) */
+window.__g25Row=function(a){
+  if(!a||(S.session&&!S.explorePreview)) return '';
+  let h='';
+  if(bookable(a)){
+    const d=occDate(a), mine=signedIn()&&myBooking(a.id,d), left=leftOf(a,d);
+    if(mine) h+=`<em class="g25-tag ok">${E(T('booked'))}</em>`;
+    else if(started(a,d)) h+='';
+    else if(left===0) h+=`<em class="g25-tag full">${E(T('full'))}</em>`;
+    else h+=`<em class="g25-tag">${E(T('book'))}${left!=null&&left<=5?' · '+E(left===1?T('left1'):T('left',{n:left})):''}</em>`;
+  }
+  if(signedIn()&&isFav(a.id)) h+=`<em class="g25-heart" aria-label="${E(T('favOn'))}">${HEART_ON}</em>`;
+  return h?`<span class="g25-rowtags">${h}</span>`:'';
+};
+/* the booking / favourite part at the bottom of an activity's details */
+function detailBox(a){
+  const d=occDate(a), inn=signedIn(), fav=inn&&isFav(a.id);
+  let book='';
+  if(bookable(a)){
+    const mine=inn&&myBooking(a.id,d), left=leftOf(a,d), st=started(a,d);
+    const cap=limited(a)?(left===0?`<span class="g25-cap full">${E(T('full'))}</span>`:`<span class="g25-cap">${E(left===1?T('left1'):T('left',{n:left}))}</span>`):'';
+    book=`<div class="g25-book">
+      <p class="g25-for">${icn('calendar',14)} ${E(mine?T('bookedFor',{d:longDate(d)}):T('bookFor',{d:longDate(d)}))}${cap?' · '+cap:''}</p>
+      ${mine?`<div class="g25-row2"><span class="g25-done">${icn('check',16)} ${E(T('booked'))}</span>${st?'':`<button type="button" class="btn ghost" data-g25-unbook="${E(mine.id)}">${E(T('cancelBooking'))}</button>`}</div>`
+        :st?`<p class="g25-mute">${E(T('started'))}</p>`
+        :left===0?`<button type="button" class="btn" disabled>${E(T('full'))}</button>`
+        :`<button type="button" class="btn g25-bookbtn" data-g25-book="${E(a.id)}" data-g25-date="${E(d)}" ${G5.busy?'disabled':''}>${E(T('book'))}</button>`}
+      ${!inn?`<p class="g25-mute">${icn('lock',13)} ${E(T('needSign'))}</p>`:''}
+    </div>`;
+  }
+  return `<div class="g25-dbox" data-g25-act="${E(a.id)}">${book}
+    <button type="button" class="g25-favbtn ${fav?'on':''}" data-g25-fav="${E(a.id)}" aria-pressed="${fav}">${fav?HEART_ON:HEART_OFF}<span>${E(fav?T('favDel'):T('favAdd'))}</span></button></div>`;
+}
+{
+  const d0=window.__tkDetail;
+  window.__tkDetail=function(a){ const x=d0?d0(a):''; if(!a||x) return x; return detailBox(a); };
+}
+
+function featureList(){
+  return `<ul class="g25-feats">${[['calendar','f1'],['heart','f2'],['ticket','f3'],['chat','f4']].map(([i,k])=>`<li>${icn(i,16)}<span>${E(T(k))}</span></li>`).join('')}</ul>`;
+}
+function bookingCard(b){
+  const a=act(b.activity_id), d=dOnly(b.occurrence_date), past=d<today();
+  const time=a?firstTime(a):String(b.act_time||'').split(/[–-]/)[0].trim(), where=(a&&a.location)||b.act_location||'';
+  const st=b.status==='booked'?(past?'':`<em class="rv-st ok">${icn('check',12)} ${E(T('booked'))}</em>`)
+    :`<em class="rv-st off">${E(b.cancelled_by&&b.cancelled_by!=='guest'?T('byTeam'):T('cancelled'))}</em>`;
+  const can=b.status==='booked'&&!past&&!(a&&started(a,d));
+  return `<article class="g25-item ${b.status}${past?' past':''}">
+    <div class="g25-it1"><b>${E((a&&a.name)||b.act_name||'')}</b>${st}</div>
+    <p class="g25-it2">${icn('calendar',13)} ${E(longDate(d))}${time?' · '+E(time):''}${where?` · ${icn('pin',13)} ${E(where)}`:''}</p>
+    ${!a&&b.status==='booked'?`<p class="g25-mute">${E(T('gone'))}</p>`:''}
+    ${can?`<button type="button" class="rv-link" data-g25-unbook="${E(b.id)}">${E(T('cancelBooking'))}</button>`:''}
+  </article>`;
+}
+function panelBooked(){
+  const td=today(), up=G5.bookings.filter(b=>b.status==='booked'&&dOnly(b.occurrence_date)>=td).sort((x,y)=>(dOnly(x.occurrence_date)+String(x.act_time||'')).localeCompare(dOnly(y.occurrence_date)+String(y.act_time||'')));
+  const old=G5.bookings.filter(b=>!up.includes(b)).sort((x,y)=>dOnly(y.occurrence_date).localeCompare(dOnly(x.occurrence_date)));
+  if(!up.length&&!old.length) return `<p class="g25-empty">${E(T('noBooked'))}</p>`;
+  return (up.length?up.map(bookingCard).join(''):`<p class="g25-empty">${E(T('noBooked'))}</p>`)
+    +(old.length?`<details class="g25-old"><summary>${E(T('earlier'))} · ${old.length}</summary>${old.map(bookingCard).join('')}</details>`:'');
+}
+function panelFavs(){
+  const list=G5.favs.map(id=>({id,a:act(id)}));
+  if(!list.length) return `<p class="g25-empty">${E(T('noFavs'))}</p>`;
+  const days=t('days')||[];
+  return list.map(({id,a})=>a?`<article class="g25-item">
+      <div class="g25-it1"><b>${E(a.name)}</b>${bookable(a)&&myBooking(a.id,occDate(a))?`<em class="rv-st ok">${E(T('booked'))}</em>`:''}</div>
+      <p class="g25-it2">${icn('calendar',13)} ${E(days[+a.day]||'')}${firstTime(a)?' · '+E(firstTime(a)):''}${a.location?` · ${icn('pin',13)} ${E(a.location)}`:''}</p>
+      <div class="g25-acts"><button type="button" class="btn ghost" data-g25-open="${E(a.id)}">${E(T('open'))}</button><button type="button" class="btn ghost g25-x" data-g25-fav="${E(a.id)}" aria-label="${E(T('favDel'))}">${HEART_ON}</button></div></article>`
+    :`<article class="g25-item past"><div class="g25-it1"><b>${E(T('gone'))}</b></div><button type="button" class="rv-link" data-g25-fav="${E(id)}">${E(T('favDel'))}</button></article>`).join('');
+}
+function panelTix(){
+  const X=R(); if(!X.groups||!X.myCard) return '';
+  const list=X.groups(G5.tickets.filter(r=>r.pack_id!=null)).sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));
+  if(!list.length) return `<p class="g25-empty">${E(T('noTix'))}</p>`;
+  return `<div class="rv-my g25-tix">${list.map(X.myCard).join('')}</div>`;
+}
+function panelContact(){
+  const nm=G5.mgrName||'Mr Hassan Amer', has=!!waLink(G5.mgrWa);
+  return `<div class="g25-contact"><span class="g25-waic">${(()=>{ try{ return brandIc('WhatsApp'); }catch(_){ return icn('chat',22); } })()}</span>
+    <div><b>${E(T('contactMgr'))}</b><small>${E(nm)}</small></div>
+    <button type="button" class="btn ${has?'':'ghost'}" data-g25-contact="1">WhatsApp</button></div>
+    ${has?'':`<p class="g25-mute">${E(T('contactOff'))}</p>`}`;
+}
+window.__g25Section=function(){
+  if(S.session&&!S.explorePreview) return '';
+  const inn=signedIn();
+  const head=`<div class="ex21-h"><h2>${icn('user',19)} ${E(T('me'))}</h2><p>${E(inn?T('meIn'):T('meOut'))}</p></div>`;
+  if(G5.state==='missing'&&!inn) return `<section class="ex21-sec g25" id="ex21-me">${head}<p class="rv-soon">${icn('lock',16)}<span>${E(T('notReady'))}</span></p></section>`;
+  const X=R();
+  if(!inn){
+    const body=G5.form&&X.regForm
+      ?`${G5.note?`<p class="g25-note">${icn('lock',14)} ${E(G5.note)}</p>`:''}${X.regForm(G5.prefill||{},T('signIn'),true)}<p class="g25-mute">${icn('lock',12)} ${E(T('privacy'))}</p>`
+      :`${featureList()}<button type="button" class="btn" data-g25-signin="me">${E(T('signIn'))}</button>`;
+    return `<section class="ex21-sec g25" id="ex21-me">${head}<div class="g25-card">${body}</div></section>`;
+  }
+  const s=G5.stay, p=profile();
+  if(G5.form&&X.regForm) return `<section class="ex21-sec g25" id="ex21-me">${head}<div class="g25-card">${X.regForm(p,T('save'),true)}</div></section>`;
+  const cnt={booked:G5.bookings.filter(b=>b.status==='booked'&&dOnly(b.occurrence_date)>=today()).length,favs:G5.favs.length,
+    tickets:X.groups?X.groups(G5.tickets.filter(r=>r.pack_id!=null&&(r.status==='reserved'||r.status==='confirmed'))).length:0};
+  const tabs=[['booked','calendar',T('tBooked'),cnt.booked],['favs','heart',T('tFavs'),cnt.favs],['tickets','ticket',T('tTix'),cnt.tickets],['contact','chat',T('tContact'),0]];
+  const tab=tabs.some(x=>x[0]===G5.tab)?G5.tab:'booked';
+  const panel=tab==='favs'?panelFavs():tab==='tickets'?panelTix():tab==='contact'?panelContact():panelBooked();
+  return `<section class="ex21-sec g25" id="ex21-me">${head}
+    <div class="g25-card g25-who"><div class="g25-whoinfo"><b>${E(s.name||'')}</b><span>${icn('door',14)} ${E(T('roomL'))} ${E(s.room||'')}${s.nationality?' · '+E(s.nationality):''}</span>
+      <small>${icn('calendar',13)} ${E(T('stay',{a:niceDate(s.arrival),d:niceDate(s.departure)}))}</small></div>
+      <div class="g25-whobtns"><button type="button" class="g25-mini" data-g25-edit="1">${icn('pen',13)} ${E(T('change'))}</button><button type="button" class="g25-mini" data-g25-signout="1">${icn('exit',13)} ${E(T('signOut'))}</button></div></div>
+    <nav class="g25-tabs" role="tablist">${tabs.map(([k,i,l,n])=>`<button type="button" role="tab" aria-selected="${tab===k}" class="${tab===k?'on':''}" data-g25-tab="${k}">${icn(i,16)}<span>${E(l)}</span>${n?`<i>${n}</i>`:''}</button>`).join('')}</nav>
+    <div class="g25-panel" role="tabpanel">${panel}</div></section>`;
+};
+window.__g25T=T;
+
+/* ---------- the guest's ticket: show / print with name and room ---------- */
+function openVoucher(resId){
+  const X=R(); if(!X.groups) return;
+  const rows=G5.tickets.filter(r=>r.res_id===resId), x=rows.length?X.groups(rows)[0]:null; if(!x) return;
+  const p=x.pack||{}, tk=x.tk||null, s=G5.stay||{};
+  const title=String((tk&&tk.name)||p.name||'Ticket').toUpperCase();
+  const nums=x.nums.map(n=>X.num?X.num(p,n):String(n)).join(', ');
+  const rowsH=[[T('guestL'),s.name||x.first.guest_name||''],[T('roomL'),s.room||x.room||''],[T('dateL'),longDate(x.date)],[T('timeL'),(tk&&tk.time)||''],[T('meet'),(tk&&tk.location)||''],[T('nums'),nums]].filter(r=>r[1]);
+  const head=/TICKET/.test(title)?title:title+' TICKET';
+  const inner=`<div class="g25-vch"><p class="g25-vk">${E(head)}</p>
+    <dl>${rowsH.map(([k,v])=>`<div><dt>${E(k)}</dt><dd>${E(v)}</dd></div>`).join('')}</dl>
+    <p class="g25-vst ${x.status}">${E(x.status==='confirmed'?'✓ '+(X.money?X.money(x.total,p.currency||'€'):''):x.status==='reserved'?(X.money?X.money(x.total,p.currency||'€'):''):T('cancelled'))}</p></div>`;
+  const w=baseModal(`${inner}<button type="button" class="btn" id="g25-vp">${icn('print',15)} ${E(T('print'))}</button><button type="button" class="btn ghost" id="g25-vx">${E(T('close'))}</button>`);
+  w.querySelector('#g25-vx').onclick=()=>w.remove();
+  w.querySelector('#g25-vp').onclick=()=>{
+    const pw=window.open('','_blank'); if(!pw){ bad('Allow pop-ups to print.'); return; }
+    pw.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font-family:system-ui,sans-serif;margin:24px}.g25-vch{max-width:420px;border:2px dashed #555;border-radius:14px;padding:18px}.g25-vk{font-size:22px;font-weight:800;letter-spacing:.06em;margin:0 0 12px}dl{margin:0}dl div{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #ddd}dt{width:40%;color:#555}dd{margin:0;font-weight:700}.g25-vst{margin:12px 0 0;font-weight:700}</style></head><body>'+inner+'<scr'+'ipt>setTimeout(function(){window.print()},300)<\/scr'+'ipt></body></html>');
+    pw.document.close();
+  };
+}
+
+/* ---------- one listener for every guest button (never added twice) ---------- */
+if(!window.__g25Click){
+  window.__g25Click=true;
+  document.addEventListener('click',e=>{
+    const el=e.target&&e.target.closest?e.target.closest('[data-g25-signin],[data-g25-tab],[data-g25-book],[data-g25-unbook],[data-g25-fav],[data-g25-open],[data-g25-voucher],[data-g25-contact],[data-g25-signout],[data-g25-edit]'):null;
+    if(!el) return;
+    const ds=el.dataset;
+    if(ds.g25Signin!=null){ e.preventDefault(); askSignIn(ds.g25Signin==='me'?'':ds.g25Signin); return; }
+    if(ds.g25Tab!=null){ e.preventDefault(); if(ds.g25Tab==='stay'){ G5.form=true; } else G5.tab=ds.g25Tab; paint('ex21-me'); return; }
+    if(ds.g25Book!=null){ e.preventDefault(); book(ds.g25Book,ds.g25Date); return; }
+    if(ds.g25Unbook!=null){ e.preventDefault(); unbook(ds.g25Unbook); return; }
+    if(ds.g25Fav!=null){ e.preventDefault(); e.stopPropagation(); toggleFav(ds.g25Fav); return; }
+    if(ds.g25Open!=null){ e.preventDefault(); const a=act(ds.g25Open); if(a&&window.__ex21OpenDetail) window.__ex21OpenDetail(a); return; }
+    if(ds.g25Voucher!=null){ e.preventDefault(); openVoucher(ds.g25Voucher); return; }
+    if(ds.g25Contact!=null){ e.preventDefault(); contactMgr(); return; }
+    if(ds.g25Signout!=null){ e.preventDefault(); signOut(); return; }
+    if(ds.g25Edit!=null){ e.preventDefault(); G5.form=true; paint('ex21-me'); return; }
+  });
+}
+/* after every paint of the Explore page: wire the sign-in form */
+{
+  const we0=window.wireExplore;
+  if(typeof we0==='function'){
+    window.wireExplore=function(){
+      we0.apply(this,arguments);
+      const box=Q('#ex21-me .rv-reg');
+      if(box&&R().wireReg) R().wireReg(box.parentNode,register,()=>{ G5.form=false; G5.note=''; G5.pending=null; paint('ex21-me'); });
+      if(signedIn()) refresh(false).then(ch=>{ if(ch) softPaint(); });
+      loadCounts(false).then(ch=>{ if(ch) softPaint(); });
+    };
+    try{ wireExplore=window.wireExplore; }catch(_){}
+  }
+}
+/* keep places and bookings fresh while the page is open */
+setInterval(()=>{ try{
+  if((S.session&&!S.explorePreview)||S.teamLogin||document.visibilityState!=='visible') return;
+  Promise.all([loadCounts(false),signedIn()?refresh(false):false]).then(r=>{ if(r[0]||r[1]) softPaint(); });
+}catch(_){ } },20000);
+
+/* ======================= MANAGER: Program → Guests ======================= */
+const MS={state:'',stays:[],rooms:[],bookings:[],favs:[],config:{},today:'',at:0,busy:false,seg:'now',q:'',roomQ:'',bmode:'current',bpast:false,open:{}};
+const mgrSig=()=>[MS.state,MS.stays.map(g=>g.id+':'+g.departure+':'+g.room+':'+g.name).join(','),MS.rooms.map(r=>r.id+':'+r.room_number+':'+r.active).join(','),MS.bookings.map(b=>b.id+b.status).join(','),MS.favs.length,JSON.stringify(MS.config)].join('|');
+async function mgrLoad(force){
+  if(!isMgr()||!REM()||MS.busy) return false;
+  if(!force&&Date.now()-MS.at<15000) return false;
+  MS.busy=true; const before=mgrSig();
+  try{
+    const r=await rpc('mgr_data',{p_token:teamTok()});
+    if(r&&r.ok){ MS.stays=r.stays||[]; MS.rooms=r.rooms||[]; MS.bookings=r.bookings||[]; MS.favs=r.favorites||[]; MS.config=r.config||{}; MS.today=dOnly(r.today)||today(); MS.state='ok'; }
+    else if(r&&r.error==='forbidden'){ MS.state='forbidden'; checkTeam(true); }
+  }catch(e){ if(missing(e)) MS.state='missing'; else if(MS.state!=='ok') MS.state='offline'; }
+  MS.busy=false; MS.at=Date.now();
+  return mgrSig()!==before;
+}
+const teamRows=()=>{ try{ return (R().rows&&R().rows().team)||[]; }catch(_){ return []; } };
+const stayOf=id=>MS.stays.find(g=>String(g.id)===String(id))||null;
+const stayState=g=>{ const td=MS.today||today(), a=dOnly(g.arrival), d=dOnly(g.departure); if(d&&d<td) return 'past'; if(a&&a>td) return 'soon'; return 'now'; };
+const nights=(a,d)=>{ const x=Date.parse(dOnly(a)+'T12:00:00'), y=Date.parse(dOnly(d)+'T12:00:00'); return x&&y?Math.round((y-x)/864e5):null; };
+const WAI='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1.1 2.7.1.2 1.8 2.8 4.5 4 1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>';
+const fmtPh=p=>{ const d=String(p||'').replace(/\D/g,''); return d?'+'+d:''; };
+function waA(ph){ const l=waLink(ph); return l?`<a class="rv-call wa" href="${E(l)}" target="_blank" rel="noopener">${WAI} ${E(fmtPh(ph))}</a>`:`<span class="rv-call">${E(ph||'—')}</span>`; }
+const statChip=g=>{ const s=stayState(g); return s==='past'?'<span class="g25-chip past">Departed</span>':s==='soon'?`<span class="g25-chip soon">Arrives ${E(niceDate(g.arrival))}</span>`:'<span class="g25-chip now">In the hotel</span>'; };
+function actLabel(a){ let c=''; try{ c=normCat(a||{}); }catch(_){ c=String(a&&a.category||''); } if(isTkAct(a)) return 'Ticket event'; if(c==='mEvents'||c==='eParty') return 'Event'; if(/^e[A-Z]/.test(c)) return 'Show'; return 'Activity'; }
+const bookingLine=a=>!bookable(a)?'Not bookable':limited(a)?`Limited · ${+a.booking_capacity} places`:'Bookable · no limit';
+
+function stayCard(g){
+  const st=stayState(g), bk=MS.bookings.filter(b=>String(b.guest_stay_id)===String(g.id));
+  const liveB=bk.filter(b=>b.status==='booked'), X=R();
+  const tix=X.groups?X.groups(teamRows().filter(r=>String(r.guest_stay_id)===String(g.id))):[];
+  const favs=MS.favs.filter(f=>String(f.guest_stay_id)===String(g.id));
+  const n=g.arrival&&g.departure?nights(g.arrival,g.departure):null;
+  const bList=bk.slice().sort((x,y)=>dOnly(y.occurrence_date).localeCompare(dOnly(x.occurrence_date))).map(b=>{ const a=act(b.activity_id), up=b.status==='booked'&&dOnly(b.occurrence_date)>=(MS.today||today());
+    return `<li class="${b.status}"><span><b>${E((a&&a.name)||b.act_name||'')}</b><small>${E(niceDate(b.occurrence_date))}${b.act_time?' · '+E(String(b.act_time).split(/\s*[–-]\s*/)[0]):''} · ${b.status==='booked'?'booked':'cancelled'+(b.cancelled_by?' by '+E(b.cancelled_by):'')}</small></span>${up?`<button type="button" class="g25-mini danger" data-g25m-unbook="${E(b.id)}">Remove</button>`:''}</li>`; }).join('');
+  const tList=tix.map(x=>`<li class="${x.status}"><span><b>${E(X.evName?X.evName(x):'Tickets')}</b><small>${E(niceDate(x.date))} · ${x.nums.map(nn=>E(X.num?X.num(x.pack,nn):nn)).join(', ')} · ${E(x.status==='confirmed'?'paid':x.status)}${X.money?' · '+E(X.money(x.total,(x.pack&&x.pack.currency)||'€')):''}</small></span></li>`).join('');
+  const fList=favs.map(f=>{ const a=act(f.activity_id); return `<li><span><b>${E(a?a.name:'(removed from the programme)')}</b></span></li>`; }).join('');
+  return `<article class="gp-card g25-stay${st==='past'?' past':''}">
+    <div class="g25-st1"><b>${E(g.name||'—')}</b>${statChip(g)}</div>
+    <p class="g25-st2">${icn('door',14)} Room <b>${E(g.room)}</b>${g.nationality?' · '+E(g.nationality):''}</p>
+    <p class="gp-stay">${icn('calendar',14)} ${E(niceDate(g.arrival)||'?')} → ${E(niceDate(g.departure)||'?')}${n!=null&&n>=0?` · ${n} night${n===1?'':'s'}`:''}</p>
+    <div class="rv-links">${waA(g.phone)}</div>
+    <details class="g25-det" data-g25m-det="${E(g.id)}" ${MS.open[g.id]?'open':''}><summary>Bookings <b>${liveB.length}</b> · Tickets <b>${tix.length}</b> · Favourites <b>${favs.length}</b></summary>
+      ${bk.length?`<h5>Activity bookings</h5><ul class="g25-ul">${bList}</ul>`:'<p class="mini">No activity bookings.</p>'}
+      ${tix.length?`<h5>Tickets</h5><ul class="g25-ul">${tList}</ul>`:'<p class="mini">No ticket reservations.</p>'}
+      ${favs.length?`<h5>Favourites</h5><ul class="g25-ul">${fList}</ul>`:''}
+    </details>
+    <p class="gp-meta">Signed in ${E(niceDate(g.created_at))}${g.last_seen?' · last seen '+E(ago(g.last_seen)):''}${st==='past'?` · <b>deleted automatically on ${E(niceDate(addDays(dOnly(g.departure),45)))}</b>`:''}</p>
+    <div class="rv-acts"><button type="button" class="btn ghost" data-g25m-edit="${E(g.id)}">${icn('pen',14)} Edit</button><button type="button" class="btn ghost rv-del" data-g25m-del="${E(g.id)}">${icn('trash',14)} Delete</button></div>
+  </article>`;
+}
+function segStays(past){
+  const list=MS.stays.filter(g=>(stayState(g)==='past')===past)
+    .sort((a,b)=>past?dOnly(b.departure).localeCompare(dOnly(a.departure)):String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
+  if(!list.length) return `<div class="t14-empty">${past?'No guests in the history. A guest moves here after the departure day and is deleted automatically 45 days after the departure.':'No guests signed in yet. Guests sign in on the Explore page under “My stay”.'}</div>`;
+  return (past?'<p class="t14-intro">Departed guests with everything they booked. Delete a record by hand at any time — otherwise it is deleted automatically 45 days after the departure.</p>':'')+list.map(stayCard).join('');
+}
+/* ---------- bookings ---------- */
+function occurrences(){
+  const td=MS.today||today(), out=[], seen=new Set();
+  const dates=MS.bpast?Array.from({length:14},(_,i)=>addDays(td,-i-1)):Array.from({length:7},(_,i)=>addDays(td,i));
+  dates.forEach(d=>{
+    const di=((new Date(d+'T12:00:00').getDay())+6)%7;
+    (S.activities||[]).filter(a=>a&&+a.day===di&&bookable(a)).forEach(a=>{ const k=ckey(a.id,d); if(!seen.has(k)){ seen.add(k); out.push({a,id:String(a.id),d}); } });
+    MS.bookings.filter(b=>dOnly(b.occurrence_date)===d).forEach(b=>{ const k=ckey(b.activity_id,d); if(!seen.has(k)){ seen.add(k); out.push({a:act(b.activity_id),id:String(b.activity_id),d,name:b.act_name,time:b.act_time}); } });
+  });
+  return out.sort((x,y)=>(MS.bpast?y.d.localeCompare(x.d):x.d.localeCompare(y.d))||String(x.a?firstTime(x.a):x.time||'').localeCompare(String(y.a?firstTime(y.a):y.time||'')));
+}
+function occCard(o){
+  const list=MS.bookings.filter(b=>String(b.activity_id)===o.id&&dOnly(b.occurrence_date)===o.d);
+  const booked=list.filter(b=>b.status==='booked'), a=o.a;
+  const cap=a&&limited(a)?`<span>Capacity <b>${+a.booking_capacity}</b></span><span>Booked <b>${booked.length}</b></span><span class="${+a.booking_capacity-booked.length<=0?'full':''}">Remaining <b>${Math.max(0,+a.booking_capacity-booked.length)}</b></span>`
+    :a&&bookable(a)?`<span>No limit</span><span>Booked <b>${booked.length}</b></span>`:`<span>${a?'Booking switched off':'Removed from the programme'}</span><span>Booked <b>${booked.length}</b></span>`;
+  const rows=list.sort((x,y)=>(x.status==='booked'?0:1)-(y.status==='booked'?0:1)||String(x.created_at).localeCompare(String(y.created_at))).map(b=>{ const g=stayOf(b.guest_stay_id)||{};
+    return `<li class="${b.status}"><span><b>${E(g.name||'—')}</b><small>Room ${E(g.room||'?')}${g.nationality?' · '+E(g.nationality):''} · ${b.status==='booked'?'booked '+E(ago(b.created_at)):'cancelled'+(b.cancelled_by?' by '+E(b.cancelled_by):'')}</small></span>${b.status==='booked'&&!MS.bpast?`<button type="button" class="g25-mini danger" data-g25m-unbook="${E(b.id)}">Remove</button>`:''}</li>`; }).join('');
+  return `<article class="gp-card g25-occ">
+    <div class="g25-st1"><b>${E((a&&a.name)||o.name||'')}</b>${a?`<button type="button" class="g25-mini" data-g25m-bset="${E(a.id)}">${icn('pen',12)} Booking</button>`:''}</div>
+    <p class="g25-st2">${icn('calendar',14)} ${E(longDate(o.d))}${a&&firstTime(a)?' · '+E(firstTime(a)):o.time?' · '+E(o.time):''}${a&&a.location?` · ${icn('pin',13)} ${E(a.location)}`:''}</p>
+    <div class="g25-capline">${cap}</div>
+    ${rows?`<ul class="g25-ul">${rows}</ul>`:'<p class="mini">No bookings yet.</p>'}
+  </article>`;
+}
+function segBookings(){
+  const seg=`<div class="t14-seg g25-sub"><button class="${MS.bmode==='current'?'on':''}" data-g25m-bmode="current">Current bookings</button><button class="${MS.bmode==='settings'?'on':''}" data-g25m-bmode="settings">Booking settings</button></div>`;
+  if(MS.bmode==='settings'){
+    const days=t('days')||[];
+    const acts=(S.activities||[]).filter(a=>a&&!isTkAct(a));
+    return seg+`<p class="t14-intro">Choose which programme items guests can book. Shows and events stay information-only unless you make them bookable. Ticket events use Tickets, not booking.</p>`
+      +[0,1,2,3,4,5,6].map(d=>{ const l=acts.filter(a=>+a.day===d).sort((x,y)=>firstTime(x).localeCompare(firstTime(y))); if(!l.length) return '';
+        return `<h4 class="g25-dayh">${E(days[d]||'')}</h4>`+l.map(a=>`<div class="g25-bsrow"><span><b>${E(a.name)}</b><small>${E(firstTime(a))}${a.location?' · '+E(a.location):''} · ${E(actLabel(a))}</small></span><em class="g25-bs ${bookable(a)?(limited(a)?'lim':'on'):''}">${E(bookingLine(a))}</em><button type="button" class="g25-mini" data-g25m-bset="${E(a.id)}">Change</button></div>`).join(''); }).join('');
+  }
+  const occ=occurrences();
+  const tog=`<div class="g25-row2"><p class="mini" style="margin:0">${MS.bpast?'The last 14 days.':'Today and the next 6 days.'}</p><button type="button" class="g25-mini" data-g25m-bpast="1">${MS.bpast?'Show coming days':'Show past days'}</button></div>`;
+  if(!occ.length) return seg+tog+`<div class="t14-empty">No bookable activities${MS.bpast?' in the last 14 days':' this week'}. Make an activity bookable in <b>Booking settings</b> or in the activity editor (Guest booking).</div>`;
+  return seg+tog+occ.map(occCard).join('');
+}
+/* ---------- rooms ---------- */
+function expandRooms(text){
+  const out=[], badL=[];
+  String(text||'').split(/[\n,;]+/).map(x=>x.trim().toUpperCase().replace(/\s+/g,'')).filter(Boolean).forEach(tok=>{
+    const m=tok.match(/^([A-Z]*)(\d+)[-–]([A-Z]*)(\d+)$/);
+    if(m&&(m[3]===''||m[3]===m[1])){ const a=+m[2], b=+m[4], w=m[2].length; if(b>=a&&b-a<=500){ for(let i=a;i<=b;i++) out.push(m[1]+String(i).padStart(w,'0')); return; } }
+    if(/^[A-Z0-9./-]{1,16}$/.test(tok)) out.push(tok); else badL.push(tok);
+  });
+  return {list:[...new Set(out)],bad:badL};
+}
+function roomRows(){
+  const q=MS.roomQ.toUpperCase().replace(/\s/g,'');
+  const list=MS.rooms.filter(r=>!q||String(r.room_key||r.room_number).includes(q));
+  if(!MS.rooms.length) return '<div class="t14-empty"><b>The room list is empty.</b> Guests can only sign in with a room number from this list — add your rooms above.</div>';
+  if(!list.length) return '<div class="t14-empty">No room matches.</div>';
+  const shown=list.slice(0,400);
+  return shown.map(r=>{ const inn=MS.stays.filter(g=>String(g.room_id)===String(r.id)&&stayState(g)!=='past').length;
+    return `<div class="g25-room${r.active?'':' off'}"><b>${E(r.room_number)}</b><small>${r.active?(inn?inn+' guest'+(inn>1?'s':'')+' signed in':'Valid'):'Switched off — guests cannot sign in'}</small>
+      <button type="button" class="g25-mini" data-g25r-toggle="${E(r.id)}">${r.active?'Switch off':'Switch on'}</button><button type="button" class="g25-mini" data-g25r-edit="${E(r.id)}" aria-label="Rename">${icn('pen',12)}</button><button type="button" class="g25-mini danger" data-g25r-del="${E(r.id)}" aria-label="Delete">${icn('trash',12)}</button></div>`; }).join('')
+    +(list.length>shown.length?`<p class="mini">${list.length-shown.length} more — search to find them.</p>`:'');
+}
+function segRooms(){
+  const act1=MS.rooms.filter(r=>r.active).length;
+  return `<p class="t14-intro">Only these room numbers can sign in. Letters are fine (H1234, A204). Upper and lower case count as the same room. A room is never tied to a guest: every new stay starts fresh.</p>
+    <div class="g25-roomadd"><label for="g25-rooms-in">Add rooms</label><textarea id="g25-rooms-in" rows="3" placeholder="H1234, H1235 — or one per line. Ranges: H101-H130"></textarea>
+      <p class="mini" id="g25-rooms-prev"></p><p class="err" id="g25-rooms-err"></p><button type="button" class="btn" id="g25-rooms-add">${icn('plus',15)} Add rooms</button></div>
+    <div class="g25-row2"><b>${MS.rooms.length} room${MS.rooms.length===1?'':'s'}</b><small class="mini">${act1} valid</small></div>
+    <input id="g25-roomq" type="search" class="gp-q" placeholder="Find a room" value="${E(MS.roomQ)}">
+    <div id="g25-roomlist" class="g25-rooms">${roomRows()}</div>`;
+}
+/* ---------- settings ---------- */
+function segSettings(){
+  const c=MS.config||{}, tz=(S.settings&&S.settings.timezone)||'', l=waLink(c.manager_whatsapp);
+  return `<div class="gp-card"><h4 class="g25-h4">${icn('chat',16)} Entertainment Manager contact</h4>
+      <p class="mini">Guests see “Contact Entertainment Manager” in My stay. It opens WhatsApp with this number.</p>
+      <label for="g25-mname">Name shown to guests</label><input id="g25-mname" value="${E(c.manager_name||'')}" placeholder="Mr Hassan Amer">
+      <label for="g25-mwa">WhatsApp number (with country code)</label><input id="g25-mwa" type="tel" inputmode="tel" value="${E(c.manager_whatsapp||'')}" placeholder="+20 100 123 4567">
+      <p class="mini" id="g25-mwa-prev">${c.manager_whatsapp?(l?'Guests open: '+E(l):'<b>This number cannot be used</b> — write it with + and the country code.'):'Not set: guests see “The Entertainment Manager contact number is currently unavailable.”'}</p>
+      <p class="err" id="g25-mwa-err"></p>
+      <div class="rv-acts"><button type="button" class="btn" id="g25-mwa-save">Save</button>${l?`<a class="btn ghost" href="${E(l)}" target="_blank" rel="noopener">Test</a>`:''}</div></div>
+    <div class="gp-card"><h4 class="g25-h4">${icn('clock',16)} Hotel time</h4>
+      ${tz?`<p class="mini">Time zone <b>${E(tz)}</b>. Today in the hotel: <b>${E(longDate(MS.today||today()))}</b>. A guest stays active through the whole departure day.</p>`
+        :`<p class="rv-warnline">No hotel time zone is set. Set it in Settings (time zone), otherwise the database counts days in UTC and a stay could end a few hours early or late.</p>`}</div>
+    <div class="gp-card"><h4 class="g25-h4">${icn('lock',16)} Guest data</h4>
+      <p class="mini">After the departure day a guest moves to History. 45 days after the departure the stay, its bookings and favourites are deleted, and the name, room, mobile and nationality are removed from its ticket reservations (numbers and money stay for the packs). This runs in the database every hour.${c.last_cleanup?' Last run: '+E(ago(c.last_cleanup))+'.':''}</p></div>`;
+}
+/* ---------- search ---------- */
+function searchBody(q){
+  const ql=low(q), qd=q.replace(/\D/g,''), qk=q.toUpperCase().replace(/\s/g,''), X=R();
+  if(ql.length<2&&qd.length<2) return '<p class="mini">Type at least 2 letters or numbers.</p>';
+  const out=[];
+  const stays=MS.stays.filter(g=>low(g.name).includes(ql)||String(g.room||'').toUpperCase().replace(/\s/g,'').includes(qk)||low(g.nationality).includes(ql)||(qd.length>=3&&String(g.phone||'').replace(/\D/g,'').includes(qd)))
+    .sort((a,b)=>(stayState(a)==='past'?1:0)-(stayState(b)==='past'?1:0));
+  if(stays.length) out.push(['Guest',stays.map(g=>`<div class="g25-res"><em class="g25-type">${stayState(g)==='past'?'Guest · history':'Guest'}</em>${stayCard(g)}</div>`).join('')]);
+  const rooms=MS.rooms.filter(r=>String(r.room_key||'').includes(qk)).slice(0,20);
+  if(rooms.length) out.push(['Room',rooms.map(r=>{ const g=MS.stays.filter(x=>String(x.room_id)===String(r.id)&&stayState(x)!=='past'); return `<div class="g25-hit"><em class="g25-type">Room</em><b>${E(r.room_number)}</b><small>${r.active?'valid':'switched off'}${g.length?' · '+g.map(x=>E(x.name)).join(', '):' · nobody signed in'}</small></div>`; }).join('')]);
+  const acts=(S.activities||[]).filter(a=>a&&(low(a.name).includes(ql)||low(a.location).includes(ql)||low(a.desc).includes(ql))).slice(0,30), days=t('days')||[];
+  if(acts.length) out.push(['Programme',acts.map(a=>{ const up=MS.bookings.filter(b=>String(b.activity_id)===String(a.id)&&b.status==='booked'&&dOnly(b.occurrence_date)>=(MS.today||today())).length;
+    return `<div class="g25-hit"><em class="g25-type">${E(actLabel(a))}</em><b>${E(a.name)}</b><small>${E(days[+a.day]||'')} · ${E(firstTime(a))}${a.location?' · '+E(a.location):''} · ${E(bookingLine(a))}${up?' · '+up+' booked':''}</small>
+      <span class="g25-hitb"><button type="button" class="g25-mini" data-g25m-aedit="${E(a.id)}">Edit</button>${isTkAct(a)?'':`<button type="button" class="g25-mini" data-g25m-bset="${E(a.id)}">Booking</button>`}</span></div>`; }).join('')]);
+  const tks=(S.tickets||[]).filter(k=>k&&(low(k.name).includes(ql)||low(k.location).includes(ql)));
+  if(tks.length) out.push(['Ticket event',tks.map(k=>`<div class="g25-hit"><em class="g25-type">Ticket event</em><b>${E(k.name)}</b><small>${E(days[+k.day]||'')}${k.time?' · '+E(k.time):''}${k.price?' · '+E(k.price):''}</small><span class="g25-hitb"><button type="button" class="g25-mini" data-g25m-tix="1">Open Tickets</button></span></div>`).join('')]);
+  if(X.groups){
+    const rows=teamRows().filter(r=>r.pack_id!=null&&(String(r.room||'').toUpperCase().includes(qk)||low(r.guest_name).includes(ql)||(qd.length>=3&&String(r.phone||'').replace(/\D/g,'').includes(qd))||(qd.length>=1&&qd.length<=5&&String(r.ticket_no)===String(+qd))||String(r.res_id||'')===q.trim()));
+    const g=X.groups(rows).slice(0,30);
+    if(g.length) out.push(['Ticket',g.map(x=>`<div class="g25-hit"><em class="g25-type">Ticket</em><b>${E(X.evName(x))} · ${x.nums.map(n=>E(X.num(x.pack,n))).join(', ')}</b><small>${E(niceDate(x.date))} · Room ${E(x.room||'—')}${x.first.guest_name?' · '+E(x.first.guest_name):''} · ${E(x.status==='confirmed'?'paid':x.status)}</small></div>`).join('')]);
+  }
+  if(!out.length) return `<div class="t14-empty">Nothing found for “${E(q)}”.</div>`;
+  return out.map(([k,h])=>h).join('');
+}
+function guestsPage(){
+  if(!isMgr()) return '';
+  const head=`<div class="t14-sh"><div><p class="t14-kick">Guest accounts · bookings · rooms</p><h3>Guests</h3></div></div>`;
+  if(MS.state==='missing') return `<section class="gp g25m" id="g25m">${head}<div class="rv-sql"><b>${icn('bell',15)} One-time step needed</b><p>Open Supabase → <b>SQL Editor</b> → New query, paste the file <b>database-v725.sql</b> and tap <b>Run</b>. Until then guests cannot sign in or book.</p></div></section>`;
+  if(MS.state==='forbidden') return `<section class="gp g25m" id="g25m">${head}<div class="rv-sql"><b>${icn('lock',15)} Please sign in again</b><p>Guest data is only shown after a fresh manager sign-in.</p></div></section>`;
+  if(!MS.at) return `<section class="gp g25m" id="g25m">${head}<p class="mini">Loading…</p></section>`;
+  const td=MS.today||today(), now=MS.stays.filter(g=>stayState(g)!=='past'), past=MS.stays.filter(g=>stayState(g)==='past');
+  const arr=now.filter(g=>dOnly(g.arrival)===td).length, lv=now.filter(g=>dOnly(g.departure)===td).length, bt=MS.bookings.filter(b=>b.status==='booked'&&dOnly(b.occurrence_date)===td).length;
+  const segs=[['now','In the hotel',now.length],['past','History',past.length],['book','Bookings',null],['rooms','Rooms',MS.rooms.length],['set','Settings',null]];
+  const seg=segs.some(x=>x[0]===MS.seg)?MS.seg:'now';
+  const body=MS.q.trim()?searchBody(MS.q.trim()):seg==='past'?segStays(true):seg==='book'?segBookings():seg==='rooms'?segRooms():seg==='set'?segSettings():segStays(false);
+  return `<section class="gp g25m" id="g25m">${head}
+    ${!MS.rooms.length?`<div class="rv-sql"><b>${icn('door',15)} Add your rooms first</b><p>Guests can only sign in with a room number from your Room list. <button type="button" class="g25-mini" data-g25m-seg="rooms">Open Rooms</button></p></div>`:''}
+    <input id="g25-q" class="gp-q g25-q" type="search" placeholder="Search guests, rooms, mobiles, nationalities, activities, tickets…" value="${E(MS.q)}" autocomplete="off">
+    <div id="g25-top" ${MS.q.trim()?'hidden':''}>
+      <div class="gp-stats"><span><b>${now.length}</b>in the hotel</span><span><b>${arr}</b>arrive today</span><span><b>${lv}</b>leave today</span><span><b>${bt}</b>bookings today</span></div>
+      <div class="t14-seg g25-segs">${segs.map(([k,l,n])=>`<button class="${seg===k?'on':''}" data-g25m-seg="${k}">${E(l)}${n!=null?` <i>${n}</i>`:''}</button>`).join('')}</div></div>
+    <div id="g25-body">${body}</div></section>`;
+}
+
+/* ---------- manager actions ---------- */
+function natOptions(v){ const list=(typeof NATIONS!=='undefined'?NATIONS:[]); return `<option value="">—</option>`+list.map(x=>`<option ${x===v?'selected':''}>${E(x)}</option>`).join('')+(v&&!list.includes(v)?`<option selected>${E(v)}</option>`:''); }
+function editStay(id){
+  const g=stayOf(id); if(!g) return;
+  const w=baseModal(`<div class="gp-ed"><h3>Edit guest</h3>
+    <label>Name</label><input id="g25e-name" maxlength="60" value="${E(g.name||'')}">
+    <label>Room number</label><input id="g25e-room" maxlength="16" autocapitalize="characters" value="${E(g.room||'')}">
+    <label>Nationality</label><select id="g25e-nat">${natOptions(g.nationality||'')}</select>
+    <label>Mobile (with country code)</label><input id="g25e-ph" type="tel" value="${E(fmtPh(g.phone))}">
+    <div class="rv-dates2"><div><label>Arrival</label><input id="g25e-arr" type="date" value="${E(dOnly(g.arrival))}"></div><div><label>Departure</label><input id="g25e-dep" type="date" value="${E(dOnly(g.departure))}"></div></div>
+    <p class="mini">A later departure brings a guest back from History. Name, room and mobile are also updated on his ticket reservations.</p>
+    <p class="rv-err" id="g25e-err" role="alert"></p><button class="btn" id="g25e-save">Save</button><button class="btn ghost" id="g25e-x">Close</button></div>`);
+  const q=s=>w.querySelector(s), err=q('#g25e-err');
+  q('#g25e-x').onclick=()=>w.remove();
+  q('#g25e-save').onclick=async()=>{
+    const b=q('#g25e-save'); b.disabled=true; err.textContent='';
+    let r=null; try{ r=await rpc('mgr_stay_update',{p_token:teamTok(),p_id:+g.id,p_room:q('#g25e-room').value,p_name:q('#g25e-name').value,p_nationality:q('#g25e-nat').value,p_phone:q('#g25e-ph').value,p_arrival:q('#g25e-arr').value||null,p_departure:q('#g25e-dep').value||null}); }catch(_){ }
+    b.disabled=false;
+    if(!r){ err.textContent='Not saved — check the internet and try again.'; return; }
+    if(!r.ok){ err.textContent={room:'This room is not in the Room list — add it under Rooms first.',name:'Write the guest’s name.',phone:'Mobile number with country code, 8–15 digits.',dates:'The departure cannot be before the arrival.',missing:'This guest was deleted in the meantime.',forbidden:'Please sign in again as manager.'}[r.error]||'Not saved.'; return; }
+    Object.assign(g,r.stay); w.remove(); ok('Guest updated'); try{ if(R().load) await R().load(); }catch(_){ } render();
+  };
+}
+async function deleteStay(id){
+  const g=stayOf(id); if(!g) return;
+  const X=R(), tix=X.groups?X.groups(teamRows().filter(r=>String(r.guest_stay_id)===String(g.id))):[], paid=tix.filter(x=>x.status==='confirmed');
+  const res=await new Promise(done=>{
+    const w=baseModal(`<div class="rv-ask"><h3>Delete this guest?</h3><p><b>${E(g.name||'')}</b> · Room <b>${E(g.room)}</b> · ${E(g.nationality||'')} · ${E(fmtPh(g.phone))}. The stay, its bookings and favourites are deleted for good${stayState(g)==='past'?'':' and the guest has to sign in again'}.</p>
+      ${tix.length?`<label class="gp-chk"><input type="checkbox" id="g25d-t"> Also delete ${tix.length===1?'the ticket reservation':'all '+tix.length+' ticket reservations'}${paid.length?` <small>(${paid.length} paid — taken out of the packs; give the money back)</small>`:''}. Otherwise the reservations stay without the guest’s personal details.</label>`:''}
+      <button class="btn warn" data-a="y">Delete guest</button><button class="btn ghost" data-a="n">Keep</button></div>`);
+    const fin=v=>{ const c=w.querySelector('#g25d-t'); const withT=!!(c&&c.checked); w.remove(); done(v?{withT}:null); };
+    w.querySelector('[data-a="y"]').onclick=()=>fin(true); w.querySelector('[data-a="n"]').onclick=()=>fin(false); w.onclick=e=>{ if(e.target===w) fin(false); };
+  });
+  if(!res) return;
+  let r=null; try{ r=await rpc('mgr_stay_delete',{p_token:teamTok(),p_id:+g.id,p_with_tickets:res.withT}); }catch(_){ }
+  if(!r||!r.ok){ bad('Not deleted — check the internet and try again.'); return; }
+  if(res.withT&&paid.length&&X.ledgerRemove){ try{ await X.ledgerRemove(paid.map(x=>x.id)); }catch(_){ } }
+  MS.stays=MS.stays.filter(x=>x!==g); MS.bookings=MS.bookings.filter(b=>String(b.guest_stay_id)!==String(g.id)); MS.favs=MS.favs.filter(f=>String(f.guest_stay_id)!==String(g.id));
+  ok('Guest deleted'); try{ if(R().load) await R().load(); }catch(_){ } render();
+}
+async function mgrUnbook(id){
+  const b=MS.bookings.find(x=>String(x.id)===String(id)); if(!b) return;
+  const g=stayOf(b.guest_stay_id)||{};
+  if(!await confirmAction({question:'Remove this booking?',detail:`${g.name||''} · Room ${g.room||''} · ${b.act_name||''} · ${niceDate(b.occurrence_date)}. The place becomes free again.`,confirmLabel:'Remove booking',danger:true})) return;
+  let r=null; try{ r=await rpc('mgr_booking_cancel',{p_token:teamTok(),p_booking:+b.id}); }catch(_){ }
+  if(!r){ bad('Not saved — check the internet and try again.'); return; }
+  b.status='cancelled'; b.cancelled_by='manager'; b.cancelled_at=new Date().toISOString(); ok('Booking removed'); render();
+}
+async function setBooking(id,enabled,type,cap){
+  let r=null; try{ r=await rpc('mgr_activity_booking',{p_token:teamTok(),p_activity:String(id),p_enabled:!!enabled,p_type:type==='limited'?'limited':'none',p_capacity:type==='limited'?+cap:null}); }catch(e){ if(missing(e)){ bad('Run database-v725.sql first (one-time step).'); return false; } }
+  if(!r||!r.ok){ bad(r&&r.error==='capacity'?'Enter the maximum number of places (1 or more).':'Booking setting not saved — try again.'); return false; }
+  const a=act(id); if(a){ a.booking_enabled=!!enabled; a.capacity_type=enabled&&type==='limited'?'limited':'none'; a.booking_capacity=enabled&&type==='limited'?+cap:null; }
+  return true;
+}
+const kindOfBk=a=>!bookable(a)?'off':limited(a)?'limited':'none';
+function bookingEditorHtml(a){
+  const ty=a?kindOfBk(a):'off', cap=a&&a.booking_capacity?+a.booking_capacity:'';
+  const d=a?occDate(a):'', n=a?MS.bookings.filter(b=>String(b.activity_id)===String(a.id)&&b.status==='booked'&&dOnly(b.occurrence_date)===d).length:0;
+  return `<div class="g25-ebook" id="g25-ebook"><label>Guest booking</label>
+    <div class="g25-seg3" role="radiogroup">${[['off','Not bookable'],['none','No limit'],['limited','Limited']].map(([k,l])=>`<button type="button" role="radio" aria-checked="${ty===k}" data-g25e="${k}" class="${ty===k?'on':''}">${l}</button>`).join('')}</div>
+    <div class="g25-ecap" ${ty==='limited'?'':'hidden'}><label for="g25-ecap">Maximum places</label><input id="g25-ecap" type="number" min="1" max="5000" inputmode="numeric" value="${E(cap)}"></div>
+    <p class="mini" id="g25-enote"></p>${n?`<p class="mini">Booked for ${E(longDate(d))}: <b>${n}</b></p>`:''}<p class="err" id="g25-eerr"></p></div>`;
+}
+const E_NOTE={off:'Guests only see it in the programme (shows and events usually stay like this).',none:'Guests tap Book. No places are counted and none are shown.',limited:'Bookings stop automatically when all places are taken.'};
+function openBookingSettings(id){
+  const a=act(id); if(!a) return;
+  const w=baseModal(`<h3>${E(a.name)}</h3><p class="mini">${E((t('days')||[])[+a.day]||'')} · ${E(firstTime(a))}</p>${bookingEditorHtml(a)}<button class="btn" id="g25-bs-save">Save</button><button class="btn ghost" id="g25-bs-x">Close</button>`);
+  wireBookingEditor(w,a);
+  w.querySelector('#g25-bs-x').onclick=()=>w.remove();
+  w.querySelector('#g25-bs-save').onclick=async()=>{ const v=readBookingEditor(w); if(!v) return; const b=w.querySelector('#g25-bs-save'); b.disabled=true;
+    if(await setBooking(a.id,v.enabled,v.type,v.cap)){ w.remove(); ok('Booking setting saved'); render(); } else b.disabled=false; };
+}
+function wireBookingEditor(w,a){
+  let ty=a?kindOfBk(a):'off';
+  const note=w.querySelector('#g25-enote'), capBox=w.querySelector('.g25-ecap');
+  const show=()=>{ w.querySelectorAll('[data-g25e]').forEach(b=>{ const on=b.dataset.g25e===ty; b.classList.toggle('on',on); b.setAttribute('aria-checked',String(on)); }); if(capBox) capBox.hidden=ty!=='limited'; if(note) note.textContent=E_NOTE[ty]; w.__g25ty=ty; };
+  w.querySelectorAll('[data-g25e]').forEach(b=>b.onclick=()=>{ ty=b.dataset.g25e; const er=w.querySelector('#g25-eerr'); if(er) er.textContent=''; show(); if(ty==='limited'){ const i=w.querySelector('#g25-ecap'); if(i) try{ i.focus(); }catch(_){ } } });
+  show();
+}
+function readBookingEditor(w){
+  const ty=w.__g25ty||'off', er=w.querySelector('#g25-eerr');
+  if(ty==='limited'){ const cap=parseInt((w.querySelector('#g25-ecap')||{}).value,10); if(!(cap>=1&&cap<=5000)){ if(er) er.textContent='Enter the maximum number of places (1 or more).'; return null; } return {enabled:true,type:'limited',cap}; }
+  return {enabled:ty!=='off',type:'none',cap:null};
+}
+/* the activity editor: "Guest booking" is part of every activity */
+let PEND=null;
+if(typeof window.openEditModal==='function'){
+  const oe=window.openEditModal;
+  window.openEditModal=function(input){
+    const r=oe.apply(this,arguments);
+    PEND=null;
+    if(isMgr()) setTimeout(()=>{
+      const ws=[...document.querySelectorAll('.modal-bg')].filter(w=>w.querySelector('#e-save')), w=ws[ws.length-1];
+      if(!w||w.querySelector('#g25-ebook')) return;
+      let a=input; if(input!=null&&typeof input!=='object') a=act(input);
+      if(a&&a.id!=null&&isTkAct(a)) return;                 // ticket events use Tickets, not booking
+      const save=[...w.querySelectorAll('#e-save')].pop(); if(!save) return;
+      save.insertAdjacentHTML('beforebegin',bookingEditorHtml(a&&a.id!=null?a:null));
+      wireBookingEditor(w,a&&a.id!=null?a:null);
+      w.addEventListener('click',ev=>{
+        if(!ev.target.closest||!ev.target.closest('#e-save')) return;
+        const v=readBookingEditor(w);
+        if(!v){ ev.preventDefault(); ev.stopImmediatePropagation(); const b=w.querySelector('#g25-ebook'); if(b) try{ b.scrollIntoView({block:'center'}); }catch(_){ } return; }
+        PEND={modal:w,...v};
+      },true);
+    },60);
+    return r;
+  };
+  try{ openEditModal=window.openEditModal; }catch(_){}
+}
+if(typeof DB!=='undefined'&&DB.saveActivity){
+  const sa0=DB.saveActivity.bind(DB);
+  DB.saveActivity=async function(a0){
+    const before=new Set((S.activities||[]).map(x=>String(x&&x.id)));
+    const old=a0&&a0.id!=null?act(a0.id):null, keep=old?{booking_enabled:old.booking_enabled,capacity_type:old.capacity_type,booking_capacity:old.booking_capacity}:null;
+    const r=await sa0.apply(DB,arguments);
+    /* the database keeps the booking settings on an ordinary save; keep the app in step */
+    if(keep){ const cur=act(a0.id); if(cur) Object.assign(cur,keep); }
+    else if(a0&&a0.id==null){ (S.activities||[]).forEach(x=>{ if(x&&x.id!=null&&!before.has(String(x.id))) Object.assign(x,{booking_enabled:false,capacity_type:'none',booking_capacity:null}); }); }
+    const P=PEND;
+    if(P&&P.modal&&document.body.contains(P.modal)&&isMgr()){
+      let id=a0&&a0.id!=null?a0.id:null;
+      if(id==null){ const fresh=(S.activities||[]).filter(x=>x&&x.id!=null&&!before.has(String(x.id))); if(fresh.length) id=fresh[fresh.length-1].id; else if(r!=null&&typeof r!=='object') id=r; }
+      const a=id!=null?act(id):null;
+      if(a&&!isTkAct(a)&&(kindOfBk(a)!==(P.enabled?P.type:'off')||(P.type==='limited'&&+a.booking_capacity!==+P.cap))) await setBooking(id,P.enabled,P.type,P.cap);
+    }
+    return r;
+  };
+}
+
+/* one listener for the manager page */
+if(!window.__g25mClick){
+  window.__g25mClick=true;
+  document.addEventListener('click',async e=>{
+    if(!isMgr()) return;
+    const el=e.target&&e.target.closest?e.target.closest('[data-g25m-seg],[data-g25m-edit],[data-g25m-del],[data-g25m-unbook],[data-g25m-bmode],[data-g25m-bpast],[data-g25m-bset],[data-g25m-aedit],[data-g25m-tix],[data-g25r-toggle],[data-g25r-edit],[data-g25r-del],#g25-rooms-add,#g25-mwa-save'):null;
+    if(!el) return;
+    const ds=el.dataset;
+    if(ds.g25mSeg){ MS.seg=ds.g25mSeg; MS.q=''; render(); return; }
+    if(ds.g25mEdit) return editStay(ds.g25mEdit);
+    if(ds.g25mDel) return deleteStay(ds.g25mDel);
+    if(ds.g25mUnbook) return mgrUnbook(ds.g25mUnbook);
+    if(ds.g25mBmode){ MS.bmode=ds.g25mBmode; render(); return; }
+    if(ds.g25mBpast){ MS.bpast=!MS.bpast; render(); return; }
+    if(ds.g25mBset) return openBookingSettings(ds.g25mBset);
+    if(ds.g25mAedit){ try{ window.openEditModal(ds.g25mAedit); }catch(_){ } return; }
+    if(ds.g25mTix){ S.sub.program='tickets'; MS.q=''; render(); return; }
+    if(ds.g25rToggle){ const r=MS.rooms.find(x=>String(x.id)===ds.g25rToggle); if(!r) return; const out=await rpc('mgr_room_save',{p_token:teamTok(),p_id:+r.id,p_number:r.room_number,p_active:!r.active}).catch(()=>null); if(out&&out.ok){ Object.assign(r,out.room); render(); } else bad('Not saved.'); return; }
+    if(ds.g25rEdit){ const r=MS.rooms.find(x=>String(x.id)===ds.g25rEdit); if(!r) return; const v=prompt('Room number',r.room_number); if(v==null||!v.trim()||v.trim().toUpperCase()===r.room_number) return;
+      const out=await rpc('mgr_room_save',{p_token:teamTok(),p_id:+r.id,p_number:v,p_active:r.active}).catch(()=>null);
+      if(out&&out.ok){ Object.assign(r,out.room); MS.at=0; await mgrLoad(true); render(); ok('Room renamed'); } else bad(out&&out.error==='exists'?'This room is already in the list.':out&&out.error==='format'?'Letters, numbers, - . / only.':'Not saved.'); return; }
+    if(ds.g25rDel){ const r=MS.rooms.find(x=>String(x.id)===ds.g25rDel); if(!r) return;
+      if(!await confirmAction({question:'Delete room '+r.room_number+'?',detail:'Nobody can sign in with this room any more. Guests already signed in keep their stay.',confirmLabel:'Delete room',danger:true})) return;
+      const out=await rpc('mgr_room_delete',{p_token:teamTok(),p_id:+r.id}).catch(()=>null); if(out&&out.ok){ MS.rooms=MS.rooms.filter(x=>x!==r); render(); } else bad('Not deleted.'); return; }
+    if(el.id==='g25-rooms-add'){
+      const inp=Q('#g25-rooms-in'), er=Q('#g25-rooms-err'), x=expandRooms(inp&&inp.value);
+      if(x.bad.length){ if(er) er.textContent='Not a room number: '+x.bad.slice(0,5).join(', ')+'. Use letters, numbers, - . / only.'; return; }
+      if(!x.list.length){ if(er) er.textContent='Write at least one room number.'; return; }
+      if(x.list.length>2000){ if(er) er.textContent='At most 2000 rooms at once.'; return; }
+      el.disabled=true;
+      const out=await rpc('mgr_rooms_add',{p_token:teamTok(),p_numbers:x.list}).catch(()=>null);
+      el.disabled=false;
+      if(!out||!out.ok){ if(er) er.textContent='Not saved — check the internet and try again.'; return; }
+      ok(out.added+' room'+(out.added===1?'':'s')+' added'+(x.list.length>out.added?' ('+(x.list.length-out.added)+' already in the list)':''));
+      await mgrLoad(true); render(); return;
+    }
+    if(el.id==='g25-mwa-save'){
+      const nm=String((Q('#g25-mname')||{}).value||'').trim(), num=String((Q('#g25-mwa')||{}).value||'').trim(), er=Q('#g25-mwa-err');
+      if(num&&!waDigits(num)){ if(er) er.textContent='Write the number with + and the country code, e.g. +20 100 123 4567.'; return; }
+      el.disabled=true;
+      try{
+        const a=await rpc('mgr_set_config',{p_token:teamTok(),p_key:'manager_whatsapp',p_value:num?'+'+waDigits(num):''});
+        const b=await rpc('mgr_set_config',{p_token:teamTok(),p_key:'manager_name',p_value:nm});
+        if(!(a&&a.ok&&b&&b.ok)) throw new Error('x');
+        MS.config={...MS.config,manager_whatsapp:num?'+'+waDigits(num):'',manager_name:nm}; ok('Saved'); render();
+      }catch(_){ el.disabled=false; bad('Not saved — check the internet and try again.'); }
+      return;
+    }
+  });
+  document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.dataset&&d.dataset.g25mDet){ if(d.open) MS.open[d.dataset.g25mDet]=1; else delete MS.open[d.dataset.g25mDet]; } },true);
+}
+window.__wireSteps=window.__wireSteps||[];
+window.__wireSteps.push(function(){
+  if(!isMgr()) return;
+  const page=Q('#g25m');
+  if(page&&!MS.at&&!MS.busy) mgrLoad(true).then(()=>{ if(Q('#g25m')) render(); });
+  const q=Q('#g25-q');
+  if(q){ let tm=null; q.oninput=()=>{ clearTimeout(tm); tm=setTimeout(()=>{ MS.q=q.value; const b=Q('#g25-body'), top=Q('#g25-top'); if(top) top.hidden=!!MS.q.trim();
+      if(b) b.innerHTML=MS.q.trim()?searchBody(MS.q.trim()):(MS.seg==='past'?segStays(true):MS.seg==='book'?segBookings():MS.seg==='rooms'?segRooms():MS.seg==='set'?segSettings():segStays(false)); },180); }; }
+  const rq=Q('#g25-roomq'); if(rq) rq.oninput=()=>{ MS.roomQ=rq.value; const l=Q('#g25-roomlist'); if(l) l.innerHTML=roomRows(); };
+  const ri=Q('#g25-rooms-in'); if(ri) ri.oninput=()=>{ const x=expandRooms(ri.value), p=Q('#g25-rooms-prev'); if(p) p.textContent=x.list.length?x.list.length+' room'+(x.list.length===1?'':'s')+': '+x.list.slice(0,8).join(', ')+(x.list.length>8?' …':''):''; const er=Q('#g25-rooms-err'); if(er) er.textContent=''; };
+  const mw=Q('#g25-mwa'); if(mw) mw.oninput=()=>{ const p=Q('#g25-mwa-prev'), v=mw.value.trim(); if(p) p.textContent=!v?'Not set: guests see that the contact number is unavailable.':waDigits(v)?'Guests open: https://wa.me/'+waDigits(v):'Write it with + and the country code.'; };
+});
+
+/* ======================= TEAM SIGN-IN: checked by the database ======================= */
+let teamCheckAt=0;
+async function checkTeam(force){
+  if(!S.session||!REM()) return;
+  if(!force&&Date.now()-teamCheckAt<5*60000) return; teamCheckAt=Date.now();
+  try{
+    if(!S.session.token){ await rpc('team_session',{p_token:''}); teamExpired(true); return; }  // reached = database-v725 is live
+    const u=await rpc('team_session',{p_token:S.session.token});
+    if(!u) teamExpired(false);
+    else if(u.role&&u.role!==S.session.role){ S.session.role=u.role==='manager'?'manager':'staff'; persist(); render(); }
+  }catch(e){ /* database-v725.sql not run yet: nothing changes */ }
+}
+function teamExpired(upgrade){
+  if(!S.session) return;
+  S.session=null; S.chatRoom=null; MS.at=0; MS.stays=[]; MS.bookings=[]; MS.favs=[]; MS.rooms=[];
+  try{ persist(); render(); }catch(_){ }
+  warn(upgrade?'Please sign in once more — sign-in is now checked securely by the database.':'Your session has ended. Please sign in again.');
+}
+setTimeout(()=>checkTeam(true),2500);
+setInterval(()=>checkTeam(false),60000);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') checkTeam(false); });
+/* signing out also ends the session in the database */
+document.addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.target.closest('#dr-out'); if(b&&S.session&&S.session.token&&REM()){ const tk=S.session.token; rpc('team_logout',{p_token:tk}).catch(()=>{}); } MS.at=0; },true);
+
+/* team accounts: username, role and password changes go through the manager's checked functions */
+if(typeof DB!=='undefined'){
+  const add0=DB.addUser&&DB.addUser.bind(DB), up0=DB.updateUser&&DB.updateUser.bind(DB), del0=DB.deleteUser&&DB.deleteUser.bind(DB);
+  const fallback=e=>missing(e);
+  DB.addUser=async function(u){
+    if(!REM()) return add0(u);
+    let r; try{ r=await rpc('mgr_user_add',{p_token:teamTok(),p_row:u}); }catch(e){ if(fallback(e)) return add0(u); bad(t('errSave')); throw e; }
+    if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can add team accounts — sign in again.':t('errSave')); throw new Error(r&&r.error||'failed'); }
+    S.users.push(r.user);
+  };
+  DB.updateUser=async function(id,patch){
+    const cur=(S.users||[]).find(x=>String(x.id)===String(id))||{}, p={...(patch||{})};
+    ['username','role'].forEach(k=>{ if(k in p&&String(p[k]??'')===String(cur[k]??'')) delete p[k]; });
+    if('password' in p&&!String(p.password||'').trim()) delete p.password;
+    const sens=['username','role','password'].some(k=>k in p);
+    if(!REM()||!sens){ delete p.password; return up0(id,p); }
+    let r; try{ r=await rpc('mgr_user_update',{p_token:teamTok(),p_id:String(id),p_patch:p}); }catch(e){ if(fallback(e)) return up0(id,patch); throw e; }
+    if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can change this — sign in again.':t('errSave')); throw new Error(r&&r.error||'failed'); }
+    S.users=S.users.map(u=>String(u.id)===String(id)?{...u,...r.user}:u);
+  };
+  DB.deleteUser=async function(id){
+    if(!REM()) return del0(id);
+    let r; try{ r=await rpc('mgr_user_delete',{p_token:teamTok(),p_id:String(id)}); }catch(e){ if(fallback(e)) return del0(id); throw e; }
+    if(!r||!r.ok) throw new Error(r&&r.error||'failed');
+    S.users=S.users.filter(x=>String(x.id)!==String(id));
+  };
+  /* "Change my password" (was calling a function that did not exist) */
+  DB.updateAccount=async function(id,patch){
+    const pw=String(patch&&patch.password||'').trim(); if(!pw) return;
+    let r; try{ r=await rpc('team_change_password',{p_token:teamTok(),p_new:pw}); }catch(e){ if(fallback(e)&&up0) return up0(id,{password:pw}); throw e; }
+    if(!r||!r.ok){ bad(r&&r.error==='short'?t('loginErr'):'Please sign in again.'); throw new Error('failed'); }
+  };
+}
+
+/* ======================= HAND-OVER TO THE OTHER LAYERS ======================= */
+window.GUEST25={t:T,waLink,waDigits,signedIn,profile,refresh,tickets:()=>G5.tickets,addTickets,serverSignedOut,askSignIn,
+  teamExpired:()=>teamExpired(false),mgrLoad:()=>mgrLoad(false),sig:()=>isMgr()?mgrSig():sigG(),
+  _state:()=>({G5,MS}),_expandRooms:expandRooms};
+if(window.AUREA_RESV) window.AUREA_RESV.guestsPage=guestsPage;
+
+/* ======================= STYLES ======================= */
+const css=document.createElement('style'); css.id='aurea-guests-v725-css';
+css.textContent=`
+.g25 .g25-card{padding:16px;border-radius:20px;background:var(--x-card,var(--card,#fff));border:1px solid var(--x-line,var(--line))}
+.g25-feats{list-style:none;margin:0 0 14px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g25-feats li{display:flex;align-items:center;gap:8px;padding:10px;border-radius:14px;background:var(--x-bg,var(--bg));font-size:13px;font-weight:600;line-height:1.3}
+.g25-feats svg{flex:none;color:var(--accent-text,var(--x-acc,var(--accent)))}
+.g25-note{display:flex;gap:6px;align-items:center;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:rgba(208,133,38,.12);color:#8A5210;font-size:13px;font-weight:600}
+.g25-mute{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:var(--x-mut,var(--muted))}
+.g25-who{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.g25-whoinfo{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:3px}.g25-whoinfo b{font-size:17px}
+.g25-whoinfo span,.g25-whoinfo small{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--x-mut,var(--muted))}
+.g25-whobtns{display:flex;gap:6px;flex-wrap:wrap}
+.g25-mini{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--x-line,var(--line));background:transparent;color:var(--x-ink,var(--ink));border-radius:99px;padding:6px 11px;font-size:12.5px;font-weight:700;width:auto;margin:0;min-height:0;cursor:pointer}
+.g25-mini.danger{color:#A33A2C}
+.g25-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0 10px}
+.g25-tabs button{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:14px;border:1px solid var(--x-line,var(--line));background:var(--x-card,var(--card,#fff));color:var(--x-ink,var(--ink));font-size:11.5px;font-weight:700;line-height:1.2;width:auto;margin:0;min-height:0;cursor:pointer;text-align:center}
+.g25-tabs button.on{background:var(--x-pri,var(--espresso));border-color:var(--x-pri,var(--espresso));color:var(--theme-button-text,#fff)}
+.g25-tabs i{position:absolute;top:4px;inset-inline-end:6px;font-style:normal;min-width:18px;height:18px;padding:0 5px;border-radius:99px;display:grid;place-items:center;background:#D08526;color:#fff;font-size:11px}
+.g25-item{padding:12px;border-radius:16px;background:var(--x-card,var(--card,#fff));border:1px solid var(--x-line,var(--line));margin-bottom:8px}
+.g25-item.booked{box-shadow:inset 3px 0 0 #4E7A48}.g25-item.cancelled,.g25-item.past{opacity:.72}
+.g25-it1{display:flex;align-items:center;gap:8px;justify-content:space-between}.g25-it1 b{font-size:15px}
+.g25-it2{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:4px 0 0;font-size:12.5px;color:var(--x-mut,var(--muted))}
+.g25-acts{display:flex;gap:8px;margin-top:8px}.g25-acts .btn{margin:0;flex:1;min-height:40px}.g25-acts .g25-x{flex:0 0 52px;color:#B03A4A}
+.g25-empty{margin:4px 0 8px;padding:14px;border-radius:14px;border:1px dashed var(--x-line,var(--line));font-size:13.5px;line-height:1.5;color:var(--x-mut,var(--muted))}
+.g25-old summary{cursor:pointer;font-weight:700;font-size:13px;padding:8px 0}
+.g25-contact{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px;border-radius:16px;background:#E7F8EE;border:1px solid #25D366;color:#0B3F20}
+.g25-contact>div{flex:1 1 150px;min-width:0;display:flex;flex-direction:column}.g25-contact b{font-size:15px}.g25-contact small{font-size:13px}
+.g25-contact .btn{flex:none;width:auto;margin:0;background:#128C4A;border-color:#128C4A;color:#fff}.g25-contact .btn.ghost{background:transparent;color:#0B3F20;border-color:#128C4A}
+.g25-waic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#25D366;color:#fff}.g25-waic svg{width:22px;height:22px}
+.g25-rowtags{display:flex;align-items:center;gap:6px;margin-top:6px}
+.g25-tag{display:inline-flex;align-items:center;font-style:normal;font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:99px;background:var(--x-pri,var(--espresso));color:var(--theme-button-text,#fff)}
+.g25-tag.ok{background:#4E7A48;color:#fff}.g25-tag.full{background:rgba(120,110,100,.25);color:inherit}
+.g25-heart{display:inline-flex;color:#D0435A}.g25-heart svg{width:15px;height:15px}
+.g25-dbox{margin:12px 0}
+.g25-book{padding:12px;border-radius:16px;background:rgba(185,138,92,.1);margin-bottom:10px}
+.g25-for{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:0 0 8px;font-size:13px;font-weight:600}
+.g25-cap{font-weight:800;color:#3F6A3A}.g25-cap.full{color:#A33A2C}
+.g25-book .btn{margin:0}
+.g25-row2{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:6px 0}
+.g25-row2 .btn{width:auto;flex:none;padding-left:14px;padding-right:14px}
+.g25-done{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:#3F6A3A}
+.g25-favbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:8px 14px;font-weight:700;font-size:13.5px;width:auto;margin:0;min-height:0;cursor:pointer}
+.g25-favbtn.on{color:#B03A4A;border-color:rgba(176,58,74,.5);background:rgba(208,67,90,.08)}
+.g25-lockline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:var(--x-card);border:1px dashed var(--x-line);font-size:13.5px}
+.g25-lockline span{flex:1 1 160px}.g25-lockline .btn{width:auto;margin:0;flex:none;padding:10px 16px}
+.g25-youhave{margin:-4px 0 12px}.g25-plain{color:inherit!important;text-decoration:none!important;display:inline-flex;align-items:center;gap:5px}
+.g25-tkacts{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+.g25-vch{border:2px dashed var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.g25-vk{margin:0 0 10px;font:800 20px/1.1 var(--font-display,serif);letter-spacing:.05em}
+.g25-vch dl{margin:0}.g25-vch dl div{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}.g25-vch dt{flex:0 0 40%;color:var(--muted);font-size:13px}.g25-vch dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+.g25-vst{margin:10px 0 0;font-weight:800}.g25-vst.confirmed{color:#3F6A3A}.g25-vst.reserved{color:#8A5210}
+/* manager */
+.g25m .g25-q{margin:6px 0 10px}
+.g25-segs,.g25-sub{flex-wrap:wrap}
+.g25-sub{margin:0 0 10px}
+.g25-st1{display:flex;align-items:center;justify-content:space-between;gap:8px}.g25-st1 b{font-size:16px}
+.g25-st2{display:flex;align-items:center;gap:5px;margin:4px 0 0;font-size:13px;color:var(--ink)}
+.g25-chip{flex:none;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:99px}
+.g25-chip.now{background:rgba(94,138,87,.15);color:#3F6A3A}.g25-chip.soon{background:rgba(208,133,38,.14);color:#8A5210}.g25-chip.past{background:rgba(120,110,100,.14);color:var(--muted)}
+.g25-det{margin-top:8px}.g25-det summary{cursor:pointer;font-size:13px;padding:6px 0}.g25-det h5{margin:8px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.g25-ul{list-style:none;margin:0;padding:0}.g25-ul li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.g25-ul li:last-child{border-bottom:0}.g25-ul li span{display:flex;flex-direction:column;min-width:0}.g25-ul li small{font-size:12px;color:var(--muted)}.g25-ul li.cancelled{opacity:.6}
+.g25-capline{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.g25-capline span{padding:5px 10px;border-radius:10px;background:var(--bg);font-size:12.5px}.g25-capline span.full{background:rgba(176,57,43,.12);color:#A33A2C}
+.g25-dayh{margin:14px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.g25-bsrow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.g25-bsrow>span{flex:1;min-width:0;display:flex;flex-direction:column}.g25-bsrow small{font-size:12px;color:var(--muted)}
+.g25-bs{flex:none;font-style:normal;font-size:11.5px;font-weight:700;color:var(--muted)}.g25-bs.on{color:#3F6A3A}.g25-bs.lim{color:#8A5210}
+.g25-roomadd{padding:12px;border-radius:16px;background:var(--bg);margin:0 0 12px}.g25-roomadd textarea{width:100%;margin:0}
+.g25-rooms{display:grid;gap:6px}
+.g25-room{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff)}
+.g25-room b{min-width:64px;font-variant-numeric:tabular-nums}.g25-room small{flex:1;min-width:0;font-size:12px;color:var(--muted)}.g25-room.off{opacity:.6}
+.g25-h4{display:flex;align-items:center;gap:6px;margin:0 0 6px;font-size:15px}
+.g25-res{margin-bottom:4px}.g25-type{display:inline-block;margin:6px 0 4px;font-style:normal;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--muted)}
+.g25-hit{position:relative;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card,#fff);margin-bottom:6px}
+.g25-hit .g25-type{align-self:flex-start;margin:0 0 2px}.g25-hit small{font-size:12.5px;color:var(--muted)}.g25-hitb{display:flex;gap:6px;margin-top:6px}
+.g25-ebook{margin:12px 0 6px;padding:12px;border-radius:14px;background:var(--bg)}
+.g25-seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.g25-seg3 button{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:13px;width:auto;margin:0;min-height:0;cursor:pointer}
+.g25-seg3 button.on{background:var(--espresso);border-color:var(--espresso);color:var(--theme-button-text,#fff)}
+.gp-stats{flex-wrap:wrap}.gp-stats span{min-width:70px}
+@media (max-width:380px){.g25-feats{grid-template-columns:1fr}.g25-tabs span{font-size:10.5px}}
+`;
+document.head.appendChild(css);
+})();
+
 </script>
 
 </body>
