@@ -4729,17 +4729,45 @@ function demoNotes(){
 }
 
 /* ---------------- data layer ---------------- */
+/* V7.28 multi-hotel: which hotel this phone shows.
+   Staff → the hotel of their account. Manager → the hotel chosen in the selector.
+   Guests → the hotel they chose (or ?hotel=N in the link / QR code). Default: hotel 1. */
+window.__hotelId=(function(){ try{
+  const q=new URLSearchParams(location.search).get('hotel');
+  if(q&&/^\d{1,9}$/.test(q)) localStorage.setItem('ent_hotel_v728',q);
+  const st=JSON.parse(localStorage.getItem('entapp_v3')||'{}'), ss=st&&st.session;
+  if(ss&&ss.role==='staff'&&ss.hotel_id) return +ss.hotel_id;
+  return +(localStorage.getItem('ent_hotel_v728')||1)||1;
+}catch(_){ return 1; } })();
+/* hotel settings: hotel 1 keeps rows 1–3, hotel N uses N*100+1 … N*100+3 */
+function __hotelRow(path, body){
+  const h=window.__hotelId||1; if(h===1||!/^app_settings\b/.test(path)) return [path, body];
+  path=path.replace(/(\bid=eq\.)([123])(?!\d)/,(m,a,n)=>a+(h*100+ +n));
+  if(body){ try{ const x=JSON.parse(body), fix=o=>{ if(o&&[1,2,3].includes(+o.id)) o.id=h*100+ +o.id; return o; }; body=JSON.stringify(Array.isArray(x)?x.map(fix):fix(x)); }catch(_){} }
+  return [path, body];
+}
 async function sb(path, opts={}){
-  const res = await fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + path, {
+  const hr=__hotelRow(path, opts.body); path=hr[0]; if(opts.body) opts={...opts, body:hr[1]};
+  const hx={};
+  try{ hx["x-hotel-id"]=String(window.__hotelId||1); const tk=(typeof S!=="undefined"&&S.session&&S.session.token)||""; if(tk) hx["x-team-token"]=tk; }catch(_){}
+  const go=extra=>fetch(CONFIG.SUPABASE_URL + "/rest/v1/" + path, {
     ...opts,
     headers:{
       "apikey":CONFIG.SUPABASE_ANON_KEY,
       "Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,
       "Content-Type":"application/json",
       "Prefer": opts.method==="POST"||opts.method==="PATCH" ? "return=representation" : "",
+      ...extra,
       ...(opts.headers||{})
     }
   });
+  let res;
+  try{ res = await go(window.__noHotelHeaders?{}:hx); }
+  catch(e){
+    /* a network that blocks extra headers: try once without them (hotel 1 behaviour) */
+    if(window.__noHotelHeaders) throw e;
+    res = await go({}); window.__noHotelHeaders=true; console.warn("Hotel headers blocked by the network — using hotel 1 rules");
+  }
   if(!res.ok) throw new Error("Supabase "+res.status+" on "+path);
   const txt = await res.text();
   return __sbParse(txt);
@@ -5430,6 +5458,12 @@ function normCat(a){
   return legacy[c]|| (a.highlight?"eShow":"mAdult");
 }
 function actOp(a){ return opOf(normCat(a)); }
+/* V7.27: five programme types. Every item stores its own type (program_type);
+   an item saved before this version gets it from its category, never from its name. */
+const PTYPES=['activity','event','show','live','special'];
+const PTYPE_OF_CAT={mAdult:'activity',mEvents:'event',eShow:'show',eLive:'live',eParty:'special',eBefore:'event',eAfter:'event'};
+function ptypeOf(a){ const p=a&&a.program_type; return PTYPES.includes(p)?p:(PTYPE_OF_CAT[normCat(a||{})]||'activity'); }
+window.__ptype=ptypeOf; window.__PTYPES=PTYPES; window.__PTYPE_OF_CAT=PTYPE_OF_CAT;
 function catImage(cat){
   return {mAdult:IMG.yoga,mEvents:IMG.foam,eBefore:IMG.neon,eLive:IMG.show,eShow:IMG.dance,eAfter:IMG.neon,eParty:IMG.foam}[cat]||IMG.show;
 }
@@ -10286,6 +10320,12 @@ function startRealtime(){
     let tmr=null, pending=false;
     client.channel("live-changes")
       .on("postgres_changes",{event:"*",schema:"public"},payload=>{
+        try{ /* V7.28: only this phone's hotel */
+          const row=payload&&(payload.new&&Object.keys(payload.new).length?payload.new:payload.old)||{}, h=window.__hotelId||1;
+          if(row.hotel_id!=null&&+row.hotel_id!==h) return;
+          if(payload.table==="app_settings"&&row.id!=null&&+row.id!==99){ const rid=+row.id, rh=[1,2,3].includes(rid)?1:(rid>=200&&[1,2,3].includes(rid%100)?Math.floor(rid/100):0); if(rh!==h) return; }
+          if(payload.table==="app_settings"&&h!==1&&row.id!=null&&[1,2,3].includes(+row.id)) return;
+        }catch(_){}
         const before=notifySnapshot();
         const patched=applyRealtimeChange(payload);
         if(patched){
@@ -12260,6 +12300,7 @@ window.__AUREA_PERSISTENCE_DAYPLAN_V626=true;
 let migratingV626=false;
 async function migrateDashboardV626(){
   if(migratingV626||!S.settings||S.settings.dashboardDayOpsMigrationV626)return false;
+  if(!(S.session&&S.session.token&&S.session.role==="manager"))return false;   // V7.28: settings are written by the manager only
   migratingV626=true;
   try{
     const po={...((S.settings&&S.settings.pageOrder)||{})};
@@ -18890,6 +18931,7 @@ async function writeRow(data){
   return r;
 }
 async function push(){
+  if(!(typeof S!=='undefined'&&S.session&&S.session.token)){ dirty.clear(); return; }   // V7.28: staff only
   if(busy){ schedule(1500); return; }
   if(!dirty.size) return;
   busy=true; const keys=[...dirty]; dirty.clear();
@@ -18912,6 +18954,7 @@ async function push(){
   }finally{ busy=false; }
 }
 async function pull(){
+  if(!(typeof S!=='undefined'&&S.session&&S.session.token)) return false;   // V7.28: staff only
   let row; try{ row=await fetchRow(); }catch(_){ return false; }
   const keys=(row&&row.data&&row.data.keys)||{};
   const x=meta(); let changed=false;
@@ -19887,7 +19930,8 @@ function coverOf(a){
   try{ const d=((S.settings&&S.settings.guestProgramDays)||{})[String(a.day)]||{}, c=d.covers||{}, op=actOp(a); if(c[op]) return c[op]; }catch(_){}
   try{ return catImage(cat(a)); }catch(_){ return ''; }
 }
-function dayActs(day){ return (S.activities||[]).filter(a=>a&&+a.day===+day&&!(window.__tkHidden&&window.__tkHidden(a))).slice().sort((a,b)=>startOf(a)-startOf(b)||String(a.name||'').localeCompare(String(b.name||''))); }
+function dayActs(day){ return dayActsAll(day).filter(a=>!X.ptype||X.ptype==='all'||ptypeOf(a)===X.ptype); }
+function dayActsAll(day){ return (S.activities||[]).filter(a=>a&&+a.day===+day&&!(window.__tkHidden&&window.__tkHidden(a))).slice().sort((a,b)=>startOf(a)-startOf(b)||String(a.name||'').localeCompare(String(b.name||''))); }
 function dayInfo(day){
   let identity='', theme='';
   try{ const d=((S.settings&&S.settings.guestProgramDays)||{})[String(day)]||{}; identity=String(d.dayName||d.identity||'').trim(); }catch(_){}
@@ -19956,10 +20000,19 @@ function progSection(){
   return `<section class="ex21-sec" id="ex21-prog">
     <div class="ex21-h"><h2>${ic('calendar',19)} ${E(L('prog'))}</h2></div>
     <nav class="ex21-days" aria-label="${E(L('prog'))}">${chips}<button type="button" class="ex21-day wk ${X.week?'on':''}" data-ex21-week="1" aria-pressed="${X.week}"><small>${E(L('week'))}</small><b>7</b></button></nav>
+    ${typeFilter(X.week?[0,1,2,3,4,5,6]:[day])}
     ${body}
     <button type="button" class="ex21-print" id="ex21-print">${ic('download',15)} ${E(L('print'))}</button>
   </section>`;
 }
+/* All · Activities · Events · Shows · Live Music · Special Events — with the real count of each */
+function typeCounts(days){ const c={all:0,activity:0,event:0,show:0,live:0,special:0}; days.forEach(d=>dayActsAll(d).forEach(a=>{ c.all++; c[ptypeOf(a)]++; })); return c; }
+function typeFilter(days){
+  const c=typeCounts(days), cur=X.ptype||'all', T=k=>window.GUEST25?window.GUEST25.t(k):k;
+  const list=[['all','pAll']].concat(PTYPES.map(p=>[p,'p_'+p])).filter(([k])=>k==='all'||c[k]||cur===k);
+  return `<nav class="ex27-types" aria-label="${E(T('pAll'))}">${list.map(([k,l])=>`<button type="button" class="ex27-type t-${k} ${cur===k?'on':''}" data-ex27-type="${k}" aria-pressed="${cur===k}">${E(T(l))}<i>${c[k]}</i></button>`).join('')}</nav>`;
+}
+window.__typeCounts=typeCounts;
 function tixSection(){ return window.AUREA_RESV?window.AUREA_RESV.exploreSection():''; }
 function teamList(){
   return (S.users||[]).filter(u=>u&&(u.role==='staff'||u.role==='manager')&&u.active!==false&&!hasLeft(u)&&!isAttOnly(u))
@@ -20026,7 +20079,7 @@ function contactSection(){
   </section>`;
 }
 function todayStrip(){
-  const ti=todayIndex(), now=nowMinutes(), acts=dayActs(ti);
+  const ti=todayIndex(), now=nowMinutes(), acts=dayActsAll(ti);
   const live=acts.find(a=>wins(a).some(w=>now>=w.s0&&now<w.e0));
   const nx=acts.find(a=>{ const w=wins(a); return w.length&&w[0].s0>now; });
   const w=S.weather&&S.weather.cur;
@@ -20048,30 +20101,34 @@ function exploreView(){
   const head=`${preview?`<div class="ex21-preview"><span>${E(L('previewBar'))}</span><button type="button" id="ex21-endpreview">${E(L('backApp'))}</button></div>`:''}
     <header class="ex21-top">
       <div class="ex21-brand">${brandMark('ex21-mark')}<span><b>${E(st.name||'Entertainment')}</b>${st.hotelName||st.subtitle?`<small>${E(st.hotelName||st.subtitle)}</small>`:''}</span></div>
-      <div class="ex21-tools">${langSelect('ex21-langsel')}${preview?'':`<button type="button" class="ex21-teambtn" id="ex21-signin">${ic('lock',13)} ${E(L('teamSignIn'))}</button>`}</div>
+      <div class="ex21-tools">${langSelect('ex21-langsel')}</div>
     </header>`;
-  const foot=`<footer class="ex21-foot"><span>${E(st.name||'Entertainment')}</span>${preview?'':`<button type="button" id="ex21-signin2">${ic('lock',12)} ${E(L('teamSignIn'))}</button><small>${E(L('teamOnly'))}</small>`}</footer>`;
+  const foot=`<footer class="ex21-foot"><span>${E(st.name||'Entertainment')}</span></footer>`;
   if(cur==='home'){
     const has=k=>secs.some(x=>x[0]===k);
     const g=window.GUEST25&&window.GUEST25.signedIn()?window.GUEST25.profile():null;
-    const n=dayActs(todayIndex()).length, team=teamList();
+    const team=teamList(), tc=typeCounts([todayIndex()]);
     const ini=nm=>window.__initials714?window.__initials714(nm):String(nm||'?').trim().charAt(0).toUpperCase();
     const faces=`<span class="ex26-faces">${team.slice(0,4).map(u=>`<i>${u.photo?`<img src="${E(u.photo)}" alt="" loading="lazy">`:E(ini(u.display_name||u.username))}</i>`).join('')}</span>`;
     const w=S.weather&&S.weather.cur;
+    const sum=PTYPES.filter(p=>tc[p]).map(p=>`<span class="ex27-sum t-${p}">${E(G5T('p_'+p))}<b>${tc[p]}</b></span>`).join('');
+    const me=has('me');
     const T=[
-      ['me','user',label('me'),g?G5T('meInS',{n:String(g.name||'').split(' ')[0]}):G5T('meOutS'),'big'],
-      ['prog','calendar',label('prog'),G5T('progS',{n}),'big'],
+      ['prog','calendar',G5T('todayProg'),sum?PTYPES.filter(p=>tc[p]).map(p=>G5T('p_'+p)+': '+tc[p]).join(' · '):G5T('nothingToday'),'big'],
+      me?['me','user',g?String(g.name||'').split(' ')[0]:G5T('signIn'),g?G5T('meInS2',{r:g.room}):G5T('meOutS'),'big me']:null,
+      me?['me:favs','heart',G5T('tFavs'),G5T('favS'),'']:null,
+      me?['me:booked','check',G5T('tBooked'),G5T('bookedS'),'']:null,
       ['tix','ticket',label('tix'),g?G5T('tixIn'):G5T('tixOut'),''],
+      me?['me:contact','chat',G5T('contactMgr'),G5T('contactMgrS'),'']:null,
       ['team','users',label('team'),G5T('teamS',{n:team.length}),'',faces],
       ['info','pin',label('info'),L('infoSub'),''],
       ['photos','sparkle',label('photos'),L('photosSub'),''],
       ['wxs','sun',label('wxs'),w?Math.round(w.temperature_2m)+'° · '+wmoLabel(w.weather_code):L('wxSub'),''],
-      ['contact','chat',label('contact'),G5T('contactS'),'']
-    ].filter(x=>has(x[0]));
-    return `<main class="ex21 ex26 fadein">${head}
-      <section class="ex21-hero ex26-hero"><p class="ey">${E(P('ey'))}</p><h1>${E(P('title'))}</h1>${todayStrip()}</section>
-      <h2 class="ex26-q">${E(G5T('homeQ'))}</h2>
-      <nav class="ex26-tiles">${T.map(([k,i,l,sub,cls,extra])=>`<button type="button" class="ex26-tile t-${k} ${cls}" data-ex21-go="${k}"><span class="ex26-ic">${extra||ic(i,22)}</span><span class="ex26-tt"><b>${E(l)}</b><small>${E(sub||'')}</small></span><span class="ex26-go" aria-hidden="true">›</span></button>`).join('')}</nav>
+      ['contact','globe',label('contact'),G5T('contactS'),'']
+    ].filter(x=>x&&has(x[0].split(':')[0]));
+    return `<main class="ex21 ex26 ex27 fadein">${head}
+      <section class="ex21-hero ex26-hero"><p class="ey">${E(P('ey'))}</p><h1>${E(P('title'))}</h1>${sum?`<div class="ex27-sums">${sum}</div>`:''}${todayStrip()}</section>
+      <nav class="ex26-tiles">${T.map(([k,i,l,sub,cls,extra])=>{ const [sec,tab]=k.split(':'); return `<button type="button" class="ex26-tile t-${sec}${tab?' t-'+tab:''} ${cls}" data-ex21-go="${sec}"${tab?` data-me-tab="${tab}"`:''}><span class="ex26-ic">${extra||ic(i,22)}</span><span class="ex26-tt"><b>${E(l)}</b><small>${E(sub||'')}</small></span><span class="ex26-go" aria-hidden="true">›</span></button>`; }).join('')}</nav>
       ${foot}</main>`;
   }
   return `<main class="ex21 ex26 fadein">${head}
@@ -20138,9 +20195,13 @@ function wireExplore(){
   const tb2=Q('#ex21-signin2'); if(tb2) tb2.onclick=goTeam;
   const ep=Q('#ex21-endpreview'); if(ep) ep.onclick=()=>{ S.explorePreview=false; X.sec='home'; render(); try{ window.scrollTo(0,0); }catch(_){} };
   root.querySelectorAll('[data-ex21-day]').forEach(b=>b.onclick=()=>{ X.day=+b.dataset.ex21Day; X.week=false; redraw('ex21-prog'); });
+  root.querySelectorAll('[data-ex27-type]').forEach(b=>b.onclick=()=>{ X.ptype=b.dataset.ex27Type; redraw('ex21-prog'); });
+  /* hidden staff access: tap the logo 5 times within 3 seconds */
+  const mk=root.querySelector('.ex21-top .ex21-mark');
+  if(mk&&!S.explorePreview){ mk.onclick=()=>{ const now=Date.now(); X.taps=(X.taps||[]).filter(t0=>now-t0<3000); X.taps.push(now); if(X.taps.length>=5){ X.taps=[]; goTeam(); } }; }
   root.querySelectorAll('[data-ex21-week]').forEach(b=>b.onclick=()=>{ X.week=true; redraw('ex21-prog'); });
   root.querySelectorAll('[data-ex21-act]').forEach(b=>b.onclick=()=>openDetail((S.activities||[]).find(a=>String(a.id)===String(b.dataset.ex21Act))));
-  root.querySelectorAll('[data-ex21-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); window.__ex21Show(a.dataset.ex21Go); });
+  root.querySelectorAll('[data-ex21-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); if(a.dataset.meTab&&window.GUEST25) window.GUEST25.setTab(a.dataset.meTab); window.__ex21Show(a.dataset.ex21Go); });
   const on=root.querySelector('.ex26-nav .on'); if(on) try{ on.scrollIntoView({block:'nearest',inline:'center'}); }catch(_){}
   const pr=Q('#ex21-print'); if(pr) pr.onclick=()=>{ if(typeof window.printInfoBoardProgram635!=='function') return; const all=S.activities; try{ if(window.__tkHidden) S.activities=(all||[]).filter(a=>!window.__tkHidden(a)); window.printInfoBoardProgram635({scope:'week',includeWho:false}); } finally{ S.activities=all; } };
   const ap=Q('#ex21-allph'); if(ap) ap.onclick=()=>{ X.allPhotos=!X.allPhotos; redraw(X.allPhotos?null:'ex21-photos'); };
@@ -20178,8 +20239,9 @@ function teamSignIn(say){
     clearAttempts();
     const role=found.role==='manager'?'manager':'staff';
     TEAM.user=''; S.remember=true; S.explorePreview=false;
-    S.session={role,name:found.display_name||found.username,username:found.username||u,userId:found.id,accountId:found.id,number:found.number||null,photo:found.photo||'',token:token||''};
+    S.session={role,name:found.display_name||found.username,username:found.username||u,userId:found.id,accountId:found.id,number:found.number||null,photo:found.photo||'',token:token||'',hotel_id:found.hotel_id||1};
     S.tab=defaultTabFor(role); navReset(); persist();
+    if(role==='staff'&&found.hotel_id&&+found.hotel_id!==(window.__hotelId||1)){ try{ localStorage.setItem('ent_hotel_v728',String(found.hotel_id)); }catch(_){} location.reload(); return; }
     try{ render(); }catch(e){ console.error('login render failed',e); S.tab=role==='manager'?'dash':'today'; persist(); render(); }
     try{ askNotifPermission(); }catch(_){}
   };
@@ -21578,7 +21640,7 @@ function ago(ts){ const t0=Date.parse(ts||''); if(!t0) return ''; const m=Math.r
 
 /* ======================= WORDS (guests) ======================= */
 const T25={
-en:{occAsk:'This room already has a registered guest. If you share the room, enter the last 4 digits of the mobile number of the guest who registered first.',occWrong:'These digits do not match. Ask the guest you share the room with, or contact the Entertainment Team.',occLocked:'Too many tries for this room. Please try again in an hour or contact the Entertainment Team.',occClosed:'This room is already registered to another guest. Please contact the Entertainment Team.',verifyL:'Room partner’s mobile — last 4 digits',beforeStay:'This date is before your arrival.',home:'Home',homeQ:'What would you like to see?',meOutS:'Sign in to book, save favourites and more',meInS:'Hello {n} — your bookings and tickets',progS:'Today: {n} activities and shows',tixOut:'Sign in to see and reserve tickets',tixIn:'Reserve your paper tickets',teamS:'{n} people — tap to meet them',contactS:'WhatsApp, social media and reviews',tixLocked:'Tickets, prices and offers are shown after you sign in.',me:'My stay',meOut:'Sign in once to book activities, keep favourites, see your tickets and message the Entertainment Manager. The programme stays open to everybody.',meIn:'Your bookings, favourites and tickets for this stay.',
+en:{hotelQ:'Choose your hotel',hotelSub:'Welcome! Please choose the hotel you are staying at.',hotelL:'Hotel',changeHotel:'Change hotel',pAll:'All',p_activity:'Activities',p_event:'Events',p_show:'Shows',p_live:'Live Music',p_special:'Special Events',todayProg:'Today’s programme',nothingToday:'See the whole week',meInS2:'Room {r} · your stay',favS:'Your saved activities',bookedS:'Your booked activities',contactMgrS:'WhatsApp Mr Hassan Amer',step1:'Room',step2:'Your details',step3:'Done',roomQ:'What is your room number?',roomHint:'Letters and numbers, as on your key card — e.g. H1234.',next:'Continue',roomOk:'Room {r} verified',changeRoom:'Change',occAsk:'This room already has a registered guest. If you share the room, enter the last 4 digits of the mobile number of the guest who registered first.',occWrong:'These digits do not match. Ask the guest you share the room with, or contact the Entertainment Team.',occLocked:'Too many tries for this room. Please try again in an hour or contact the Entertainment Team.',occClosed:'This room is already registered to another guest. Please contact the Entertainment Team.',verifyL:'Room partner’s mobile — last 4 digits',beforeStay:'This date is before your arrival.',home:'Home',homeQ:'What would you like to see?',meOutS:'Sign in to book, save favourites and more',meInS:'Hello {n} — your bookings and tickets',progS:'Today: {n} activities and shows',tixOut:'Sign in to see and reserve tickets',tixIn:'Reserve your paper tickets',teamS:'{n} people — tap to meet them',contactS:'WhatsApp, social media and reviews',tixLocked:'Tickets, prices and offers are shown after you sign in.',me:'My stay',meOut:'Sign in once to book activities, keep favourites, see your tickets and message the Entertainment Manager. The programme stays open to everybody.',meIn:'Your bookings, favourites and tickets for this stay.',
   f1:'Book activities',f2:'Save favourites',f3:'Your tickets',f4:'Message the Entertainment Manager',signIn:'Sign in',save:'Save',signOut:'Sign out',change:'Change details',
   tBooked:'Booked activities',tFavs:'Favourites',tTix:'Tickets',tContact:'Contact',book:'Book',booked:'Booked ✓',cancelBooking:'Cancel booking',full:'Full',left:'{n} places left',left1:'1 place left',
   favAdd:'Add to favourites',favDel:'Remove from favourites',favOn:'In your favourites',needSign:'Please sign in first — it takes a minute.',
@@ -21592,7 +21654,7 @@ en:{occAsk:'This room already has a registered guest. If you share the room, ent
   signInToRes:'Sign in to reserve tickets.',youHave:'{n} ticket reservation(s) — see My stay › Tickets',welcome:'Welcome, {n}!',net:'No connection — please try again.',
   notReady:'Guest sign-in opens soon.',notBookable:'This activity cannot be booked.',earlier:'Earlier and cancelled',upcoming:'Coming up',open:'Open',signOutQ:'Sign out on this phone?',
   stay:'{a} → {d}',noLimit:'Free booking',bookFor:'Booking for {d}',when:'When',where:'Where',bookedFor:'Booked for {d}',privacy:'Only you and the Entertainment Manager see these details.',close:'Close'},
-de:{occAsk:'Für dieses Zimmer ist schon ein Gast angemeldet. Wenn du das Zimmer teilst, gib die letzten 4 Ziffern der Handynummer des zuerst angemeldeten Gastes ein.',occWrong:'Die Ziffern stimmen nicht. Frag deinen Zimmerpartner oder wende dich an das Entertainment-Team.',occLocked:'Zu viele Versuche für dieses Zimmer. Bitte in einer Stunde erneut versuchen oder das Entertainment-Team fragen.',occClosed:'Dieses Zimmer ist bereits auf einen anderen Gast angemeldet. Bitte wende dich an das Entertainment-Team.',verifyL:'Handy des Zimmerpartners — letzte 4 Ziffern',beforeStay:'Dieses Datum ist vor deiner Anreise.',home:'Start',homeQ:'Was möchtest du sehen?',meOutS:'Anmelden zum Buchen, Favoriten und mehr',meInS:'Hallo {n} — deine Buchungen und Tickets',progS:'Heute: {n} Aktivitäten und Shows',tixOut:'Anmelden, um Tickets zu sehen und zu reservieren',tixIn:'Reserviere deine Papiertickets',teamS:'{n} Personen — tippe, um sie kennenzulernen',contactS:'WhatsApp, Social Media und Bewertungen',tixLocked:'Tickets, Preise und Angebote siehst du nach der Anmeldung.',me:'Mein Aufenthalt',meOut:'Einmal anmelden, um Aktivitäten zu buchen, Favoriten zu speichern, deine Tickets zu sehen und dem Entertainment Manager zu schreiben. Das Programm bleibt für alle offen.',meIn:'Deine Buchungen, Favoriten und Tickets für diesen Aufenthalt.',
+de:{hotelQ:'Wähle dein Hotel',hotelSub:'Willkommen! Bitte wähle das Hotel, in dem du wohnst.',hotelL:'Hotel',changeHotel:'Hotel wechseln',pAll:'Alle',p_activity:'Aktivitäten',p_event:'Events',p_show:'Shows',p_live:'Live-Musik',p_special:'Special Events',todayProg:'Programm heute',nothingToday:'Die ganze Woche ansehen',meInS2:'Zimmer {r} · dein Aufenthalt',favS:'Deine gespeicherten Aktivitäten',bookedS:'Deine gebuchten Aktivitäten',contactMgrS:'WhatsApp an Mr Hassan Amer',step1:'Zimmer',step2:'Deine Angaben',step3:'Fertig',roomQ:'Wie ist deine Zimmernummer?',roomHint:'Buchstaben und Zahlen wie auf der Schlüsselkarte — z. B. H1234.',next:'Weiter',roomOk:'Zimmer {r} bestätigt',changeRoom:'Ändern',occAsk:'Für dieses Zimmer ist schon ein Gast angemeldet. Wenn du das Zimmer teilst, gib die letzten 4 Ziffern der Handynummer des zuerst angemeldeten Gastes ein.',occWrong:'Die Ziffern stimmen nicht. Frag deinen Zimmerpartner oder wende dich an das Entertainment-Team.',occLocked:'Zu viele Versuche für dieses Zimmer. Bitte in einer Stunde erneut versuchen oder das Entertainment-Team fragen.',occClosed:'Dieses Zimmer ist bereits auf einen anderen Gast angemeldet. Bitte wende dich an das Entertainment-Team.',verifyL:'Handy des Zimmerpartners — letzte 4 Ziffern',beforeStay:'Dieses Datum ist vor deiner Anreise.',home:'Start',homeQ:'Was möchtest du sehen?',meOutS:'Anmelden zum Buchen, Favoriten und mehr',meInS:'Hallo {n} — deine Buchungen und Tickets',progS:'Heute: {n} Aktivitäten und Shows',tixOut:'Anmelden, um Tickets zu sehen und zu reservieren',tixIn:'Reserviere deine Papiertickets',teamS:'{n} Personen — tippe, um sie kennenzulernen',contactS:'WhatsApp, Social Media und Bewertungen',tixLocked:'Tickets, Preise und Angebote siehst du nach der Anmeldung.',me:'Mein Aufenthalt',meOut:'Einmal anmelden, um Aktivitäten zu buchen, Favoriten zu speichern, deine Tickets zu sehen und dem Entertainment Manager zu schreiben. Das Programm bleibt für alle offen.',meIn:'Deine Buchungen, Favoriten und Tickets für diesen Aufenthalt.',
   f1:'Aktivitäten buchen',f2:'Favoriten speichern',f3:'Deine Tickets',f4:'Dem Entertainment Manager schreiben',signIn:'Anmelden',save:'Speichern',signOut:'Abmelden',change:'Angaben ändern',
   tBooked:'Gebuchte Aktivitäten',tFavs:'Favoriten',tTix:'Tickets',tContact:'Kontakt',book:'Buchen',booked:'Gebucht ✓',cancelBooking:'Buchung stornieren',full:'Ausgebucht',left:'noch {n} Plätze',left1:'noch 1 Platz',
   favAdd:'Zu Favoriten',favDel:'Aus Favoriten entfernen',favOn:'In deinen Favoriten',needSign:'Bitte zuerst anmelden — dauert eine Minute.',
@@ -21606,7 +21668,7 @@ de:{occAsk:'Für dieses Zimmer ist schon ein Gast angemeldet. Wenn du das Zimmer
   signInToRes:'Zum Reservieren von Tickets bitte anmelden.',youHave:'{n} Ticket-Reservierung(en) — siehe Mein Aufenthalt › Tickets',welcome:'Willkommen, {n}!',net:'Keine Verbindung — bitte erneut versuchen.',
   notReady:'Die Gast-Anmeldung öffnet bald.',notBookable:'Diese Aktivität kann nicht gebucht werden.',earlier:'Früher und storniert',upcoming:'Demnächst',open:'Öffnen',signOutQ:'Auf diesem Handy abmelden?',
   noLimit:'Freie Buchung',bookFor:'Buchung für {d}',when:'Wann',where:'Wo',bookedFor:'Gebucht für {d}',privacy:'Nur du und der Entertainment Manager sehen diese Angaben.',close:'Schließen'},
-ru:{occAsk:'В этой комнате уже зарегистрирован гость. Если вы живёте вместе, введите последние 4 цифры телефона гостя, зарегистрировавшегося первым.',occWrong:'Цифры не совпадают. Спросите соседа по комнате или обратитесь к команде анимации.',occLocked:'Слишком много попыток для этой комнаты. Попробуйте через час или обратитесь к команде анимации.',occClosed:'Эта комната уже зарегистрирована на другого гостя. Обратитесь к команде анимации.',verifyL:'Телефон соседа по комнате — последние 4 цифры',beforeStay:'Эта дата раньше вашего заезда.',home:'Главная',homeQ:'Что вы хотите посмотреть?',meOutS:'Войдите, чтобы бронировать и сохранять избранное',meInS:'Здравствуйте, {n} — ваши брони и билеты',progS:'Сегодня: {n} активностей и шоу',tixOut:'Войдите, чтобы увидеть и забронировать билеты',tixIn:'Бронируйте бумажные билеты',teamS:'{n} человек — нажмите, чтобы познакомиться',contactS:'WhatsApp, соцсети и отзывы',tixLocked:'Билеты, цены и предложения видны после входа.',me:'Моё пребывание',meOut:'Войдите один раз, чтобы бронировать активности, сохранять избранное, видеть свои билеты и писать менеджеру анимации. Программа открыта для всех.',meIn:'Ваши брони, избранное и билеты на это пребывание.',
+ru:{hotelQ:'Выберите ваш отель',hotelSub:'Добро пожаловать! Выберите отель, в котором вы живёте.',hotelL:'Отель',changeHotel:'Сменить отель',pAll:'Все',p_activity:'Активности',p_event:'События',p_show:'Шоу',p_live:'Живая музыка',p_special:'Особые события',todayProg:'Программа на сегодня',nothingToday:'Смотреть всю неделю',meInS2:'Комната {r} · ваше пребывание',favS:'Сохранённые активности',bookedS:'Ваши брони',contactMgrS:'WhatsApp — Mr Hassan Amer',step1:'Комната',step2:'Ваши данные',step3:'Готово',roomQ:'Какой номер вашей комнаты?',roomHint:'Буквы и цифры, как на ключ-карте — напр. H1234.',next:'Далее',roomOk:'Комната {r} подтверждена',changeRoom:'Изменить',occAsk:'В этой комнате уже зарегистрирован гость. Если вы живёте вместе, введите последние 4 цифры телефона гостя, зарегистрировавшегося первым.',occWrong:'Цифры не совпадают. Спросите соседа по комнате или обратитесь к команде анимации.',occLocked:'Слишком много попыток для этой комнаты. Попробуйте через час или обратитесь к команде анимации.',occClosed:'Эта комната уже зарегистрирована на другого гостя. Обратитесь к команде анимации.',verifyL:'Телефон соседа по комнате — последние 4 цифры',beforeStay:'Эта дата раньше вашего заезда.',home:'Главная',homeQ:'Что вы хотите посмотреть?',meOutS:'Войдите, чтобы бронировать и сохранять избранное',meInS:'Здравствуйте, {n} — ваши брони и билеты',progS:'Сегодня: {n} активностей и шоу',tixOut:'Войдите, чтобы увидеть и забронировать билеты',tixIn:'Бронируйте бумажные билеты',teamS:'{n} человек — нажмите, чтобы познакомиться',contactS:'WhatsApp, соцсети и отзывы',tixLocked:'Билеты, цены и предложения видны после входа.',me:'Моё пребывание',meOut:'Войдите один раз, чтобы бронировать активности, сохранять избранное, видеть свои билеты и писать менеджеру анимации. Программа открыта для всех.',meIn:'Ваши брони, избранное и билеты на это пребывание.',
   f1:'Бронировать активности',f2:'Избранное',f3:'Ваши билеты',f4:'Написать менеджеру анимации',signIn:'Войти',save:'Сохранить',signOut:'Выйти',change:'Изменить данные',
   tBooked:'Мои брони',tFavs:'Избранное',tTix:'Билеты',tContact:'Контакт',book:'Забронировать',booked:'Забронировано ✓',cancelBooking:'Отменить бронь',full:'Мест нет',left:'осталось мест: {n}',left1:'осталось 1 место',
   favAdd:'В избранное',favDel:'Убрать из избранного',favOn:'В избранном',needSign:'Сначала войдите — это займёт минуту.',
@@ -21620,7 +21682,7 @@ ru:{occAsk:'В этой комнате уже зарегистрирован г�
   signInToRes:'Войдите, чтобы бронировать билеты.',youHave:'Брони билетов: {n} — см. Моё пребывание › Билеты',welcome:'Добро пожаловать, {n}!',net:'Нет связи — попробуйте ещё раз.',
   notReady:'Вход для гостей скоро откроется.',notBookable:'Эту активность нельзя забронировать.',earlier:'Прошедшие и отменённые',upcoming:'Скоро',open:'Открыть',signOutQ:'Выйти на этом телефоне?',
   noLimit:'Свободная запись',bookFor:'Бронь на {d}',when:'Когда',where:'Где',bookedFor:'Забронировано на {d}',privacy:'Эти данные видите только вы и менеджер анимации.',close:'Закрыть'},
-pl:{occAsk:'W tym pokoju jest już zarejestrowany gość. Jeśli dzielisz pokój, wpisz 4 ostatnie cyfry numeru telefonu gościa, który zarejestrował się pierwszy.',occWrong:'Cyfry się nie zgadzają. Zapytaj współlokatora lub zespół animacji.',occLocked:'Zbyt wiele prób dla tego pokoju. Spróbuj za godzinę lub skontaktuj się z zespołem animacji.',occClosed:'Ten pokój jest już zarejestrowany na innego gościa. Skontaktuj się z zespołem animacji.',verifyL:'Telefon współlokatora — 4 ostatnie cyfry',beforeStay:'Ta data jest przed Twoim przyjazdem.',home:'Start',homeQ:'Co chcesz zobaczyć?',meOutS:'Zaloguj się, aby rezerwować i zapisywać ulubione',meInS:'Cześć {n} — Twoje rezerwacje i bilety',progS:'Dziś: {n} zajęć i show',tixOut:'Zaloguj się, aby zobaczyć i zarezerwować bilety',tixIn:'Rezerwuj papierowe bilety',teamS:'{n} osób — dotknij, aby ich poznać',contactS:'WhatsApp, media społecznościowe i opinie',tixLocked:'Bilety, ceny i oferty zobaczysz po zalogowaniu.',me:'Mój pobyt',meOut:'Zaloguj się raz, aby rezerwować zajęcia, zapisywać ulubione, widzieć bilety i pisać do Entertainment Managera. Program jest otwarty dla wszystkich.',meIn:'Twoje rezerwacje, ulubione i bilety na ten pobyt.',
+pl:{hotelQ:'Wybierz swój hotel',hotelSub:'Witamy! Wybierz hotel, w którym mieszkasz.',hotelL:'Hotel',changeHotel:'Zmień hotel',pAll:'Wszystko',p_activity:'Zajęcia',p_event:'Wydarzenia',p_show:'Show',p_live:'Muzyka na żywo',p_special:'Wydarzenia specjalne',todayProg:'Program na dziś',nothingToday:'Zobacz cały tydzień',meInS2:'Pokój {r} · Twój pobyt',favS:'Twoje zapisane zajęcia',bookedS:'Twoje rezerwacje',contactMgrS:'WhatsApp do Mr Hassan Amer',step1:'Pokój',step2:'Twoje dane',step3:'Gotowe',roomQ:'Jaki jest numer Twojego pokoju?',roomHint:'Litery i cyfry jak na karcie — np. H1234.',next:'Dalej',roomOk:'Pokój {r} potwierdzony',changeRoom:'Zmień',occAsk:'W tym pokoju jest już zarejestrowany gość. Jeśli dzielisz pokój, wpisz 4 ostatnie cyfry numeru telefonu gościa, który zarejestrował się pierwszy.',occWrong:'Cyfry się nie zgadzają. Zapytaj współlokatora lub zespół animacji.',occLocked:'Zbyt wiele prób dla tego pokoju. Spróbuj za godzinę lub skontaktuj się z zespołem animacji.',occClosed:'Ten pokój jest już zarejestrowany na innego gościa. Skontaktuj się z zespołem animacji.',verifyL:'Telefon współlokatora — 4 ostatnie cyfry',beforeStay:'Ta data jest przed Twoim przyjazdem.',home:'Start',homeQ:'Co chcesz zobaczyć?',meOutS:'Zaloguj się, aby rezerwować i zapisywać ulubione',meInS:'Cześć {n} — Twoje rezerwacje i bilety',progS:'Dziś: {n} zajęć i show',tixOut:'Zaloguj się, aby zobaczyć i zarezerwować bilety',tixIn:'Rezerwuj papierowe bilety',teamS:'{n} osób — dotknij, aby ich poznać',contactS:'WhatsApp, media społecznościowe i opinie',tixLocked:'Bilety, ceny i oferty zobaczysz po zalogowaniu.',me:'Mój pobyt',meOut:'Zaloguj się raz, aby rezerwować zajęcia, zapisywać ulubione, widzieć bilety i pisać do Entertainment Managera. Program jest otwarty dla wszystkich.',meIn:'Twoje rezerwacje, ulubione i bilety na ten pobyt.',
   f1:'Rezerwuj zajęcia',f2:'Zapisuj ulubione',f3:'Twoje bilety',f4:'Napisz do Entertainment Managera',signIn:'Zaloguj się',save:'Zapisz',signOut:'Wyloguj',change:'Zmień dane',
   tBooked:'Zarezerwowane',tFavs:'Ulubione',tTix:'Bilety',tContact:'Kontakt',book:'Rezerwuj',booked:'Zarezerwowano ✓',cancelBooking:'Anuluj rezerwację',full:'Brak miejsc',left:'wolne miejsca: {n}',left1:'1 wolne miejsce',
   favAdd:'Do ulubionych',favDel:'Usuń z ulubionych',favOn:'W ulubionych',needSign:'Najpierw się zaloguj — to minuta.',
@@ -21634,7 +21696,7 @@ pl:{occAsk:'W tym pokoju jest już zarejestrowany gość. Jeśli dzielisz pokój
   signInToRes:'Zaloguj się, aby rezerwować bilety.',youHave:'Rezerwacje biletów: {n} — zob. Mój pobyt › Bilety',welcome:'Witaj, {n}!',net:'Brak połączenia — spróbuj ponownie.',
   notReady:'Logowanie gości wkrótce.',notBookable:'Tych zajęć nie można zarezerwować.',earlier:'Wcześniejsze i anulowane',upcoming:'Wkrótce',open:'Otwórz',signOutQ:'Wylogować na tym telefonie?',
   noLimit:'Wolna rezerwacja',bookFor:'Rezerwacja na {d}',when:'Kiedy',where:'Gdzie',bookedFor:'Zarezerwowano na {d}',privacy:'Te dane widzisz tylko Ty i Entertainment Manager.',close:'Zamknij'},
-cs:{occAsk:'Na tento pokoj je již přihlášen host. Pokud pokoj sdílíte, zadejte poslední 4 číslice mobilu hosta, který se přihlásil první.',occWrong:'Číslice nesouhlasí. Zeptejte se spolubydlícího nebo animačního týmu.',occLocked:'Příliš mnoho pokusů pro tento pokoj. Zkuste to za hodinu nebo kontaktujte animační tým.',occClosed:'Tento pokoj je již přihlášen na jiného hosta. Kontaktujte prosím animační tým.',verifyL:'Mobil spolubydlícího — poslední 4 číslice',beforeStay:'Toto datum je před vaším příjezdem.',home:'Domů',homeQ:'Co chcete vidět?',meOutS:'Přihlaste se k rezervacím a oblíbeným',meInS:'Dobrý den, {n} — vaše rezervace a vstupenky',progS:'Dnes: {n} aktivit a show',tixOut:'Přihlaste se a uvidíte vstupenky',tixIn:'Rezervujte si papírové vstupenky',teamS:'{n} lidí — klepněte a poznejte je',contactS:'WhatsApp, sociální sítě a recenze',tixLocked:'Vstupenky, ceny a nabídky uvidíte po přihlášení.',me:'Můj pobyt',meOut:'Přihlaste se jednou a můžete rezervovat aktivity, ukládat oblíbené, vidět své vstupenky a psát Entertainment Managerovi. Program je otevřený všem.',meIn:'Vaše rezervace, oblíbené a vstupenky pro tento pobyt.',
+cs:{hotelQ:'Vyberte svůj hotel',hotelSub:'Vítejte! Vyberte hotel, ve kterém bydlíte.',hotelL:'Hotel',changeHotel:'Změnit hotel',pAll:'Vše',p_activity:'Aktivity',p_event:'Akce',p_show:'Show',p_live:'Živá hudba',p_special:'Speciální akce',todayProg:'Dnešní program',nothingToday:'Zobrazit celý týden',meInS2:'Pokoj {r} · váš pobyt',favS:'Vaše uložené aktivity',bookedS:'Vaše rezervace',contactMgrS:'WhatsApp — Mr Hassan Amer',step1:'Pokoj',step2:'Vaše údaje',step3:'Hotovo',roomQ:'Jaké je číslo vašeho pokoje?',roomHint:'Písmena a čísla jako na kartě — např. H1234.',next:'Pokračovat',roomOk:'Pokoj {r} ověřen',changeRoom:'Změnit',occAsk:'Na tento pokoj je již přihlášen host. Pokud pokoj sdílíte, zadejte poslední 4 číslice mobilu hosta, který se přihlásil první.',occWrong:'Číslice nesouhlasí. Zeptejte se spolubydlícího nebo animačního týmu.',occLocked:'Příliš mnoho pokusů pro tento pokoj. Zkuste to za hodinu nebo kontaktujte animační tým.',occClosed:'Tento pokoj je již přihlášen na jiného hosta. Kontaktujte prosím animační tým.',verifyL:'Mobil spolubydlícího — poslední 4 číslice',beforeStay:'Toto datum je před vaším příjezdem.',home:'Domů',homeQ:'Co chcete vidět?',meOutS:'Přihlaste se k rezervacím a oblíbeným',meInS:'Dobrý den, {n} — vaše rezervace a vstupenky',progS:'Dnes: {n} aktivit a show',tixOut:'Přihlaste se a uvidíte vstupenky',tixIn:'Rezervujte si papírové vstupenky',teamS:'{n} lidí — klepněte a poznejte je',contactS:'WhatsApp, sociální sítě a recenze',tixLocked:'Vstupenky, ceny a nabídky uvidíte po přihlášení.',me:'Můj pobyt',meOut:'Přihlaste se jednou a můžete rezervovat aktivity, ukládat oblíbené, vidět své vstupenky a psát Entertainment Managerovi. Program je otevřený všem.',meIn:'Vaše rezervace, oblíbené a vstupenky pro tento pobyt.',
   f1:'Rezervovat aktivity',f2:'Ukládat oblíbené',f3:'Vaše vstupenky',f4:'Napsat Entertainment Managerovi',signIn:'Přihlásit',save:'Uložit',signOut:'Odhlásit',change:'Změnit údaje',
   tBooked:'Rezervované',tFavs:'Oblíbené',tTix:'Vstupenky',tContact:'Kontakt',book:'Rezervovat',booked:'Rezervováno ✓',cancelBooking:'Zrušit rezervaci',full:'Obsazeno',left:'volná místa: {n}',left1:'1 volné místo',
   favAdd:'Do oblíbených',favDel:'Odebrat z oblíbených',favOn:'V oblíbených',needSign:'Nejdřív se přihlaste — zabere to minutu.',
@@ -21648,7 +21710,7 @@ cs:{occAsk:'Na tento pokoj je již přihlášen host. Pokud pokoj sdílíte, zad
   signInToRes:'Pro rezervaci vstupenek se přihlaste.',youHave:'Rezervace vstupenek: {n} — viz Můj pobyt › Vstupenky',welcome:'Vítejte, {n}!',net:'Bez připojení — zkuste to znovu.',
   notReady:'Přihlášení hostů brzy.',notBookable:'Tuto aktivitu nelze rezervovat.',earlier:'Dřívější a zrušené',upcoming:'Brzy',open:'Otevřít',signOutQ:'Odhlásit na tomto telefonu?',
   noLimit:'Volná rezervace',bookFor:'Rezervace na {d}',when:'Kdy',where:'Kde',bookedFor:'Rezervováno na {d}',privacy:'Tyto údaje vidíte jen vy a Entertainment Manager.',close:'Zavřít'},
-nl:{occAsk:'Voor deze kamer is al een gast ingelogd. Deel je de kamer, vul dan de laatste 4 cijfers in van het mobiele nummer van de gast die zich eerst aanmeldde.',occWrong:'De cijfers kloppen niet. Vraag het je kamergenoot of het entertainmentteam.',occLocked:'Te veel pogingen voor deze kamer. Probeer het over een uur opnieuw of vraag het entertainmentteam.',occClosed:'Deze kamer is al aangemeld door een andere gast. Neem contact op met het entertainmentteam.',verifyL:'Mobiel van je kamergenoot — laatste 4 cijfers',beforeStay:'Deze datum ligt vóór je aankomst.',home:'Start',homeQ:'Wat wil je zien?',meOutS:'Log in om te boeken en favorieten te bewaren',meInS:'Hallo {n} — je boekingen en tickets',progS:'Vandaag: {n} activiteiten en shows',tixOut:'Log in om tickets te zien en te reserveren',tixIn:'Reserveer je papieren tickets',teamS:'{n} mensen — tik om ze te leren kennen',contactS:'WhatsApp, sociale media en reviews',tixLocked:'Tickets, prijzen en aanbiedingen zie je na het inloggen.',me:'Mijn verblijf',meOut:'Log één keer in om activiteiten te boeken, favorieten te bewaren, je tickets te zien en de Entertainment Manager te appen. Het programma blijft voor iedereen open.',meIn:'Je boekingen, favorieten en tickets voor dit verblijf.',
+nl:{hotelQ:'Kies je hotel',hotelSub:'Welkom! Kies het hotel waar je verblijft.',hotelL:'Hotel',changeHotel:'Ander hotel',pAll:'Alles',p_activity:'Activiteiten',p_event:'Evenementen',p_show:'Shows',p_live:'Livemuziek',p_special:'Speciale events',todayProg:'Programma van vandaag',nothingToday:'Bekijk de hele week',meInS2:'Kamer {r} · je verblijf',favS:'Je bewaarde activiteiten',bookedS:'Je geboekte activiteiten',contactMgrS:'WhatsApp Mr Hassan Amer',step1:'Kamer',step2:'Je gegevens',step3:'Klaar',roomQ:'Wat is je kamernummer?',roomHint:'Letters en cijfers zoals op je sleutelkaart — bijv. H1234.',next:'Verder',roomOk:'Kamer {r} bevestigd',changeRoom:'Wijzigen',occAsk:'Voor deze kamer is al een gast ingelogd. Deel je de kamer, vul dan de laatste 4 cijfers in van het mobiele nummer van de gast die zich eerst aanmeldde.',occWrong:'De cijfers kloppen niet. Vraag het je kamergenoot of het entertainmentteam.',occLocked:'Te veel pogingen voor deze kamer. Probeer het over een uur opnieuw of vraag het entertainmentteam.',occClosed:'Deze kamer is al aangemeld door een andere gast. Neem contact op met het entertainmentteam.',verifyL:'Mobiel van je kamergenoot — laatste 4 cijfers',beforeStay:'Deze datum ligt vóór je aankomst.',home:'Start',homeQ:'Wat wil je zien?',meOutS:'Log in om te boeken en favorieten te bewaren',meInS:'Hallo {n} — je boekingen en tickets',progS:'Vandaag: {n} activiteiten en shows',tixOut:'Log in om tickets te zien en te reserveren',tixIn:'Reserveer je papieren tickets',teamS:'{n} mensen — tik om ze te leren kennen',contactS:'WhatsApp, sociale media en reviews',tixLocked:'Tickets, prijzen en aanbiedingen zie je na het inloggen.',me:'Mijn verblijf',meOut:'Log één keer in om activiteiten te boeken, favorieten te bewaren, je tickets te zien en de Entertainment Manager te appen. Het programma blijft voor iedereen open.',meIn:'Je boekingen, favorieten en tickets voor dit verblijf.',
   f1:'Activiteiten boeken',f2:'Favorieten bewaren',f3:'Je tickets',f4:'De Entertainment Manager appen',signIn:'Inloggen',save:'Opslaan',signOut:'Uitloggen',change:'Gegevens wijzigen',
   tBooked:'Geboekt',tFavs:'Favorieten',tTix:'Tickets',tContact:'Contact',book:'Boeken',booked:'Geboekt ✓',cancelBooking:'Boeking annuleren',full:'Vol',left:'nog {n} plaatsen',left1:'nog 1 plaats',
   favAdd:'Aan favorieten',favDel:'Uit favorieten',favOn:'In je favorieten',needSign:'Log eerst in — het duurt een minuut.',
@@ -21662,7 +21724,7 @@ nl:{occAsk:'Voor deze kamer is al een gast ingelogd. Deel je de kamer, vul dan d
   signInToRes:'Log in om tickets te reserveren.',youHave:'{n} ticketreservering(en) — zie Mijn verblijf › Tickets',welcome:'Welkom, {n}!',net:'Geen verbinding — probeer opnieuw.',
   notReady:'Inloggen voor gasten opent binnenkort.',notBookable:'Deze activiteit kan niet worden geboekt.',earlier:'Eerder en geannuleerd',upcoming:'Binnenkort',open:'Openen',signOutQ:'Uitloggen op deze telefoon?',
   noLimit:'Vrij boeken',bookFor:'Boeking voor {d}',when:'Wanneer',where:'Waar',bookedFor:'Geboekt voor {d}',privacy:'Alleen jij en de Entertainment Manager zien deze gegevens.',close:'Sluiten'},
-fr:{occAsk:'Un client est déjà enregistré pour cette chambre. Si vous partagez la chambre, entrez les 4 derniers chiffres du mobile du client enregistré en premier.',occWrong:'Les chiffres ne correspondent pas. Demandez à votre compagnon de chambre ou à l’équipe d’animation.',occLocked:'Trop d’essais pour cette chambre. Réessayez dans une heure ou contactez l’équipe d’animation.',occClosed:'Cette chambre est déjà enregistrée par un autre client. Contactez l’équipe d’animation.',verifyL:'Mobile de votre compagnon de chambre — 4 derniers chiffres',beforeStay:'Cette date est avant votre arrivée.',home:'Accueil',homeQ:'Que voulez-vous voir ?',meOutS:'Connectez-vous pour réserver et garder vos favoris',meInS:'Bonjour {n} — vos réservations et billets',progS:'Aujourd’hui : {n} activités et spectacles',tixOut:'Connectez-vous pour voir et réserver les billets',tixIn:'Réservez vos billets papier',teamS:'{n} personnes — touchez pour les rencontrer',contactS:'WhatsApp, réseaux sociaux et avis',tixLocked:'Billets, prix et offres visibles après connexion.',me:'Mon séjour',meOut:'Connectez-vous une fois pour réserver des activités, garder vos favoris, voir vos billets et écrire à l’Entertainment Manager. Le programme reste ouvert à tous.',meIn:'Vos réservations, favoris et billets pour ce séjour.',
+fr:{hotelQ:'Choisissez votre hôtel',hotelSub:'Bienvenue ! Choisissez l’hôtel où vous séjournez.',hotelL:'Hôtel',changeHotel:'Changer d’hôtel',pAll:'Tout',p_activity:'Activités',p_event:'Événements',p_show:'Spectacles',p_live:'Musique live',p_special:'Événements spéciaux',todayProg:'Programme du jour',nothingToday:'Voir toute la semaine',meInS2:'Chambre {r} · votre séjour',favS:'Vos activités enregistrées',bookedS:'Vos activités réservées',contactMgrS:'WhatsApp Mr Hassan Amer',step1:'Chambre',step2:'Vos informations',step3:'Terminé',roomQ:'Quel est votre numéro de chambre ?',roomHint:'Lettres et chiffres, comme sur votre carte — ex. H1234.',next:'Continuer',roomOk:'Chambre {r} vérifiée',changeRoom:'Modifier',occAsk:'Un client est déjà enregistré pour cette chambre. Si vous partagez la chambre, entrez les 4 derniers chiffres du mobile du client enregistré en premier.',occWrong:'Les chiffres ne correspondent pas. Demandez à votre compagnon de chambre ou à l’équipe d’animation.',occLocked:'Trop d’essais pour cette chambre. Réessayez dans une heure ou contactez l’équipe d’animation.',occClosed:'Cette chambre est déjà enregistrée par un autre client. Contactez l’équipe d’animation.',verifyL:'Mobile de votre compagnon de chambre — 4 derniers chiffres',beforeStay:'Cette date est avant votre arrivée.',home:'Accueil',homeQ:'Que voulez-vous voir ?',meOutS:'Connectez-vous pour réserver et garder vos favoris',meInS:'Bonjour {n} — vos réservations et billets',progS:'Aujourd’hui : {n} activités et spectacles',tixOut:'Connectez-vous pour voir et réserver les billets',tixIn:'Réservez vos billets papier',teamS:'{n} personnes — touchez pour les rencontrer',contactS:'WhatsApp, réseaux sociaux et avis',tixLocked:'Billets, prix et offres visibles après connexion.',me:'Mon séjour',meOut:'Connectez-vous une fois pour réserver des activités, garder vos favoris, voir vos billets et écrire à l’Entertainment Manager. Le programme reste ouvert à tous.',meIn:'Vos réservations, favoris et billets pour ce séjour.',
   f1:'Réserver des activités',f2:'Garder des favoris',f3:'Vos billets',f4:'Écrire à l’Entertainment Manager',signIn:'Se connecter',save:'Enregistrer',signOut:'Se déconnecter',change:'Modifier',
   tBooked:'Réservées',tFavs:'Favoris',tTix:'Billets',tContact:'Contact',book:'Réserver',booked:'Réservé ✓',cancelBooking:'Annuler la réservation',full:'Complet',left:'{n} places restantes',left1:'1 place restante',
   favAdd:'Ajouter aux favoris',favDel:'Retirer des favoris',favOn:'Dans vos favoris',needSign:'Connectez-vous d’abord — une minute suffit.',
@@ -21676,7 +21738,7 @@ fr:{occAsk:'Un client est déjà enregistré pour cette chambre. Si vous partage
   signInToRes:'Connectez-vous pour réserver des billets.',youHave:'{n} réservation(s) de billets — voir Mon séjour › Billets',welcome:'Bienvenue, {n} !',net:'Pas de connexion — réessayez.',
   notReady:'La connexion client ouvre bientôt.',notBookable:'Cette activité ne peut pas être réservée.',earlier:'Passées et annulées',upcoming:'À venir',open:'Ouvrir',signOutQ:'Se déconnecter sur ce téléphone ?',
   noLimit:'Réservation libre',bookFor:'Réservation pour {d}',when:'Quand',where:'Où',bookedFor:'Réservé pour {d}',privacy:'Seuls vous et l’Entertainment Manager voyez ces données.',close:'Fermer'},
-ar:{occAsk:'هذه الغرفة مسجّلة بالفعل باسم ضيف. إذا كنت تشاركه الغرفة، أدخل آخر 4 أرقام من هاتف الضيف الذي سجّل أولاً.',occWrong:'الأرقام غير صحيحة. اسأل شريكك في الغرفة أو تواصل مع فريق الترفيه.',occLocked:'محاولات كثيرة لهذه الغرفة. حاول بعد ساعة أو تواصل مع فريق الترفيه.',occClosed:'هذه الغرفة مسجّلة لضيف آخر. يرجى التواصل مع فريق الترفيه.',verifyL:'هاتف شريك الغرفة — آخر 4 أرقام',beforeStay:'هذا التاريخ قبل وصولك.',home:'الرئيسية',homeQ:'ماذا تريد أن ترى؟',meOutS:'سجّل الدخول للحجز وحفظ المفضلة',meInS:'مرحباً {n} — حجوزاتك وتذاكرك',progS:'اليوم: {n} أنشطة وعروض',tixOut:'سجّل الدخول لرؤية التذاكر وحجزها',tixIn:'احجز تذاكرك الورقية',teamS:'{n} أشخاص — اضغط للتعرف عليهم',contactS:'واتساب ووسائل التواصل والتقييمات',tixLocked:'تظهر التذاكر والأسعار والعروض بعد تسجيل الدخول.',me:'إقامتي',meOut:'سجّل الدخول مرة واحدة لحجز الأنشطة وحفظ المفضلة ورؤية تذاكرك ومراسلة مدير الترفيه. البرنامج مفتوح للجميع.',meIn:'حجوزاتك ومفضلتك وتذاكرك لهذه الإقامة.',
+ar:{hotelQ:'اختر فندقك',hotelSub:'أهلاً بك! اختر الفندق الذي تقيم فيه.',hotelL:'الفندق',changeHotel:'تغيير الفندق',pAll:'الكل',p_activity:'الأنشطة',p_event:'الفعاليات',p_show:'العروض',p_live:'موسيقى حية',p_special:'فعاليات خاصة',todayProg:'برنامج اليوم',nothingToday:'شاهد الأسبوع كاملاً',meInS2:'الغرفة {r} · إقامتك',favS:'أنشطتك المحفوظة',bookedS:'أنشطتك المحجوزة',contactMgrS:'واتساب Mr Hassan Amer',step1:'الغرفة',step2:'بياناتك',step3:'تم',roomQ:'ما رقم غرفتك؟',roomHint:'حروف وأرقام كما على بطاقة المفتاح — مثل H1234.',next:'متابعة',roomOk:'تم التحقق من الغرفة {r}',changeRoom:'تغيير',occAsk:'هذه الغرفة مسجّلة بالفعل باسم ضيف. إذا كنت تشاركه الغرفة، أدخل آخر 4 أرقام من هاتف الضيف الذي سجّل أولاً.',occWrong:'الأرقام غير صحيحة. اسأل شريكك في الغرفة أو تواصل مع فريق الترفيه.',occLocked:'محاولات كثيرة لهذه الغرفة. حاول بعد ساعة أو تواصل مع فريق الترفيه.',occClosed:'هذه الغرفة مسجّلة لضيف آخر. يرجى التواصل مع فريق الترفيه.',verifyL:'هاتف شريك الغرفة — آخر 4 أرقام',beforeStay:'هذا التاريخ قبل وصولك.',home:'الرئيسية',homeQ:'ماذا تريد أن ترى؟',meOutS:'سجّل الدخول للحجز وحفظ المفضلة',meInS:'مرحباً {n} — حجوزاتك وتذاكرك',progS:'اليوم: {n} أنشطة وعروض',tixOut:'سجّل الدخول لرؤية التذاكر وحجزها',tixIn:'احجز تذاكرك الورقية',teamS:'{n} أشخاص — اضغط للتعرف عليهم',contactS:'واتساب ووسائل التواصل والتقييمات',tixLocked:'تظهر التذاكر والأسعار والعروض بعد تسجيل الدخول.',me:'إقامتي',meOut:'سجّل الدخول مرة واحدة لحجز الأنشطة وحفظ المفضلة ورؤية تذاكرك ومراسلة مدير الترفيه. البرنامج مفتوح للجميع.',meIn:'حجوزاتك ومفضلتك وتذاكرك لهذه الإقامة.',
   f1:'حجز الأنشطة',f2:'حفظ المفضلة',f3:'تذاكرك',f4:'مراسلة مدير الترفيه',signIn:'تسجيل الدخول',save:'حفظ',signOut:'تسجيل الخروج',change:'تعديل البيانات',
   tBooked:'الأنشطة المحجوزة',tFavs:'المفضلة',tTix:'التذاكر',tContact:'تواصل',book:'احجز',booked:'تم الحجز ✓',cancelBooking:'إلغاء الحجز',full:'مكتمل',left:'متبقٍ {n} أماكن',left1:'متبقٍ مكان واحد',
   favAdd:'أضف إلى المفضلة',favDel:'إزالة من المفضلة',favOn:'في مفضلتك',needSign:'سجّل الدخول أولاً — يستغرق دقيقة.',
@@ -21690,7 +21752,7 @@ ar:{occAsk:'هذه الغرفة مسجّلة بالفعل باسم ضيف. إذ�
   signInToRes:'سجّل الدخول لحجز التذاكر.',youHave:'حجوزات التذاكر: {n} — انظر إقامتي › التذاكر',welcome:'أهلاً {n}!',net:'لا يوجد اتصال — حاول مرة أخرى.',
   notReady:'تسجيل دخول الضيوف قريباً.',notBookable:'لا يمكن حجز هذا النشاط.',earlier:'السابقة والملغاة',upcoming:'القادمة',open:'فتح',signOutQ:'تسجيل الخروج على هذا الهاتف؟',
   noLimit:'حجز مفتوح',bookFor:'الحجز ليوم {d}',when:'متى',where:'أين',bookedFor:'محجوز ليوم {d}',privacy:'لا يرى هذه البيانات إلا أنت ومدير الترفيه.',close:'إغلاق'},
-it:{occAsk:'Questa camera ha già un ospite registrato. Se condividi la camera, inserisci le ultime 4 cifre del cellulare dell’ospite registrato per primo.',occWrong:'Le cifre non corrispondono. Chiedi al tuo compagno di camera o al team di animazione.',occLocked:'Troppi tentativi per questa camera. Riprova tra un’ora o contatta il team di animazione.',occClosed:'Questa camera è già registrata a un altro ospite. Contatta il team di animazione.',verifyL:'Cellulare del compagno di camera — ultime 4 cifre',beforeStay:'Questa data è prima del tuo arrivo.',home:'Home',homeQ:'Cosa vuoi vedere?',meOutS:'Accedi per prenotare e salvare i preferiti',meInS:'Ciao {n} — prenotazioni e biglietti',progS:'Oggi: {n} attività e spettacoli',tixOut:'Accedi per vedere e prenotare i biglietti',tixIn:'Prenota i biglietti cartacei',teamS:'{n} persone — tocca per conoscerle',contactS:'WhatsApp, social e recensioni',tixLocked:'Biglietti, prezzi e offerte sono visibili dopo l’accesso.',me:'Il mio soggiorno',meOut:'Accedi una volta per prenotare attività, salvare i preferiti, vedere i tuoi biglietti e scrivere all’Entertainment Manager. Il programma resta aperto a tutti.',meIn:'Le tue prenotazioni, i preferiti e i biglietti di questo soggiorno.',
+it:{hotelQ:'Scegli il tuo hotel',hotelSub:'Benvenuto! Scegli l’hotel in cui soggiorni.',hotelL:'Hotel',changeHotel:'Cambia hotel',pAll:'Tutto',p_activity:'Attività',p_event:'Eventi',p_show:'Spettacoli',p_live:'Musica dal vivo',p_special:'Eventi speciali',todayProg:'Programma di oggi',nothingToday:'Vedi tutta la settimana',meInS2:'Camera {r} · il tuo soggiorno',favS:'Le tue attività salvate',bookedS:'Le tue attività prenotate',contactMgrS:'WhatsApp Mr Hassan Amer',step1:'Camera',step2:'I tuoi dati',step3:'Fatto',roomQ:'Qual è il numero della tua camera?',roomHint:'Lettere e numeri come sulla chiave — es. H1234.',next:'Continua',roomOk:'Camera {r} verificata',changeRoom:'Cambia',occAsk:'Questa camera ha già un ospite registrato. Se condividi la camera, inserisci le ultime 4 cifre del cellulare dell’ospite registrato per primo.',occWrong:'Le cifre non corrispondono. Chiedi al tuo compagno di camera o al team di animazione.',occLocked:'Troppi tentativi per questa camera. Riprova tra un’ora o contatta il team di animazione.',occClosed:'Questa camera è già registrata a un altro ospite. Contatta il team di animazione.',verifyL:'Cellulare del compagno di camera — ultime 4 cifre',beforeStay:'Questa data è prima del tuo arrivo.',home:'Home',homeQ:'Cosa vuoi vedere?',meOutS:'Accedi per prenotare e salvare i preferiti',meInS:'Ciao {n} — prenotazioni e biglietti',progS:'Oggi: {n} attività e spettacoli',tixOut:'Accedi per vedere e prenotare i biglietti',tixIn:'Prenota i biglietti cartacei',teamS:'{n} persone — tocca per conoscerle',contactS:'WhatsApp, social e recensioni',tixLocked:'Biglietti, prezzi e offerte sono visibili dopo l’accesso.',me:'Il mio soggiorno',meOut:'Accedi una volta per prenotare attività, salvare i preferiti, vedere i tuoi biglietti e scrivere all’Entertainment Manager. Il programma resta aperto a tutti.',meIn:'Le tue prenotazioni, i preferiti e i biglietti di questo soggiorno.',
   f1:'Prenota attività',f2:'Salva i preferiti',f3:'I tuoi biglietti',f4:'Scrivi all’Entertainment Manager',signIn:'Accedi',save:'Salva',signOut:'Esci',change:'Modifica dati',
   tBooked:'Prenotate',tFavs:'Preferiti',tTix:'Biglietti',tContact:'Contatto',book:'Prenota',booked:'Prenotato ✓',cancelBooking:'Annulla prenotazione',full:'Completo',left:'{n} posti liberi',left1:'1 posto libero',
   favAdd:'Aggiungi ai preferiti',favDel:'Rimuovi dai preferiti',favOn:'Nei tuoi preferiti',needSign:'Prima accedi — ci vuole un minuto.',
@@ -21760,7 +21822,7 @@ async function refresh(force){
   if(!r.ok){ serverSignedOut(); return true; }
   const before=sigG();
   G5.stay=r.stay; G5.bookings=r.bookings||[]; G5.favs=(r.favorites||[]).map(String); G5.tickets=r.tickets||[];
-  G5.mgrWa=r.manager_whatsapp||''; G5.mgrName=r.manager_name||''; G5.state='ok'; saveLocal();
+  G5.mgrWa=r.manager_whatsapp||''; G5.mgrName=r.manager_name||''; G5.state='ok'; saveLocal(); checkStayHotel();
   return sigG()!==before;
 }
 function serverSignedOut(){
@@ -21779,12 +21841,13 @@ async function register(g){
     G5.needVerify=true; showVerify();
     return {err:r.error==='occupied'?T('occAsk'):T('occWrong'),f:'#g25-verify'};
   }
+  if(r&&!r.ok&&r.error==='room'&&G5.room&&!G5.token){ G5.room=''; setTimeout(()=>{ paint('ex21-me'); const e2=Q('#g27-err'); if(e2) e2.textContent=T('roomBad'); },30); return {err:T('roomBad')}; }
   if(r&&!r.ok&&(r.error==='locked'||r.error==='occupied_closed')) return {err:T(r.error==='locked'?'occLocked':'occClosed'),f:'#rv-room'};
   if(!r||!r.ok){
     const m={room:['roomBad','#rv-room'],name:['checkName','#rv-name'],phone:['checkPhone','#rv-phone'],dates:['checkDates','#rv-dep'],nationality:['checkNat','#rv-nat']}[r&&r.error];
     return m?{err:T(m[0]),f:m[1]}:{err:T('net')};
   }
-  const first=!G5.token; G5.needVerify=false;
+  const first=!G5.token; G5.needVerify=false; G5.room='';
   G5.token=r.token; G5.stay=r.stay; G5.checked=0; G5.form=false; G5.prefill=null; G5.note=''; saveLocal();
   await refresh(true);
   try{ if(R().load) await R().load(); }catch(_){}
@@ -21870,7 +21933,8 @@ async function toggleFav(id){
 function runPending(p){ if(!p||!signedIn()) return; if(p.type==='book') book(p.id,p.date); else if(p.type==='fav') toggleFav(p.id); }
 function askSignIn(from){
   document.querySelectorAll('.modal-bg').forEach(w=>{ if(w.querySelector('.ex21-detail')||w.querySelector('.rv-pack')) w.remove(); });
-  G5.form=true; G5.note=from?T('needSign'):''; G5.back=from==='tix'?'tix':'';
+  G5.form=true; G5.note=from?T('needSign'):''; G5.back=from==='tix'?'tix':''; if(!signedIn()) G5.room=G5.room||'';
+  setTimeout(()=>{ const r0=Q('#g27-room'); if(r0) try{ r0.focus({preventScroll:true}); }catch(_){ } },140);
   paint('ex21-me');
   setTimeout(()=>{ const r=Q('#rv-room'); if(r) try{ r.focus({preventScroll:true}); }catch(_){ } },120);
 }
@@ -21998,9 +22062,17 @@ window.__g25Section=function(){
   if(G5.state==='missing'&&!inn) return `<section class="ex21-sec g25" id="ex21-me">${head}<p class="rv-soon">${icn('lock',16)}<span>${E(T('notReady'))}</span></p></section>`;
   const X=R();
   if(!inn){
-    const body=G5.form&&X.regForm
-      ?`${G5.note?`<p class="g25-note">${icn('lock',14)} ${E(G5.note)}</p>`:''}${withVerify(X.regForm(G5.prefill||{},T('signIn'),true))}<p class="g25-mute">${icn('lock',12)} ${E(T('privacy'))}</p>`
-      :`${featureList()}<button type="button" class="btn" data-g25-signin="me">${E(T('signIn'))}</button>`;
+    const steps=n=>`<ol class="g27-steps">${[['1',T('step1')],['2',T('step2')],['3',T('step3')]].map(([k,l],i)=>`<li class="${i+1<n?'done':i+1===n?'on':''}"><i>${i+1<n?'✓':k}</i><span>${E(l)}</span></li>`).join('')}</ol>`;
+    const note=G5.note?`<p class="g25-note">${icn('lock',14)} ${E(G5.note)}</p>`:'';
+    const body=!(G5.form&&X.regForm)
+      ?`${featureList()}<button type="button" class="btn" data-g25-signin="me">${E(T('signIn'))}</button>`
+      :!G5.room
+      ?`${steps(1)}${note}${HS.list&&HS.list.length>1?`<div class="g28-cur">${icn('home',15)}<span>${E(T('hotelL'))}: <b>${E(hotelName(curHotel())||'')}</b></span><button type="button" class="g25-mini" id="g28-chg">${E(T('changeHotel'))}</button></div>`:''}<div class="g27-room"><label for="g27-room">${E(T('roomQ'))}</label>
+          <input id="g27-room" type="text" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="12" autocomplete="off" enterkeyhint="go" placeholder="H1234" value="${E((G5.prefill&&G5.prefill.room)||'')}">
+          <small>${E(T('roomHint'))}</small><p class="rv-err" id="g27-err" role="alert" aria-live="polite"></p>
+          <button type="button" class="btn" id="g27-next">${E(T('next'))}</button><button type="button" class="btn ghost" id="g27-x">${E(t('cancelBtn'))}</button></div>`
+      :`${steps(2)}<div class="g27-roomok">${icn('check',16)}<span>${E(T('roomOk',{r:G5.room}))}</span><button type="button" class="g25-mini" id="g27-back">${E(T('changeRoom'))}</button></div>${note}
+        <div class="g27-s2">${withVerify(X.regForm({...(G5.prefill||{}),room:G5.room},T('signIn'),true))}</div><p class="g25-mute">${icn('lock',12)} ${E(T('privacy'))}</p>`;
     return `<section class="ex21-sec g25" id="ex21-me">${head}<div class="g25-card">${body}</div></section>`;
   }
   const s=G5.stay, p=profile();
@@ -22047,7 +22119,7 @@ if(!window.__g25Click){
     const el=e.target&&e.target.closest?e.target.closest('[data-g25-signin],[data-g25-tab],[data-g25-book],[data-g25-unbook],[data-g25-fav],[data-g25-open],[data-g25-voucher],[data-g25-contact],[data-g25-signout],[data-g25-edit]'):null;
     if(!el) return;
     const ds=el.dataset;
-    if(ds.g25Signin!=null){ e.preventDefault(); askSignIn(ds.g25Signin==='me'?'':ds.g25Signin); return; }
+    if(ds.g25Signin!=null){ e.preventDefault(); G5.room=''; askSignIn(ds.g25Signin==='me'?'':ds.g25Signin); return; }
     if(ds.g25Tab!=null){ e.preventDefault(); if(ds.g25Tab==='stay'){ G5.form=true; } else G5.tab=ds.g25Tab; paint('ex21-me'); return; }
     if(ds.g25Book!=null){ e.preventDefault(); book(ds.g25Book,ds.g25Date); return; }
     if(ds.g25Unbook!=null){ e.preventDefault(); unbook(ds.g25Unbook); return; }
@@ -22065,8 +22137,28 @@ if(!window.__g25Click){
   if(typeof we0==='function'){
     window.wireExplore=function(){
       we0.apply(this,arguments);
+      /* step 1: the room (checked by the database before the guest types the rest) */
+      const rin=Q('#g27-room'), nx=Q('#g27-next');
+      if(rin&&nx){
+        const er=Q('#g27-err');
+        const go=async()=>{
+          const v=String(rin.value||'').replace(/\s/g,'').toUpperCase();
+          if(!/^[A-Z0-9./-]{1,12}$/.test(v)){ if(er) er.textContent=T('roomFmt'); try{ rin.focus(); }catch(_){ } return; }
+          nx.disabled=true; if(er) er.textContent='';
+          let okRoom=true;
+          try{ const r0=await rpc('public_room_check',{p_room:v}); okRoom=!!(r0&&r0.ok); }catch(e){ okRoom=missing(e); }   // not installed yet: the check happens at the end
+          nx.disabled=false;
+          if(!okRoom){ if(er) er.textContent=T('roomBad'); try{ rin.focus(); }catch(_){ } return; }
+          G5.room=v; paint('ex21-me');
+          setTimeout(()=>{ const h=Q('#ex21-me #rv-room'); if(h){ h.value=v; h.dispatchEvent(new Event('input',{bubbles:true})); } const nm=Q('#rv-name'); if(nm&&!nm.value) try{ nm.focus({preventScroll:true}); }catch(_){ } },60);
+        };
+        nx.onclick=go; rin.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+        const x0=Q('#g27-x'); if(x0) x0.onclick=()=>{ G5.form=false; G5.note=''; G5.pending=null; paint('ex21-me'); };
+      }
+      const ch=Q('#g28-chg'); if(ch) ch.onclick=()=>{ try{ localStorage.removeItem('ent_hotel_v728'); }catch(_){} hotelPicker(); };
+      const bk=Q('#g27-back'); if(bk) bk.onclick=()=>{ G5.room=''; G5.needVerify=false; paint('ex21-me'); };
       const box=Q('#ex21-me .rv-reg');
-      if(box&&R().wireReg) R().wireReg(box.parentNode,register,()=>{ G5.form=false; G5.note=''; G5.pending=null; G5.needVerify=false; paint('ex21-me'); });
+      if(box&&R().wireReg) R().wireReg(box.parentNode,register,()=>{ G5.form=false; G5.note=''; G5.pending=null; G5.needVerify=false; G5.room=''; paint('ex21-me'); });
       if(signedIn()) refresh(false).then(ch=>{ if(ch) softPaint(); });
       loadCounts(false).then(ch=>{ if(ch) softPaint(); });
     };
@@ -22374,13 +22466,15 @@ if(typeof window.openEditModal==='function'){
       let a=input; if(input!=null&&typeof input!=='object') a=act(input);
       if(a&&a.id!=null&&isTkAct(a)) return;                 // ticket events use Tickets, not booking
       const save=[...w.querySelectorAll('#e-save')].pop(); if(!save) return;
-      save.insertAdjacentHTML('beforebegin',bookingEditorHtml(a&&a.id!=null?a:null));
+      const pt=a&&a.id!=null?window.__ptype(a):'activity';
+      save.insertAdjacentHTML('beforebegin',`<div class="g25-ebook g27-etype"><label for="g27-ptype">Programme type</label><select id="g27-ptype">${(window.__PTYPES||[]).map(k=>`<option value="${k}" ${k===pt?'selected':''}>${E(({activity:'Activity',event:'Event',show:'Show',live:'Live Music',special:'Special Event'})[k])}</option>`).join('')}</select><p class="mini">Guests filter the programme by this type and see the right count for each type.</p></div>`+bookingEditorHtml(a&&a.id!=null?a:null));
+      ptypeColumn();
       wireBookingEditor(w,a&&a.id!=null?a:null);
       w.addEventListener('click',ev=>{
         if(!ev.target.closest||!ev.target.closest('#e-save')) return;
         const v=readBookingEditor(w);
         if(!v){ ev.preventDefault(); ev.stopImmediatePropagation(); const b=w.querySelector('#g25-ebook'); if(b) try{ b.scrollIntoView({block:'center'}); }catch(_){ } return; }
-        PEND={modal:w,...v};
+        const ps=w.querySelector('#g27-ptype'); PEND={modal:w,...v,ptype:ps?ps.value:''};
       },true);
     },60);
     return r;
@@ -22390,6 +22484,7 @@ if(typeof window.openEditModal==='function'){
 if(typeof DB!=='undefined'&&DB.saveActivity){
   const sa0=DB.saveActivity.bind(DB);
   DB.saveActivity=async function(a0){
+    if(PEND&&PEND.ptype&&PTYPE_COL&&a0&&PEND.modal&&document.body.contains(PEND.modal)) a0.program_type=PEND.ptype;
     const before=new Set((S.activities||[]).map(x=>String(x&&x.id)));
     const old=a0&&a0.id!=null?act(a0.id):null, keep=old?{booking_enabled:old.booking_enabled,capacity_type:old.capacity_type,booking_capacity:old.booking_capacity}:null;
     const r=await sa0.apply(DB,arguments);
@@ -22407,6 +22502,13 @@ if(typeof DB!=='undefined'&&DB.saveActivity){
   };
 }
 
+/* does the database already have the programme-type column (database-v727.sql)? */
+let PTYPE_COL=false, ptypeChecked=false;
+function ptypeColumn(){
+  if(ptypeChecked) return; ptypeChecked=true;
+  if((S.activities||[]).some(a=>a&&'program_type' in a)){ PTYPE_COL=true; return; }
+  if(REM()) sb('activities?select=program_type&limit=1').then(()=>{ PTYPE_COL=true; }).catch(()=>{ PTYPE_COL=false; });
+}
 /* one listener for the manager page */
 if(!window.__g25mClick){
   window.__g25mClick=true;
@@ -22512,11 +22614,14 @@ if(typeof DB!=='undefined'){
     const cur=(S.users||[]).find(x=>String(x.id)===String(id))||{}, p={...(patch||{})};
     ['username','role'].forEach(k=>{ if(k in p&&String(p[k]??'')===String(cur[k]??'')) delete p[k]; });
     if('password' in p&&!String(p.password||'').trim()) delete p.password;
-    const sens=['username','role','password'].some(k=>k in p);
+    if(UPEND&&String(UPEND.id)===String(id)&&UPEND.modal&&document.body.contains(UPEND.modal)){ p.hotel_id=UPEND.hotel; UPEND=null; }
+    if('hotel_id' in p&&+p.hotel_id===+(cur.hotel_id||0)) delete p.hotel_id;
+    const sens=['username','role','password','hotel_id'].some(k=>k in p);
     if(!REM()||!sens){ delete p.password; return up0(id,p); }
     let r; try{ r=await rpc('mgr_user_update',{p_token:teamTok(),p_id:String(id),p_patch:p}); }catch(e){ if(fallback(e)) return up0(id,patch); throw e; }
     if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can change this — sign in again.':t('errSave')); throw new Error(r&&r.error||'failed'); }
     S.users=S.users.map(u=>String(u.id)===String(id)?{...u,...r.user}:u);
+    if(r.user&&r.user.role==='staff'&&+r.user.hotel_id!==curHotel()){ S.users=S.users.filter(u=>String(u.id)!==String(id)); ok('Moved to '+(hotelName(r.user.hotel_id)||'the other hotel')); }
   };
   DB.deleteUser=async function(id){
     if(!REM()) return del0(id);
@@ -22532,8 +22637,131 @@ if(typeof DB!=='undefined'){
   };
 }
 
+/* ======================= HOTELS (V7.28) ======================= */
+const HS={list:null,mgr:null};
+const curHotel=()=>window.__hotelId||1;
+const hotelName=id=>{ const h=(HS.mgr||HS.list||[]).find(x=>+x.id===+id); return h?h.name:''; };
+async function loadHotels(){
+  if(!REM()) return;
+  try{ HS.list=(await rpc('public_hotels',{}))||[]; }catch(_){ HS.list=null; }
+}
+/* switch this phone to another hotel: save what is pending, clear this hotel's copies, reload */
+async function switchHotel(id){
+  try{ if(window.cloudSyncNowV70) await Promise.race([window.cloudSyncNowV70(), new Promise(r=>setTimeout(r,2500))]); }catch(_){}
+  await new Promise(r=>setTimeout(r,600));
+  try{
+    const ls=localStorage, keepK=['entapp_lang','ent_theme_manual'], keep={};
+    keepK.forEach(k=>{ const v=ls.getItem(k); if(v!=null) keep[k]=v; });
+    let st={}; try{ st=JSON.parse(ls.getItem('entapp_v3')||'{}')||{}; }catch(_){}
+    const st2={}; ['session','lang','remember','theme'].forEach(k=>{ if(k in st) st2[k]=st[k]; });
+    ls.clear();                                    // plain clear: nothing is deleted in the cloud
+    Object.keys(keep).forEach(k=>ls.setItem(k,keep[k]));
+    ls.setItem('entapp_v3',JSON.stringify(st2));
+    ls.setItem('ent_hotel_v728',String(id));
+  }catch(_){}
+  const u=new URL(location.href); u.searchParams.delete('hotel'); location.replace(u.toString());
+}
+/* guests: choose the hotel first (only when there is more than one) */
+function hotelPicker(){
+  if(Q('.g28-pick')) return;
+  const list=HS.list||[];
+  const w=document.createElement('div'); w.className='g28-pick';
+  w.innerHTML=`<div class="g28-pin"><p class="g28-kick">${E(T('hotelSub'))}</p><h2>${E(T('hotelQ'))}</h2>
+    <div class="g28-hl">${list.map(h=>`<button type="button" class="g28-h" data-g28-hotel="${E(h.id)}">${h.logo?`<img src="${E(h.logo)}" alt="">`:`<span class="g28-hi">${E(String(h.name||'?').trim().charAt(0).toUpperCase())}</span>`}<b>${E(h.name)}</b><i>›</i></button>`).join('')}</div></div>`;
+  document.body.appendChild(w);
+  w.querySelectorAll('[data-g28-hotel]').forEach(b=>b.onclick=()=>{
+    const id=+b.dataset.g28Hotel;
+    if(id===curHotel()){ try{ localStorage.setItem('ent_hotel_v728',String(id)); }catch(_){} w.remove(); return; }
+    w.querySelectorAll('button').forEach(x=>x.disabled=true); switchHotel(id);
+  });
+}
+function needsPicker(){
+  if(S.session&&!S.explorePreview) return false;
+  if(S.teamLogin||Q('#f-user')) return false;          // never over the staff sign-in
+  if(!(HS.list&&HS.list.length>1)) return false;
+  let chosen=null; try{ chosen=localStorage.getItem('ent_hotel_v728'); }catch(_){}
+  if(chosen&&HS.list.some(h=>String(h.id)===String(chosen))) return false;
+  return !signedIn();
+}
+setTimeout(async()=>{ await loadHotels(); if(needsPicker()) hotelPicker(); else if(HS.list&&HS.list.length>1&&!(S.session&&!S.explorePreview)) softPaint(); },1200);
+/* a guest's stay belongs to one hotel: show that hotel */
+function checkStayHotel(){ const h=G5.stay&&+G5.stay.hotel_id; if(h&&h!==curHotel()) switchHotel(h); }
+
+/* manager: hotel selector + hotel management */
+async function mgrHotels(){ try{ const r=await rpc('mgr_hotels',{p_token:teamTok()}); if(r&&r.ok){ HS.mgr=r.hotels||[]; return true; } }catch(_){ } return false; }
+function hotelBar(){
+  const list=HS.mgr||[]; if(!list.length) return '';
+  return `<div class="g28-hbar"><span>${icn('home',15)} Current hotel</span>
+    <select id="g28-hsel" aria-label="Current hotel">${list.map(h=>`<option value="${E(h.id)}" ${+h.id===curHotel()?'selected':''}>${E(h.name)}${h.status!=='active'?' (inactive)':''}</option>`).join('')}</select>
+    <button type="button" class="g25-mini" id="g28-hman">${icn('pen',12)} Hotels</button></div>`;
+}
+function openHotels(){
+  const list=HS.mgr||[];
+  const w=baseModal(`<h3>Hotels</h3><p class="mini">One Entertainment Manager for all hotels. Every hotel has its own rooms, guests, staff, programme, tickets and settings — nothing is shared between hotels.</p>
+    <div class="g28-hlist">${list.map(h=>`<div class="g28-hrow ${h.status!=='active'?'off':''}"><div><b>${E(h.name)}</b><small>${h.rooms} rooms · ${h.staff} staff · ${h.guests} guests in the hotel${h.status!=='active'?' · inactive':''}</small><small class="g28-link">Guest link: ${E(location.origin+location.pathname+'?hotel='+h.id)}</small></div><button type="button" class="g25-mini" data-g28-edit="${E(h.id)}">${icn('pen',12)} Edit</button></div>`).join('')}</div>
+    <h4 class="g25-h4" style="margin-top:14px">Add a hotel</h4>
+    <label for="g28-nn">Hotel name</label><input id="g28-nn" maxlength="60" placeholder="e.g. Amarina Abu Soma">
+    <label for="g28-nl">Logo link (optional)</label><input id="g28-nl" placeholder="https://…">
+    <p class="mini">The new hotel starts empty, with the look and features of hotel 1. Switch to it with “Current hotel”, then add its rooms, staff and programme.</p>
+    <p class="err" id="g28-nerr"></p><button class="btn" id="g28-add">Add hotel</button><button class="btn ghost" id="g28-x">Close</button>`);
+  w.querySelector('#g28-x').onclick=()=>w.remove();
+  w.querySelector('#g28-add').onclick=async()=>{
+    const nm=w.querySelector('#g28-nn').value.trim(), lg=w.querySelector('#g28-nl').value.trim(), er=w.querySelector('#g28-nerr');
+    if(nm.length<2){ er.textContent='Write the hotel name.'; return; }
+    const out=await rpc('mgr_hotel_save',{p_token:teamTok(),p_id:null,p_name:nm,p_logo:lg,p_status:'active'}).catch(()=>null);
+    if(!out||!out.ok){ er.textContent=out&&out.error==='forbidden'?'Sign in again as manager.':'Not saved — run database-v728.sql first.'; return; }
+    await mgrHotels(); w.remove(); ok('Hotel added'); render(); openHotels();
+  };
+  w.querySelectorAll('[data-g28-edit]').forEach(b=>b.onclick=()=>{ w.remove(); editHotel(+b.dataset.g28Edit); });
+}
+function editHotel(id){
+  const h=(HS.mgr||[]).find(x=>+x.id===id); if(!h) return;
+  const w=baseModal(`<h3>${E(h.name)}</h3><label for="g28-en">Hotel name</label><input id="g28-en" maxlength="60" value="${E(h.name)}">
+    <label for="g28-el">Logo link</label><input id="g28-el" value="${E(h.logo||'')}">
+    <label for="g28-es">Status</label><select id="g28-es"><option value="active" ${h.status==='active'?'selected':''}>Active — guests can choose it</option><option value="inactive" ${h.status!=='active'?'selected':''}>Inactive — hidden from guests</option></select>
+    <p class="err" id="g28-eerr"></p><button class="btn" id="g28-es2">Save</button><button class="btn ghost" id="g28-ex">Close</button>`);
+  w.querySelector('#g28-ex').onclick=()=>{ w.remove(); openHotels(); };
+  w.querySelector('#g28-es2').onclick=async()=>{
+    const out=await rpc('mgr_hotel_save',{p_token:teamTok(),p_id:id,p_name:w.querySelector('#g28-en').value,p_logo:w.querySelector('#g28-el').value,p_status:w.querySelector('#g28-es').value}).catch(()=>null);
+    const er=w.querySelector('#g28-eerr');
+    if(!out||!out.ok){ er.textContent=out&&out.error==='first'?'The first hotel cannot be switched off.':out&&out.error==='name'?'Write the hotel name.':'Not saved.'; return; }
+    await mgrHotels(); w.remove(); ok('Saved'); render(); openHotels();
+  };
+}
+window.__wireSteps.push(function(){
+  if(!isMgr()||S.explorePreview) return;
+  const scr=Q('.screen');
+  if(scr&&!scr.querySelector('.g28-hbar')){
+    if(!HS.mgr){ if(!HS.busy){ HS.busy=true; mgrHotels().then(okk=>{ HS.busy=false; if(okk) render(); }); } return; }
+    const top=scr.firstElementChild; const html=hotelBar(); if(!html) return;
+    if(top) top.insertAdjacentHTML('afterend',html); else scr.insertAdjacentHTML('afterbegin',html);
+    const sel=Q('#g28-hsel'); if(sel) sel.onchange=async()=>{
+      const id=+sel.value; if(id===curHotel()) return;
+      if(!await confirmAction({question:'Switch to '+hotelName(id)+'?',detail:'The app reloads with the programme, guests, rooms, staff, bookings and tickets of that hotel. Changes on this phone are saved first.',confirmLabel:'Switch hotel'})){ sel.value=String(curHotel()); return; }
+      switchHotel(id);
+    };
+    const hm=Q('#g28-hman'); if(hm) hm.onclick=openHotels;
+  }
+});
+/* staff: which hotel a team member belongs to (manager only) */
+let UPEND=null;
+if(typeof window.openUserEditModal==='function'){
+  const ou=window.openUserEditModal;
+  window.openUserEditModal=function(u){
+    const r=ou.apply(this,arguments);
+    if(isMgr()&&u&&u.role==='staff'&&HS.mgr&&HS.mgr.length>1) setTimeout(()=>{
+      const ws=[...document.querySelectorAll('.modal-bg')].filter(w=>w.querySelector('#ue-pass')), w=ws[ws.length-1]; if(!w||w.querySelector('#g28-uh')) return;
+      const pass=w.querySelector('#ue-pass'); const cur=+(u.hotel_id||curHotel());
+      pass.insertAdjacentHTML('afterend',`<label for="g28-uh">Hotel</label><select id="g28-uh">${HS.mgr.map(h=>`<option value="${E(h.id)}" ${+h.id===cur?'selected':''}>${E(h.name)}</option>`).join('')}</select><p class="mini">Moving a team member keeps the same account; he then only sees the new hotel.</p>`);
+      w.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('button'); if(!b||!/save|ue-/i.test(b.id||'')) return; const v=+w.querySelector('#g28-uh').value; UPEND=v!==cur?{id:u.id,hotel:v,modal:w}:null; },true);
+    },40);
+    return r;
+  };
+  try{ openUserEditModal=window.openUserEditModal; }catch(_){}
+}
+
 /* ======================= HAND-OVER TO THE OTHER LAYERS ======================= */
-window.GUEST25={t:T,waLink,waDigits,signedIn,profile,refresh,tickets:()=>G5.tickets,addTickets,serverSignedOut,askSignIn,
+window.GUEST25={hotels:()=>HS,switchHotel,setTab:k=>{ G5.tab=k; },t:T,waLink,waDigits,signedIn,profile,refresh,tickets:()=>G5.tickets,addTickets,serverSignedOut,askSignIn,
   teamExpired:()=>teamExpired(false),mgrLoad:()=>mgrLoad(false),sig:()=>isMgr()?mgrSig():sigG(),
   _state:()=>({G5,MS}),_expandRooms:expandRooms};
 if(window.AUREA_RESV) window.AUREA_RESV.guestsPage=guestsPage;
@@ -22618,6 +22846,40 @@ css.textContent=`
 .g25-seg3 button{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:13px;width:auto;margin:0;min-height:0;cursor:pointer}
 .g25-seg3 button.on{background:var(--espresso);border-color:var(--espresso);color:var(--theme-button-text,#fff)}
 .gp-stats{flex-wrap:wrap}.gp-stats span{min-width:70px}
+/* V7.28 hotels */
+.g28-pick{position:fixed;inset:0;z-index:300;background:var(--x-bg,#F6F0E8);overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top) + 40px) 18px 30px}
+.g28-pin{width:100%;max-width:460px}.g28-kick{margin:0 0 6px;color:var(--x-mut,#8a7a6a);font-size:14px}.g28-pin h2{font:600 32px/1.1 var(--font-display,serif);margin:0 0 18px;color:var(--x-ink,#2b1d14)}
+.g28-hl{display:grid;gap:12px}.g28-h{display:flex;align-items:center;gap:14px;width:100%;margin:0;padding:16px;border-radius:22px;border:1px solid var(--x-line,#e6dccf);background:var(--x-card,#fff);color:var(--x-ink,#2b1d14);text-align:start;cursor:pointer;box-shadow:0 6px 20px rgba(60,40,20,.06)}
+.g28-h img,.g28-hi{flex:none;width:52px;height:52px;border-radius:16px;object-fit:cover;display:grid;place-items:center;background:var(--x-pri,#3b2a20);color:#fff;font:600 24px/1 var(--font-display,serif)}
+.g28-h b{flex:1;font-size:17px}.g28-h i{font-style:normal;font-size:24px;opacity:.4}
+.g28-cur{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:var(--x-bg,var(--bg));font-size:13.5px}.g28-cur span{flex:1}
+.g28-hbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line)}
+.g28-hbar>span{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:var(--muted)}.g28-hbar select{flex:1 1 150px;margin:0;min-height:38px;font-weight:700}
+.g28-hlist{display:grid;gap:8px}.g28-hrow{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line)}.g28-hrow>div{flex:1;min-width:0;display:flex;flex-direction:column}.g28-hrow small{font-size:12px;color:var(--muted)}.g28-hrow.off{opacity:.6}
+.g28-link{overflow-wrap:anywhere;font-size:11px!important}
+/* V7.27 guest home, types, onboarding */
+.ex27 .ex21-top{padding-top:6px}
+.ex27 .ex26-hero h1{font-size:clamp(30px,8vw,40px);margin-bottom:10px}
+.ex27-sums{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.ex27-sum{display:inline-flex;align-items:baseline;gap:5px;padding:6px 11px;border-radius:99px;background:var(--x-card,#fff);border:1px solid var(--x-line,var(--line));font-size:12.5px;font-weight:600;color:var(--x-mut,var(--muted))}
+.ex27-sum b{font-size:15px;color:var(--x-ink,var(--ink))}
+.ex27-types{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px 0 4px;padding-bottom:2px}.ex27-types::-webkit-scrollbar{display:none}
+.ex27-type{flex:none;display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:99px;border:1px solid var(--x-line,var(--line));background:var(--x-card,#fff);color:var(--x-ink,var(--ink));font-weight:700;font-size:13px;width:auto;margin:0;min-height:0;cursor:pointer}
+.ex27-type i{font-style:normal;font-size:11.5px;min-width:20px;height:20px;padding:0 6px;border-radius:99px;display:grid;place-items:center;background:var(--x-bg,var(--bg))}
+.ex27-type.on{background:var(--x-pri,var(--espresso));border-color:var(--x-pri,var(--espresso));color:var(--theme-button-text,#fff)}.ex27-type.on i{background:rgba(255,255,255,.2)}
+.ex27 .ex26-tiles{gap:12px}
+.ex27 .ex26-tile{border-radius:22px;box-shadow:0 6px 20px rgba(60,40,20,.06)}
+.ex27 .ex26-tile.me{background:linear-gradient(135deg,rgba(185,138,92,.16),rgba(185,138,92,.04));}
+.g27-steps{display:flex;gap:6px;list-style:none;margin:0 0 16px;padding:0}
+.g27-steps li{flex:1;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--x-mut,var(--muted));padding-bottom:8px;border-bottom:3px solid var(--x-line,var(--line))}
+.g27-steps li i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;background:var(--x-bg,var(--bg))}
+.g27-steps li.on{color:var(--x-ink,var(--ink));border-color:var(--x-pri,var(--espresso))}.g27-steps li.on i{background:var(--x-pri,var(--espresso));color:#fff}
+.g27-steps li.done{color:#3F6A3A;border-color:#6C9A64}.g27-steps li.done i{background:#6C9A64;color:#fff}
+.g27-room label{font:600 20px/1.25 var(--font-display,serif);margin:0 0 10px!important;display:block}
+.g27-room input{font-size:24px;text-align:center;letter-spacing:.12em;font-weight:800;text-transform:uppercase}
+.g27-room small{display:block;margin:6px 0 0;color:var(--x-mut,var(--muted));font-size:12.5px}
+.g27-roomok{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:rgba(94,138,87,.12);color:#3F6A3A;font-weight:700;font-size:14px}.g27-roomok span{flex:1}
+.g27-s2 label[for="rv-room"],.g27-s2 #rv-room{display:none!important}
 /* V7.27 room check */
 .g25-verify{margin:12px 0 0;padding:12px;border-radius:14px;background:rgba(208,133,38,.12);border:1px solid rgba(208,133,38,.45)}
 .g25-verify label{margin-top:0!important}.g25-verify input{letter-spacing:.4em;font-size:20px;text-align:center;font-weight:800}
