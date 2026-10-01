@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment · AUREA V6.74</title>
+<title>Entertainment ·Mr Hassan </title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style id="aurea-styles">
@@ -4491,8 +4491,7 @@ const DAY_PLAN=[
   {day:6,name:"Sunday",theme:"German",dress:"Classic Brown & Black (Shirt & Trouser)",entrance:5,off:[9,10],practice:false,
     makeup:null, eveningShow:"International / Brazilian", showTime:"21:00 – 21:30", showLoc:"Stage", liveBand:"20:15–21:00 · 21:30–22:15"}
 ];
-const TEAM_ROLES={1:"Manager",2:"Entertainer · Social Media",3:"DJ"};
-function roleForNumber(n){ return TEAM_ROLES[n]||"Entertainer"; }
+function roleForNumber(n){ const u=(S.users||[]).find(x=>+x.number===+n); return u?roleLabelOf(u):"Sport Entertainer"; }
 /* Counts the whole team once — used by the team page and the management export */
 function teamStats(){
   const team=(S.users||[]).filter(u=>u.role==="staff"||u.role==="manager");
@@ -4599,8 +4598,7 @@ function personDayInfo(num,day){
   const isVacation=att==="V", isAbsent=att==="A";
   const isOff=!isVacation&&!isAbsent&&(att==="O"||dp.off.includes(num));
   const isEntrance=!isVacation&&!isAbsent&&!isOff&&dp.entrance===num;
-  const isDJ=num===3;
-  const isSocial=num===2;
+  const isDJ=isDjRole(u); const isSocial=isSocialRole(u);
   // DJ special schedule
   let djNote="";
   if(isDJ){
@@ -4739,6 +4737,42 @@ window.__hotelId=(function(){ try{
   if(ss&&ss.role==='staff'&&ss.hotel_id) return +ss.hotel_id;
   return +(localStorage.getItem('ent_hotel_v728')||1)||1;
 }catch(_){ return 1; } })();
+/* V7.29: a new guest sees ONLY "Choose your hotel" — nothing of any hotel loads before. */
+(function(){ /* decided at once, before any request: does this phone have to choose a hotel first? */
+  try{
+    if(typeof REMOTE==='undefined'||!REMOTE) return;
+    const qs=new URLSearchParams(location.search); if(qs.has('team')||qs.get('hotel')) return;
+    const st=JSON.parse(localStorage.getItem('entapp_v3')||'{}')||{}; if(st.session&&(st.session.token||st.session.role)) return;
+    if(localStorage.getItem('ent_hotel_v728')) return;
+    const g=JSON.parse(localStorage.getItem('ent_guest_v725')||'null'); if(g&&g.stay&&g.stay.hotel_id) return;
+    window.__gateWait=new Promise(res=>{ window.__gateDone=()=>{ window.__gateWait=null; document.documentElement.classList.remove('g29-gating'); res(); }; });
+    document.documentElement.classList.add('g29-gating');
+    const css=document.createElement('style'); css.textContent='html.g29-gating body{visibility:hidden}'; document.head.appendChild(css);
+  }catch(_){}
+})();
+window.__hotelGate=async function(){ try{ await hotelGate29(); } finally { if(window.__gateDone) window.__gateDone(); } };
+async function hotelGate29(){
+  if(typeof REMOTE==='undefined'||!REMOTE) return;
+  const qs=new URLSearchParams(location.search);
+  if(qs.has('team')||qs.get('hotel')) return;
+  let st={}; try{ st=JSON.parse(localStorage.getItem('entapp_v3')||'{}')||{}; }catch(_){}
+  if(st.session&&(st.session.token||st.session.role)) return;
+  if(localStorage.getItem('ent_hotel_v728')) return;
+  try{ const g=JSON.parse(localStorage.getItem('ent_guest_v725')||'null'); if(g&&g.stay&&g.stay.hotel_id){ localStorage.setItem('ent_hotel_v728',String(g.stay.hotel_id)); window.__hotelId=+g.stay.hotel_id; return; } }catch(_){}
+  let list=null; try{ list=await rpc('public_hotels',{}); }catch(_){ return; }      // database not updated yet
+  if(!Array.isArray(list)||!list.length) return;
+  const W={en:['Welcome!','Choose your hotel','Please choose the hotel you are staying at.'],de:['Willkommen!','Wähle dein Hotel','Bitte wähle das Hotel, in dem du wohnst.'],ru:['Добро пожаловать!','Выберите ваш отель','Выберите отель, в котором вы живёте.'],pl:['Witamy!','Wybierz swój hotel','Wybierz hotel, w którym mieszkasz.'],cs:['Vítejte!','Vyberte svůj hotel','Vyberte hotel, ve kterém bydlíte.'],nl:['Welkom!','Kies je hotel','Kies het hotel waar je verblijft.'],fr:['Bienvenue !','Choisissez votre hôtel','Choisissez l’hôtel où vous séjournez.'],ar:['أهلاً بك!','اختر فندقك','اختر الفندق الذي تقيم فيه.'],it:['Benvenuto!','Scegli il tuo hotel','Scegli l’hotel in cui soggiorni.']};
+  const lang=String((typeof S!=='undefined'&&S.lang)||localStorage.getItem('entapp_lang')||'en'), w=W[lang]||W[lang.split('-')[0]]||W.en;
+  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const id=await new Promise(done=>{
+    const d=document.createElement('div'); d.className='g28-pick g29-gate';
+    d.innerHTML='<div class="g28-pin"><p class="g28-kick">'+esc(w[0])+'</p><h2>'+esc(w[1])+'</h2><p class="g29-sub">'+esc(w[2])+'</p><div class="g28-hl">'+list.map(h=>'<button type="button" class="g28-h" data-h="'+esc(h.id)+'">'+(h.logo?'<img src="'+esc(h.logo)+'" alt="">':'<span class="g28-hi">'+esc(String(h.name||'?').trim().charAt(0).toUpperCase())+'</span>')+'<b>'+esc(h.name)+'</b><i>›</i></button>').join('')+'</div></div>';
+    document.documentElement.appendChild(d);            // outside the page: a render cannot remove it
+    d.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ d.remove(); done(+b.dataset.h); });
+  });
+  localStorage.setItem('ent_hotel_v728',String(id)); window.__hotelId=id;
+  if(id!==1&&typeof DAY_PLAN!=='undefined') DAY_PLAN.forEach(d=>Object.assign(d,{theme:'',dress:'',entrance:null,off:[],practice:false,makeup:null,eveningShow:'',showTime:'',showLoc:'',liveBand:''}));
+}
 /* hotel settings: hotel 1 keeps rows 1–3, hotel N uses N*100+1 … N*100+3 */
 function __hotelRow(path, body){
   const h=window.__hotelId||1; if(h===1||!/^app_settings\b/.test(path)) return [path, body];
@@ -4747,6 +4781,7 @@ function __hotelRow(path, body){
   return [path, body];
 }
 async function sb(path, opts={}){
+  if(window.__gateWait&&!/^rpc\/public_hotels\b/.test(path)) await window.__gateWait;
   const hr=__hotelRow(path, opts.body); path=hr[0]; if(opts.body) opts={...opts, body:hr[1]};
   const hx={};
   try{ hx["x-hotel-id"]=String(window.__hotelId||1); const tk=(typeof S!=="undefined"&&S.session&&S.session.token)||""; if(tk) hx["x-team-token"]=tk; }catch(_){}
@@ -6274,23 +6309,35 @@ function nextAttNumber(){
   for(let n=ATT_ONLY_MIN;n<=ATT_ONLY_MAX;n++) if(!taken.has(n)) return n;
   return null;
 }
-const DJ_NUMBER=3;
+/* V7.29: a staff member's job is his ROLE (app_users.staff_role), never his number.
+   sport · guest_contact · dj · social · supervisor. Activities: Sport Entertainers by default;
+   any other role only when the manager switches "Can run activities" on for that person. */
+const STAFF_ROLES={sport:'Sport Entertainer',guest_contact:'Guest Contact',dj:'DJ',social:'Social Media',supervisor:'Supervisor'};
+function staffRole(u){ if(!u) return ''; if(u.role==='manager') return 'manager'; const r=String(u.staff_role||'').trim(); return STAFF_ROLES[r]?r:'sport'; }
+function isDjRole(u){ return !!u&&u.role==='staff'&&staffRole(u)==='dj'; }
+function isSocialRole(u){ return !!u&&u.role==='staff'&&staffRole(u)==='social'; }
+function roleAllowsActivities(u){ if(!u||u.role!=='staff') return false; if(u.can_activities===true) return true; if(u.can_activities===false) return false; return staffRole(u)==='sport'; }
+function noActivityRole(u){ return !u||u.role!=='staff'||(!roleAllowsActivities(u)&&!isDjRole(u)); }
+function roleLabelOf(u){ if(!u) return ''; if(u.role==='manager') return 'Manager'; return STAFF_ROLES[staffRole(u)]||'Sport Entertainer'; }
+function djsOf(list){ return (list||S.users||[]).filter(u=>isDjRole(u)&&u.active!==false&&!(typeof hasLeft==='function'&&hasLeft(u))); }
+window.STAFF_ROLES=STAFF_ROLES; window.staffRole=staffRole; window.isDjRole=isDjRole; window.isSocialRole=isSocialRole;
+window.roleAllowsActivities=roleAllowsActivities; window.noActivityRole=noActivityRole; window.roleLabelOf=roleLabelOf;
 /* DJ work mode is manager-selectable. Standard DJ = special programme only.
    Sport DJ = special programme + normal daytime activities, subject to the same
    availability, capability, gender, entrance-duty, clash and fairness rules as entertainers. */
 function djWorkMode(){ return String((S.settings&&S.settings.djWorkMode)||"dj").toLowerCase()==="sport_dj"?"sport_dj":"dj"; }
-function isSportDJ(u){ return !!u && +u.number===DJ_NUMBER && djWorkMode()==="sport_dj"; }
-const NO_ACTIVITY_NUMBERS=[1,2];          // manager and social media never enter the normal activity rota; DJ eligibility is mode-aware
+function isSportDJ(u){ return isDjRole(u) && (djWorkMode()==="sport_dj" || u.can_activities===true); }
+          // manager and social media never enter the normal activity rota; DJ eligibility is mode-aware
 /* Shows, parties and events belong to the DJ. Entertainers only receive normal activities. */
 function eventsCrew(day, dateStr_){
   return (S.users||[])
-    .filter(u=>u.role==="staff" && +u.number===DJ_NUMBER && availableOn(u,day,dateStr_))
+    .filter(u=>u.role==="staff" && isDjRole(u) && availableOn(u,day,dateStr_))
     .sort((a,b)=>(a.number||99)-(b.number||99));
 }
-function isEventsOnly(u){ return !!u && +u.number===DJ_NUMBER && !isSportDJ(u); }
+function isEventsOnly(u){ return !!u && isDjRole(u) && !isSportDJ(u); }
 function assignableStaff(day, dateStr_){
   return (S.users||[])
-    .filter(u=>u.role==="staff" && u.number && !NO_ACTIVITY_NUMBERS.includes(+u.number) && (+u.number!==DJ_NUMBER || isSportDJ(u))
+    .filter(u=>u.role==="staff" && u.number && !noActivityRole(u) && (!isDjRole(u) || isSportDJ(u))
       && availableOn(u,day,dateStr_))
     .sort((a,b)=>(a.number||99)-(b.number||99));
 }
@@ -6539,7 +6586,7 @@ function assignDateStr(day){
 function whoCanRun(a){
   const ds=assignDateStr(a.day);
   if(activitySlot(a)==="event"){
-    const dj=(eventsCrew(a.day,ds)||[]).find(u=>+u.number===DJ_NUMBER)||null;
+    const dj=(eventsCrew(a.day,ds)||[]).find(u=>isDjRole(u))||null;
     return dj ? ((dj.display_name||dj.username)+(isSportDJ(dj)?" · Sport DJ":" · DJ")) : "DJ unavailable";
   }
   const team=assignableStaff(a.day,ds);
@@ -8417,8 +8464,9 @@ function buildDataset(kind){
     const st=teamStats(), duty=dayDutyStats(d);
     if(st.total){
       // entertainers working today = entertainers minus the ones off (manager excluded)
-      const offEnt=duty.off.filter(u=>u.role!=="manager").length;
-      rows.push([t("workingEntToday"), String(Math.max(0, st.entertainers-offEnt))+" / "+st.entertainers]);
+      const activeEnt=(S.users||[]).filter(u=>u.role==="staff"&&u.active!==false&&!hasLeft(u)).length;
+      const workEnt=(duty.working||[]).filter(u=>u.role==="staff").length;
+      rows.push([t("workingEntToday"), String(workEnt)+" / "+activeEnt]);
       rows.push([t("totalAllTeam"), String(st.total)]);
       if(st.natList.length) rows.push([t("byNationality"), st.natList.map(n=>n.name+" "+n.count).join(" · ")]);
       const gen=[st.byGender.male+" "+t("genderM"), st.byGender.female+" "+t("genderF")];
@@ -9448,7 +9496,7 @@ function openUserModal(){
     <label>${t("displayName")}</label><input id="u-disp">
     <label>${t("roleLabel")}</label>
     <select id="u-role"><option value="staff">${t("staff")}</option><option value="manager">${t("manager")}</option></select>
-    <label>${t("shirtNumber")} (2–10)</label><input id="u-num" type="number" min="2" max="10" placeholder="e.g. 4">
+    <label>${t("shirtNumber")} (1–50)</label><input id="u-num" type="number" min="1" max="50" placeholder="e.g. 4">
     <label>${t("nationality")}</label>${nationField("u-nat","u-natx","")}
     <label>${t("genderLbl")}</label><select id="u-gen">${genderOptions("")}</select>
     <div class="pay630-editbox">
@@ -9473,7 +9521,7 @@ function openUserModal(){
     const display_name=wrap.querySelector("#u-disp").value.trim();
     const role=wrap.querySelector("#u-role").value;
     const numRaw=wrap.querySelector("#u-num").value;
-    const number=numRaw?Math.max(2,Math.min(10,+numRaw)):null;
+    const number=numRaw?Math.max(1,Math.min(50,+numRaw)):null;
     const err=wrap.querySelector("#u-err");
     if(!username||!password){ err.textContent=t("loginErr"); return; }
     if(S.users.some(x=>x.username===username)){ err.textContent=t("userExists"); return; }
@@ -9537,8 +9585,8 @@ function openUserEditModal(u){
       <option value="staff" ${u.role==="staff"?"selected":""}>${t("staff")}</option>
       <option value="manager" ${u.role==="manager"?"selected":""}>${t("manager")}</option>
     </select>
-    <label>${t("shirtNumber")} (2–10)</label><input id="ue-num" type="number" min="2" max="10" value="${u.number||""}">
-    ${+u.number===DJ_NUMBER?`<label>DJ WORK MODE</label><select id="ue-djmode"><option value="dj" ${djWorkMode()==="dj"?"selected":""}>DJ · Events, Shows & Live Music only</option><option value="sport_dj" ${djWorkMode()==="sport_dj"?"selected":""}>Sport DJ · Activities + Events, Shows & Live Music</option></select><p class="mini" style="margin-top:6px">Sport DJ joins the normal activity rota and follows the same capability, availability, fairness and conflict rules as entertainers.</p>`:""}
+    <label>${t("shirtNumber")} (1–50)</label><input id="ue-num" type="number" min="1" max="50" value="${u.number||""}">
+    ${isDjRole(u)?`<label>DJ WORK MODE</label><select id="ue-djmode"><option value="dj" ${djWorkMode()==="dj"?"selected":""}>DJ · Events, Shows & Live Music only</option><option value="sport_dj" ${djWorkMode()==="sport_dj"?"selected":""}>Sport DJ · Activities + Events, Shows & Live Music</option></select><p class="mini" style="margin-top:6px">Sport DJ joins the normal activity rota and follows the same capability, availability, fairness and conflict rules as entertainers.</p>`:""}
     <div class="row2">
       <div><label>${t("employeeId")}</label><input id="ue-eid" value="${esc(u.employee_id||"")}"></div>
       <div><label>${t("positionLbl2")}</label><input id="ue-pos" value="${esc(u.position||"")}"></div>
@@ -9589,7 +9637,7 @@ function openUserEditModal(u){
       hire_date:wrap.querySelector("#ue-hire").value,
       photos:uePics};
     const numRaw=wrap.querySelector("#ue-num").value;
-    patch.number=numRaw?Math.max(2,Math.min(10,+numRaw)):null;
+    patch.number=numRaw?Math.max(1,Math.min(50,+numRaw)):null;
     if(!lastManager) patch.role=wrap.querySelector("#ue-role").value;
     if(newUser && newUser!==u.username){
       if(S.users.some(x=>x.id!==u.id && String(x.username).toLowerCase()===newUser.toLowerCase())){ toast(t("userExists")); return; }
@@ -10345,8 +10393,12 @@ function startRealtime(){
   sc.onerror=()=>console.warn("realtime script blocked — polling continues");
   document.head.appendChild(sc);
 }
+/* V7.29: the built-in weekly plan (themes, entrance duty, days off) is Amarina's.
+   Any other hotel starts with an empty plan and only uses its own saved one. */
+if((window.__hotelId||1)!==1&&typeof DAY_PLAN!=='undefined') DAY_PLAN.forEach(d=>Object.assign(d,{theme:'',dress:'',entrance:null,off:[],practice:false,makeup:null,eveningShow:'',showTime:'',showLoc:'',liveBand:''}));
 (async function(){
   restore();
+  try{ if(window.__hotelGate) await window.__hotelGate(); }catch(e){ console.warn('hotel gate',e); }
   document.documentElement.setAttribute("data-theme",S.theme);
   document.documentElement.lang=S.lang;
   document.documentElement.dir=(/^ar/.test(S.lang)?"rtl":"ltr");
@@ -10562,9 +10614,9 @@ function startRealtime(){
     const paintTimes=()=>{ timeBox.innerHTML=sets.map((x,i)=>`<div class="time-set-row"><div><label>Start</label><input type="time" data-ts="${i}" value="${esc(x.start||"")}"></div><div><label>End</label><input type="time" data-te="${i}" value="${esc(x.end||"")}"></div><button type="button" data-trm="${i}" ${sets.length===1?"disabled":""}>×</button></div>`).join(""); qa("[data-ts]",timeBox).forEach(el=>el.onchange=()=>sets[+el.dataset.ts].start=el.value); qa("[data-te]",timeBox).forEach(el=>el.onchange=()=>sets[+el.dataset.te].end=el.value); qa("[data-trm]",timeBox).forEach(b=>b.onclick=()=>{sets.splice(+b.dataset.trm,1);paintTimes();}); }; paintTimes();
     q("#v2-time-add",wrap).onclick=()=>{ const last=sets[sets.length-1]||{start:"10:00",end:"10:45"}; sets.push({start:last.end||last.start||"10:00",end:""}); paintTimes(); };
     qa("[data-v2repeat]",wrap).forEach(b=>b.onclick=()=>{repeat=b.dataset.v2repeat;qa("[data-v2repeat]",wrap).forEach(x=>x.classList.toggle("on",x===b));});
-    const updateEntMode=()=>{ const cat=q("#e-cat",wrap).value, sel=q("#e-ent",wrap), note=q("#v2-ent-note",wrap); const isAct=cat==="mAdult"; sel.disabled=!isAct; if(!isAct){ const dj=(S.users||[]).find(u=>u.role==="staff"&&+u.number===DJ_NUMBER); sel.value=dj?dj.username:""; note.textContent=dj?"DJ assigned automatically: "+(dj.display_name||dj.username):"DJ will be assigned automatically when available."; } else note.textContent="Leave empty to let Smart Auto Assign choose fairly."; }; q("#e-cat",wrap).onchange=updateEntMode; updateEntMode();
+    const updateEntMode=()=>{ const cat=q("#e-cat",wrap).value, sel=q("#e-ent",wrap), note=q("#v2-ent-note",wrap); const isAct=cat==="mAdult"; sel.disabled=!isAct; if(!isAct){ const dj=(S.users||[]).find(u=>u.role==="staff"&&isDjRole(u)); sel.value=dj?dj.username:""; note.textContent=dj?"DJ assigned automatically: "+(dj.display_name||dj.username):"DJ will be assigned automatically when available."; } else note.textContent="Leave empty to let Smart Auto Assign choose fairly."; }; q("#e-cat",wrap).onchange=updateEntMode; updateEntMode();
     q("#e-x",wrap).onclick=()=>wrap.remove();
-    q("#e-save",wrap).onclick=async()=>{ qa("[data-ts]",timeBox).forEach(el=>sets[+el.dataset.ts].start=el.value); qa("[data-te]",timeBox).forEach(el=>sets[+el.dataset.te].end=el.value); const time=sets.filter(x=>x.start).map(x=>x.start+(x.end?" – "+x.end:"")).join(" / "); const base={...a,name:q("#e-name",wrap).value.trim(),desc:q("#e-desc",wrap).value.trim(),day:+q("#e-day",wrap).value,category:q("#e-cat",wrap).value,time:time||"10:00",capacity:+a.capacity||0,location:q("#e-loc",wrap).value.trim(),customCategory:(q("#e-custom-cat",wrap)?q("#e-custom-cat",wrap).value.trim():txt(a.customCategory).trim()),entertainer:(q("#e-cat",wrap).value!=="mAdult"?(((S.users||[]).find(u=>u.role==="staff"&&+u.number===DJ_NUMBER)||{}).username||""):q("#e-ent",wrap).value.trim()),image:ePhoto,highlight:q("#e-hl",wrap).checked}; if(!base.name) return;
+    q("#e-save",wrap).onclick=async()=>{ qa("[data-ts]",timeBox).forEach(el=>sets[+el.dataset.ts].start=el.value); qa("[data-te]",timeBox).forEach(el=>sets[+el.dataset.te].end=el.value); const time=sets.filter(x=>x.start).map(x=>x.start+(x.end?" – "+x.end:"")).join(" / "); const base={...a,name:q("#e-name",wrap).value.trim(),desc:q("#e-desc",wrap).value.trim(),day:+q("#e-day",wrap).value,category:q("#e-cat",wrap).value,time:time||"10:00",capacity:+a.capacity||0,location:q("#e-loc",wrap).value.trim(),customCategory:(q("#e-custom-cat",wrap)?q("#e-custom-cat",wrap).value.trim():txt(a.customCategory).trim()),entertainer:(q("#e-cat",wrap).value!=="mAdult"?(((S.users||[]).find(u=>u.role==="staff"&&isDjRole(u))||{}).username||""):q("#e-ent",wrap).value.trim()),image:ePhoto,highlight:q("#e-hl",wrap).checked}; if(!base.name) return;
       if(isNew&&repeat==="week"){ const clean={...base}; delete clean.id; for(let d=0;d<7;d++){ await DB.saveActivity({...clean,day:d}); if(!REMOTE) await new Promise(r=>setTimeout(r,2)); } toastOk("Added to the whole week"); }
       else await DB.saveActivity(base);
       wrap.remove(); toastOk(t("saved")); render(); };
@@ -10588,7 +10640,7 @@ function startRealtime(){
 /* ===== aurea-v4-manager-logic ===== */
 
 (function(){
-  function v4Dj(){ return (S.users||[]).find(u=>u.role==="staff" && +u.number===DJ_NUMBER && u.active!==false && !hasLeft(u)); }
+  function v4Dj(){ return (S.users||[]).find(u=>u.role==="staff" && isDjRole(u) && u.active!==false && !hasLeft(u)); }
   function v4Special(a){ return a && normCat(a)!=="mAdult"; }
   async function v4RepairDj(){
     if(!S.session || S.session.role!=="manager") return;
@@ -10663,7 +10715,7 @@ function startRealtime(){
   };
   function userByAssignment(v){ const s=String(v||'').trim().toLowerCase(); return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===s || String(u.display_name||'').toLowerCase()===s); }
   function assignmentValid(a,day,ds){
-    const u=userByAssignment(a.entertainer); if(activitySlot(a)==='event') return !!u && +u.number===DJ_NUMBER;
+    const u=userByAssignment(a.entertainer); if(activitySlot(a)==='event') return !!u && isDjRole(u);
     return !!u && availableOn(u,day,ds) && canRunActivity(u,a) && !entranceConflict(u,day,a);
   }
   function displayAssignee(a){ const u=userByAssignment(a.entertainer); return u?(u.display_name||u.username):String(a.entertainer||'').trim(); }
@@ -11441,7 +11493,7 @@ function assignedPrograms620(u,day){
       const parts=txt620(a.entertainer).toLowerCase().split(/[,;/]/).map(x=>x.trim()).filter(Boolean);
       return parts.includes(un)||(dn&&parts.includes(dn));
     }
-    return num===DJ_NUMBER; // programme events / live / show / party operationally belong to DJ
+    return isDjRole((S.users||[]).find(x=>+x.number===+num)); // programme events / live / show / party operationally belong to DJ
   });
 }
 function programType620(a){
@@ -11459,12 +11511,12 @@ function responsible620(a){
     const u=userByAssignment620(a.entertainer);
     return u?display620(u):(txt620(a.entertainer)||"Unassigned");
   }
-  const dj=(S.users||[]).find(u=>u.role==="staff"&&+u.number===DJ_NUMBER&&u.active!==false&&!hasLeft(u));
+  const dj=(S.users||[]).find(u=>u.role==="staff"&&isDjRole(u)&&u.active!==false&&!hasLeft(u));
   return dj?display620(dj)+" · DJ":"DJ not available";
 }
 function programStatus620(a){
   const c=cat620(a),day=a.day;
-  let u=c==="mAdult"?userByAssignment620(a.entertainer):(S.users||[]).find(x=>x.role==="staff"&&+x.number===DJ_NUMBER&&x.active!==false&&!hasLeft(x));
+  let u=c==="mAdult"?userByAssignment620(a.entertainer):(S.users||[]).find(x=>x.role==="staff"&&isDjRole(x)&&x.active!==false&&!hasLeft(x));
   if(!u)return c==="mAdult"?(txt620(a.entertainer)?"Assigned user not found":"UNASSIGNED"):"DJ NOT AVAILABLE";
   const st=dutyState620(u,day);
   if(st.key!=="working")return"CONFLICT · "+st.label;
@@ -11490,7 +11542,7 @@ function teamDutyDataset620(){
       const st=dutyState620(u,day),ent=isEntrance620(u,day),items=assignedPrograms620(u,day)
         .map(a=>(a.time||"")+" "+(a.name||"")).join(" | ");
       rows.push([prettyExportDate620(dateForDay620(day)),staffNumber620(u)?("#"+staffNumber620(u)):"",display620(u),
-        u.role==="manager"?"Manager":(+staffNumber620(u)===DJ_NUMBER?"DJ":(+staffNumber620(u)===2?"Social Media":"Entertainer")),
+        u.role==="manager"?"Manager":(isDjRole(u)?"DJ":(isSocialRole(u)?"Social Media":"Entertainer")),
         st.label,ent?"16:00–18:30":"",items||"—"]);
     });
   });
@@ -11528,7 +11580,7 @@ function extraDataset620(kind){
     return{title:"Daily quiz",headers:["Date","Audience","Question","Hint","Correct answer","Replies","Status"],rows};
   }
   if(kind==="buses")return{title:"Bus schedule",headers:["Direction","Time","Note"],rows:(S.buses||[]).map(b=>[b.direction||"",b.time||"",b.note||""])};
-  if(kind==="skills")return{title:"Team activity capabilities",headers:["#","Team member","Can run","Cannot run"],rows:activeTeam620().filter(u=>u.role==="staff"&&(+staffNumber620(u)!==DJ_NUMBER||isSportDJ(u))&&+staffNumber620(u)!==2).map(u=>["#"+staffNumber620(u),display620(u),(canDoList(u)||[]).map(prettyAct).join(", "),(cannotDoList(u)||[]).map(prettyAct).join(", ")])};
+  if(kind==="skills")return{title:"Team activity capabilities",headers:["#","Team member","Can run","Cannot run"],rows:activeTeam620().filter(u=>u.role==="staff"&&(!isDjRole(u)||isSportDJ(u))&&!isSocialRole(u)).map(u=>["#"+staffNumber620(u),display620(u),(canDoList(u)||[]).map(prettyAct).join(", "),(cannotDoList(u)||[]).map(prettyAct).join(", ")])};
   return null;
 }
 window.buildDataset=buildDataset=function(kind){
@@ -11633,7 +11685,7 @@ function todayRequirementItemsV621(){
 function responsibleDisplayV621(a){
   const direct=entertainerName(a&&a.entertainer);
   if(direct)return direct;
-  const dj=(S.users||[]).find(u=>u.role==="staff"&&+u.number===DJ_NUMBER&&u.active!==false&&!hasLeft(u));
+  const dj=(S.users||[]).find(u=>u.role==="staff"&&isDjRole(u)&&u.active!==false&&!hasLeft(u));
   return dj?(dj.display_name||dj.username||""):"—";
 }
 function typeV621(a){return normCat(a)==="mEvents"?"Event":"Show";}
@@ -11708,7 +11760,7 @@ function hardAvailable622(u,a,day){
 }
 function hardValidExisting622(a){
   if(activitySlot(a)==="event"){
-    const dj=(eventsCrew(a.day,dayDate622(a.day))||[]).find(u=>+u.number===DJ_NUMBER)||null;
+    const dj=(eventsCrew(a.day,dayDate622(a.day))||[]).find(u=>isDjRole(u))||null;
     return !!dj;
   }
   const u=userFor622(a.entertainer);
@@ -11755,7 +11807,7 @@ function clashesWithReserved622(u,a,reserved){
 }
 function choose622(pool,m,reserved,a,day,variant){
   let candidates=(pool||[])
-    .filter(u=>+u.number!==DJ_NUMBER || isSportDJ(u))
+    .filter(u=>!isDjRole(u) || isSportDJ(u))
     .filter(u=>hardAvailable622(u,a,day)&&!clashesWithReserved622(u,a,reserved))
     .filter(u=>sameDaySlotCount622(m,u,a,day)===0)
     .filter(u=>!(reserved||[]).some(x=>{
@@ -11791,7 +11843,7 @@ window.pickFairest=function(pool,load,usedThisSlot,act,day){
   /* Compatibility for any older caller: use the new hard eligibility and fairness.
      `usedThisSlot` remains respected, but never overrides a hard safety rule. */
   const fake=metrics622([]);
-  let c=(pool||[]).filter(u=>(+u.number!==DJ_NUMBER || isSportDJ(u))&&hardAvailable622(u,act,day));
+  let c=(pool||[]).filter(u=>(!isDjRole(u) || isSportDJ(u))&&hardAvailable622(u,act,day));
   const unused=c.filter(u=>!usedThisSlot||!usedThisSlot.has(u.username));if(unused.length)c=unused;
   return choose622(c,fake,[],act,day,0);
 };
@@ -11817,7 +11869,7 @@ function planDay622(day,opts,sharedMetrics,variant,targetOverride){
   const exclude=targetOverride?targets:((o.onlyEmpty)?[]:(S.activities||[]).filter(a=>a.day===day&&activitySlot(a)!=="event"));
   const m=sharedMetrics||metrics622(exclude);
   const reserved=preserved622(day,targets);
-  const pool=assignableStaff(day,dayDate622(day)).filter(u=>+u.number!==DJ_NUMBER || isSportDJ(u));
+  const pool=assignableStaff(day,dayDate622(day)).filter(u=>!isDjRole(u) || isSportDJ(u));
   targets.forEach(a=>{
     const pick=choose622(pool,m,reserved,a,day,variant||0);
     if(!pick)return;
@@ -11841,7 +11893,7 @@ window.applyAssignments=applyAssignments=async function(list){
   for(const it of (list||[])){
     const a=it.activity,u=userFor622(it.username);
     if(activitySlot(a)==="event"){
-      if(!u||+u.number!==DJ_NUMBER||!availableOn(u,a.day,dayDate622(a.day))){toastErr("This event/show assignment is not available.");return false;}
+      if(!u||!isDjRole(u)||!availableOn(u,a.day,dayDate622(a.day))){toastErr("This event/show assignment is not available.");return false;}
     }else{
       if(!hardAvailable622(u,a,a.day)||clashesWithReserved622(u,a,reserved)){
         toastErr((u?(u.display_name||u.username):"This entertainer")+" is not available for "+(a.name||"this activity")+". Check day off, vacation, absence, entrance duty, gender, capability and time conflicts.");
@@ -11862,7 +11914,7 @@ async function repairDay622(day){
   if(!invalid.length)return false;
   repairing622=true;
   try{
-    const m=metrics622(invalid),reserved=preserved622(day,invalid),pool=assignableStaff(day,dayDate622(day)).filter(u=>+u.number!==DJ_NUMBER || isSportDJ(u));
+    const m=metrics622(invalid),reserved=preserved622(day,invalid),pool=assignableStaff(day,dayDate622(day)).filter(u=>!isDjRole(u) || isSportDJ(u));
     for(const a of invalid){
       const pick=choose622(pool,m,reserved,a,day,0);
       if(pick){
@@ -11921,14 +11973,14 @@ window.openEditModal=function(input){
 /* Manager assignment overview uses the same hard validity rules. */
 window.assignActsInner=function(day,ds,acts,openIgnored,working){
   const unresolved=acts.filter(a=>!hardValidExisting622(a));
-  const dj=(S.users||[]).find(u=>u&&u.role==="staff"&&+u.number===DJ_NUMBER&&u.active!==false&&!hasLeft(u));
+  const dj=(S.users||[]).find(u=>u&&u.role==="staff"&&isDjRole(u)&&u.active!==false&&!hasLeft(u));
   const djState=()=>{
     if(!dj)return "DJ account unavailable";
     const st=(ds&&ds.length>=10)?attStatus(dj,ds.slice(0,7),+ds.slice(8,10)):"";
     if(st==="V")return "Vacation";
     if(st==="A")return "Absent";
     if(st==="N")return "Not working";
-    if(dayPlanFor(day).off.includes(+DJ_NUMBER))return "Day off";
+    if(dj&&dayPlanFor(day).off.includes(+dj.number))return "Day off";
     return "";
   };
   const djProblem=djState();
@@ -11936,13 +11988,13 @@ window.assignActsInner=function(day,ds,acts,openIgnored,working){
   const djWarnings=djProblem&&djItems.length?`<div class="as622-rule-note" style="border:1px solid rgba(176,82,57,.22);background:rgba(176,82,57,.05)"><b>DJ operational warning:</b> ${djItems.map(a=>esc(a.name)).join(", ")} ${djItems.length===1?"is":"are"} DJ programme, but ${esc(dj?dj.display_name||dj.username:"DJ")} is on <b>${esc(djProblem)}</b>. The app will not assign these events/shows/parties to an entertainer. Management needs to arrange DJ coverage.</div>`:"";
   return `<div class="g3-stats" style="margin-top:12px"><div class="stat"><b>${acts.length}</b><span>${t("activities")}</span></div><div class="stat"><b>${unresolved.length}</b><span>Needs assignment</span></div><div class="stat"><b>${working.length}</b><span>${t("workingToday")}</span></div></div>
     <div class="card ent-card" id="asg-ent" style="margin-top:12px"><span class="ent-ic">${ic("door",20)}</span><span class="asg-mid"><b>${t("entranceDuty")}</b><span class="mini">${personTag(dayPlanFor(day).entrance)||t("noOneEntrance")}</span></span><span class="ent-go">${ic("pen",15)}</span></div>
-    <div class="as622-rule-note"><b>Smart assignment:</b> Maximum <b>1 activity per entertainer per operation</b>. Day off, vacation, absence and Entrance Duty are hard blocks. Entrance Duty allows an activity only when it is fully finished by 16:00; 15:30–16:00 is valid, 15:45–16:15 is not. The planner avoids repeated activities and repeated start-times, balances active/relaxing workload and total assignments, respects Can/Can't, and applies gender only when configured. DJ #3 is excluded from normal activities.</div>
+    <div class="as622-rule-note"><b>Smart assignment:</b> Maximum <b>1 activity per entertainer per operation</b>. Day off, vacation, absence and Entrance Duty are hard blocks. Entrance Duty allows an activity only when it is fully finished by 16:00; 15:30–16:00 is valid, 15:45–16:15 is not. The planner avoids repeated activities and repeated start-times, balances active/relaxing workload and total assignments, respects Can/Can't, and applies gender only when configured. DJs are excluded from normal activities (unless the manager allows a DJ to run activities).</div>
     ${djWarnings}
     <div class="asg-actions-v5"><button class="btn" id="asg-auto">${ic("sparkle",18)} Generate plans</button><button class="btn ghost" id="asg-clearbad" title="Repair invalid assignments">↻</button></div>
     <div class="asg-status-v5 ${unresolved.length?"warn":""}">${unresolved.length?unresolved.length+" item(s) need a valid assignment":"All current assignments pass the hard availability checks"}</div>
     <div class="card" style="margin-top:12px">${acts.length?acts.map(a=>{
       const isEvent=activitySlot(a)==="event",valid=hardValidExisting622(a);
-      const dj=isEvent?(eventsCrew(a.day,dayDate622(a.day))||[]).find(x=>+x.number===DJ_NUMBER):null;
+      const dj=isEvent?(eventsCrew(a.day,dayDate622(a.day))||[]).find(x=>isDjRole(x)):null;
       const u=isEvent?dj:userFor622(a.entertainer);
       const who=u?(u.display_name||u.username):String(a.entertainer||"").trim();
       return `<div class="asg-row" data-aopen="${a.id}"><span class="asg-t">${esc(a.time||"")}</span><span class="asg-mid"><b>${esc(a.name)}</b><span class="mini">${esc(whoCanRun(a))}${a.location?" · "+esc(a.location):""}</span><span class="asg-kind-v5">${isEvent?"DJ programme":type622(a)}</span></span>${valid?`<span class="asg-who">${esc(who)}${isEvent?" · Auto":""}</span>`:`<span class="asg-who none">${isEvent?"DJ unavailable":"Needs plan"}</span>`}</div>`
@@ -11998,7 +12050,7 @@ function baseMetrics624(excluded){
   const m={count:{},points:{},acts:{},times:{},types:{},days:{},ops:{}};
   (S.activities||[]).forEach(a=>{
     if(skip.has(a)||activitySlot(a)==='event'||!String(a.entertainer||'').trim())return;
-    const u=user624(a.entertainer);if(!u||+u.number===DJ_NUMBER)return;
+    const u=user624(a.entertainer);if(!u||isDjRole(u))return;
     bump624(m,u,a,a.day);
   });
   return m;
@@ -12033,7 +12085,7 @@ function previousAssignees624(previousPlans,a){
 function candidate624(day,a,m,usedOps,previousPlans,alt,generation){
   const api=api624(),date=assignDateStr(day),op=activitySlot(a);
   let pool=assignableStaff(day,date)
-    .filter(u=>+u.number!==DJ_NUMBER || isSportDJ(u))
+    .filter(u=>!isDjRole(u) || isSportDJ(u))
     .filter(u=>api&&api.hardAvailable?api.hardAvailable(u,a,day):true)
     .filter(u=>!usedOps.has(key624(u)+'|'+day+'|'+op));
   if(!pool.length)return null;
@@ -12053,7 +12105,7 @@ function candidate624(day,a,m,usedOps,previousPlans,alt,generation){
   return near[0].u;
 }
 function eventRows624(day){
-  const dj=(eventsCrew(day,assignDateStr(day))||[]).find(u=>+u.number===DJ_NUMBER)||null;
+  const dj=(eventsCrew(day,assignDateStr(day))||[]).find(u=>isDjRole(u))||null;
   return (S.activities||[]).filter(a=>a&&a.day===day&&activitySlot(a)==='event').map(a=>({
     activity:a,slot:'event',username:dj?dj.username:'',name:dj?(dj.display_name||dj.username):'DJ unavailable',day,user:dj||null
   }));
@@ -12062,7 +12114,7 @@ function preservedUsage624(day,targets,m,usedOps){
   const targetSet=new Set(targets);
   (S.activities||[]).forEach(a=>{
     if(a.day!==day||activitySlot(a)==='event'||targetSet.has(a)||!String(a.entertainer||'').trim())return;
-    const u=user624(a.entertainer);if(!u||+u.number===DJ_NUMBER)return;
+    const u=user624(a.entertainer);if(!u||isDjRole(u))return;
     usedOps.add(key624(u)+'|'+day+'|'+activitySlot(a));
   });
 }
@@ -12111,12 +12163,12 @@ window.applyAssignments=applyAssignments=async function(list){
     if(!it||!it.activity||!it.username)continue;
     const a=it.activity,u=user624(it.username);
     if(activitySlot(a)==='event'){
-      if(!u||+u.number!==DJ_NUMBER||!availableOn(u,a.day,assignDateStr(a.day))){
+      if(!u||!isDjRole(u)||!availableOn(u,a.day,assignDateStr(a.day))){
         toastErr('DJ is not available for '+(a.name||'this programme item')+'.');return false;
       }
       continue;
     }
-    if(!u||+u.number===DJ_NUMBER||!(api&&api.hardAvailable&&api.hardAvailable(u,a,a.day))){
+    if(!u||isDjRole(u)||!(api&&api.hardAvailable&&api.hardAvailable(u,a,a.day))){
       toastErr((u?(u.display_name||u.username):'This entertainer')+' is not eligible for '+(a.name||'this activity')+'.');return false;
     }
     const k=key624(u)+'|'+a.day+'|'+activitySlot(a);
@@ -12148,7 +12200,7 @@ window.openAutoAssignModal=function(day){
       ${plan.length?`<div class="aa-bal ${bal.spread<=1?'good':'warn'}"><b>Fairness</b><span>${bal.spread<=1?'Evenly shared':'Workload difference '+bal.spread} · ${bal.min}–${bal.max} activities</span></div>
       <div class="card aa-list">${Object.keys(byDay).sort((a,b)=>a-b).map(d=>`<div class="aa-day"><b>${esc(t('days')[+d]||'')}</b></div>${byDay[d].map(x=>{
         const i=plan.indexOf(x),isEvent=x.slot==='event';
-        const pool=isEvent?eventsCrew(+d,assignDateStr(+d)):assignableStaff(+d,assignDateStr(+d)).filter(u=>+u.number!==DJ_NUMBER&&(api624()?.hardAvailable?api624().hardAvailable(u,x.activity,+d):true));
+        const pool=isEvent?eventsCrew(+d,assignDateStr(+d)):assignableStaff(+d,assignDateStr(+d)).filter(u=>!isDjRole(u)&&(api624()?.hardAvailable?api624().hardAvailable(u,x.activity,+d):true));
         return `<div class="aa-row"><span class="aa-slot ${x.slot}">${isEvent?'DJ':x.slot}</span><span class="aa-mid"><b>${esc(x.activity.name)}</b><span class="mini">${esc(x.activity.time||'')} · ${activityType(x.activity)}</span></span><select class="aa-sel" data-v624row="${i}" ${isEvent?'disabled':''}><option value="">${isEvent?'DJ unavailable':'— unassigned —'}</option>${pool.map(u=>`<option value="${esc(u.username)}" ${u.username===x.username?'selected':''}>${esc(u.display_name||u.username)}</option>`).join('')}</select></div>`;
       }).join('')}`).join('')}</div>
       <button class="btn" id="v624-apply">${ic('check',16)} Apply Plan ${String.fromCharCode(65+variant)}</button>`:`<div class="empty"><div class="big">${ic('users',28)}</div>No programme items for this selection.</div>`}
@@ -16699,7 +16751,7 @@ document.head.appendChild(st);
 (function(){
 'use strict';
 if(window.__AUREA_DASH_V710) return; window.__AUREA_DASH_V710=true;
-const DJN=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+const DJN='DJ';
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const addDays=(s,n)=>{ const d=new Date(s+'T12:00:00'); d.setDate(d.getDate()+n); return iso(d); };
 const today=()=>hotelDateStr(), tomorrow=()=>addDays(today(),1);
@@ -16720,7 +16772,7 @@ function whyOff(u,day,date){
   return 'not working';
 }
 function working(u,day,date){ try{ return availableOn(u,day,date); }catch(_){ return true; } }
-function dj(){ return (S.users||[]).find(u=>u&&u.role==='staff'&&+u.number===DJN&&u.active!==false&&!(typeof hasLeft==='function'&&hasLeft(u)))||null; }
+function dj(){ return (S.users||[]).find(u=>u&&u.role==='staff'&&isDjRole(u)&&u.active!==false&&!(typeof hasLeft==='function'&&hasLeft(u)))||null; }
 function sheetState(a){
   const sh=typeof reqSheetForAct==='function'?reqSheetForAct(a):null;
   if(!sh) return {ok:false,txt:'no sheet'};
@@ -16742,10 +16794,10 @@ function build(){
   const D=dj();
   const evToday=T.filter(special), evTomorrow=M.filter(special);
   if(!D && (evToday.length||evTomorrow.length)){
-    const staff3=(S.users||[]).find(u=>+u.number===DJN);
+    const staff3=(S.users||[]).find(u=>isDjRole(u));
     out.push(item('urgent','bad','music','No DJ in the team',
-      staff3?`Team member #${DJN} (${staff3.display_name||staff3.username}) is ${staff3.active===false?'switched off':staff3.role!=='staff'?'not an entertainer account':'marked as left'}. Events, shows and live music are run by #${DJN}.`
-            :`Events, shows and live music are run by team member #${DJN}. Nobody active has number ${DJN} — open Team and give the DJ number ${DJN}.`,
+      staff3?`The DJ ${staff3.display_name||staff3.username} is ${staff3.active===false?'switched off':staff3.role!=='staff'?'not an entertainer account':'marked as left'}. Events, shows and live music are run by team members with the DJ role.`
+            :`Events, shows and live music are run by team members with the DJ role. Nobody active has the DJ role — open Team and set a team member's role to DJ.`,
       'Setup',nav('team','accounts'),1));
   } else if(D){
     [[td,di,evToday,'urgent','today'],[tmw,dt,evTomorrow,'tomorrow','tomorrow']].forEach(([date,day,ev,g,word])=>{
@@ -16829,7 +16881,7 @@ window.attentionItems=items;
 'use strict';
 if(window.__AUREA_DAYPLAN_V711) return; window.__AUREA_DAYPLAN_V711=true;
 const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const DJN=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+const DJN='DJ';
 const LOC={en:'en-GB',de:'de-DE',ru:'ru-RU',pl:'pl-PL',cs:'cs-CZ',nl:'nl-NL',fr:'fr-FR',ar:'ar-EG',it:'it-IT',ro:'ro-RO',tr:'tr-TR',sk:'sk-SK',sr:'sr-Latn-RS',uk:'uk-UA',zh:'zh-CN',hi:'hi-IN','ar-tn':'ar-TN','ar-dz':'ar-DZ'};
 const wins=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w; }catch(_){} const s=timeToMin(a&&a.time); return s==null?[]:[{s0:s,e0:s+30}]; };
 const startOf=a=>{ const w=wins(a); return w.length?w[0].s0:9999; };
@@ -16852,7 +16904,7 @@ function model(day){
   const people=team.map(u=>{
     const num=+u.number||(u.role==='manager'?1:0);
     const mine=acts.filter(a=>normal(a)&&assignedTo(a,u));
-    const isDJ=num===DJN;
+    const isDJ=isDjRole(u);
     return {u,num,status:statusOf(u),entrance:+dp.entrance===num&&num>0,dj:isDJ,makeup:dp.makeup&&+dp.makeup.num===num,acts:mine,events:isDJ?acts.filter(special):[],role:(typeof roleForNumber==='function'?roleForNumber(num):'')};
   });
   const checks=[];
@@ -16864,7 +16916,7 @@ function model(day){
   else if(ent.status!=='working') checks.push({tone:'bad',text:`${ent.u.display_name||ent.u.username} has entrance duty but is on ${ent.status==='off'?'day off':ent.status}`});
   else { try{ const clash=ent.acts.filter(a=>entranceConflict(ent.u,day,a)); if(clash.length) checks.push({tone:'bad',text:`${ent.u.display_name||ent.u.username} has entrance duty and ${clash.map(a=>a.name).join(', ')} at the same time`}); }catch(_){} }
   const evs=acts.filter(special), dj=people.find(p=>p.dj);
-  if(evs.length&&!dj) checks.push({tone:'bad',text:`${evs.length} event${evs.length>1?'s':''} but no DJ (#${DJN}) in the team`});
+  if(evs.length&&!dj) checks.push({tone:'bad',text:`${evs.length} event${evs.length>1?'s':''} but nobody with the DJ role in the team`});
   else if(evs.length&&dj&&dj.status!=='working') checks.push({tone:'bad',text:`DJ ${dj.u.display_name||dj.u.username} is on ${dj.status==='off'?'day off':dj.status} — ${evs.length} event${evs.length>1?'s':''} need him`});
   const empty=acts.filter(a=>normal(a)&&!String(a.entertainer||'').trim());
   if(empty.length) checks.push({tone:'warn',text:`${empty.length} activit${empty.length>1?'ies have':'y has'} nobody: ${empty.map(a=>hhmm(startOf(a))+' '+a.name).join(', ')}`,nav:'assign'});
@@ -18010,7 +18062,7 @@ function accounts(){
   const all=S.users||[], team=appTeam().sort((a,b)=>(+a.number||99)-(+b.number||99));
   const gone=all.filter(u=>(u.role==='staff'||u.role==='manager')&&left(u)), att=all.filter(u=>attOnly(u)&&!left(u));
   const roles={}; team.forEach(u=>{ const r=roleOf(u); roles[r]=(roles[r]||0)+1; });
-  const order=['Manager','Entertainer · Social Media','DJ','Entertainer'];
+  const order=['Manager','Supervisor','Sport Entertainer','DJ','Social Media','Guest Contact'];
   const roleTxt=Object.keys(roles).sort((a,b)=>(order.indexOf(a)+1||9)-(order.indexOf(b)+1||9)).map(r=>`${roles[r]} ${r==='Entertainer · Social Media'?'social media':r==='DJ'?'DJ':r.toLowerCase()+(roles[r]>1&&r==='Entertainer'?'s':'')}`).join(' · ');
   const g={male:0,female:0}; const nat={}; team.forEach(u=>{ if(u.gender==='male') g.male++; else if(u.gender==='female') g.female++; const n=String(u.nationality||'').trim(); if(n) nat[n]=(nat[n]||0)+1; });
   const now=team.map(u=>({u,s:todayState(u)}));
@@ -18508,7 +18560,7 @@ document.head.appendChild(css);
 if(window.__AUREA_V719) return; window.__AUREA_V719=true;
 const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const Q=s=>document.querySelector(s);
-const DJN=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+const DJN='DJ';
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const addDays=(s,n)=>{ const d=new Date(String(s).slice(0,10)+'T12:00:00'); d.setDate(d.getDate()+n); return ymd(d); };
 const today=()=>hotelDateStr(), tomorrow=()=>addDays(today(),1);
@@ -18525,7 +18577,7 @@ function wins(a){
   const s=timeToMin(a&&a.time); return s==null?[]:[{s0:s,e0:s+30}];
 }
 const liveUser=u=>u&&u.active!==false&&!(typeof hasLeft==='function'&&hasLeft(u))&&!(typeof isAttOnly==='function'&&isAttOnly(u));
-function dj(){ return (S.users||[]).find(u=>u&&u.role==='staff'&&+u.number===DJN&&liveUser(u))||null; }
+function dj(){ return (S.users||[]).find(u=>u&&u.role==='staff'&&isDjRole(u)&&liveUser(u))||null; }
 function userOf(raw){ const q=String(raw||'').split(/\s*[,;\/]\s*/)[0].trim().replace(/^#/,'').toLowerCase(); if(!q) return null; return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===q||String(u.display_name||'').toLowerCase()===q||String(u.number||'')===q)||null; }
 const uname=u=>u?(u.display_name||u.username||''):'';
 function whyOff(u,day,date){
@@ -18537,8 +18589,8 @@ const working=(u,day,date)=>{ try{ return availableOn(u,day,date); }catch(_){ re
 /* ======================= CONTROL CENTER ======================= */
 const LABEL={'setup':'Fix','prepare':'Make sheet','assign':'Assign','staff':'Change','dj':'Day plan','tickets':'Tickets','money':'Collect','team':'Answer','tasks':'Tasks','quiz':'Write'};
 function djHelp(){
-  const cand=(S.users||[]).filter(u=>u&&u.role==='staff'&&liveUser(u)&&+u.number!==DJN&&/\bdj\b|disc ?jockey/i.test([u.position,u.display_name,u.username].join(' ')));
-  if(cand.length===1){ const c=cand[0]; return `${uname(c)} looks like your DJ but has ${c.number?'number #'+c.number:'no number'}. Events, shows and live music always go to #${DJN} — open Team and give ${uname(c)} number ${DJN}.`; }
+  const cand=(S.users||[]).filter(u=>u&&u.role==='staff'&&liveUser(u)&&!isDjRole(u)&&/\bdj\b|disc ?jockey/i.test([u.position,u.display_name,u.username].join(' ')));
+  if(cand.length===1){ const c=cand[0]; return `${uname(c)} looks like your DJ but has another role. Events, shows and live music go to team members with the DJ role — open Team and set ${uname(c)}'s role to DJ.`; }
   return null;
 }
 function extraItems(){
@@ -18623,7 +18675,7 @@ function dayCard(day){
     <div class="card dy19-card">
       ${identity?`<div class="dy19-id"><span>Theme of the day</span><b>${E(identity)}</b></div>`:''}
       <div class="dy19-grid">${row(t('restaurantTheme'),E(theme))}${row(t('dressCode'),E(dress))}${row(t('entranceDuty'),E(ent))}${row(t('dayOff'),E(off))}${away.length?row('Away today',E(away.join(' · ')),true):''}${custom}</div>
-      <p class="dy19-team">${ic('users',14)} <b>${workingN}</b> of ${team.length} entertainers working today</p>
+      <p class="dy19-team">${ic('users',14)} ${team.length?`<b>${workingN}</b> of ${team.length} entertainers working today`:'No team members in this hotel yet — add them in Team'}</p>
     </div></div>`;
 }
 
@@ -18640,9 +18692,9 @@ function sheetChip(a,td){
 function whoLine(a,day,td,done){
   if(special(a)){
     const raw=String(a.entertainer||'').trim(), u=userOf(raw)||dj();
-    if(!u) return raw?{t:typeof entertainerName==='function'?entertainerName(raw):raw}:{t:`No DJ (#${DJN}) in the team`,k:'bad'};
+    if(!u) return raw?{t:typeof entertainerName==='function'?entertainerName(raw):raw}:{t:`No DJ in the team`,k:'bad'};
     if(!done&&!working(u,day,td)) return {t:`${uname(u)} is ${whyOff(u,day,td)}`,k:'bad'};
-    return {t:uname(u)+(+u.number===DJN?' · DJ':'')};
+    return {t:uname(u)+(isDjRole(u)?' · DJ':'')};
   }
   const raw=String(a.entertainer||'').trim();
   if(!raw) return done?{t:''}:{t:'Nobody assigned',k:'warn'};
@@ -19382,7 +19434,7 @@ async function runJobs(jobs){
 /* ---------- the planner (V7.05) ---------- */
 const api=()=>window.AUREA_SMART_ASSIGNMENT_V622||{};
 const uname=u=>String(u&&u.username||'').toLowerCase();
-const DJ=typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
+const DJ='DJ';
 function userByName(v){
   const q=String(v||'').trim().toLowerCase(); if(!q) return null;
   return (S.users||[]).find(u=>String(u.username||'').toLowerCase()===q||String(u.display_name||'').toLowerCase()===q)||null;
@@ -19392,7 +19444,7 @@ const wins=a=>{ try{ const w=activityWindows(a); if(w&&w.length) return w; }catc
 const startMin=a=>{ const w=wins(a); return w.length?w[0].s0:null; };
 const typeOf=a=>{ try{ return activityType(a); }catch(_){ return 'x'; } };
 const normal=a=>{ const s=activitySlot(a); return s==='morning'||s==='afternoon'; };
-const isDJuser=u=>!!u && +u.number===DJ;
+const isDJuser=u=>!!u && isDjRole(u);
 const djSport=()=>{ try{ return djWorkMode()==='sport_dj'; }catch(_){ return false; } };
 /* The DJ keeps his events: a daytime activity must end 60 min before any
    event, show, live music or party of that day starts, and may start 30 min
@@ -19416,7 +19468,7 @@ function eligible(w,anchor,day,a){
   });
 }
 function djFor(w,anchor,day){
-  return withWeek(w,anchor,()=>(eventsCrew(day,assignDateStr(day))||[]).find(u=>+u.number===DJ)||null);
+  return withWeek(w,anchor,()=>(eventsCrew(day,assignDateStr(day))||[]).find(u=>isDjRole(u))||null);
 }
 function rng(seed){ let t=seed>>>0; return ()=>{ t+=0x6D2B79F5; let r=Math.imul(t^t>>>15,t|1); r^=r+Math.imul(r^r>>>7,r|61); return ((r^r>>>14)>>>0)/4294967296; }; }
 
@@ -19891,10 +19943,7 @@ window.__ex21L=L; window.__ex21TX=TX;
 /* the role under a team member's name (Meet the team, here and in the app) */
 window.__role20=function(p){
   if(!p) return '';
-  if(p.role==='manager'||+p.number===1) return L('rMgr');
-  if(+p.number===2) return L('rSocial');
-  if(+p.number===3) return L('rDj');
-  return p.role==='staff'?L('rEnt'):'';
+  if(p.role==='manager') return L('rMgr'); const r=staffRole(p); if(r==='social') return L('rSocial'); if(r==='dj') return L('rDj'); if(r==='sport') return L('rEnt'); return p.role==='staff'?(STAFF_ROLES[r]||L('rEnt')):'';
 };
 
 /* ---------- her own texts (Settings → Explore page); empty = translated default ---------- */
@@ -20156,7 +20205,7 @@ window.addEventListener('popstate',e=>{
 function openDetail(a,forTeam){
   if(!a) return;
   const img=coverOf(a), days=t('days')||[];
-  const who=forTeam?(()=>{ const raw=String(a.entertainer||'').trim(); if(normCat(a)!=='mAdult'){ const dj=(S.users||[]).find(u=>u.role==='staff'&&+u.number===3&&u.active!==false&&!hasLeft(u)); return dj?(dj.display_name||dj.username)+' · DJ':''; } try{ return raw?entertainerName(raw):t('allTeam'); }catch(_){ return raw; } })():'';
+  const who=forTeam?(()=>{ const raw=String(a.entertainer||'').trim(); if(normCat(a)!=='mAdult'){ const dj=(S.users||[]).find(u=>isDjRole(u)&&u.active!==false&&!hasLeft(u)); return dj?(dj.display_name||dj.username)+' · DJ':''; } try{ return raw?entertainerName(raw):t('allTeam'); }catch(_){ return raw; } })():'';
   const wrap=baseModal(`<div class="ex21-detail">${img?`<div class="ph"><img src="${E(img)}" alt=""></div>`:''}
     <span class="ex21-type">${E((window.__tkOfAct&&window.__tkOfAct(a)||{}).label||typeL(a))}${a.highlight?' · '+E(L('hl')):''}</span><h3>${E(a.name||'')}</h3>
     <dl><div><dt>${ic('calendar',14)} ${E(L('when'))}</dt><dd>${E(days[+a.day]||'')} · ${E(timeText(a)||L('tba'))}</dd></div>
@@ -21099,8 +21148,8 @@ function typeOf(tk){
 }
 const typeName=ty=>G('ty_'+ty);
 /* ---- the programme entry of a ticket event ---- */
-const DJN=()=>typeof DJ_NUMBER!=='undefined'?DJ_NUMBER:3;
-const djUser=()=>(((S.users||[]).find(u=>u&&u.role==='staff'&&+u.number===DJN()))||{}).username||'';
+const DJN=()=>'DJ';
+const djUser=()=>(((S.users||[]).find(u=>u&&u.role==='staff'&&isDjRole(u)))||{}).username||'';
 const normName=s=>low(s).replace(/[^a-z0-9Ѐ-ӿ؀-ۿ]+/g,'');
 const t2m=s=>{ const m=String(s||'').match(/(\d{1,2})[:.](\d{2})/); return m?(+m[1])*60+(+m[2]):null; };
 const m2t=m=>{ m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
@@ -22605,9 +22654,10 @@ if(typeof DB!=='undefined'){
   const add0=DB.addUser&&DB.addUser.bind(DB), up0=DB.updateUser&&DB.updateUser.bind(DB), del0=DB.deleteUser&&DB.deleteUser.bind(DB);
   const fallback=e=>missing(e);
   DB.addUser=async function(u){
+    if(ROLEPEND&&ROLEPEND.key==='new'&&ROLEPEND.modal&&document.body.contains(ROLEPEND.modal)&&u&&u.role==='staff'){ u={...u,staff_role:ROLEPEND.staff_role,can_activities:ROLEPEND.can_activities}; ROLEPEND=null; }
     if(!REM()) return add0(u);
     let r; try{ r=await rpc('mgr_user_add',{p_token:teamTok(),p_row:u}); }catch(e){ if(fallback(e)) return add0(u); bad(t('errSave')); throw e; }
-    if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can add team accounts — sign in again.':t('errSave')); throw new Error(r&&r.error||'failed'); }
+    if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can add team accounts — sign in again.':r&&r.error==='number_taken'?`Number #${u.number} is already used by ${r.by||'another team member'}${r.hotel?' ('+r.hotel+')':''}.`:r&&r.error==='number_range'?'Staff numbers go from 1 to 50.':t('errSave')); throw new Error(r&&r.error||'failed'); }
     S.users.push(r.user);
   };
   DB.updateUser=async function(id,patch){
@@ -22615,11 +22665,14 @@ if(typeof DB!=='undefined'){
     ['username','role'].forEach(k=>{ if(k in p&&String(p[k]??'')===String(cur[k]??'')) delete p[k]; });
     if('password' in p&&!String(p.password||'').trim()) delete p.password;
     if(UPEND&&String(UPEND.id)===String(id)&&UPEND.modal&&document.body.contains(UPEND.modal)){ p.hotel_id=UPEND.hotel; UPEND=null; }
+    if(ROLEPEND&&ROLEPEND.key===String(id)&&ROLEPEND.modal&&document.body.contains(ROLEPEND.modal)){ p.staff_role=ROLEPEND.staff_role; p.can_activities=ROLEPEND.can_activities; ROLEPEND=null; }
     if('hotel_id' in p&&+p.hotel_id===+(cur.hotel_id||0)) delete p.hotel_id;
-    const sens=['username','role','password','hotel_id'].some(k=>k in p);
+    ['number','staff_role','can_activities'].forEach(k=>{ if(k in p&&String(p[k]??'')===String(cur[k]??'')) delete p[k]; });
+    if(p.staff_role&&!(cur.staff_role)&&p.staff_role==='sport'&&cur.role==='staff'&&!('number' in p)&&Object.keys(p).length===1) delete p.staff_role;
+    const sens=['username','role','password','hotel_id','number','staff_role','can_activities'].some(k=>k in p);
     if(!REM()||!sens){ delete p.password; return up0(id,p); }
     let r; try{ r=await rpc('mgr_user_update',{p_token:teamTok(),p_id:String(id),p_patch:p}); }catch(e){ if(fallback(e)) return up0(id,patch); throw e; }
-    if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can change this — sign in again.':t('errSave')); throw new Error(r&&r.error||'failed'); }
+    if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can change this — sign in again.':r&&r.error==='number_taken'?`Number #${p.number} is already used by ${r.by||'another team member'}${r.hotel?' ('+r.hotel+')':''}.`:r&&r.error==='number_range'?'Staff numbers go from 1 to 50.':t('errSave')); throw new Error(r&&r.error||'failed'); }
     S.users=S.users.map(u=>String(u.id)===String(id)?{...u,...r.user}:u);
     if(r.user&&r.user.role==='staff'&&+r.user.hotel_id!==curHotel()){ S.users=S.users.filter(u=>String(u.id)!==String(id)); ok('Moved to '+(hotelName(r.user.hotel_id)||'the other hotel')); }
   };
@@ -22683,7 +22736,7 @@ function needsPicker(){
   if(chosen&&HS.list.some(h=>String(h.id)===String(chosen))) return false;
   return !signedIn();
 }
-setTimeout(async()=>{ await loadHotels(); if(needsPicker()) hotelPicker(); else if(HS.list&&HS.list.length>1&&!(S.session&&!S.explorePreview)) softPaint(); },1200);
+setTimeout(async()=>{ await loadHotels(); if(HS.list&&HS.list.length>1&&!(S.session&&!S.explorePreview)) softPaint(); },1200);
 /* a guest's stay belongs to one hotel: show that hotel */
 function checkStayHotel(){ const h=G5.stay&&+G5.stay.hotel_id; if(h&&h!==curHotel()) switchHotel(h); }
 
@@ -22742,6 +22795,41 @@ window.__wireSteps.push(function(){
     };
     const hm=Q('#g28-hman'); if(hm) hm.onclick=openHotels;
   }
+});
+/* staff: role, "can run activities", numbers 1–50 unique in ALL hotels (manager only) */
+let ROLEPEND=null, USED=null;
+async function usedNumbers(){ try{ const r=await rpc('mgr_used_numbers',{p_token:teamTok()}); if(r&&r.ok) USED=r.numbers||[]; }catch(_){ USED=null; } return USED; }
+function nextFree(){ const t=new Set((USED||[]).map(x=>+x.number)); for(let n=1;n<=50;n++) if(!t.has(n)) return n; return null; }
+function roleFields(u,numSel,errSel,w){
+  const r=u?(u.staff_role||(u.role==='staff'?'sport':'')):'sport', ca=u&&u.can_activities===true?'yes':u&&u.can_activities===false?'no':'';
+  const num=w.querySelector(numSel); if(!num) return;
+  num.insertAdjacentHTML('afterend',`<p class="mini" id="g29-numhint">${USED?`Numbers are unique in all hotels. Next free number: <b>#${nextFree()||'—'}</b>`:''}</p>
+    <label for="g29-role">Staff role</label><select id="g29-role">${Object.entries(window.STAFF_ROLES||{}).map(([k,l])=>`<option value="${k}" ${k===r?'selected':''}>${E(l)}</option>`).join('')}</select>
+    <label for="g29-act">Can run activities</label><select id="g29-act"><option value="" ${ca===''?'selected':''}>As the role decides (Sport Entertainer: yes · others: no)</option><option value="yes" ${ca==='yes'?'selected':''}>Yes — allow activities</option><option value="no" ${ca==='no'?'selected':''}>No — never activities</option></select>
+    <p class="mini">The role decides the kind of work, the skills (I can / I can't) decide which activities. The number never decides the job.</p><p class="err" id="g29-err"></p>`);
+  const save=w.querySelector(errSel);
+  w.addEventListener('click',ev=>{
+    const b=ev.target.closest&&ev.target.closest('#u-save,#ue-go'); if(!b) return;
+    const er=w.querySelector('#g29-err'), n=+(num.value||0);
+    if(n&&(n<1||n>50)){ ev.preventDefault(); ev.stopImmediatePropagation(); er.textContent='Staff numbers go from 1 to 50.'; return; }
+    const other=n&&(USED||[]).find(x=>+x.number===n&&String(x.id)!==String(u&&u.id||''));
+    if(other){ ev.preventDefault(); ev.stopImmediatePropagation(); er.textContent=`Number #${n} is already used by ${other.name}${other.hotel?' ('+other.hotel+')':''}. Next free number: #${nextFree()||'—'}.`; try{ num.focus(); }catch(_){} return; }
+    const av=w.querySelector('#g29-act').value;
+    ROLEPEND={key:u?String(u.id):'new',modal:w,staff_role:w.querySelector('#g29-role').value,can_activities:av===''?null:av==='yes'};
+  },true);
+}
+['openUserModal','openUserEditModal'].forEach(fn=>{
+  if(typeof window[fn]!=='function') return;
+  const o=window[fn];
+  window[fn]=function(u){
+    const r=o.apply(this,arguments);
+    if(isMgr()&&(fn==='openUserModal'||(u&&u.role==='staff'))) usedNumbers().then(()=>{
+      const ws=[...document.querySelectorAll('.modal-bg')].filter(w=>w.querySelector(fn==='openUserModal'?'#u-num':'#ue-num')), w=ws[ws.length-1];
+      if(w&&!w.querySelector('#g29-role')) roleFields(fn==='openUserModal'?null:u, fn==='openUserModal'?'#u-num':'#ue-num', fn==='openUserModal'?'#u-save':'#ue-go', w);
+    });
+    return r;
+  };
+  try{ if(fn==='openUserModal') openUserModal=window[fn]; }catch(_){}
 });
 /* staff: which hotel a team member belongs to (manager only) */
 let UPEND=null;
@@ -22846,6 +22934,8 @@ css.textContent=`
 .g25-seg3 button{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:13px;width:auto;margin:0;min-height:0;cursor:pointer}
 .g25-seg3 button.on{background:var(--espresso);border-color:var(--espresso);color:var(--theme-button-text,#fff)}
 .gp-stats{flex-wrap:wrap}.gp-stats span{min-width:70px}
+/* V7.29 */
+.g29-gate .g29-sub{margin:-8px 0 18px;color:var(--x-mut,#8a7a6a);font-size:15px}
 /* V7.28 hotels */
 .g28-pick{position:fixed;inset:0;z-index:300;background:var(--x-bg,#F6F0E8);overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top) + 40px) 18px 30px}
 .g28-pin{width:100%;max-width:460px}.g28-kick{margin:0 0 6px;color:var(--x-mut,#8a7a6a);font-size:14px}.g28-pin h2{font:600 32px/1.1 var(--font-display,serif);margin:0 0 18px;color:var(--x-ink,#2b1d14)}
