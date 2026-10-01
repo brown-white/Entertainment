@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Entertainment ·Mr Hassan </title>
+<title>Entertainment · AUREA V6.74</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style id="aurea-styles">
@@ -4782,6 +4782,7 @@ function __hotelRow(path, body){
 }
 async function sb(path, opts={}){
   if(window.__gateWait&&!/^rpc\/public_hotels\b/.test(path)) await window.__gateWait;
+  if(window.__previewReadOnly&&opts.method&&opts.method!=="GET"&&!/^rpc\/(team_ticket_orders|team_session|team_role_defaults|staff_guests|public_|mgr_data|mgr_used_numbers|mgr_hotels)/.test(path)) throw new Error("Preview is read-only");
   const hr=__hotelRow(path, opts.body); path=hr[0]; if(opts.body) opts={...opts, body:hr[1]};
   const hx={};
   try{ hx["x-hotel-id"]=String(window.__hotelId||1); const tk=(typeof S!=="undefined"&&S.session&&S.session.token)||""; if(tk) hx["x-team-token"]=tk; }catch(_){}
@@ -20288,7 +20289,7 @@ function teamSignIn(say){
     clearAttempts();
     const role=found.role==='manager'?'manager':'staff';
     TEAM.user=''; S.remember=true; S.explorePreview=false;
-    S.session={role,name:found.display_name||found.username,username:found.username||u,userId:found.id,accountId:found.id,number:found.number||null,photo:found.photo||'',token:token||'',hotel_id:found.hotel_id||1};
+    S.session={role,name:found.display_name||found.username,username:found.username||u,userId:found.id,accountId:found.id,number:found.number||null,photo:found.photo||'',token:token||'',hotel_id:found.hotel_id||1,staff_role:found.staff_role||null,perms:found.perms||null};
     S.tab=defaultTabFor(role); navReset(); persist();
     if(role==='staff'&&found.hotel_id&&+found.hotel_id!==(window.__hotelId||1)){ try{ localStorage.setItem('ent_hotel_v728',String(found.hotel_id)); }catch(_){} location.reload(); return; }
     try{ render(); }catch(e){ console.error('login render failed',e); S.tab=role==='manager'?'dash':'today'; persist(); render(); }
@@ -20309,7 +20310,7 @@ function teamSignIn(say){
     done();
     if(r&&r.ok&&r.user){
       const found={...((S.users||[]).find(x=>String(x.id)===String(r.user.id))||{}),...r.user};
-      return enter(found,r.token);
+      return rpc('team_session',{p_token:r.token}).then(me=>{ if(me&&me.perms) found.perms=me.perms; enter(found,r.token); }).catch(()=>enter(found,r.token));
     }
     const e=r&&r.error;
     if(e==='attendance') return say(L('attOnly'));
@@ -20680,7 +20681,7 @@ async function load(){
   const before=sig();
   try{
     if(isTeam()){
-      const r=await rpc('team_ticket_orders',{p_token:teamTok()});
+      const r=(window.__can&&!window.__can('tickets'))?{ok:true,rows:[]}:await rpc('team_ticket_orders',{p_token:teamTok()});
       if(r&&r.ok) RS.team=r.rows||[];
       else if(r&&r.error==='signin'&&GA()) GA().teamExpired();
       await gpLoad();
@@ -21059,6 +21060,7 @@ function resCard(x,who){
 }
 function staffPanel(){
   if(!(S.session&&S.session.role==='staff')||!PK()) return '';
+  if(window.__can&&!window.__can('tickets')) return '';
   const P=PK(), mine=packsAll().filter(p=>low(p.user)===low(me())&&!closed(p)).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
   const waiting=groups(RS.team.filter(r=>r.status==='reserved'&&low(r.collect_from)===low(me()))).sort((a,b)=>String(a.at).localeCompare(String(b.at)));
   if(!mine.length&&!waiting.length) return '';
@@ -21118,6 +21120,7 @@ function wireTeam(root,after){
 }
 window.__wireSteps.push(function(){
   if(!isTeam()) return;
+  if(window.__previewReadOnly) return;          // V7.30: a staff preview shows, it does not reload
   if(RS.who!==me()||!RS.loadedAt){ RS.who=me(); RS.seen=null; RS.team=[]; load().then(ch=>{ if(ch) repaint(); }); }
   wireTeam(document);
   document.querySelectorAll('[data-rv-mode]').forEach(b=>b.onclick=()=>{ S.rvMode=b.dataset.rvMode; render(); });
@@ -22654,7 +22657,7 @@ if(typeof DB!=='undefined'){
   const add0=DB.addUser&&DB.addUser.bind(DB), up0=DB.updateUser&&DB.updateUser.bind(DB), del0=DB.deleteUser&&DB.deleteUser.bind(DB);
   const fallback=e=>missing(e);
   DB.addUser=async function(u){
-    if(ROLEPEND&&ROLEPEND.key==='new'&&ROLEPEND.modal&&document.body.contains(ROLEPEND.modal)&&u&&u.role==='staff'){ u={...u,staff_role:ROLEPEND.staff_role,can_activities:ROLEPEND.can_activities}; ROLEPEND=null; }
+    if(ROLEPEND&&ROLEPEND.key==='new'&&ROLEPEND.modal&&document.body.contains(ROLEPEND.modal)&&u&&u.role==='staff'){ u={...u,staff_role:ROLEPEND.staff_role,permissions:ROLEPEND.permissions}; ROLEPEND=null; }
     if(!REM()) return add0(u);
     let r; try{ r=await rpc('mgr_user_add',{p_token:teamTok(),p_row:u}); }catch(e){ if(fallback(e)) return add0(u); bad(t('errSave')); throw e; }
     if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can add team accounts — sign in again.':r&&r.error==='number_taken'?`Number #${u.number} is already used by ${r.by||'another team member'}${r.hotel?' ('+r.hotel+')':''}.`:r&&r.error==='number_range'?'Staff numbers go from 1 to 50.':t('errSave')); throw new Error(r&&r.error||'failed'); }
@@ -22665,11 +22668,12 @@ if(typeof DB!=='undefined'){
     ['username','role'].forEach(k=>{ if(k in p&&String(p[k]??'')===String(cur[k]??'')) delete p[k]; });
     if('password' in p&&!String(p.password||'').trim()) delete p.password;
     if(UPEND&&String(UPEND.id)===String(id)&&UPEND.modal&&document.body.contains(UPEND.modal)){ p.hotel_id=UPEND.hotel; UPEND=null; }
-    if(ROLEPEND&&ROLEPEND.key===String(id)&&ROLEPEND.modal&&document.body.contains(ROLEPEND.modal)){ p.staff_role=ROLEPEND.staff_role; p.can_activities=ROLEPEND.can_activities; ROLEPEND=null; }
+    if(ROLEPEND&&ROLEPEND.key===String(id)&&ROLEPEND.modal&&document.body.contains(ROLEPEND.modal)){ p.staff_role=ROLEPEND.staff_role; p.permissions=ROLEPEND.permissions; ROLEPEND=null; }
     if('hotel_id' in p&&+p.hotel_id===+(cur.hotel_id||0)) delete p.hotel_id;
-    ['number','staff_role','can_activities'].forEach(k=>{ if(k in p&&String(p[k]??'')===String(cur[k]??'')) delete p[k]; });
+    ['number','staff_role'].forEach(k=>{ if(k in p&&String(p[k]??'')===String(cur[k]??'')) delete p[k]; });
+    if('permissions' in p&&JSON.stringify(p.permissions||{})===JSON.stringify(cur.permissions||{})) delete p.permissions;
     if(p.staff_role&&!(cur.staff_role)&&p.staff_role==='sport'&&cur.role==='staff'&&!('number' in p)&&Object.keys(p).length===1) delete p.staff_role;
-    const sens=['username','role','password','hotel_id','number','staff_role','can_activities'].some(k=>k in p);
+    const sens=['username','role','password','hotel_id','number','staff_role','permissions'].some(k=>k in p);
     if(!REM()||!sens){ delete p.password; return up0(id,p); }
     let r; try{ r=await rpc('mgr_user_update',{p_token:teamTok(),p_id:String(id),p_patch:p}); }catch(e){ if(fallback(e)) return up0(id,patch); throw e; }
     if(!r||!r.ok){ bad(r&&r.error==='exists'?t('userExists'):r&&r.error==='forbidden'?'Only the manager can change this — sign in again.':r&&r.error==='number_taken'?`Number #${p.number} is already used by ${r.by||'another team member'}${r.hotel?' ('+r.hotel+')':''}.`:r&&r.error==='number_range'?'Staff numbers go from 1 to 50.':t('errSave')); throw new Error(r&&r.error||'failed'); }
@@ -22796,6 +22800,145 @@ window.__wireSteps.push(function(){
     const hm=Q('#g28-hman'); if(hm) hm.onclick=openHotels;
   }
 });
+/* ======================= ROLE-BASED STAFF APP (V7.30) =======================
+   What a staff member sees and can do = role defaults (database) + the manager's
+   switches for that person. The menu is BUILT from these permissions, pages that
+   are not allowed cannot be opened, the planner only gives activities to people
+   with 'activities', and the database checks the same permissions. */
+const PERM_LIST=[
+  ['myday','My Day (always on)',1],['programme','Programme pages'],['see_activities','See Activities in the programme'],['activities','Receive Activity assignments'],
+  ['events','Events'],['shows','Shows'],['live','Live Music'],['special','Special Events'],['tickets','Ticket packs & reservations'],
+  ['tasks','Tasks'],['chat','Chat with the manager'],['team','Team page'],['team_ops','Team today (who works, day off, entrance, assignments)'],
+  ['guest_support','Guest Support (guests in the hotel)'],['guest_private','Private guest data (mobile, nationality)'],
+  ['quiz','Quiz'],['gallery','Photos'],['bus','Bus times'],['weather','Weather']];
+const MGR_ONLY=['Guest database & history','Tickets management','Manager settings & hotels'];
+let ROLE_DEF=null;
+async function loadRoleDefaults(){ if(ROLE_DEF||!teamTok()) return ROLE_DEF; try{ const r=await rpc('team_role_defaults',{p_token:teamTok()}); if(r&&r.ok) ROLE_DEF=r.defaults; }catch(_){ } return ROLE_DEF; }
+/* effective permissions of any team member (used by the planner and the manager's panel) */
+function effPerms(u){
+  if(!u) return {}; if(u.role==='manager') return {manager:true};
+  if(!ROLE_DEF) return null;
+  const d={...(ROLE_DEF[staffRole(u)]||ROLE_DEF.sport||{})}, o=u.permissions&&typeof u.permissions==='object'?u.permissions:{};
+  Object.keys(o).forEach(k=>{ if(typeof o[k]==='boolean') d[k]=o[k]; }); d.myday=true; return d;
+}
+/* the person using this phone (or the person shown in Preview) */
+const PREV={u:null,perms:null,real:null};
+function can(k){
+  if(PREV.u) return !!(PREV.perms&&PREV.perms[k]);
+  if(!S.session) return false; if(S.session.role==='manager') return true;
+  const p=S.session.perms; if(!p) return true;              // database not updated yet: everything as before
+  return !!p[k];
+}
+window.__can=can;
+/* the planner: activities only for people with the 'activities' permission */
+try{ roleAllowsActivities=function(u){ if(!u||u.role!=='staff') return false; const p=effPerms(u); if(p) return !!p.activities; if(u.can_activities===true) return true; if(u.can_activities===false) return false; return staffRole(u)==='sport'; }; window.roleAllowsActivities=roleAllowsActivities; }catch(_){}
+try{ isSportDJ=function(u){ if(!isDjRole(u)) return false; const p=effPerms(u); return p?!!p.activities:(typeof djWorkMode==='function'&&djWorkMode()==='sport_dj'); }; }catch(_){}
+/* the menu is built from the permissions */
+const NAV_PERM={workday:'myday',mypage:'myday',today:'programme',week:'programme',chat:'chat',tasks:'tasks',teaminfo:'team',quiz:'quiz',gallery:'gallery',bus:'bus',weather:'weather',gsupport:'guest_support',teamops:'team_ops'};
+if(typeof navGroupsBase==='function'){
+  const nb0=navGroupsBase;
+  navGroupsBase=function(role){
+    const g=nb0.apply(this,arguments); if(role!=='staff') return g;
+    const extra=[]; if(can('guest_support')) extra.push(['gsupport','users','Guest Support',0]); if(can('team_ops')) extra.push(['teamops','clipboard','Team today',0]);
+    const out=g.map(x=>({...x,items:x.items.filter(i=>!NAV_PERM[i[0]]||can(NAV_PERM[i[0]]))}));
+    if(extra.length&&out[0]) out[0]={...out[0],items:out[0].items.concat(extra)};
+    return out.filter(x=>x.items.length);
+  };
+}
+/* pages: only what is allowed; the programme shows only allowed types */
+const TYPE_PERM={activity:'see_activities',event:'events',show:'shows',live:'live',special:'special'};
+if(typeof staffView==='function'){
+  const sv0=staffView;
+  const sv=function(){
+    const tab=String(S.tab||'');
+    if(NAV_PERM[tab]&&!can(NAV_PERM[tab])) S.tab='workday';
+    if(S.tab==='gsupport') return guestSupportView();
+    if(S.tab==='teamops') return teamTodayView();
+    if(S.tab==='today'||S.tab==='week'){
+      const all=S.activities; S.activities=(all||[]).filter(a=>can(TYPE_PERM[window.__ptype?window.__ptype(a):'activity']||'see_activities'));
+      try{ return sv0.apply(this,arguments); } finally { S.activities=all; }
+    }
+    return sv0.apply(this,arguments);
+  };
+  staffView=sv; window.staffView=sv;
+}
+/* Guest Support: the guests in the hotel (private data only with 'guest_private') */
+const GSS={at:0,list:null,priv:false,err:''};
+function guestSupportView(){
+  if(!GSS.at&&!GSS.busy){ GSS.busy=true; rpc('staff_guests',{p_token:teamTok()}).then(r=>{ GSS.busy=false; GSS.at=Date.now(); if(r&&r.ok){ GSS.list=r.stays||[]; GSS.priv=!!r.private; GSS.err=''; } else GSS.err=r&&r.error==='forbidden'?'You do not have access to Guest Support.':'Could not load.'; render(); }).catch(()=>{ GSS.busy=false; GSS.at=Date.now(); GSS.err='Could not load.'; render(); }); }
+  const list=GSS.list||[];
+  return `<div class="screen fadein">${topBar('Guest Support',hotelName(curHotel())||'')}
+    <p class="mini">Guests in the hotel today and tomorrow${GSS.priv?' — with mobile and nationality':' — mobile numbers and nationality are only shown to staff the manager allows'}.</p>
+    ${GSS.err?`<div class="t14-empty">${E(GSS.err)}</div>`:!GSS.at?'<p class="mini">Loading…</p>':!list.length?'<div class="t14-empty">No guests signed in.</div>':
+      list.map(g=>`<article class="gp-card"><div class="g25-st1"><b>${E(g.name||'—')}</b><span class="g25-chip now">Room ${E(g.room)}</span></div>
+        <p class="gp-stay">${icn('calendar',14)} ${E(niceDate(g.arrival))} → ${E(niceDate(g.departure))}${g.bookings?` · ${g.bookings} booking${g.bookings>1?'s':''}`:''}</p>
+        ${GSS.priv?`<p class="g25-st2">${g.nationality?E(g.nationality)+' · ':''}${waA(g.phone)}</p>`:''}</article>`).join('')}
+    <button class="btn ghost" id="g30-gsr">Refresh</button></div>`;
+}
+/* Team today (Supervisor): who works, day off, vacation, entrance and today's assignments */
+function teamTodayView(){
+  const d=todayIndex(); let st={working:[],off:[],vacation:[],absent:[]}; try{ st=dayDutyStats(d)||st; }catch(_){}
+  let dp={}; try{ dp=dayPlanFor(d)||{}; }catch(_){}
+  const mine=u=>(S.activities||[]).filter(a=>a&&+a.day===d&&String(a.entertainer||'').toLowerCase().split(/[,;]/).map(x=>x.trim()).includes(String(u.username).toLowerCase()));
+  const row=(u,tag)=>`<li><span><b>#${E(u.number||'—')} ${E(u.display_name||u.username)}</b><small>${E(roleLabelOf(u))}${+dp.entrance===+u.number?' · Entrance duty':''}${tag?' · '+tag:''}</small></span><small>${mine(u).map(a=>E(a.name)).join(', ')}</small></li>`;
+  return `<div class="screen fadein">${topBar('Team today',(t('days')||[])[d]||'')}
+    <div class="gp-card"><h4 class="g25-h4">Working · ${(st.working||[]).filter(u=>u.role==='staff').length}</h4><ul class="g25-ul">${(st.working||[]).filter(u=>u.role==='staff').map(u=>row(u,'')).join('')||'<li>—</li>'}</ul></div>
+    <div class="gp-card"><h4 class="g25-h4">Not working</h4><ul class="g25-ul">${[...(st.off||[]).map(u=>row(u,'Day off')),...(st.vacation||[]).map(u=>row(u,'Vacation')),...(st.absent||[]).map(u=>row(u,'Absent'))].join('')||'<li>—</li>'}</ul></div></div>`;
+}
+window.__wireSteps.push(function(){ const b=Q('#g30-gsr'); if(b) b.onclick=()=>{ GSS.at=0; render(); }; });
+
+/* the manager's panel: App access / Permissions + Preview */
+function permPanel(u,roleKey,over){
+  const base=ROLE_DEF?{...(ROLE_DEF[roleKey]||ROLE_DEF.sport||{})}:null;
+  if(!base) return '<p class="mini">Permissions appear after database-v730.sql is installed.</p>';
+  return `<div class="g30-perms"><div class="g30-ph"><b>App access / Permissions</b><small>✓ / ✗ from the role · tap to change for this person</small></div>
+    ${PERM_LIST.map(([k,l,fixed])=>{ const def=!!base[k], o=over[k], eff=fixed?true:(typeof o==='boolean'?o:def);
+      return `<button type="button" class="g30-p ${eff?'on':'off'} ${typeof o==='boolean'&&!fixed?'own':''}" data-g30-perm="${k}" ${fixed?'disabled':''}><i>${eff?'✓':'✗'}</i><span>${E(l)}</span><small>${fixed?'always':typeof o==='boolean'?'set for this person':'role default'}</small></button>`; }).join('')}
+    ${MGR_ONLY.map(l=>`<div class="g30-p off fixed"><i>✗</i><span>${E(l)}</span><small>manager only</small></div>`).join('')}
+    <button type="button" class="btn ghost g30-prev" id="g30-prev">${icn('user',15)} Preview Staff App</button></div>`;
+}
+function wirePermPanel(w,u){
+  const box=w.querySelector('#g30-box'); if(!box) return;
+  const roleSel=w.querySelector('#g29-role');
+  const draw=()=>{ box.innerHTML=permPanel(u,roleSel?roleSel.value:staffRole(u),w.__over); bind(); };
+  const bind=()=>{
+    box.querySelectorAll('[data-g30-perm]').forEach(b=>b.onclick=()=>{ const k=b.dataset.g30Perm, base=(ROLE_DEF&&ROLE_DEF[roleSel?roleSel.value:staffRole(u)])||{}, cur=typeof w.__over[k]==='boolean'?w.__over[k]:!!base[k];
+      const next=!cur; if(next===!!base[k]) delete w.__over[k]; else w.__over[k]=next; draw(); });
+    const pv=box.querySelector('#g30-prev'); if(pv) pv.onclick=()=>{ const role=roleSel?roleSel.value:staffRole(u); const fake={...(u||{}),role:'staff',staff_role:role,permissions:{...w.__over}}; w.remove(); startPreview(fake); };
+  };
+  if(roleSel) roleSel.addEventListener('change',()=>{ w.__over={}; draw(); });
+  draw();
+}
+/* Preview: the manager sees approximately what this person sees — read-only, nothing changes */
+function startPreview(u){
+  PREV.u=u; PREV.perms=effPerms(u)||{}; PREV.real=S.session; PREV.tab=S.tab; S.tab='workday'; window.__previewReadOnly=true; render(); try{ window.scrollTo(0,0); }catch(_){}
+}
+function endPreview(){ const t0=PREV.tab; PREV.u=null; PREV.perms=null; PREV.real=null; window.__previewReadOnly=false; S.tab=t0||'dash'; render(); }
+if(typeof render==='function'){
+  const r0=render;
+  render=function(){
+    if(!PREV.u||!PREV.real) return r0.apply(this,arguments);
+    const real=PREV.real;
+    S.session={...real,role:'staff',username:PREV.u.username||'preview',name:PREV.u.display_name||PREV.u.username||'Preview',number:PREV.u.number||null,userId:PREV.u.id,perms:PREV.perms,preview:true};
+    try{ return r0.apply(this,arguments); } finally { S.session=real; }
+  };
+  window.render=render;
+}
+if(typeof persist==='function'){ const p0=persist; persist=function(){ if(PREV.u&&PREV.real){ const cur=S.session; S.session=PREV.real; try{ return p0.apply(this,arguments); } finally { S.session=cur; } } return p0.apply(this,arguments); }; }
+window.__wireSteps.push(function(){
+  if(!PREV.u) return; const scr=Q('.screen'); if(!scr||scr.querySelector('.g30-pbar')) return;
+  scr.insertAdjacentHTML('afterbegin',`<div class="g30-pbar">${icn('user',15)}<span>Preview as <b>#${E(PREV.u.number||'—')} ${E(PREV.u.display_name||PREV.u.username||'')}</b> — ${E(STAFF_ROLES[staffRole(PREV.u)]||'')}. Read-only.</span><button type="button" id="g30-exit">Exit preview</button></div>`);
+  const x=Q('#g30-exit'); if(x) x.onclick=endPreview;
+});
+/* the staff member's own permissions come from the database at sign-in and on every session check */
+async function refreshMyPerms(){
+  if(!S.session||S.session.role!=='staff'||!S.session.token||!REM()) return;
+  try{ const me=await rpc('team_session',{p_token:S.session.token}); if(me&&me.perms){ const ch=JSON.stringify(me.perms)!==JSON.stringify(S.session.perms||null)||me.staff_role!==S.session.staff_role; S.session.perms=me.perms; S.session.staff_role=me.staff_role; if(ch){ persist(); render(); } } }catch(_){ }
+}
+setTimeout(()=>{ refreshMyPerms(); if(isTeam()) loadRoleDefaults(); },1800);
+setInterval(refreshMyPerms,120000);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') refreshMyPerms(); });
+
 /* staff: role, "can run activities", numbers 1–50 unique in ALL hotels (manager only) */
 let ROLEPEND=null, USED=null;
 async function usedNumbers(){ try{ const r=await rpc('mgr_used_numbers',{p_token:teamTok()}); if(r&&r.ok) USED=r.numbers||[]; }catch(_){ USED=null; } return USED; }
@@ -22805,8 +22948,11 @@ function roleFields(u,numSel,errSel,w){
   const num=w.querySelector(numSel); if(!num) return;
   num.insertAdjacentHTML('afterend',`<p class="mini" id="g29-numhint">${USED?`Numbers are unique in all hotels. Next free number: <b>#${nextFree()||'—'}</b>`:''}</p>
     <label for="g29-role">Staff role</label><select id="g29-role">${Object.entries(window.STAFF_ROLES||{}).map(([k,l])=>`<option value="${k}" ${k===r?'selected':''}>${E(l)}</option>`).join('')}</select>
-    <label for="g29-act">Can run activities</label><select id="g29-act"><option value="" ${ca===''?'selected':''}>As the role decides (Sport Entertainer: yes · others: no)</option><option value="yes" ${ca==='yes'?'selected':''}>Yes — allow activities</option><option value="no" ${ca==='no'?'selected':''}>No — never activities</option></select>
-    <p class="mini">The role decides the kind of work, the skills (I can / I can't) decide which activities. The number never decides the job.</p><p class="err" id="g29-err"></p>`);
+    <p class="mini">The role decides the menu, the pages and the kind of work; the skills (I can / I can't) decide which activities. The number never decides the job.</p>
+    <div id="g30-box"></div><p class="err" id="g29-err"></p>`);
+  w.__over={...((u&&u.permissions&&typeof u.permissions==='object')?u.permissions:{})};
+  if(u&&u.can_activities!=null&&!('activities' in w.__over)) w.__over.activities=u.can_activities;
+  loadRoleDefaults().then(()=>wirePermPanel(w,u));
   const save=w.querySelector(errSel);
   w.addEventListener('click',ev=>{
     const b=ev.target.closest&&ev.target.closest('#u-save,#ue-go'); if(!b) return;
@@ -22814,8 +22960,7 @@ function roleFields(u,numSel,errSel,w){
     if(n&&(n<1||n>50)){ ev.preventDefault(); ev.stopImmediatePropagation(); er.textContent='Staff numbers go from 1 to 50.'; return; }
     const other=n&&(USED||[]).find(x=>+x.number===n&&String(x.id)!==String(u&&u.id||''));
     if(other){ ev.preventDefault(); ev.stopImmediatePropagation(); er.textContent=`Number #${n} is already used by ${other.name}${other.hotel?' ('+other.hotel+')':''}. Next free number: #${nextFree()||'—'}.`; try{ num.focus(); }catch(_){} return; }
-    const av=w.querySelector('#g29-act').value;
-    ROLEPEND={key:u?String(u.id):'new',modal:w,staff_role:w.querySelector('#g29-role').value,can_activities:av===''?null:av==='yes'};
+    ROLEPEND={key:u?String(u.id):'new',modal:w,staff_role:w.querySelector('#g29-role').value,permissions:{...(w.__over||{})}};
   },true);
 }
 ['openUserModal','openUserEditModal'].forEach(fn=>{
@@ -22849,7 +22994,7 @@ if(typeof window.openUserEditModal==='function'){
 }
 
 /* ======================= HAND-OVER TO THE OTHER LAYERS ======================= */
-window.GUEST25={hotels:()=>HS,switchHotel,setTab:k=>{ G5.tab=k; },t:T,waLink,waDigits,signedIn,profile,refresh,tickets:()=>G5.tickets,addTickets,serverSignedOut,askSignIn,
+window.GUEST25={can,effPerms,startPreview,endPreview,hotels:()=>HS,switchHotel,setTab:k=>{ G5.tab=k; },t:T,waLink,waDigits,signedIn,profile,refresh,tickets:()=>G5.tickets,addTickets,serverSignedOut,askSignIn,
   teamExpired:()=>teamExpired(false),mgrLoad:()=>mgrLoad(false),sig:()=>isMgr()?mgrSig():sigG(),
   _state:()=>({G5,MS}),_expandRooms:expandRooms};
 if(window.AUREA_RESV) window.AUREA_RESV.guestsPage=guestsPage;
@@ -22934,6 +23079,15 @@ css.textContent=`
 .g25-seg3 button{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:13px;width:auto;margin:0;min-height:0;cursor:pointer}
 .g25-seg3 button.on{background:var(--espresso);border-color:var(--espresso);color:var(--theme-button-text,#fff)}
 .gp-stats{flex-wrap:wrap}.gp-stats span{min-width:70px}
+/* V7.30 */
+.g30-perms{margin:12px 0;padding:12px;border-radius:16px;background:var(--bg);border:1px solid var(--line)}
+.g30-ph{display:flex;flex-direction:column;margin-bottom:8px}.g30-ph small{color:var(--muted);font-size:12px}
+.g30-p{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 4px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);text-align:start;min-height:0;cursor:pointer;font-size:13.5px}
+.g30-p i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px}
+.g30-p.on i{background:#6C9A64;color:#fff}.g30-p.off i{background:rgba(176,57,43,.15);color:#A33A2C}
+.g30-p span{flex:1}.g30-p small{flex:none;font-size:11px;color:var(--muted)}.g30-p.own{border-color:var(--espresso);box-shadow:inset 3px 0 0 var(--espresso)}.g30-p.fixed{opacity:.6;cursor:default}
+.g30-prev{margin-top:8px}
+.g30-pbar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:450;box-shadow:0 10px 30px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0;padding:10px 12px;border-radius:14px;background:#2b1d14;color:#fff;font-size:13px}.g30-pbar span{flex:1}.g30-pbar button{width:auto;margin:0;min-height:0;padding:7px 12px;border-radius:99px;border:0;background:#fff;color:#2b1d14;font-weight:800;cursor:pointer}
 /* V7.29 */
 .g29-gate .g29-sub{margin:-8px 0 18px;color:var(--x-mut,#8a7a6a);font-size:15px}
 /* V7.28 hotels */
