@@ -22409,9 +22409,10 @@ function guestsPage(){
   if(!MS.at) return `<section class="gp g25m" id="g25m">${head}<p class="mini">Loading…</p></section>`;
   const td=MS.today||today(), now=MS.stays.filter(g=>stayState(g)!=='past'), past=MS.stays.filter(g=>stayState(g)==='past');
   const arr=now.filter(g=>dOnly(g.arrival)===td).length, lv=now.filter(g=>dOnly(g.departure)===td).length, bt=MS.bookings.filter(b=>b.status==='booked'&&dOnly(b.occurrence_date)===td).length;
-  const segs=[['now','In the hotel',now.length],['past','History',past.length],['book','Bookings',null],['rooms','Rooms',MS.rooms.length],['set','Settings',null]];
+  const segs=[['now','In the hotel',now.length],['past','History',past.length],['book','Bookings',null],['support','Guest Support',null],['rooms','Rooms',MS.rooms.length],['set','Settings',null]];
   const seg=segs.some(x=>x[0]===MS.seg)?MS.seg:'now';
-  const body=MS.q.trim()?searchBody(MS.q.trim()):seg==='past'?segStays(true):seg==='book'?segBookings():seg==='rooms'?segRooms():seg==='set'?segSettings():segStays(false);
+  if(seg==='support'||seg==='set') loadRoleDefaults().then(d=>{ if(d&&!MS.rdOnce){ MS.rdOnce=1; render(); } });
+  const body=MS.q.trim()?searchBody(MS.q.trim()):seg==='support'?gsModule():seg==='set'?segSettings()+mgrGsSettings():seg==='past'?segStays(true):seg==='book'?segBookings():seg==='rooms'?segRooms():seg==='set'?segSettings():segStays(false);
   return `<section class="gp g25m" id="g25m">${head}
     ${!MS.rooms.length?`<div class="rv-sql"><b>${icn('door',15)} Add your rooms first</b><p>Guests can only sign in with a room number from your Room list. <button type="button" class="g25-mini" data-g25m-seg="rooms">Open Rooms</button></p></div>`:''}
     <input id="g25-q" class="gp-q g25-q" type="search" placeholder="Search guests, rooms, mobiles, nationalities, activities, tickets…" value="${E(MS.q)}" autocomplete="off">
@@ -22809,7 +22810,8 @@ const PERM_LIST=[
   ['myday','My Day (always on)',1],['programme','Programme pages'],['see_activities','See Activities in the programme'],['activities','Receive Activity assignments'],
   ['events','Events'],['shows','Shows'],['live','Live Music'],['special','Special Events'],['tickets','Ticket packs & reservations'],
   ['tasks','Tasks'],['chat','Chat with the manager'],['team','Team page'],['team_ops','Team today (who works, day off, entrance, assignments)'],
-  ['guest_support','Guest Support (guests in the hotel)'],['guest_private','Private guest data (mobile, nationality)'],
+  ['guest_support','Guest Support: new Request / Comment / Complaint'],['gs_history','Guest Support history'],['gs_export','Export Guest Support (PDF)'],
+  ['fast_action','Fast Action (management contacts)'],['room_manual','Type room numbers by hand'],['guest_private','Private guest data (mobile, nationality)'],
   ['quiz','Quiz'],['gallery','Photos'],['bus','Bus times'],['weather','Weather']];
 const MGR_ONLY=['Guest database & history','Tickets management','Manager settings & hotels'];
 let ROLE_DEF=null;
@@ -22834,12 +22836,13 @@ window.__can=can;
 try{ roleAllowsActivities=function(u){ if(!u||u.role!=='staff') return false; const p=effPerms(u); if(p) return !!p.activities; if(u.can_activities===true) return true; if(u.can_activities===false) return false; return staffRole(u)==='sport'; }; window.roleAllowsActivities=roleAllowsActivities; }catch(_){}
 try{ isSportDJ=function(u){ if(!isDjRole(u)) return false; const p=effPerms(u); return p?!!p.activities:(typeof djWorkMode==='function'&&djWorkMode()==='sport_dj'); }; }catch(_){}
 /* the menu is built from the permissions */
+const NAV_ANY={gsupport:['guest_support','gs_history','fast_action']};
 const NAV_PERM={workday:'myday',mypage:'myday',today:'programme',week:'programme',chat:'chat',tasks:'tasks',teaminfo:'team',quiz:'quiz',gallery:'gallery',bus:'bus',weather:'weather',gsupport:'guest_support',teamops:'team_ops'};
 if(typeof navGroupsBase==='function'){
   const nb0=navGroupsBase;
   navGroupsBase=function(role){
     const g=nb0.apply(this,arguments); if(role!=='staff') return g;
-    const extra=[]; if(can('guest_support')) extra.push(['gsupport','users','Guest Support',0]); if(can('team_ops')) extra.push(['teamops','clipboard','Team today',0]);
+    const extra=[]; if(can('guest_support')||can('gs_history')||can('fast_action')) extra.push(['gsupport','users','Guest Support',0]); if(can('team_ops')) extra.push(['teamops','clipboard','Team today',0]);
     const out=g.map(x=>({...x,items:x.items.filter(i=>!NAV_PERM[i[0]]||can(NAV_PERM[i[0]]))}));
     if(extra.length&&out[0]) out[0]={...out[0],items:out[0].items.concat(extra)};
     return out.filter(x=>x.items.length);
@@ -22851,8 +22854,8 @@ if(typeof staffView==='function'){
   const sv0=staffView;
   const sv=function(){
     const tab=String(S.tab||'');
-    if(NAV_PERM[tab]&&!can(NAV_PERM[tab])) S.tab='workday';
-    if(S.tab==='gsupport') return guestSupportView();
+    if(NAV_ANY[tab]?!NAV_ANY[tab].some(can):(NAV_PERM[tab]&&!can(NAV_PERM[tab]))) S.tab='workday';
+    if(S.tab==='gsupport') return `<div class="screen fadein">${topBar('Guest Support',GSM.meta&&GSM.meta.hotel||'')}${gsModule()}</div>`;
     if(S.tab==='teamops') return teamTodayView();
     if(S.tab==='today'||S.tab==='week'){
       const all=S.activities; S.activities=(all||[]).filter(a=>can(TYPE_PERM[window.__ptype?window.__ptype(a):'activity']||'see_activities'));
@@ -22864,16 +22867,16 @@ if(typeof staffView==='function'){
 }
 /* Guest Support: the guests in the hotel (private data only with 'guest_private') */
 const GSS={at:0,list:null,priv:false,err:''};
-function guestSupportView(){
+function guestSupportView(inner){
   if(!GSS.at&&!GSS.busy){ GSS.busy=true; rpc('staff_guests',{p_token:teamTok()}).then(r=>{ GSS.busy=false; GSS.at=Date.now(); if(r&&r.ok){ GSS.list=r.stays||[]; GSS.priv=!!r.private; GSS.err=''; } else GSS.err=r&&r.error==='forbidden'?'You do not have access to Guest Support.':'Could not load.'; render(); }).catch(()=>{ GSS.busy=false; GSS.at=Date.now(); GSS.err='Could not load.'; render(); }); }
   const list=GSS.list||[];
-  return `<div class="screen fadein">${topBar('Guest Support',hotelName(curHotel())||'')}
+  return `${inner?'':`<div class="screen fadein">${topBar('Guest Support',hotelName(curHotel())||'')}`}
     <p class="mini">Guests in the hotel today and tomorrow${GSS.priv?' — with mobile and nationality':' — mobile numbers and nationality are only shown to staff the manager allows'}.</p>
     ${GSS.err?`<div class="t14-empty">${E(GSS.err)}</div>`:!GSS.at?'<p class="mini">Loading…</p>':!list.length?'<div class="t14-empty">No guests signed in.</div>':
       list.map(g=>`<article class="gp-card"><div class="g25-st1"><b>${E(g.name||'—')}</b><span class="g25-chip now">Room ${E(g.room)}</span></div>
         <p class="gp-stay">${icn('calendar',14)} ${E(niceDate(g.arrival))} → ${E(niceDate(g.departure))}${g.bookings?` · ${g.bookings} booking${g.bookings>1?'s':''}`:''}</p>
         ${GSS.priv?`<p class="g25-st2">${g.nationality?E(g.nationality)+' · ':''}${waA(g.phone)}</p>`:''}</article>`).join('')}
-    <button class="btn ghost" id="g30-gsr">Refresh</button></div>`;
+    <button class="btn ghost" id="g30-gsr">Refresh</button>${inner?'':'</div>'}`;
 }
 /* Team today (Supervisor): who works, day off, vacation, entrance and today's assignments */
 function teamTodayView(){
@@ -22938,6 +22941,143 @@ async function refreshMyPerms(){
 setTimeout(()=>{ refreshMyPerms(); if(isTeam()) loadRoleDefaults(); },1800);
 setInterval(refreshMyPerms,120000);
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') refreshMyPerms(); });
+
+/* ======================= GUEST SUPPORT + FAST ACTION (V7.31) =======================
+   ONE module for staff and manager. The tabs a person gets = his permissions;
+   the database returns only this hotel's data and checks the same permissions. */
+const GSM={tab:'',kind:'request',meta:null,metaAt:0,list:null,busy:false,f:{kind:'',status:'',dept:'',rating:'',room:'',nat:'',from:'',to:''},rate:0,msg:''};
+const KIND={request:'Request',comment:'Comment',complaint:'Complaint'};
+function gsLoadMeta(force){ if(GSM.busy||(!force&&GSM.metaAt)) return; GSM.busy=true; rpc('gs_meta',{p_token:teamTok()}).then(r=>{ GSM.busy=false; GSM.metaAt=Date.now(); GSM.meta=r&&r.ok?r:{departments:[],rooms:[],contacts:[],err:r&&r.error||'x'}; render(); }).catch(e=>{ GSM.busy=false; GSM.metaAt=Date.now(); GSM.meta={departments:[],rooms:[],contacts:[],err:missing(e)?'missing':'net'}; render(); }); }
+function gsTabs(){ return [['new','New',can('guest_support')],['hist','History',can('gs_history')],['fast','Fast Action',can('fast_action')],['guests','Guests in the hotel',can('guest_support')&&!isMgr()]].filter(x=>x[2]); }
+function gsModule(){
+  const tabs=gsTabs(); if(!tabs.length) return '<div class="t14-empty">No access.</div>';
+  if(!tabs.some(x=>x[0]===GSM.tab)) GSM.tab=tabs[0][0];
+  if(!GSM.metaAt) gsLoadMeta();
+  const M=GSM.meta;
+  if(M&&M.err==='missing') return '<div class="rv-sql"><b>One-time step</b><p>Run database-v731.sql in Supabase.</p></div>';
+  const body=!M?'<p class="mini">Loading…</p>':GSM.tab==='new'?gsForm(M):GSM.tab==='hist'?gsHistory(M):GSM.tab==='fast'?gsFast(M):guestSupportView(true);
+  return `<div class="t14-seg g31-tabs">${tabs.map(([k,l])=>`<button class="${GSM.tab===k?'on':''}" data-g31-tab="${k}">${E(l)}</button>`).join('')}</div>${body}`;
+}
+function gsForm(M){
+  const nat=(typeof NATIONS!=='undefined'?NATIONS:[]);
+  return `<div class="gp-card g31-form">
+    <div class="g25-seg3">${Object.entries(KIND).map(([k,l])=>`<button type="button" class="${GSM.kind===k?'on':''}" data-g31-kind="${k}">${E(l)}</button>`).join('')}</div>
+    <label for="g31-room">Room number</label><select id="g31-room"><option value="">—</option>${(M.rooms||[]).map(x=>`<option>${E(x)}</option>`).join('')}${can('room_manual')?'<option value="__m">Type another room…</option>':''}</select>
+    <input id="g31-room2" placeholder="Room number" maxlength="16" hidden>
+    <label for="g31-nat">Nationality</label><select id="g31-nat"><option value="">—</option>${nat.map(x=>`<option>${E(x)}</option>`).join('')}<option value="__m">Type another…</option></select>
+    <input id="g31-nat2" placeholder="Nationality" maxlength="40" hidden>
+    <div class="rv-dates2"><div><label for="g31-arr">Arrival</label><input id="g31-arr" type="date"></div><div><label for="g31-dep">Departure</label><input id="g31-dep" type="date"></div></div>
+    <label for="g31-body">${E(KIND[GSM.kind])}</label><textarea id="g31-body" rows="4" maxlength="2000" placeholder="What did the guest say?"></textarea>
+    <label for="g31-dept">Department</label><select id="g31-dept"><option value="">—</option>${(M.departments||[]).filter(d=>d.active!==false).map(d=>`<option>${E(d.name)}</option>`).join('')}</select>
+    <label>Department rating</label><div class="g31-stars">${[1,2,3,4,5].map(n=>`<button type="button" class="${GSM.rate>=n?'on':''}" data-g31-rate="${n}" aria-label="${n} stars">★</button>`).join('')}</div>
+    <p class="mini">Saved with the date, time and your name (${E((S.session&&S.session.name)||'')}).</p>
+    <p class="err" id="g31-err"></p><button class="btn" id="g31-save">Save ${E(KIND[GSM.kind].toLowerCase())}</button></div>`;
+}
+const fmtDT=ts=>{ try{ return new Date(ts).toLocaleString(LOC[S.lang]||'en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(_){ return ts; } };
+const stars=n=>n?'★'.repeat(n)+'☆'.repeat(5-n):'';
+function gsHistory(M){
+  const f=GSM.f, L=GSM.list;
+  return `<div class="gp-card g31-filters">
+    <div class="g31-fr"><select id="g31f-kind"><option value="">All types</option>${Object.entries(KIND).map(([k,l])=>`<option value="${k}" ${f.kind===k?'selected':''}>${l}</option>`).join('')}</select>
+      <select id="g31f-status"><option value="">Open + closed</option><option value="open" ${f.status==='open'?'selected':''}>Open</option><option value="closed" ${f.status==='closed'?'selected':''}>Closed</option></select></div>
+    <div class="g31-fr"><select id="g31f-dept"><option value="">All departments</option>${(M.departments||[]).map(d=>`<option ${f.dept===d.name?'selected':''}>${E(d.name)}</option>`).join('')}</select>
+      <select id="g31f-rating"><option value="">Any rating</option>${[5,4,3,2,1].map(n=>`<option value="${n}" ${+f.rating===n?'selected':''}>${n} ★</option>`).join('')}</select></div>
+    <div class="g31-fr"><input id="g31f-room" placeholder="Room" value="${E(f.room)}"><input id="g31f-nat" placeholder="Nationality" value="${E(f.nat)}"></div>
+    <div class="g31-fr"><input id="g31f-from" type="date" value="${E(f.from)}" aria-label="From"><input id="g31f-to" type="date" value="${E(f.to)}" aria-label="To"></div>
+    <div class="rv-acts"><button class="btn" id="g31-apply">Show</button>${can('gs_export')?`<button class="btn ghost" id="g31-pdf">${icn('print',14)} Export PDF</button>`:''}</div></div>
+    ${L===null?'<p class="mini">Choose filters and tap Show.</p>':!L.length?'<div class="t14-empty">No records.</div>':L.map(x=>`<article class="gp-card g31-rec ${x.kind} ${x.status}">
+      <div class="g25-st1"><b>${E(KIND[x.kind])}${x.room?' · Room '+E(x.room):''}</b><span class="g25-chip ${x.status==='open'?'soon':'past'}">${x.status==='open'?'Open':'Closed'}</span></div>
+      <p class="g31-body">${E(x.body)}</p>
+      <p class="mini">${E(fmtDT(x.created_at))} · ${E(x.staff_name||'')}${x.department?' · '+E(x.department):''}${x.rating?' · <b class="g31-st">'+stars(x.rating)+'</b>':''}${x.nationality?' · '+E(x.nationality):''}${x.arrival?' · '+E(niceDate(x.arrival))+' → '+E(niceDate(x.departure)):''}</p>
+      <button type="button" class="g25-mini" data-g31-st="${E(x.id)}|${x.status==='open'?'closed':'open'}">${x.status==='open'?'Close':'Reopen'}</button></article>`).join('')}`;
+}
+function gsFast(M){
+  const list=(M.contacts||[]).filter(c=>c.active!==false);
+  if(!list.length) return `<div class="t14-empty">No management contacts yet.${isMgr()?' Add them in Guests → Settings.':''}</div>`;
+  return list.map(c=>{ const l=waLink(c.phone); return `<div class="g31-fast"><div><b>${E(c.name)}</b><small>${E(c.position||'')}</small></div>${l?`<a class="btn g31-wa" href="${E(l)}" target="_blank" rel="noopener">${WAI} WhatsApp</a>`:'<small>No valid number</small>'}</div>`; }).join('');
+}
+async function gsSave(){
+  const v=id=>{ const e=Q(id); return e?String(e.value||'').trim():''; }, er=Q('#g31-err');
+  const room=v('#g31-room')==='__m'?v('#g31-room2'):v('#g31-room'), nat=v('#g31-nat')==='__m'?v('#g31-nat2'):v('#g31-nat');
+  if(v('#g31-body').length<2){ er.textContent='Write what the guest said.'; return; }
+  const b=Q('#g31-save'); b.disabled=true;
+  const r=await rpc('gs_add',{p_token:teamTok(),p_kind:GSM.kind,p_room:room||null,p_nationality:nat||null,p_arrival:v('#g31-arr')||null,p_departure:v('#g31-dep')||null,p_body:v('#g31-body'),p_department:v('#g31-dept')||null,p_rating:GSM.rate||null}).catch(()=>null);
+  b.disabled=false;
+  if(!r||!r.ok){ er.textContent={room:'This room is not in the room list.',dates:'The departure cannot be before the arrival.',forbidden:'You do not have access.',department:'Choose a department from the list.'}[r&&r.error]||'Not saved — try again.'; return; }
+  ok(KIND[GSM.kind]+' saved'); GSM.rate=0; GSM.list=null; render();
+}
+async function gsApply(){
+  const v=id=>{ const e=Q(id); return e?String(e.value||'').trim():''; };
+  GSM.f={kind:v('#g31f-kind'),status:v('#g31f-status'),dept:v('#g31f-dept'),rating:v('#g31f-rating'),room:v('#g31f-room'),nat:v('#g31f-nat'),from:v('#g31f-from'),to:v('#g31f-to')};
+  const f=GSM.f, r=await rpc('gs_list',{p_token:teamTok(),p_from:f.from||null,p_to:f.to||null,p_kind:f.kind||null,p_department:f.dept||null,p_room:f.room||null,p_nationality:f.nat||null,p_rating:f.rating?+f.rating:null,p_status:f.status||null}).catch(()=>null);
+  if(!r||!r.ok){ bad(r&&r.error==='forbidden'?'You do not have access to the history.':'Could not load.'); return; }
+  GSM.list=(r.records||[]).filter(x=>!f.from||dOnly(x.created_at)>=f.from).filter(x=>!f.to||dOnly(x.created_at)<=f.to); GSM.hotel=r.hotel; render();
+}
+/* ONE export for everybody: only the records this person may see, of this hotel */
+function gsPdf(){
+  const L=GSM.list||[], f=GSM.f; if(!L.length){ bad('Show the records first.'); return; }
+  const fil=[f.kind&&KIND[f.kind],f.status,f.dept,f.rating&&f.rating+' ★',f.room&&'Room '+f.room,f.nat,(f.from||f.to)&&((f.from||'…')+' → '+(f.to||'…'))].filter(Boolean).join(' · ')||'All records';
+  const rows=L.map(x=>`<tr><td>${E(fmtDT(x.created_at))}</td><td>${E(KIND[x.kind])}</td><td>${E(x.room||'')}</td><td>${E(x.nationality||'')}</td><td>${E(x.department||'')}</td><td>${stars(x.rating)}</td><td>${E(x.body)}</td><td>${E(x.staff_name||'')}</td><td>${x.status==='open'?'Open':'Closed'}</td></tr>`).join('');
+  const pw=window.open('','_blank'); if(!pw){ bad('Allow pop-ups to export.'); return; }
+  pw.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Guest Support — ${E(GSM.hotel||'')}</title><style>
+    @page{size:A4 landscape;margin:14mm}body{font-family:Georgia,serif;color:#2b1d14}h1{font-size:22px;margin:0}p{margin:4px 0 12px;color:#6b5a4a;font:13px system-ui,sans-serif}
+    table{width:100%;border-collapse:collapse;font:11.5px system-ui,sans-serif}th{background:#3b2a20;color:#fff;text-align:left;padding:6px}td{padding:6px;border-bottom:1px solid #e3d7c8;vertical-align:top}tr:nth-child(even) td{background:#faf6f0}
+    .f{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #b98a5c;padding-bottom:8px;margin-bottom:10px}</style></head><body>
+    <div class="f"><div><h1>${E(GSM.hotel||'')} — Guest Support</h1><p>${E(fil)} · ${L.length} record${L.length===1?'':'s'}</p></div><p>Exported ${E(new Date().toLocaleString('en-GB'))} by ${E((S.session&&S.session.name)||'')}</p></div>
+    <table><thead><tr><th>Date</th><th>Type</th><th>Room</th><th>Nationality</th><th>Department</th><th>Rating</th><th>Text</th><th>Staff</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+    <scr`+`ipt>setTimeout(function(){window.print()},300)<\/scr`+`ipt></body></html>`);
+  pw.document.close();
+}
+if(!window.__g31Click){
+  window.__g31Click=true;
+  document.addEventListener('click',async e=>{
+    const el=e.target&&e.target.closest?e.target.closest('[data-g31-tab],[data-g31-kind],[data-g31-rate],[data-g31-st],#g31-save,#g31-apply,#g31-pdf'):null; if(!el) return;
+    const d=el.dataset;
+    if(d.g31Tab){ GSM.tab=d.g31Tab; if(d.g31Tab!=='new') gsLoadMeta(true); render(); return; }
+    if(d.g31Kind){ GSM.kind=d.g31Kind; document.querySelectorAll('[data-g31-kind]').forEach(b=>b.classList.toggle('on',b===el)); const lb=Q('label[for="g31-body"]'); if(lb) lb.textContent=KIND[GSM.kind]; const sv=Q('#g31-save'); if(sv) sv.textContent='Save '+KIND[GSM.kind].toLowerCase(); return; }
+    if(d.g31Rate){ const n=+d.g31Rate; GSM.rate=GSM.rate===n?0:n; document.querySelectorAll('[data-g31-rate]').forEach(b=>b.classList.toggle('on',+b.dataset.g31Rate<=GSM.rate)); return; }
+    if(d.g31St){ const [id,st]=d.g31St.split('|'); const r=await rpc('gs_status',{p_token:teamTok(),p_id:+id,p_status:st}).catch(()=>null); if(r&&r.ok){ const x=(GSM.list||[]).find(y=>String(y.id)===id); if(x) x.status=st; render(); } else bad('Not saved.'); return; }
+    if(el.id==='g31-save') return gsSave();
+    if(el.id==='g31-apply') return gsApply();
+    if(el.id==='g31-pdf') return gsPdf();
+  });
+  document.addEventListener('change',e=>{ const t0=e.target; if(t0&&t0.id==='g31-room'){ const m=Q('#g31-room2'); if(m) m.hidden=t0.value!=='__m'; } if(t0&&t0.id==='g31-nat'){ const m=Q('#g31-nat2'); if(m) m.hidden=t0.value!=='__m'; } });
+}
+/* the manager: departments, management contacts and role settings of the current hotel */
+function mgrGsSettings(){
+  const M=GSM.meta; if(!GSM.metaAt) gsLoadMeta(); if(!M) return '<p class="mini">Loading…</p>';
+  if(M.err==='missing') return '<div class="rv-sql"><b>One-time step</b><p>Run database-v731.sql in Supabase.</p></div>';
+  return `<div class="gp-card"><h4 class="g25-h4">${icn('clipboard',16)} Departments (Guest Support ratings)</h4>
+      ${(M.departments||[]).map(d=>`<div class="g25-room${d.active?'':' off'}"><b>${E(d.name)}</b><small>${d.active?'shown':'hidden'}</small><button type="button" class="g25-mini" data-g31d-tog="${d.id}|${E(d.name)}|${d.active?0:1}">${d.active?'Hide':'Show'}</button><button type="button" class="g25-mini danger" data-g31d-del="${d.id}">${icn('trash',12)}</button></div>`).join('')}
+      <div class="g31-fr"><input id="g31d-new" placeholder="New department"><button class="btn" id="g31d-add" style="width:auto">Add</button></div></div>
+    <div class="gp-card"><h4 class="g25-h4">${icn('chat',16)} Fast Action — management contacts</h4>
+      ${(M.contacts||[]).map(c=>`<div class="g25-room${c.active?'':' off'}"><b>${E(c.name)}</b><small>${E(c.position||'')} · ${E(c.phone||'')}</small><button type="button" class="g25-mini" data-g31c-edit="${c.id}">${icn('pen',12)}</button><button type="button" class="g25-mini" data-g31c-tog="${c.id}">${c.active?'Hide':'Show'}</button><button type="button" class="g25-mini danger" data-g31c-del="${c.id}">${icn('trash',12)}</button></div>`).join('')||'<p class="mini">No contacts yet.</p>'}
+      <button class="btn ghost" id="g31c-add">${icn('plus',14)} Add contact</button></div>
+    <div class="gp-card"><h4 class="g25-h4">${icn('users',16)} Role settings — what each role sees</h4><p class="mini">Defaults for everybody with that role (all hotels). Single persons can still be changed in Team → edit.</p>
+      <select id="g31r-role">${Object.entries(window.STAFF_ROLES||{}).map(([k,l])=>`<option value="${k}" ${GSM.role===k?'selected':''}>${E(l)}</option>`).join('')}</select>
+      <div id="g31r-box">${ROLE_DEF?PERM_LIST.map(([k,l,fx])=>{ const on=fx||!!((ROLE_DEF[GSM.role||'sport']||{})[k]); return `<button type="button" class="g30-p ${on?'on':'off'}" data-g31r="${k}" ${fx?'disabled':''}><i>${on?'✓':'✗'}</i><span>${E(l)}</span></button>`; }).join(''):'<p class="mini">Loading…</p>'}</div></div>`;
+}
+function editContact(c){
+  const w=baseModal(`<h3>${c?'Edit contact':'New contact'}</h3><label>Name</label><input id="g31c-n" value="${E(c&&c.name||'')}"><label>Position</label><input id="g31c-p" value="${E(c&&c.position||'')}" placeholder="e.g. Front Office Manager"><label>WhatsApp (with country code)</label><input id="g31c-t" type="tel" value="${E(c&&c.phone||'')}" placeholder="+20 …"><p class="err" id="g31c-e"></p><button class="btn" id="g31c-s">Save</button><button class="btn ghost" id="g31c-x">Close</button>`);
+  w.querySelector('#g31c-x').onclick=()=>w.remove();
+  w.querySelector('#g31c-s').onclick=async()=>{ const ph=w.querySelector('#g31c-t').value; if(!waDigits(ph)){ w.querySelector('#g31c-e').textContent='Write the number with + and the country code.'; return; }
+    const r=await rpc('mgr_contact_save',{p_token:teamTok(),p_id:c?+c.id:null,p_name:w.querySelector('#g31c-n').value,p_position:w.querySelector('#g31c-p').value,p_phone:ph,p_active:c?c.active:true}).catch(()=>null);
+    if(!r||!r.ok){ w.querySelector('#g31c-e').textContent=r&&r.error==='name'?'Write the name.':'Not saved.'; return; } w.remove(); gsLoadMeta(true); };
+}
+document.addEventListener('click',async e=>{
+  if(!isMgr()) return; const el=e.target&&e.target.closest?e.target.closest('[data-g31d-tog],[data-g31d-del],#g31d-add,#g31c-add,[data-g31c-edit],[data-g31c-tog],[data-g31c-del],[data-g31r]'):null; if(!el) return;
+  const d=el.dataset, T=teamTok(), C=id=>(GSM.meta.contacts||[]).find(x=>String(x.id)===String(id));
+  if(d.g31dTog){ const [id,nm,on]=d.g31dTog.split('|'); await rpc('mgr_dept_save',{p_token:T,p_id:+id,p_name:nm,p_active:on==='1',p_sort:null}).catch(()=>null); return gsLoadMeta(true); }
+  if(d.g31dDel){ if(!await confirmAction({question:'Delete this department?',detail:'Old records keep their department name.',confirmLabel:'Delete',danger:true})) return; await rpc('mgr_dept_delete',{p_token:T,p_id:+d.g31dDel}).catch(()=>null); return gsLoadMeta(true); }
+  if(el.id==='g31d-add'){ const v=(Q('#g31d-new')||{}).value||''; const r=await rpc('mgr_dept_save',{p_token:T,p_id:null,p_name:v,p_active:true,p_sort:null}).catch(()=>null); if(!r||!r.ok) bad(r&&r.error==='exists'?'This department is already in the list.':'Write the department name.'); return gsLoadMeta(true); }
+  if(el.id==='g31c-add') return editContact(null);
+  if(d.g31cEdit) return editContact(C(d.g31cEdit));
+  if(d.g31cTog){ const c=C(d.g31cTog); await rpc('mgr_contact_save',{p_token:T,p_id:+c.id,p_name:c.name,p_position:c.position,p_phone:c.phone,p_active:!c.active}).catch(()=>null); return gsLoadMeta(true); }
+  if(d.g31cDel){ if(!await confirmAction({question:'Remove this contact?',confirmLabel:'Remove',danger:true})) return; await rpc('mgr_contact_delete',{p_token:T,p_id:+d.g31cDel}).catch(()=>null); return gsLoadMeta(true); }
+  if(d.g31r){ const role=GSM.role||'sport', cur=!!((ROLE_DEF[role]||{})[d.g31r]); const perms={...(ROLE_DEF[role]||{}),[d.g31r]:!cur};
+    const r=await rpc('mgr_role_save',{p_token:T,p_role:role,p_perms:perms}).catch(()=>null); if(r&&r.ok){ ROLE_DEF=r.defaults; render(); } else bad('Not saved — run database-v731.sql.'); }
+});
+document.addEventListener('change',e=>{ if(e.target&&e.target.id==='g31r-role'){ GSM.role=e.target.value; render(); } });
 
 /* staff: role, "can run activities", numbers 1–50 unique in ALL hotels (manager only) */
 let ROLEPEND=null, USED=null;
@@ -23079,6 +23219,14 @@ css.textContent=`
 .g25-seg3 button{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-weight:700;font-size:13px;width:auto;margin:0;min-height:0;cursor:pointer}
 .g25-seg3 button.on{background:var(--espresso);border-color:var(--espresso);color:var(--theme-button-text,#fff)}
 .gp-stats{flex-wrap:wrap}.gp-stats span{min-width:70px}
+/* V7.31 */
+.g31-tabs{flex-wrap:wrap;margin-bottom:10px}.g31-form .g25-seg3{margin-bottom:6px}
+.g31-stars{display:flex;gap:6px}.g31-stars button{width:auto;min-height:0;margin:0;padding:4px 6px;border:0;background:none;font-size:30px;line-height:1;color:#d9cdbf;cursor:pointer}.g31-stars button.on{color:#E0A526}
+.g31-fr{display:flex;gap:8px;margin-bottom:8px}.g31-fr>*{flex:1;margin:0!important;min-width:0}
+.g31-rec.complaint{box-shadow:inset 3px 0 0 #B0392B}.g31-rec.request{box-shadow:inset 3px 0 0 #D08526}.g31-rec.comment{box-shadow:inset 3px 0 0 #5E8A57}.g31-rec.closed{opacity:.7}
+.g31-body{margin:6px 0;white-space:pre-wrap;font-size:14px}.g31-st{color:#E0A526}
+.g31-fast{display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line)}.g31-fast>div{flex:1;display:flex;flex-direction:column}.g31-fast small{color:var(--muted);font-size:12.5px}
+.g31-wa{width:auto!important;margin:0!important;background:#128C4A!important;border-color:#128C4A!important;color:#fff!important;display:inline-flex;align-items:center;gap:6px}
 /* V7.30 */
 .g30-perms{margin:12px 0;padding:12px;border-radius:16px;background:var(--bg);border:1px solid var(--line)}
 .g30-ph{display:flex;flex-direction:column;margin-bottom:8px}.g30-ph small{color:var(--muted);font-size:12px}
