@@ -1,0 +1,89 @@
+/* AUREA · css/tickets.css — tickets: the inventory, sellers, ticket types, printing and the template editor, prizes, bingo. */
+
+/* ---------- The inventory, sellers, ticket types ---------- */
+.packs{display:flex;flex-direction:column;gap:.4rem}
+.pack{display:flex;gap:.7rem;align-items:center;background:var(--s);border:1px solid var(--line);border-radius:var(--r);padding:.6rem .8rem;cursor:pointer;text-align:start}
+.pack.on{border-color:var(--p);box-shadow:inset 0 0 0 1px var(--p)}
+.pack span{display:flex;flex-direction:column}
+.tickets{display:flex;flex-direction:column;gap:.4rem}
+.tk{display:flex;gap:.8rem;align-items:center;background:var(--s);border:1px dashed color-mix(in srgb,var(--p) 40%,transparent);border-radius:10px;padding:.55rem .8rem;flex-wrap:wrap}
+.tk>b{font-family:var(--disp);font-size:1.7rem;min-width:3.5rem}
+.tk span{flex:1}
+.pack-card .stats{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
+.swatch{display:inline-block;width:1rem;height:1rem;border-radius:5px;background:var(--cc);vertical-align:-.15em;margin-inline-end:.4rem;box-shadow:0 0 0 1px var(--line)}
+.offer-rows{display:flex;flex-direction:column;gap:.4rem}
+.offer-row{display:flex;align-items:center;gap:.45rem}
+.offer-row input{width:5rem}
+.offer-row span{color:var(--mut);font-size:.9rem}
+.batches{display:flex;flex-direction:column;gap:.6rem}
+.batch-card{display:block;color:inherit;text-decoration:none}
+.batch-card.off{opacity:.72}
+.tk-stats{grid-template-columns:repeat(auto-fill,minmax(86px,1fr))}
+.tk-stats span{padding:.4rem .55rem}
+.tk-stats span b{font-size:1.2rem}
+.tk-grid button{position:relative}
+.tk-grid .st-assigned{background:color-mix(in srgb,var(--a) 16%,var(--s))}
+.tk-grid .st-reserved{background:color-mix(in srgb,var(--warn) 24%,var(--s))}
+.tk-grid .st-sold{background:color-mix(in srgb,var(--ok) 24%,var(--s))}
+.tk-grid .st-void{background:var(--soft);color:var(--mut);text-decoration:line-through}
+.tk-grid button:disabled:not(.st-void){opacity:1;text-decoration:none}
+.tk-grid i{position:absolute;top:4px;inset-inline-end:4px;width:6px;height:6px;border-radius:50%;background:var(--a)}
+.tk-legend{display:flex;flex-wrap:wrap;gap:.3rem .9rem}
+.tk-legend span{display:inline-flex;align-items:center;gap:.35rem}
+.tk-legend i{display:inline-block;width:.85rem;height:.85rem;border-radius:3px;border:1px solid var(--line);background:var(--s)}
+.tk-legend .st-assigned i{background:color-mix(in srgb,var(--a) 16%,var(--s))}
+.tk-legend .st-reserved i{background:color-mix(in srgb,var(--warn) 24%,var(--s))}
+.tk-legend .st-sold i{background:color-mix(in srgb,var(--ok) 24%,var(--s))}
+.tk-legend .st-void i{background:var(--soft)}
+.tk-legend .printed i{width:.45rem;height:.45rem;border-radius:50%;border:0;background:var(--a)}
+.tk-bar{flex-wrap:wrap;gap:.4rem}
+.tk-bar-btns{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.tk-code{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tk-row{width:100%;text-align:start}
+.tk-ranges p{margin:.15rem 0;overflow-wrap:anywhere}
+.tk-pay{flex-basis:100%}
+.seller-pack{border-top:1px solid var(--line);padding-top:.6rem;margin-top:.6rem}
+.search-row{gap:.4rem;margin-bottom:.6rem}
+
+/* ---------- Printing and the template editor ---------- */
+.tk-prev{overflow-x:auto;padding:.5rem;border-radius:12px;background:#fff;border:1px dashed var(--line)}
+.tk-prev .tks.a4{width:190mm}
+.sheet-prev{padding:.6rem;border-radius:12px;background:var(--s2);border:1px dashed var(--line);overflow:auto}
+.sheet-prev>svg{display:block;width:100%;height:auto;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.12)}
+form#studio .section,form#studio h3{margin-top:1rem}
+/* the ticket template editor: settings beside a live preview (stacked on a phone) */
+.td-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:1rem;align-items:start}
+.td-prev{position:sticky;top:0}
+.td-prev .sheet-prev{display:flex;justify-content:center}
+.tk-flist{display:flex;flex-direction:column;gap:.2rem;margin-top:.3rem}
+.tk-f{display:flex;align-items:center;gap:.4rem;padding:.2rem .4rem;border:1px solid var(--line);border-radius:10px;background:var(--s)}
+.tk-f label{flex:1;display:flex;align-items:center;gap:.45rem;min-width:0}
+.tk-f .move{display:flex;gap:.1rem}
+.tk-f .move .icon-btn{width:30px;height:30px}
+@media (max-width:720px){.td-wrap{grid-template-columns:1fr}.td-prev{position:static;order:-1}}
+
+/* ---------- Prizes ---------- */
+.prize-set{border-top:4px solid var(--cc)}
+.prize-set header{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;flex-wrap:wrap}
+.prize-set header small{text-transform:uppercase;letter-spacing:.1em;font-size:.68rem;color:var(--a)}
+.prize-set h2{margin:.1rem 0 .5rem}
+.prizes{display:flex;flex-direction:column;gap:.5rem;margin:.4rem 0 .6rem}
+.prize{display:flex;align-items:center;gap:.7rem;padding:.6rem .7rem;border-radius:14px;background:color-mix(in srgb,var(--tx) 2.5%,var(--s));border:1px solid var(--line);flex-wrap:wrap}
+.prize.won{background:linear-gradient(90deg,color-mix(in srgb,var(--cc) 12%,var(--s)),var(--s))}
+.prize .place{font-family:var(--disp);font-size:1.5rem;color:var(--cc);width:1.6rem;text-align:center}
+.prize img,.prize .pz-ic{width:3rem;height:3rem;border-radius:12px;object-fit:cover;display:grid;place-items:center;background:color-mix(in srgb,var(--cc) 14%,var(--s));color:var(--cc);flex:none}
+.prize .winner{align-items:center;gap:.3rem;font-weight:500;color:var(--cc);display:inline;line-height:1.5}
+.pz-act{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+.prize .grow{min-width:9rem;flex:1}
+.prize .winner .ico{vertical-align:-.2em}
+@media (max-width:480px){
+  .pz-act{flex-basis:100%;justify-content:flex-end}
+}
+.prize.focus{outline:2px solid var(--a);outline-offset:2px}
+
+/* ---------- Bingo caller ---------- */
+.bingo-caller .ball{font-family:var(--disp);font-size:5rem;font-weight:600;line-height:1;width:8rem;height:8rem;margin:.4rem auto;border-radius:50%;display:grid;place-items:center;background:var(--p);color:var(--on-p)}
+.bingo-board{grid-template-columns:repeat(10,1fr)}
+.bingo-board span{display:grid;place-items:center;font-variant-numeric:tabular-nums;cursor:default}
+.bingo-board span.used{background:var(--soft);font-weight:600}
+.bingo-board span.last{background:var(--a);color:#fff}
