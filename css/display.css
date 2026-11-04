@@ -1,0 +1,66 @@
+/* Mr Hassan · css/display.css — THE display mode (components/display.js): only the game or the vote – no top bar, menus, title or controls –
+   readable from far away, in its theme (the theme's colours arrive as --dm-* variables, its font, number style and animation
+   as data-* attributes). One look for bingo, the wheels, the arrow, random number and the reception voting screen. */
+body.display-mode #top,body.display-mode #ctx,body.display-mode #side,body.display-mode #tabbar,body.display-mode #offline,body.display-mode .pg-title,body.display-mode .tabs{display:none!important}
+body.display-mode .layout{display:block}
+body.display-mode #view{padding:0;max-width:none;margin:0}
+body.display-mode .page{max-width:none;padding:0;margin:0}
+body.display-mode{background:#14110e;color:#f6efe2;overflow-x:hidden}
+.dm{--dm-bg:#14110e;--dm-bg2:#2b2219;--dm-fg:#f6efe2;--dm-accent:#e9c77b;--dm-muted:#cbbfa8;--dm-ball:#e9c77b;--dm-ball-fg:#1b140c;
+  position:fixed;inset:0;z-index:20;overflow:auto;padding:clamp(.8rem,2.5vw,2.5rem);color:var(--dm-fg);background:radial-gradient(ellipse at 50% 0%,var(--dm-bg2),var(--dm-bg) 70%);
+  --tx:var(--dm-fg);--mut:var(--dm-muted);--a:var(--dm-accent);--s:color-mix(in srgb,var(--dm-fg) 7%,var(--dm-bg));--line:color-mix(in srgb,var(--dm-fg) 18%,transparent);--soft:color-mix(in srgb,var(--dm-fg) 10%,transparent);
+  --wh-rim:var(--dm-bg);--wh-hub:var(--dm-bg);--wh-rim-2:var(--dm-accent);--wh-pin:var(--dm-accent);display:flex;flex-direction:column}
+.dm[data-font=serif]{font-family:var(--disp)}
+.dm[data-font=sans]{font-family:var(--ui)}
+.dm[data-font=display]{font-family:var(--disp);letter-spacing:.04em}
+.dm[data-font=display] h1{text-transform:uppercase;letter-spacing:.12em}
+.dm[data-font=rounded]{font-family:"Jost",ui-rounded,system-ui,sans-serif}
+.dm-brand{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;text-align:center;margin-bottom:clamp(.4rem,1.5vh,1.2rem)}
+.dm-brand img{max-height:clamp(2.4rem,8vh,5rem);max-width:30vw;object-fit:contain}
+.dm-brand h1{font-size:clamp(1.6rem,4vw,3.4rem);margin:0;color:var(--dm-accent);letter-spacing:.02em;font-family:inherit}
+.dm-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+.dm-exit{position:fixed;top:.6rem;inset-inline-end:.6rem;z-index:30;display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .8rem;border-radius:99px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.45);color:#f6efe2;opacity:.35;cursor:pointer;font-size:.85rem;font-family:var(--ui)}
+.dm-exit:hover,.dm-exit:focus-visible{opacity:1}
+.dm .card{background:color-mix(in srgb,var(--dm-fg) 6%,transparent);border-color:color-mix(in srgb,var(--dm-fg) 14%,transparent);color:var(--dm-fg)}
+.dm .muted{color:var(--dm-muted)}
+.dm-status{text-align:center;margin:0}
+.dm-count{font-size:clamp(1rem,2vw,1.5rem);color:var(--dm-muted);margin:0;text-align:center}
+.dm-win{font-size:clamp(1.4rem,3vw,2.4rem);color:var(--dm-accent);display:flex;align-items:center;justify-content:center;gap:.5rem;margin:0}
+
+/* ---------- bingo ---------- */
+.dm-bingo{display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(.4rem,1.5vh,1.2rem)}
+.dm-left{display:flex;flex-direction:column;align-items:center;gap:clamp(.4rem,1.5vh,1.2rem)}
+@media (orientation:landscape) and (min-width:900px){
+  .dm-bingo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-areas:"head head" "left board";align-items:center;column-gap:clamp(1rem,3vw,3rem)}
+  .dm-bingo .dm-status{grid-area:head}
+  .dm-left{grid-area:left}
+  .dm-bingo .bingo-board,.dm-bingo .bg-grid75{grid-area:board;width:100%}
+  .dm-ball{font-size:clamp(6rem,22vmin,20rem);width:min(40vw,62vh);height:min(40vw,62vh)}
+  .dm .bingo-board.big span,.dm .bg-grid75.big span{min-height:clamp(26px,7vh,72px)}
+}
+.dm-ball{font-weight:700;line-height:1;font-size:clamp(7rem,28vmin,22rem);width:clamp(12rem,48vmin,36rem);height:clamp(12rem,48vmin,36rem);border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--dm-ball) 25%,#fff),var(--dm-ball) 55%,color-mix(in srgb,var(--dm-ball) 70%,#000));color:var(--dm-ball-fg);
+  box-shadow:0 30px 80px -30px color-mix(in srgb,var(--dm-ball) 60%,transparent);white-space:nowrap;font-variant-numeric:tabular-nums}
+.dm[data-number=tile] .dm-ball{border-radius:12%;background:linear-gradient(160deg,color-mix(in srgb,var(--dm-ball) 30%,#fff),var(--dm-ball))}
+.dm[data-number=plain] .dm-ball{background:none;box-shadow:none;color:var(--dm-accent);width:auto;height:auto}
+.dm-prev{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;min-height:3rem}
+.dm-prev span{font-size:clamp(1.4rem,3.5vw,2.6rem);font-weight:600;padding:.15rem 1rem;border-radius:99px;background:color-mix(in srgb,var(--dm-fg) 10%,transparent);font-variant-numeric:tabular-nums}
+.dm .bingo-board.big,.dm .bg-grid75.big{width:min(100%,70rem);gap:.3rem}
+.dm .bingo-board.big span,.dm .bg-grid75.big span{background:color-mix(in srgb,var(--dm-fg) 6%,transparent);border-color:color-mix(in srgb,var(--dm-fg) 12%,transparent);color:color-mix(in srgb,var(--dm-fg) 45%,transparent);min-height:clamp(28px,4.5vh,56px);font-size:clamp(.85rem,1.8vw,1.4rem)}
+.dm .bingo-board.big span.used,.dm .bg-grid75.big span.used{background:color-mix(in srgb,var(--dm-accent) 25%,transparent);color:var(--dm-fg)}
+.dm .bingo-board.big span.last,.dm .bg-grid75.big span.last{background:var(--dm-accent);color:var(--dm-ball-fg)}
+.dm .bg-grid75.big .bg-l{color:var(--dm-accent);font-size:clamp(1.2rem,2.5vw,2rem)}
+
+/* ---------- the wheels, the arrow, random number ---------- */
+.dm-wheel{display:flex;flex-direction:column;align-items:center;gap:clamp(.5rem,2vh,1.5rem)}
+.dm .ch-res b{font-size:clamp(2.4rem,7vw,6rem);color:var(--dm-fg)}
+.dm .ch-res span{color:var(--dm-accent);font-size:clamp(1rem,2.6vw,2rem)}
+.dm .ch-res.win b{color:var(--dm-accent)}
+.dm .ar-dial{fill:color-mix(in srgb,var(--dm-fg) 6%,transparent);stroke:color-mix(in srgb,var(--dm-fg) 20%,transparent)}
+.dm .ar-arrow{fill:var(--dm-accent);stroke:var(--dm-bg)}
+.dm-rand{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.dm .rn-big{font-size:clamp(8rem,40vmin,30rem);color:var(--dm-accent)}
+.dm .ch-hist{justify-content:center}
+.dm .ch-hist span{font-size:clamp(1.1rem,2.5vw,2rem);background:color-mix(in srgb,var(--dm-fg) 10%,transparent)}
+.dm[data-anim=slow] .rn-big.pop{animation-duration:.9s}
+.dm[data-anim=fast] .rn-big.pop{animation-duration:.35s}
