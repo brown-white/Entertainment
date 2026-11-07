@@ -1,0 +1,231 @@
+/* Mr Hassan · css/main.css — THE design system's base: every design token (the Theme Engine, components/theme.js, writes the colours),
+   typography, base elements, utilities and the app shell (side menu, top bar, page, bottom bar). Every other style file uses these tokens –
+   no colour, size, corner or shadow of its own. */
+
+/* ---------- Design tokens ----------
+   The colours below are Executive Light, the default theme; the Theme Engine replaces them for the hotel's theme, the light / dark mode and
+   the hotel's brand colours. Everything else (soft status backgrounds, hover, focus) is derived from them, so a theme is only colours. */
+:root{
+  /* brand */
+  --primary:#0F5C56;--on-primary:#FFFFFF;--secondary:#142027;--on-secondary:#FFFFFF;--accent:#B5893B;--on-accent:#1A1408;
+  /* surfaces */
+  --bg-app:#F2F4F3;--bg-nav:#142027;--on-nav:#D9E2E0;--bg-header:#FFFFFF;--on-header:#15212B;--bg-surface:#FFFFFF;--bg-elevated:#FFFFFF;
+  --bg-input:#FFFFFF;--bg-muted:#F4F6F5;
+  --paper:#FFFFFF;--media-bg:#000000;--on-media:#FFFFFF; /* documents and QR codes are paper, photos and videos sit on black – in every theme */
+  /* text */
+  --text:#15212B;--text-2:#44515C;--text-muted:#66727D;--text-inverse:#FFFFFF;
+  /* borders */
+  --border:#E1E5E4;--border-subtle:#EBEEED;--border-strong:#C5CCCB;
+  /* status (and the programme types' fifth colour) */
+  --success:#23784A;--warning:#A86400;--danger:#C23B2B;--info:#2160A8;--neutral:#66727D;--special:#7354A8;--show:#9A3C63;
+  --shadow-ink:#101828;
+  color-scheme:light;-webkit-text-size-adjust:100%;background:var(--bg-app);
+
+  /* typography: two families at most (the theme may set a display face for titles) */
+  --font-ui:'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:var(--font-ui);
+  --fs-page-title:1.625rem;--fs-section:1.125rem;--fs-card-title:1rem;--fs-body:.9375rem;--fs-small:.8125rem;--fs-label:.8125rem;
+  --fs-helper:.75rem;--fs-kpi:1.75rem;--fs-th:.75rem;--fs-btn:.875rem;
+  --fw-regular:400;--fw-medium:500;--fw-semibold:600;--fw-bold:700;
+  --lh-tight:1.2;--lh:1.5;
+  /* spacing */
+  --sp-1:.25rem;--sp-2:.5rem;--sp-3:.75rem;--sp-4:1rem;--sp-5:1.25rem;--sp-6:1.5rem;--sp-8:2rem;--sp-10:2.5rem;
+  /* density (Comfortable; Compact and Dense below) */
+  --control-h:40px;--control-h-sm:32px;--row-py:.7rem;--row-px:.9rem;--cell-py:.55rem;--cell-px:.75rem;--gap:.75rem;--card-p:1.25rem;
+  /* corners */
+  --r-xs:4px;--r-sm:6px;--r-md:8px;--r-lg:12px;--r-xl:16px;--r-pill:999px;
+  --r-ctl:var(--r-md);--r-card:var(--r-lg);--r-modal:var(--r-xl);
+  /* motion */
+  --dur-1:120ms;--dur-2:180ms;--dur-3:260ms;--ease:cubic-bezier(.2,.7,.2,1);
+  /* layout */
+  --side-w:252px;--rail-w:68px;--top-h:56px;--content-max:1240px;--content-narrow:880px;--safe-b:env(safe-area-inset-bottom,0px);
+}
+/* derived from the colours above – again on every element that brings its own colours (the theme editor's preview, a display screen:
+   data-tokens), so a soft background or a shadow there follows those colours */
+html,[data-tokens]{
+  /* soft status backgrounds and readable status text (light and dark alike) */
+  --success-soft:color-mix(in srgb,var(--success) 13%,var(--bg-surface));--success-text:color-mix(in srgb,var(--success) 82%,var(--text));
+  --warning-soft:color-mix(in srgb,var(--warning) 14%,var(--bg-surface));--warning-text:color-mix(in srgb,var(--warning) 78%,var(--text));
+  --danger-soft:color-mix(in srgb,var(--danger) 12%,var(--bg-surface));--danger-text:color-mix(in srgb,var(--danger) 85%,var(--text));
+  --info-soft:color-mix(in srgb,var(--info) 12%,var(--bg-surface));--info-text:color-mix(in srgb,var(--info) 85%,var(--text));
+  --neutral-soft:var(--bg-muted);--neutral-text:var(--text-2);
+  --special-soft:color-mix(in srgb,var(--special) 13%,var(--bg-surface));--special-text:color-mix(in srgb,var(--special) 85%,var(--text));
+  --accent-soft:color-mix(in srgb,var(--accent) 16%,var(--bg-surface));
+  --primary-soft:color-mix(in srgb,var(--primary) 10%,var(--bg-surface));
+  --primary-hover:color-mix(in srgb,var(--primary) 86%,var(--text));
+  /* interaction */
+  --hover:color-mix(in srgb,var(--text) 5%,transparent);--selected:var(--primary-soft);--focus:color-mix(in srgb,var(--primary) 55%,var(--accent));
+  --disabled:.45;
+  /* the programme's types */
+  --t-activity:var(--success);--t-event:var(--warning);--t-show:var(--show);--t-live_music:var(--info);--t-special_event:var(--special);
+
+  /* shadows: flat surfaces; only floating layers lift */
+  --shadow-1:0 1px 2px color-mix(in srgb,var(--shadow-ink) 6%,transparent);
+  --shadow-2:0 2px 4px -2px color-mix(in srgb,var(--shadow-ink) 8%,transparent),0 8px 20px -4px color-mix(in srgb,var(--shadow-ink) 14%,transparent);
+  --shadow-3:0 24px 56px -12px color-mix(in srgb,var(--shadow-ink) 32%,transparent);
+  --shadow-card:var(--shadow-1);
+}
+/* density: the person's choice (Profile → Appearance) */
+[data-density=compact]{--control-h:36px;--control-h-sm:30px;--row-py:.5rem;--row-px:.75rem;--cell-py:.4rem;--cell-px:.6rem;--gap:.6rem;--card-p:1rem;--fs-body:.875rem}
+[data-density=dense]{--control-h:32px;--control-h-sm:28px;--row-py:.35rem;--row-px:.6rem;--cell-py:.25rem;--cell-px:.45rem;--gap:.45rem;--card-p:.75rem;--fs-body:.8125rem;--fs-small:.75rem}
+/* corner style and heading face (part of the theme: Settings → Themes) */
+[data-btn=pill]{--r-ctl:var(--r-pill)}
+[data-btn=square]{--r-ctl:3px;--r-card:6px;--r-modal:8px}
+[data-font=elegant]{--font-display:'Cormorant Garamond',Georgia,serif}
+[data-font=modern]{--font-display:var(--font-ui)}
+[data-font=classic]{--font-display:Georgia,'Times New Roman',serif}
+[dir=rtl]{--font-ui:'IBM Plex Sans Arabic','IBM Plex Sans',system-ui,sans-serif}
+
+/* ---------- Base elements ---------- */
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-app);color:var(--text);font:var(--fw-regular) var(--fs-body)/var(--lh) var(--font-ui);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%}
+button{font:inherit;color:inherit}
+h1{font:var(--fw-semibold) var(--fs-page-title)/var(--lh-tight) var(--font-display);letter-spacing:-.01em;margin:0 0 .5em;color:var(--text)}
+h2{font:var(--fw-semibold) var(--fs-section)/var(--lh-tight) var(--font-display);margin:0 0 .5em;color:var(--text)}
+h3{font:var(--fw-semibold) var(--fs-card-title)/var(--lh-tight) var(--font-display);margin:0 0 .5em;color:var(--text)}
+[data-font=elegant] h1,[data-font=elegant] h2{font-weight:var(--fw-semibold);letter-spacing:.005em}
+section{margin:var(--sp-6) 0}
+input,select{font:inherit;color:var(--text);background:var(--bg-input);border:1px solid var(--border-strong);border-radius:var(--r-ctl);min-height:var(--control-h);padding:.45rem .7rem;width:100%;transition:border-color var(--dur-1),box-shadow var(--dur-1)}
+textarea{font:inherit;color:var(--text);background:var(--bg-input);border:1px solid var(--border-strong);border-radius:var(--r-ctl);min-height:5.5rem;line-height:var(--lh);padding:.45rem .7rem;width:100%;transition:border-color var(--dur-1),box-shadow var(--dur-1)}
+input[type=checkbox],input[type=radio]{width:1.15rem;height:1.15rem;min-height:0;padding:0;accent-color:var(--primary)}
+input[type=color]{width:3rem;height:var(--control-h);padding:.2rem}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--primary)}
+input:hover,select:hover,textarea:hover{border-color:color-mix(in srgb,var(--border-strong) 60%,var(--text))}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 18%,transparent);outline:none}
+input:disabled,select:disabled,textarea:disabled{opacity:var(--disabled);cursor:not-allowed}
+input::placeholder,textarea::placeholder{color:var(--text-muted)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{background:var(--bg-muted);padding:.1rem .35rem;border-radius:var(--r-xs);font-size:.85em;word-break:break-all}
+hr{border:0;border-top:1px solid var(--border);margin:var(--sp-4) 0}
+::selection{background:color-mix(in srgb,var(--primary) 22%,transparent)}
+/* a change of hotel or theme: the colours change softly (components/theme.js) */
+.theme-fade,.theme-fade *{transition:background-color var(--dur-3) var(--ease),color var(--dur-3) var(--ease),border-color var(--dur-3) var(--ease)!important}
+[hidden]{display:none!important} /* a hidden bar or field stays hidden, whatever its own display */
+/* phones: a field of 16 px or more is never zoomed into */
+@media (pointer:coarse){
+  input,select,textarea{font-size:max(16px,var(--fs-body))}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* ---------- Typography: the roles ---------- */
+.t-page{font:var(--fw-semibold) var(--fs-page-title)/var(--lh-tight) var(--font-display)}
+.t-section{font:var(--fw-semibold) var(--fs-section)/var(--lh-tight) var(--font-display)}
+.t-card{font:var(--fw-semibold) var(--fs-card-title)/var(--lh-tight) var(--font-ui)}
+.t-label{font-size:var(--fs-label);font-weight:var(--fw-medium);color:var(--text-2)}
+.t-helper{font-size:var(--fs-helper);color:var(--text-muted)}
+.t-kpi{font:var(--fw-semibold) var(--fs-kpi)/1.1 var(--font-ui);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.num,time,.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- Utilities ---------- */
+.muted{color:var(--text-muted)}
+.small,small{font-size:var(--fs-small)}
+.center{text-align:center}
+.grow{flex:1;min-width:0}
+.bad-t{color:var(--danger-text)}
+.nowrap{white-space:nowrap}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;top:-3rem;inset-inline-start:var(--sp-3);z-index:80;padding:.5rem .9rem;border-radius:var(--r-ctl);background:var(--secondary);color:var(--on-secondary);text-decoration:none;font-weight:var(--fw-semibold)}
+.skip:focus{top:var(--sp-3)}
+
+/* ---------- The app shell ----------
+   Desktop: the side menu (full or a rail of icons), the top bar over the page. Tablet: the rail. Phone: the top bar and the bottom bar. */
+.shell{display:flex;min-height:100vh}
+.shell-main{flex:1;min-width:0;display:flex;flex-direction:column}
+#top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:var(--sp-2);min-height:var(--top-h);padding:.4rem var(--sp-4);padding-top:calc(.4rem + env(safe-area-inset-top,0px));background:var(--bg-header);color:var(--on-header);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;min-width:0;color:inherit}
+.brand img{height:32px;width:auto;max-width:96px;object-fit:contain;flex:none}
+.brand .mark{display:grid;place-items:center;width:32px;height:32px;border-radius:var(--r-md);background:var(--primary);color:var(--on-primary);font:var(--fw-semibold) 1rem/1 var(--font-display);flex:none}
+.brand span{display:flex;flex-direction:column;min-width:0}
+.brand b{font:var(--fw-semibold) 1rem/1.15 var(--font-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:var(--fs-helper)}
+#top .brand{flex:1}
+.top-r{display:flex;gap:var(--sp-1);align-items:center;margin-inline-start:auto}
+/* the hotel / team switch: in the top bar (its own line on a phone) */
+.ctx-sw{display:flex;gap:var(--sp-2);align-items:center;min-width:0;flex:0 1 auto}
+.ctx-sw.static label{border-color:transparent;background:none;padding-inline-start:0}
+.ctx-sw label{display:flex;align-items:center;gap:.35rem;min-width:0;border:1px solid var(--border);border-radius:var(--r-ctl);padding:0 .1rem 0 .55rem;background:var(--bg-surface);color:var(--text-2)}
+.ctx-sw label .ico{color:var(--text-muted);width:1.1em;height:1.1em}
+.ctx-sw select{border:0;background:transparent;min-height:calc(var(--control-h) - 6px);padding:.2rem .4rem;width:auto;max-width:13rem;font-weight:var(--fw-medium);box-shadow:none}
+.ctx-sw .ctx-txt{font-weight:var(--fw-medium);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-search{display:none;align-items:center;gap:.5rem;min-width:12rem;max-width:22rem;flex:1 1 14rem;height:var(--control-h-sm);padding:0 .65rem;border:1px solid var(--border);border-radius:var(--r-ctl);background:var(--bg-muted);color:var(--text-muted);cursor:pointer;font-size:var(--fs-small);text-align:start}
+.top-search span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-search kbd,.kbd{font:inherit;font-size:var(--fs-helper);border:1px solid var(--border);border-radius:var(--r-xs);padding:0 .3rem;background:var(--bg-surface)}
+.preview-bar{background:var(--warning-soft);color:var(--warning-text);padding:.45rem var(--sp-4);display:flex;gap:var(--sp-4);align-items:center;justify-content:space-between;font-weight:var(--fw-medium);border-bottom:1px solid color-mix(in srgb,var(--warning) 30%,transparent)}
+#view{flex:1;min-width:0;padding:var(--sp-4) var(--sp-4) calc(5.5rem + var(--safe-b))}
+.page{max-width:var(--content-max);margin:0 auto}
+.page.narrow-page{max-width:var(--content-narrow)}
+
+/* the side menu */
+#side{display:none;flex:none;width:var(--side-w);height:100vh;position:sticky;top:0;flex-direction:column;background:var(--bg-nav);color:var(--on-nav);border-inline-end:1px solid color-mix(in srgb,var(--on-nav) 10%,var(--bg-nav))}
+.side-head{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-4) var(--sp-4) var(--sp-3);min-height:var(--top-h)}
+.side-head .brand small{color:color-mix(in srgb,var(--on-nav) 65%,transparent)}
+.side-scroll{flex:1;overflow:auto;padding:0 var(--sp-3) var(--sp-3);scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--on-nav) 25%,transparent) transparent}
+.side-grp{margin:var(--sp-3) 0 0}
+.side-grp h3{font:var(--fw-medium) var(--fs-helper)/1.2 var(--font-ui);color:color-mix(in srgb,var(--on-nav) 58%,transparent);margin:0 0 var(--sp-1);padding:var(--sp-1) var(--sp-2)}
+.side-link{display:flex;align-items:center;gap:.7rem;min-height:36px;padding:.35rem .6rem;border-radius:var(--r-md);text-decoration:none;color:color-mix(in srgb,var(--on-nav) 88%,transparent);font-size:var(--fs-small);font-weight:var(--fw-medium);position:relative}
+.side-link .ico{width:1.15rem;height:1.15rem;opacity:.85}
+.side-link .ava{flex:none}
+.side-link span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-link:hover{background:color-mix(in srgb,var(--on-nav) 8%,transparent);color:var(--on-nav)}
+.side-link.on{background:color-mix(in srgb,var(--on-nav) 13%,transparent);color:var(--on-nav)}
+.side-link.on::before{content:"";position:absolute;inset-inline-start:-.75rem;top:22%;bottom:22%;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.side-link .badge{margin-inline-start:auto}
+.side-foot{display:flex;align-items:center;gap:var(--sp-1);padding:var(--sp-2) var(--sp-3) var(--sp-3);border-top:1px solid color-mix(in srgb,var(--on-nav) 10%,transparent)}
+.side-foot .side-link{flex:1}
+.side-btn{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:var(--r-md);border:0;background:transparent;color:color-mix(in srgb,var(--on-nav) 80%,transparent);cursor:pointer;flex:none}
+.side-btn:hover{background:color-mix(in srgb,var(--on-nav) 8%,transparent);color:var(--on-nav)}
+/* the rail: icons only (tablets, or chosen on a desktop) */
+.rail #side{width:var(--rail-w)}
+.rail .side-head .brand span:not(.mark),.rail .side-grp h3,.rail .side-link span,.rail .side-link .badge{display:none}
+.rail .side-head{justify-content:center;padding-inline:0}
+.rail .side-scroll{padding-inline:var(--sp-2)}
+.rail .side-link{justify-content:center;padding:.5rem}
+.rail .side-link.on::before{inset-inline-start:-.5rem}
+.rail .side-grp{border-top:1px solid color-mix(in srgb,var(--on-nav) 10%,transparent);padding-top:var(--sp-2)}
+.rail .side-grp:first-child{border-top:0}
+.rail .side-foot{flex-direction:column}
+
+/* the bottom bar (phones; guests on every screen) */
+#tabbar{position:fixed;bottom:0;left:0;right:0;z-index:20;display:flex;padding-bottom:var(--safe-b);background:var(--bg-surface);border-top:1px solid var(--border)}
+#tabbar a{text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;color:var(--text-muted);position:relative;flex:1 1 0;min-width:0;min-height:56px;padding:.4rem .1rem}
+#tabbar a span{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.6875rem;font-weight:var(--fw-medium);line-height:1.2}
+#tabbar a .ico{width:1.4rem;height:1.4rem}
+#tabbar a.on{color:var(--primary)}
+#tabbar a.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:2px;border-radius:0 0 2px 2px;background:var(--primary)}
+#tabbar .badge{position:absolute;top:.3rem;inset-inline-start:calc(50% + .35rem)}
+
+/* the whole menu (phone: "More"): the same groups as the side menu */
+.menu-all section{margin:0 0 var(--sp-5)}
+.menu-all h3{font:var(--fw-medium) var(--fs-small)/1.2 var(--font-ui);color:var(--text-muted);margin:0 0 var(--sp-2)}
+.menu-all .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden}
+.menu-all a{display:flex;align-items:center;gap:.7rem;min-height:52px;padding:.6rem .85rem;text-decoration:none;color:var(--text);font-weight:var(--fw-medium);background:var(--bg-surface)}
+.menu-all a:hover{background:var(--bg-muted)}
+.menu-all a.on{color:var(--primary)}
+.mi{display:inline-grid;place-items:center;width:2rem;height:2rem;border-radius:var(--r-md);background:var(--primary-soft);color:var(--primary);flex:none}
+.mi .ico{width:1.15rem;height:1.15rem}
+
+#offline{position:fixed;top:0;left:0;right:0;z-index:70;background:var(--warning);color:var(--text-inverse);text-align:center;padding:.35rem var(--sp-4);padding-top:calc(.35rem + env(safe-area-inset-top,0px));font-size:var(--fs-small);font-weight:var(--fw-medium)}
+
+/* tablets and desktops: the side menu replaces the bottom bar (the rail on tablets or when chosen: body.rail, set by the menu) */
+@media (min-width:768px){
+  #side{display:flex}
+  body:has(#side:not(:empty)) #tabbar{display:none}
+  body:has(#side:not(:empty)) #view{padding:var(--sp-6) var(--sp-6) var(--sp-8)}
+  body:has(#side:not(:empty)) #top .brand{display:none}
+}
+/* a wide screen: the search box in the top bar (else its icon) */
+@media (min-width:1024px){
+  .top-search{display:flex}
+  .top-search-ic{display:none}
+}
+@media (max-width:767px){
+  #top{flex-wrap:wrap;row-gap:.35rem}
+  #top .ctx-sw{order:3;flex-basis:100%;padding-bottom:.1rem}
+  #top .ctx-sw label{flex:1 1 0}
+  #top .ctx-sw select{width:100%;max-width:none;min-width:0;text-overflow:ellipsis}
+  :root{--fs-page-title:1.375rem}
+}

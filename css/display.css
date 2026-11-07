@@ -1,0 +1,122 @@
+/* Mr Hassan · css/display.css — THE display screen (components/display.js), in its own window: only the game or the vote – no top bar, menus,
+   title, controls or app messages – readable from far away, in its theme (the theme's colours arrive as --dm-* variables, its font,
+   number style and animation as data-* attributes); Full screen and Close show while the mouse moves; "Reconnecting …" over the last
+   picture. One look for bingo, the wheels, the arrow, random number, the scoreboards, the vote results and the reception screen. */
+body.display-mode #top,body.display-mode #ctx,body.display-mode #side,body.display-mode #tabbar,body.display-mode #offline,body.display-mode .pg-head,body.display-mode .tabs{display:none!important}
+body.display-mode:not(.ds-touch) #toasts{display:none!important}
+body.display-mode .shell{display:block}
+body.display-mode #view{padding:0;max-width:none;margin:0}
+body.display-mode .page{max-width:none;padding:0;margin:0}
+body.display-mode{background:var(--media-bg);color:var(--on-media);overflow-x:hidden}
+.dm{--dm-bg-img:none;--dm-bg:#14110e;--dm-bg2:#2b2219;--dm-fg:#f6efe2;--dm-accent:#e9c77b;--dm-muted:#cbbfa8;--dm-ball:#e9c77b;--dm-ball-fg:#1b140c;
+  position:fixed;inset:0;z-index:20;overflow:auto;padding:clamp(.8rem,2.5vw,2.5rem);color:var(--dm-fg);background:radial-gradient(ellipse at 50% 0%,var(--dm-bg2),var(--dm-bg) 70%);
+  /* inside the display the app's tokens follow the display theme (a component on the display reads them) */
+  --text:var(--dm-fg);--text-2:var(--dm-fg);--text-muted:var(--dm-muted);--primary:var(--dm-accent);--on-primary:var(--dm-ball-fg);--accent:var(--dm-accent);--on-accent:var(--dm-ball-fg);
+  --bg-surface:color-mix(in srgb,var(--dm-fg) 7%,var(--dm-bg));--bg-elevated:var(--bg-surface);--bg-input:var(--bg-surface);--border:color-mix(in srgb,var(--dm-fg) 18%,transparent);
+  --border-subtle:color-mix(in srgb,var(--dm-fg) 10%,transparent);--border-strong:color-mix(in srgb,var(--dm-fg) 30%,transparent);--bg-muted:color-mix(in srgb,var(--dm-fg) 10%,transparent);
+  --wh-rim:var(--dm-bg);--wh-hub:var(--dm-bg);--wh-rim-2:var(--dm-accent);--wh-pin:var(--dm-accent);display:flex;flex-direction:column}
+.dm[data-bgimg]{background:linear-gradient(color-mix(in srgb,var(--dm-bg) 72%,transparent),color-mix(in srgb,var(--dm-bg) 90%,transparent)),var(--dm-bg-img) center/cover no-repeat}
+.dm[data-font=serif]{font-family:'Cormorant Garamond',Georgia,serif}
+.dm[data-font=sans]{font-family:var(--font-ui)}
+.dm[data-font=display]{font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:.04em}
+.dm[data-font=display] h1{text-transform:uppercase;letter-spacing:.12em}
+.dm[data-font=rounded]{font-family:ui-rounded,var(--font-ui)}
+.dm-brand{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;text-align:center;margin-bottom:clamp(.4rem,1.5vh,1.2rem)}
+.dm-brand img{max-height:clamp(2.4rem,8vh,5rem);max-width:30vw;object-fit:contain}
+.dm-brand h1{font-size:clamp(1.6rem,4vw,3.4rem);margin:0;color:var(--dm-accent);letter-spacing:.02em;font-family:inherit}
+.dm-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+/* the window's own buttons (Full screen, Close): a corner, faint; gone while nobody moves the mouse or touches the screen */
+.ds-bar{position:fixed;top:.6rem;inset-inline-end:.6rem;z-index:30;display:flex;gap:.4rem;transition:opacity .4s}
+.ds-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .85rem;border-radius:var(--r-pill);border:1px solid color-mix(in srgb,var(--on-media) 28%,transparent);background:color-mix(in srgb,var(--media-bg) 50%,transparent);color:var(--on-media);opacity:.55;cursor:pointer;font:500 .85rem var(--font-ui)}
+.ds-btn:hover,.ds-btn:focus-visible{opacity:1}
+body.ds-idle .ds-bar{opacity:0;pointer-events:none}
+@media (max-width:600px){.ds-btn span{display:none}.ds-btn{padding:.5rem}}
+body.ds-idle.ds-full{cursor:none}
+/* the connection gone: the last picture stays, dimmed, and says it is reconnecting (never a technical message) */
+.ds-wait{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;background:color-mix(in srgb,var(--media-bg) 62%,transparent);backdrop-filter:blur(3px);color:var(--on-media);font:600 clamp(1.3rem,3.5vw,2.6rem) var(--font-ui);text-align:center;padding:1rem}
+.ds-wait[hidden]{display:none}
+.ds-dots{display:flex;gap:.6rem}.ds-dots i{width:.9rem;height:.9rem;border-radius:50%;background:currentColor;animation:ds-dot 1.2s infinite ease-in-out}
+.ds-dots i:nth-child(2){animation-delay:.15s}.ds-dots i:nth-child(3){animation-delay:.3s}
+@keyframes ds-dot{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.ds-dots i{animation:none;opacity:.8}}
+.dm-gone{font-size:clamp(1.4rem,4vw,3rem);text-align:center;color:var(--dm-muted)}
+/* where the game stands: starting soon, paused, cancelled – and the final screen (GAME FINISHED · WINNER · the result) */
+.dm-stage{text-align:center;margin:0 0 clamp(.4rem,1.5vh,1rem);font-size:clamp(1.2rem,3vw,2.2rem);color:var(--dm-accent);letter-spacing:.06em;text-transform:uppercase}
+.dm-final{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.2rem;margin:0 0 clamp(.5rem,2vh,1.4rem)}
+.dm-final span{font-size:clamp(1.1rem,2.6vw,2rem);letter-spacing:.14em;text-transform:uppercase;color:var(--dm-muted)}
+.dm-final b{display:inline-flex;align-items:center;gap:.3em;font-size:clamp(2.2rem,7vw,5.5rem);line-height:1.05;color:var(--dm-accent);animation:dm-win var(--dur-3) var(--ease) both}
+.dm-final b .ico{width:.85em;height:.85em;stroke-width:1.4}
+@keyframes dm-win{from{transform:scale(.85);opacity:0}}
+.dm .card{background:color-mix(in srgb,var(--dm-fg) 6%,transparent);border-color:color-mix(in srgb,var(--dm-fg) 14%,transparent);color:var(--dm-fg)}
+.dm .muted{color:var(--dm-muted)}
+.dm-status{text-align:center;margin:0}
+.dm-count{font-size:clamp(1rem,2vw,1.5rem);color:var(--dm-muted);margin:0;text-align:center}
+.dm-win{font-size:clamp(1.4rem,3vw,2.4rem);color:var(--dm-accent);display:flex;align-items:center;justify-content:center;gap:.5rem;margin:0}
+
+/* ---------- bingo ---------- */
+.dm-bingo{display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(.4rem,1.5vh,1.2rem)}
+.dm-left{display:flex;flex-direction:column;align-items:center;gap:clamp(.4rem,1.5vh,1.2rem)}
+@media (orientation:landscape) and (min-width:900px){
+  .dm-bingo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-areas:"head head" "left board";align-items:center;column-gap:clamp(1rem,3vw,3rem)}
+  .dm-bingo .dm-status{grid-area:head}
+  .dm-left{grid-area:left}
+  .dm-bingo .bingo-board,.dm-bingo .bg-grid75{grid-area:board;width:100%}
+  .dm-ball{font-size:clamp(6rem,22vmin,20rem);width:min(40vw,62vh);height:min(40vw,62vh)}
+  .dm .bingo-board.big span,.dm .bg-grid75.big span{min-height:clamp(26px,7vh,72px)}
+}
+.dm-ball{font-weight:700;line-height:1;font-size:clamp(7rem,28vmin,22rem);width:clamp(12rem,48vmin,36rem);height:clamp(12rem,48vmin,36rem);border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--dm-ball) 25%,var(--on-media)),var(--dm-ball) 55%,color-mix(in srgb,var(--dm-ball) 70%,var(--media-bg)));color:var(--dm-ball-fg);
+  box-shadow:0 30px 80px -30px color-mix(in srgb,var(--dm-ball) 60%,transparent);white-space:nowrap;font-variant-numeric:tabular-nums}
+.dm[data-number=tile] .dm-ball{border-radius:12%;background:linear-gradient(160deg,color-mix(in srgb,var(--dm-ball) 30%,var(--on-media)),var(--dm-ball))}
+.dm[data-number=plain] .dm-ball{background:none;box-shadow:none;color:var(--dm-accent);width:auto;height:auto}
+.dm-prev{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;min-height:3rem}
+.dm-prev span{font-size:clamp(1.4rem,3.5vw,2.6rem);font-weight:600;padding:.15rem 1rem;border-radius:var(--r-pill);background:color-mix(in srgb,var(--dm-fg) 10%,transparent);font-variant-numeric:tabular-nums}
+.dm .bingo-board.big,.dm .bg-grid75.big{width:min(100%,70rem);gap:.3rem}
+.dm .bingo-board.big span,.dm .bg-grid75.big span{background:color-mix(in srgb,var(--dm-fg) 6%,transparent);border-color:color-mix(in srgb,var(--dm-fg) 12%,transparent);color:color-mix(in srgb,var(--dm-fg) 45%,transparent);min-height:clamp(28px,4.5vh,56px);font-size:clamp(.85rem,1.8vw,1.4rem)}
+.dm .bingo-board.big span.used,.dm .bg-grid75.big span.used{background:color-mix(in srgb,var(--dm-accent) 25%,transparent);color:var(--dm-fg)}
+.dm .bingo-board.big span.last,.dm .bg-grid75.big span.last{background:var(--dm-accent);color:var(--dm-ball-fg)}
+.dm .bg-grid75.big .bg-l{color:var(--dm-accent);font-size:clamp(1.2rem,2.5vw,2rem)}
+
+/* ---------- the wheels, the arrow, random number ---------- */
+.dm-wheel{display:flex;flex-direction:column;align-items:center;gap:clamp(.5rem,2vh,1.5rem)}
+.dm .ch-res b{font-size:clamp(2.2rem,min(7vw,9vh),6rem);color:var(--dm-fg)}
+.dm .ch-res span{color:var(--dm-accent);font-size:clamp(1rem,2.6vw,2rem)}
+.dm .ch-res.win b{color:var(--dm-accent)}
+.dm .ar-dial{fill:color-mix(in srgb,var(--dm-fg) 6%,transparent);stroke:color-mix(in srgb,var(--dm-fg) 20%,transparent)}
+.dm .ar-arrow{fill:var(--dm-accent);stroke:var(--dm-bg)}
+.dm-rand{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.dm .rn-big{font-size:clamp(8rem,40vmin,30rem);color:var(--dm-accent)}
+.dm .ch-hist{justify-content:center}
+.dm .ch-hist span{font-size:clamp(1.1rem,2.5vw,2rem);background:color-mix(in srgb,var(--dm-fg) 10%,transparent)}
+.dm[data-anim=slow] .rn-big.pop{animation-duration:.9s}
+.dm[data-anim=fast] .rn-big.pop{animation-duration:.35s}
+
+/* ---------- the scoreboards: darts and every score game ---------- */
+.dm-score{display:flex;flex-direction:column;align-items:center;gap:clamp(.6rem,2vh,1.6rem);width:100%}
+.dm-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:clamp(.5rem,1.5vw,1.2rem);width:min(100%,90rem)}
+.dm-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.3rem;padding:clamp(.7rem,2vw,1.6rem);border-radius:var(--r-card);border:2px solid color-mix(in srgb,var(--dm-fg) 14%,transparent);background:color-mix(in srgb,var(--dm-fg) 6%,transparent)}
+.dm-card .nm b{display:block;font-size:clamp(1.2rem,2.6vw,2.2rem)}
+.dm-card .nm small{color:var(--dm-muted);font-size:clamp(.85rem,1.4vw,1.2rem)}
+.dm-card .big{font-size:clamp(3rem,9vw,8rem);line-height:1;font-variant-numeric:tabular-nums;color:var(--dm-fg)}
+.dm-card > small{color:var(--dm-muted);font-size:clamp(.85rem,1.4vw,1.2rem)}
+.dm-card.on{border-color:var(--dm-accent);background:color-mix(in srgb,var(--dm-accent) 16%,transparent)}
+.dm-card.on .big{color:var(--dm-accent)}
+.dm-card.win{border-color:var(--dm-accent);background:color-mix(in srgb,var(--dm-accent) 26%,transparent)}
+.dm-turn{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6rem;font-size:clamp(1.1rem,2.6vw,2rem)}
+.dm-turn span{min-width:3.2em;text-align:center;padding:.2rem .7rem;border-radius:var(--r-ctl);background:color-mix(in srgb,var(--dm-fg) 10%,transparent);font-weight:700;font-variant-numeric:tabular-nums}
+.dm-turn span.bust{color:var(--dm-accent);text-decoration:line-through}
+.dm .tablewrap{width:min(100%,70rem)}
+.dm table{color:var(--dm-fg);font-size:clamp(.9rem,1.6vw,1.4rem)}
+.dm table th,.dm table td{border-color:color-mix(in srgb,var(--dm-fg) 15%,transparent)}
+.dm .st-line .chip{font-size:clamp(.9rem,1.6vw,1.3rem);background:color-mix(in srgb,var(--dm-fg) 10%,transparent);color:var(--dm-fg)}
+
+/* ---------- the vote: the question, the choices, the results when everyone may see them ---------- */
+.dm-vote{display:flex;flex-direction:column;align-items:center;gap:clamp(.6rem,2vh,1.6rem);width:min(100%,70rem);margin:0 auto}
+.dm-q{font-size:clamp(1.8rem,5vw,4rem);text-align:center;margin:0;line-height:1.15;color:var(--dm-fg);font-family:inherit}
+.dm-choices{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:.8rem;width:100%}
+.dm-choices li{padding:clamp(.7rem,2vw,1.4rem);border-radius:var(--r-card);text-align:center;font-size:clamp(1.3rem,3vw,2.4rem);font-weight:600;background:color-mix(in srgb,var(--dm-fg) 8%,transparent);border:1px solid color-mix(in srgb,var(--dm-fg) 14%,transparent)}
+.dm .vt-bars{width:100%}
+.dm .vt-bars.big .vt-l b{font-size:clamp(1.3rem,3vw,2.4rem)}
+.dm .vt-bars.big .vt-l small{font-size:clamp(1rem,2vw,1.6rem);color:var(--dm-muted)}
+.dm .vt-bars.big .vt-bar{height:clamp(1rem,2.6vh,1.8rem)}
+.dm .vt-total{font-size:clamp(1rem,2vw,1.5rem);text-align:center;color:var(--dm-muted)}

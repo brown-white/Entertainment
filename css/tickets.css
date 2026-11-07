@@ -1,0 +1,111 @@
+/* Mr Hassan · css/tickets.css — tickets: the inventory, sellers, ticket types, printing and the template editor, prizes. */
+
+/* ---------- The inventory, sellers, ticket types ---------- */
+.packs{display:flex;flex-direction:column;gap:.4rem}
+.pack{display:flex;gap:.7rem;align-items:center;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-card);padding:.6rem .8rem;cursor:pointer;text-align:start}
+.pack.on{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+.pack:hover{border-color:var(--border-strong)}
+.pack span{display:flex;flex-direction:column}
+.tickets{display:flex;flex-direction:column;gap:.4rem}
+.tk{display:flex;gap:.8rem;align-items:center;background:var(--bg-surface);border:1px dashed var(--border-strong);border-radius:var(--r-ctl);padding:.55rem .8rem;flex-wrap:wrap}
+.tk>b{font:var(--fw-semibold) 1.5rem/1 var(--font-ui);min-width:3.5rem;font-variant-numeric:tabular-nums}
+.tk span{flex:1}
+.pack-card .stats{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
+.swatch{display:inline-block;width:1rem;height:1rem;border-radius:var(--r-xs);background:var(--cc);vertical-align:-.15em;margin-inline-end:.4rem;box-shadow:0 0 0 1px var(--border)}
+.offer-rows{display:flex;flex-direction:column;gap:.4rem}
+.offer-row{display:flex;align-items:center;gap:.45rem}
+.offer-row input{width:5rem}
+.offer-row span{color:var(--text-muted);font-size:.9rem}
+.offer-row select{width:auto;min-width:4.6rem}
+/* (10.4) money in several currencies: an official price per currency, the currency and payment-method choice of a sale */
+.price-rows{display:flex;flex-wrap:wrap;gap:.45rem .8rem}
+.price-row{display:inline-flex;align-items:center;gap:.4rem}
+.price-row input{width:6.5rem}
+.price-row b{font-variant-numeric:tabular-nums;font-size:.9rem;color:var(--text-muted)}
+.tk-choose{gap:.45rem;flex-wrap:wrap;overflow:visible}
+.tk-choose .chip-btn{font-size:var(--fs-body);min-height:var(--control-h);padding:0 1rem;font-variant-numeric:tabular-nums}
+.tk-methods{display:flex;flex-wrap:wrap;gap:.2rem 1rem}
+.tk-money table{margin-bottom:.6rem}
+.tk-rep-range{flex-wrap:wrap;gap:.5rem}
+.tk-rep-range label{display:inline-flex;align-items:center;gap:.35rem}
+.fx-rates{display:flex;flex-direction:column;gap:.4rem;margin:.3rem 0 .8rem}
+.fx-rate.row-mini{display:flex;align-items:center;gap:.6rem;justify-content:flex-start}
+.fx-rate input{width:8rem;flex:0 0 auto}
+.fx-rate span:first-child{min-width:4.2rem}
+.batches{display:flex;flex-direction:column;gap:.6rem}
+.batch-card{display:block;color:inherit;text-decoration:none}
+.batch-card.off{opacity:.72}
+.tk-stats{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.tk-stats span{padding:.4rem .55rem}
+.tk-stats span b{font-size:1.2rem}
+.tk-grid button{position:relative}
+.tk-grid .st-assigned{background:var(--primary-soft)}
+.tk-grid .st-reserved{background:var(--warning-soft);color:var(--warning-text)}
+.tk-grid .st-sold{background:var(--success-soft);color:var(--success-text);font-weight:var(--fw-semibold)}
+.tk-grid .st-void{background:var(--bg-muted);color:var(--text-muted);text-decoration:line-through}
+.tk-grid .st-complimentary{background:var(--primary-soft)}
+.tk-grid .st-refunded{background:var(--danger-soft);color:var(--danger-text)}
+.tk-grid button:disabled:not(.st-void){opacity:1;text-decoration:none}
+.tk-grid i{position:absolute;top:4px;inset-inline-end:4px;width:6px;height:6px;border-radius:50%;background:var(--primary)}
+.tk-legend{display:flex;flex-wrap:wrap;gap:.3rem .9rem}
+.tk-legend span{display:inline-flex;align-items:center;gap:.35rem}
+.tk-legend i{display:inline-block;width:.85rem;height:.85rem;border-radius:var(--r-xs);border:1px solid var(--border);background:var(--bg-surface)}
+.tk-legend .st-assigned i{background:var(--primary-soft)}
+.tk-legend .st-reserved i{background:var(--warning-soft)}
+.tk-legend .st-sold i{background:var(--success-soft)}
+.tk-legend .st-void i{background:var(--bg-muted)}
+.tk-legend .st-complimentary i{background:var(--primary-soft)}
+.tk-legend .st-refunded i{background:var(--danger-soft)}
+.tk-legend .printed i{width:.45rem;height:.45rem;border-radius:50%;border:0;background:var(--primary)}
+.tk-bar{flex-wrap:wrap;gap:.4rem}
+.tk-bar-btns{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.tk-code{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tk-row{width:100%;text-align:start}
+.tk-ranges p{margin:.15rem 0;overflow-wrap:anywhere}
+.tk-pay{flex-basis:100%}
+.seller-pack{border-top:1px solid var(--border);padding-top:.6rem;margin-top:.6rem}
+.search-row{gap:.4rem;margin-bottom:.6rem}
+
+/* ---------- Printing and the template editor ---------- */
+.sheet-prev{padding:.6rem;border-radius:var(--r-ctl);background:var(--bg-muted);border:1px dashed var(--border);overflow:auto}
+.sheet-prev>svg{display:block;width:100%;height:auto;background:var(--paper);box-shadow:var(--shadow-2)}
+form#studio .section,form#studio h3{margin-top:1rem}
+/* the ticket template editor: settings beside a live preview (stacked on a phone) */
+.td-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:1rem;align-items:start}
+.td-prev{position:sticky;top:0}
+.td-prev .sheet-prev{display:flex;justify-content:center}
+.tk-flist{display:flex;flex-direction:column;gap:.2rem;margin-top:.3rem}
+.tk-f{display:flex;align-items:center;gap:.4rem;padding:.2rem .4rem;border:1px solid var(--border);border-radius:var(--r-ctl);background:var(--bg-surface)}
+.tk-f label{flex:1;display:flex;align-items:center;gap:.45rem;min-width:0}
+.tk-f .move{display:flex;gap:.1rem}
+.tk-f .move .icon-btn{width:30px;height:30px}
+@media (max-width:720px){.td-wrap{grid-template-columns:1fr}.td-prev{position:static;order:-1}}
+
+/* ---------- Prizes ---------- */
+.prize-set{border-top:4px solid var(--cc)}
+.prize-set header{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;flex-wrap:wrap}
+.prize-set header small{font-size:var(--fs-small);color:var(--text-muted)}
+.prize-set h2{margin:.1rem 0 .5rem}
+.prizes{display:flex;flex-direction:column;gap:.5rem;margin:.4rem 0 .6rem}
+.prize{display:flex;align-items:center;gap:.7rem;padding:.6rem .7rem;border-radius:var(--r-card);background:var(--bg-surface);border:1px solid var(--border);flex-wrap:wrap}
+.prize.won{background:color-mix(in srgb,var(--cc) 8%,var(--bg-surface));border-color:color-mix(in srgb,var(--cc) 35%,var(--border))}
+.prize .place{font:var(--fw-semibold) 1.35rem/1 var(--font-ui);color:color-mix(in srgb,var(--cc) 80%,var(--text));width:1.6rem;text-align:center}
+.prize img,.prize .pz-ic{width:3rem;height:3rem;border-radius:var(--r-ctl);object-fit:cover;display:grid;place-items:center;background:color-mix(in srgb,var(--cc) 14%,var(--bg-surface));color:var(--cc);flex:none}
+.prize .winner{align-items:center;gap:.3rem;font-weight:500;color:var(--cc);display:inline;line-height:1.5}
+.pz-act{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+.prize .grow{min-width:9rem;flex:1}
+.prize .winner .ico{vertical-align:-.2em}
+@media (max-width:480px){
+  .pz-act{flex-basis:100%;justify-content:flex-end}
+}
+.prize.focus{outline:2px solid var(--focus);outline-offset:2px}
+
+/* (10.4) the sale form's choices (currency, payment method) and the price fields per currency */
+fieldset.tk-field{border:0;padding:0;margin:var(--sp-4) 0 .9rem;min-width:0}
+fieldset.tk-field legend{font-size:var(--fs-label);font-weight:var(--fw-medium);color:var(--text-2);padding:0;margin-bottom:.35rem}
+fieldset.prices-in{border:1px solid var(--border);border-radius:var(--r-ctl);padding:.5rem .7rem;min-width:0}
+fieldset.prices-in legend{font-size:var(--fs-label);font-weight:var(--fw-medium);color:var(--text-2);padding:0 .3rem}
+/* a seller's money: one tile each (collected, handed in, still due), each currency on its own line – never one sum */
+.tk-money-sum{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:.5rem;margin:.5rem 0}
+.tk-money-sum>div{display:flex;flex-direction:column;gap:.1rem;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-ctl);padding:.45rem .7rem}
+.tk-money-sum b{font-size:1.05rem;white-space:nowrap;font-variant-numeric:tabular-nums}

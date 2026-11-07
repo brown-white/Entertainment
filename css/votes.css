@@ -1,0 +1,71 @@
+/* Mr Hassan · css/votes.css — votes: a vote's card with its state and results (each choice's bar and %), the sources, the analytics, the guest
+   app's vote, and collecting a vote (room → nationality → answer): the entertainer's phone and the reception touch screen (large). */
+.vt-card header{display:flex;gap:.6rem;align-items:flex-start}
+.vt-card h3{margin:0 0 .2rem}
+.vt-bars{list-style:none;margin:.6rem 0 .3rem;padding:0;display:grid;gap:.55rem}
+.vt-bars li{display:grid;gap:.2rem}
+.vt-l{display:flex;justify-content:space-between;gap:.6rem;align-items:baseline}
+.vt-l b{font-weight:500;overflow-wrap:anywhere}
+.vt-l small{color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.vt-bar{height:.75rem;border-radius:var(--r-pill);background:var(--bg-muted);overflow:hidden}
+.vt-bar i{display:block;height:100%;border-radius:inherit;background:var(--primary);transition:width .6s}
+.vt-bars.big .vt-l b{font-size:1.1rem}
+.vt-bars.big .vt-bar{height:1.1rem}
+.vt-total{margin:.2rem 0;color:var(--text-muted);font-size:.9rem}
+.vt-src{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:.7rem}
+.vt-src span{display:flex;flex-direction:column;align-items:center;padding:.5rem;border:1px solid var(--border);border-radius:var(--r-ctl)}
+.vt-src small{color:var(--text-muted);font-size:.75rem;text-align:center}
+.vt-src b{font:var(--fw-semibold) 1.5rem/1.1 var(--font-ui);font-variant-numeric:tabular-nums}
+.vr-filter summary{cursor:pointer;display:flex;align-items:center;gap:.4rem;min-height:40px}
+.vr-nat,.vr-rows{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.vr-nat th,.vr-rows th,.vr-rows td{padding:.35rem .45rem;border-bottom:1px solid var(--border);text-align:start}
+.vr-nat td{padding:.35rem .45rem;border-bottom:1px solid var(--border);text-align:center}
+.vr-staff{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));gap:.35rem}
+.vr-staff li{display:flex;justify-content:space-between;gap:.5rem;padding:.35rem .6rem;border:1px solid var(--border);border-radius:var(--r-ctl)}
+
+/* ---------- choosing an answer (the guest app, the entertainer, the reception screen) ---------- */
+.vc-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.5rem;margin:.6rem 0}
+.vc-choice{min-height:64px;padding:.7rem .9rem;border-radius:var(--r-card);border:2px solid var(--border);background:var(--bg-surface);color:var(--text);font:inherit;font-size:1.1rem;font-weight:500;cursor:pointer;touch-action:manipulation;overflow-wrap:anywhere}
+.vc-choice.on{border-color:var(--primary);background:var(--primary-soft)}
+.vc-choice:active{transform:scale(.98)}
+.g-vote .btn.lg{margin-top:.2rem}
+
+/* ---------- collecting a vote: room → nationality → answer ---------- */
+.vc{display:flex;flex-direction:column;gap:.8rem;max-width:40rem;margin:0 auto;width:100%}
+.vc-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem}
+.vc-steps li{text-align:center;padding:.4rem .2rem;border-radius:var(--r-pill);font-size:.82rem;color:var(--text-muted);border:1px solid var(--border)}
+.vc-steps li.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-weight:var(--fw-semibold)}
+.vc-steps li.done{color:var(--text)}
+.vc-room{display:flex;flex-direction:column;gap:.3rem}
+.vc-room input{font-size:2rem;text-align:center;letter-spacing:.1em;min-height:64px;font-variant-numeric:tabular-nums}
+.vc-rooms{display:flex;flex-wrap:wrap;gap:.35rem;min-height:2.6rem}
+.vc-rooms .pickchip{min-height:44px;font-size:1.05rem}
+.vc-rooms .pickchip.on,.vc-nats .pickchip.on,.vc-stays .pickchip.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.vc-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem}
+.vc-keys .btn{min-height:62px;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.vc-for{margin:0;color:var(--text-muted)}
+.vc-known{margin:0;font-size:1.05rem}
+.vc-nats{display:flex;flex-wrap:wrap;gap:.35rem}
+.vc-nats .pickchip{min-height:46px}
+.vc-q{margin:.2rem 0 0;font-size:1.5rem}
+.vc-go{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end}
+.vc-go .btn{min-height:54px}
+.vc-go .btn.lg{flex:1 1 12rem}
+.vc-done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.3rem;padding:1rem 0}
+.vc-done .ico{width:3.4rem;height:3.4rem;color:var(--success-text)}
+.vc-done h2{margin:0}
+/* the reception touch screen: everything larger */
+.vc-big{max-width:56rem}
+.vc-big .vc-steps li{font-size:1.1rem;padding:.6rem}
+.vc-big .vc-room input{font-size:3rem;min-height:90px}
+.vc-big .vc-keys .btn{min-height:84px;font-size:2.2rem}
+.vc-big .vc-nats .pickchip{min-height:60px;font-size:1.2rem;padding:.4rem 1rem}
+.vc-big .vc-choice{min-height:96px;font-size:1.6rem}
+.vc-big .vc-q{font-size:clamp(1.8rem,4vw,3rem);text-align:center}
+.vc-big .vc-go .btn{min-height:72px;font-size:1.3rem}
+.vc-big .btn.lg.wide{min-height:80px;font-size:1.4rem}
+.dm .vc-steps li.on{color:var(--dm-bg)}
+.dm #vc-room,.dm .vc .field select{background:color-mix(in srgb,var(--dm-fg) 8%,transparent);color:var(--dm-fg);border-color:color-mix(in srgb,var(--dm-fg) 25%,transparent)}
+.dm .vc .btn.secondary{color:var(--dm-fg);background:transparent;border-color:color-mix(in srgb,var(--dm-fg) 30%,transparent)}
+.dm .vc .btn:not(.secondary){background:var(--dm-accent);color:var(--dm-bg);border-color:var(--dm-accent)}
+.dm .vc .pickchip{color:var(--dm-fg);border-color:color-mix(in srgb,var(--dm-fg) 25%,transparent);background:transparent}

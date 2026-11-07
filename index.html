@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="description" content="Hotel entertainment programme, bookings and team app">
+<title>Mr Hassan</title>
+<script>/* a file of the app that could not be loaded (an incomplete upload) is said on the screen, never hidden */
+addEventListener('error', e => {
+  const s = e.target, f = s && /^(SCRIPT|LINK)$/.test(s.tagName) && (s.getAttribute('src') || s.getAttribute('href') || '');
+  if (!f || !/^(js|css)\//.test(f)) return;
+  const say = () => document.body.insertAdjacentHTML('afterbegin', '<p role="alert" style="margin:0;padding:.8rem 1rem;background:#A85454;color:#fff;font:15px/1.4 system-ui,sans-serif">'
+    + 'A file of the app could not be loaded: ' + f.split('?')[0] + ' – upload every file of the app folder, with its folders.</p>');
+  document.body ? say() : addEventListener('DOMContentLoaded', say);
+}, true);
+</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css?v=ea6eb0cb6a">
+<link rel="stylesheet" href="css/components.css?v=fb5fe4e04c">
+<link rel="stylesheet" href="css/guest.css?v=6b3064d001">
+<link rel="stylesheet" href="css/pages.css?v=904e279e8d">
+<link rel="stylesheet" href="css/programme.css?v=9da59a0cbf">
+<link rel="stylesheet" href="css/tickets.css?v=e69d997b2e">
+<link rel="stylesheet" href="css/display.css?v=4e9d4e434e">
+<link rel="stylesheet" href="css/games.css?v=26344df884">
+<link rel="stylesheet" href="css/votes.css?v=90c60cff9f">
+</head>
+<body>
+<a class="skip" href="#view">Skip to content</a>
+<div class="shell"><nav id="side" aria-label="Menu"></nav>
+  <div class="shell-main"><header id="top"></header><div id="ctx" hidden></div><main id="view" tabindex="-1"></main></div></div>
+<nav id="tabbar" aria-label="Menu"></nav>
+<div id="offline" role="status" hidden></div>
+<div id="toasts" aria-live="polite"></div>
+<!-- Mr Hassan: plain scripts, loaded in this order. Each file uses only files above it (test/structure.test.js checks it);
+     buttons reach any file by name (data-act="…" → ACT.…). -->
+<!-- the foundation: config, state, languages, the database, helpers, icons, permissions -->
+<script src="js/config.js?v=58b635f37b"></script>
+<script src="js/core/state.js?v=fca852fb09"></script>
+<script src="js/translations/translations.js?v=e22a331df1"></script>
+<script src="js/translations/languages.js?v=7c01fcf2f2"></script>
+<script src="js/supabase.js?v=709f316deb"></script>
+<script src="js/core/utils.js?v=c966d8225b"></script>
+<script src="js/icons/icons.js?v=d41d4caa64"></script>
+<script src="js/core/permissions.js?v=9545009cc1"></script>
+<!-- shared pieces of every screen, the session, the router and the shell -->
+<script src="js/components/modals.js?v=51a9599b37"></script>
+<script src="js/core/actions.js?v=949457bd23"></script>
+<script src="js/components/cards.js?v=e2e271c513"></script>
+<script src="js/components/theme.js?v=b4e1d17279"></script>
+<script src="js/core/auth.js?v=1b954488c1"></script>
+<script src="js/core/router.js?v=4ca13e4b6f"></script>
+<script src="js/components/forms.js?v=978be900b6"></script>
+<script src="js/components/tables.js?v=a4bf755a49"></script>
+<script src="js/components/navigation.js?v=42fc77d8cd"></script>
+<script src="js/components/display.js?v=d1ed70e5ff"></script>
+<!-- systems: the logic several pages share -->
+<script src="js/systems/exports.js?v=106e17fcac"></script>
+<script src="js/systems/notifications.js?v=100801989e"></script>
+<script src="js/systems/feedback.js?v=53ed6f2170"></script>
+<script src="js/systems/guest-lifecycle.js?v=022010fb01"></script>
+<script src="js/systems/team-schedule.js?v=02826fd6f8"></script>
+<script src="js/systems/attendance.js?v=c1e906d12a"></script>
+<script src="js/systems/suppliers.js?v=2c67fc89cc"></script>
+<script src="js/systems/smart-planner.js?v=aaea3fe336"></script>
+<script src="js/systems/assignment-system.js?v=7dcb567785"></script>
+<script src="js/systems/games.js?v=ead81efc42"></script>
+<script src="js/systems/game-darts.js?v=46f103bcd9"></script>
+<script src="js/systems/game-score.js?v=c7b0056060"></script>
+<script src="js/systems/game-bingo.js?v=c04db044dd"></script>
+<script src="js/systems/game-chance.js?v=044ba60e61"></script>
+<script src="js/systems/votes.js?v=acbfbb072d"></script>
+<script src="js/systems/program-engine.js?v=20b525e56b"></script>
+<script src="js/systems/ticket-system.js?v=0e49bbe785"></script>
+<script src="js/systems/operations.js?v=968472c471"></script>
+<script src="js/systems/lifecycle.js?v=5a6797a038"></script>
+<!-- pages: the guest app -->
+<script src="js/pages/guest/home.js?v=d88a542060"></script>
+<script src="js/pages/guest/programme.js?v=178545867a"></script>
+<script src="js/pages/guest/tickets.js?v=469ae49028"></script>
+<script src="js/pages/guest/stay.js?v=e20c1cb306"></script>
+<script src="js/pages/guest/fun.js?v=12bcb1063b"></script>
+<script src="js/pages/guest/celebrate.js?v=9b2b4b9425"></script>
+<!-- pages: staff and management (a page part comes before its page: Week overview → Programme, Prizes → Tickets) -->
+<script src="js/pages/sign-in.js?v=94b777a63a"></script>
+<script src="js/pages/menu.js?v=c77bc6c5ad"></script>
+<script src="js/pages/content.js?v=bd75a69386"></script>
+<script src="js/pages/my-day.js?v=eb88fe0ffb"></script>
+<script src="js/pages/requests.js?v=90b91f9a7c"></script>
+<script src="js/pages/profile.js?v=83e27d0d0d"></script>
+<script src="js/pages/weekly-overview.js?v=af6c5f6275"></script>
+<script src="js/pages/program.js?v=c8b0e1cd20"></script>
+<script src="js/pages/programme-export.js?v=af4e4dea90"></script>
+<script src="js/pages/assignments.js?v=969ef4a939"></script>
+<script src="js/pages/sell-tickets.js?v=3813e4f916"></script>
+<script src="js/pages/games.js?v=e56cbb8192"></script>
+<script src="js/pages/votes.js?v=140af0d87c"></script>
+<script src="js/pages/tasks.js?v=520b44df2a"></script>
+<script src="js/pages/chat.js?v=09725a2f10"></script>
+<script src="js/pages/team.js?v=def93d2192"></script>
+<script src="js/pages/quiz.js?v=8b5c18f9f9"></script>
+<script src="js/pages/gallery.js?v=fff3e63378"></script>
+<script src="js/pages/hotel-info.js?v=8835a42678"></script>
+<script src="js/pages/guest-support.js?v=f67217dbbe"></script>
+<script src="js/pages/feedback.js?v=2510e6a178"></script>
+<script src="js/pages/assistant.js?v=ba8552f05a"></script>
+<script src="js/pages/payroll.js?v=676d7eb167"></script>
+<script src="js/pages/guest-requests.js?v=b8a75bdb88"></script>
+<script src="js/pages/bingo.js?v=d7c492b18c"></script>
+<script src="js/pages/search.js?v=d6fb84e0b0"></script>
+<script src="js/pages/dashboard.js?v=9f3225ce16"></script>
+<script src="js/pages/attendance.js?v=84c37f607b"></script>
+<script src="js/pages/day-plan.js?v=18728c3297"></script>
+<script src="js/pages/staff.js?v=db9a16b221"></script>
+<script src="js/pages/hotels.js?v=ef68b14688"></script>
+<script src="js/pages/guests.js?v=35d33e3421"></script>
+<script src="js/pages/ticket-designer.js?v=e5b1af8aba"></script>
+<script src="js/pages/prizes.js?v=4d4fc5df30"></script>
+<script src="js/pages/tickets.js?v=3c54307d2b"></script>
+<script src="js/pages/requirements.js?v=c0e48c994b"></script>
+<script src="js/pages/notifications.js?v=b3e383dc19"></script>
+<script src="js/pages/settings.js?v=f57c994dbf"></script>
+<script src="js/pages/themes.js?v=7514735771"></script>
+<script src="js/pages/activity-log.js?v=1423698a4c"></script>
+<script src="js/pages/backup.js?v=8163b35009"></script>
+<script src="js/pages/qr.js?v=3b3c79b300"></script>
+<!-- start -->
+<script src="js/app.js?v=eae5eaa979"></script>
+</body>
+</html>

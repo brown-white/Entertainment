@@ -1,0 +1,65 @@
+/* Mr Hassan · css/guest.css — the guest app: choosing the hotel, home, programme and booking, my stay, quiz. */
+
+/* ---------- Choose the hotel ---------- */
+.hotel-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem}
+.hotel-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-card);padding:var(--sp-5);color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;gap:.4rem;cursor:pointer}
+.hotel-card img{width:auto;max-width:140px;height:64px;object-fit:contain}
+.hotel-card:hover{border-color:var(--border-strong)}
+.hotel-card .mono{width:64px;height:64px;border-radius:var(--r-card);background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font:var(--fw-semibold) 1.75rem/1 var(--font-display)}
+.hotel-card b{font:var(--fw-semibold) var(--fs-section)/1.25 var(--font-display)}
+
+/* ---------- Home ---------- */
+.hero{width:100%;max-height:260px;object-fit:cover;border-radius:var(--r-card);margin-bottom:.8rem}
+.more-link{display:inline-block;margin-top:var(--sp-3);color:var(--primary);font-weight:var(--fw-medium)}
+.lead{font-size:1.08rem;max-width:62ch;line-height:1.6}
+.g-hero .lead{margin:.2rem 0}
+.g-hero .hello{margin:0 0 .3rem}
+.cta{display:flex;flex-direction:column;gap:.3rem;text-decoration:none;margin:.8rem 0}
+.cta b{font:var(--fw-semibold) var(--fs-section)/1.25 var(--font-display)}
+.cta .btn{align-self:flex-start;margin-top:.3rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem;margin:1rem 0}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;padding:1rem;min-height:96px;background:var(--bg-surface);text-decoration:none;border:1px solid var(--border);box-shadow:var(--shadow-card);border-radius:var(--r-card)}
+.tile span{width:2.4rem;height:2.4rem;border-radius:var(--r-md);display:grid;place-items:center;color:var(--primary);background:var(--primary-soft)}
+.tile b{font-weight:500;line-height:1.25}
+.g-hero .weather{border:0;padding:0;background:transparent;margin-top:.4rem;box-shadow:none}
+.tile span .ico{width:1.4rem;height:1.4rem}
+.day-banner{display:flex;flex-direction:column;gap:.15rem;padding:.2rem 0 .6rem;margin-bottom:.4rem;border-bottom:1px solid var(--border)}
+.day-banner small{font-size:var(--fs-small);color:var(--text-muted)}
+.day-banner b{font:var(--fw-semibold) 1.5rem/1.15 var(--font-display)}
+.day-banner span,.day-line span{display:inline-flex;align-items:center;gap:.35rem;color:var(--text-muted)}
+.day-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1rem;margin:.2rem 0 .6rem}
+.day-line b{font:var(--fw-semibold) var(--fs-section)/1.2 var(--font-display)}
+
+/* ---------- Programme, booking, my stay, quiz ---------- */
+.stay-card{display:flex;flex-direction:column;gap:.2rem}
+.stay-card b{font:var(--fw-semibold) 1.35rem/1.2 var(--font-display)}
+.q{font:var(--fw-semibold) var(--fs-section)/1.35 var(--font-display)}
+.answers{display:flex;flex-direction:column;gap:.4rem}
+.chips.cats{align-items:center}
+.chips.cats>.ico{color:var(--primary)}
+.chips.cats .chip-btn.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.book-box{display:flex;flex-direction:column;gap:var(--sp-3);padding:var(--sp-4);border-radius:var(--r-card);background:var(--primary-soft);border:1px solid color-mix(in srgb,var(--primary) 25%,transparent)}
+.book-box .places{margin:0;display:flex;align-items:center;gap:.4rem;color:var(--text-muted)}
+.winners ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+.winners li{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--border-subtle)}
+.winners li:last-child{border:0}
+.winners img{width:3rem;height:3rem;border-radius:var(--r-ctl);object-fit:cover}
+.winners small{display:block;color:var(--text-muted)}
+.winners .tk-no{font:var(--fw-semibold) 1.1rem/1 var(--font-ui);color:var(--primary);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ---------- 10.9 the guest's songs (YouTube's search) and celebrations ---------- */
+.song-find .yt-find{flex-wrap:nowrap}
+.song-find .yt-find input{flex:1;min-width:0}
+.yt-res .li{display:flex;gap:.6rem;align-items:center;cursor:pointer}
+.yt-res img{width:72px;height:54px;object-fit:cover;border-radius:var(--r-md);flex:none}
+.yt-res .grow{display:grid;gap:.1rem;min-width:0;overflow-wrap:anywhere}
+.yt-pick p{overflow-wrap:anywhere}
+.yt-media{position:relative;aspect-ratio:16/9;border-radius:var(--r-card);overflow:hidden;background:var(--media-bg)}
+.yt-media img,.yt-media iframe{width:100%;height:100%;object-fit:cover;border:0;display:block}
+.yt-play{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;border:0;background:color-mix(in srgb,var(--media-bg) 60%,transparent);color:var(--on-media);display:grid;place-items:center;cursor:pointer}
+.yt-mini{width:48px;height:36px;object-fit:cover;border-radius:var(--r-sm);flex:none}
+.chips.pick{flex-wrap:wrap;overflow:visible}
+.cel-form h3{margin:var(--sp-4) 0 .35rem}
+.cel-form .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.cel-req{display:grid;gap:.3rem}
+.cel-reply input{flex:1;min-width:0}
